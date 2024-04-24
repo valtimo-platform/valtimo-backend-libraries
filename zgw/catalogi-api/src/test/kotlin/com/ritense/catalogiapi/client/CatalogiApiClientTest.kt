@@ -409,6 +409,50 @@ internal class CatalogiApiClientTes {
         return recordedRequest
     }
 
+    @Test
+    fun `should get eigenschappen request and parse response`() {
+        val webclientBuilder = WebClient.builder()
+        val client = CatalogiApiClient(webclientBuilder)
+        val baseUrl = mockApi.url("api").toString()
+        val responseBody = """
+            {
+                "count": 1,
+                "next": null,
+                "previous": null,
+                "results": [
+                    {
+                        "url": "http://ritense.com/catalogi/api/v1/eigenschappen/724c0f92-683d-4dd8-a14b-75850dbf043d",
+                        "naam": "achternaam",
+                        "definitie": "achternaam",
+                        "specificatie": {
+                            "groep": "tekst",
+                            "formaat": "tekst",
+                            "lengte": "100",
+                            "kardinaliteit": "1",
+                            "waardenverzameling": []
+                        },
+                        "toelichting": "",
+                        "zaaktype": "http://ritense.com/catalogi/api/v1/zaaktypen/35bbe19f-4ae8-4591-9763-273ad2675340"
+                    }
+                ]
+            }
+        """.trimIndent()
+        mockApi.enqueue(mockResponse(responseBody))
+
+        val response = client.getEigenschappen(
+            authentication = TestAuthentication(),
+            baseUrl = URI(baseUrl),
+            request = EigenschapRequest(page = 1)
+        )
+
+        // to make sure the request is cleaned up to prevent issues with other tests
+        mockApi.takeRequest()
+        assertEquals(1, response.results.size)
+        val zaaktype = response.results.single()
+        assertEquals("http://ritense.com/catalogi/api/v1/eigenschappen/724c0f92-683d-4dd8-a14b-75850dbf043d", zaaktype.url.toString())
+        assertEquals("achternaam", zaaktype.naam)
+    }
+
     private fun mockResponse(body: String): MockResponse {
         return MockResponse()
             .addHeader("Content-Type", "application/json")

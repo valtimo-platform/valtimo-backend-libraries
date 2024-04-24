@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Dimpact.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.service.impl.model.catalogi
+package com.ritense.zakenapi.repository
 
+import com.ritense.zakenapi.domain.ZaakHersteltermijn
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
 import java.net.URI
-import java.time.Period
+import java.time.LocalDate
+import java.util.UUID
 
-data class ZaakType (
-    val url: URI,
-    val omschrijving: String,
-    val omschrijvingGeneriek: String? = null,
-    val doorlooptijd: Period? = null
-)
+interface ZaakHersteltermijnRepository : JpaRepository<ZaakHersteltermijn, UUID> {
+
+    fun findByZaakUrlAndEndDateIsNull(zaakUrl: URI): ZaakHersteltermijn?
+}

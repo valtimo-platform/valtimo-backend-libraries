@@ -3,6 +3,7 @@ package com.ritense.zakenapi
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.catalogiapi.CatalogiApiAuthentication
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.plugin.domain.ActivityType
@@ -15,6 +16,8 @@ import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProces
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.impl.result.NewDocumentAndStartProcessResultSucceeded
 import com.ritense.valtimo.contract.resource.Resource
+import com.ritense.zakenapi.domain.CreateZaakRequest
+import com.ritense.zgw.Rsin
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -31,11 +34,14 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpMethod
+import org.springframework.http.HttpMethod.POST
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
 import java.net.URI
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
@@ -63,6 +69,8 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
     lateinit var server: MockWebServer
 
     lateinit var processDefinitionId: String
+
+    private var executedRequests: MutableList<RecordedRequest> = mutableListOf()
 
     @BeforeEach
     internal fun setUp() {
@@ -122,6 +130,25 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
     @AfterEach
     internal fun tearDown() {
         server.shutdown()
+    }
+
+    @Test
+    fun `should create zaak with uiterlijkeEinddatumAfdoening`() {
+        val zakenApiPlugin = pluginService.createInstance<ZakenApiPlugin>(UUID.fromString(ZAKEN_API_PLUGIN_ID))
+        val document = runWithoutAuthorization {
+            documentService.createDocument(
+                NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
+            ).resultingDocument().get()
+        }
+
+        zakenApiPlugin.createZaak(
+            document.id().id,
+            Rsin("155539620"),
+            URI("http://localhost:56273/catalogi/my-zaaktype-id")
+        )
+
+        val requestBody = getRequestBody(POST, "/zaken/zaken", CreateZaakRequest::class.java)
+        assertEquals(requestBody.uiterlijkeEinddatumAfdoening, LocalDate.now().plusDays(84))
     }
 
     @Test
@@ -201,12 +228,15 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
     }
 
     private fun setupMockZakenApiServer() {
-        val dispatcher: Dispatcher = object: Dispatcher() {
+        val dispatcher: Dispatcher = object : Dispatcher() {
             @Throws(InterruptedException::class)
             override fun dispatch(request: RecordedRequest): MockResponse {
+                executedRequests.add(request)
                 val path = request.path?.substringBefore('?')
                 val response = when(path) {
                     "/zaakinformatieobjecten" -> handleZaakInformatieObjectRequest()
+                    "/catalogi/my-zaaktype-id" -> getZaaktypeResponse()
+                    "/zaken/zaken" -> createZaakResponse()
                     else -> MockResponse().setResponseCode(404)
                 }
                 return response
@@ -232,13 +262,129 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         return mockResponse(body)
     }
 
+    private fun createZaakResponse(): MockResponse {
+        val body = """
+            {
+                "url": "http://localhost/zaken/api/v1/zaken/95b9a6a8-978c-40f7-93d0-eb4b46597355",
+                "uuid": "95b9a6a8-978c-40f7-93d0-eb4b46597355",
+                "identificatie": "ZAAK-2023-0000000001",
+                "bronorganisatie": "419071349",
+                "omschrijving": "",
+                "toelichting": "",
+                "zaaktype": "http://localhost/catalogi/api/v1/zaaktypen/744ca059-f412-49d4-8963-5800e4afd486",
+                "registratiedatum": "2024-02-13",
+                "verantwoordelijkeOrganisatie": "420936440",
+                "startdatum": "2023-01-23",
+                "einddatum": null,
+                "einddatumGepland": null,
+                "uiterlijkeEinddatumAfdoening": null,
+                "publicatiedatum": null,
+                "communicatiekanaal": "",
+                "productenOfDiensten": [],
+                "vertrouwelijkheidaanduiding": "zaakvertrouwelijk",
+                "betalingsindicatie": "",
+                "betalingsindicatieWeergave": "",
+                "laatsteBetaaldatum": null,
+                "zaakgeometrie": null,
+                "verlenging": null,
+                "opschorting": {
+                    "indicatie": false,
+                    "reden": ""
+                },
+                "selectielijstklasse": "",
+                "hoofdzaak": null,
+                "deelzaken": [],
+                "relevanteAndereZaken": [],
+                "eigenschappen": [],
+                "status": null,
+                "kenmerken": [],
+                "archiefnominatie": null,
+                "archiefstatus": "nog_te_archiveren",
+                "archiefactiedatum": null,
+                "resultaat": null,
+                "opdrachtgevendeOrganisatie": ""
+            }
+        """.trimIndent()
+        return mockResponse(body)
+    }
+
+    private fun getZaaktypeResponse(): MockResponse {
+        val body = """
+            {
+                "url": "http://localhost/catalogi/api/v1/zaaktypen/744ca059-f412-49d4-8963-5800e4afd486",
+                "identificatie": "example-case",
+                "omschrijving": "Example case",
+                "omschrijvingGeneriek": "Example case",
+                "vertrouwelijkheidaanduiding": "zaakvertrouwelijk",
+                "doel": "For test purposes.",
+                "aanleiding": "aanleiding",
+                "toelichting": "toelichting",
+                "indicatieInternOfExtern": "extern",
+                "handelingInitiator": "Indienen",
+                "onderwerp": "Example",
+                "handelingBehandelaar": "Case",
+                "doorlooptijd": "P84D",
+                "servicenorm": null,
+                "opschortingEnAanhoudingMogelijk": false,
+                "verlengingMogelijk": true,
+                "verlengingstermijn": "P42D",
+                "trefwoorden": [
+                    "example"
+                ],
+                "publicatieIndicatie": false,
+                "publicatietekst": "",
+                "verantwoordingsrelatie": [],
+                "productenOfDiensten": [
+                    "https://github.com/valtimo-platform/valtimo-platform"
+                ],
+                "selectielijstProcestype": "https://ritense.com",
+                "referentieproces": {
+                    "naam": "Example case",
+                    "link": "http://ritense.com"
+                },
+                "catalogus": "http://localhost/catalogi/api/v1/catalogussen/8225508a-6840-413e-acc9-6422af120db1",
+                "statustypen": [
+                    "http://localhost/catalogi/api/v1/statustypen/12345678-3f25-4716-5432-49ea8e954fd0"
+                ],
+                "resultaattypen": [],
+                "eigenschappen": [
+                    "http://localhost/catalogi/api/v1/eigenschappen/12345678-b04b-424b-ab02-c4102b562633"
+                ],
+                "informatieobjecttypen": [
+                    "http://localhost/catalogi/api/v1/informatieobjecttypen/12345678-be3b-4bad-9e3c-49a6219c92ad"
+                ],
+                "roltypen": [
+                    "http://localhost/catalogi/api/v1/roltypen/12345678-c38d-47b8-bed5-994db88ead61"
+                ],
+                "besluittypen": [],
+                "deelzaaktypen": [],
+                "gerelateerdeZaaktypen": [],
+                "beginGeldigheid": "2021-01-01",
+                "eindeGeldigheid": null,
+                "versiedatum": "2021-01-01",
+                "concept": false
+            }
+        """.trimIndent()
+        return mockResponse(body)
+    }
+
+    fun findRequest(method: HttpMethod, path: String): RecordedRequest? {
+        return executedRequests
+            .filter { method.matches(it.method!!) }
+            .firstOrNull { it.path?.substringBefore('?').equals(path) }
+    }
+
+    fun <T> getRequestBody(method: HttpMethod, path: String, clazz: Class<T>): T {
+        return objectMapper.readValue(findRequest(method, path)!!.body.readUtf8(), clazz)
+    }
+
     private fun mockResponse(body: String): MockResponse {
         return MockResponse()
             .addHeader("Content-Type", "application/json")
             .setBody(body)
     }
 
-    class TestAuthentication: ZakenApiAuthentication {
+    class TestAuthentication : ZakenApiAuthentication, CatalogiApiAuthentication {
         override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
             return next.exchange(request)
         }
@@ -248,6 +394,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         private const val PROCESS_DEFINITION_KEY = "zaken-api-plugin"
         private const val DOCUMENT_DEFINITION_KEY = "profile"
         private const val INFORMATIE_OBJECT_URL = "http://informatie.object.url"
+        private const val ZAKEN_API_PLUGIN_ID = "3079d6fe-42e3-4f8f-a9db-52ce2507b7ee"
         private val ZAAK_URL = URI("http://localhost:56273/zaken/57f66ff6-db7f-43bc-84ef-6847640d3609")
     }
 }

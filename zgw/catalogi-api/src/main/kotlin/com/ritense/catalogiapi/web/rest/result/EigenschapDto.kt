@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Dimpact.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.service.impl.model.catalogi
+package com.ritense.catalogiapi.web.rest.result
 
+import com.ritense.catalogiapi.domain.Eigenschap
 import java.net.URI
-import java.time.Period
 
-data class ZaakType (
+class EigenschapDto(
     val url: URI,
-    val omschrijving: String,
-    val omschrijvingGeneriek: String? = null,
-    val doorlooptijd: Period? = null
-)
+    val name: String,
+) {
+
+    companion object {
+        fun of(eigenschap: Eigenschap): EigenschapDto = EigenschapDto(
+            url = eigenschap.url!!,
+            name = eigenschap.naam
+        )
+    }
+}

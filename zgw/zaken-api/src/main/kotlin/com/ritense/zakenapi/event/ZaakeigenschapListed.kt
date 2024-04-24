@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Dimpact.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.service.impl.model.catalogi
+package com.ritense.zakenapi.event
 
-import java.net.URI
-import java.time.Period
+import com.fasterxml.jackson.databind.node.ArrayNode
+import com.ritense.outbox.domain.BaseEvent
 
-data class ZaakType (
-    val url: URI,
-    val omschrijving: String,
-    val omschrijvingGeneriek: String? = null,
-    val doorlooptijd: Period? = null
+class ZaakeigenschapListed (zaakeigenschappen: ArrayNode) : BaseEvent(
+    type = "com.ritense.gzac.zrc.zaakeigenschap.listed",
+    resultType = "List<com.ritense.zakenapi.domain.ZaakeigenschapResponse>",
+    resultId = null,
+    result = zaakeigenschappen
 )
