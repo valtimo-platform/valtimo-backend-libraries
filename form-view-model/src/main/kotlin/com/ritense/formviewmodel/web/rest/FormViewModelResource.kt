@@ -1,6 +1,7 @@
 package com.ritense.formviewmodel.web.rest
 
-import com.fasterxml.jackson.databind.JsonNode
+import com.ritense.formviewmodel.domain.ViewModel
+import com.ritense.formviewmodel.domain.factory.ViewModelLoaderFactory
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType
 import org.springframework.http.ResponseEntity
@@ -20,16 +21,20 @@ class FormViewModelResource {
     fun getFormViewModel(
         @RequestParam(required = true) formId: String,
         @RequestParam(required = true) taskInstanceId: String
-    ): ResponseEntity<JsonNode> {
-        return ResponseEntity.ok().build()
+    ): ResponseEntity<ViewModel?> {
+        return ResponseEntity.ok(
+            ViewModelLoaderFactory().getViewModelLoader(formId)?.onLoad(taskInstanceId)
+        )
     }
 
     @PostMapping
     fun updateFormViewModel(
         @RequestParam(required = true) formId: String,
         @RequestParam(required = true) taskInstanceId: String,
-        @RequestBody formViewModel: String // TODO: Define the form view model
-    ): ResponseEntity<JsonNode> {
-        return ResponseEntity.ok().build()
+        @RequestBody formViewModel: ViewModel
+    ): ResponseEntity<ViewModel> {
+        return ResponseEntity.ok(
+            ViewModelLoaderFactory().getViewModelLoader(formId)?.onLoad(taskInstanceId)?.update(formViewModel)
+        )
     }
 }
