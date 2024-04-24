@@ -39,7 +39,7 @@ class FormViewModelProcessLinkActivityHandler(
             .orElseThrow { RuntimeException("Form definition not found by id ${processLink.formDefinitionId}") }
         return ProcessLinkActivityResult(
             processLink.id,
-            FORM_TASK_TYPE_KEY,
+            FORM_VIEW_MODEL_TASK_TYPE_KEY,
             FormViewModelTaskOpenResultProperties(processLink.formDefinitionId, formDefinition.asJson())
         )
     }
@@ -55,12 +55,12 @@ class FormViewModelProcessLinkActivityHandler(
             .orElseThrow { RuntimeException("Form definition not found by id ${processLink.formDefinitionId}") }
         return ProcessLinkActivityResult(
             processLink.id,
-            FORM_TASK_TYPE_KEY,
+            FORM_VIEW_MODEL_TASK_TYPE_KEY,
             FormViewModelTaskOpenResultProperties(processLink.formDefinitionId, formDefinition.asJson())
         )
     }
 
     companion object {
-        private const val FORM_TASK_TYPE_KEY = "form"
+        private const val FORM_VIEW_MODEL_TASK_TYPE_KEY = "form-view-model"
     }
 }
