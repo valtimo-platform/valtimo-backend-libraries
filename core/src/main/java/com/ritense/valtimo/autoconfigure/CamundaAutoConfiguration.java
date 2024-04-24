@@ -34,15 +34,12 @@ import com.ritense.valtimo.contract.mail.MailSender;
 import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSettingsService;
 import com.ritense.valtimo.helper.CamundaCollectionHelper;
 import com.ritense.valtimo.helper.DelegateTaskHelper;
-import com.ritense.valtimo.security.ProfileTestConfiguration;
-import com.ritense.valtimo.security.UserAuthTestConfiguration;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.web.rest.error.CamundaExceptionTranslator;
 import java.util.Collections;
 import org.camunda.bpm.application.impl.event.ProcessApplicationEventListenerPlugin;
 import org.camunda.bpm.extension.keycloak.auth.KeycloakJwtAuthenticationFilter;
 import org.camunda.bpm.extension.keycloak.config.KeycloakCockpitConfiguration;
-import org.camunda.bpm.extension.keycloak.config.KeycloakCockpitConfigurationFilter;
 import org.camunda.bpm.extension.keycloak.config.KeycloakConfigurationFilterRegistrationBean;
 import org.camunda.bpm.spring.boot.starter.CamundaBpmAutoConfiguration;
 import org.camunda.bpm.spring.boot.starter.property.CamundaBpmProperties;
@@ -54,9 +51,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
-
-import static com.ritense.valtimo.security.ProfileTestConfiguration.PROFILE_PATH;
-import static com.ritense.valtimo.security.UserAuthTestConfiguration.AUTH_PATH;
 
 @AutoConfiguration
 @AutoConfigureAfter(CamundaBpmAutoConfiguration.class)
@@ -196,27 +190,5 @@ public class CamundaAutoConfiguration {
             keycloakCockpitConfiguration,
             camundaBpmProperties.getWebapp().getApplicationPath()
         );
-    }
-
-    @Bean
-    public FilterRegistrationBean test1(
-        CamundaBpmProperties camundaBpmProperties
-    ) {
-        FilterRegistrationBean filterRegistration = new FilterRegistrationBean();
-        filterRegistration.setFilter(new ProfileTestConfiguration());
-        filterRegistration.setOrder(Integer.MIN_VALUE);
-        filterRegistration.addUrlPatterns(camundaBpmProperties.getWebapp().getApplicationPath() + PROFILE_PATH);
-        return filterRegistration;
-    }
-
-    @Bean
-    public FilterRegistrationBean test2(
-        CamundaBpmProperties camundaBpmProperties
-    ) {
-        FilterRegistrationBean filterRegistration = new FilterRegistrationBean();
-        filterRegistration.setFilter(new UserAuthTestConfiguration());
-        filterRegistration.setOrder(Integer.MIN_VALUE);
-        filterRegistration.addUrlPatterns(camundaBpmProperties.getWebapp().getApplicationPath() + AUTH_PATH);
-        return filterRegistration;
     }
 }

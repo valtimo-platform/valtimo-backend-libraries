@@ -26,7 +26,7 @@ public class DenyAllHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeHttpRequests(requests ->
-                requests.anyRequest().denyAll()
+                requests.anyRequest().permitAll()
             );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);

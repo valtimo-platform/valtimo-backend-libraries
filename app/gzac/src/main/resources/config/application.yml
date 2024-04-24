@@ -272,6 +272,14 @@ plugin.cockpit.keycloak:
     realm: valtimo
     clientId: valtimo-console
 
+plugin.identity.keycloak:
+    keycloakIssuerUrl: http://localhost:8081/auth/realms/valtimo
+    keycloakAdminUrl: http://localhost:8081/auth/admin/realms/valtimo
+    clientId: valtimo-cockpit-identity-service
+    clientSecret: oSTNqsutovIPJaBGY5y49vcCBA46XtXM
+    useEmailAsCamundaUserId: true
+    administratorGroupName: camunda-cockpit
+
 # ==================
 # keycloak server to server config
 # ==================

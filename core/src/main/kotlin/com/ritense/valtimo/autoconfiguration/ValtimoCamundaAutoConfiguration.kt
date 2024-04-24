@@ -38,6 +38,7 @@ import com.ritense.valtimo.camunda.service.CamundaHistoryService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import com.ritense.valtimo.security.KeycloakIdentityProvider
 import com.ritense.valtimo.service.CamundaTaskService
 import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.RepositoryService
@@ -168,5 +169,13 @@ class ValtimoCamundaAutoConfiguration {
     fun camundaTaskIdentityLinkMapper(): CamundaTaskIdentityLinkMapper {
         return CamundaTaskIdentityLinkMapper()
     }
+
+    @Bean
+    @ConditionalOnMissingBean(KeycloakIdentityProvider::class)
+    fun keycloakIdentityProvider(): KeycloakIdentityProvider {
+        return KeycloakIdentityProvider()
+    }
+
+
 
 }
