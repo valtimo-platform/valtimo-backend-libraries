@@ -16,18 +16,29 @@
 
 package com.ritense.formviewmodel.autoconfigure;
 
+import com.ritense.form.service.impl.FormIoFormDefinitionService
+import com.ritense.formviewmodel.FormViewModelProcessLinkActivityHandler
 import com.ritense.formviewmodel.security.config.FormViewModelHttpSecurityConfigurerKotlin
 import com.ritense.formviewmodel.web.rest.FormViewModelResource
-import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.context.annotation.Bean
+import org.springframework.core.annotation.Order
 
 @AutoConfiguration
 class FormViewModelAutoConfiguration {
 
+    @Order(390)
     @Bean
     fun formViewModelHttpSecurityConfigurerKotlin() = FormViewModelHttpSecurityConfigurerKotlin();
 
     @Bean
     fun formViewModelRestResource() = FormViewModelResource();
+
+    @Bean
+    fun formViewModelProcessLinkTaskProvider(
+        formDefinitionService: FormIoFormDefinitionService
+    ): FormViewModelProcessLinkActivityHandler {
+        return FormViewModelProcessLinkActivityHandler(formDefinitionService)
+    }
 
 }

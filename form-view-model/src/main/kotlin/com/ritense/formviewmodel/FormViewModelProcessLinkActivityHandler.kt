@@ -14,38 +14,33 @@
  * limitations under the License.
  */
 
-package com.ritense.form.processlink
+package com.ritense.formviewmodel
 
 import com.ritense.form.domain.FormProcessLink
-import com.ritense.form.domain.FormTaskOpenResultProperties
-import com.ritense.form.service.PrefillFormService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
+import com.ritense.formviewmodel.domain.FormViewModelTaskOpenResultProperties
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import java.util.UUID
 
-class FormProcessLinkActivityHandler(
+class FormViewModelProcessLinkActivityHandler(
     private val formDefinitionService: FormIoFormDefinitionService,
-    private val prefillFormService: PrefillFormService,
-) : ProcessLinkActivityHandler<FormTaskOpenResultProperties> {
+) : ProcessLinkActivityHandler<FormViewModelTaskOpenResultProperties> {
 
     override fun supports(processLink: ProcessLink): Boolean {
-        return processLink is FormProcessLink && !processLink.viewModelEnabled
+        return processLink is FormProcessLink && processLink.viewModelEnabled
     }
 
-    override fun openTask(task: CamundaTask, processLink: ProcessLink): ProcessLinkActivityResult<FormTaskOpenResultProperties> {
+    override fun openTask(task: CamundaTask, processLink: ProcessLink): ProcessLinkActivityResult<FormViewModelTaskOpenResultProperties> {
         processLink as FormProcessLink
-        val formDefinition = prefillFormService.getPrefilledFormDefinition(
-            formDefinitionId = processLink.formDefinitionId,
-            processInstanceId = task.getProcessInstanceId(),
-            taskInstanceId = task.id,
-        )
+        val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId)
+            .orElseThrow { RuntimeException("Form definition not found by id ${processLink.formDefinitionId}") }
         return ProcessLinkActivityResult(
             processLink.id,
-            FORM_TASK_TYPE_KEY,
-            FormTaskOpenResultProperties(processLink.formDefinitionId, formDefinition.asJson())
+            FORM_VIEW_MODEL_TASK_TYPE_KEY,
+            FormViewModelTaskOpenResultProperties(processLink.formDefinitionId, formDefinition.asJson())
         )
     }
 
@@ -54,17 +49,18 @@ class FormProcessLinkActivityHandler(
         documentId: UUID?,
         documentDefinitionName: String?,
         processLink: ProcessLink
-    ): ProcessLinkActivityResult<FormTaskOpenResultProperties> {
+    ): ProcessLinkActivityResult<FormViewModelTaskOpenResultProperties> {
         processLink as FormProcessLink
-        val formDefinition = prefillFormService.getPrefilledFormDefinition(processLink.formDefinitionId, documentId)
+        val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId)
+            .orElseThrow { RuntimeException("Form definition not found by id ${processLink.formDefinitionId}") }
         return ProcessLinkActivityResult(
             processLink.id,
-            FORM_TASK_TYPE_KEY,
-            FormTaskOpenResultProperties(processLink.formDefinitionId, formDefinition.asJson())
+            FORM_VIEW_MODEL_TASK_TYPE_KEY,
+            FormViewModelTaskOpenResultProperties(processLink.formDefinitionId, formDefinition.asJson())
         )
     }
 
     companion object {
-        private const val FORM_TASK_TYPE_KEY = "form"
+        private const val FORM_VIEW_MODEL_TASK_TYPE_KEY = "form-view-model"
     }
 }
