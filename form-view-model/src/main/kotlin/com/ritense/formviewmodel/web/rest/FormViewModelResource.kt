@@ -37,13 +37,12 @@ class FormViewModelResource(
         @RequestParam(required = true) taskInstanceId: String,
         @RequestBody formViewModel: String
     ): ResponseEntity<ViewModel> {
-        val castedViewModel = castViewModel(formViewModel, viewModelLoaderFactory.getViewModelLoader(formId)?.getViewModelType()!!)
         return ResponseEntity.ok(
-            castedViewModel.update(castedViewModel)
+            parseViewModel(formViewModel, viewModelLoaderFactory.getViewModelLoader(formId)?.getViewModelType()!!).update()
         )
     }
 
-    private inline fun <reified T : ViewModel>castViewModel(formViewModel: String, viewModelType: KClass<out T>): ViewModel {
+    private inline fun <reified T : ViewModel>parseViewModel(formViewModel: String, viewModelType: KClass<out T>): ViewModel {
         return jacksonObjectMapper().readValue(formViewModel, viewModelType.java)
     }
 }
