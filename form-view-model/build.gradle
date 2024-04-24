@@ -26,6 +26,8 @@ dependencies {
     implementation project(":contract")
     implementation project(":core")
     implementation project(":authorization")
+    implementation project(":form")
+    implementation project(":process-link")
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
