@@ -153,7 +153,7 @@ class BesluitenApiClientTest {
                 "bestuursorgaan": "680572442",
                 "ingangsdatum": "2023-04-21",
                 "vervaldatum": "2023-04-22",
-                "vervalreden": null,
+                "vervalreden": "",
                 "vervalredenWeergave": "reden",
                 "publicatiedatum": "2023-04-23",
                 "verzenddatum": "2023-04-24",
