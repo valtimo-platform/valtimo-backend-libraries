@@ -21,12 +21,17 @@ import com.ritense.documentenapi.DocumentenApiAuthentication
 import com.ritense.documentenapi.event.DocumentDeleted
 import com.ritense.documentenapi.event.DocumentInformatieObjectDownloaded
 import com.ritense.documentenapi.event.DocumentInformatieObjectViewed
+import com.ritense.documentenapi.event.DocumentListed
 import com.ritense.documentenapi.event.DocumentStored
 import com.ritense.documentenapi.event.DocumentUpdated
+import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
 import com.ritense.outbox.OutboxService
 import com.ritense.zgw.ClientTools
+import com.ritense.zgw.ClientTools.Companion.optionalQueryParam
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferUtils
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
@@ -39,6 +44,7 @@ import java.io.InputStream
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
 import java.net.URI
+import kotlin.math.min
 
 class DocumentenApiClient(
     private val webclientBuilder: WebClient.Builder,
@@ -107,6 +113,67 @@ class DocumentenApiClient(
         }
 
         return result
+    }
+
+    fun getInformatieObjecten(
+        authentication: DocumentenApiAuthentication,
+        baseUrl: URI,
+        pageable: Pageable,
+        documentSearchRequest: DocumentSearchRequest,
+    ): org.springframework.data.domain.Page<DocumentInformatieObject> {
+        // because the documenten api only supports a fixed page size, we will try to calculate the page we need to request
+        // the only page sizes that are supported are those that can fit n times in the itemsPerPage
+        if (ITEMS_PER_PAGE % pageable.pageSize != 0) {
+            throw IllegalArgumentException("Page size is not supported")
+        }
+        if (documentSearchRequest.zaakUrl == null) {
+            throw IllegalArgumentException("Zaak URL is required")
+        }
+
+        val pageToRequest = ((pageable.pageSize * pageable.pageNumber) / ITEMS_PER_PAGE) + 1
+
+        val result = checkNotNull(
+            buildFilteredClient(authentication)
+                .get()
+                .uri {
+                    ClientTools.baseUrlToBuilder(it, baseUrl)
+                        .path("enkelvoudiginformatieobjecten")
+                        .optionalQueryParam("titel", documentSearchRequest.title)
+                        .optionalQueryParam("informatieobjecttype", documentSearchRequest.informationObjectType)
+                        .optionalQueryParam("vertrouwelijkheidaanduiding", documentSearchRequest.confidentialityLevel)
+                        .optionalQueryParam("auteur", documentSearchRequest.author)
+                        .optionalQueryParam("creatiedatum__gte", documentSearchRequest.creationDateFrom) // TODO: something with time zones
+                        .optionalQueryParam("creatiedatum__lte", documentSearchRequest.creationDateTo)
+                        .optionalQueryParam("trefwoorden", documentSearchRequest.tags?.joinToString(","))
+                        .queryParam("objectinformatieobjecten__object", documentSearchRequest.zaakUrl)
+                        .queryParam("page", pageToRequest)
+                        .build()
+                }
+                .retrieve()
+                .toEntity(ClientTools.getTypedPage(DocumentInformatieObject::class.java))
+                .block()?.body
+        ) {
+            "Could not retrieve documents for zaak ${documentSearchRequest.zaakUrl}"
+        }
+
+        // trying to find the chunk of the returned page that we need
+        val fromIndex = (pageable.pageSize * (pageable.pageNumber)) % ITEMS_PER_PAGE
+        val toIndex = fromIndex + pageable.pageSize
+        val pageItems = if (fromIndex > result.results.size) {
+            emptyList()
+        } else {
+            result.results.subList(fromIndex, min(result.results.size, toIndex))
+        }
+
+        val returnedPage  = PageImpl(pageItems, pageable, result.count.toLong())
+
+        outboxService.send {
+            DocumentListed(
+                objectMapper.valueToTree(pageItems)
+            )
+        }
+
+        return returnedPage
     }
 
     fun downloadInformatieObjectContent(
@@ -244,5 +311,9 @@ class DocumentenApiClient(
             .doOnComplete(doOnComplete)
         DataBufferUtils.write(flux, osPipe).subscribe(DataBufferUtils.releaseConsumer())
         return isPipe
+    }
+
+    companion object {
+        const val ITEMS_PER_PAGE = 100
     }
 }

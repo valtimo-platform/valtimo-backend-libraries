@@ -23,6 +23,7 @@ import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.document.domain.RelatedFile
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
+import com.ritense.document.service.DocumentService
 import com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider
 import com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.Companion.VIEW
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
@@ -33,7 +34,7 @@ import com.ritense.documentenapi.domain.DocumentenApiColumn
 import com.ritense.documentenapi.domain.DocumentenApiColumnId
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
-import com.ritense.documentenapi.web.rest.dto.DocumentenApiVersionDto
+import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
 import com.ritense.documentenapi.web.rest.dto.ModifyDocumentRequest
 import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
 import com.ritense.plugin.service.PluginService
@@ -42,6 +43,8 @@ import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificat
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersion
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.processlink.service.PluginProcessLinkService
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.transaction.annotation.Transactional
 import java.io.InputStream
 import java.net.URI
@@ -53,6 +56,7 @@ class DocumentenApiService(
     private val catalogiService: CatalogiService,
     private val documentenApiColumnRepository: DocumentenApiColumnRepository,
     private val authorizationService: AuthorizationService,
+    private val valtimoDocumentService: DocumentService,
     private val documentDefinitionService: JsonSchemaDocumentDefinitionService,
     private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
     private val pluginProcessLinkService: PluginProcessLinkService,
@@ -66,6 +70,18 @@ class DocumentenApiService(
     fun getInformatieObject(pluginConfigurationId: String, documentId: String): DocumentInformatieObject {
         val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
         return documentApiPlugin.getInformatieObject(documentId)
+    }
+
+    fun getCaseInformatieObjecten(
+        documentId: UUID,
+        documentSearchRequest: DocumentSearchRequest,
+        pageable: Pageable
+    ): Page<RelatedFile> {
+        val documentDefinitionName = valtimoDocumentService.get(documentId.toString()).definitionId().name()
+        val pluginConfigurationId = detectPluginConfigurations(documentDefinitionName).first().id.id //TODO: handle multiple configurations
+        val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
+        return documentApiPlugin.getInformatieObjecten(documentSearchRequest, pageable)
+            .map { getRelatedFiles(it, pluginConfigurationId.toString()) }
     }
 
     fun modifyInformatieObject(

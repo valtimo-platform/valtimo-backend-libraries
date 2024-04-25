@@ -27,6 +27,7 @@ import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.documentenapi.client.PatchDocumentRequest
 import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.documentenapi.service.DocumentDeleteHandler
+import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
@@ -42,6 +43,8 @@ import jakarta.validation.ValidationException
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.hibernate.validator.constraints.Length
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.web.util.UriComponentsBuilder
 import java.io.InputStream
 import java.net.URI
@@ -186,6 +189,10 @@ class DocumentenApiPlugin(
 
     fun getInformatieObject(objectUrl: URI): DocumentInformatieObject {
         return client.getInformatieObject(authenticationPluginConfiguration, objectUrl)
+    }
+
+    fun getInformatieObjecten(documentSearchRequest: DocumentSearchRequest, pageable: Pageable): Page<DocumentInformatieObject> {
+        return client.getInformatieObjecten(authenticationPluginConfiguration, url, pageable, documentSearchRequest)
     }
 
     fun deleteInformatieObject(objectUrl: URI) {
