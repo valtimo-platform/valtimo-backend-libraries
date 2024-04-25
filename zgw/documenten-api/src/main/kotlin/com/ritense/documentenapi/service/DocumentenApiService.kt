@@ -37,6 +37,7 @@ import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
 import com.ritense.documentenapi.web.rest.dto.ModifyDocumentRequest
 import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
+import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
@@ -155,6 +156,15 @@ class DocumentenApiService(
     }
 
     fun getApiVersions(caseDefinitionName: String): List<String> {
+        return runWithoutAuthorization {
+            detectPluginConfigurations(caseDefinitionName)
+                .mapNotNull { (pluginService.createInstance(it) as DocumentenApiPlugin).apiVersion }
+                .toList()
+                .sorted()
+        }
+    }
+
+    fun detectPluginConfigurations(caseDefinitionName: String): List<PluginConfiguration> {
         documentDefinitionService.requirePermission(caseDefinitionName, VIEW)
         val link =
             documentDefinitionProcessLinkService.getDocumentDefinitionProcessLink(caseDefinitionName, "DOCUMENT_UPLOAD")
@@ -162,16 +172,15 @@ class DocumentenApiService(
             return emptyList()
         }
         val processDefinitionKey = link.get().id.processDefinitionKey
-        val detectedVersions = runWithoutAuthorization {
+        val detectedConfigurations = runWithoutAuthorization {
             camundaRepositoryService.findLinkedProcessDefinitions(byKey(processDefinitionKey).and(byLatestVersion()))
                 .asSequence()
                 .flatMap { pluginProcessLinkService.getProcessLinks(it.id) }
                 .map { pluginService.getPluginConfiguration(it.pluginConfigurationId) }
                 .filter { it.pluginDefinition.key == DocumentenApiPlugin.PLUGIN_KEY }
-                .mapNotNull { (pluginService.createInstance(it) as DocumentenApiPlugin).apiVersion }
                 .toList()
         }
-        return detectedVersions.sorted()
+        return detectedConfigurations
     }
 
     private fun getRelatedFiles(
