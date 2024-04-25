@@ -28,6 +28,9 @@ import com.ritense.openzaak.domain.connector.OpenZaakConfig
 import com.ritense.openzaak.domain.connector.OpenZaakProperties
 import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.service.ZaakTypeLinkService
+import com.ritense.openzaak.service.ZaakTypeService
+import com.ritense.openzaak.service.impl.model.ResultWrapper
+import com.ritense.openzaak.service.impl.model.catalogi.ZaakType
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
@@ -39,10 +42,12 @@ import okhttp3.mockwebserver.RecordedRequest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpMethod
 import java.net.URI
+import java.time.Period
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -158,6 +163,7 @@ internal class TaakObjectServiceIntTest : BaseIntegrationTest() {
                     "GET /zaken/api/v1/rollen" -> mockResponseFromFile("/data/get-rol.json")
                     "GET /api/v1/kanaal" -> mockResponseFromFile("/data/get-kanalen.json")
                     "POST /api/v1/abonnement" -> mockResponseFromFile("/data/post-abonnement.json")
+                    "GET /catalogi/api/v1/zaaktypen" -> mockResponseFromFile("/data/get-zaaktypen.json")
                     else -> MockResponse().setResponseCode(404)
                 }
                 return response
