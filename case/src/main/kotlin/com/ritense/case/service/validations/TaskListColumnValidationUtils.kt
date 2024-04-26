@@ -27,6 +27,8 @@ import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valueresolver.ValueResolverService
 import org.zalando.problem.Status
 
+private const val TASK_PREFIX = "task:"
+
 open class TaskListColumnValidationUtils(
     open val taskListColumnRepository: TaskListColumnRepository,
     open val documentDefinitionService: DocumentDefinitionService,
@@ -83,10 +85,19 @@ open class TaskListColumnValidationUtils(
 
     @Throws(InvalidListColumnException::class)
     internal fun isPropertyPathValid(caseDefinitionName: String, taskListColumnDto: TaskListColumnDto) {
-        try {
-            valueResolverService.validateValues(caseDefinitionName, listOf(taskListColumnDto.path))
-        } catch (ex: Exception) {
-            throw InvalidListColumnException(ex.message, Status.BAD_REQUEST)
+        val path = taskListColumnDto.path
+
+        if (path.startsWith(TASK_PREFIX, ignoreCase = true)) {
+            val pathWithoutPrefix = path.substring(TASK_PREFIX.length)
+            if (!listOf("createTime", "name", "assignee", "dueDate").contains(pathWithoutPrefix)) {
+                throw InvalidListColumnException("\"${pathWithoutPrefix}\" is not an option for the task: prefix.", Status.BAD_REQUEST)
+            }
+        } else {
+            try {
+                valueResolverService.validateValues(caseDefinitionName, listOf(path))
+            } catch (ex: Exception) {
+                throw InvalidListColumnException(ex.message, Status.BAD_REQUEST)
+            }
         }
     }
 
