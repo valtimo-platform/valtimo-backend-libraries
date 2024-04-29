@@ -22,8 +22,10 @@ import com.ritense.documentenapi.DocumentenApiAuthentication
 import com.ritense.documentenapi.event.DocumentDeleted
 import com.ritense.documentenapi.event.DocumentInformatieObjectDownloaded
 import com.ritense.documentenapi.event.DocumentInformatieObjectViewed
+import com.ritense.documentenapi.event.DocumentListed
 import com.ritense.documentenapi.event.DocumentStored
 import com.ritense.documentenapi.event.DocumentUpdated
+import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
 import com.ritense.outbox.OutboxService
 import com.ritense.outbox.domain.BaseEvent
 import com.ritense.valtimo.contract.json.MapperSingleton
@@ -32,6 +34,7 @@ import com.ritense.zgw.domain.Vertrouwelijkheid
 import com.ritense.zgw.exceptions.RequestFailedException
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.RecordedRequest
 import okio.Buffer
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.AfterAll
@@ -46,6 +49,8 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
@@ -739,6 +744,197 @@ internal class DocumentenApiClientTest {
         verify(outboxService, times(0)).send(eventCapture.capture())
     }
 
+    @Test
+    fun `search result should return page of values`() {
+
+        val pageable = Pageable.ofSize(10)
+        val documentSearchRequest = DocumentSearchRequest(
+            zaakUrl = URI("http://example.com/zaak/123"),
+        )
+        val documentSearchResult = doDocumentSearchRequest(pageable, documentSearchRequest)
+
+        assertEquals("Bearer test", documentSearchResult.recordedRequest.getHeader("Authorization"))
+        assertEquals("/enkelvoudiginformatieobjecten", documentSearchResult.recordedRequest.path?.substringBefore("?"))
+        assertEquals("GET", documentSearchResult.recordedRequest.method)
+        assertEquals(5, documentSearchResult.page.content.size)
+
+        val queryParameters = parseQueryString(documentSearchResult.recordedRequest.requestUrl.toString())
+        assertEquals("http://example.com/zaak/123", queryParameters["objectinformatieobjecten__object"])
+
+        //verify result
+        val result = documentSearchResult.page.content[0]
+
+        assertEquals(URI("http://api.example.org/informatieobjecten/600a5a20-97d6-46f2-8424-15315e53e9c2"), result.url)
+        assertEquals("identificatie", result.identificatie)
+        assertEquals(Rsin("621248691"), result.bronorganisatie)
+        assertEquals(LocalDate.of(2019, 8, 24), result.creatiedatum)
+        assertEquals("titel", result.titel)
+        assertEquals(Vertrouwelijkheid.OPENBAAR, result.vertrouwelijkheidaanduiding)
+        assertEquals("auteur", result.auteur)
+        assertEquals(DocumentStatusType.DEFINITIEF, result.status)
+        assertEquals("formaat", result.formaat)
+        assertEquals("nl", result.taal)
+        assertEquals(4, result.versie)
+        assertEquals(LocalDateTime.of(2019, 8, 24, 14, 15, 22), result.beginRegistratie)
+        assertEquals("bestandsnaam", result.bestandsnaam)
+        assertEquals(123, result.bestandsomvang)
+        assertEquals(URI("http://example.com/link"), result.link)
+        assertEquals("beschrijving", result.beschrijving)
+        assertEquals(LocalDate.of(2019, 8, 23), result.ontvangstdatum)
+        assertEquals(LocalDate.of(2019, 8, 22), result.verzenddatum)
+        assertEquals(true, result.indicatieGebruiksrecht)
+
+        //verify event
+        val listedEvent =  documentSearchResult.event as DocumentListed
+        assertTrue(listedEvent.resultId == null)
+        assertEquals("List<com.ritense.documentenapi.client.DocumentInformatieObject>", listedEvent.resultType)
+        assertEquals("com.ritense.gzac.drc.document.listed", listedEvent.type)
+        assertEquals(5, listedEvent.result?.size())
+    }
+
+    @Test
+    fun `search should return single page`() {
+
+        val pageable = Pageable.ofSize(2)
+        val documentSearchRequest = DocumentSearchRequest(
+            zaakUrl = URI("http://example.com/zaak/123"),
+        )
+        val documentSearchResult = doDocumentSearchRequest(pageable, documentSearchRequest)
+
+        val queryParameters = parseQueryString(documentSearchResult.recordedRequest.requestUrl.toString())
+        assertEquals("http://example.com/zaak/123", queryParameters["objectinformatieobjecten__object"])
+        assertEquals("1", queryParameters["page"])
+
+        //verify result is first 2 items
+        assertEquals(2, documentSearchResult.page.content.size)
+        assertEquals("http://api.example.org/informatieobjecten/600a5a20-97d6-46f2-8424-15315e53e9c2", documentSearchResult.page.content[0].url.toString())
+        assertEquals("http://api.example.org/informatieobjecten/10545984-7748-4234-b7f3-7b4aa3b2721a", documentSearchResult.page.content[1].url.toString())
+
+        //verify event
+        val listedEvent =  documentSearchResult.event as DocumentListed
+        assertTrue(listedEvent.resultId == null)
+        assertEquals("List<com.ritense.documentenapi.client.DocumentInformatieObject>", listedEvent.resultType)
+        assertEquals("com.ritense.gzac.drc.document.listed", listedEvent.type)
+        assertEquals(2, listedEvent.result?.size())
+    }
+
+    @Test
+    fun `search should return second page`() {
+
+        val pageable = Pageable.ofSize(2).withPage(1)
+        val documentSearchRequest = DocumentSearchRequest(
+            zaakUrl = URI("http://example.com/zaak/123"),
+        )
+        val documentSearchResult = doDocumentSearchRequest(pageable, documentSearchRequest)
+
+        val queryParameters = parseQueryString(documentSearchResult.recordedRequest.requestUrl.toString())
+        assertEquals("http://example.com/zaak/123", queryParameters["objectinformatieobjecten__object"])
+        assertEquals("1", queryParameters["page"])
+
+        //verify result is next 2 items
+        assertEquals(2, documentSearchResult.page.content.size)
+        assertEquals("http://api.example.org/informatieobjecten/600a5a20-97d6-46f2-8424-15315e53e9c2", documentSearchResult.page.content[0].url.toString())
+        assertEquals("http://api.example.org/informatieobjecten/10545984-7748-4234-b7f3-7b4aa3b2721a", documentSearchResult.page.content[1].url.toString())
+
+        //verify event
+        val listedEvent =  documentSearchResult.event as DocumentListed
+        assertTrue(listedEvent.resultId == null)
+        assertEquals("List<com.ritense.documentenapi.client.DocumentInformatieObject>", listedEvent.resultType)
+        assertEquals("com.ritense.gzac.drc.document.listed", listedEvent.type)
+        assertEquals(2, listedEvent.result?.size())
+    }
+
+    @Test
+    fun `search should return first results of second api page`() {
+
+        val pageable = Pageable.ofSize(2).withPage(10)
+        val documentSearchRequest = DocumentSearchRequest(
+            zaakUrl = URI("http://example.com/zaak/123"),
+        )
+        val documentSearchResult = doDocumentSearchRequest(pageable, documentSearchRequest)
+
+        val queryParameters = parseQueryString(documentSearchResult.recordedRequest.requestUrl.toString())
+        assertEquals("http://example.com/zaak/123", queryParameters["objectinformatieobjecten__object"])
+        assertEquals("2", queryParameters["page"])
+
+        //verify result is first 2 items
+        assertEquals(2, documentSearchResult.page.content.size)
+        assertEquals("http://api.example.org/informatieobjecten/b8a3c2ea-097b-4b9f-a595-9d9f23cde95e", documentSearchResult.page.content[0].url.toString())
+        assertEquals("http://api.example.org/informatieobjecten/912dcb8d-2c51-4f7f-80e7-7375ab5fd2a9", documentSearchResult.page.content[1].url.toString())
+
+        //verify event
+        val listedEvent =  documentSearchResult.event as DocumentListed
+        assertTrue(listedEvent.resultId == null)
+        assertEquals("List<com.ritense.documentenapi.client.DocumentInformatieObject>", listedEvent.resultType)
+        assertEquals("com.ritense.gzac.drc.document.listed", listedEvent.type)
+        assertEquals(2, listedEvent.result?.size())
+    }
+
+    @Test
+    fun `search should send all optional search parameters`() {
+
+        val pageable = Pageable.ofSize(2).withPage(0)
+        val documentSearchRequest = DocumentSearchRequest(
+            informationObjectType = "http://example.com/informatieobjecttype/123",
+            title = "title",
+            confidentialityLevel = "confidential",
+            creationDateFrom = LocalDateTime.of(2020, 5, 3, 12, 0),
+            creationDateTo = LocalDateTime.of(2020, 5, 3, 13, 0),
+            author = "author",
+            tags = listOf("tag1", "tag2"),
+            zaakUrl = URI("http://example.com/zaak/123"),
+        )
+        val documentSearchResult = doDocumentSearchRequest(pageable, documentSearchRequest)
+
+        val queryParameters = parseQueryString(documentSearchResult.recordedRequest.requestUrl.toString())
+        assertEquals("http://example.com/zaak/123", queryParameters["objectinformatieobjecten__object"])
+        assertEquals("1", queryParameters["page"])
+        assertEquals("http://example.com/informatieobjecttype/123", queryParameters["informatieobjecttype"])
+        assertEquals("title", queryParameters["titel"])
+        assertEquals("confidential", queryParameters["vertrouwelijkheidaanduiding"])
+        assertEquals("author", queryParameters["auteur"])
+        assertEquals("2020-05-03T12:00", queryParameters["creatiedatum__gte"])
+        assertEquals("2020-05-03T13:00", queryParameters["creatiedatum__lte"])
+        assertEquals("tag1,tag2", queryParameters["trefwoorden"])
+    }
+
+    private fun parseQueryString(url: String?): Map<String, String> {
+        return url?.substringAfter("?")?.split("&")?.associate {
+            val (key, value) = it.split("=")
+            key to value
+        } ?: emptyMap()
+    }
+
+    private fun doDocumentSearchRequest(pageable: Pageable, documentSearchRequest: DocumentSearchRequest): DocumentSearchResult {
+        val webclientBuilder = WebClient.builder()
+        val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper, mock())
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+
+        mockDocumentenApi.enqueue(mockResponseFromFile("/config/documenten-api/document-page.json"))
+
+        val page = client.getInformatieObjecten(
+            TestAuthentication(),
+            mockDocumentenApi.url("/").toUri(),
+            pageable,
+            documentSearchRequest
+        )
+
+        val recordedRequest = mockDocumentenApi.takeRequest()
+        verify(outboxService).send(eventCapture.capture())
+
+        return DocumentSearchResult(
+            page,
+            recordedRequest,
+            eventCapture.firstValue.get()
+        )
+    }
+
+    class DocumentSearchResult(
+        val page: Page<DocumentInformatieObject>,
+        val recordedRequest: RecordedRequest,
+        val event: BaseEvent
+    )
+
     private fun mockResponse(body: String): MockResponse {
         return MockResponse()
             .addHeader("Content-Type", "application/json")
@@ -749,6 +945,13 @@ internal class DocumentenApiClientTest {
         return MockResponse()
             .addHeader("Content-Type", "application/octet-stream")
             .setBody(buffer)
+    }
+
+    private fun mockResponseFromFile(fileName: String): MockResponse {
+        return MockResponse()
+            .addHeader("Content-Type", "application/json; charset=utf-8")
+            .setResponseCode(200)
+            .setBody(this::class.java.getResource(fileName).readText(Charsets.UTF_8))
     }
 
     class TestAuthentication : DocumentenApiAuthentication {

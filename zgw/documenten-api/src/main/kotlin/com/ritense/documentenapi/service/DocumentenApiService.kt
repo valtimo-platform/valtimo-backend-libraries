@@ -79,7 +79,11 @@ class DocumentenApiService(
         pageable: Pageable
     ): Page<RelatedFile> {
         val documentDefinitionName = valtimoDocumentService.get(documentId.toString()).definitionId().name()
-        val pluginConfigurationId = detectPluginConfigurations(documentDefinitionName).first().id.id //TODO: handle multiple configurations
+        val pluginConfigurations = detectPluginConfigurations(documentDefinitionName)
+        if (pluginConfigurations.size != 1) {
+            throw IllegalStateException("Expected exactly one plugin configuration for case definition '$documentDefinitionName', but found ${pluginConfigurations.size}")
+        }
+        val pluginConfigurationId = pluginConfigurations.first().id.id
         val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
         return documentApiPlugin.getInformatieObjecten(documentSearchRequest, pageable)
             .map { getRelatedFiles(it, pluginConfigurationId.toString()) }

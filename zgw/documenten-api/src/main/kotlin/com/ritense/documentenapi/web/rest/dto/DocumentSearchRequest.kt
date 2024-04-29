@@ -21,12 +21,12 @@ import java.net.URI
 import java.time.LocalDateTime
 
 data class DocumentSearchRequest(
-    val informationObjectType: String?,
-    val title: String?,
-    val confidentialityLevel: String?,
-    val creationDateFrom: LocalDateTime?,
-    val creationDateTo: LocalDateTime?,
-    val author: String?,
-    val tags: List<String>?,
-    @JsonIgnore val zaakUrl: URI?
+    val informationObjectType: String? = null,
+    val title: String? = null,
+    val confidentialityLevel: String? = null,
+    val creationDateFrom: LocalDateTime? = null,
+    val creationDateTo: LocalDateTime? = null,
+    val author: String? = null,
+    val tags: List<String>? = null,
+    @JsonIgnore val zaakUrl: URI? = null
 )

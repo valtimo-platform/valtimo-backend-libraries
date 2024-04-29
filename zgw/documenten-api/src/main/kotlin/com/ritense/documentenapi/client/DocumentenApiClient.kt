@@ -142,7 +142,7 @@ class DocumentenApiClient(
                         .optionalQueryParam("informatieobjecttype", documentSearchRequest.informationObjectType)
                         .optionalQueryParam("vertrouwelijkheidaanduiding", documentSearchRequest.confidentialityLevel)
                         .optionalQueryParam("auteur", documentSearchRequest.author)
-                        .optionalQueryParam("creatiedatum__gte", documentSearchRequest.creationDateFrom) // TODO: something with time zones
+                        .optionalQueryParam("creatiedatum__gte", documentSearchRequest.creationDateFrom)
                         .optionalQueryParam("creatiedatum__lte", documentSearchRequest.creationDateTo)
                         .optionalQueryParam("trefwoorden", documentSearchRequest.tags?.joinToString(","))
                         .queryParam("objectinformatieobjecten__object", documentSearchRequest.zaakUrl)
