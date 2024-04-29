@@ -258,7 +258,7 @@ class ZaakService(
             .filter { it.url.equals(zaaktypeUrl) }
             .first()
             .doorlooptijd
-            .let { doorlooptijd -> startdatum.atStartOfDay() + doorlooptijd }
+            ?.let { doorlooptijd -> startdatum.atStartOfDay() + doorlooptijd }
             ?.toLocalDate()
     }
 }
