@@ -63,7 +63,7 @@ public class Jsr310LocalDateDeserializer extends JsonDeserializer<LocalDate> {
                 final int day = parser.getIntValue();
 
                 if (parser.nextToken() != JsonToken.END_ARRAY) {
-                    throw context.wrongTokenException(parser, JsonToken.END_ARRAY, "Expected array to end.");
+                    throw context.wrongTokenException(parser, (Class<?>) null, JsonToken.END_ARRAY, "Expected array to end.");
                 }
                 return LocalDate.of(year, month, day);
 
@@ -74,7 +74,7 @@ public class Jsr310LocalDateDeserializer extends JsonDeserializer<LocalDate> {
                 }
                 return LocalDate.parse(string, ISO_DATE_OPTIONAL_TIME);
             default:
-                throw context.wrongTokenException(parser, JsonToken.START_ARRAY, "Expected array or string.");
+                throw context.wrongTokenException(parser, (Class<?>) null, JsonToken.START_ARRAY, "Expected array or string.");
         }
     }
 }
