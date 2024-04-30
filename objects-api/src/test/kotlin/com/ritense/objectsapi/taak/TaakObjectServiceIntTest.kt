@@ -164,6 +164,7 @@ internal class TaakObjectServiceIntTest : BaseIntegrationTest() {
                     "GET /api/v1/kanaal" -> mockResponseFromFile("/data/get-kanalen.json")
                     "POST /api/v1/abonnement" -> mockResponseFromFile("/data/post-abonnement.json")
                     "GET /catalogi/api/v1/zaaktypen" -> mockResponseFromFile("/data/get-zaaktypen.json")
+                    "GET /catalogi/api/v1/zaaktypen/4e9c2359-83ac-4e3b-96b6-3f278f1fc773" -> mockResponseFromFile("/data/get-zaaktype.json")
                     else -> MockResponse().setResponseCode(404)
                 }
                 return response
