@@ -33,6 +33,7 @@ import com.ritense.documentenapi.domain.DocumentenApiColumn
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
+import com.ritense.documentenapi.web.rest.dto.DocumentenApiDocumentDto
 import com.ritense.documentenapi.web.rest.dto.ModifyDocumentRequest
 import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
 import com.ritense.plugin.domain.PluginConfiguration
@@ -75,7 +76,7 @@ class DocumentenApiService(
         documentId: UUID,
         documentSearchRequest: DocumentSearchRequest,
         pageable: Pageable
-    ): Page<RelatedFile> {
+    ): Page<DocumentenApiDocumentDto> {
         val documentDefinitionName = valtimoDocumentService.get(documentId.toString()).definitionId().name()
         val pluginConfigurations = detectPluginConfigurations(documentDefinitionName)
         if (pluginConfigurations.size != 1) {
@@ -84,7 +85,7 @@ class DocumentenApiService(
         val pluginConfigurationId = pluginConfigurations.first().id.id
         val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
         return documentApiPlugin.getInformatieObjecten(documentSearchRequest, pageable)
-            .map { getRelatedFiles(it, pluginConfigurationId.toString()) }
+            .map { mapDocumentenApiDocument(it, pluginConfigurationId.toString()) }
     }
 
     fun modifyInformatieObject(
@@ -213,6 +214,33 @@ class DocumentenApiService(
             confidentialityLevel = informatieObject.vertrouwelijkheidaanduiding?.key,
             version = informatieObject.versie,
             indicationUsageRights = informatieObject.indicatieGebruiksrecht
+        )
+    }
+
+    private fun mapDocumentenApiDocument(
+        informatieObject: DocumentInformatieObject,
+        pluginConfigurationId: String
+    ): DocumentenApiDocumentDto {
+        return DocumentenApiDocumentDto(
+            fileId = UUID.fromString(informatieObject.url.path.substringAfterLast("/")),
+            pluginConfigurationId = UUID.fromString(pluginConfigurationId),
+            bestandsnaam = informatieObject.bestandsnaam,
+            bestandsomvang = informatieObject.bestandsomvang,
+            creatiedatum = informatieObject.creatiedatum.atStartOfDay(),
+            auteur = informatieObject.auteur,
+            titel = informatieObject.titel,
+            status = informatieObject.status?.key,
+            taal = informatieObject.taal,
+            identificatie = informatieObject.identificatie,
+            beschrijving = informatieObject.beschrijving,
+            informatieobjecttype = getInformatieobjecttypeByUri(informatieObject.informatieobjecttype),
+            trefwoorden = informatieObject.trefwoorden,
+            formaat = informatieObject.formaat,
+            verzenddatum = informatieObject.verzenddatum,
+            ontvangstdatum = informatieObject.ontvangstdatum,
+            vertrouwelijkheidaanduiding = informatieObject.vertrouwelijkheidaanduiding?.key,
+            versie = informatieObject.versie,
+            indicatieGebruiksrecht = informatieObject.indicatieGebruiksrecht
         )
     }
 

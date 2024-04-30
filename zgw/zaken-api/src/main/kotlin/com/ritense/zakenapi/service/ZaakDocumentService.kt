@@ -17,11 +17,11 @@
 package com.ritense.zakenapi.service
 
 import com.ritense.catalogiapi.service.CatalogiService
-import com.ritense.document.domain.RelatedFile
 import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
+import com.ritense.documentenapi.web.rest.dto.DocumentenApiDocumentDto
 import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginService
@@ -62,7 +62,7 @@ class ZaakDocumentService(
         documentId: UUID,
         documentSearchRequest: DocumentSearchRequest,
         pageable: Pageable,
-    ): Page<RelatedFile> {
+    ): Page<DocumentenApiDocumentDto> {
         val zaakUri = zaakUrlProvider.getZaakUrl(documentId)
         val documentSearchRequestWithZaakUrl = documentSearchRequest.copy(zaakUrl = zaakUri)
 

@@ -18,6 +18,7 @@ package com.ritense.zakenapi.web.rest
 
 import com.ritense.document.domain.RelatedFile
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
+import com.ritense.documentenapi.web.rest.dto.DocumentenApiDocumentDto
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.zakenapi.domain.ZaakResponse
@@ -47,7 +48,7 @@ class ZaakDocumentResource(
         @PathVariable(name = "documentId") documentId: UUID,
         documentSearchRequest: DocumentSearchRequest,
         pageable: Pageable,
-    ): Page<RelatedFile> {
+    ): Page<DocumentenApiDocumentDto> {
         return zaakDocumentService.getInformatieObjectenAsRelatedFilesPage(documentId, documentSearchRequest, pageable)
     }
 
