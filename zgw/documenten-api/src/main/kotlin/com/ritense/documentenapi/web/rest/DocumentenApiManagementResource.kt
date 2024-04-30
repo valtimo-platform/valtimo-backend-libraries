@@ -17,7 +17,9 @@
 package com.ritense.documentenapi.web.rest
 
 import com.ritense.authorization.annotation.RunWithoutAuthorization
+import com.ritense.documentenapi.domain.DocumentenApiColumnKey
 import com.ritense.documentenapi.service.DocumentenApiService
+import com.ritense.documentenapi.web.rest.dto.ColumnKeyResponse
 import com.ritense.documentenapi.web.rest.dto.ColumnResponse
 import com.ritense.documentenapi.web.rest.dto.DocumentenApiVersionManagementDto
 import com.ritense.documentenapi.web.rest.dto.ReorderColumnRequest
@@ -39,6 +41,12 @@ import org.springframework.web.bind.annotation.RestController
 class DocumentenApiManagementResource(
     val documentenApiService: DocumentenApiService
 ) {
+    @RunWithoutAuthorization
+    @GetMapping("/v1/case-definition/zgw-document-column-key")
+    fun getColumnKeys(): ResponseEntity<List<ColumnKeyResponse>> {
+        return ResponseEntity.ok(DocumentenApiColumnKey.entries.map { ColumnKeyResponse.of(it) }.sortedBy { it.key })
+    }
+
     @RunWithoutAuthorization
     @GetMapping("/v1/case-definition/{caseDefinitionName}/zgw-document-column")
     fun getConfiguredColumns(
