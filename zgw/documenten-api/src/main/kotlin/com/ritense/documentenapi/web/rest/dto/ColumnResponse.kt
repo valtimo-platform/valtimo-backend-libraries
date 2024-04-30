@@ -16,24 +16,32 @@
 
 package com.ritense.documentenapi.web.rest.dto
 
+import com.ritense.documentenapi.domain.ColumnDefaultSort
 import com.ritense.documentenapi.domain.DocumentenApiColumn
 import com.ritense.documentenapi.domain.DocumentenApiColumnId
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey
 
-data class ConfiguredColumnDto(
+data class ColumnResponse(
     val key: String,
-    val enabled: Boolean,
+    val sortable: Boolean,
+    val filterable: Boolean,
+    val defaultSort: String?,
 ) {
-    fun toEntity(caseDefinitionName: String, order: Int = 0): DocumentenApiColumn = DocumentenApiColumn(
-        id = DocumentenApiColumnId(caseDefinitionName, DocumentenApiColumnKey.valueOf(key.uppercase())),
-        order = order,
-        enabled = enabled
-    )
+    fun toEntity(caseDefinitionName: String, order: Int = 0): DocumentenApiColumn {
+        val keyEnum = DocumentenApiColumnKey.valueOf(key.uppercase())
+        return DocumentenApiColumn(
+            id = DocumentenApiColumnId(caseDefinitionName, keyEnum),
+            order = order,
+            defaultSort = defaultSort?.let { ColumnDefaultSort.valueOf(it.uppercase()) }
+        )
+    }
 
     companion object {
-        fun of(column: DocumentenApiColumn): ConfiguredColumnDto = ConfiguredColumnDto(
+        fun of(column: DocumentenApiColumn): ColumnResponse = ColumnResponse(
             key = column.id.key.name.lowercase(),
-            enabled = column.enabled,
+            sortable = column.id.key.sortable,
+            filterable = column.id.key.filterable,
+            defaultSort = column.defaultSort?.name
         )
     }
 }

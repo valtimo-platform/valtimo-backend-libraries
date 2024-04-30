@@ -205,7 +205,8 @@ class ProcessDocumentsAutoConfiguration {
         taskListColumnRepository: TaskListColumnRepository,
         userManagementService: UserManagementService,
         authorizationService: AuthorizationService,
-        queryDialectHelper: QueryDialectHelper
+        queryDialectHelper: QueryDialectHelper,
+        taskService: CamundaTaskService,
     ): CaseTaskListSearchService {
         return CaseTaskListSearchService(
             entityManager,
@@ -213,7 +214,8 @@ class ProcessDocumentsAutoConfiguration {
             taskListColumnRepository,
             userManagementService,
             authorizationService,
-            queryDialectHelper
+            queryDialectHelper,
+            taskService,
         )
     }
 
