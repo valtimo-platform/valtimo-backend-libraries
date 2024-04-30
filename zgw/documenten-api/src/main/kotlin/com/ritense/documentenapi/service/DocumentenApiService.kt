@@ -217,7 +217,7 @@ class DocumentenApiService(
         )
     }
 
-    private fun mapDocumentenApiDocument(
+    fun mapDocumentenApiDocument(
         informatieObject: DocumentInformatieObject,
         pluginConfigurationId: String
     ): DocumentenApiDocumentDto {

@@ -18,6 +18,8 @@ package com.ritense.documentenapi.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.documentenapi.DocumentenApiAuthentication
+import com.ritense.documentenapi.domain.DocumentenApiColumn
+import com.ritense.documentenapi.domain.DocumentenApiColumnKey
 import com.ritense.documentenapi.event.DocumentDeleted
 import com.ritense.documentenapi.event.DocumentInformatieObjectDownloaded
 import com.ritense.documentenapi.event.DocumentInformatieObjectViewed
@@ -38,6 +40,7 @@ import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToFlux
+import org.springframework.web.util.UriBuilder
 import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Flux
 import java.io.InputStream
@@ -138,15 +141,16 @@ class DocumentenApiClient(
                 .uri {
                     ClientTools.baseUrlToBuilder(it, baseUrl)
                         .path("enkelvoudiginformatieobjecten")
-                        .optionalQueryParam("titel", documentSearchRequest.title)
-                        .optionalQueryParam("informatieobjecttype", documentSearchRequest.informationObjectType)
-                        .optionalQueryParam("vertrouwelijkheidaanduiding", documentSearchRequest.confidentialityLevel)
-                        .optionalQueryParam("auteur", documentSearchRequest.author)
-                        .optionalQueryParam("creatiedatum__gte", documentSearchRequest.creationDateFrom)
-                        .optionalQueryParam("creatiedatum__lte", documentSearchRequest.creationDateTo)
-                        .optionalQueryParam("trefwoorden", documentSearchRequest.tags?.joinToString(","))
+                        .optionalQueryParam("titel", documentSearchRequest.titel)
+                        .optionalQueryParam("informatieobjecttype", documentSearchRequest.informatieobjecttype)
+                        .optionalQueryParam("vertrouwelijkheidaanduiding", documentSearchRequest.vertrouwelijkheidaanduiding)
+                        .optionalQueryParam("auteur", documentSearchRequest.auteur)
+                        .optionalQueryParam("creatiedatum__gte", documentSearchRequest.creatiedatumFrom)
+                        .optionalQueryParam("creatiedatum__lte", documentSearchRequest.creatiedatumTo)
+                        .optionalQueryParam("trefwoorden", documentSearchRequest.trefwoorden?.joinToString(","))
                         .queryParam("objectinformatieobjecten__object", documentSearchRequest.zaakUrl)
                         .queryParam("page", pageToRequest)
+                        .addSortParameter(pageable)
                         .build()
                 }
                 .retrieve()
@@ -311,6 +315,21 @@ class DocumentenApiClient(
             .doOnComplete(doOnComplete)
         DataBufferUtils.write(flux, osPipe).subscribe(DataBufferUtils.releaseConsumer())
         return isPipe
+    }
+
+    fun UriBuilder.addSortParameter(pageable: Pageable): UriBuilder {
+        val sortString = pageable.sort.map {
+            val property = DocumentenApiColumnKey.from(it.property)
+            if (property == null || !property.sortable) {
+                throw IllegalArgumentException("Sorting by ${it.property} is not supported")
+            }
+            val directionMarker = if (it.isAscending) "" else "-"
+            "$directionMarker${property.name.lowercase()}"
+        }.joinToString(",")
+        if (sortString.isNotBlank()) {
+            this.queryParam("ordering", sortString)
+        }
+        return this
     }
 
     companion object {

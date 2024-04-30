@@ -50,7 +50,9 @@ import org.mockito.kotlin.reset
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
@@ -833,8 +835,8 @@ internal class DocumentenApiClientTest {
 
         //verify result is next 2 items
         assertEquals(2, documentSearchResult.page.content.size)
-        assertEquals("http://api.example.org/informatieobjecten/600a5a20-97d6-46f2-8424-15315e53e9c2", documentSearchResult.page.content[0].url.toString())
-        assertEquals("http://api.example.org/informatieobjecten/10545984-7748-4234-b7f3-7b4aa3b2721a", documentSearchResult.page.content[1].url.toString())
+        assertEquals("http://api.example.org/informatieobjecten/b8a3c2ea-097b-4b9f-a595-9d9f23cde95e", documentSearchResult.page.content[0].url.toString())
+        assertEquals("http://api.example.org/informatieobjecten/912dcb8d-2c51-4f7f-80e7-7375ab5fd2a9", documentSearchResult.page.content[1].url.toString())
 
         //verify event
         val listedEvent =  documentSearchResult.event as DocumentListed
@@ -847,7 +849,7 @@ internal class DocumentenApiClientTest {
     @Test
     fun `search should return first results of second api page`() {
 
-        val pageable = Pageable.ofSize(2).withPage(10)
+        val pageable = Pageable.ofSize(2).withPage(50)
         val documentSearchRequest = DocumentSearchRequest(
             zaakUrl = URI("http://example.com/zaak/123"),
         )
@@ -859,8 +861,8 @@ internal class DocumentenApiClientTest {
 
         //verify result is first 2 items
         assertEquals(2, documentSearchResult.page.content.size)
-        assertEquals("http://api.example.org/informatieobjecten/b8a3c2ea-097b-4b9f-a595-9d9f23cde95e", documentSearchResult.page.content[0].url.toString())
-        assertEquals("http://api.example.org/informatieobjecten/912dcb8d-2c51-4f7f-80e7-7375ab5fd2a9", documentSearchResult.page.content[1].url.toString())
+        assertEquals("http://api.example.org/informatieobjecten/600a5a20-97d6-46f2-8424-15315e53e9c2", documentSearchResult.page.content[0].url.toString())
+        assertEquals("http://api.example.org/informatieobjecten/10545984-7748-4234-b7f3-7b4aa3b2721a", documentSearchResult.page.content[1].url.toString())
 
         //verify event
         val listedEvent =  documentSearchResult.event as DocumentListed
@@ -875,13 +877,13 @@ internal class DocumentenApiClientTest {
 
         val pageable = Pageable.ofSize(2).withPage(0)
         val documentSearchRequest = DocumentSearchRequest(
-            informationObjectType = "http://example.com/informatieobjecttype/123",
-            title = "title",
-            confidentialityLevel = "confidential",
-            creationDateFrom = LocalDateTime.of(2020, 5, 3, 12, 0),
-            creationDateTo = LocalDateTime.of(2020, 5, 3, 13, 0),
-            author = "author",
-            tags = listOf("tag1", "tag2"),
+            informatieobjecttype = "http://example.com/informatieobjecttype/123",
+            titel = "title",
+            vertrouwelijkheidaanduiding = "confidential",
+            creatiedatumFrom = LocalDateTime.of(2020, 5, 3, 12, 0),
+            creatiedatumTo = LocalDateTime.of(2020, 5, 3, 13, 0),
+            auteur = "author",
+            trefwoorden = listOf("tag1", "tag2"),
             zaakUrl = URI("http://example.com/zaak/123"),
         )
         val documentSearchResult = doDocumentSearchRequest(pageable, documentSearchRequest)
@@ -898,6 +900,56 @@ internal class DocumentenApiClientTest {
         assertEquals("tag1,tag2", queryParameters["trefwoorden"])
     }
 
+    @Test
+    fun `search should sort on known sort option`() {
+        val pageable = PageRequest.of(0, 10, Sort.by("titel"));
+        val documentSearchRequest = DocumentSearchRequest(
+            zaakUrl = URI("http://example.com/zaak/123"),
+        )
+        val documentSearchResult = doDocumentSearchRequest(pageable, documentSearchRequest)
+
+        val queryParameters = parseQueryString(documentSearchResult.recordedRequest.requestUrl.toString())
+        assertEquals("http://example.com/zaak/123", queryParameters["objectinformatieobjecten__object"])
+        assertEquals("titel", queryParameters["ordering"])
+    }
+
+    @Test
+    fun `search should sort on known sort option descending`() {
+        val pageable = PageRequest.of(0, 10, Sort.by("titel").descending());
+        val documentSearchRequest = DocumentSearchRequest(
+            zaakUrl = URI("http://example.com/zaak/123"),
+        )
+        val documentSearchResult = doDocumentSearchRequest(pageable, documentSearchRequest)
+
+        val queryParameters = parseQueryString(documentSearchResult.recordedRequest.requestUrl.toString())
+        assertEquals("http://example.com/zaak/123", queryParameters["objectinformatieobjecten__object"])
+        assertEquals("-titel", queryParameters["ordering"])
+    }
+
+    @Test
+    fun `search should sort on multiple known sort options`() {
+        val pageable = PageRequest.of(0, 10, Sort.by("titel").descending().and(Sort.by("auteur").ascending()));
+        val documentSearchRequest = DocumentSearchRequest(
+            zaakUrl = URI("http://example.com/zaak/123"),
+        )
+        val documentSearchResult = doDocumentSearchRequest(pageable, documentSearchRequest)
+
+        val queryParameters = parseQueryString(documentSearchResult.recordedRequest.requestUrl.toString())
+        assertEquals("http://example.com/zaak/123", queryParameters["objectinformatieobjecten__object"])
+        assertEquals("-titel,auteur", queryParameters["ordering"])
+    }
+
+    @Test
+    fun `search should throw exception when sorting by unknown sort option`() {
+        val pageable = PageRequest.of(0, 10, Sort.by("something"));
+        val documentSearchRequest = DocumentSearchRequest(
+            zaakUrl = URI("http://example.com/zaak/123"),
+        )
+        assertThrows<IllegalArgumentException> {
+            val documentSearchResult = doDocumentSearchRequest(pageable, documentSearchRequest, true)
+        }
+    }
+
     private fun parseQueryString(url: String?): Map<String, String> {
         return url?.substringAfter("?")?.split("&")?.associate {
             val (key, value) = it.split("=")
@@ -905,12 +957,14 @@ internal class DocumentenApiClientTest {
         } ?: emptyMap()
     }
 
-    private fun doDocumentSearchRequest(pageable: Pageable, documentSearchRequest: DocumentSearchRequest): DocumentSearchResult {
+    private fun doDocumentSearchRequest(pageable: Pageable, documentSearchRequest: DocumentSearchRequest, expectException: Boolean = false): DocumentSearchResult {
         val webclientBuilder = WebClient.builder()
         val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper, mock())
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
-        mockDocumentenApi.enqueue(mockResponseFromFile("/config/documenten-api/document-page.json"))
+        if (!expectException) {
+            mockDocumentenApi.enqueue(mockResponseFromFile("/config/documenten-api/document-page.json"))
+        }
 
         val page = client.getInformatieObjecten(
             TestAuthentication(),
