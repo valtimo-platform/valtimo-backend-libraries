@@ -873,6 +873,33 @@ internal class DocumentenApiClientTest {
     }
 
     @Test
+    fun `search with unsupported page size should throw exception`() {
+
+        val pageable = Pageable.ofSize(3) // 100 is not evenly divisible by 3
+        val documentSearchRequest = DocumentSearchRequest(
+            zaakUrl = URI("http://example.com/zaak/123"),
+        )
+        val exception = assertThrows<IllegalArgumentException> {
+            val documentSearchResult = doDocumentSearchRequest(pageable, documentSearchRequest, true)
+        }
+
+        assertEquals("Page size is not supported", exception.message)
+    }
+
+    @Test
+    fun `search without zaakUrl should throw exception`() {
+
+        val pageable = Pageable.ofSize(10)
+        val documentSearchRequest = DocumentSearchRequest()
+
+        val exception = assertThrows<IllegalArgumentException> {
+            val documentSearchResult = doDocumentSearchRequest(pageable, documentSearchRequest, true)
+        }
+
+        assertEquals("Zaak URL is required", exception.message)
+    }
+
+    @Test
     fun `search should send all optional search parameters`() {
 
         val pageable = Pageable.ofSize(2).withPage(0)
@@ -962,6 +989,7 @@ internal class DocumentenApiClientTest {
         val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper, mock())
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
+        // prevent queuing of response when exception is expected to avoid other tests breaking with old data in the queue
         if (!expectException) {
             mockDocumentenApi.enqueue(mockResponseFromFile("/config/documenten-api/document-page.json"))
         }
