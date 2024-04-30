@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.contains
 import org.mockito.Mockito.verify
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.whenever
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
@@ -58,15 +59,13 @@ class ZaakServiceTest : BaseTest() {
     @BeforeEach
     fun setUp() {
         baseSetUp()
-        whenever(zaakTypeService.getZaakTypes()).thenReturn(
-            ResultWrapper<ZaakType>(1, null, null, listOf(
-                ZaakType(
-                    zaakTypeUrl,
-                    "",
-                    "",
-                    Period.ofDays(1)
-                )
-            ))
+        whenever(zaakTypeService.getZaakType(anyOrNull())).thenReturn(
+            ZaakType(
+                zaakTypeUrl,
+                "",
+                "",
+                Period.ofDays(1)
+            )
         )
 
         whenever(zaakTypeLinkService.findBy(document.definitionId().name())).thenReturn(
@@ -196,17 +195,6 @@ class ZaakServiceTest : BaseTest() {
             "",
             URI.create("http://example.com"),
             ""
-        )
-    }
-
-    private fun getZaaktypen(): List<ZaakType> {
-        return listOf(
-            ZaakType(
-                zaakTypeUrl,
-                "example",
-                "example",
-                Period.ofDays(1)
-            )
         )
     }
 
