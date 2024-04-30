@@ -17,12 +17,11 @@
 package com.ritense.zakenapi.service
 
 import com.ritense.catalogiapi.service.CatalogiService
-import com.ritense.document.domain.RelatedFile
 import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.documentenapi.client.DocumentInformatieObject
-import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
+import com.ritense.documentenapi.web.rest.dto.DocumentenApiDocumentDto
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
@@ -141,7 +140,7 @@ class ZaakDocumentServiceTest {
         val documentSearchRequestCaptor = argumentCaptor<DocumentSearchRequest>()
         val pageable = mock<Pageable>()
         val documentSearchRequest = DocumentSearchRequest()
-        val resultPage = mock<Page<RelatedFile>>()
+        val resultPage = mock<Page<DocumentenApiDocumentDto>>()
 
         whenever(documentenApiService.getCaseInformatieObjecten(any(), documentSearchRequestCaptor.capture(), any())).thenReturn(resultPage)
 

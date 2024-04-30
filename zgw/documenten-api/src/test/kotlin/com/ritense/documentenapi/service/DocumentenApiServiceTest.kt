@@ -11,6 +11,7 @@ import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
+import com.ritense.documentenapi.web.rest.dto.DocumentenApiDocumentDto
 import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
@@ -120,13 +121,13 @@ class DocumentenApiServiceTest {
 
         assertEquals(1, resultPage.size)
         val firstResult = resultPage.content.first()
-        assertInstanceOf(RelatedFileDto::class.java, firstResult)
-        val relatedFileDto = firstResult as RelatedFileDto
-        assertEquals("nl", firstResult.language)
-        assertEquals("titel", firstResult.title)
-        assertEquals(1, firstResult.version)
+        assertInstanceOf(DocumentenApiDocumentDto::class.java, firstResult)
+        val relatedFileDto = firstResult as DocumentenApiDocumentDto
+        assertEquals("nl", firstResult.taal)
+        assertEquals("titel", firstResult.titel)
+        assertEquals(1, firstResult.versie)
         assertEquals("informatieobjecttype", firstResult.informatieobjecttype)
-        assertEquals("y", firstResult.author)
+        assertEquals("y", firstResult.auteur)
         assertEquals(UUID.fromString("0e757153-fce3-44bc-a47f-494840784a16"), firstResult.fileId)
     }
 
