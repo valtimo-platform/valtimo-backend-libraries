@@ -71,6 +71,21 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
     }
 
     @Test
+    fun `should get a list of all Documenten API column keys`() {
+        mockMvc.perform(
+            get("/api/management/v1/case-definition/zgw-document-column-key", "profile")
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$[0].key").value("auteur"))
+            .andExpect(jsonPath("$[0].sortable").value(true))
+            .andExpect(jsonPath("$[0].filterable").value(true))
+            .andExpect(jsonPath("$[1].key").value("beschrijving"))
+            .andExpect(jsonPath("$[1].sortable").value(false))
+            .andExpect(jsonPath("$[1].filterable").value(false))
+    }
+
+    @Test
     fun `should get a list of ordered Documenten API columns`() {
         documentenApiColumnRepository.deleteAllByIdCaseDefinitionName("profile")
 
