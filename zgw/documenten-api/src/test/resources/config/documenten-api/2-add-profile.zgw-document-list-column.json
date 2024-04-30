@@ -4,9 +4,15 @@
         {
             "key": "profile",
             "columns": [
-                "BESTANDSNAAM",
-                "TAAL",
-                "VERSIE"
+                {
+                    "key": "BESTANDSNAAM"
+                },
+                {
+                    "key": "TAAL"
+                },
+                {
+                    "key": "VERSIE"
+                }
             ]
         }
     ]
