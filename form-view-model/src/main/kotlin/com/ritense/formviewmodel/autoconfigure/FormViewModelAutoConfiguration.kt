@@ -21,9 +21,7 @@ import com.ritense.formviewmodel.FormViewModelProcessLinkActivityHandler
 import com.ritense.formviewmodel.domain.ViewModelLoader
 import com.ritense.formviewmodel.domain.factory.ViewModelLoaderFactory
 import com.ritense.formviewmodel.security.config.FormViewModelHttpSecurityConfigurerKotlin
-import com.ritense.formviewmodel.test.TestViewModelLoader
 import com.ritense.formviewmodel.web.rest.FormViewModelResource
-import com.ritense.valtimo.implementation.util.commandhandling.CommandHandler
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.core.annotation.Order
@@ -55,5 +53,4 @@ class FormViewModelAutoConfiguration {
     ) = ViewModelLoaderFactory(
         loaders
     )
-
 }
