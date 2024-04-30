@@ -582,7 +582,7 @@ public class JsonSchemaDocumentService implements DocumentService {
                 new DelegateUserEntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
                     ASSIGNABLE,
-                    assignee.getEmail(),
+                    assigneeId,
                     document
                 )
             );
@@ -787,7 +787,7 @@ public class JsonSchemaDocumentService implements DocumentService {
                 new DelegateUserEntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
                     ASSIGNABLE,
-                    assignee.getEmail(),
+                    assigneeId,
                     documents
                 )
             );

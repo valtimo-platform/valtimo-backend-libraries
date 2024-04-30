@@ -17,7 +17,6 @@
 package com.ritense.authorization.request
 
 import com.ritense.authorization.Action
-import com.ritense.valtimo.contract.utils.SecurityUtils
 
 open class EntityAuthorizationRequest<T>(
     override val resourceType: Class<T>,
@@ -32,5 +31,5 @@ open class EntityAuthorizationRequest<T>(
     )
 
     override val user: String?
-        get() = SecurityUtils.getCurrentUserLogin()
+        get() = null
 }
