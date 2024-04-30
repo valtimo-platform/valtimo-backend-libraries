@@ -20,6 +20,7 @@ import com.ritense.openzaak.service.ZaakTypeService
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.ZaakType
 import org.springframework.web.client.RestTemplate
+import java.net.URI
 
 class ZaakTypeService(
     private val restTemplate: RestTemplate,
@@ -33,6 +34,14 @@ class ZaakTypeService(
             .get()
             .build()
             .executeWrapped(ZaakType::class.java)
+    }
+
+    override fun getZaakType(zaaktypeUrl: URI): ZaakType {
+        return OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
+            .path(zaaktypeUrl.path)
+            .get()
+            .build()
+            .execute(ZaakType::class.java)
     }
 
 }

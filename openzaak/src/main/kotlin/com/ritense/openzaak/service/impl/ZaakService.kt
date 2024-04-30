@@ -253,10 +253,7 @@ class ZaakService(
 
     private fun calculateUiterlijkeEinddatumAfdoening(zaaktypeUrl: URI, startdatum: LocalDate): LocalDate? {
         return zaakTypeService
-            .getZaakTypes()
-            .results
-            .filter { it.url.equals(zaaktypeUrl) }
-            .first()
+            .getZaakType(zaaktypeUrl)
             .doorlooptijd
             ?.let { doorlooptijd -> startdatum.atStartOfDay() + doorlooptijd }
             ?.toLocalDate()

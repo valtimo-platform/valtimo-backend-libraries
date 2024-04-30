@@ -18,9 +18,12 @@ package com.ritense.openzaak.service
 
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.ZaakType
+import java.net.URI
 
 interface ZaakTypeService {
 
     fun getZaakTypes(): ResultWrapper<ZaakType>
+
+    fun getZaakType(zaaktypeUrl: URI): ZaakType
 
 }
