@@ -61,6 +61,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -89,6 +90,7 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
 
         mockMvc = MockMvcBuilders.standaloneSetup(documentDefinitionResource)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setMessageConverters(new MappingJackson2HttpMessageConverter(MapperSingleton.get()))
             .build();
 
         definition = definition();
@@ -111,7 +113,7 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
 
     @Test
     void shouldReturnTemplate() throws Exception {
-        var objectMapper = MapperSingleton.INSTANCE.get();
+        var objectMapper = MapperSingleton.get();
         var requestDto = new DocumentDefinitionTemplateRequestDto("123", "456");
 
         mockMvc.perform(
@@ -139,7 +141,7 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
 
     @Test
     void shouldNotReturnTemplateWhenIdEndsOnPeriod() throws Exception {
-        var objectMapper = MapperSingleton.INSTANCE.get();
+        var objectMapper = MapperSingleton.get();
         var requestDto = new DocumentDefinitionTemplateRequestDto("123.", "456");
 
         mockMvc.perform(
