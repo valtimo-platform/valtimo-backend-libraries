@@ -18,7 +18,7 @@ package com.ritense.documentenapi.web.rest
 
 import com.ritense.document.domain.RelatedFile
 import com.ritense.documentenapi.service.DocumentenApiService
-import com.ritense.documentenapi.web.rest.dto.ColumnDto
+import com.ritense.documentenapi.web.rest.dto.ColumnResponse
 import com.ritense.documentenapi.web.rest.dto.DocumentenApiVersionDto
 import com.ritense.documentenapi.web.rest.dto.ModifyDocumentRequest
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
@@ -92,8 +92,8 @@ class DocumentenApiResource(
     @GetMapping("/v1/case-definition/{caseDefinitionName}/zgw-document-column")
     fun getColumns(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
-    ): ResponseEntity<List<ColumnDto>> {
-        return ResponseEntity.ok(documentenApiService.getColumns(caseDefinitionName).map { ColumnDto.of(it) })
+    ): ResponseEntity<List<ColumnResponse>> {
+        return ResponseEntity.ok(documentenApiService.getColumns(caseDefinitionName).map { ColumnResponse.of(it) })
     }
 
     @GetMapping("/v1/case-definition/{caseDefinitionName}/documenten-api/version")

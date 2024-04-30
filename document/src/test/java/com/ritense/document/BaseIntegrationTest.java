@@ -131,6 +131,7 @@ public abstract class BaseIntegrationTest extends BaseTest {
             .id(UUID.randomUUID().toString())
             .firstName(firstName)
             .lastName(lastName)
+            .roles(List.of(FULL_ACCESS_ROLE))
             .build();
     }
 

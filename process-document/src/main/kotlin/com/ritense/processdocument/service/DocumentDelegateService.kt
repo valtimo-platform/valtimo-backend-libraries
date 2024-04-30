@@ -81,7 +81,7 @@ class DocumentDelegateService(
         return findOptionalValueByJsonPointer(jsonPointer, execution!!).orElseThrow()
     }
 
-    fun findValueByJsonPointerOrDefault(jsonPointer: String?, execution: DelegateExecution, defaultValue: Any): Any {
+    fun findValueByJsonPointerOrDefault(jsonPointer: String?, execution: DelegateExecution, defaultValue: Any?): Any? {
         return findOptionalValueByJsonPointer(jsonPointer, execution).orElse(defaultValue)
     }
 

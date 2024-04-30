@@ -18,7 +18,9 @@ package com.ritense.documentenapi.exporter
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.documentenapi.deployment.ZgwDocumentListColumn
 import com.ritense.documentenapi.deployment.ZgwDocumentListColumnChangeset
+import com.ritense.documentenapi.domain.ColumnDefaultSort.ASC
 import com.ritense.documentenapi.domain.DocumentenApiColumn
 import com.ritense.documentenapi.domain.DocumentenApiColumnId
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey
@@ -57,7 +59,7 @@ class ZgwDocumentListColumnExporterTest(
 
         whenever(documentenApiColumnRepository.findAllByIdCaseDefinitionNameOrderByOrder(name)).thenReturn(
             listOf(
-                DocumentenApiColumn(DocumentenApiColumnId(name, DocumentenApiColumnKey.AUTEUR)),
+                DocumentenApiColumn(DocumentenApiColumnId(name, DocumentenApiColumnKey.AUTEUR), 0, ASC),
                 DocumentenApiColumn(DocumentenApiColumnId(name, DocumentenApiColumnKey.BESTANDSNAAM))
             )
         )
@@ -73,8 +75,8 @@ class ZgwDocumentListColumnExporterTest(
         val columnCollection = value.caseDefinitions.first()
         assertThat(columnCollection.key).isEqualTo(name)
         assertThat(columnCollection.columns).containsExactly(
-            DocumentenApiColumnKey.AUTEUR,
-            DocumentenApiColumnKey.BESTANDSNAAM,
+            ZgwDocumentListColumn(DocumentenApiColumnKey.AUTEUR, ASC),
+            ZgwDocumentListColumn(DocumentenApiColumnKey.BESTANDSNAAM, null),
         )
     }
 

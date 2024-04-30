@@ -14,22 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization.request
+package com.ritense.documentenapi.domain
 
-import com.ritense.authorization.Action
+import com.fasterxml.jackson.annotation.JsonCreator
 
-open class EntityAuthorizationRequest<T>(
-    override val resourceType: Class<T>,
-    override val action: Action<T>,
-    val entities: List<T>,
-) : AuthorizationRequest<T> {
+enum class ColumnDefaultSort {
+    ASC, DESC;
 
-    constructor(resourceType: Class<T>, action: Action<T>, vararg entities: T?) : this(
-        resourceType,
-        action,
-        if (entities.any { it == null }) emptyList() else entities.filterNotNull().toList()
-    )
-
-    override val user: String?
-        get() = null
+    companion object {
+        @JvmStatic
+        @JsonCreator
+        fun from(name: String?) = ColumnDefaultSort.entries.firstOrNull { it.name.equals(name, ignoreCase = true) }
+    }
 }

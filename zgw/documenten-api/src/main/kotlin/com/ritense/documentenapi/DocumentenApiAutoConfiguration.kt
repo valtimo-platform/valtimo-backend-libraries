@@ -18,7 +18,7 @@ package com.ritense.documentenapi
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
-import com.ritense.case.deployment.ZgwDocumentListColumnDeploymentService
+import com.ritense.documentenapi.deployment.ZgwDocumentListColumnDeploymentService
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.documentenapi.client.DocumentenApiClient

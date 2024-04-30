@@ -23,6 +23,7 @@ import com.ritense.documentenapi.domain.DocumentenApiColumn
 import com.ritense.documentenapi.domain.DocumentenApiColumnId
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.IDENTIFICATIE
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.TITEL
+import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
@@ -32,12 +33,15 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
+import kotlin.test.assertNull
 
 @Transactional
 internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
@@ -54,6 +58,9 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
     @Autowired
     lateinit var documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService
 
+    @Autowired
+    lateinit var documentenApiColumnRepository: DocumentenApiColumnRepository
+
     lateinit var mockMvc: MockMvc
 
     @BeforeEach
@@ -64,136 +71,130 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
     }
 
     @Test
+    fun `should get a list of all Documenten API column keys`() {
+        mockMvc.perform(
+            get("/api/management/v1/case-definition/zgw-document-column-key", "profile")
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$[0].key").value("auteur"))
+            .andExpect(jsonPath("$[0].sortable").value(true))
+            .andExpect(jsonPath("$[0].filterable").value(true))
+            .andExpect(jsonPath("$[1].key").value("beschrijving"))
+            .andExpect(jsonPath("$[1].sortable").value(false))
+            .andExpect(jsonPath("$[1].filterable").value(false))
+    }
+
+    @Test
     fun `should get a list of ordered Documenten API columns`() {
+        documentenApiColumnRepository.deleteAllByIdCaseDefinitionName("profile")
+
         runWithoutAuthorization {
-            documentenApiService.updateColumn(
-                DocumentenApiColumn(DocumentenApiColumnId("myCaseDefinition", IDENTIFICATIE))
+            documentenApiService.createOrUpdateColumn(
+                DocumentenApiColumn(DocumentenApiColumnId("profile", IDENTIFICATIE), 0)
             )
-            documentenApiService.updateColumn(
-                DocumentenApiColumn(DocumentenApiColumnId("myCaseDefinition", TITEL))
+            documentenApiService.createOrUpdateColumn(
+                DocumentenApiColumn(DocumentenApiColumnId("profile", TITEL), 1)
             )
         }
 
         mockMvc.perform(
-            get("/api/management/v1/case-definition/{caseDefinitionName}/zgw-document-column", "myCaseDefinition")
+            get("/api/management/v1/case-definition/{caseDefinitionName}/zgw-document-column", "profile")
         )
-            .andDo(MockMvcResultHandlers.print())
+            .andDo(print())
+            .andExpect(status().isOk)
             .andExpect(jsonPath("$[0].key").value("identificatie"))
-            .andExpect(jsonPath("$[0].enabled").value(true))
+            .andExpect(jsonPath("$[0].sortable").value(false))
+            .andExpect(jsonPath("$[0].filterable").value(false))
             .andExpect(jsonPath("$[1].key").value("titel"))
-            .andExpect(jsonPath("$[1].enabled").value(true))
+            .andExpect(jsonPath("$[1].sortable").value(true))
+            .andExpect(jsonPath("$[1].filterable").value(true))
     }
 
     @Test
     fun `should reorder list of Documenten API columns`() {
+        documentenApiColumnRepository.deleteAllByIdCaseDefinitionName("profile")
+
         runWithoutAuthorization {
-            documentenApiService.updateColumn(
-                DocumentenApiColumn(DocumentenApiColumnId("myCaseDefinition", IDENTIFICATIE))
+            documentenApiService.createOrUpdateColumn(
+                DocumentenApiColumn(DocumentenApiColumnId("profile", IDENTIFICATIE))
             )
-            documentenApiService.updateColumn(
-                DocumentenApiColumn(DocumentenApiColumnId("myCaseDefinition", TITEL))
+            documentenApiService.createOrUpdateColumn(
+                DocumentenApiColumn(DocumentenApiColumnId("profile", TITEL))
             )
         }
 
         mockMvc.perform(
-            put("/api/management/v1/case-definition/{caseDefinitionName}/zgw-document-column", "myCaseDefinition")
+            put("/api/management/v1/case-definition/{caseDefinitionName}/zgw-document-column", "profile")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content("""
                     [
                         {
                             "key": "titel",
-                            "enabled": true
+                            "defaultSort": "asc"
                         },
                         {
-                            "key": "identificatie",
-                            "enabled": true
-                        },
-                        {
-                            "key": "creatiedatum",
-                            "enabled": false
-                        },
-                        {
-                            "key": "auteur",
-                            "enabled": false
-                        },
-                        {
-                            "key": "bestandsomvang",
-                            "enabled": false
-                        },
-                        {
-                            "key": "informatieobjecttype",
-                            "enabled": false
-                        },
-                        {
-                            "key": "bronorganisatie",
-                            "enabled": false
-                        },
-                        {
-                            "key": "vertrouwelijkheidaanduiding",
-                            "enabled": false
-                        },
-                        {
-                            "key": "status",
-                            "enabled": false
-                        },
-                        {
-                            "key": "formaat",
-                            "enabled": false
-                        },
-                        {
-                            "key": "taal",
-                            "enabled": false
-                        },
-                        {
-                            "key": "versie",
-                            "enabled": false
-                        },
-                        {
-                            "key": "bestandsnaam",
-                            "enabled": false
-                        },
-                        {
-                            "key": "beschrijving",
-                            "enabled": false
-                        },
-                        {
-                            "key": "locked",
-                            "enabled": false
+                            "key": "identificatie"
                         }
                     ]
                 """.trimMargin())
         )
-            .andDo(MockMvcResultHandlers.print())
+            .andDo(print())
+            .andExpect(status().isOk)
             .andExpect(jsonPath("$[0].key").value("titel"))
-            .andExpect(jsonPath("$[0].enabled").value(true))
+            .andExpect(jsonPath("$[0].sortable").value(true))
+            .andExpect(jsonPath("$[0].filterable").value(true))
             .andExpect(jsonPath("$[1].key").value("identificatie"))
-            .andExpect(jsonPath("$[1].enabled").value(true))
+            .andExpect(jsonPath("$[1].sortable").value(false))
+            .andExpect(jsonPath("$[1].filterable").value(false))
     }
 
     @Test
     fun `should update Documenten API column`() {
         runWithoutAuthorization {
-            documentenApiService.updateColumn(
-                DocumentenApiColumn(DocumentenApiColumnId("myCaseDefinition", IDENTIFICATIE))
+            documentenApiService.createOrUpdateColumn(
+                DocumentenApiColumn(DocumentenApiColumnId("profile", TITEL))
             )
         }
 
         mockMvc.perform(
             put(
                 "/api/management/v1/case-definition/{caseDefinitionName}/zgw-document-column/{columnKey}",
-                "myCaseDefinition",
-                "identificatie"
+                "profile",
+                "titel"
             )
                 .contentType(APPLICATION_JSON_VALUE)
                 .content("""
                     {
-                        "enabled": false
+                        "defaultSort": "asc"
                     }
                 """.trimMargin())
         )
-            .andDo(MockMvcResultHandlers.print())
-            .andExpect(jsonPath("$.key").value("identificatie"))
-            .andExpect(jsonPath("$.enabled").value(false))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.key").value("titel"))
+            .andExpect(jsonPath("$.defaultSort").value("ASC"))
+    }
+
+    @Test
+    fun `should delete Documenten API column`() {
+        runWithoutAuthorization {
+            documentenApiService.createOrUpdateColumn(
+                DocumentenApiColumn(DocumentenApiColumnId("profile", TITEL))
+            )
+        }
+
+        mockMvc.perform(
+            delete(
+                "/api/management/v1/case-definition/{caseDefinitionName}/zgw-document-column/{columnKey}",
+                "profile",
+                "titel"
+            )
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+
+        assertNull(documentenApiColumnRepository.findByIdCaseDefinitionNameAndIdKey("profile", TITEL))
     }
 
     @Test
@@ -206,7 +207,7 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
         }
 
         mockMvc.perform(get("/api/management/v1/case-definition/{caseDefinitionName}/documenten-api/version", "profile"))
-            .andDo(MockMvcResultHandlers.print())
+            .andDo(print())
             .andExpect(jsonPath("$.selectedVersion").value("1.2.0"))
             .andExpect(jsonPath("$.detectedVersions.size()").value(1))
             .andExpect(jsonPath("$.detectedVersions[0]").value("1.2.0"))

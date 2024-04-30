@@ -18,6 +18,7 @@ package com.ritense.documentenapi.service
 
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
+import com.ritense.documentenapi.domain.ColumnDefaultSort.DESC
 import com.ritense.documentenapi.domain.DocumentenApiColumn
 import com.ritense.documentenapi.domain.DocumentenApiColumnId
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.AUTEUR
@@ -37,9 +38,11 @@ open class DocumentenApiColumnDeploymentService(
     @RunWithoutAuthorization
     @EventListener(DocumentDefinitionDeployedEvent::class)
     open fun createDocumentenApiColumns(event: DocumentDefinitionDeployedEvent) {
-        if (event.documentDefinition().id().version() == 1L && !columnsExistForDocumentDefinitionName(event.documentDefinition().id().name())) {
+        if (event.documentDefinition().id()
+                .version() == 1L && !columnsExistForDocumentDefinitionName(event.documentDefinition().id().name())
+        ) {
             getDefaultColumns(event.documentDefinition().id().name()).forEach { column ->
-                documentenApiService.updateColumn(column)
+                documentenApiService.createOrUpdateColumn(column)
             }
         }
     }
@@ -47,7 +50,7 @@ open class DocumentenApiColumnDeploymentService(
     private fun getDefaultColumns(documentDefinitionName: String): List<DocumentenApiColumn> {
         return listOf(
             DocumentenApiColumn(DocumentenApiColumnId(documentDefinitionName, TITEL)),
-            DocumentenApiColumn(DocumentenApiColumnId(documentDefinitionName, CREATIEDATUM)),
+            DocumentenApiColumn(DocumentenApiColumnId(documentDefinitionName, CREATIEDATUM), 1, DESC),
             DocumentenApiColumn(DocumentenApiColumnId(documentDefinitionName, AUTEUR)),
             DocumentenApiColumn(DocumentenApiColumnId(documentDefinitionName, BESTANDSOMVANG)),
             DocumentenApiColumn(DocumentenApiColumnId(documentDefinitionName, INFORMATIEOBJECTTYPE)),
