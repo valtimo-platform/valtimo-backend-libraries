@@ -21,6 +21,7 @@ import com.ritense.authorization.AuthorizationContext
 import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DisplayType
 import com.ritense.case.domain.EmptyDisplayTypeParameter
+import com.ritense.case.domain.EnumDisplayTypeParameter
 import com.ritense.case.domain.TaskListColumn
 import com.ritense.case.domain.TaskListColumnId
 import com.ritense.case.repository.TaskListColumnRepository
@@ -42,9 +43,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
@@ -98,6 +100,24 @@ class TaskListResourceIntTest : BaseIntegrationTest() {
                 true,
                 ColumnDefaultSort.ASC,
                 1
+            ),
+            TaskListColumn(
+                TaskListColumnId("house", "col3"),
+                "Context",
+                "task:context",
+                DisplayType("string", EmptyDisplayTypeParameter()),
+                true,
+                ColumnDefaultSort.ASC,
+                2
+            ),
+            TaskListColumn(
+                TaskListColumnId("house", "col4"),
+                "Approved",
+                "task:variable.approved",
+                DisplayType("boolean", EnumDisplayTypeParameter(mapOf("Yes" to "No"))),
+                true,
+                ColumnDefaultSort.ASC,
+                3
             )
         )
 
@@ -109,35 +129,47 @@ class TaskListResourceIntTest : BaseIntegrationTest() {
 
         assertThat(taskList).hasSize(testUserData.size)
 
-        val sortedTestUserData = testUserData.sortedBy { it.get("lastName") }
+        val sortedTestUserData = testUserData.sortedBy { it["lastName"] as String? }
 
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v3/task")
+            post("/api/v3/task")
                 .param("filter", CamundaTaskService.TaskFilter.ALL.toString())
                 .content(objectMapper.writeValueAsString(TaskListSearchDto("house")))
                 .characterEncoding(StandardCharsets.UTF_8)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         )
             .andDo(MockMvcResultHandlers.print())
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content").isArray)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].id", hasItems(*taskList.map { it.id }.toTypedArray())))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].items").isArray)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].items[0].key").value("col1"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].items[0].value").value(sortedTestUserData[0]["firstName"]))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].items[1].key").value("col2"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].items[1].value").value(sortedTestUserData[0]["lastName"]))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].items[0].key").value("col1"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].items[0].value").value(sortedTestUserData[1]["firstName"]))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].items[1].key").value("col2"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].items[1].value").value(sortedTestUserData[1]["lastName"]))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[2].items[0].key").value("col1"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[2].items[0].value").value(sortedTestUserData[2]["firstName"]))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[2].items[1].key").value("col2"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[2].items[1].value").value(sortedTestUserData[2]["lastName"]))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(3))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.sort[0].property").value("doc:last-name"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.sort[0].direction").value("ASC"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.content").isArray)
+            .andExpect(jsonPath("$.content[*].id", hasItems(*taskList.map { it.id }.toTypedArray())))
+            .andExpect(jsonPath("$.content[0].items").isArray)
+            .andExpect(jsonPath("$.content[0].items[0].key").value("col1"))
+            .andExpect(jsonPath("$.content[0].items[0].value").value(sortedTestUserData[0]["firstName"]))
+            .andExpect(jsonPath("$.content[0].items[1].key").value("col2"))
+            .andExpect(jsonPath("$.content[0].items[1].value").value(sortedTestUserData[0]["lastName"]))
+            .andExpect(jsonPath("$.content[0].items[2].key").value("col3"))
+            .andExpect(jsonPath("$.content[0].items[2].value").value(sortedTestUserData[0]["context"]))
+            .andExpect(jsonPath("$.content[0].items[3].key").value("col4"))
+            .andExpect(jsonPath("$.content[0].items[3].value").value(sortedTestUserData[0]["approved"]))
+            .andExpect(jsonPath("$.content[1].items[0].key").value("col1"))
+            .andExpect(jsonPath("$.content[1].items[0].value").value(sortedTestUserData[1]["firstName"]))
+            .andExpect(jsonPath("$.content[1].items[1].key").value("col2"))
+            .andExpect(jsonPath("$.content[1].items[1].value").value(sortedTestUserData[1]["lastName"]))
+            .andExpect(jsonPath("$.content[1].items[2].key").value("col3"))
+            .andExpect(jsonPath("$.content[1].items[2].value").value(sortedTestUserData[1]["context"]))
+            .andExpect(jsonPath("$.content[1].items[3].key").value("col4"))
+            .andExpect(jsonPath("$.content[1].items[3].value").value(sortedTestUserData[1]["approved"]))
+            .andExpect(jsonPath("$.content[2].items[0].key").value("col1"))
+            .andExpect(jsonPath("$.content[2].items[0].value").value(sortedTestUserData[2]["firstName"]))
+            .andExpect(jsonPath("$.content[2].items[1].key").value("col2"))
+            .andExpect(jsonPath("$.content[2].items[1].value").value(sortedTestUserData[2]["lastName"]))
+            .andExpect(jsonPath("$.content[2].items[2].key").value("col3"))
+            .andExpect(jsonPath("$.content[2].items[2].value").value(sortedTestUserData[2]["context"]))
+            .andExpect(jsonPath("$.content[2].items[3].key").value("col4"))
+            .andExpect(jsonPath("$.content[2].items[3].value").value(sortedTestUserData[2]["approved"]))
+            .andExpect(jsonPath("$.totalElements").value(3))
+            .andExpect(jsonPath("$.sort[0].property").value("doc:last-name"))
+            .andExpect(jsonPath("$.sort[0].direction").value("ASC"))
     }
 
 
@@ -153,38 +185,42 @@ class TaskListResourceIntTest : BaseIntegrationTest() {
         assertThat(taskList).hasSize(testUserData.size)
 
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v3/task")
+            post("/api/v3/task")
                 .param("filter", CamundaTaskService.TaskFilter.ALL.toString())
                 .content(objectMapper.writeValueAsString(TaskListSearchDto(null)))
                 .characterEncoding(StandardCharsets.UTF_8)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         )
             .andDo(MockMvcResultHandlers.print())
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content").isArray)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].id", hasItems(*taskList.map { it.id }.toTypedArray())))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[0]", hasKey("name")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[0]", hasKey("assignee")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[0]", hasKey("created")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[0]", hasKey("due")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[0]", hasKey("owner")))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.content").isArray)
+            .andExpect(jsonPath("$.content[*].id", hasItems(*taskList.map { it.id }.toTypedArray())))
+            .andExpect(jsonPath("$.content[0]", hasKey("name")))
+            .andExpect(jsonPath("$.content[0]", hasKey("assignee")))
+            .andExpect(jsonPath("$.content[0]", hasKey("created")))
+            .andExpect(jsonPath("$.content[0]", hasKey("due")))
+            .andExpect(jsonPath("$.content[0]", hasKey("owner")))
     }
 
-    private fun startNewProcessesWithTestData(): List<Map<String, String>> {
+    private fun startNewProcessesWithTestData(): List<Map<String, Any?>> {
         val testUserData = listOf(
-            mapOf("lastName" to "Ever", "firstName" to "Greatest"),
-            mapOf("lastName" to "A.", "firstName" to "Henk"),
-            mapOf("lastName" to "R.", "firstName" to "Karel")
+            mapOf("lastName" to "Ever", "firstName" to "Greatest", "context" to "Amsterdam", "approved" to true),
+            mapOf("lastName" to "A.", "firstName" to "Henk", "context" to "Rotterdam", "approved" to false),
+            mapOf("lastName" to "R.", "firstName" to null, "context" to null, "approved" to null)
         )
 
-        testUserData.forEach {
+        testUserData.forEach { testUserDataRow ->
+            val firstName = testUserDataRow["firstName"]?.let { "\"$it\"" }
+            val lastName = testUserDataRow["lastName"]?.let { "\"$it\"" }
+            val context = testUserDataRow["context"]
+            val approved = testUserDataRow["approved"]
             val startRequest = NewDocumentAndStartProcessRequest(
                 "single-user-task-process",
                 NewDocumentRequest(
                     "house",
-                    objectMapper.readTree("""{ "first-name": "${it["firstName"]}", "last-name": "${it["lastName"]}"}""")
+                    objectMapper.readTree("""{ "first-name": $firstName, "last-name": $lastName}""")
                 )
-            )
+            ).withProcessVars(mapOf("context" to context, "approved" to approved))
             AuthorizationContext.runWithoutAuthorization {
                 camundaProcessJsonSchemaDocumentService.newDocumentAndStartProcess(
                     startRequest

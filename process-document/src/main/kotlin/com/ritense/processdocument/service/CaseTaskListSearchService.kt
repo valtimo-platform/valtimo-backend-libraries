@@ -17,6 +17,7 @@
 package com.ritense.processdocument.service
 
 import com.ritense.authorization.Action
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
@@ -38,6 +39,7 @@ import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valtimo.service.CamundaTaskService.TaskFilter
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.persistence.EntityManager
@@ -49,14 +51,14 @@ import jakarta.persistence.criteria.Order
 import jakarta.persistence.criteria.Path
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
-import java.time.LocalDateTime
-import java.util.UUID
-import java.util.stream.Collectors
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
+import java.time.LocalDateTime
+import java.util.UUID
+import java.util.stream.Collectors
 
 
 class CaseTaskListSearchService(
@@ -65,7 +67,8 @@ class CaseTaskListSearchService(
     private val taskListColumnRepository: TaskListColumnRepository,
     private val userManagementService: UserManagementService,
     private val authorizationService: AuthorizationService,
-    private val queryDialectHelper: QueryDialectHelper
+    private val queryDialectHelper: QueryDialectHelper,
+    private val taskService: CamundaTaskService,
 ) {
     private val CONTENT = "content"
     private val INTERNAL_STATUS = "internalStatus"
@@ -295,16 +298,33 @@ class CaseTaskListSearchService(
         val (taskPaths, otherPaths) = paths.partition { it.startsWith(TASK_PREFIX) }
 
         val resolvedValuesMap = valueResolverService.resolveValues(caseTask.documentInstanceId.toString(), otherPaths).toMutableMap()
-
-        resolvedValuesMap.putAll(taskPaths.map { taskPath ->
-            taskPath to CaseTaskProperties.getByPropertyName(taskPath.substring(TASK_PREFIX.length))?.getValueFromObject(caseTask)
-        })
+        resolvedValuesMap.putAll(taskPaths.map { taskPath -> resolveTaskValue(caseTask, taskPath) })
 
         val items = taskListColumns.map { caseListColumn ->
             TaskListRowDto.TaskListItemDto(caseListColumn.id.key, resolvedValuesMap[caseListColumn.path])
         }.toList()
 
         return TaskListRowDto(caseTask.taskId, caseTask.documentInstanceId.toString(), caseTask.processInstanceId, caseTask.name, caseTask.createTime, items)
+    }
+
+    private fun resolveTaskValue(caseTask: CaseTask, taskPath: String): Pair<String, Any?> {
+        val value = runWithoutAuthorization {
+            when (val path = taskPath.substringAfter(TASK_PREFIX).substringBefore(".")) {
+
+                // TODO make it more efficient to get variables
+                "variable" -> taskService.getVariable(caseTask.taskId, taskPath.substringAfter("."))
+                "context" -> taskService.getVariable(caseTask.taskId, "context")
+
+                "assignee" -> {
+                    CaseTaskProperties.getByPropertyName("assignee")
+                        ?.getValueFromObject(caseTask)
+                        ?.let { assigneeId -> userManagementService.findById(assigneeId as String).fullName }
+                }
+
+                else -> CaseTaskProperties.getByPropertyName(path)?.getValueFromObject(caseTask)
+            }
+        }
+        return taskPath to value
     }
 
     private fun <T> stringToPath(parent: Path<*>, path: String): Path<T> {
