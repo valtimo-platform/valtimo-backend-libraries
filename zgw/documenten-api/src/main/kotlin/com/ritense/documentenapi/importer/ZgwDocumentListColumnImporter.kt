@@ -16,7 +16,7 @@
 
 package com.ritense.documentenapi.importer
 
-import com.ritense.case.deployment.ZgwDocumentListColumnDeploymentService
+import com.ritense.documentenapi.deployment.ZgwDocumentListColumnDeploymentService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION

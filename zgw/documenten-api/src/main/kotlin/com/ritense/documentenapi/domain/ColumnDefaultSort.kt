@@ -16,24 +16,14 @@
 
 package com.ritense.documentenapi.domain
 
-import jakarta.persistence.Column
-import jakarta.persistence.EmbeddedId
-import jakarta.persistence.Entity
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
-import jakarta.persistence.Table
+import com.fasterxml.jackson.annotation.JsonCreator
 
-@Entity
-@Table(name = "documenten_api_column")
-data class DocumentenApiColumn(
+enum class ColumnDefaultSort {
+    ASC, DESC;
 
-    @EmbeddedId
-    val id: DocumentenApiColumnId,
-
-    @Column(name = "column_order")
-    val order: Int = 0,
-
-    @Column(name = "default_sort")
-    @Enumerated(EnumType.STRING)
-    val defaultSort: ColumnDefaultSort? = null,
-)
+    companion object {
+        @JvmStatic
+        @JsonCreator
+        fun from(name: String?) = ColumnDefaultSort.entries.firstOrNull { it.name.equals(name, ignoreCase = true) }
+    }
+}

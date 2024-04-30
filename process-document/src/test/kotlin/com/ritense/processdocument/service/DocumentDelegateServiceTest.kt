@@ -221,7 +221,19 @@ internal class DocumentDelegateServiceTest : BaseTest() {
         val jsonSchemaDocument = createDocument()
         val defaultValue = "DEFAULT_VALUE"
         whenever(documentService.findBy(any<JsonSchemaDocumentId>())).thenReturn(Optional.of(jsonSchemaDocument))
-        val value: Any = documentDelegateService.findValueByJsonPointerOrDefault(
+        val value: Any? = documentDelegateService.findValueByJsonPointerOrDefault(
+            "/incorrectpath", delegateExecutionFake, defaultValue
+        )
+
+        assertEquals(defaultValue, value)
+    }
+
+    @Test
+    fun `should accept null for default value`() {
+        val jsonSchemaDocument = createDocument()
+        val defaultValue = null
+        whenever(documentService.findBy(any<JsonSchemaDocumentId>())).thenReturn(Optional.of(jsonSchemaDocument))
+        val value: Any? = documentDelegateService.findValueByJsonPointerOrDefault(
             "/incorrectpath", delegateExecutionFake, defaultValue
         )
 

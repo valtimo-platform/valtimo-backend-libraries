@@ -77,4 +77,11 @@
         </sql>
     </changeSet>
 
+    <changeSet id="7" author="Ritense">
+        <dropColumn tableName="documenten_api_column" columnName="enabled"/>
+        <addColumn tableName="documenten_api_column">
+            <column name="default_sort" type="varchar(10)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
