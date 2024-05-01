@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.documentenapi.deployment.ZgwDocumentListColumnDeploymentService
 import com.ritense.catalogiapi.service.CatalogiService
+import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.documentenapi.exporter.ZgwDocumentListColumnExporter
@@ -100,6 +101,7 @@ class DocumentenApiAutoConfiguration {
         catalogiService: CatalogiService,
         documentenApiColumnRepository: DocumentenApiColumnRepository,
         authorizationService: AuthorizationService,
+        valtimoDocumentService: DocumentService,
         documentDefinitionService: JsonSchemaDocumentDefinitionService,
         documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
         pluginProcessLinkService: PluginProcessLinkService,
@@ -110,6 +112,7 @@ class DocumentenApiAutoConfiguration {
             catalogiService,
             documentenApiColumnRepository,
             authorizationService,
+            valtimoDocumentService,
             documentDefinitionService,
             documentDefinitionProcessLinkService,
             pluginProcessLinkService,
