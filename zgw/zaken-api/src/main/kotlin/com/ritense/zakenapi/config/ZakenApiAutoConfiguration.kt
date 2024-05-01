@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.documentenapi.service.DocumentDeleteHandler
+import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
@@ -106,9 +107,10 @@ class ZakenApiAutoConfiguration {
     fun zaakDocumentService(
         zaakUrlProvider: ZaakUrlProvider,
         pluginService: PluginService,
-        catalogiService: CatalogiService
+        catalogiService: CatalogiService,
+        documentenApiService: DocumentenApiService,
     ): ZaakDocumentService {
-        return ZaakDocumentService(zaakUrlProvider, pluginService, catalogiService)
+        return ZaakDocumentService(zaakUrlProvider, pluginService, catalogiService, documentenApiService)
     }
 
     @Bean

@@ -19,6 +19,9 @@ package com.ritense.zakenapi.service
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.documentenapi.client.DocumentInformatieObject
+import com.ritense.documentenapi.service.DocumentenApiService
+import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
+import com.ritense.documentenapi.web.rest.dto.DocumentenApiDocumentDto
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
@@ -31,11 +34,14 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import java.net.URI
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -47,13 +53,15 @@ class ZaakDocumentServiceTest {
     lateinit var zaakUrlProvider: ZaakUrlProvider
     lateinit var pluginService: PluginService
     lateinit var catalogiService: CatalogiService
+    lateinit var documentenApiService: DocumentenApiService
 
     @BeforeEach
     fun init() {
         zaakUrlProvider = mock()
         pluginService = mock()
         catalogiService = mock()
-        service = ZaakDocumentService(zaakUrlProvider, pluginService, catalogiService)
+        documentenApiService = mock()
+        service = ZaakDocumentService(zaakUrlProvider, pluginService, catalogiService, documentenApiService)
     }
 
     @Test
@@ -121,6 +129,26 @@ class ZaakDocumentServiceTest {
         val result = service.getZaakByDocumentId(documentId)
 
         assertEquals(zaak, result)
+    }
+
+    @Test
+    fun `should get InformatieObjecten Page for zaak`() {
+        val documentId = UUID.randomUUID()
+        val zaakUrl = URI("https://example.com/1")
+        whenever(zaakUrlProvider.getZaakUrl(documentId)).thenReturn(zaakUrl)
+
+        val documentSearchRequestCaptor = argumentCaptor<DocumentSearchRequest>()
+        val pageable = mock<Pageable>()
+        val documentSearchRequest = DocumentSearchRequest()
+        val resultPage = mock<Page<DocumentenApiDocumentDto>>()
+
+        whenever(documentenApiService.getCaseInformatieObjecten(any(), documentSearchRequestCaptor.capture(), any())).thenReturn(resultPage)
+
+        val page = service.getInformatieObjectenAsRelatedFilesPage(documentId, documentSearchRequest, pageable)
+
+        assertEquals(resultPage, page)
+        // Check if the zaakUrl is set in the DocumentSearchRequest
+        assertEquals(zaakUrl, documentSearchRequestCaptor.firstValue.zaakUrl)
     }
 
     private fun createZaakInformatieObjecten(zaakUrl: URI, count: Int = 5): List<ZaakInformatieObject> {

@@ -18,6 +18,10 @@ package com.ritense.zakenapi.service
 
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.documentenapi.DocumentenApiPlugin
+import com.ritense.documentenapi.client.DocumentInformatieObject
+import com.ritense.documentenapi.service.DocumentenApiService
+import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
+import com.ritense.documentenapi.web.rest.dto.DocumentenApiDocumentDto
 import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginService
@@ -26,6 +30,8 @@ import com.ritense.zakenapi.ZakenApiPlugin
 import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zakenapi.link.ZaakInstanceLinkNotFoundException
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.transaction.annotation.Transactional
 import java.net.URI
 import java.util.UUID
@@ -35,6 +41,7 @@ class ZaakDocumentService(
     private val zaakUrlProvider: ZaakUrlProvider,
     private val pluginService: PluginService,
     private val catalogiService: CatalogiService,
+    private val documentenApiService: DocumentenApiService
 ) {
 
     fun getInformatieObjectenAsRelatedFiles(documentId: UUID): List<RelatedFileDto> {
@@ -51,10 +58,28 @@ class ZaakDocumentService(
             .map { getRelatedFiles(it) }
     }
 
+    fun getInformatieObjectenAsRelatedFilesPage(
+        documentId: UUID,
+        documentSearchRequest: DocumentSearchRequest,
+        pageable: Pageable,
+    ): Page<DocumentenApiDocumentDto> {
+        val zaakUri = zaakUrlProvider.getZaakUrl(documentId)
+        val documentSearchRequestWithZaakUrl = documentSearchRequest.copy(zaakUrl = zaakUri)
+
+        return documentenApiService.getCaseInformatieObjecten(documentId, documentSearchRequestWithZaakUrl, pageable)
+    }
+
     private fun getRelatedFiles(zaakInformatieObject: ZaakInformatieObject): RelatedFileDto {
         val pluginConfiguration = getDocumentenApiPluginByInformatieobjectUrl(zaakInformatieObject.informatieobject)
         val plugin = pluginService.createInstance(pluginConfiguration) as DocumentenApiPlugin
         val informatieObject = plugin.getInformatieObject(zaakInformatieObject.informatieobject)
+        return mapRelatedFile(informatieObject, pluginConfiguration)
+    }
+
+    private fun mapRelatedFile(
+        informatieObject: DocumentInformatieObject,
+        pluginConfiguration: PluginConfiguration
+    ): RelatedFileDto {
         return RelatedFileDto(
             fileId = UUID.fromString(informatieObject.url.path.substringAfterLast("/")),
             fileName = informatieObject.bestandsnaam,
