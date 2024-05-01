@@ -39,7 +39,6 @@ import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
-import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valtimo.service.CamundaTaskService.TaskFilter
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.persistence.EntityManager
@@ -51,14 +50,14 @@ import jakarta.persistence.criteria.Order
 import jakarta.persistence.criteria.Path
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
+import java.time.LocalDateTime
+import java.util.UUID
+import java.util.stream.Collectors
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
-import java.time.LocalDateTime
-import java.util.UUID
-import java.util.stream.Collectors
 
 
 class CaseTaskListSearchService(
@@ -67,8 +66,7 @@ class CaseTaskListSearchService(
     private val taskListColumnRepository: TaskListColumnRepository,
     private val userManagementService: UserManagementService,
     private val authorizationService: AuthorizationService,
-    private val queryDialectHelper: QueryDialectHelper,
-    private val taskService: CamundaTaskService,
+    private val queryDialectHelper: QueryDialectHelper
 ) {
     private val CONTENT = "content"
     private val INTERNAL_STATUS = "internalStatus"
@@ -310,11 +308,6 @@ class CaseTaskListSearchService(
     private fun resolveTaskValue(caseTask: CaseTask, taskPath: String): Pair<String, Any?> {
         val value = runWithoutAuthorization {
             when (val path = taskPath.substringAfter(TASK_PREFIX).substringBefore(".")) {
-
-                // TODO make it more efficient to get variables
-                "variable" -> taskService.getVariable(caseTask.taskId, taskPath.substringAfter("."))
-                "context" -> taskService.getVariable(caseTask.taskId, "context")
-
                 "assignee" -> {
                     CaseTaskProperties.getByPropertyName("assignee")
                         ?.getValueFromObject(caseTask)
