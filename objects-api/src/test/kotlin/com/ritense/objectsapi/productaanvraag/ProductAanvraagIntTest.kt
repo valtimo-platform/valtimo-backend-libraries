@@ -324,6 +324,7 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
                         "/documenten/api/v1/enkelvoudiginformatieobjecten/8b1568b4-cfbe-4151-bab0-787cd238814e" -> handleDocumentRequest(extractId(path))
                         "/documenten/api/v1/enkelvoudiginformatieobjecten/30ccb521-bf2c-452a-a24c-ed389a66b9fc" -> handleDocumentRequest(extractId(path))
                         "/catalogi/api/v1/zaaktypen" -> mockZaakTypeResponse()
+                        "/catalogi/api/v1/zaaktypen/4e9c2359-83ac-4e3b-96b6-3f278f1fc773" -> mockSingleZaakTypeResponse()
                         else -> MockResponse().setResponseCode(404)
                     }
                     "POST" -> when (path) {
@@ -670,6 +671,26 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
                                 Period.of(0, 1, 0)
                             )
                         )
+                    )
+                )
+            )
+    }
+
+    private fun mockSingleZaakTypeResponse(): MockResponse {
+        return MockResponse()
+            .addHeader("Content-Type", "application/json; charset=utf-8")
+            .setResponseCode(200)
+            .setBody(
+                MapperSingleton.get().writeValueAsString(
+                    ZaakType(
+                        URI(
+                            "http://localhost:" +
+                                server.port +
+                                "/catalogi/api/v1/zaaktypen/4e9c2359-83ac-4e3b-96b6-3f278f1fc773"
+                        ),
+                        "omschrijving",
+                        "omschrijvingGeneriek",
+                        Period.of(0, 1, 0)
                     )
                 )
             )
