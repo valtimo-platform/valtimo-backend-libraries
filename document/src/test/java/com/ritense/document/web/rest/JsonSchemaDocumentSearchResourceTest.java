@@ -45,13 +45,13 @@ import com.ritense.valtimo.contract.utils.TestUtil;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -76,6 +76,7 @@ class JsonSchemaDocumentSearchResourceTest extends BaseTest {
         mockMvc = MockMvcBuilders
             .standaloneSetup(documentSearchResource)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setMessageConverters(new MappingJackson2HttpMessageConverter(MapperSingleton.get()))
             .build();
 
         var content = new JsonDocumentContent("{\"firstName\": \"John\"}");

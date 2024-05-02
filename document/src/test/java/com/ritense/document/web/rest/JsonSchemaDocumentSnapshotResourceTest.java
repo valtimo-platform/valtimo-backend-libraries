@@ -38,6 +38,7 @@ import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentSnapshotService;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentSnapshotResource;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -47,6 +48,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -69,6 +71,7 @@ public class JsonSchemaDocumentSnapshotResourceTest extends BaseTest {
 
         mockMvc = MockMvcBuilders.standaloneSetup(documentSnapshotResource)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setMessageConverters(new MappingJackson2HttpMessageConverter(MapperSingleton.get()))
             .build();
 
         document = spy(createDocument(new JsonDocumentContent("{\"street\": \"Funenpark\"}")));
