@@ -1,6 +1,7 @@
 package com.ritense.formviewmodel.web.rest
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.formviewmodel.domain.ViewModel
 import com.ritense.formviewmodel.domain.factory.ViewModelLoaderFactory
@@ -12,7 +13,6 @@ import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType
 import com.ritense.valtimo.service.CamundaTaskService
-import com.ritense.authorization.AuthorizationService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
 import kotlin.reflect.KClass
 
 @RestController
@@ -88,5 +87,6 @@ class FormViewModelResource(
     fun <T : ViewModel>handleViewModel(eventHandler: OnFormSubmittedEventHandler<*>, viewModel: ViewModel, taskInstanceId: String, viewModelType: KClass<out T>) {
         val castedEventHandler = eventHandler as OnFormSubmittedEventHandler<T>
         castedEventHandler.handle(viewModel as T, taskInstanceId)
+        camundaTaskService.complete(taskInstanceId)
     }
 }
