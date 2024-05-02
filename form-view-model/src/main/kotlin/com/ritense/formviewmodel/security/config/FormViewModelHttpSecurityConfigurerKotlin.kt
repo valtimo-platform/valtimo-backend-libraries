@@ -26,7 +26,10 @@ class FormViewModelHttpSecurityConfigurerKotlin : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeHttpRequests { requests ->
-                requests.requestMatchers(antMatcher(POST, "/api/v1/form/view-model")).authenticated()
+                requests.requestMatchers(
+                    antMatcher(POST, "/api/v1/form/view-model"),
+                    antMatcher(POST, "/api/v1/form/view-model/submit")
+                ).authenticated()
                     .requestMatchers(antMatcher(GET, "/api/v1/form/view-model")).authenticated()
             }
         } catch (e: Exception) {

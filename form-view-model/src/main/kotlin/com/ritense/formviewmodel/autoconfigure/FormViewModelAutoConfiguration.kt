@@ -16,12 +16,15 @@
 
 package com.ritense.formviewmodel.autoconfigure;
 
+import com.ritense.authorization.AuthorizationService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formviewmodel.FormViewModelProcessLinkActivityHandler
 import com.ritense.formviewmodel.domain.ViewModelLoader
 import com.ritense.formviewmodel.domain.factory.ViewModelLoaderFactory
+import com.ritense.formviewmodel.event.OnFormSubmittedEventHandler
 import com.ritense.formviewmodel.security.config.FormViewModelHttpSecurityConfigurerKotlin
 import com.ritense.formviewmodel.web.rest.FormViewModelResource
+import com.ritense.valtimo.service.CamundaTaskService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.core.annotation.Order
@@ -35,10 +38,16 @@ class FormViewModelAutoConfiguration {
 
     @Bean
     fun formViewModelRestResource(
-        viewModelLoaderFactory: ViewModelLoaderFactory
+        viewModelLoaderFactory: ViewModelLoaderFactory,
+        handlers: List<OnFormSubmittedEventHandler<*>>,
+        camundaTaskService: CamundaTaskService,
+        authorizationService: AuthorizationService
     ) = FormViewModelResource(
-        viewModelLoaderFactory
-    );
+        viewModelLoaderFactory,
+        handlers,
+        camundaTaskService,
+        authorizationService
+    )
 
     @Bean
     fun formViewModelProcessLinkTaskProvider(
@@ -53,4 +62,5 @@ class FormViewModelAutoConfiguration {
     ) = ViewModelLoaderFactory(
         loaders
     )
+
 }
