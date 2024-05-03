@@ -16,21 +16,15 @@
 
 package com.ritense.documentenapi.service
 
-import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
-import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.document.domain.RelatedFile
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.Companion.VIEW
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.client.PatchDocumentRequest
-import com.ritense.documentenapi.domain.DocumentenApiColumn
-import com.ritense.documentenapi.domain.DocumentenApiColumnKey
-import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.documentenapi.web.rest.dto.ModifyDocumentRequest
 import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
 import com.ritense.plugin.service.PluginService
@@ -48,7 +42,6 @@ import java.util.UUID
 class DocumentenApiService(
     private val pluginService: PluginService,
     private val catalogiService: CatalogiService,
-    private val documentenApiColumnRepository: DocumentenApiColumnRepository,
     private val authorizationService: AuthorizationService,
     private val documentDefinitionService: JsonSchemaDocumentDefinitionService,
     private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
@@ -81,61 +74,6 @@ class DocumentenApiService(
         val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
         val documentUrl = documentApiPlugin.createInformatieObjectUrl(documentId)
         documentApiPlugin.deleteInformatieObject(documentUrl)
-    }
-
-    fun getColumns(caseDefinitionName: String): List<DocumentenApiColumn> {
-        val documentDefinition = documentDefinitionService.findLatestByName(caseDefinitionName)
-            .orElseThrow { IllegalArgumentException("Unknown case-definition '$caseDefinitionName'") }
-        authorizationService.requirePermission(
-            EntityAuthorizationRequest(
-                JsonSchemaDocumentDefinition::class.java,
-                VIEW,
-                documentDefinition
-            )
-        )
-
-        return documentenApiColumnRepository.findAllByIdCaseDefinitionNameOrderByOrder(caseDefinitionName)
-    }
-
-    fun updateColumnOrder(columns: List<DocumentenApiColumn>): List<DocumentenApiColumn> {
-        denyAuthorization()
-        require(columns.isNotEmpty()) { "Failed to sort empty Document API columns" }
-        val caseDefinitionName = columns[0].id.caseDefinitionName
-        documentDefinitionService.findLatestByName(caseDefinitionName)
-            .orElseThrow { IllegalArgumentException("Unknown case-definition '$caseDefinitionName'") }
-        val existingColumns = this.getColumns(caseDefinitionName)
-        require(existingColumns.size == columns.size) { "Incorrect number of Documenten API columns" }
-        val newColumns = columns.map { column ->
-            existingColumns.find { it.id.key == column.id.key }
-                ?.copy(order = column.order)
-                ?: throw IllegalStateException("Failed to find column with key ${column.id.key}")
-        }
-        return documentenApiColumnRepository.saveAll(newColumns)
-    }
-
-    fun createOrUpdateColumn(column: DocumentenApiColumn): DocumentenApiColumn {
-        documentDefinitionService.findLatestByName(column.id.caseDefinitionName)
-            .orElseThrow { IllegalArgumentException("Unknown case-definition '${column.id.caseDefinitionName}'") }
-        denyAuthorization()
-        val order = documentenApiColumnRepository.findByIdCaseDefinitionNameAndIdKey(
-            column.id.caseDefinitionName,
-            column.id.key
-        )?.order ?: documentenApiColumnRepository.countAllByIdCaseDefinitionName(column.id.caseDefinitionName).toInt()
-
-        if (column.defaultSort != null) {
-            check(column.id.key.sortable) { "Documenten API column '${column.id.key}' is not sortable" }
-            check(!documentenApiColumnRepository.findAllByIdCaseDefinitionNameOrderByOrder(column.id.caseDefinitionName)
-                .any { it.id != column.id && it.defaultSort != null }) { "Documenten API columns can not have default sorting on multiple columns" }
-        }
-
-        return documentenApiColumnRepository.save(column.copy(order = order))
-    }
-
-    fun deleteColumn(caseDefinitionName: String, columnKey: String) {
-        denyAuthorization()
-        val documentenApiColumnKey = DocumentenApiColumnKey.from(columnKey)
-            ?: throw IllegalStateException("Unknown column '$columnKey'")
-        documentenApiColumnRepository.deleteByIdCaseDefinitionNameAndIdKey(caseDefinitionName, documentenApiColumnKey)
     }
 
     fun getApiVersions(caseDefinitionName: String): List<String> {
@@ -188,14 +126,5 @@ class DocumentenApiService(
 
     private fun getInformatieobjecttypeByUri(uri: String?): String? {
         return uri?.let { catalogiService.getInformatieobjecttype(URI(it))?.omschrijving }
-    }
-
-    private fun denyAuthorization() {
-        authorizationService.requirePermission(
-            EntityAuthorizationRequest(
-                JsonSchemaDocumentDefinition::class.java,
-                Action.deny()
-            )
-        );
     }
 }
