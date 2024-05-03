@@ -21,6 +21,7 @@ import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.of;
 import static org.springframework.http.ResponseEntity.ok;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
 import com.ritense.document.domain.impl.template.DocumentDefinitionTemplateRequestDto;
@@ -32,6 +33,7 @@ import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import com.ritense.document.service.result.DocumentVersionsResult;
 import com.ritense.document.service.result.UndeployDocumentDefinitionResult;
 import com.ritense.document.web.rest.DocumentDefinitionResource;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
@@ -63,8 +65,8 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     }
 
     @Override
-    public ResponseEntity<String> getDocumentDefinitionTemplate(DocumentDefinitionTemplateRequestDto requestDto) {
-        return ok(
+    public ResponseEntity<Object> getDocumentDefinitionTemplate(DocumentDefinitionTemplateRequestDto requestDto) throws JsonProcessingException {
+        return ok(MapperSingleton.get().readTree(
             """
                 {
                     "$id": "%s.schema",
@@ -74,7 +76,7 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
                     "properties": {},
                     "additionalProperties":false
                 }
-                """.formatted(requestDto.documentDefinitionId(), requestDto.documentDefinitionTitle())
+                """.formatted(requestDto.documentDefinitionId(), requestDto.documentDefinitionTitle()))
         );
     }
 
