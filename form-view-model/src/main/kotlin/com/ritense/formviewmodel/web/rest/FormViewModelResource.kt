@@ -34,34 +34,34 @@ class FormViewModelResource(
 
     @GetMapping
     fun getFormViewModel(
-        @RequestParam(required = true) formId: String,
+        @RequestParam(required = true) formName: String,
         @RequestParam(required = true) taskInstanceId: String
     ): ResponseEntity<ViewModel?> {
         return ResponseEntity.ok(
-            viewModelLoaderFactory.getViewModelLoader(formId)?.onLoad(taskInstanceId)
+            viewModelLoaderFactory.getViewModelLoader(formName)?.onLoad(taskInstanceId)
         )
     }
 
     @PostMapping
     fun updateFormViewModel(
-        @RequestParam(required = true) formId: String,
+        @RequestParam(required = true) formName: String,
         @RequestParam(required = true) taskInstanceId: String,
         @RequestBody formViewModel: String
     ): ResponseEntity<ViewModel> {
         return ResponseEntity.ok(
-            parseViewModel(formViewModel, viewModelLoaderFactory.getViewModelLoader(formId)?.getViewModelType()!!).update()
+            parseViewModel(formViewModel, viewModelLoaderFactory.getViewModelLoader(formName)?.getViewModelType()!!).update()
         )
     }
 
     @PostMapping("/submit")
     fun submitFormViewModel(
-        @RequestParam(required = true) formId: String,
+        @RequestParam(required = true) formName: String,
         @RequestParam(required = true) taskInstanceId: String,
         @RequestBody formViewModel: String
     ): ResponseEntity<FormError> {
-        val type = viewModelLoaderFactory.getViewModelLoader(formId)?.getViewModelType()!!
+        val type = viewModelLoaderFactory.getViewModelLoader(formName)?.getViewModelType()!!
         val viewModel = parseViewModel(formViewModel, type)
-        val eventHandler = eventHandlers.find { it.supports(formId) }!!
+        val eventHandler = eventHandlers.find { it.supports(formName) }!!
         try {
             camundaTaskService.findTaskById(taskInstanceId)
             authorizationService.requirePermission(

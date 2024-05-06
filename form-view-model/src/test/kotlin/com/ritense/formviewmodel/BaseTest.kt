@@ -16,6 +16,21 @@
 
 package com.ritense.formviewmodel
 
+import com.ritense.form.domain.FormIoFormDefinition
+import org.apache.commons.io.IOUtils
+import java.io.IOException
+import java.nio.charset.StandardCharsets
+import java.util.UUID
+
 abstract class BaseTest {
     fun readFileAsString(fileName: String): String = this::class.java.getResource(fileName)!!.readText(Charsets.UTF_8)
+
+    @Throws(IOException::class)
+    protected fun formDefinitionOf(formDefinitionId: String): FormIoFormDefinition {
+        val s = IOUtils.toString(
+            Thread.currentThread().contextClassLoader.getResourceAsStream("config/form/$formDefinitionId.json"),
+            StandardCharsets.UTF_8
+        )
+        return FormIoFormDefinition(UUID.randomUUID(), "form-example", s, false)
+    }
 }

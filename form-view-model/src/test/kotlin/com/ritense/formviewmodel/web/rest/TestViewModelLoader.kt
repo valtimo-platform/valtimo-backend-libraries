@@ -7,7 +7,9 @@ class TestViewModelLoader : ViewModelLoader<TestViewModel> {
         return TestViewModel()
     }
 
-    override fun supports(formId: String): Boolean {
-        return formId == "formId"
+    override fun supports(formName: String): Boolean {
+        return formName == getFormName()
     }
+
+    override fun getFormName(): String = "formName"
 }

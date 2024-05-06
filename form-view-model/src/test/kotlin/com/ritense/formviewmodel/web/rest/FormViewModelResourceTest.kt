@@ -47,7 +47,7 @@ class FormViewModelResourceTest : BaseTest() {
             .perform(
                 MockMvcRequestBuilders
                     .get(
-                        "/api/v1/form/view-model?formId=formId&taskInstanceId=taskInstanceId"
+                        "/api/v1/form/view-model?formName=formName&taskInstanceId=taskInstanceId"
                     )
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
             )
@@ -69,13 +69,13 @@ class FormViewModelResourceTest : BaseTest() {
 
     @Test
     fun `should update form view model`() {
-        whenever(viewModelLoaderFactory.getViewModelLoader("formId")).thenReturn(TestViewModelLoader())
+        whenever(viewModelLoaderFactory.getViewModelLoader("formName")).thenReturn(TestViewModelLoader())
 
         mockMvc
             .perform(
                 MockMvcRequestBuilders
                     .post(
-                        "/api/v1/form/view-model?formId=formId&taskInstanceId=taskInstanceId"
+                        "/api/v1/form/view-model?formName=formName&taskInstanceId=taskInstanceId"
                     )
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(jacksonObjectMapper().writeValueAsString(TestViewModel()))
@@ -98,13 +98,13 @@ class FormViewModelResourceTest : BaseTest() {
 
     @Test
     fun `should submit form view model`() {
-        whenever(viewModelLoaderFactory.getViewModelLoader("formId")).thenReturn(TestViewModelLoader())
+        whenever(viewModelLoaderFactory.getViewModelLoader("formName")).thenReturn(TestViewModelLoader())
 
         mockMvc
             .perform(
                 MockMvcRequestBuilders
                     .post(
-                        "/api/v1/form/view-model/submit?formId=formId&taskInstanceId=taskInstanceId"
+                        "/api/v1/form/view-model/submit?formName=formName&taskInstanceId=taskInstanceId"
                     )
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(jacksonObjectMapper().writeValueAsString(TestViewModel()))

@@ -21,12 +21,15 @@ import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formviewmodel.FormViewModelProcessLinkActivityHandler
 import com.ritense.formviewmodel.domain.ViewModelLoader
 import com.ritense.formviewmodel.domain.factory.ViewModelLoaderFactory
+import com.ritense.formviewmodel.domain.validation.OnStartUpViewModelValidator
 import com.ritense.formviewmodel.event.OnFormSubmittedEventHandler
 import com.ritense.formviewmodel.security.config.FormViewModelHttpSecurityConfigurerKotlin
 import com.ritense.formviewmodel.web.rest.FormViewModelResource
 import com.ritense.valtimo.service.CamundaTaskService
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
+import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 
 @AutoConfiguration
@@ -63,4 +66,13 @@ class FormViewModelAutoConfiguration {
         loaders
     )
 
+    @Bean
+    @Order(Ordered.LOWEST_PRECEDENCE)
+    fun onStartUpViewModelValidator(
+        formIoFormDefinitionService: FormIoFormDefinitionService,
+        context: ApplicationContext
+    ) = OnStartUpViewModelValidator(
+        formIoFormDefinitionService,
+        context
+    )
 }
