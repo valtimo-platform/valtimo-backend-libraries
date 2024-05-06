@@ -1,8 +1,8 @@
 package com.ritense.formviewmodel.autoconfigure
 
-import com.ritense.valtimo.implementation.util.commandhandling.Command
-import com.ritense.valtimo.implementation.util.commandhandling.CommandDispatcher
-import com.ritense.valtimo.implementation.util.commandhandling.CommandHandler
+import com.ritense.formviewmodel.util.commandhandling.Command
+import com.ritense.formviewmodel.util.commandhandling.CommandDispatcher
+import com.ritense.formviewmodel.util.commandhandling.CommandHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 

@@ -1,7 +1,7 @@
-package com.ritense.valtimo.implementation.util.commandhandling.decorator
+package com.ritense.formviewmodel.util.commandhandling.decorator
 
-import com.ritense.valtimo.implementation.util.commandhandling.Command
-import com.ritense.valtimo.implementation.util.commandhandling.CommandHandler
+import com.ritense.formviewmodel.util.commandhandling.Command
+import com.ritense.formviewmodel.util.commandhandling.CommandHandler
 
 abstract class CommandHandlerDecorator<C : Command<T>, T>(
     protected val commandHandler: CommandHandler<C, T>
