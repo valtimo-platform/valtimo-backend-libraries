@@ -1,9 +1,6 @@
 package com.ritense.formviewmodel.util.commandhandling
 
 import com.ritense.formviewmodel.BaseTest
-import com.ritense.valtimo.implementation.util.commandhandling.Command
-import com.ritense.valtimo.implementation.util.commandhandling.CommandDispatcher
-import com.ritense.valtimo.implementation.util.commandhandling.CommandHandler
 import com.ritense.valtimo.implementation.util.commandhandling.LambdaCommand
 import com.ritense.valtimo.implementation.util.commandhandling.LambdaCommandHandler
 import org.assertj.core.api.Assertions.assertThat

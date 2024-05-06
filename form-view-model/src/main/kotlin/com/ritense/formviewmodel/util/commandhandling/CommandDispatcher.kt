@@ -1,7 +1,7 @@
-package com.ritense.valtimo.implementation.util.commandhandling
+package com.ritense.formviewmodel.util.commandhandling
 
 import com.ritense.formviewmodel.util.SpringContextHelper
-import com.ritense.valtimo.implementation.util.commandhandling.decorator.DecoratorBuilder
+import com.ritense.formviewmodel.util.commandhandling.decorator.DecoratorBuilder
 import mu.KotlinLogging
 import kotlin.reflect.KClass
 

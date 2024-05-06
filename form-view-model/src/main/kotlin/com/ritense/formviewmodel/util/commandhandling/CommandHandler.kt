@@ -1,4 +1,4 @@
-package com.ritense.valtimo.implementation.util.commandhandling
+package com.ritense.formviewmodel.util.commandhandling
 
 import org.springframework.transaction.annotation.Transactional
 import kotlin.reflect.KClass

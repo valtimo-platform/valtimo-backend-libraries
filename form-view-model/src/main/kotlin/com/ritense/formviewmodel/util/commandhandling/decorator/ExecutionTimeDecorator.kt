@@ -1,7 +1,7 @@
-package com.ritense.valtimo.implementation.util.commandhandling.decorator
+package com.ritense.formviewmodel.util.commandhandling.decorator
 
-import com.ritense.valtimo.implementation.util.commandhandling.Command
-import com.ritense.valtimo.implementation.util.commandhandling.CommandHandler
+import com.ritense.formviewmodel.util.commandhandling.Command
+import com.ritense.formviewmodel.util.commandhandling.CommandHandler
 import mu.KotlinLogging
 
 class ExecutionTimeDecorator<C : Command<T>, T>(
