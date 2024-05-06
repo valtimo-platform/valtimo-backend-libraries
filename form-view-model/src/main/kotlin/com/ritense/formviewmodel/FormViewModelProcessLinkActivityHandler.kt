@@ -38,9 +38,13 @@ class FormViewModelProcessLinkActivityHandler(
         val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId)
             .orElseThrow { RuntimeException("Form definition not found by id ${processLink.formDefinitionId}") }
         return ProcessLinkActivityResult(
-            processLink.id,
-            FORM_VIEW_MODEL_TASK_TYPE_KEY,
-            FormViewModelTaskOpenResultProperties(processLink.formDefinitionId, formDefinition.asJson())
+            processLinkId = processLink.id,
+            type = FORM_VIEW_MODEL_TASK_TYPE_KEY,
+            properties = FormViewModelTaskOpenResultProperties(
+                formDefinitionId = processLink.formDefinitionId,
+                formDefinition = formDefinition.asJson(),
+                formName = formDefinition.name
+            )
         )
     }
 

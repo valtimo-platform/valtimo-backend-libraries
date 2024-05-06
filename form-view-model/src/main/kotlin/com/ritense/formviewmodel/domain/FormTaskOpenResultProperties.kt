@@ -5,5 +5,6 @@ import java.util.UUID
 
 data class FormViewModelTaskOpenResultProperties(
     val formDefinitionId: UUID,
-    val formDefinition: JsonNode
+    val formDefinition: JsonNode,
+    val formName: String
 )
