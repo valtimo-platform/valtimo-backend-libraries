@@ -10,6 +10,7 @@ import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
+import com.ritense.documentenapi.repository.DocumentenApiVersionRepository
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
 import com.ritense.documentenapi.web.rest.dto.DocumentenApiDocumentDto
 import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
@@ -53,6 +54,7 @@ class DocumentenApiServiceTest {
     private lateinit var documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService
     private lateinit var pluginProcessLinkService: PluginProcessLinkService
     private lateinit var camundaRepositoryService: CamundaRepositoryService
+    private lateinit var documentenApiVersionRepository: DocumentenApiVersionRepository
 
     @BeforeEach
     fun before() {
@@ -65,6 +67,7 @@ class DocumentenApiServiceTest {
         documentDefinitionProcessLinkService = mock<DocumentDefinitionProcessLinkService>()
         pluginProcessLinkService = mock<PluginProcessLinkService>()
         camundaRepositoryService = mock<CamundaRepositoryService>()
+        documentenApiVersionRepository = mock<DocumentenApiVersionRepository>()
 
         service = DocumentenApiService(
             pluginService,
@@ -75,7 +78,8 @@ class DocumentenApiServiceTest {
             documentDefinitionService,
             documentDefinitionProcessLinkService,
             pluginProcessLinkService,
-            camundaRepositoryService
+            camundaRepositoryService,
+            documentenApiVersionRepository
         )
     }
 

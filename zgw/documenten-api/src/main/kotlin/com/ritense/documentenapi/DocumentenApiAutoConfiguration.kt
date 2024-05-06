@@ -23,9 +23,11 @@ import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.documentenapi.client.DocumentenApiClient
+import com.ritense.documentenapi.deployment.ZgwDocumentVersionDeploymentService
 import com.ritense.documentenapi.exporter.ZgwDocumentListColumnExporter
 import com.ritense.documentenapi.importer.ZgwDocumentListColumnImporter
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
+import com.ritense.documentenapi.repository.DocumentenApiVersionRepository
 import com.ritense.documentenapi.security.DocumentenApiHttpSecurityConfigurer
 import com.ritense.documentenapi.service.DocumentDeleteHandler
 import com.ritense.documentenapi.service.DocumentenApiColumnDeploymentService
@@ -82,7 +84,8 @@ class DocumentenApiAutoConfiguration {
         storageService: TemporaryResourceStorageService,
         applicationEventPublisher: ApplicationEventPublisher,
         objectMapper: ObjectMapper,
-        documentDeleteHandlers: List<DocumentDeleteHandler>
+        documentDeleteHandlers: List<DocumentDeleteHandler>,
+        documentenApiVersionRepository: DocumentenApiVersionRepository,
     ): DocumentenApiPluginFactory {
         return DocumentenApiPluginFactory(
             pluginService,
@@ -90,7 +93,8 @@ class DocumentenApiAutoConfiguration {
             storageService,
             applicationEventPublisher,
             objectMapper,
-            documentDeleteHandlers
+            documentDeleteHandlers,
+            documentenApiVersionRepository,
         )
     }
 
@@ -106,6 +110,7 @@ class DocumentenApiAutoConfiguration {
         documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
         pluginProcessLinkService: PluginProcessLinkService,
         camundaRepositoryService: CamundaRepositoryService,
+        documentenApiVersionRepository: DocumentenApiVersionRepository,
     ): DocumentenApiService {
         return DocumentenApiService(
             pluginService,
@@ -117,6 +122,7 @@ class DocumentenApiAutoConfiguration {
             documentDefinitionProcessLinkService,
             pluginProcessLinkService,
             camundaRepositoryService,
+            documentenApiVersionRepository,
         )
     }
 
@@ -147,6 +153,21 @@ class DocumentenApiAutoConfiguration {
         )
     }
 
+    @Bean
+    @ConditionalOnMissingBean(ZgwDocumentVersionDeploymentService::class)
+    fun zgwDocumentVersionDeploymentService(
+        objectMapper: ObjectMapper,
+        documentenApiVersionRepository: DocumentenApiVersionRepository,
+        changelogService: ChangelogService,
+        @Value("\${valtimo.changelog.zgw-document-version.clear-tables:false}") clearTables: Boolean
+    ): ZgwDocumentVersionDeploymentService {
+        return ZgwDocumentVersionDeploymentService(
+            objectMapper,
+            documentenApiVersionRepository,
+            changelogService,
+            clearTables,
+        )
+    }
 
     @Bean
     @ConditionalOnMissingBean(DocumentenApiResource::class)

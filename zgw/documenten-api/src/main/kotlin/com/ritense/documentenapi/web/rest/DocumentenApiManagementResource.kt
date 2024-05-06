@@ -22,6 +22,7 @@ import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.documentenapi.web.rest.dto.ColumnKeyResponse
 import com.ritense.documentenapi.web.rest.dto.ColumnResponse
 import com.ritense.documentenapi.web.rest.dto.DocumentenApiVersionManagementDto
+import com.ritense.documentenapi.web.rest.dto.DocumentenApiVersionsManagementDto
 import com.ritense.documentenapi.web.rest.dto.ReorderColumnRequest
 import com.ritense.documentenapi.web.rest.dto.UpdateColumnRequest
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
@@ -91,7 +92,14 @@ class DocumentenApiManagementResource(
     fun getApiVersion(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<DocumentenApiVersionManagementDto> {
-        val apiVersions = documentenApiService.getApiVersions(caseDefinitionName)
+        val apiVersions = documentenApiService.detectedVersions(caseDefinitionName)
         return ResponseEntity.ok(DocumentenApiVersionManagementDto(apiVersions.firstOrNull(), apiVersions))
+    }
+
+    @RunWithoutAuthorization
+    @GetMapping("/v1/documenten-api/versions")
+    fun getAllApiVersion(): ResponseEntity<DocumentenApiVersionsManagementDto> {
+        val versions = documentenApiService.getAllVersions().map { it.key }
+        return ResponseEntity.ok(DocumentenApiVersionsManagementDto(versions))
     }
 }

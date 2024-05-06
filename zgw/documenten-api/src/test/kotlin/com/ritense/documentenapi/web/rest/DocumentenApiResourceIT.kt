@@ -28,6 +28,10 @@ import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
+import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
+import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import jakarta.transaction.Transactional
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -73,6 +77,9 @@ internal class DocumentenApiResourceIT : BaseIntegrationTest() {
 
     @Autowired
     lateinit var documentenApiColumnRepository: DocumentenApiColumnRepository
+
+    @Autowired
+    lateinit var documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService
 
     lateinit var mockMvc: MockMvc
 
@@ -148,6 +155,25 @@ internal class DocumentenApiResourceIT : BaseIntegrationTest() {
             .andExpect(jsonPath("$[0].sortable").value(false))
             .andExpect(jsonPath("$[1].key").value("titel"))
             .andExpect(jsonPath("$[1].sortable").value(true))
+    }
+
+    @Test
+    @WithMockUser(username = USER_EMAIL, authorities = [USER])
+    fun `should get API version`() {
+        runWithoutAuthorization {
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                "profile",
+                DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
+            )
+        }
+
+        mockMvc.perform(get("/api/v1/case-definition/{caseDefinitionName}/documenten-api/version", "profile"))
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.selectedVersion").value("1.5.0-test-1.0.0"))
+            .andExpect(jsonPath("$.supportsFilterable").value(false))
+            .andExpect(jsonPath("$.supportsSortable").value(true))
+            .andExpect(jsonPath("$.supportsTrefwoorden").value(true))
     }
 
     private fun setupMockDocumentenApiServer() {

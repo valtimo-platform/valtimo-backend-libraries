@@ -16,30 +16,9 @@
 
 package com.ritense.documentenapi.domain
 
-import com.fasterxml.jackson.annotation.JsonCreator
+open class DocumentenApiInfo {
+    open fun isColumnFilterable(columnKey: DocumentenApiColumnKey): Boolean = false
 
-enum class DocumentenApiColumnKey {
-    IDENTIFICATIE,
-    BRONORGANISATIE,
-    CREATIEDATUM,
-    TITEL,
-    VERTROUWELIJKHEIDAANDUIDING,
-    AUTEUR,
-    STATUS,
-    FORMAAT,
-    TAAL,
-    VERSIE,
-    BESTANDSNAAM,
-    BESTANDSOMVANG,
-    BESCHRIJVING,
-    INFORMATIEOBJECTTYPE,
-    LOCKED,
-    TREFWOORDEN;
-
-    companion object {
-        @JvmStatic
-        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-        fun from(name: String) = entries.firstOrNull { it.name.equals(name, ignoreCase = true) }
-    }
+    open fun isColumnSortable(columnKey: DocumentenApiColumnKey): Boolean = false
 }
 

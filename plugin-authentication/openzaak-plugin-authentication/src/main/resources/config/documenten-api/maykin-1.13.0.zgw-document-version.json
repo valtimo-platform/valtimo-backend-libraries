@@ -1,0 +1,13 @@
+{
+    "changesetId": "makin-1.13.0.zgw-document-version",
+    "documentenApiVersions": [
+        {
+            "version": "1.4.2-maykin-1.13.0",
+            "features": {
+                "filterable": true,
+                "sortable": true,
+                "trefwoorden":  true
+            }
+        }
+    ]
+}

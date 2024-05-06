@@ -26,6 +26,7 @@ import com.ritense.documentenapi.client.DocumentStatusType
 import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.documentenapi.client.PatchDocumentRequest
 import com.ritense.documentenapi.event.DocumentCreated
+import com.ritense.documentenapi.repository.DocumentenApiVersionRepository
 import com.ritense.documentenapi.service.DocumentDeleteHandler
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
 import com.ritense.plugin.annotation.Plugin
@@ -61,6 +62,7 @@ class DocumentenApiPlugin(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val objectMapper: ObjectMapper,
     private val documentDeleteHandlers: List<DocumentDeleteHandler>,
+    private val documentenApiVersionRepository: DocumentenApiVersionRepository,
 ) {
     @Url
     @PluginProperty(key = URL_PROPERTY, secret = false)
@@ -222,7 +224,7 @@ class DocumentenApiPlugin(
 
     @PluginEvent(invokedOn = [EventType.CREATE, EventType.UPDATE])
     fun onSave() {
-        if (apiVersion != null && !API_VERSIONS.contains(apiVersion)) {
+        if (apiVersion != null && !documentenApiVersionRepository.existsById(apiVersion!!)) {
             throw ValidationException("Unknown API version '$apiVersion'.")
         }
     }
@@ -305,7 +307,6 @@ class DocumentenApiPlugin(
         const val DEFAULT_LANGUAGE = "nld"
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"
         const val DOCUMENT_URL_PROCESS_VAR = "documentUrl"
-        val API_VERSIONS = arrayOf("1.4.3", "1.4.1", "1.4.0", "1.3.0", "1.2.0", "1.1.0", "1.0.0", "1.0.1", "1.0.0")
 
         fun findConfigurationByUrl(url: URI) = { properties: JsonNode ->
             url.toString().startsWith(properties.get(URL_PROPERTY).textValue())

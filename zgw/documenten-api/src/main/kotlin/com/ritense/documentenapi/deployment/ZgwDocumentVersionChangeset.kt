@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.documentenapi.web.rest.dto
+package com.ritense.documentenapi.deployment
 
 import com.ritense.documentenapi.domain.DocumentenApiVersion
 
-data class DocumentenApiVersionDto(
-    val selectedVersion: String? = null,
-    val supportsFilterable: Boolean,
-    val supportsSortable: Boolean,
-    val supportsTrefwoorden: Boolean,
+data class ZgwDocumentVersionChangeset(
+    val changesetId: String,
+    val documentenApiVersions: List<DocumentenApiVersionWithFeatures>
+)
+
+data class DocumentenApiVersionWithFeatures(
+    val version: String,
+    val features: Map<String, Boolean>
 ) {
-    companion object {
-        fun of(version: DocumentenApiVersion?) = DocumentenApiVersionDto(
-            selectedVersion = version?.key,
-            supportsFilterable = version?.supportsFilterable() ?: false,
-            supportsSortable = version?.supportsSortable() ?: false,
-            supportsTrefwoorden = version?.supportsTrefwoorden() ?: false,
-        )
-    }
+    fun toEntity() = DocumentenApiVersion(version, features)
 }

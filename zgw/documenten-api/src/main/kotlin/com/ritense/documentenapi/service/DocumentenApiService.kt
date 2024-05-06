@@ -31,7 +31,9 @@ import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.client.PatchDocumentRequest
 import com.ritense.documentenapi.domain.DocumentenApiColumn
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey
+import com.ritense.documentenapi.domain.DocumentenApiVersion
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
+import com.ritense.documentenapi.repository.DocumentenApiVersionRepository
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
 import com.ritense.documentenapi.web.rest.dto.DocumentenApiDocumentDto
 import com.ritense.documentenapi.web.rest.dto.ModifyDocumentRequest
@@ -61,6 +63,7 @@ class DocumentenApiService(
     private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
     private val pluginProcessLinkService: PluginProcessLinkService,
     private val camundaRepositoryService: CamundaRepositoryService,
+    private val documentenApiVersionRepository: DocumentenApiVersionRepository,
 ) {
     fun downloadInformatieObject(pluginConfigurationId: String, documentId: String): InputStream {
         val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
@@ -161,13 +164,22 @@ class DocumentenApiService(
         documentenApiColumnRepository.deleteByIdCaseDefinitionNameAndIdKey(caseDefinitionName, documentenApiColumnKey)
     }
 
-    fun getApiVersions(caseDefinitionName: String): List<String> {
-        return runWithoutAuthorization {
-            detectPluginConfigurations(caseDefinitionName)
-                .mapNotNull { (pluginService.createInstance(it) as DocumentenApiPlugin).apiVersion }
-                .toList()
-                .sorted()
-        }
+    fun getVersion(caseDefinitionName: String): DocumentenApiVersion? {
+        val version = detectedVersions(caseDefinitionName).firstOrNull() ?: return null
+        return documentenApiVersionRepository.findById(version)
+            .orElseThrow { IllegalStateException("Unknown Documenten API version '$version'") }
+    }
+
+    fun getAllVersions(): List<DocumentenApiVersion> {
+        denyAuthorization()
+        return documentenApiVersionRepository.findAllByOrderByKeyDesc()
+    }
+
+    fun detectedVersions(caseDefinitionName: String): List<String> {
+        return detectPluginConfigurations(caseDefinitionName)
+            .mapNotNull { (pluginService.createInstance(it) as DocumentenApiPlugin).apiVersion }
+            .toList()
+            .sorted()
     }
 
     fun detectPluginConfigurations(caseDefinitionName: String): List<PluginConfiguration> {
