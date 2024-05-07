@@ -9,5 +9,5 @@ class TestViewModelLoader : ViewModelLoader<TestViewModel> {
         return formName == getFormName()
     }
 
-    override fun getFormName(): String = "formName"
+    override fun getFormName(): String = "test"
 }
