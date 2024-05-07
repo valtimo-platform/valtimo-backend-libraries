@@ -19,9 +19,10 @@ package com.ritense.zakenapi.service
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.documentenapi.client.DocumentInformatieObject
+import com.ritense.documentenapi.domain.DocumentenApiVersion
 import com.ritense.documentenapi.service.DocumentenApiService
+import com.ritense.documentenapi.service.DocumentenApiVersionService
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
-import com.ritense.documentenapi.web.rest.dto.DocumentenApiDocumentDto
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
@@ -40,7 +41,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.net.URI
 import java.time.LocalDate
@@ -54,6 +55,7 @@ class ZaakDocumentServiceTest {
     lateinit var pluginService: PluginService
     lateinit var catalogiService: CatalogiService
     lateinit var documentenApiService: DocumentenApiService
+    lateinit var documentenApiVersionService: DocumentenApiVersionService
 
     @BeforeEach
     fun init() {
@@ -61,7 +63,14 @@ class ZaakDocumentServiceTest {
         pluginService = mock()
         catalogiService = mock()
         documentenApiService = mock()
-        service = ZaakDocumentService(zaakUrlProvider, pluginService, catalogiService, documentenApiService)
+        documentenApiVersionService = mock()
+        service = ZaakDocumentService(
+            zaakUrlProvider,
+            pluginService,
+            catalogiService,
+            documentenApiService,
+            documentenApiVersionService
+        )
     }
 
     @Test
@@ -140,9 +149,19 @@ class ZaakDocumentServiceTest {
         val documentSearchRequestCaptor = argumentCaptor<DocumentSearchRequest>()
         val pageable = mock<Pageable>()
         val documentSearchRequest = DocumentSearchRequest()
-        val resultPage = mock<Page<DocumentenApiDocumentDto>>()
+        val resultPage = PageImpl(listOf<DocumentInformatieObject>())
 
-        whenever(documentenApiService.getCaseInformatieObjecten(any(), documentSearchRequestCaptor.capture(), any())).thenReturn(resultPage)
+        whenever(
+            documentenApiService.getCaseInformatieObjecten(
+                any(),
+                documentSearchRequestCaptor.capture(),
+                any()
+            )
+        ).thenReturn(resultPage)
+        whenever(documentenApiVersionService.getVersionByDocumentId(documentId))
+            .thenReturn(DocumentenApiVersion("1.5.0-test-1.0.0", listOf("titel"), listOf("titel")))
+        whenever(pluginService.createInstance(eq(ZakenApiPlugin::class.java), any()))
+            .thenReturn(mock<ZakenApiPlugin>())
 
         val page = service.getInformatieObjectenAsRelatedFilesPage(documentId, documentSearchRequest, pageable)
 
