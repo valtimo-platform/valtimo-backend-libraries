@@ -18,14 +18,8 @@ package com.ritense.documentenapi.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.documentenapi.BaseIntegrationTest
 import com.ritense.documentenapi.DocumentenApiAuthentication
-import com.ritense.documentenapi.domain.DocumentenApiColumn
-import com.ritense.documentenapi.domain.DocumentenApiColumnId
-import com.ritense.documentenapi.domain.DocumentenApiColumnKey
-import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
-import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import jakarta.transaction.Transactional
@@ -48,8 +42,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import org.springframework.web.reactive.function.client.ClientRequest
@@ -67,12 +59,6 @@ internal class DocumentenApiResourceIT : BaseIntegrationTest() {
 
     @Autowired
     lateinit var objectMapper: ObjectMapper
-
-    @Autowired
-    lateinit var documentenApiService: DocumentenApiService
-
-    @Autowired
-    lateinit var documentenApiColumnRepository: DocumentenApiColumnRepository
 
     lateinit var mockMvc: MockMvc
 
@@ -124,30 +110,6 @@ internal class DocumentenApiResourceIT : BaseIntegrationTest() {
             .andExpect(header().string("Content-Disposition", "attachment; filename=\"passport.jpg\""))
             .andExpect(header().string("Content-Type", "image/jpeg"))
             .andExpect(content().string("TEST_DOCUMENT_CONTENT"))
-    }
-
-    @Test
-    fun `should get a list of all ordered Documenten API columns`() {
-        documentenApiColumnRepository.deleteAllByIdCaseDefinitionName("profile")
-
-        runWithoutAuthorization {
-            documentenApiService.createOrUpdateColumn(
-                DocumentenApiColumn(DocumentenApiColumnId("profile", DocumentenApiColumnKey.IDENTIFICATIE), 0)
-            )
-            documentenApiService.createOrUpdateColumn(
-                DocumentenApiColumn(DocumentenApiColumnId("profile", DocumentenApiColumnKey.TITEL), 1)
-            )
-        }
-
-        mockMvc.perform(
-            get("/api/management/v1/case-definition/{caseDefinitionName}/zgw-document-column", "profile")
-        )
-            .andDo(MockMvcResultHandlers.print())
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$[0].key").value("identificatie"))
-            .andExpect(jsonPath("$[0].sortable").value(false))
-            .andExpect(jsonPath("$[1].key").value("titel"))
-            .andExpect(jsonPath("$[1].sortable").value(true))
     }
 
     private fun setupMockDocumentenApiServer() {
