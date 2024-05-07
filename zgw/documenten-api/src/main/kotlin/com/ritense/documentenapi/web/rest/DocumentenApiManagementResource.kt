@@ -17,6 +17,7 @@
 package com.ritense.documentenapi.web.rest
 
 import com.ritense.authorization.annotation.RunWithoutAuthorization
+import com.ritense.documentenapi.domain.DocumentenApiColumnKey
 import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.documentenapi.service.DocumentenApiVersionService
 import com.ritense.documentenapi.web.rest.dto.ColumnKeyResponse
@@ -52,6 +53,14 @@ class DocumentenApiManagementResource(
         val columns = documentenApiService.getAllColumnKeys(caseDefinitionName)
             .map { ColumnKeyResponse.of(it, version) }
         return ResponseEntity.ok(columns)
+    }
+
+    @RunWithoutAuthorization
+    @GetMapping("/v1/case-definition/zgw-document-column-key")
+    fun getColumnKeysTemp(): ResponseEntity<List<ColumnKeyResponse>> {
+        return ResponseEntity.ok(DocumentenApiColumnKey.entries.map {
+            ColumnKeyResponse.of(it, DocumentenApiVersionService.MINIMUM_VERSION)
+        }.sortedBy { it.key })
     }
 
     @RunWithoutAuthorization
