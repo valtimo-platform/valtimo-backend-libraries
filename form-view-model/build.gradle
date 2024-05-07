@@ -16,10 +16,6 @@
 
 dockerCompose {
     projectName = "form-view-model"
-
-    securityTesting {
-        isRequiredBy(project.tasks.securityTesting)
-    }
 }
 
 dependencies {
