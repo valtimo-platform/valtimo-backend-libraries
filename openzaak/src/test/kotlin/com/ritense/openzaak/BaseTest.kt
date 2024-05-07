@@ -29,6 +29,7 @@ import com.ritense.openzaak.service.impl.OpenZaakConfigService
 import com.ritense.openzaak.service.impl.OpenZaakTokenGeneratorService
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
+import com.ritense.openzaak.service.impl.ZaakTypeService
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
@@ -61,6 +62,9 @@ abstract class BaseTest {
 
     @Mock
     lateinit var zaakInstanceLinkService: ZaakInstanceLinkService
+
+    @Mock
+    lateinit var zaakTypeService: ZaakTypeService
 
     @Mock
     lateinit var documentService: DocumentService

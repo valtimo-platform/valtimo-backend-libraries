@@ -35,8 +35,6 @@ import java.net.URI
 
 class ZaaktypeServiceTest : BaseTest() {
 
-    lateinit var zaakTypeService: ZaakTypeService
-
     @BeforeEach
     fun setUp() {
         baseSetUp()
