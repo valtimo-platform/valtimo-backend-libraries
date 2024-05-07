@@ -72,7 +72,7 @@ dependencies {
 
     implementation "org.hibernate.orm:hibernate-core:${hibernateCoreVersion}"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-reactive:${kotlinCoroutinesVersion}"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-reactor:$kotlinCoroutinesVersion"
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 

@@ -18,6 +18,7 @@ package com.ritense.openzaak.service
 
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.ZaakType
+import java.net.URI
 
 @Deprecated("Since 12.0.0. Replace with the Catalogi API plugin")
 interface ZaakTypeService {
@@ -25,4 +26,5 @@ interface ZaakTypeService {
     @Deprecated("Since 12.0.0.", ReplaceWith("com.ritense.catalogiapi.client.CatalogiApiClient.getZaaktypen"))
     fun getZaakTypes(): ResultWrapper<ZaakType>
 
+    fun getZaakType(zaaktypeUrl: URI): ZaakType
 }

@@ -104,7 +104,7 @@ class TaskListResourceIntTest : BaseIntegrationTest() {
             TaskListColumn(
                 TaskListColumnId("house", "col3"),
                 "Context",
-                "task:context",
+                "pv:context",
                 DisplayType("string", EmptyDisplayTypeParameter()),
                 true,
                 ColumnDefaultSort.ASC,
@@ -113,7 +113,7 @@ class TaskListResourceIntTest : BaseIntegrationTest() {
             TaskListColumn(
                 TaskListColumnId("house", "col4"),
                 "Approved",
-                "task:variable.approved",
+                "pv:approved",
                 DisplayType("boolean", EnumDisplayTypeParameter(mapOf("Yes" to "No"))),
                 true,
                 ColumnDefaultSort.ASC,

@@ -20,6 +20,7 @@ import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_J
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
 import com.ritense.document.domain.impl.template.DocumentDefinitionTemplateRequestDto;
@@ -53,7 +54,7 @@ public interface DocumentDefinitionResource {
     );
 
     @PostMapping(value = "/management/v1/document-definition-template", consumes = APPLICATION_JSON_VALUE)
-    ResponseEntity<String> getDocumentDefinitionTemplate(@Valid @RequestBody DocumentDefinitionTemplateRequestDto requestDto);
+    ResponseEntity<Object> getDocumentDefinitionTemplate(@Valid @RequestBody DocumentDefinitionTemplateRequestDto requestDto) throws JsonProcessingException;
 
     @GetMapping("/management/v1/document-definition")
     ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitionsForManagement(
