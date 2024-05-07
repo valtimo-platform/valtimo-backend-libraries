@@ -20,16 +20,16 @@ import com.ritense.documentenapi.domain.DocumentenApiVersion
 
 data class DocumentenApiVersionDto(
     val selectedVersion: String? = null,
-    val supportsFilterable: Boolean,
-    val supportsSortable: Boolean,
+    val supportsFilterableColumns: Boolean,
+    val supportsSortableColumns: Boolean,
     val supportsTrefwoorden: Boolean,
 ) {
     companion object {
         fun of(version: DocumentenApiVersion?) = DocumentenApiVersionDto(
-            selectedVersion = version?.key,
-            supportsFilterable = version?.supportsFilterable() ?: false,
-            supportsSortable = version?.supportsSortable() ?: false,
-            supportsTrefwoorden = version?.supportsTrefwoorden() ?: false,
+            selectedVersion = version?.version,
+            supportsFilterableColumns = version?.supportsFilterableColumns() ?: false,
+            supportsSortableColumns = version?.supportsSortableColumns() ?: false,
+            supportsTrefwoorden = version?.supportsTrefwoorden ?: false,
         )
     }
 }

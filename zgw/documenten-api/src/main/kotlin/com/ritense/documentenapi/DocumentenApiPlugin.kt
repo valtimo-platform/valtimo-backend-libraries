@@ -26,8 +26,8 @@ import com.ritense.documentenapi.client.DocumentStatusType
 import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.documentenapi.client.PatchDocumentRequest
 import com.ritense.documentenapi.event.DocumentCreated
-import com.ritense.documentenapi.repository.DocumentenApiVersionRepository
 import com.ritense.documentenapi.service.DocumentDeleteHandler
+import com.ritense.documentenapi.service.DocumentenApiVersionService
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
@@ -62,7 +62,7 @@ class DocumentenApiPlugin(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val objectMapper: ObjectMapper,
     private val documentDeleteHandlers: List<DocumentDeleteHandler>,
-    private val documentenApiVersionRepository: DocumentenApiVersionRepository,
+    private val documentenApiVersionService: DocumentenApiVersionService,
 ) {
     @Url
     @PluginProperty(key = URL_PROPERTY, secret = false)
@@ -224,7 +224,7 @@ class DocumentenApiPlugin(
 
     @PluginEvent(invokedOn = [EventType.CREATE, EventType.UPDATE])
     fun onSave() {
-        if (apiVersion != null && !documentenApiVersionRepository.existsById(apiVersion!!)) {
+        if (apiVersion != null && !documentenApiVersionService.isValidVersion(apiVersion!!)) {
             throw ValidationException("Unknown API version '$apiVersion'.")
         }
     }

@@ -28,7 +28,6 @@ import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import jakarta.transaction.Transactional
-import org.hamcrest.Matchers.contains
 import org.hamcrest.Matchers.containsInRelativeOrder
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -74,8 +73,15 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should get a list of all Documenten API column keys`() {
+        runWithoutAuthorization {
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                "profile",
+                DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
+            )
+        }
+
         mockMvc.perform(
-            get("/api/management/v1/case-definition/zgw-document-column-key", "profile")
+            get("/api/management/v1/case-definition/{caseDefinitionName}/zgw-document-column-key", "profile")
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -84,11 +90,18 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
             .andExpect(jsonPath("$[0].filterable").value(true))
             .andExpect(jsonPath("$[1].key").value("beschrijving"))
             .andExpect(jsonPath("$[1].sortable").value(false))
-            .andExpect(jsonPath("$[1].filterable").value(false))
+            .andExpect(jsonPath("$[1].filterable").value(true))
     }
 
     @Test
     fun `should get a list of ordered Documenten API columns`() {
+        runWithoutAuthorization {
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                "profile",
+                DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
+            )
+        }
+
         documentenApiColumnRepository.deleteAllByIdCaseDefinitionName("profile")
 
         runWithoutAuthorization {
@@ -115,6 +128,12 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should reorder list of Documenten API columns`() {
+        runWithoutAuthorization {
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                "profile",
+                DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
+            )
+        }
         documentenApiColumnRepository.deleteAllByIdCaseDefinitionName("profile")
 
         runWithoutAuthorization {
@@ -156,6 +175,12 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
     @Test
     fun `should update Documenten API column`() {
         runWithoutAuthorization {
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                "profile",
+                DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
+            )
+        }
+        runWithoutAuthorization {
             documentenApiService.createOrUpdateColumn(
                 DocumentenApiColumn(DocumentenApiColumnId("profile", TITEL))
             )
@@ -185,6 +210,10 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
     @Test
     fun `should delete Documenten API column`() {
         runWithoutAuthorization {
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                "profile",
+                DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
+            )
             documentenApiService.createOrUpdateColumn(
                 DocumentenApiColumn(DocumentenApiColumnId("profile", TITEL))
             )
@@ -226,13 +255,6 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should get all API versions`() {
-        runWithoutAuthorization {
-            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-                "profile",
-                DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
-            )
-        }
-
         mockMvc.perform(get("/api/management/v1/documenten-api/versions"))
             .andDo(print())
             .andExpect(status().isOk)

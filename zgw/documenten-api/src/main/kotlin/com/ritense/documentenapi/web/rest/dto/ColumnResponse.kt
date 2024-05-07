@@ -20,6 +20,7 @@ import com.ritense.documentenapi.domain.ColumnDefaultSort
 import com.ritense.documentenapi.domain.DocumentenApiColumn
 import com.ritense.documentenapi.domain.DocumentenApiColumnId
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey
+import com.ritense.documentenapi.domain.DocumentenApiVersion
 
 data class ColumnResponse(
     val key: String,
@@ -37,10 +38,10 @@ data class ColumnResponse(
     }
 
     companion object {
-        fun of(column: DocumentenApiColumn): ColumnResponse = ColumnResponse(
+        fun of(column: DocumentenApiColumn, version: DocumentenApiVersion): ColumnResponse = ColumnResponse(
             key = column.id.key.name.lowercase(),
-            sortable = column.id.key.sortable,
-            filterable = column.id.key.filterable,
+            sortable = version.isColumnSortable(column.id.key),
+            filterable = version.isColumnFilterable(column.id.key),
             defaultSort = column.defaultSort?.name
         )
     }

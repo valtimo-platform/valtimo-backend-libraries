@@ -136,8 +136,11 @@ internal class DocumentenApiResourceIT : BaseIntegrationTest() {
     @Test
     fun `should get a list of all ordered Documenten API columns`() {
         documentenApiColumnRepository.deleteAllByIdCaseDefinitionName("profile")
-
         runWithoutAuthorization {
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                "profile",
+                DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
+            )
             documentenApiService.createOrUpdateColumn(
                 DocumentenApiColumn(DocumentenApiColumnId("profile", DocumentenApiColumnKey.IDENTIFICATIE), 0)
             )
@@ -171,8 +174,8 @@ internal class DocumentenApiResourceIT : BaseIntegrationTest() {
             .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.selectedVersion").value("1.5.0-test-1.0.0"))
-            .andExpect(jsonPath("$.supportsFilterable").value(false))
-            .andExpect(jsonPath("$.supportsSortable").value(true))
+            .andExpect(jsonPath("$.supportsFilterableColumns").value(true))
+            .andExpect(jsonPath("$.supportsSortableColumns").value(true))
             .andExpect(jsonPath("$.supportsTrefwoorden").value(true))
     }
 

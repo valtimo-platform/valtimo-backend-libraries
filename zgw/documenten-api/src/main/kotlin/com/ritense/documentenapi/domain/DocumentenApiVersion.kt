@@ -16,45 +16,39 @@
 
 package com.ritense.documentenapi.domain
 
-import io.hypersistence.utils.hibernate.type.json.JsonType
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.Table
-import org.hibernate.annotations.Type
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
 
-@Entity
-@Table(name = "documenten_api_version")
-data class DocumentenApiVersion(
+open class DocumentenApiVersion(
+    open val version: String,
+    open val filterableColumns: List<String> = emptyList(),
+    open val sortableColumns: List<String> = emptyList(),
+    open val supportsTrefwoorden: Boolean = false,
 
-    @Id
-    @Column(name = "version_key")
-    val key: String,
-
-    @Type(value = JsonType::class)
-    @Column(name = "features")
-    val features: Map<String, Boolean> = mapOf(),
+    @JsonAnySetter
+    @get:JsonAnyGetter
+    open val unmappedFields: Map<String, Any?> = mapOf(),
 ) : Comparable<DocumentenApiVersion> {
 
-    fun supportsFilterable() = features[FILTERABLE] ?: false
-    fun supportsSortable() = features[SORTABLE] ?: false
-    fun supportsTrefwoorden() = features[TREFWOORDEN] ?: false
+    open fun supportsFilterableColumns(): Boolean = filterableColumns.isNotEmpty()
+    open fun supportsSortableColumns(): Boolean = sortableColumns.isNotEmpty()
 
-    override fun compareTo(other: DocumentenApiVersion) = key.compareTo(other.key)
+    open fun isColumnFilterable(columnKey: DocumentenApiColumnKey) =
+        filterableColumns.contains(columnKey.name.lowercase())
+
+    open fun isColumnSortable(columnKey: DocumentenApiColumnKey) = sortableColumns.contains(columnKey.name.lowercase())
+
+    override fun compareTo(other: DocumentenApiVersion) = version.compareTo(other.version)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
         other as DocumentenApiVersion
-        return key == other.key
+        return version == other.version
     }
 
-    override fun hashCode() = key.hashCode()
+    override fun hashCode() = version.hashCode()
 
-    companion object {
-        const val FILTERABLE = "filterable"
-        const val SORTABLE = "sortable"
-        const val TREFWOORDEN = "trefwoorden"
-    }
+    override fun toString(): String = version
 }

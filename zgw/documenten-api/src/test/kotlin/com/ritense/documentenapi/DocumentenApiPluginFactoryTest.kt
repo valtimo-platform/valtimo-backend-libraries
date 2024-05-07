@@ -18,7 +18,8 @@ package com.ritense.documentenapi
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.documentenapi.client.DocumentenApiClient
-import com.ritense.documentenapi.repository.DocumentenApiVersionRepository
+import com.ritense.documentenapi.service.DocumentDeleteHandler
+import com.ritense.documentenapi.service.DocumentenApiVersionService
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
@@ -41,10 +42,11 @@ internal class DocumentenApiPluginFactoryTest {
         val pluginService: PluginService = mock()
         val client: DocumentenApiClient = mock()
         val storageService: TemporaryResourceStorageService = mock()
-        val applicationEventPublisher = mock<ApplicationEventPublisher>()
         val authentication = mock<DocumentenApiAuthentication>()
-        val documentenApiVersionRepository = mock<DocumentenApiVersionRepository>()
-
+        val applicationEventPublisher: ApplicationEventPublisher = mock()
+        val objectMapper = MapperSingleton.get()
+        val documentDeleteHandlers: List<DocumentDeleteHandler> = mock()
+        val documentenApiVersionService: DocumentenApiVersionService = mock()
         whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(authentication)
         whenever(pluginService.getObjectMapper()).thenReturn(MapperSingleton.get())
 
@@ -84,9 +86,9 @@ internal class DocumentenApiPluginFactoryTest {
             client,
             storageService,
             applicationEventPublisher,
-            MapperSingleton.get(),
-            listOf(),
-            documentenApiVersionRepository,
+            objectMapper,
+            documentDeleteHandlers,
+            documentenApiVersionService,
         )
 
         val plugin = factory.create(configuration)

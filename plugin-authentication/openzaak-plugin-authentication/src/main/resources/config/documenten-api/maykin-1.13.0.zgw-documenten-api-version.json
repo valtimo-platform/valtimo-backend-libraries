@@ -1,0 +1,23 @@
+[
+    {
+        "version": "1.4.2-maykin-1.13.0",
+        "filterableColumns": [
+            "auteur",
+            "beschrijving",
+            "creatiedatum",
+            "informatieobjecttype",
+            "titel",
+            "vertrouwelijkheidaanduiding"
+        ],
+        "sortableColumns": [
+            "auteur",
+            "bestandsomvang",
+            "creatiedatum",
+            "formaat",
+            "status",
+            "titel",
+            "vertrouwelijkheidaanduiding"
+        ],
+        "supportsTrefwoorden": true
+    }
+]

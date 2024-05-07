@@ -281,7 +281,7 @@ class OpenZaakApplicationReadyEventListener(
     }
 
     private fun connectZaakType(event: DocumentDefinitionDeployedEvent) {
-        if (event.documentDefinition().id().name().equals("bezwaar")) {
+        if (event.documentDefinition().id().name() == "bezwaar") {
             zaakTypeLinkService.createZaakTypeLink(
                 CreateZaakTypeLinkRequest(
                     "bezwaar",
@@ -299,7 +299,7 @@ class OpenZaakApplicationReadyEventListener(
                 )
             )
         }
-        if (event.documentDefinition().id().name().equals(PORTAL_PERSON)) {
+        if (event.documentDefinition().id().name() == PORTAL_PERSON) {
             zaakTypeLinkService.createZaakTypeLink(
                 CreateZaakTypeLinkRequest(
                     PORTAL_PERSON,

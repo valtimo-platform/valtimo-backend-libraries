@@ -18,20 +18,21 @@ package com.ritense.documentenapi
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
-import com.ritense.documentenapi.deployment.ZgwDocumentListColumnDeploymentService
 import com.ritense.catalogiapi.service.CatalogiService
+import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.documentenapi.client.DocumentenApiClient
-import com.ritense.documentenapi.deployment.ZgwDocumentVersionDeploymentService
+import com.ritense.documentenapi.deployment.ZgwDocumentListColumnDeploymentService
+import com.ritense.documentenapi.domain.DocumentenApiVersion
 import com.ritense.documentenapi.exporter.ZgwDocumentListColumnExporter
 import com.ritense.documentenapi.importer.ZgwDocumentListColumnImporter
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
-import com.ritense.documentenapi.repository.DocumentenApiVersionRepository
 import com.ritense.documentenapi.security.DocumentenApiHttpSecurityConfigurer
 import com.ritense.documentenapi.service.DocumentDeleteHandler
 import com.ritense.documentenapi.service.DocumentenApiColumnDeploymentService
 import com.ritense.documentenapi.service.DocumentenApiService
+import com.ritense.documentenapi.service.DocumentenApiVersionService
 import com.ritense.documentenapi.web.rest.DocumentenApiManagementResource
 import com.ritense.documentenapi.web.rest.DocumentenApiResource
 import com.ritense.outbox.OutboxService
@@ -52,6 +53,7 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.annotation.Order
+import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.web.reactive.function.client.WebClient
@@ -85,7 +87,7 @@ class DocumentenApiAutoConfiguration {
         applicationEventPublisher: ApplicationEventPublisher,
         objectMapper: ObjectMapper,
         documentDeleteHandlers: List<DocumentDeleteHandler>,
-        documentenApiVersionRepository: DocumentenApiVersionRepository,
+        documentenApiVersionService: DocumentenApiVersionService,
     ): DocumentenApiPluginFactory {
         return DocumentenApiPluginFactory(
             pluginService,
@@ -94,7 +96,7 @@ class DocumentenApiAutoConfiguration {
             applicationEventPublisher,
             objectMapper,
             documentDeleteHandlers,
-            documentenApiVersionRepository,
+            documentenApiVersionService,
         )
     }
 
@@ -107,10 +109,7 @@ class DocumentenApiAutoConfiguration {
         authorizationService: AuthorizationService,
         valtimoDocumentService: DocumentService,
         documentDefinitionService: JsonSchemaDocumentDefinitionService,
-        documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
-        pluginProcessLinkService: PluginProcessLinkService,
-        camundaRepositoryService: CamundaRepositoryService,
-        documentenApiVersionRepository: DocumentenApiVersionRepository,
+        documentenApiVersionService: DocumentenApiVersionService,
     ): DocumentenApiService {
         return DocumentenApiService(
             pluginService,
@@ -119,10 +118,35 @@ class DocumentenApiAutoConfiguration {
             authorizationService,
             valtimoDocumentService,
             documentDefinitionService,
+            documentenApiVersionService,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DocumentenApiVersionService::class)
+    fun documentenApiVersionService(
+        resourceLoader: ResourceLoader,
+        objectMapper: ObjectMapper,
+        documentenApiVersions: List<DocumentenApiVersion>,
+        pluginService: PluginService,
+        authorizationService: AuthorizationService,
+        documentService: DocumentService,
+        documentDefinitionService: DocumentDefinitionService,
+        documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
+        pluginProcessLinkService: PluginProcessLinkService,
+        camundaRepositoryService: CamundaRepositoryService,
+    ): DocumentenApiVersionService {
+        return DocumentenApiVersionService(
+            resourceLoader,
+            objectMapper,
+            documentenApiVersions.associateBy { it.version }.toMutableMap(),
+            pluginService,
+            authorizationService,
+            documentService,
+            documentDefinitionService,
             documentDefinitionProcessLinkService,
             pluginProcessLinkService,
             camundaRepositoryService,
-            documentenApiVersionRepository,
         )
     }
 
@@ -154,35 +178,27 @@ class DocumentenApiAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(ZgwDocumentVersionDeploymentService::class)
-    fun zgwDocumentVersionDeploymentService(
-        objectMapper: ObjectMapper,
-        documentenApiVersionRepository: DocumentenApiVersionRepository,
-        changelogService: ChangelogService,
-        @Value("\${valtimo.changelog.zgw-document-version.clear-tables:false}") clearTables: Boolean
-    ): ZgwDocumentVersionDeploymentService {
-        return ZgwDocumentVersionDeploymentService(
-            objectMapper,
-            documentenApiVersionRepository,
-            changelogService,
-            clearTables,
-        )
-    }
-
-    @Bean
     @ConditionalOnMissingBean(DocumentenApiResource::class)
     fun documentenApiResource(
-        documentenApiService: DocumentenApiService
+        documentenApiService: DocumentenApiService,
+        documentenApiVersionService: DocumentenApiVersionService,
     ): DocumentenApiResource {
-        return DocumentenApiResource(documentenApiService)
+        return DocumentenApiResource(
+            documentenApiService,
+            documentenApiVersionService
+        )
     }
 
     @Bean
     @ConditionalOnMissingBean(DocumentenApiManagementResource::class)
     fun documentenApiManagementResource(
-        documentenApiService: DocumentenApiService
+        documentenApiService: DocumentenApiService,
+        documentenApiVersionService: DocumentenApiVersionService,
     ): DocumentenApiManagementResource {
-        return DocumentenApiManagementResource(documentenApiService)
+        return DocumentenApiManagementResource(
+            documentenApiService,
+            documentenApiVersionService
+        )
     }
 
     @Order(380)

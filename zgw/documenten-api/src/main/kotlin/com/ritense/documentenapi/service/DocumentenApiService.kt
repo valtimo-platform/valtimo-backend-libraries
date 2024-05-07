@@ -17,7 +17,6 @@
 package com.ritense.documentenapi.service
 
 import com.ritense.authorization.Action
-import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.catalogiapi.service.CatalogiService
@@ -31,20 +30,11 @@ import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.client.PatchDocumentRequest
 import com.ritense.documentenapi.domain.DocumentenApiColumn
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey
-import com.ritense.documentenapi.domain.DocumentenApiVersion
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
-import com.ritense.documentenapi.repository.DocumentenApiVersionRepository
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
-import com.ritense.documentenapi.web.rest.dto.DocumentenApiDocumentDto
 import com.ritense.documentenapi.web.rest.dto.ModifyDocumentRequest
 import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
-import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginService
-import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
-import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
-import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersion
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
-import com.ritense.valtimo.processlink.service.PluginProcessLinkService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.transaction.annotation.Transactional
@@ -60,10 +50,7 @@ class DocumentenApiService(
     private val authorizationService: AuthorizationService,
     private val valtimoDocumentService: DocumentService,
     private val documentDefinitionService: JsonSchemaDocumentDefinitionService,
-    private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
-    private val pluginProcessLinkService: PluginProcessLinkService,
-    private val camundaRepositoryService: CamundaRepositoryService,
-    private val documentenApiVersionRepository: DocumentenApiVersionRepository,
+    private val documentenApiVersionService: DocumentenApiVersionService,
 ) {
     fun downloadInformatieObject(pluginConfigurationId: String, documentId: String): InputStream {
         val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
@@ -79,16 +66,19 @@ class DocumentenApiService(
         documentId: UUID,
         documentSearchRequest: DocumentSearchRequest,
         pageable: Pageable
-    ): Page<DocumentenApiDocumentDto> {
+    ): Page<DocumentInformatieObject> {
         val documentDefinitionName = valtimoDocumentService.get(documentId.toString()).definitionId().name()
-        val pluginConfigurations = detectPluginConfigurations(documentDefinitionName)
-        if (pluginConfigurations.size != 1) {
-            throw IllegalStateException("Expected exactly one plugin configuration for case definition '$documentDefinitionName', but found ${pluginConfigurations.size}")
+        val (pluginConfiguration, plugin, version) = documentenApiVersionService.getPluginVersion(documentDefinitionName)
+        check(pluginConfiguration != null && plugin != null) {
+            "No Documenten API plugin configured for Case definition '$documentDefinitionName'"
         }
-        val pluginConfigurationId = pluginConfigurations.first().id.id
-        val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
-        return documentApiPlugin.getInformatieObjecten(documentSearchRequest, pageable)
-            .map { mapDocumentenApiDocument(it, pluginConfigurationId.toString()) }
+        check(version != null && version.supportsSortableColumns() && version.supportsFilterableColumns()) {
+            "File sorting and filtering not supported on Documenten API plugin version '$version'"
+        }
+        pageable.sort.forEach { sortColumn ->
+            check(version.sortableColumns.contains(sortColumn.property))
+        }
+        return plugin.getInformatieObjecten(documentSearchRequest, pageable)
     }
 
     fun modifyInformatieObject(
@@ -96,6 +86,10 @@ class DocumentenApiService(
         documentId: String,
         modifyDocumentRequest: ModifyDocumentRequest
     ): RelatedFile? {
+        if (modifyDocumentRequest.trefwoorden?.isNotEmpty() == true) {
+            val version = documentenApiVersionService.getVersionByDocumentId(UUID.fromString(documentId))
+            check(version.supportsTrefwoorden) { "Documenten API doesn't support 'trefwoorden'" }
+        }
         val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
         val documentUrl = documentApiPlugin.createInformatieObjectUrl(documentId)
         val informatieObject =
@@ -121,6 +115,16 @@ class DocumentenApiService(
         )
 
         return documentenApiColumnRepository.findAllByIdCaseDefinitionNameOrderByOrder(caseDefinitionName)
+    }
+
+    fun getAllColumnKeys(caseDefinitionName: String): List<DocumentenApiColumnKey> {
+        val version = documentenApiVersionService.getVersion(caseDefinitionName)
+        val columnKeys = DocumentenApiColumnKey.entries.sortedBy { it.name }
+        return if (version.supportsTrefwoorden) {
+            columnKeys.filter { it != DocumentenApiColumnKey.TREFWOORDEN }
+        } else {
+            columnKeys
+        }
     }
 
     fun updateColumnOrder(columns: List<DocumentenApiColumn>): List<DocumentenApiColumn> {
@@ -149,9 +153,8 @@ class DocumentenApiService(
         )?.order ?: documentenApiColumnRepository.countAllByIdCaseDefinitionName(column.id.caseDefinitionName).toInt()
 
         if (column.defaultSort != null) {
-            check(column.id.key.sortable) { "Documenten API column '${column.id.key}' is not sortable" }
             check(!documentenApiColumnRepository.findAllByIdCaseDefinitionNameOrderByOrder(column.id.caseDefinitionName)
-                .any { it.id != column.id && it.defaultSort != null }) { "Documenten API columns can not have default sorting on multiple columns" }
+                .any { it.id != column.id && it.defaultSort != null }) { "Documenten API can not have default sorting on multiple columns" }
         }
 
         return documentenApiColumnRepository.save(column.copy(order = order))
@@ -162,43 +165,6 @@ class DocumentenApiService(
         val documentenApiColumnKey = DocumentenApiColumnKey.from(columnKey)
             ?: throw IllegalStateException("Unknown column '$columnKey'")
         documentenApiColumnRepository.deleteByIdCaseDefinitionNameAndIdKey(caseDefinitionName, documentenApiColumnKey)
-    }
-
-    fun getVersion(caseDefinitionName: String): DocumentenApiVersion? {
-        val version = detectedVersions(caseDefinitionName).firstOrNull() ?: return null
-        return documentenApiVersionRepository.findById(version)
-            .orElseThrow { IllegalStateException("Unknown Documenten API version '$version'") }
-    }
-
-    fun getAllVersions(): List<DocumentenApiVersion> {
-        denyAuthorization()
-        return documentenApiVersionRepository.findAllByOrderByKeyDesc()
-    }
-
-    fun detectedVersions(caseDefinitionName: String): List<String> {
-        return detectPluginConfigurations(caseDefinitionName)
-            .mapNotNull { (pluginService.createInstance(it) as DocumentenApiPlugin).apiVersion }
-            .toList()
-            .sorted()
-    }
-
-    fun detectPluginConfigurations(caseDefinitionName: String): List<PluginConfiguration> {
-        documentDefinitionService.requirePermission(caseDefinitionName, VIEW)
-        val link =
-            documentDefinitionProcessLinkService.getDocumentDefinitionProcessLink(caseDefinitionName, "DOCUMENT_UPLOAD")
-        if (link.isEmpty) {
-            return emptyList()
-        }
-        val processDefinitionKey = link.get().id.processDefinitionKey
-        val detectedConfigurations = runWithoutAuthorization {
-            camundaRepositoryService.findLinkedProcessDefinitions(byKey(processDefinitionKey).and(byLatestVersion()))
-                .asSequence()
-                .flatMap { pluginProcessLinkService.getProcessLinks(it.id) }
-                .map { pluginService.getPluginConfiguration(it.pluginConfigurationId) }
-                .filter { it.pluginDefinition.key == DocumentenApiPlugin.PLUGIN_KEY }
-                .toList()
-        }
-        return detectedConfigurations
     }
 
     private fun getRelatedFiles(
@@ -229,33 +195,6 @@ class DocumentenApiService(
         )
     }
 
-    fun mapDocumentenApiDocument(
-        informatieObject: DocumentInformatieObject,
-        pluginConfigurationId: String
-    ): DocumentenApiDocumentDto {
-        return DocumentenApiDocumentDto(
-            fileId = UUID.fromString(informatieObject.url.path.substringAfterLast("/")),
-            pluginConfigurationId = UUID.fromString(pluginConfigurationId),
-            bestandsnaam = informatieObject.bestandsnaam,
-            bestandsomvang = informatieObject.bestandsomvang,
-            creatiedatum = informatieObject.creatiedatum.atStartOfDay(),
-            auteur = informatieObject.auteur,
-            titel = informatieObject.titel,
-            status = informatieObject.status?.key,
-            taal = informatieObject.taal,
-            identificatie = informatieObject.identificatie,
-            beschrijving = informatieObject.beschrijving,
-            informatieobjecttype = getInformatieobjecttypeByUri(informatieObject.informatieobjecttype),
-            trefwoorden = informatieObject.trefwoorden,
-            formaat = informatieObject.formaat,
-            verzenddatum = informatieObject.verzenddatum,
-            ontvangstdatum = informatieObject.ontvangstdatum,
-            vertrouwelijkheidaanduiding = informatieObject.vertrouwelijkheidaanduiding?.key,
-            versie = informatieObject.versie,
-            indicatieGebruiksrecht = informatieObject.indicatieGebruiksrecht
-        )
-    }
-
     private fun getInformatieobjecttypeByUri(uri: String?): String? {
         return uri?.let { catalogiService.getInformatieobjecttype(URI(it))?.omschrijving }
     }
@@ -266,6 +205,6 @@ class DocumentenApiService(
                 JsonSchemaDocumentDefinition::class.java,
                 Action.deny()
             )
-        );
+        )
     }
 }
