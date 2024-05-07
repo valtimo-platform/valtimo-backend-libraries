@@ -9,7 +9,7 @@
     "components": [
         {
             "label": "Voornaam",
-            "key": "vm:test",
+            "key": "test",
             "type": "textfield",
             "input": true,
             "validate": {
@@ -20,7 +20,7 @@
         },
         {
             "label": "Voornaam",
-            "key": "vm:test2",
+            "key": "test2",
             "type": "textfield",
             "input": true,
             "validate": {

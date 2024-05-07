@@ -3,67 +3,71 @@ package com.ritense.formviewmodel.validation
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formviewmodel.BaseTest
+import com.ritense.formviewmodel.viewmodel.TestViewModel
 import com.ritense.formviewmodel.viewmodel.ViewModel
 import com.ritense.formviewmodel.viewmodel.ViewModelLoader
-import com.ritense.formviewmodel.viewmodel.TestViewModel
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.mock
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.whenever
-import org.springframework.context.ApplicationContext
+import java.io.ByteArrayOutputStream
+import java.io.PrintStream
 import java.util.Optional
 import kotlin.reflect.KClass
+import kotlin.test.assertTrue
 
 class OnStartUpViewModelValidatorTest : BaseTest() {
 
     @Mock
     private lateinit var formIoFormDefinitionService: FormIoFormDefinitionService
 
-    @Mock
-    private lateinit var context: ApplicationContext
-
     @InjectMocks
     private lateinit var onStartUpViewModelValidator: OnStartUpViewModelValidator
+
+    private lateinit var viewModelLoaders: List<ViewModelLoader<*>>
+
+    private lateinit var viewModelLoader: ViewModelLoader<ViewModel>
 
     @BeforeEach
     fun setUp() {
         formIoFormDefinitionService = mock()
-        context = mock()
-        onStartUpViewModelValidator = OnStartUpViewModelValidator(formIoFormDefinitionService, context)
+        viewModelLoader = mock(ViewModelLoader::class.java) as ViewModelLoader<ViewModel>
+        viewModelLoaders = listOf(viewModelLoader)
+        onStartUpViewModelValidator = OnStartUpViewModelValidator(formIoFormDefinitionService, viewModelLoaders)
     }
 
     @Test
-    fun `validateAllViewModels should throw IllegalArgumentException when a ViewModelLoader is not valid`() {
-        // Mocking ViewModelLoader
+    fun `validateAllViewModels should print stack trace`() {
+        // Redirect System.err to capture what is printed
+        val outputStream = ByteArrayOutputStream()
+        val printStream = PrintStream(outputStream)
+        System.setErr(printStream)
+
         val viewModelLoader1 = mockViewModelLoader("user-task-1", true)
         val viewModelLoader2 = mockViewModelLoader("user-task-2", false)
 
-        whenever(context.getBeansOfType(ViewModelLoader::class.java))
-            .thenReturn(mapOf("viewModelLoader1" to viewModelLoader1, "viewModelLoader2" to viewModelLoader2))
+        onStartUpViewModelValidator.validateAllViewModels()
 
+        // Reset System.err
+        System.setErr(System.err)
 
-        // Mocking FormIoFormDefinitionService
-        whenever(formIoFormDefinitionService.getFormDefinitionByName("user-task-1")).thenReturn(getValidFormDefinition())
-        whenever(formIoFormDefinitionService.getFormDefinitionByName("user-task-2")).thenReturn(getInvalidFormDefinition())
+        // Get the captured output
+        val printedStackTrace = outputStream.toString()
 
-        // Test
-        assertThrows<IllegalArgumentException> {
-            onStartUpViewModelValidator.validateAllViewModels()
-        }
+        // Verify if the expected stack trace was printed
+        assertTrue(printedStackTrace.contains("The following properties are missing in the view model for form (user-task-2): [age]")
+        )
     }
 
     private fun mockViewModelLoader(formName: String, isValid: Boolean): ViewModelLoader<ViewModel> {
-        val viewModelLoader = mock(ViewModelLoader::class.java) as ViewModelLoader<ViewModel>
         val viewModel = TestViewModel()
-        if (!isValid) {
-            whenever(formIoFormDefinitionService.getFormDefinitionByName(any())).doReturn(getValidFormDefinition())
+        if (isValid) {
+            whenever(formIoFormDefinitionService.getFormDefinitionByName(formName)).doReturn(getValidFormDefinition())
         } else {
-            whenever(formIoFormDefinitionService.getFormDefinitionByName(any())).doReturn(getInvalidFormDefinition())
+            whenever(formIoFormDefinitionService.getFormDefinitionByName(formName)).doReturn(getInvalidFormDefinition())
         }
         whenever(viewModelLoader.getFormName()).thenReturn(formName)
         whenever(viewModelLoader.getViewModelType()).thenReturn(viewModel::class as KClass<ViewModel>)

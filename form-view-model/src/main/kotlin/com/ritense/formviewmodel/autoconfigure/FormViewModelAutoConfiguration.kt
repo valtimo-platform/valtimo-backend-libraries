@@ -31,7 +31,6 @@ import com.ritense.formviewmodel.viewmodel.ViewModelLoaderFactory
 import com.ritense.formviewmodel.web.rest.FormViewModelResource
 import com.ritense.valtimo.service.CamundaTaskService
 import org.springframework.boot.autoconfigure.AutoConfiguration
-import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
@@ -99,9 +98,9 @@ class FormViewModelAutoConfiguration {
     @Order(Ordered.LOWEST_PRECEDENCE)
     fun onStartUpViewModelValidator(
         formIoFormDefinitionService: FormIoFormDefinitionService,
-        context: ApplicationContext
+        viewModelLoaders: List<ViewModelLoader<*>>
     ) = OnStartUpViewModelValidator(
         formIoFormDefinitionService,
-        context
+        viewModelLoaders
     )
 }
