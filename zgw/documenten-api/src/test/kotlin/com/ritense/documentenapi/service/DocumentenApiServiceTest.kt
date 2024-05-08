@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ritense.documentenapi.service
 
 import com.ritense.authorization.AuthorizationService
@@ -9,10 +25,10 @@ import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.documentenapi.client.DocumentInformatieObject
+import com.ritense.documentenapi.domain.DocumentenApiVersion
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
 import com.ritense.documentenapi.web.rest.dto.DocumentenApiDocumentDto
-import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
@@ -20,10 +36,7 @@ import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.domain.impl.DocumentDefinitionProcessLink
 import com.ritense.processdocument.domain.impl.DocumentDefinitionProcessLinkId
-import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
-import com.ritense.valtimo.processlink.service.PluginProcessLinkService
 import com.ritense.zgw.Rsin
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertInstanceOf
@@ -38,7 +51,6 @@ import org.springframework.data.domain.Pageable
 import java.net.URI
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.Optional
 import java.util.UUID
 
 class DocumentenApiServiceTest {
@@ -50,9 +62,7 @@ class DocumentenApiServiceTest {
     private lateinit var authorizationService: AuthorizationService
     private lateinit var valtimoDocumentService: DocumentService
     private lateinit var documentDefinitionService: JsonSchemaDocumentDefinitionService
-    private lateinit var documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService
-    private lateinit var pluginProcessLinkService: PluginProcessLinkService
-    private lateinit var camundaRepositoryService: CamundaRepositoryService
+    private lateinit var documentenApiVersionService: DocumentenApiVersionService
 
     @BeforeEach
     fun before() {
@@ -62,9 +72,7 @@ class DocumentenApiServiceTest {
         authorizationService = mock<AuthorizationService>()
         valtimoDocumentService = mock<DocumentService>()
         documentDefinitionService = mock<JsonSchemaDocumentDefinitionService>()
-        documentDefinitionProcessLinkService = mock<DocumentDefinitionProcessLinkService>()
-        pluginProcessLinkService = mock<PluginProcessLinkService>()
-        camundaRepositoryService = mock<CamundaRepositoryService>()
+        documentenApiVersionService = mock<DocumentenApiVersionService>()
 
         service = DocumentenApiService(
             pluginService,
@@ -73,9 +81,7 @@ class DocumentenApiServiceTest {
             authorizationService,
             valtimoDocumentService,
             documentDefinitionService,
-            documentDefinitionProcessLinkService,
-            pluginProcessLinkService,
-            camundaRepositoryService
+            documentenApiVersionService,
         )
     }
 
@@ -89,82 +95,31 @@ class DocumentenApiServiceTest {
         val document = mock<Document>()
         whenever(valtimoDocumentService.get(documentId.toString())).thenReturn(document)
         whenever(document.definitionId()).thenReturn(documentDefinitionId)
-        val processLink = mock<DocumentDefinitionProcessLink>()
-        whenever(documentDefinitionProcessLinkService.getDocumentDefinitionProcessLink(any(), any())).thenReturn(
-            Optional.of(processLink))
-        val processLinkId = DocumentDefinitionProcessLinkId.existingId("some-document-name", "some-process-name")
-        whenever(processLink.id).thenReturn(processLinkId)
-        val processDefinition = mock<CamundaProcessDefinition>()
-        whenever(camundaRepositoryService.findLinkedProcessDefinitions(any())).thenReturn(listOf(processDefinition))
-        whenever(processDefinition.id).thenReturn("some-process-id")
-        val pluginProcessLink = mock<PluginProcessLink>()
-        whenever(pluginProcessLinkService.getProcessLinks("some-process-id")).thenReturn(listOf(pluginProcessLink))
         val pluginConfigurationId = PluginConfigurationId.existingId(UUID.randomUUID())
-        whenever(pluginProcessLink.pluginConfigurationId).thenReturn(pluginConfigurationId)
         val pluginConfiguration = mock<PluginConfiguration>()
-        whenever(pluginService.getPluginConfiguration(pluginConfigurationId)).thenReturn(pluginConfiguration)
         val pluginDefinition = mock<PluginDefinition>()
         whenever(pluginDefinition.key).thenReturn(DocumentenApiPlugin.PLUGIN_KEY)
         whenever(pluginConfiguration.pluginDefinition).thenReturn(pluginDefinition)
         whenever(pluginConfiguration.id).thenReturn(pluginConfigurationId)
         val plugin = mock<DocumentenApiPlugin>()
-        whenever(pluginService.createInstance<DocumentenApiPlugin>(any<UUID>())).thenReturn(plugin)
         val relatedFile = createDocumentInformatieObject()
         val page = PageImpl(listOf(relatedFile), pageable, 1)
         whenever(plugin.getInformatieObjecten(documentSearchRequest, pageable)).thenReturn(page)
-        val informatieobjecttype = mock<Informatieobjecttype>()
-        whenever(catalogiService.getInformatieobjecttype(URI("http://localhost/informatieobjecttype")))
-            .thenReturn(informatieobjecttype)
-        whenever(informatieobjecttype.omschrijving).thenReturn("informatieobjecttype")
+        val version = DocumentenApiVersion("1.5.0-test-1.0.0", listOf("titel"), listOf("titel"))
+        whenever(documentenApiVersionService.getPluginVersion("some-document-name"))
+            .thenReturn(Triple(pluginConfiguration, plugin, version))
 
         val resultPage = service.getCaseInformatieObjecten(documentId, documentSearchRequest, pageable)
 
         assertEquals(1, resultPage.size)
         val firstResult = resultPage.content.first()
-        assertInstanceOf(DocumentenApiDocumentDto::class.java, firstResult)
-        val relatedFileDto = firstResult as DocumentenApiDocumentDto
+        assertInstanceOf(DocumentInformatieObject::class.java, firstResult)
+        firstResult as DocumentInformatieObject
         assertEquals("nl", firstResult.taal)
         assertEquals("titel", firstResult.titel)
         assertEquals(1, firstResult.versie)
-        assertEquals("informatieobjecttype", firstResult.informatieobjecttype)
+        assertEquals("http://localhost/informatieobjecttype", firstResult.informatieobjecttype)
         assertEquals("y", firstResult.auteur)
-        assertEquals(UUID.fromString("0e757153-fce3-44bc-a47f-494840784a16"), firstResult.fileId)
-    }
-
-    @Test
-    fun `getCaseInformatieObjecten should throw exception when multiple plugins are found`() {
-        val documentId = UUID.randomUUID()
-        val documentSearchRequest = DocumentSearchRequest()
-        val pageable = Pageable.unpaged()
-
-        val documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId("some-document-name", 3)
-        val document = mock<Document>()
-        whenever(valtimoDocumentService.get(documentId.toString())).thenReturn(document)
-        whenever(document.definitionId()).thenReturn(documentDefinitionId)
-        val processLink = mock<DocumentDefinitionProcessLink>()
-        whenever(documentDefinitionProcessLinkService.getDocumentDefinitionProcessLink(any(), any())).thenReturn(
-            Optional.of(processLink))
-        val processLinkId = DocumentDefinitionProcessLinkId.existingId("some-document-name", "some-process-name")
-        whenever(processLink.id).thenReturn(processLinkId)
-        val processDefinition = mock<CamundaProcessDefinition>()
-        val processDefinition2 = mock<CamundaProcessDefinition>()
-        whenever(camundaRepositoryService.findLinkedProcessDefinitions(any())).thenReturn(listOf(processDefinition, processDefinition2))
-        whenever(processDefinition.id).thenReturn("some-process-id")
-        whenever(processDefinition2.id).thenReturn("some-process-id")
-        val pluginProcessLink = mock<PluginProcessLink>()
-        whenever(pluginProcessLinkService.getProcessLinks("some-process-id")).thenReturn(listOf(pluginProcessLink))
-        val pluginConfigurationId = PluginConfigurationId.existingId(UUID.randomUUID())
-        whenever(pluginProcessLink.pluginConfigurationId).thenReturn(pluginConfigurationId)
-        val pluginConfiguration = mock<PluginConfiguration>()
-        whenever(pluginService.getPluginConfiguration(pluginConfigurationId)).thenReturn(pluginConfiguration)
-        val pluginDefinition = mock<PluginDefinition>()
-        whenever(pluginDefinition.key).thenReturn(DocumentenApiPlugin.PLUGIN_KEY)
-        whenever(pluginConfiguration.pluginDefinition).thenReturn(pluginDefinition)
-        whenever(pluginConfiguration.id).thenReturn(pluginConfigurationId)
-
-        assertThrows<IllegalStateException> {
-            val resultPage = service.getCaseInformatieObjecten(documentId, documentSearchRequest, pageable)
-        }
     }
 
     private fun createDocumentInformatieObject() = DocumentInformatieObject(

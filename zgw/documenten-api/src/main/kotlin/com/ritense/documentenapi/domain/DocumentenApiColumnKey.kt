@@ -18,25 +18,23 @@ package com.ritense.documentenapi.domain
 
 import com.fasterxml.jackson.annotation.JsonCreator
 
-enum class DocumentenApiColumnKey(
-    val sortable: Boolean = false,
-    val filterable: Boolean = false
-) {
+enum class DocumentenApiColumnKey {
     IDENTIFICATIE,
     BRONORGANISATIE,
-    CREATIEDATUM(sortable = true, filterable = true),
-    TITEL(sortable = true, filterable = true),
-    VERTROUWELIJKHEIDAANDUIDING(sortable = true, filterable = true),
-    AUTEUR(sortable = true, filterable = true),
-    STATUS(sortable = true),
-    FORMAAT(sortable = true),
+    CREATIEDATUM,
+    TITEL,
+    VERTROUWELIJKHEIDAANDUIDING,
+    AUTEUR,
+    STATUS,
+    FORMAAT,
     TAAL,
     VERSIE,
     BESTANDSNAAM,
-    BESTANDSOMVANG(sortable = true),
+    BESTANDSOMVANG,
     BESCHRIJVING,
-    INFORMATIEOBJECTTYPE(filterable = true),
-    LOCKED;
+    INFORMATIEOBJECTTYPE,
+    LOCKED,
+    TREFWOORDEN;
 
     companion object {
         @JvmStatic

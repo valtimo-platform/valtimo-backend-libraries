@@ -17,6 +17,7 @@
 package com.ritense.documentenapi.web.rest.dto
 
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey
+import com.ritense.documentenapi.domain.DocumentenApiVersion
 
 data class ColumnKeyResponse(
     val key: String,
@@ -24,10 +25,10 @@ data class ColumnKeyResponse(
     val filterable: Boolean,
 ) {
     companion object {
-        fun of(columnKey: DocumentenApiColumnKey): ColumnKeyResponse = ColumnKeyResponse(
+        fun of(columnKey: DocumentenApiColumnKey, version: DocumentenApiVersion): ColumnKeyResponse = ColumnKeyResponse(
             key = columnKey.name.lowercase(),
-            sortable = columnKey.sortable,
-            filterable = columnKey.filterable,
+            sortable = version.isColumnSortable(columnKey),
+            filterable = version.isColumnFilterable(columnKey),
         )
     }
 }

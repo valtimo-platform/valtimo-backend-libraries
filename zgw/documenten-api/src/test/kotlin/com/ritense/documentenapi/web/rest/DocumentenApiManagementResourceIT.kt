@@ -28,6 +28,7 @@ import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import jakarta.transaction.Transactional
+import org.hamcrest.Matchers.containsInRelativeOrder
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -72,8 +73,15 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should get a list of all Documenten API column keys`() {
+        runWithoutAuthorization {
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                "profile",
+                DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
+            )
+        }
+
         mockMvc.perform(
-            get("/api/management/v1/case-definition/zgw-document-column-key", "profile")
+            get("/api/management/v1/case-definition/{caseDefinitionName}/zgw-document-column-key", "profile")
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -82,11 +90,18 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
             .andExpect(jsonPath("$[0].filterable").value(true))
             .andExpect(jsonPath("$[1].key").value("beschrijving"))
             .andExpect(jsonPath("$[1].sortable").value(false))
-            .andExpect(jsonPath("$[1].filterable").value(false))
+            .andExpect(jsonPath("$[1].filterable").value(true))
     }
 
     @Test
     fun `should get a list of ordered Documenten API columns`() {
+        runWithoutAuthorization {
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                "profile",
+                DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
+            )
+        }
+
         documentenApiColumnRepository.deleteAllByIdCaseDefinitionName("profile")
 
         runWithoutAuthorization {
@@ -113,6 +128,12 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should reorder list of Documenten API columns`() {
+        runWithoutAuthorization {
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                "profile",
+                DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
+            )
+        }
         documentenApiColumnRepository.deleteAllByIdCaseDefinitionName("profile")
 
         runWithoutAuthorization {
@@ -127,7 +148,8 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
         mockMvc.perform(
             put("/api/management/v1/case-definition/{caseDefinitionName}/zgw-document-column", "profile")
                 .contentType(APPLICATION_JSON_VALUE)
-                .content("""
+                .content(
+                    """
                     [
                         {
                             "key": "titel",
@@ -137,7 +159,8 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
                             "key": "identificatie"
                         }
                     ]
-                """.trimMargin())
+                """.trimMargin()
+                )
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -152,6 +175,12 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
     @Test
     fun `should update Documenten API column`() {
         runWithoutAuthorization {
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                "profile",
+                DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
+            )
+        }
+        runWithoutAuthorization {
             documentenApiService.createOrUpdateColumn(
                 DocumentenApiColumn(DocumentenApiColumnId("profile", TITEL))
             )
@@ -164,11 +193,13 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
                 "titel"
             )
                 .contentType(APPLICATION_JSON_VALUE)
-                .content("""
+                .content(
+                    """
                     {
                         "defaultSort": "asc"
                     }
-                """.trimMargin())
+                """.trimMargin()
+                )
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -179,6 +210,10 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
     @Test
     fun `should delete Documenten API column`() {
         runWithoutAuthorization {
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                "profile",
+                DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
+            )
             documentenApiService.createOrUpdateColumn(
                 DocumentenApiColumn(DocumentenApiColumnId("profile", TITEL))
             )
@@ -206,10 +241,42 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
             )
         }
 
-        mockMvc.perform(get("/api/management/v1/case-definition/{caseDefinitionName}/documenten-api/version", "profile"))
+        mockMvc.perform(
+            get(
+                "/api/management/v1/case-definition/{caseDefinitionName}/documenten-api/version",
+                "profile"
+            )
+        )
             .andDo(print())
-            .andExpect(jsonPath("$.selectedVersion").value("1.2.0"))
+            .andExpect(jsonPath("$.selectedVersion").value("1.5.0-test-1.0.0"))
             .andExpect(jsonPath("$.detectedVersions.size()").value(1))
-            .andExpect(jsonPath("$.detectedVersions[0]").value("1.2.0"))
+            .andExpect(jsonPath("$.detectedVersions[0]").value("1.5.0-test-1.0.0"))
+    }
+
+    @Test
+    fun `should get all API versions`() {
+        mockMvc.perform(get("/api/management/v1/documenten-api/versions"))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(
+                jsonPath(
+                    "$.versions", containsInRelativeOrder(
+                        "1.5.0-test-1.0.0",
+                        "1.5.0",
+                        "1.4.3",
+                        "1.4.2",
+                        "1.4.1",
+                        "1.4.0",
+                        "1.3.0",
+                        "1.2.3",
+                        "1.2.2",
+                        "1.2.1",
+                        "1.2.0",
+                        "1.1.0",
+                        "1.0.1",
+                        "1.0.0"
+                    )
+                )
+            )
     }
 }

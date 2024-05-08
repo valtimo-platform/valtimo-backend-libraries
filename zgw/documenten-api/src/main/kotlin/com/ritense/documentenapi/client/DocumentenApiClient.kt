@@ -320,9 +320,7 @@ class DocumentenApiClient(
     fun UriBuilder.addSortParameter(pageable: Pageable): UriBuilder {
         val sortString = pageable.sort.map {
             val property = DocumentenApiColumnKey.from(it.property)
-            if (property == null || !property.sortable) {
-                throw IllegalArgumentException("Sorting by ${it.property} is not supported")
-            }
+                ?: throw IllegalArgumentException("Unknown Documenten API property ${it.property}")
             val directionMarker = if (it.isAscending) "" else "-"
             "$directionMarker${property.name.lowercase()}"
         }.joinToString(",")

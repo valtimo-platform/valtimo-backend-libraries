@@ -19,7 +19,9 @@ package com.ritense.zakenapi.service
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.documentenapi.client.DocumentInformatieObject
+import com.ritense.documentenapi.domain.DocumentenApiVersion
 import com.ritense.documentenapi.service.DocumentenApiService
+import com.ritense.documentenapi.service.DocumentenApiVersionService
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
 import com.ritense.documentenapi.web.rest.dto.DocumentenApiDocumentDto
 import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
@@ -31,7 +33,9 @@ import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zakenapi.link.ZaakInstanceLinkNotFoundException
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import org.springframework.data.support.PageableExecutionUtils
 import org.springframework.transaction.annotation.Transactional
 import java.net.URI
 import java.util.UUID
@@ -41,7 +45,8 @@ class ZaakDocumentService(
     private val zaakUrlProvider: ZaakUrlProvider,
     private val pluginService: PluginService,
     private val catalogiService: CatalogiService,
-    private val documentenApiService: DocumentenApiService
+    private val documentenApiService: DocumentenApiService,
+    private val documentenApiVersionService: DocumentenApiVersionService,
 ) {
 
     fun getInformatieObjectenAsRelatedFiles(documentId: UUID): List<RelatedFileDto> {
@@ -65,8 +70,22 @@ class ZaakDocumentService(
     ): Page<DocumentenApiDocumentDto> {
         val zaakUri = zaakUrlProvider.getZaakUrl(documentId)
         val documentSearchRequestWithZaakUrl = documentSearchRequest.copy(zaakUrl = zaakUri)
-
-        return documentenApiService.getCaseInformatieObjecten(documentId, documentSearchRequestWithZaakUrl, pageable)
+        val version = documentenApiVersionService.getVersionByDocumentId(documentId)
+        require(version.supportsTrefwoorden || documentSearchRequest.trefwoorden == null) {
+            "Unsupported field 'trefwoorden' on Documenten API version '$version'"
+        }
+        return if (version.supportsFilterableColumns() && version.supportsSortableColumns()) {
+            documentenApiService.getCaseInformatieObjecten(
+                documentId,
+                documentSearchRequestWithZaakUrl,
+                pageable
+            ).map { mapDocumentenApiDocument(it, version) }
+        } else {
+            val zakenApiPlugin = getZakenApiPlugin(zaakUri)
+            val documenten = zakenApiPlugin.getZaakInformatieObjecten(zaakUri)
+                .map { mapDocumentenApiDocument(it, version) }
+            PageImpl(documenten, pageable, documenten.size.toLong())
+        }
     }
 
     private fun getRelatedFiles(zaakInformatieObject: ZaakInformatieObject): RelatedFileDto {
@@ -101,6 +120,74 @@ class ZaakDocumentService(
             confidentialityLevel = informatieObject.vertrouwelijkheidaanduiding?.key,
             version = informatieObject.versie,
             indicationUsageRights = informatieObject.indicatieGebruiksrecht
+        )
+    }
+
+    private fun mapDocumentenApiDocument(
+        informatieObject: DocumentInformatieObject,
+        version: DocumentenApiVersion,
+    ): DocumentenApiDocumentDto {
+        val pluginConfiguration = getDocumentenApiPluginByInformatieobjectUrl(informatieObject.url)
+        val trefwoorden = if (version.supportsTrefwoorden) {
+            informatieObject.trefwoorden
+        } else {
+            listOf()
+        }
+        return DocumentenApiDocumentDto(
+            fileId = UUID.fromString(informatieObject.url.path.substringAfterLast("/")),
+            pluginConfigurationId = pluginConfiguration.id.id,
+            bestandsnaam = informatieObject.bestandsnaam,
+            bestandsomvang = informatieObject.bestandsomvang,
+            creatiedatum = informatieObject.creatiedatum.atStartOfDay(),
+            auteur = informatieObject.auteur,
+            titel = informatieObject.titel,
+            status = informatieObject.status?.key,
+            taal = informatieObject.taal,
+            identificatie = informatieObject.identificatie,
+            beschrijving = informatieObject.beschrijving,
+            informatieobjecttype = getInformatieobjecttypeByUri(informatieObject.informatieobjecttype),
+            trefwoorden = trefwoorden,
+            formaat = informatieObject.formaat,
+            verzenddatum = informatieObject.verzenddatum,
+            ontvangstdatum = informatieObject.ontvangstdatum,
+            vertrouwelijkheidaanduiding = informatieObject.vertrouwelijkheidaanduiding?.key,
+            versie = informatieObject.versie,
+            indicatieGebruiksrecht = informatieObject.indicatieGebruiksrecht
+        )
+    }
+
+    private fun mapDocumentenApiDocument(
+        zaakInformatieObject: ZaakInformatieObject,
+        version: DocumentenApiVersion,
+    ): DocumentenApiDocumentDto {
+        val pluginConfiguration = getDocumentenApiPluginByInformatieobjectUrl(zaakInformatieObject.informatieobject)
+        val plugin = pluginService.createInstance(pluginConfiguration) as DocumentenApiPlugin
+        val informatieObject = plugin.getInformatieObject(zaakInformatieObject.informatieobject)
+        val trefwoorden = if (version.supportsTrefwoorden) {
+            informatieObject.trefwoorden
+        } else {
+            listOf()
+        }
+        return DocumentenApiDocumentDto(
+            fileId = UUID.fromString(informatieObject.url.path.substringAfterLast("/")),
+            pluginConfigurationId = pluginConfiguration.id.id,
+            bestandsnaam = informatieObject.bestandsnaam,
+            bestandsomvang = informatieObject.bestandsomvang,
+            creatiedatum = informatieObject.creatiedatum.atStartOfDay(),
+            auteur = informatieObject.auteur,
+            titel = informatieObject.titel,
+            status = informatieObject.status?.key,
+            taal = informatieObject.taal,
+            identificatie = informatieObject.identificatie,
+            beschrijving = informatieObject.beschrijving,
+            informatieobjecttype = getInformatieobjecttypeByUri(informatieObject.informatieobjecttype),
+            trefwoorden = trefwoorden,
+            formaat = informatieObject.formaat,
+            verzenddatum = informatieObject.verzenddatum,
+            ontvangstdatum = informatieObject.ontvangstdatum,
+            vertrouwelijkheidaanduiding = informatieObject.vertrouwelijkheidaanduiding?.key,
+            versie = informatieObject.versie,
+            indicatieGebruiksrecht = informatieObject.indicatieGebruiksrecht
         )
     }
 
@@ -140,6 +227,15 @@ class ZaakDocumentService(
         )
             ?: throw IllegalStateException("Missing plugin configuration of type '${ZakenApiPlugin.PLUGIN_KEY}' for url '$url'")
         return plugin.getZaak(url)
+    }
+
+    private fun getZakenApiPlugin(zaakUri: URI): ZakenApiPlugin {
+        return checkNotNull(
+            pluginService.createInstance(
+                ZakenApiPlugin::class.java,
+                ZakenApiPlugin.findConfigurationByUrl(zaakUri)
+            )
+        ) { "Could not find ${ZakenApiPlugin::class.simpleName} configuration for zaak with url: $zaakUri" }
     }
 
 }

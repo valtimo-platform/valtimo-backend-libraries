@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.resource.domain
+package com.ritense.documentenapi.web.rest.dto
 
-data class TemporaryResourceUploadedEvent(
-    val resourceId: String,
+data class DocumentenApiVersionsManagementDto(
+    val versions: List<String>
 )

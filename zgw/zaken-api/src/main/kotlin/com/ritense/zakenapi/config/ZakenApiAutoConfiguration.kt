@@ -21,6 +21,7 @@ import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.documentenapi.service.DocumentDeleteHandler
 import com.ritense.documentenapi.service.DocumentenApiService
+import com.ritense.documentenapi.service.DocumentenApiVersionService
 import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
@@ -109,8 +110,15 @@ class ZakenApiAutoConfiguration {
         pluginService: PluginService,
         catalogiService: CatalogiService,
         documentenApiService: DocumentenApiService,
+        documentenApiVersionService: DocumentenApiVersionService,
     ): ZaakDocumentService {
-        return ZaakDocumentService(zaakUrlProvider, pluginService, catalogiService, documentenApiService)
+        return ZaakDocumentService(
+            zaakUrlProvider,
+            pluginService,
+            catalogiService,
+            documentenApiService,
+            documentenApiVersionService,
+        )
     }
 
     @Bean
