@@ -8,8 +8,6 @@ class AandachtsPuntenViewModelLoader: ViewModelLoader<AandachtsPuntenViewModel> 
     override fun onLoad(taskInstanceId: String): AandachtsPuntenViewModel {
         return AandachtsPuntenViewModel(
             StamtabellenApi().getAandachtspunten(),
-            null,
-            null,
             null
         )
     }

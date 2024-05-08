@@ -1,11 +1,10 @@
 package com.inwonerplan.poc.aanbod
 
 import com.inwonerplan.model.Aanbod
+import com.inwonerplan.model.Aandachtspunt
 import com.ritense.formviewmodel.domain.ViewModel
 
 data class AanbodViewModel(
-    val aandachtspunt: String,
-    val subdoel: String,
     val aanbiedingen: List<Aanbod>,
     val aanbod: Aanbod?,
     val aanbodGrid: List<AanbodGridRow>

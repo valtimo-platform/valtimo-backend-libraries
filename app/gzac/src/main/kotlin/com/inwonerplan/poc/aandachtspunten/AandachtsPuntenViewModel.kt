@@ -7,8 +7,6 @@ import com.ritense.formviewmodel.domain.ViewModel
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AandachtsPuntenViewModel(
     val aandachtspunten: List<Aandachtspunt>,
-    val aandachtspunt: String?,
-    val notitie: String?,
     val aandachtspuntenGrid: List<AandachtsPuntGridRow>?
 ) : ViewModel {
     override fun update(): ViewModel {
