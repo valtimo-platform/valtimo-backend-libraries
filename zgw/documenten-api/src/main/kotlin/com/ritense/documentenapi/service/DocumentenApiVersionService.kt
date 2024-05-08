@@ -46,7 +46,7 @@ import java.util.UUID
 class DocumentenApiVersionService(
     private val resourceLoader: ResourceLoader,
     private val objectMapper: ObjectMapper,
-    private val documentenApiVersions: MutableMap<String, DocumentenApiVersion>,
+    beanDocumentenApiVersions: Map<String, DocumentenApiVersion>,
     private val pluginService: PluginService,
     private val authorizationService: AuthorizationService,
     private val documentService: DocumentService,
@@ -56,14 +56,13 @@ class DocumentenApiVersionService(
     private val camundaRepositoryService: CamundaRepositoryService,
 ) {
 
-    init {
-        loadResources().forEach { resource ->
-            val versionsFromResource = objectMapper.readValue<List<DocumentenApiVersion>>(resource.inputStream)
-                .filter { !documentenApiVersions.contains(it.version) }
-                .associateBy { it.version }
+    private val documentenApiVersions: Map<String, DocumentenApiVersion>
 
-            documentenApiVersions.putAll(versionsFromResource)
-        }
+    init {
+        val resourceDocumentenApiVersions = loadResources()
+            .flatMap { resource -> objectMapper.readValue<List<DocumentenApiVersion>>(resource.inputStream) }
+            .associateBy { it.version }
+        documentenApiVersions = resourceDocumentenApiVersions + beanDocumentenApiVersions
     }
 
     fun isValidVersion(versionTag: String) = documentenApiVersions.contains(versionTag)
