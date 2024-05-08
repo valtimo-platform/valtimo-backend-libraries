@@ -22,6 +22,7 @@ import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.domain.DocumentenApiVersion
 import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.documentenapi.service.DocumentenApiVersionService
+import com.ritense.documentenapi.service.DocumentenApiVersionService.Companion.MINIMUM_VERSION
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
@@ -34,6 +35,7 @@ import com.ritense.zgw.Rsin
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doAnswer
@@ -42,6 +44,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import java.net.URI
 import java.time.LocalDate
@@ -160,14 +163,32 @@ class ZaakDocumentServiceTest {
         ).thenReturn(resultPage)
         whenever(documentenApiVersionService.getVersionByDocumentId(documentId))
             .thenReturn(DocumentenApiVersion("1.5.0-test-1.0.0", listOf("titel"), listOf("titel")))
-        whenever(pluginService.createInstance(eq(ZakenApiPlugin::class.java), any()))
-            .thenReturn(mock<ZakenApiPlugin>())
 
         val page = service.getInformatieObjectenAsRelatedFilesPage(documentId, documentSearchRequest, pageable)
 
         assertEquals(resultPage, page)
         // Check if the zaakUrl is set in the DocumentSearchRequest
         assertEquals(zaakUrl, documentSearchRequestCaptor.firstValue.zaakUrl)
+    }
+
+    @Test
+    fun `should throw when get InformatieObjecten Page for zaak does not support filtering`() {
+        val documentId = UUID.randomUUID()
+        val zaakUrl = URI("https://example.com/1")
+        whenever(zaakUrlProvider.getZaakUrl(documentId)).thenReturn(zaakUrl)
+
+        val pageable = PageRequest.of(0, 10)
+        val documentSearchRequest = DocumentSearchRequest(titel = "The Ritensions")
+
+        whenever(documentenApiVersionService.getVersionByDocumentId(documentId)).thenReturn(MINIMUM_VERSION)
+        whenever(pluginService.createInstance(eq(ZakenApiPlugin::class.java), any()))
+            .thenReturn(mock<ZakenApiPlugin>())
+
+        val exception = assertThrows<IllegalStateException> {
+            service.getInformatieObjectenAsRelatedFilesPage(documentId, documentSearchRequest, pageable)
+        }
+
+        assertEquals("Unsupported filter 'titel' on Documenten API with version 1.0.0", exception.message)
     }
 
     private fun createZaakInformatieObjecten(zaakUrl: URI, count: Int = 5): List<ZaakInformatieObject> {
