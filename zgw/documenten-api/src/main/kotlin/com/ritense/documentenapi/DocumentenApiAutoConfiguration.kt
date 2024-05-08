@@ -139,7 +139,7 @@ class DocumentenApiAutoConfiguration {
         return DocumentenApiVersionService(
             resourceLoader,
             objectMapper,
-            documentenApiVersions.associateBy { it.version }.toMutableMap(),
+            documentenApiVersions.associateBy { it.version },
             pluginService,
             authorizationService,
             documentService,
