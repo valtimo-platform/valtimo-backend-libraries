@@ -107,7 +107,7 @@ class ZaakDocumentService(
         if (shouldCheck) {
             val fieldName = columnKey.name.lowercase()
             check(version.filterableColumns.contains(fieldName)) {
-                "Unsupported filter field '$fieldName' on Documenten API version with version $version"
+                "Unsupported filter '$fieldName' on Documenten API with version $version"
             }
         }
     }
