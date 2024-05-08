@@ -16,21 +16,50 @@
 
 package com.ritense.formviewmodel.autoconfigure;
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
-import com.ritense.formviewmodel.FormViewModelProcessLinkActivityHandler
-import com.ritense.formviewmodel.domain.ViewModelLoader
-import com.ritense.formviewmodel.domain.factory.ViewModelLoaderFactory
-import com.ritense.formviewmodel.event.OnFormSubmittedEventHandler
+import com.ritense.formviewmodel.event.FormViewModelSubmissionHandler
+import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
+import com.ritense.formviewmodel.processlink.FormViewModelProcessLinkActivityHandler
 import com.ritense.formviewmodel.security.config.FormViewModelHttpSecurityConfigurerKotlin
+import com.ritense.formviewmodel.service.FormViewModelService
+import com.ritense.formviewmodel.service.FormViewModelSubmissionService
+import com.ritense.formviewmodel.validation.OnStartUpViewModelValidator
+import com.ritense.formviewmodel.viewmodel.ViewModelLoader
+import com.ritense.formviewmodel.viewmodel.ViewModelLoaderFactory
 import com.ritense.formviewmodel.web.rest.FormViewModelResource
 import com.ritense.valtimo.service.CamundaTaskService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Bean
+import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 
 @AutoConfiguration
 class FormViewModelAutoConfiguration {
+
+    @Bean
+    fun formViewModelService(
+        objectMapper: ObjectMapper
+    ) = FormViewModelService(
+        objectMapper
+    )
+
+    @Bean
+    fun formViewModelSubmissionHandlerFactory(
+        formViewModelSubmissionHandlers: List<FormViewModelSubmissionHandler>,
+    ) = FormViewModelSubmissionHandlerFactory(
+        formViewModelSubmissionHandlers
+    )
+
+    @Bean
+    fun formViewModelSubmissionService(
+        formViewModelSubmissionHandlerFactory: FormViewModelSubmissionHandlerFactory,
+        camundaTaskService: CamundaTaskService,
+    ) = FormViewModelSubmissionService(
+        formViewModelSubmissionHandlerFactory,
+        camundaTaskService,
+    )
 
     @Order(390)
     @Bean
@@ -39,14 +68,16 @@ class FormViewModelAutoConfiguration {
     @Bean
     fun formViewModelRestResource(
         viewModelLoaderFactory: ViewModelLoaderFactory,
-        handlers: List<OnFormSubmittedEventHandler<*>>,
         camundaTaskService: CamundaTaskService,
-        authorizationService: AuthorizationService
+        authorizationService: AuthorizationService,
+        formViewModelService: FormViewModelService,
+        formViewModelSubmissionService: FormViewModelSubmissionService
     ) = FormViewModelResource(
         viewModelLoaderFactory,
-        handlers,
         camundaTaskService,
-        authorizationService
+        authorizationService,
+        formViewModelService,
+        formViewModelSubmissionService
     )
 
     @Bean
@@ -63,4 +94,13 @@ class FormViewModelAutoConfiguration {
         loaders
     )
 
+    @Bean
+    @Order(Ordered.LOWEST_PRECEDENCE)
+    fun onStartUpViewModelValidator(
+        formIoFormDefinitionService: FormIoFormDefinitionService,
+        viewModelLoaders: List<ViewModelLoader<*>>
+    ) = OnStartUpViewModelValidator(
+        formIoFormDefinitionService,
+        viewModelLoaders
+    )
 }
