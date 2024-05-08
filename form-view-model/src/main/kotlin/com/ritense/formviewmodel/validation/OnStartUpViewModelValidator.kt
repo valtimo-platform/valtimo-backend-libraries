@@ -1,5 +1,6 @@
 package com.ritense.formviewmodel.validation
 
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
@@ -28,7 +29,11 @@ class OnStartUpViewModelValidator(
 
     private fun validateSubmission(viewModelLoader: ViewModelLoader<*>, form: FormIoFormDefinition) {
         formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler(viewModelLoader.getFormName())?.let {
-            it.getSubmissionType().java.declaredFields.map { it.name }.filter {
+            val submissionType = it.getSubmissionType().java
+            if (submissionType.simpleName == ObjectNode::class.simpleName) {
+                return
+            }
+            submissionType.declaredFields.map { it.name }.filter {
                 it !in getFormKeys(form)
             }.let {
                 if (it.isNotEmpty()) {
