@@ -120,7 +120,7 @@ class DocumentenApiService(
     fun getAllColumnKeys(caseDefinitionName: String): List<DocumentenApiColumnKey> {
         val version = documentenApiVersionService.getVersion(caseDefinitionName)
         val columnKeys = DocumentenApiColumnKey.entries.sortedBy { it.name }
-        return if (version.supportsTrefwoorden) {
+        return if (!version.supportsTrefwoorden) {
             columnKeys.filter { it != DocumentenApiColumnKey.TREFWOORDEN }
         } else {
             columnKeys
