@@ -5,14 +5,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.formviewmodel.event.FormViewModelSubmission
 import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
 import com.ritense.formviewmodel.viewmodel.Submission
-import com.ritense.formviewmodel.viewmodel.ViewModel
 import com.ritense.valtimo.service.CamundaTaskService
 import kotlin.reflect.KClass
 
 class FormViewModelSubmissionService(
     private val formViewModelSubmissionHandlerFactory: FormViewModelSubmissionHandlerFactory,
     private val camundaTaskService: CamundaTaskService,
-    val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper
 ) {
 
     fun handleSubmission(
@@ -40,7 +39,6 @@ class FormViewModelSubmissionService(
         submission: ObjectNode,
         submissionType: KClass<out T>
     ): Submission {
-        // When a field is not present in the ViewModel what then? A: it's ignored
         return objectMapper.convertValue(submission, submissionType.java)
     }
 

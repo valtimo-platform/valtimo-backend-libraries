@@ -1,10 +1,11 @@
 package com.ritense.formviewmodel.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.formviewmodel.BaseTest
 import com.ritense.formviewmodel.commandhandling.ExampleCommand
 import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
-import com.ritense.formviewmodel.event.TestEventHandler
+import com.ritense.formviewmodel.event.TestSubmissionHandler
 import com.ritense.formviewmodel.json.MapperSingleton
 import com.ritense.valtimo.service.CamundaTaskService
 import org.junit.jupiter.api.BeforeEach
@@ -19,19 +20,22 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
     private lateinit var formViewModelSubmissionService: FormViewModelSubmissionService
     private lateinit var formViewModelSubmissionHandlerFactory: FormViewModelSubmissionHandlerFactory
     private lateinit var camundaTaskService: CamundaTaskService
-    private lateinit var testEventHandler: TestEventHandler
+    private lateinit var testSubmissionHandler: TestSubmissionHandler
+    private lateinit var objectMapper: ObjectMapper
 
     @BeforeEach
     fun setUp() {
         super.baseSetup()
         camundaTaskService = mock()
-        testEventHandler = TestEventHandler()
+        testSubmissionHandler = TestSubmissionHandler()
+        objectMapper = ObjectMapper()
         formViewModelSubmissionHandlerFactory = FormViewModelSubmissionHandlerFactory(
-            formViewModelSubmissionHandlers = listOf(testEventHandler)
+            formViewModelSubmissionHandlers = listOf(testSubmissionHandler)
         )
         formViewModelSubmissionService = FormViewModelSubmissionService(
             formViewModelSubmissionHandlerFactory = formViewModelSubmissionHandlerFactory,
-            camundaTaskService = camundaTaskService
+            camundaTaskService = camundaTaskService,
+            objectMapper = objectMapper
         )
     }
 

@@ -26,6 +26,7 @@ import com.ritense.formviewmodel.security.config.FormViewModelHttpSecurityConfig
 import com.ritense.formviewmodel.service.FormViewModelService
 import com.ritense.formviewmodel.service.FormViewModelSubmissionService
 import com.ritense.formviewmodel.validation.OnStartUpViewModelValidator
+import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.formviewmodel.viewmodel.ViewModelLoader
 import com.ritense.formviewmodel.viewmodel.ViewModelLoaderFactory
 import com.ritense.formviewmodel.web.rest.FormViewModelResource
@@ -46,7 +47,7 @@ class FormViewModelAutoConfiguration {
 
     @Bean
     fun formViewModelSubmissionHandlerFactory(
-        formViewModelSubmissionHandlers: List<FormViewModelSubmissionHandler>,
+        formViewModelSubmissionHandlers: List<FormViewModelSubmissionHandler<Submission>>,
     ) = FormViewModelSubmissionHandlerFactory(
         formViewModelSubmissionHandlers
     )
@@ -55,9 +56,11 @@ class FormViewModelAutoConfiguration {
     fun formViewModelSubmissionService(
         formViewModelSubmissionHandlerFactory: FormViewModelSubmissionHandlerFactory,
         camundaTaskService: CamundaTaskService,
+        objectMapper: ObjectMapper
     ) = FormViewModelSubmissionService(
         formViewModelSubmissionHandlerFactory,
         camundaTaskService,
+        objectMapper
     )
 
     @Order(390)
@@ -96,9 +99,11 @@ class FormViewModelAutoConfiguration {
     @Bean
     fun onStartUpViewModelValidator(
         formIoFormDefinitionService: FormIoFormDefinitionService,
-        viewModelLoaders: List<ViewModelLoader<*>>
+        viewModelLoaders: List<ViewModelLoader<*>>,
+        formViewModelSubmissionHandlerFactory: FormViewModelSubmissionHandlerFactory
     ) = OnStartUpViewModelValidator(
         formIoFormDefinitionService,
-        viewModelLoaders
+        viewModelLoaders,
+        formViewModelSubmissionHandlerFactory
     )
 }
