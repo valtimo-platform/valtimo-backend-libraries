@@ -1,7 +1,5 @@
 package com.ritense.formviewmodel.commandhandling
 
-import com.ritense.formviewmodel.commandhandling.Command
-
 data class ExampleCommand(
     val age: Int
 ) : Command<Boolean> {

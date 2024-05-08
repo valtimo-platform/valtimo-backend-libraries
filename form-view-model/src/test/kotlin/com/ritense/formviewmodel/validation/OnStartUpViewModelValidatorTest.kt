@@ -58,7 +58,8 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
         val printedStackTrace = outputStream.toString()
 
         // Verify if the expected stack trace was printed
-        assertTrue(printedStackTrace.contains("The following properties are missing in the view model for form (user-task-2): [age]")
+        assertTrue(printedStackTrace.contains(
+            "The following properties are missing in the view model for form (user-task-2): [age]")
         )
     }
 

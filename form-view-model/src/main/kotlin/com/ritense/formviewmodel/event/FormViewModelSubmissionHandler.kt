@@ -1,9 +1,15 @@
 package com.ritense.formviewmodel.event
 
-interface FormViewModelSubmissionHandler {
+import com.ritense.formviewmodel.viewmodel.Submission
+import kotlin.reflect.KClass
+
+interface FormViewModelSubmissionHandler<T : Submission> {
 
     fun supports(formName: String): Boolean
 
-    fun handle(formViewModelSubmission: FormViewModelSubmission)
+    fun handle(submission: T)
+
+    @Suppress("UNCHECKED_CAST")
+    fun getSubmissionType() = this::class.supertypes.first().arguments.first().type!!.classifier as KClass<T>
 
 }

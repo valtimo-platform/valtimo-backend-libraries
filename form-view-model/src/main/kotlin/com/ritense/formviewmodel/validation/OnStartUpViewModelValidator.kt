@@ -3,14 +3,13 @@ package com.ritense.formviewmodel.validation
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formviewmodel.viewmodel.ViewModelLoader
+import mu.KotlinLogging
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
-import org.springframework.stereotype.Component
 
-@Component
 class OnStartUpViewModelValidator(
     private val formIoFormDefinitionService: FormIoFormDefinitionService,
-    val viewModelLoaders: List<ViewModelLoader<*>>,
+    private val viewModelLoaders: List<ViewModelLoader<*>>
 ) : ApplicationRunner {
 
     override fun run(args: ApplicationArguments?) {
@@ -19,29 +18,27 @@ class OnStartUpViewModelValidator(
 
     fun validateAllViewModels() {
         for (viewModelLoader in viewModelLoaders) {
-            val form = validateViewModel(viewModelLoader)
-            if (form != null) {
-                try {
-                    val missingProperties = getAllMissingProperties(viewModelLoader, form)
-                    throw IllegalArgumentException("The following properties are missing in the view model for form (${viewModelLoader.getFormName()}): $missingProperties")
-                } catch (e: Exception) {
-                    e.printStackTrace()
+            validateViewModel(viewModelLoader)?.let {
+                logger.error {
+                    "The following properties are missing in the view model for form " +
+                        "(${viewModelLoader.getFormName()}): $it"
                 }
             }
         }
     }
 
-    fun validateViewModel(viewModelLoader: ViewModelLoader<*>): FormIoFormDefinition? {
+    // TODO how to simulate the submission of a form definition?
+    private fun validateViewModel(viewModelLoader: ViewModelLoader<*>): List<String>? {
         val form = formIoFormDefinitionService.getFormDefinitionByName(viewModelLoader.getFormName()).get()
-
         if (!extractProperties(viewModelLoader.getViewModelType().java).containsAll(getFormKeys(form))) {
-            return form
+            val missingProperties = getAllMissingProperties(viewModelLoader, form)
+            return missingProperties
+        } else {
+            return null
         }
-
-        return null
     }
 
-    fun getAllMissingProperties(viewModelLoader: ViewModelLoader<*>, form: FormIoFormDefinition): List<String> {
+    private fun getAllMissingProperties(viewModelLoader: ViewModelLoader<*>, form: FormIoFormDefinition): List<String> {
         return extractProperties(viewModelLoader.getViewModelType().java).filter {
             it !in form.inputFields.map {
                 it["key"].asText()
@@ -49,13 +46,17 @@ class OnStartUpViewModelValidator(
         }
     }
 
-    fun getFormKeys(form: FormIoFormDefinition): List<String> {
+    private fun getFormKeys(form: FormIoFormDefinition): List<String> {
         return form.inputFields.map {
             it["key"].asText()
         }
     }
 
-    fun extractProperties(clazz: Class<*>): List<String> {
+    private fun extractProperties(clazz: Class<*>): List<String> {
         return clazz.declaredFields.map { it.name }
+    }
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
     }
 }

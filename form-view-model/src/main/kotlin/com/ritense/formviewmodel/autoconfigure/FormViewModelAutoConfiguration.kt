@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.formviewmodel.autoconfigure;
+package com.ritense.formviewmodel.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
@@ -32,7 +32,6 @@ import com.ritense.formviewmodel.web.rest.FormViewModelResource
 import com.ritense.valtimo.service.CamundaTaskService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Bean
-import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 
 @AutoConfiguration
@@ -63,7 +62,7 @@ class FormViewModelAutoConfiguration {
 
     @Order(390)
     @Bean
-    fun formViewModelHttpSecurityConfigurerKotlin() = FormViewModelHttpSecurityConfigurerKotlin();
+    fun formViewModelHttpSecurityConfigurerKotlin() = FormViewModelHttpSecurityConfigurerKotlin()
 
     @Bean
     fun formViewModelRestResource(
@@ -95,7 +94,6 @@ class FormViewModelAutoConfiguration {
     )
 
     @Bean
-    @Order(Ordered.LOWEST_PRECEDENCE)
     fun onStartUpViewModelValidator(
         formIoFormDefinitionService: FormIoFormDefinitionService,
         viewModelLoaders: List<ViewModelLoader<*>>

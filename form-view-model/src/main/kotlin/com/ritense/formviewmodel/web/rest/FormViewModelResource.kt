@@ -65,12 +65,12 @@ class FormViewModelResource(
         @RequestBody submission: ObjectNode
     ): ResponseEntity<FormError> {
         try {
-            camundaTaskService.findTaskById(taskInstanceId)
+            val task = camundaTaskService.findTaskById(taskInstanceId)
             authorizationService.requirePermission(
                 EntityAuthorizationRequest(
                     CamundaTask::class.java,
                     CamundaTaskActionProvider.COMPLETE,
-                    camundaTaskService.findTaskById(taskInstanceId)
+                    task
                 )
             )
             formViewModelSubmissionService.handleSubmission(

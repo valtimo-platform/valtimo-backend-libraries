@@ -11,7 +11,9 @@ class FormViewModelSubmissionHandlerFactoryTest : BaseTest() {
 
     @BeforeEach
     fun setUp() {
-        formViewModelSubmissionHandlerFactory = FormViewModelSubmissionHandlerFactory(listOf(TestEventHandler()))
+        formViewModelSubmissionHandlerFactory = FormViewModelSubmissionHandlerFactory(
+            listOf(TestEventHandler())
+        )
     }
 
     @Test
