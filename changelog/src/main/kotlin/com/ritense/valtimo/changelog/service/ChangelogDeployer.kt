@@ -20,7 +20,6 @@ import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
-import org.springframework.core.annotation.Order
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
@@ -29,7 +28,6 @@ class ChangelogDeployer(
     private val changesetDeployers: List<ChangesetDeployer>,
 ) {
 
-    @Order(0)
     @EventListener(ApplicationReadyEvent::class)
     fun deployAll() {
         logger.info { "Running deployer" }

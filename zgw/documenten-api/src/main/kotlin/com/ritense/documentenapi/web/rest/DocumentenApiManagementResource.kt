@@ -43,7 +43,6 @@ class DocumentenApiManagementResource(
     private val documentenApiService: DocumentenApiService,
     private val documentenApiVersionService: DocumentenApiVersionService
 ) {
-
     @RunWithoutAuthorization
     @GetMapping("/v1/case-definition/{caseDefinitionName}/zgw-document-column-key")
     fun getColumnKeys(
