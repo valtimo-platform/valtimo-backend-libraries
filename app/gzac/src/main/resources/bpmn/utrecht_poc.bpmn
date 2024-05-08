@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1p2y9ja" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.22.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.21.0">
+  <bpmn:process id="Utrecht_POC" name="Utrecht POC" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_0lx2ob8</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0lx2ob8" sourceRef="StartEvent_1" targetRef="aandachtspunt" />
+    <bpmn:userTask id="aandachtspunt" name="Aandachtspunt" camunda:candidateGroups="ROLE_USER">
+      <bpmn:incoming>Flow_0lx2ob8</bpmn:incoming>
+      <bpmn:outgoing>Flow_1dkxq3k</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_1dkxq3k" sourceRef="aandachtspunt" targetRef="subdoelen" />
+    <bpmn:userTask id="subdoelen" name="Subdoelen" camunda:candidateGroups="ROLE_USER">
+      <bpmn:incoming>Flow_1dkxq3k</bpmn:incoming>
+      <bpmn:outgoing>Flow_0rgxflc</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0rgxflc" sourceRef="subdoelen" targetRef="aanbod" />
+    <bpmn:userTask id="aanbod" name="Aanbod" camunda:candidateGroups="ROLE_USER">
+      <bpmn:incoming>Flow_0rgxflc</bpmn:incoming>
+      <bpmn:outgoing>Flow_0yjqncd</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="Event_0vtwc98">
+      <bpmn:incoming>Flow_0yjqncd</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0yjqncd" sourceRef="aanbod" targetRef="Event_0vtwc98" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Utrecht_POC">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0r711ez_di" bpmnElement="aandachtspunt">
+        <dc:Bounds x="270" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_01btocu_di" bpmnElement="subdoelen">
+        <dc:Bounds x="440" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_09ek11t_di" bpmnElement="aanbod">
+        <dc:Bounds x="610" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0vtwc98_di" bpmnElement="Event_0vtwc98">
+        <dc:Bounds x="782" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0lx2ob8_di" bpmnElement="Flow_0lx2ob8">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="270" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1dkxq3k_di" bpmnElement="Flow_1dkxq3k">
+        <di:waypoint x="370" y="117" />
+        <di:waypoint x="440" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0rgxflc_di" bpmnElement="Flow_0rgxflc">
+        <di:waypoint x="540" y="117" />
+        <di:waypoint x="610" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0yjqncd_di" bpmnElement="Flow_0yjqncd">
+        <di:waypoint x="710" y="117" />
+        <di:waypoint x="782" y="117" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

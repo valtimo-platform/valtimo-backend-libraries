@@ -15,7 +15,7 @@ class OnStartUpViewModelValidator(
 ) : ApplicationRunner {
 
     override fun run(args: ApplicationArguments?) {
-        validateAllViewModels()
+//        validateAllViewModels()
     }
 
     fun validateAllViewModels() {

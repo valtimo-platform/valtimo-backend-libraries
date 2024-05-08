@@ -1,3 +1,15 @@
+plugins {
+    id "org.openapi.generator" version "7.5.0"
+}
+
+openApiGenerate {
+    inputSpec.set("src/main/resources/inwonerplan.openapi.json")
+    generatorName.set("kotlin")
+    apiPackage.set("com.inwonerplan.api")
+    invokerPackage.set("com.inwonerplan.invoker")
+    modelPackage.set("com.inwonerplan.model")
+}
+
 dependencies {
     implementation(platform(project(":dependencies:valtimo-dependency-versions")))
 
@@ -7,6 +19,10 @@ dependencies {
     implementation(project(":zgw:portaaltaak"))
 
     implementation("io.github.microutils:kotlin-logging")
+
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.moshi:moshi:1.15.1")
+    implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
 
     compileOnly(project(":besluit"))
     compileOnly(project(":openzaak"))

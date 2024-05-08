@@ -1,0 +1,8 @@
+{
+  "$id" : "utrecht-poc.schema",
+  "type" : "object",
+  "title" : "Utrecht POC",
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "properties" : {},
+  "additionalProperties" : false
+}

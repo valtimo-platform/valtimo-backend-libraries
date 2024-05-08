@@ -1,0 +1,16 @@
+{
+  "changesetId" : "utrecht-poc.case-tabs.1715082918384",
+  "case-definitions" : [
+    {
+      "key" : "utrecht-poc",
+      "tabs" : [
+        {
+          "key" : "summary",
+          "name" : "Summary",
+          "type" : "standard",
+          "contentKey" : "summary"
+        }
+      ]
+    }
+  ]
+}

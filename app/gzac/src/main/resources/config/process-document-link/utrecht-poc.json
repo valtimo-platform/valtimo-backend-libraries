@@ -1,0 +1,7 @@
+[
+  {
+    "processDefinitionKey" : "Utrecht_POC",
+    "canInitializeDocument" : true,
+    "startableByUser" : false
+  }
+]

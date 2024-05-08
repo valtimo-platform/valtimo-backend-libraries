@@ -1,0 +1,26 @@
+[
+  {
+    "activityId" : "StartEvent_1",
+    "activityType" : "bpmn:StartEvent:start",
+    "formDefinitionName" : "empty-form",
+    "processLinkType" : "form"
+  },
+    {
+        "activityId" : "aandachtspunt",
+        "activityType" : "bpmn:UserTask:create",
+        "formDefinitionName" : "form_aandachtspunt",
+        "processLinkType" : "form-view-model"
+    },
+    {
+        "activityId" : "subdoelen",
+        "activityType" : "bpmn:UserTask:create",
+        "formDefinitionName" : "form_subdoelen",
+        "processLinkType" : "form-view-model"
+    },
+    {
+        "activityId" : "aanbod",
+        "activityType" : "bpmn:UserTask:create",
+        "formDefinitionName" : "form_aanbod",
+        "processLinkType" : "form-view-model"
+    }
+]
