@@ -12,20 +12,27 @@ class AanbodViewModelLoader: ViewModelLoader<AanbodViewModel> {
         val aanbodGrid = subdoel.subdoelenGrid.map {
             AanbodGridRow(
                 it.aandachtspunt,
-                resolveSubdoelNaam(it.subdoel!!),
+                it.aandachtspunt,
+                it.subdoel!!,
+                it.subdoel,
+                getSubdoelenForAandachtspunten(it.aandachtspunt),
                 null
             )
         }
 
         return AanbodViewModel(
             StamtabellenApi().getAanbod(),
-            null,
-            aanbodGrid
+            aanbodGrid,
+            StamtabellenApi().getAandachtspunten()
         )
     }
 
-    fun resolveSubdoelNaam(subdoelId: String) =
-        StamtabellenApi().getSubdoelen().find { it.uuid!!.toString() == subdoelId}!!.naam!!
+    fun getSubdoelenForAandachtspunten(aandachtsPunt: String) =
+        StamtabellenApi().getSubdoelen().filter { subdoel ->
+            subdoel.aandachtspunten!!.find { subdoelAandachtsPunt ->
+                subdoelAandachtsPunt.id!!.toString() == aandachtsPunt
+            } != null
+        }
 
     override fun supports(formName: String): Boolean {
         return formName == "form_aanbod"

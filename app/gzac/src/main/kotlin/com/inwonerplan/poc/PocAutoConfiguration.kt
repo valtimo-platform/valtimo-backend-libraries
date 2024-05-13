@@ -1,6 +1,7 @@
 package com.inwonerplan.poc
 
 import com.inwonerplan.poc.aanbod.AanbodViewModelLoader
+import com.inwonerplan.poc.aanbod.OnAanbodSubmittedEventHandler
 import com.inwonerplan.poc.aandachtspunten.OnAandachtsPuntenSubmittedEventHandler
 import com.inwonerplan.poc.aandachtspunten.AandachtsPuntenViewModelLoader
 import com.inwonerplan.poc.subdoelen.OnSubdoelenSubmittedEventHandler
@@ -21,5 +22,7 @@ class PocAutoConfiguration {
     fun onSubdoelenSubmittedEventHandler() = OnSubdoelenSubmittedEventHandler()
     @Bean
     fun aanbodViewModelLoader() = AanbodViewModelLoader()
+    @Bean
+    fun onAanbodSubmittedEventHandler() = OnAanbodSubmittedEventHandler()
 
 }

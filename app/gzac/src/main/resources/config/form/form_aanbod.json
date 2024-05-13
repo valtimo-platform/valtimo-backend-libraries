@@ -21,13 +21,104 @@
                         {
                             "components": [
                                 {
-                                    "label": "Aandachtspunt",
-                                    "applyMaskOn": "change",
-                                    "disabled": true,
-                                    "tableView": true,
                                     "key": "aandachtspunt",
-                                    "type": "textfield",
-                                    "input": true
+                                    "data": {
+                                        "custom": "values = data['vm:aandachtspunten'];",
+                                        "values": [
+                                            {
+                                                "label": "",
+                                                "value": ""
+                                            }
+                                        ],
+                                        "json": "",
+                                        "url": "",
+                                        "resource": ""
+                                    },
+                                    "type": "select",
+                                    "validate": {
+                                        "custom": "console.log('aandachtpunt',input, row.aandachtspuntOriginal); if(input != row.aandachtspuntOriginal) { row.subdoel = null; form.updateViewModel(); }"
+                                    },
+                                    "input": true,
+                                    "label": "Aandachtspunt",
+                                    "widget": "choicesjs",
+                                    "dataSrc": "custom",
+                                    "template": "<span>{{ item.naamAandachtsPunt }}</span>",
+                                    "tableView": true,
+                                    "attributes": {
+                                        "data-testid": "ontwikkelwens-ontwikkelwensens"
+                                    },
+                                    "valueProperty": "id",
+                                    "placeholder": "",
+                                    "prefix": "",
+                                    "customClass": "",
+                                    "suffix": "",
+                                    "multiple": false,
+                                    "defaultValue": null,
+                                    "protected": false,
+                                    "unique": false,
+                                    "persistent": true,
+                                    "hidden": false,
+                                    "clearOnHide": true,
+                                    "refreshOn": "",
+                                    "redrawOn": "",
+                                    "modalEdit": false,
+                                    "dataGridLabel": false,
+                                    "labelPosition": "top",
+                                    "description": "",
+                                    "errorLabel": "",
+                                    "tooltip": "",
+                                    "hideLabel": false,
+                                    "tabindex": "",
+                                    "disabled": false,
+                                    "autofocus": false,
+                                    "dbIndex": false,
+                                    "customDefaultValue": "",
+                                    "calculateValue": "",
+                                    "calculateServer": false,
+                                    "validateOn": "change",
+                                    "conditional": {
+                                        "show": null,
+                                        "when": null,
+                                        "eq": ""
+                                    },
+                                    "overlay": {
+                                        "style": "",
+                                        "left": "",
+                                        "top": "",
+                                        "width": "",
+                                        "height": ""
+                                    },
+                                    "allowCalculateOverride": false,
+                                    "encrypted": false,
+                                    "showCharCount": false,
+                                    "showWordCount": false,
+                                    "properties": {},
+                                    "allowMultipleMasks": false,
+                                    "addons": [],
+                                    "authenticate": false,
+                                    "ignoreCache": false,
+                                    "idPath": "id",
+                                    "clearOnRefresh": false,
+                                    "limit": 100,
+                                    "lazyLoad": true,
+                                    "filter": "",
+                                    "searchEnabled": true,
+                                    "searchDebounce": 0.3,
+                                    "searchField": "",
+                                    "minSearch": 0,
+                                    "readOnlyValue": false,
+                                    "selectFields": "",
+                                    "selectThreshold": 0.3,
+                                    "uniqueOptions": false,
+                                    "fuseOptions": {
+                                        "include": "score",
+                                        "threshold": 0.3
+                                    },
+                                    "indexeddb": {
+                                        "filter": {}
+                                    },
+                                    "customOptions": {},
+                                    "useExactSearch": false
                                 }
                             ],
                             "width": 12,
@@ -40,13 +131,101 @@
                         {
                             "components": [
                                 {
-                                    "label": "Subdoel",
-                                    "applyMaskOn": "change",
-                                    "disabled": true,
-                                    "tableView": true,
                                     "key": "subdoel",
-                                    "type": "textfield",
-                                    "input": true
+                                    "data": {
+                                        "custom": "values = row.subdoelen;",
+                                        "values": [
+                                            {
+                                                "label": "",
+                                                "value": ""
+                                            }
+                                        ],
+                                        "json": "",
+                                        "url": "",
+                                        "resource": ""
+                                    },
+                                    "type": "select",
+                                    "validate": {
+                                        "custom": "console.log('subdoel', input, row.subdoelOriginal); if(input != row.subdoelOriginal) { form.updateViewModel(); }"
+                                    },
+                                    "input": true,
+                                    "label": "Subdoel",
+                                    "widget": "choicesjs",
+                                    "dataSrc": "custom",
+                                    "template": "<span>{{ item.naam }}</span>",
+                                    "tableView": true,
+                                    "valueProperty": "uuid",
+                                    "placeholder": "",
+                                    "prefix": "",
+                                    "customClass": "",
+                                    "suffix": "",
+                                    "multiple": false,
+                                    "defaultValue": null,
+                                    "protected": false,
+                                    "unique": false,
+                                    "persistent": true,
+                                    "hidden": false,
+                                    "clearOnHide": true,
+                                    "refreshOn": "",
+                                    "redrawOn": "",
+                                    "modalEdit": false,
+                                    "dataGridLabel": false,
+                                    "labelPosition": "top",
+                                    "description": "",
+                                    "errorLabel": "",
+                                    "tooltip": "",
+                                    "hideLabel": false,
+                                    "tabindex": "",
+                                    "disabled": false,
+                                    "autofocus": false,
+                                    "dbIndex": false,
+                                    "customDefaultValue": "",
+                                    "calculateValue": "",
+                                    "calculateServer": false,
+                                    "validateOn": "change",
+                                    "conditional": {
+                                        "show": null,
+                                        "when": null,
+                                        "eq": ""
+                                    },
+                                    "overlay": {
+                                        "style": "",
+                                        "left": "",
+                                        "top": "",
+                                        "width": "",
+                                        "height": ""
+                                    },
+                                    "allowCalculateOverride": false,
+                                    "encrypted": false,
+                                    "showCharCount": false,
+                                    "showWordCount": false,
+                                    "properties": {},
+                                    "allowMultipleMasks": false,
+                                    "addons": [],
+                                    "authenticate": false,
+                                    "ignoreCache": false,
+                                    "idPath": "uuid",
+                                    "clearOnRefresh": false,
+                                    "limit": 100,
+                                    "lazyLoad": true,
+                                    "filter": "",
+                                    "searchEnabled": true,
+                                    "searchDebounce": 0.3,
+                                    "searchField": "",
+                                    "minSearch": 0,
+                                    "readOnlyValue": false,
+                                    "selectFields": "",
+                                    "selectThreshold": 0.3,
+                                    "uniqueOptions": false,
+                                    "fuseOptions": {
+                                        "include": "score",
+                                        "threshold": 0.3
+                                    },
+                                    "indexeddb": {
+                                        "filter": {}
+                                    },
+                                    "customOptions": {},
+                                    "useExactSearch": false
                                 }
                             ],
                             "width": 12,
