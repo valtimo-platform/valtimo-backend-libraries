@@ -5,11 +5,13 @@ import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formviewmodel.BaseTest
 import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
 import com.ritense.formviewmodel.event.TestSubmissionHandler
+import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.formviewmodel.viewmodel.TestViewModel
 import com.ritense.formviewmodel.viewmodel.ViewModel
 import com.ritense.formviewmodel.viewmodel.ViewModelLoader
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.mock
@@ -29,11 +31,8 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
 
     @InjectMocks
     private lateinit var onStartUpViewModelValidator: OnStartUpViewModelValidator
-
     private lateinit var viewModelLoaders: List<ViewModelLoader<*>>
-
     private lateinit var viewModelLoader: ViewModelLoader<ViewModel>
-
     private lateinit var formViewModelSubmissionHandlerFactory: FormViewModelSubmissionHandlerFactory
 
     @BeforeEach
@@ -47,6 +46,50 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
             viewModelLoaders,
             formViewModelSubmissionHandlerFactory
         )
+    }
+
+    @Test
+    fun `should validateAllViewModels`() {
+        viewModelLoaders = listOf(
+            mockViewModelLoader("user-task-1", true),
+        )
+        assertThrows<IllegalStateException> {
+            onStartUpViewModelValidator.validateAllViewModels()
+        }
+    }
+
+    // Example ViewModels
+    data class Person(val name: String, val address: Address)
+    data class Address(val street: String, val city: City)
+    data class City(val name: String, val code: Int)
+    data class InvalidViewModel(val name: String) // missing ViewModel Interface is not allowed
+
+    @Test
+    fun `should throw exeption error for invalid ViewModel`() {
+        assertThrows<IllegalStateException> {
+            onStartUpViewModelValidator.extractFieldNames(InvalidViewModel::class)
+        }
+    }
+
+    @Test
+    fun `should extract all ViewModel field names`() {
+        onStartUpViewModelValidator.extractFieldNames(Person::class).let {
+            assertTrue(it.contains("address.city.code"))
+            assertTrue(it.contains("address.city.name"))
+            assertTrue(it.contains("address.street"))
+            assertTrue(it.contains("name"))
+        }
+    }
+
+    data class MySubmission(val name: String, val address: Address) : Submission
+
+    @Test
+    fun `should extract all field names for Submission`() {
+        onStartUpViewModelValidator.extractFieldNames(MySubmission::class).let {
+            assertTrue(it.contains("name"))
+            assertTrue(it.contains("address.city.code"))
+            assertTrue(it.contains("address.city.name"))
+        }
     }
 
     @Test
@@ -68,12 +111,16 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
         val printedStackTrace = outputStream.toString()
 
         // Verify if the expected stack trace was printed
-        assertTrue(printedStackTrace.contains(
-            "The following properties are missing in the view model for form (user-task-2): [age]")
+        assertTrue(
+            printedStackTrace.contains(
+                "The following properties are missing in the view model for form (user-task-2): [age]"
+            )
         )
 
-        assertTrue(printedStackTrace.contains(
-            "The following properties are missing in the submission for form (user-task-2): [age]")
+        assertTrue(
+            printedStackTrace.contains(
+                "The following properties are missing in the submission for form (user-task-2): [age]"
+            )
         )
     }
 
@@ -86,7 +133,9 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
         }
         whenever(viewModelLoader.getFormName()).thenReturn(formName)
         whenever(viewModelLoader.getViewModelType()).thenReturn(viewModel::class as KClass<ViewModel>)
-        whenever(formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler(formName)).thenReturn(TestSubmissionHandler())
+        whenever(formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler(formName)).thenReturn(
+            TestSubmissionHandler()
+        )
         return viewModelLoader
     }
 

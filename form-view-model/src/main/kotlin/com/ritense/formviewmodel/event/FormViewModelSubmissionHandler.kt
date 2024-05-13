@@ -7,7 +7,7 @@ interface FormViewModelSubmissionHandler<T : Submission> {
 
     fun supports(formName: String): Boolean
 
-    fun <T>handle(submission: T)
+    fun <T> handle(submission: T)
 
     @Suppress("UNCHECKED_CAST")
     fun getSubmissionType() = this::class.supertypes.first().arguments.first().type!!.classifier as KClass<T>
