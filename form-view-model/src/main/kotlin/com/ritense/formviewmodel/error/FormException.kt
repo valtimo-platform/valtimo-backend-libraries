@@ -1,7 +1,8 @@
 package com.ritense.formviewmodel.error
 
+// TODO does not yet work
 class FormException(
-    private val msg: String,
+    msg: String,
     val component: String? = null,
     cause: Throwable? = null
 ) : Exception(msg, cause)

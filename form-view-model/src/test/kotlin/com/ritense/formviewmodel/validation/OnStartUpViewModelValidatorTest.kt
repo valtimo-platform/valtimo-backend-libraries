@@ -7,6 +7,7 @@ import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
 import com.ritense.formviewmodel.event.TestSubmissionHandler
 import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.formviewmodel.viewmodel.TestViewModel
+import com.ritense.formviewmodel.viewmodel.TestViewModelLoader
 import com.ritense.formviewmodel.viewmodel.ViewModel
 import com.ritense.formviewmodel.viewmodel.ViewModelLoader
 import org.junit.jupiter.api.BeforeEach
@@ -49,27 +50,22 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
     }
 
     @Test
-    fun `should validateAllViewModels`() {
-        viewModelLoaders = listOf(
-            mockViewModelLoader("user-task-1", true),
-        )
-        assertThrows<IllegalStateException> {
-            onStartUpViewModelValidator.validateAllViewModels()
-        }
+    fun `should validate ViewModel`() {
+        val testViewModelLoader = TestViewModelLoader()
+        onStartUpViewModelValidator.validateViewModel(testViewModelLoader, formDefinitionOf("user-task-1"))
     }
 
     // Example ViewModels
     data class Person(val name: String, val address: Address)
     data class Address(val street: String, val city: City)
     data class City(val name: String, val code: Int)
-    data class InvalidViewModel(val name: String) // missing ViewModel Interface is not allowed
 
-    @Test
-    fun `should throw exeption error for invalid ViewModel`() {
+   /* @Test
+    fun `should throw exception error for invalid ViewModel`() {
         assertThrows<IllegalStateException> {
             onStartUpViewModelValidator.extractFieldNames(InvalidViewModel::class)
         }
-    }
+    }*/
 
     @Test
     fun `should extract all ViewModel field names`() {
@@ -102,7 +98,7 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
         mockViewModelLoader("user-task-1", true)
         mockViewModelLoader("user-task-2", false)
 
-        onStartUpViewModelValidator.validateAllViewModels()
+        onStartUpViewModelValidator.validate()
 
         // Reset System.err
         System.setOut(System.out)

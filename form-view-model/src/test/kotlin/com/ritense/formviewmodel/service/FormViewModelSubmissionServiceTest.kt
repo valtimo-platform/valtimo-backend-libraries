@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.formviewmodel.BaseTest
 import com.ritense.formviewmodel.commandhandling.ExampleCommand
+import com.ritense.formviewmodel.error.FormException
 import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
 import com.ritense.formviewmodel.event.TestSubmissionHandler
 import com.ritense.formviewmodel.json.MapperSingleton
+import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.service.CamundaTaskService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -22,10 +24,12 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
     private lateinit var camundaTaskService: CamundaTaskService
     private lateinit var testSubmissionHandler: TestSubmissionHandler
     private lateinit var objectMapper: ObjectMapper
+    private lateinit var camundaTask: CamundaTask
 
     @BeforeEach
     fun setUp() {
         super.baseSetup()
+        camundaTask = mock()
         camundaTaskService = mock()
         testSubmissionHandler = TestSubmissionHandler()
         objectMapper = ObjectMapper()
@@ -45,21 +49,21 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
         formViewModelSubmissionService.handleSubmission(
             formName = "test",
             submission = submission,
-            taskInstanceId = "test"
+            task = camundaTask
         )
         verify(commandDispatcher).dispatch(any<ExampleCommand>())
-        verify(camundaTaskService).complete("test")
+        verify(camundaTaskService).complete(camundaTask.id)
     }
 
     @Test
     fun `should not handle submission`() {
         val submission = submissionWithUnderAge()
 
-        assertThrows<IllegalArgumentException> {
+        assertThrows<FormException> {
             formViewModelSubmissionService.handleSubmission(
                 formName = "test",
                 submission = submission,
-                taskInstanceId = "test"
+                task = camundaTask
             )
         }
     }

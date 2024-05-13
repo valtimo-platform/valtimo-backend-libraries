@@ -1,5 +1,7 @@
 package com.ritense.formviewmodel.commandhandling
 
+import com.ritense.formviewmodel.error.FormException
+
 data class ExampleCommand(
     val age: Int
 ) : Command<Boolean> {
@@ -8,7 +10,7 @@ data class ExampleCommand(
         if (age > 18) {
             println("You are an adult")
         } else {
-            throw IllegalArgumentException("You are not an adult")
+            throw FormException("You are not an adult", component = "age")
         }
     }
 }

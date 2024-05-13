@@ -2,9 +2,9 @@ package com.ritense.formviewmodel.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.ritense.formviewmodel.event.FormViewModelSubmission
 import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
 import com.ritense.formviewmodel.viewmodel.Submission
+import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.service.CamundaTaskService
 import kotlin.reflect.KClass
 
@@ -17,22 +17,18 @@ class FormViewModelSubmissionService(
     fun handleSubmission(
         formName: String,
         submission: ObjectNode,
-        taskInstanceId: String
+        task: CamundaTask
     ) {
         val formViewModelSubmissionHandler = formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler(
             formName = formName
         ) ?: throw RuntimeException("No event handler found for formName $formName")
         val submissionType = formViewModelSubmissionHandler.getSubmissionType()
         val submissionConverted = parseSubmission(submission, submissionType)
-        val formViewModelSubmission = FormViewModelSubmission(
-            formName = formName,
-            submission = submissionConverted,
-            taskInstanceId = taskInstanceId,
-        )
         formViewModelSubmissionHandler.handle(
-            submission = formViewModelSubmission.submission
+            submission = submissionConverted,
+            task = task
         )
-        camundaTaskService.complete(taskInstanceId)
+        camundaTaskService.complete(task.id)
     }
 
     private inline fun <reified T : Submission> parseSubmission(
