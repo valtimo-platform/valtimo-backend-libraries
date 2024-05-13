@@ -28,6 +28,7 @@ import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.repository.CaseTabSpecificationFactory
+import com.ritense.case.repository.CaseWidgetTabRepository
 import com.ritense.case.repository.TaskListColumnRepository
 import com.ritense.case.security.config.CaseHttpSecurityConfigurer
 import com.ritense.case.service.CaseDefinitionDeploymentService
@@ -43,6 +44,7 @@ import com.ritense.case.service.CaseTabImporter
 import com.ritense.case.service.CaseTabService
 import com.ritense.case.service.CaseTaskListExporter
 import com.ritense.case.service.CaseTaskListImporter
+import com.ritense.case.service.CaseWidgetTabService
 import com.ritense.case.service.ObjectMapperConfigurer
 import com.ritense.case.service.TaskColumnService
 import com.ritense.case.web.rest.CaseDefinitionResource
@@ -363,4 +365,10 @@ class CaseAutoConfiguration {
     ) = CaseDefinitionSettingsImporter(
         deploymentService
     )
+
+    @Bean
+    @ConditionalOnMissingBean(CaseWidgetTabService::class)
+    fun caseWidgetTabService(
+        caseWidgetTabRepository: CaseWidgetTabRepository
+    ) = CaseWidgetTabService(caseWidgetTabRepository)
 }

@@ -20,7 +20,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
     <changeSet id="1" author="Ritense">
-        <createTable tableName="widget_tab_configuration">
+        <createTable tableName="case_widget_tab">
             <column name="case_definition_name" type="varchar(256)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -33,9 +33,9 @@
     <!-- match the type of this column with json_schema_document_definition.document_definition_name -->
     <changeSet id="2" author="Ritense">
         <addForeignKeyConstraint
-            baseTableName="widget_tab_configuration"
+            baseTableName="case_widget_tab"
             baseColumnNames="case_definition_name, tab_key"
-            constraintName="fk_widget_tab_configuration_case_tab"
+            constraintName="fk_case_widget_tab_case_tab"
             referencedTableName="case_tab"
             referencedColumnNames="case_definition_name, tab_key" />
     </changeSet>
