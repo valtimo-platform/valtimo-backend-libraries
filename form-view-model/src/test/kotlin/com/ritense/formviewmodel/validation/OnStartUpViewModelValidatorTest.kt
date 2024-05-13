@@ -10,9 +10,9 @@ import com.ritense.formviewmodel.viewmodel.TestViewModel
 import com.ritense.formviewmodel.viewmodel.TestViewModelLoader
 import com.ritense.formviewmodel.viewmodel.ViewModel
 import com.ritense.formviewmodel.viewmodel.ViewModelLoader
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.mock
@@ -50,22 +50,51 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
     }
 
     @Test
-    fun `should validate ViewModel`() {
+    fun `should be valid ViewModel`() {
         val testViewModelLoader = TestViewModelLoader()
-        onStartUpViewModelValidator.validateViewModel(testViewModelLoader, formDefinitionOf("user-task-1"))
+        val missingFields = onStartUpViewModelValidator.validateViewModel(
+            testViewModelLoader,
+            formDefinitionOf("user-task-1")
+        )
+        assertThat(missingFields).isEmpty()
+    }
+
+    @Test
+    fun `should not be valid ViewModel`() {
+        val testViewModelLoader = TestViewModelLoader()
+        val missingFields = onStartUpViewModelValidator.validateViewModel(
+            testViewModelLoader,
+            formDefinitionOf("user-task-2")
+        )
+        assertThat(missingFields).isNotEmpty()
+        assertThat(missingFields).contains("age")
+    }
+
+    @Test
+    fun `should be valid Submission`() {
+        val testSubmissionHandler = TestSubmissionHandler()
+        val missingFields = onStartUpViewModelValidator.validateSubmission(
+            testSubmissionHandler,
+            formDefinitionOf("user-task-1")
+        )
+        assertThat(missingFields).isEmpty()
+    }
+
+    @Test
+    fun `should not be valid Submission`() {
+        val testSubmissionHandler = TestSubmissionHandler()
+        val missingFields = onStartUpViewModelValidator.validateSubmission(
+            testSubmissionHandler,
+            formDefinitionOf("user-task-2")
+        )
+        assertThat(missingFields).isNotEmpty()
+        assertThat(missingFields).contains("age")
     }
 
     // Example ViewModels
     data class Person(val name: String, val address: Address)
     data class Address(val street: String, val city: City)
     data class City(val name: String, val code: Int)
-
-   /* @Test
-    fun `should throw exception error for invalid ViewModel`() {
-        assertThrows<IllegalStateException> {
-            onStartUpViewModelValidator.extractFieldNames(InvalidViewModel::class)
-        }
-    }*/
 
     @Test
     fun `should extract all ViewModel field names`() {
@@ -89,7 +118,7 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
     }
 
     @Test
-    fun `validateAllViewModels should print stack trace`() {
+    fun `should validate`() {
         // Redirect System.err to capture what is printed
         val outputStream = ByteArrayOutputStream()
         val printStream = PrintStream(outputStream)

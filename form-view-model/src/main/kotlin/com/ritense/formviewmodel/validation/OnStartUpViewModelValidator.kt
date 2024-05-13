@@ -3,6 +3,7 @@ package com.ritense.formviewmodel.validation
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.service.impl.FormIoFormDefinitionService
+import com.ritense.formviewmodel.event.FormViewModelSubmissionHandler
 import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
 import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.formviewmodel.viewmodel.ViewModelLoader
@@ -25,17 +26,23 @@ class OnStartUpViewModelValidator(
 
     fun validate() {
         for (viewModelLoader in viewModelLoaders) {
-            val form = formIoFormDefinitionService.getFormDefinitionByName(viewModelLoader.getFormName()).get()
-            validateViewModel(viewModelLoader, form).let { missingProperties ->
+            val formDefinition =
+                formIoFormDefinitionService.getFormDefinitionByName(viewModelLoader.getFormName()).get()
+            validateViewModel(viewModelLoader, formDefinition).let { missingProperties ->
                 logger.error {
                     "The following properties are missing in the view model for form " +
                         "(${viewModelLoader.getFormName()}): $missingProperties"
                 }
-            }
-            validateSubmission(viewModelLoader, form).let { missingProperties ->
-                logger.error {
-                    "The following properties are missing in the submission for form " +
-                        "(${viewModelLoader.getFormName()}): $missingProperties"
+                // Validate submission for the view model
+                formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler(
+                    viewModelLoader.getFormName()
+                )?.let {
+                    validateSubmission(it, formDefinition).let { missingSubmissionProperties ->
+                        logger.error {
+                            "The following properties are missing in the submission for form " +
+                                "(${viewModelLoader.getFormName()}): $missingSubmissionProperties"
+                        }
+                    }
                 }
             }
         }
@@ -44,37 +51,32 @@ class OnStartUpViewModelValidator(
     fun validateViewModel(
         viewModelLoader: ViewModelLoader<*>,
         formDefinition: FormIoFormDefinition
-    ): List<String>? {
+    ): List<String> {
         return getAllMissingProperties(viewModelLoader.getViewModelType(), formDefinition)
     }
 
     fun validateSubmission(
-        viewModelLoader: ViewModelLoader<*>,
+        submissionHandler: FormViewModelSubmissionHandler<out Submission>,
         formDefinition: FormIoFormDefinition
-    ): List<String>? {
-        return formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler(viewModelLoader.getFormName())
-            ?.let {
-                val submissionType = it.getSubmissionType()::class
-                if (submissionType.simpleName == ObjectNode::class.simpleName) {
-                    logger.error {
-                        "Submission type for form ${viewModelLoader.getFormName()} is ObjectNode. " +
-                            "This is not advised. Please create a data class for the submission."
-                    }
-                    return null
-                }
-                return getAllMissingProperties(it.getSubmissionType(), formDefinition)
+    ): List<String> {
+        val submissionType = submissionHandler.getSubmissionType()::class
+        if (submissionType.simpleName == ObjectNode::class.simpleName) {
+            logger.error {
+                "Submission type for form ${formDefinition.name} is ObjectNode. " +
+                    "This is not advised. Please create a data class for the submission."
             }
+        }
+        return getAllMissingProperties(submissionHandler.getSubmissionType(), formDefinition)
     }
 
     private fun getAllMissingProperties(
         submission: KClass<*>,
         formDefinition: FormIoFormDefinition
-    ): List<String>? {
+    ): List<String> {
         val fieldNames = extractFieldNames(submission)
-        val missingFields = fieldNames.filter { fieldName ->
+        return fieldNames.filter { fieldName ->
             fieldName !in formDefinition.inputFields.map { it["key"].asText() }
         }
-        return missingFields.ifEmpty { null }
     }
 
     fun extractFieldNames(kClass: KClass<*>, prefix: String = ""): List<String> {
