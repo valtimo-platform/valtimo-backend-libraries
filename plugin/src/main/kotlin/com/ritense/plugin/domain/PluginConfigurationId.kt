@@ -31,6 +31,10 @@ data class PluginConfigurationId(
 
     companion object {
 
+        fun existingId(id: String): PluginConfigurationId {
+            return existingId(UUID.fromString(id))
+        }
+
         fun existingId(id: UUID): PluginConfigurationId {
             return PluginConfigurationId(id)
         }

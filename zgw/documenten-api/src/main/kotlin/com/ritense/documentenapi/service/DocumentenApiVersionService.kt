@@ -120,7 +120,7 @@ class DocumentenApiVersionService(
         return detectedConfigurations
     }
 
-    private fun getVersionByTag(versionTag: String?) = documentenApiVersions[versionTag]
+    fun getVersionByTag(versionTag: String?) = documentenApiVersions[versionTag]
 
     private fun loadResources(): Array<Resource> {
         return ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(PATH)
