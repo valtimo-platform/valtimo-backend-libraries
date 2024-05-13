@@ -1,8 +1,8 @@
 package com.ritense.formviewmodel.domain.validation
 
 import com.ritense.form.service.impl.FormIoFormDefinitionService
-import com.ritense.formviewmodel.domain.ViewModel
-import com.ritense.formviewmodel.domain.ViewModelLoader
+import com.ritense.formviewmodel.viewmodel.ViewModel
+import com.ritense.formviewmodel.viewmodel.ViewModelLoader
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.context.ApplicationContext

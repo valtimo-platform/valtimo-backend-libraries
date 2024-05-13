@@ -2,7 +2,7 @@ package com.inwonerplan.poc.aandachtspunten
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.inwonerplan.model.Aandachtspunt
-import com.ritense.formviewmodel.domain.ViewModel
+import com.ritense.formviewmodel.viewmodel.ViewModel
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AandachtsPuntenViewModel(

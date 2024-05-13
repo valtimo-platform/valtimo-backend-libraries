@@ -2,11 +2,11 @@ package com.inwonerplan.poc.subdoelen
 
 import com.inwonerplan.api.StamtabellenApi
 import com.inwonerplan.poc.POCSubmissions
-import com.ritense.formviewmodel.domain.ViewModelLoader
+import com.ritense.formviewmodel.viewmodel.ViewModelLoader
 
 class SubdoelenViewModelLoader: ViewModelLoader<SubdoelenViewModel> {
 
-    override fun onLoad(taskInstanceId: String): SubdoelenViewModel {
+    override fun load(taskInstanceId: String): SubdoelenViewModel {
         val aandachtsPunten = POCSubmissions.aandachtsPunten!!
 
         val subdoelenGrid = aandachtsPunten.aandachtspuntenGrid!!.map {
@@ -23,9 +23,6 @@ class SubdoelenViewModelLoader: ViewModelLoader<SubdoelenViewModel> {
         )
     }
 
-    fun resolveAandachtsPuntNaam(id: String) =
-        StamtabellenApi().getAandachtspunten().find { it.id!!.toString() == id }!!.naamAandachtsPunt!!
-
     fun getSubdoelenForAandachtspunten(aandachtsPunt: String) =
         StamtabellenApi().getSubdoelen().filter { subdoel ->
             subdoel.aandachtspunten!!.find { subdoelAandachtsPunt ->
@@ -34,7 +31,7 @@ class SubdoelenViewModelLoader: ViewModelLoader<SubdoelenViewModel> {
         }
 
     override fun supports(formName: String): Boolean {
-        return formName == "form_subdoelen"
+        return formName == getFormName()
     }
 
     override fun getFormName(): String {

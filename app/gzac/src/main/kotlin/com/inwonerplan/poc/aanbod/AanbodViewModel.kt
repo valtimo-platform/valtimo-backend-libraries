@@ -3,10 +3,9 @@ package com.inwonerplan.poc.aanbod
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.inwonerplan.api.StamtabellenApi
 import com.inwonerplan.model.Aanbod
-import com.inwonerplan.model.AanbodActiviteit
 import com.inwonerplan.model.Aandachtspunt
 import com.inwonerplan.model.Subdoel
-import com.ritense.formviewmodel.domain.ViewModel
+import com.ritense.formviewmodel.viewmodel.ViewModel
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AanbodViewModel(

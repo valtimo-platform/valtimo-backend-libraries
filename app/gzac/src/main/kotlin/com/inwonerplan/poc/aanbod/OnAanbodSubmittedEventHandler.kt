@@ -1,15 +1,17 @@
 package com.inwonerplan.poc.aanbod
 
-import com.ritense.formviewmodel.event.OnFormSubmittedEventHandler
+import com.ritense.formviewmodel.event.FormViewModelSubmission
+import com.ritense.formviewmodel.event.FormViewModelSubmissionHandler
 
-class OnAanbodSubmittedEventHandler : OnFormSubmittedEventHandler<AanbodViewModel> {
+
+class OnAanbodSubmittedEventHandler : FormViewModelSubmissionHandler {
 
     override fun supports(formName: String): Boolean {
         return formName == "form_aanbod"
     }
 
-    override fun handle(submission: AanbodViewModel, taskInstanceId: String) {
-        println(submission)
+    override fun handle(formViewModelSubmission: FormViewModelSubmission) {
+        println(formViewModelSubmission)
     }
 
 }

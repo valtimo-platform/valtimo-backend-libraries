@@ -2,11 +2,11 @@ package com.inwonerplan.poc.aanbod
 
 import com.inwonerplan.api.StamtabellenApi
 import com.inwonerplan.poc.POCSubmissions
-import com.ritense.formviewmodel.domain.ViewModelLoader
+import com.ritense.formviewmodel.viewmodel.ViewModelLoader
 
 class AanbodViewModelLoader: ViewModelLoader<AanbodViewModel> {
 
-    override fun onLoad(taskInstanceId: String): AanbodViewModel {
+    override fun load(taskInstanceId: String): AanbodViewModel {
         val subdoel = POCSubmissions.subdoelen!!
 
         val aanbodGrid = subdoel.subdoelenGrid.map {

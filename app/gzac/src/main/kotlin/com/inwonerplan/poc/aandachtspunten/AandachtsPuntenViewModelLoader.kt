@@ -1,11 +1,11 @@
 package com.inwonerplan.poc.aandachtspunten
 
 import com.inwonerplan.api.StamtabellenApi
-import com.ritense.formviewmodel.domain.ViewModelLoader
+import com.ritense.formviewmodel.viewmodel.ViewModelLoader
 
 class AandachtsPuntenViewModelLoader: ViewModelLoader<AandachtsPuntenViewModel> {
 
-    override fun onLoad(taskInstanceId: String): AandachtsPuntenViewModel {
+    override fun load(taskInstanceId: String): AandachtsPuntenViewModel {
         return AandachtsPuntenViewModel(
             StamtabellenApi().getAandachtspunten(),
             null
@@ -13,7 +13,7 @@ class AandachtsPuntenViewModelLoader: ViewModelLoader<AandachtsPuntenViewModel> 
     }
 
     override fun supports(formName: String): Boolean {
-        return formName == "form_aandachtspunt"
+        return formName == getFormName()
     }
 
     override fun getFormName(): String {
