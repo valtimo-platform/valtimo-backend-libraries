@@ -1,29 +1,41 @@
 package com.ritense.formviewmodel.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.ritense.formviewmodel.event.FormViewModelSubmission
 import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
+import com.ritense.formviewmodel.viewmodel.Submission
+import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.service.CamundaTaskService
+import kotlin.reflect.KClass
 
 class FormViewModelSubmissionService(
     private val formViewModelSubmissionHandlerFactory: FormViewModelSubmissionHandlerFactory,
-    private val camundaTaskService: CamundaTaskService
+    private val camundaTaskService: CamundaTaskService,
+    private val objectMapper: ObjectMapper
 ) {
 
     fun handleSubmission(
         formName: String,
         submission: ObjectNode,
-        taskInstanceId: String
+        task: CamundaTask
     ) {
         val formViewModelSubmissionHandler = formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler(
             formName = formName
         ) ?: throw RuntimeException("No event handler found for formName $formName")
-        val formViewModelSubmission = FormViewModelSubmission(
-            formName = formName,
-            submission = submission,
-            taskInstanceId = taskInstanceId,
+        val submissionType = formViewModelSubmissionHandler.getSubmissionType()
+        val submissionConverted = parseSubmission(submission, submissionType)
+        formViewModelSubmissionHandler.handle(
+            submission = submissionConverted,
+            task = task
         )
-        formViewModelSubmissionHandler.handle(formViewModelSubmission)
-        camundaTaskService.complete(taskInstanceId)
+        camundaTaskService.complete(task.id)
     }
+
+    private inline fun <reified T : Submission> parseSubmission(
+        submission: ObjectNode,
+        submissionType: KClass<out T>
+    ): Submission {
+        return objectMapper.convertValue(submission, submissionType.java)
+    }
+
 }

@@ -1,11 +1,14 @@
 package com.ritense.formviewmodel.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.formviewmodel.BaseTest
 import com.ritense.formviewmodel.commandhandling.ExampleCommand
+import com.ritense.formviewmodel.error.FormException
 import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
-import com.ritense.formviewmodel.event.TestEventHandler
+import com.ritense.formviewmodel.event.TestSubmissionHandler
 import com.ritense.formviewmodel.json.MapperSingleton
+import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.service.CamundaTaskService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -19,19 +22,24 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
     private lateinit var formViewModelSubmissionService: FormViewModelSubmissionService
     private lateinit var formViewModelSubmissionHandlerFactory: FormViewModelSubmissionHandlerFactory
     private lateinit var camundaTaskService: CamundaTaskService
-    private lateinit var testEventHandler: TestEventHandler
+    private lateinit var testSubmissionHandler: TestSubmissionHandler
+    private lateinit var objectMapper: ObjectMapper
+    private lateinit var camundaTask: CamundaTask
 
     @BeforeEach
     fun setUp() {
         super.baseSetup()
+        camundaTask = mock()
         camundaTaskService = mock()
-        testEventHandler = TestEventHandler()
+        testSubmissionHandler = TestSubmissionHandler()
+        objectMapper = ObjectMapper()
         formViewModelSubmissionHandlerFactory = FormViewModelSubmissionHandlerFactory(
-            formViewModelSubmissionHandlers = listOf(testEventHandler)
+            formViewModelSubmissionHandlers = listOf(testSubmissionHandler)
         )
         formViewModelSubmissionService = FormViewModelSubmissionService(
             formViewModelSubmissionHandlerFactory = formViewModelSubmissionHandlerFactory,
-            camundaTaskService = camundaTaskService
+            camundaTaskService = camundaTaskService,
+            objectMapper = objectMapper
         )
     }
 
@@ -41,21 +49,21 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
         formViewModelSubmissionService.handleSubmission(
             formName = "test",
             submission = submission,
-            taskInstanceId = "test"
+            task = camundaTask
         )
         verify(commandDispatcher).dispatch(any<ExampleCommand>())
-        verify(camundaTaskService).complete("test")
+        verify(camundaTaskService).complete(camundaTask.id)
     }
 
     @Test
     fun `should not handle submission`() {
         val submission = submissionWithUnderAge()
 
-        assertThrows<IllegalArgumentException> {
+        assertThrows<FormException> {
             formViewModelSubmissionService.handleSubmission(
                 formName = "test",
                 submission = submission,
-                taskInstanceId = "test"
+                task = camundaTask
             )
         }
     }

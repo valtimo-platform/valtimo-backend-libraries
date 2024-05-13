@@ -1,9 +1,9 @@
 package com.ritense.formviewmodel.event
 
-import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.formviewmodel.viewmodel.Submission
 
-data class FormViewModelSubmission(
+data class FormViewModelSubmission<T : Submission>(
     val formName: String,
-    val submission: ObjectNode,
+    val submission: T, // Reuse of ViewModel is allowed.
     val taskInstanceId: String
 )
