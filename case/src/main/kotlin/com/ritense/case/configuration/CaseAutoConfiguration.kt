@@ -28,7 +28,6 @@ import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.repository.CaseTabSpecificationFactory
-import com.ritense.case.repository.CaseWidgetTabRepository
 import com.ritense.case.repository.TaskListColumnRepository
 import com.ritense.case.security.config.CaseHttpSecurityConfigurer
 import com.ritense.case.service.CaseDefinitionDeploymentService
@@ -44,7 +43,6 @@ import com.ritense.case.service.CaseTabImporter
 import com.ritense.case.service.CaseTabService
 import com.ritense.case.service.CaseTaskListExporter
 import com.ritense.case.service.CaseTaskListImporter
-import com.ritense.case.service.CaseWidgetTabService
 import com.ritense.case.service.ObjectMapperConfigurer
 import com.ritense.case.service.TaskColumnService
 import com.ritense.case.web.rest.CaseDefinitionResource
@@ -65,6 +63,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Lazy
 import org.springframework.core.Ordered
@@ -147,9 +146,10 @@ class CaseAutoConfiguration {
     fun caseTabService(
         caseTabRepository: CaseTabRepository,
         @Lazy authorizationService: AuthorizationService,
-        documentDefinitionService: DocumentDefinitionService
+        documentDefinitionService: DocumentDefinitionService,
+        applicationEventPublisher: ApplicationEventPublisher
     ): CaseTabService {
-        return CaseTabService(caseTabRepository, documentDefinitionService, authorizationService)
+        return CaseTabService(caseTabRepository, documentDefinitionService, authorizationService, applicationEventPublisher)
     }
 
     @Bean
@@ -365,10 +365,4 @@ class CaseAutoConfiguration {
     ) = CaseDefinitionSettingsImporter(
         deploymentService
     )
-
-    @Bean
-    @ConditionalOnMissingBean(CaseWidgetTabService::class)
-    fun caseWidgetTabService(
-        caseWidgetTabRepository: CaseWidgetTabRepository
-    ) = CaseWidgetTabService(caseWidgetTabRepository)
 }

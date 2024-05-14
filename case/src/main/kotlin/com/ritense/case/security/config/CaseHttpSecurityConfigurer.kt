@@ -58,6 +58,7 @@ class CaseHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(antMatcher(GET, MANAGEMENT_TAB_URL)).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "/api/management/v1/case/{caseDefinitionName}/{caseDefinitionVersion}/export")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(POST, "/api/management/v1/case/import")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "$MANAGEMENT_WIDGET_TAB_URL/{tabKey}")).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
@@ -70,5 +71,6 @@ class CaseHttpSecurityConfigurer : HttpSecurityConfigurer {
         private const val MANAGEMENT_CASE_LIST_COLUMN_URL = "/api/management/v1/case/{caseDefinitionName}/list-column"
         private const val MANAGEMENT_TASK_LIST_COLUMN_URL = "/api/management/v1/case/{caseDefinitionName}/task-list-column"
         private const val MANAGEMENT_TAB_URL = "/api/management/v1/case-definition/{caseDefinitionName}/tab"
+        private const val MANAGEMENT_WIDGET_TAB_URL = "/api/management/v1/case-definition/{caseDefinitionName}/widget-tab"
     }
 }

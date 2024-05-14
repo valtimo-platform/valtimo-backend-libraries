@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.case.web.rest.dto
+package com.ritense.case_.domain.tab
 
-import com.ritense.case.domain.CaseTab
-import com.ritense.case.domain.CaseTabType
+import com.ritense.case.domain.CaseTabId
+import jakarta.persistence.EmbeddedId
+import jakarta.persistence.Entity
+import jakarta.persistence.Table
 
-data class CaseTabDto(
-    val key: String,
-    val name: String? = null,
-    val type: CaseTabType,
-    val contentKey: String,
-) {
-    companion object {
-        fun of(caseTab: CaseTab) = CaseTabDto(
-            caseTab.id.key,
-            caseTab.name,
-            caseTab.type,
-            caseTab.contentKey
-        )
-    }
-}
+@Entity
+@Table(name = "case_widget_tab")
+data class CaseWidgetTab(
+    @EmbeddedId
+    val id: CaseTabId,
+)

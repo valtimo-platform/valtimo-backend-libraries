@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.case.domain.tab
+package com.ritense.case_.repository
 
+import com.ritense.case_.domain.tab.CaseWidgetTab
 import com.ritense.case.domain.CaseTabId
-import jakarta.persistence.EmbeddedId
-import jakarta.persistence.Entity
-import jakarta.persistence.Table
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 
-@Entity
-@Table(name = "case_widget_tab")
-data class CaseWidgetTab(
-    @EmbeddedId
-    val id: CaseTabId,
-)
+interface CaseWidgetTabRepository : JpaRepository<CaseWidgetTab, CaseTabId>, JpaSpecificationExecutor<CaseWidgetTab>

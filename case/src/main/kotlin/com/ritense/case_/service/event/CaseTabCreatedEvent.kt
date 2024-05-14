@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.case.repository
+package com.ritense.case_.service.event
 
-import com.ritense.case.domain.CaseTabId
-import com.ritense.case.domain.tab.CaseWidgetTab
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import com.ritense.case.domain.CaseTab
 
-interface CaseWidgetTabRepository : JpaRepository<CaseWidgetTab, CaseTabId>, JpaSpecificationExecutor<CaseWidgetTab>
+data class CaseTabCreatedEvent(val tab: CaseTab)

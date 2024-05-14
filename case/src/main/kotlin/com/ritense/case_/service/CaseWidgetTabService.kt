@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.case.service
+package com.ritense.case_.service
 
 import com.ritense.case.domain.CaseTabId
-import com.ritense.case.domain.tab.CaseWidgetTab
-import com.ritense.case.repository.CaseWidgetTabRepository
+import com.ritense.case.domain.CaseTabType
+import com.ritense.case_.domain.tab.CaseWidgetTab
+import com.ritense.case_.repository.CaseWidgetTabRepository
+import com.ritense.case_.rest.dto.CaseWidgetTabDto
+import com.ritense.case_.service.event.CaseTabCreatedEvent
+import org.springframework.context.event.EventListener
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional(readOnly = false)
@@ -26,12 +31,16 @@ class CaseWidgetTabService(
     private val caseWidgetTabRepository: CaseWidgetTabRepository
 ) {
 
-    fun createWidgetTab(tab: CaseTabId): CaseWidgetTab {
-        return caseWidgetTabRepository.save(CaseWidgetTab(tab))
+    @EventListener(CaseTabCreatedEvent::class)
+    fun handleCaseTabCreatedEvent(event: CaseTabCreatedEvent) {
+        if (event.tab.type == CaseTabType.WIDGETS) {
+            caseWidgetTabRepository.save(CaseWidgetTab(event.tab.id))
+        }
     }
 
     @Transactional(readOnly = true)
-    fun getWidgetTab(caseDefinitionName: String, key: String): CaseWidgetTab {
-        return caseWidgetTabRepository.getReferenceById(CaseTabId(caseDefinitionName, key))
+    fun getWidgetTab(caseDefinitionName: String, key: String): CaseWidgetTabDto? {
+        return caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, key))
+            ?.let { CaseWidgetTabDto.of(it) }
     }
 }

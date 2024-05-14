@@ -37,6 +37,7 @@
             baseColumnNames="case_definition_name, tab_key"
             constraintName="fk_case_widget_tab_case_tab"
             referencedTableName="case_tab"
-            referencedColumnNames="case_definition_name, tab_key" />
+            referencedColumnNames="case_definition_name, tab_key"
+            onDelete="CASCADE"/>
     </changeSet>
 </databaseChangeLog>

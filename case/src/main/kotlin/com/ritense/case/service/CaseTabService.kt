@@ -16,6 +16,7 @@
 
 package com.ritense.case.service
 
+import com.ritense.case_.service.event.CaseTabCreatedEvent
 import com.ritense.authorization.Action.Companion.deny
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
@@ -30,6 +31,7 @@ import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateOrderDto
 import com.ritense.document.service.DocumentDefinitionService
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Sort
 import org.springframework.transaction.annotation.Transactional
 import kotlin.jvm.optionals.getOrNull
@@ -38,7 +40,8 @@ import kotlin.jvm.optionals.getOrNull
 class CaseTabService(
     private val caseTabRepository: CaseTabRepository,
     private val documentDefinitionService: DocumentDefinitionService,
-    private val authorizationService: AuthorizationService
+    private val authorizationService: AuthorizationService,
+    private val applicationEventPublisher: ApplicationEventPublisher
 ) {
     fun getCaseTab(caseDefinitionName: String, key: String): CaseTab {
         val caseTab = caseTabRepository.getReferenceById(CaseTabId(caseDefinitionName, key))
@@ -70,9 +73,9 @@ class CaseTabService(
             ?: throw NoSuchElementException("Case definition with name $caseDefinitionName does not exist!")
 
         val currentTabs = getCaseTabs(caseDefinitionName)
-        val tabWithKeyExists = currentTabs.filter { tab ->
-            tab.id.key.equals(caseTabDto.key)
-        }.isNotEmpty()
+        val tabWithKeyExists = currentTabs.any { tab ->
+            tab.id.key == caseTabDto.key
+        }
 
         if (tabWithKeyExists) {
             throw TabAlreadyExistsException(caseTabDto.key)
@@ -87,6 +90,9 @@ class CaseTabService(
         )
 
         val savedTab = caseTabRepository.save(caseTab)
+
+        applicationEventPublisher.publishEvent(CaseTabCreatedEvent(savedTab))
+
         return CaseTabDto.of(savedTab)
     }
 

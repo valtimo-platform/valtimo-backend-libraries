@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.case.web.rest.dto
+package com.ritense.case_.rest.dto
 
-import com.ritense.case.domain.CaseTab
-import com.ritense.case.domain.CaseTabType
+import com.ritense.case_.domain.tab.CaseWidgetTab
 
-data class CaseTabDto(
-    val key: String,
-    val name: String? = null,
-    val type: CaseTabType,
-    val contentKey: String,
+data class CaseWidgetTabDto(
+    val caseDefinitionName: String,
+    val key: String
 ) {
     companion object {
-        fun of(caseTab: CaseTab) = CaseTabDto(
-            caseTab.id.key,
-            caseTab.name,
-            caseTab.type,
-            caseTab.contentKey
-        )
+        @JvmStatic
+        fun of(tab: CaseWidgetTab): CaseWidgetTabDto {
+            return CaseWidgetTabDto(tab.id.caseDefinitionName, tab.id.key)
+        }
     }
 }
