@@ -48,7 +48,6 @@ class CaseWidgetTabManagementResourceIntTest @Autowired constructor(
 
     lateinit var mockMvc: MockMvc
 
-
     @BeforeEach
     fun setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build()
