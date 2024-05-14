@@ -35,4 +35,5 @@
     <include file="changelog/20231006-add-standard-case-tabs.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20240228-add-task-list-column.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20240513-add-case-widget-tab.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20240514-add-case-widget-tab-widget.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

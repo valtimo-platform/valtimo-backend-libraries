@@ -16,20 +16,22 @@
 
 package com.ritense.case_.rest.dto
 
-import com.ritense.case_.domain.tab.CaseWidgetTab
+import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 
-data class CaseWidgetTabDto(
-    val caseDefinitionName: String,
+data class CaseWidgetTabWidgetDto(
     val key: String,
-    val widgets: List<CaseWidgetTabWidgetDto> = listOf(),
+    val title: String,
+    val width: Int,
+    val highContrast: Boolean
 ) {
     companion object {
         @JvmStatic
-        fun of(tab: CaseWidgetTab): CaseWidgetTabDto {
-            return CaseWidgetTabDto(
-                tab.id.caseDefinitionName,
-                tab.id.key,
-                widgets = tab.widgets.map { CaseWidgetTabWidgetDto.of(it) }
+        fun of(widget: CaseWidgetTabWidget): CaseWidgetTabWidgetDto {
+            return CaseWidgetTabWidgetDto(
+                widget.key,
+                widget.title,
+                widget.width,
+                widget.highContrast
             )
         }
     }

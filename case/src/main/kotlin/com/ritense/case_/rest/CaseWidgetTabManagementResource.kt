@@ -24,6 +24,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 
 @Controller
@@ -39,6 +41,16 @@ class CaseWidgetTabManagementResource(
         @PathVariable tabKey: String
     ): ResponseEntity<CaseWidgetTabDto> {
         val widgetTab = caseWidgetTabService.getWidgetTab(caseDefinitionName, tabKey)
+        return ResponseEntity.ofNullable(widgetTab)
+    }
+
+    @PostMapping("/v1/case-definition/{caseDefinitionName}/widget-tab/{tabKey}")
+    fun getCaseTabWidget(
+        @PathVariable caseDefinitionName: String,
+        @PathVariable tabKey: String,
+        @RequestBody caseWidgetTabDto: CaseWidgetTabDto
+    ): ResponseEntity<CaseWidgetTabDto> {
+        val widgetTab = caseWidgetTabService.updateWidgetTab(caseWidgetTabDto)
         return ResponseEntity.ofNullable(widgetTab)
     }
 }

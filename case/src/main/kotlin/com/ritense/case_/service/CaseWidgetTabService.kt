@@ -19,12 +19,14 @@ package com.ritense.case_.service
 import com.ritense.case.domain.CaseTabId
 import com.ritense.case.domain.CaseTabType
 import com.ritense.case_.domain.tab.CaseWidgetTab
+import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 import com.ritense.case_.repository.CaseWidgetTabRepository
 import com.ritense.case_.rest.dto.CaseWidgetTabDto
 import com.ritense.case_.service.event.CaseTabCreatedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
+import kotlin.jvm.optionals.getOrElse
 
 @Transactional(readOnly = false)
 class CaseWidgetTabService(
@@ -42,5 +44,27 @@ class CaseWidgetTabService(
     fun getWidgetTab(caseDefinitionName: String, key: String): CaseWidgetTabDto? {
         return caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, key))
             ?.let { CaseWidgetTabDto.of(it) }
+    }
+
+    fun updateWidgetTab(tabDto: CaseWidgetTabDto): CaseWidgetTabDto? {
+        val caseWidgetTab = caseWidgetTabRepository.findById(CaseTabId(tabDto.caseDefinitionName, tabDto.key))
+            .getOrElse {
+                throw RuntimeException(
+                    "Failed to update dashboard. Dashboard with key '${tabDto.key}' doesn't exist " +
+                        "for case definition with name '${tabDto.caseDefinitionName}'."
+                )
+            }.copy(
+                widgets = tabDto.widgets.mapIndexed { index, widgetDto ->
+                    CaseWidgetTabWidget(
+                        widgetDto.key,
+                        widgetDto.title,
+                        index,
+                        widgetDto.width,
+                        widgetDto.highContrast
+                    )
+                }
+            )
+
+        return CaseWidgetTabDto.of(caseWidgetTabRepository.save(caseWidgetTab))
     }
 }
