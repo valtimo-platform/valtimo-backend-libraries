@@ -48,4 +48,22 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
         assertThat(widgetTab).isNotNull
     }
 
+    @Test
+    fun `should remove widget tab when case tab is removed`() {
+        val caseDefinitionName = "some-case-type"
+        val tabKey = "my-tab"
+
+
+        runWithoutAuthorization {
+            caseTabService.createCaseTab(caseDefinitionName, CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-"))
+        }
+
+        val tabId = CaseTabId(caseDefinitionName, tabKey)
+        assertThat(caseWidgetTabRepository.existsById(tabId)).isTrue()
+        runWithoutAuthorization {
+            caseTabService.deleteCaseTab(caseDefinitionName, tabKey)
+        }
+        assertThat(caseWidgetTabRepository.existsById(tabId)).isFalse()
+    }
+
 }
