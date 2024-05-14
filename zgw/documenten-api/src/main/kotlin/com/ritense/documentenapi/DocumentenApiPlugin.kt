@@ -247,6 +247,7 @@ class DocumentenApiPlugin(
                 VERTROUWELIJKHEIDAANDUIDING_FIELD
             )
         )
+        val trefwoorden = (getMetadataField(metadata, TREFWOORDEN_FIELD) as String?)?.split(',')
 
         val request = CreateDocumentRequest(
             bronorganisatie = bronorganisatie,
@@ -264,7 +265,7 @@ class DocumentenApiPlugin(
             verzenddatum = getLocalDateFromMetaData(metadata, VERZENDDATUM_FIELD),
             informatieobjecttype = informatieobjecttype ?: getMetadataField(metadata, INFORMATIEOBJECTTYPE_FIELD),
             formaat = getMetadataField(metadata, FORMAAT_FIELD),
-            trefwoorden = getMetadataField(metadata, TREFWOORDEN_FIELD),
+            trefwoorden = trefwoorden,
         )
 
         val documentCreateResult = client.storeDocument(authenticationPluginConfiguration, url, request)
