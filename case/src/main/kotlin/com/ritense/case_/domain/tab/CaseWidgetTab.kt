@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.case.domain
+package com.ritense.case_.domain.tab
 
-import com.fasterxml.jackson.annotation.JsonValue
+import com.ritense.case.domain.CaseTabId
+import jakarta.persistence.EmbeddedId
+import jakarta.persistence.Entity
+import jakarta.persistence.Table
 
-enum class CaseTabType {
-    STANDARD,
-    FORMIO,
-    CUSTOM,
-    WIDGETS;
-
-    val value: String
-        @JsonValue get() = name.lowercase()
-}
+@Entity
+@Table(name = "case_widget_tab")
+data class CaseWidgetTab(
+    @EmbeddedId
+    val id: CaseTabId,
+)

@@ -14,16 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.case.domain
+package com.ritense.case_.service.event
 
-import com.fasterxml.jackson.annotation.JsonValue
+import com.ritense.case.domain.CaseTab
 
-enum class CaseTabType {
-    STANDARD,
-    FORMIO,
-    CUSTOM,
-    WIDGETS;
-
-    val value: String
-        @JsonValue get() = name.lowercase()
-}
+data class CaseTabCreatedEvent(val tab: CaseTab)

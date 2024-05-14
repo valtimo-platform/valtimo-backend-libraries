@@ -21,7 +21,7 @@ import com.ritense.case.domain.CaseTabType
 
 data class CaseTabDto(
     val key: String,
-    val name: String?,
+    val name: String? = null,
     val type: CaseTabType,
     val contentKey: String,
 ) {

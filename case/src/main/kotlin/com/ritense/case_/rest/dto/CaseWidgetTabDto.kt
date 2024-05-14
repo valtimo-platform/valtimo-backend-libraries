@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.case.domain
+package com.ritense.case_.rest.dto
 
-import com.fasterxml.jackson.annotation.JsonValue
+import com.ritense.case_.domain.tab.CaseWidgetTab
 
-enum class CaseTabType {
-    STANDARD,
-    FORMIO,
-    CUSTOM,
-    WIDGETS;
-
-    val value: String
-        @JsonValue get() = name.lowercase()
+data class CaseWidgetTabDto(
+    val caseDefinitionName: String,
+    val key: String
+) {
+    companion object {
+        @JvmStatic
+        fun of(tab: CaseWidgetTab): CaseWidgetTabDto {
+            return CaseWidgetTabDto(tab.id.caseDefinitionName, tab.id.key)
+        }
+    }
 }
