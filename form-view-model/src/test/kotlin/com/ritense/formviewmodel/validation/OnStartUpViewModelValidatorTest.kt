@@ -138,13 +138,13 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
         // Verify if the expected stack trace was printed
         assertTrue(
             printedStackTrace.contains(
-                "The following properties are missing in the view model for form (user-task-2): [age]"
+                "The following properties are missing in the view model for form (user-task-2): [dataContainer, age, nestedData]"
             )
         )
 
         assertTrue(
             printedStackTrace.contains(
-                "The following properties are missing in the submission for form (user-task-2): [age]"
+                "The following properties are missing in the submission for form (user-task-2): [dataContainer, age, nestedData]"
             )
         )
     }

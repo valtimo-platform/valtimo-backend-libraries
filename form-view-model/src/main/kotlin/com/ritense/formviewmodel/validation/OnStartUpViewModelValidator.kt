@@ -29,18 +29,22 @@ class OnStartUpViewModelValidator(
             val formDefinition =
                 formIoFormDefinitionService.getFormDefinitionByName(viewModelLoader.getFormName()).get()
             validateViewModel(viewModelLoader, formDefinition).let { missingProperties ->
-                logger.error {
-                    "The following properties are missing in the view model for form " +
-                        "(${viewModelLoader.getFormName()}): $missingProperties"
-                }
-                // Validate submission for the view model
-                formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler(
-                    viewModelLoader.getFormName()
-                )?.let {
-                    validateSubmission(it, formDefinition).let { missingSubmissionProperties ->
-                        logger.error {
-                            "The following properties are missing in the submission for form " +
-                                "(${viewModelLoader.getFormName()}): $missingSubmissionProperties"
+                if (missingProperties.isNotEmpty()) {
+                    logger.error {
+                        "The following properties are missing in the view model for form " +
+                            "(${viewModelLoader.getFormName()}): $missingProperties"
+                    }
+                    // Validate submission for the view model
+                    formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler(
+                        viewModelLoader.getFormName()
+                    )?.let {
+                        validateSubmission(it, formDefinition).let { missingSubmissionProperties ->
+                            if (missingSubmissionProperties.isNotEmpty()) {
+                                logger.error {
+                                    "The following properties are missing in the submission for form " +
+                                        "(${viewModelLoader.getFormName()}): $missingSubmissionProperties"
+                                }
+                            }
                         }
                     }
                 }
@@ -73,7 +77,7 @@ class OnStartUpViewModelValidator(
         submission: KClass<*>,
         formDefinition: FormIoFormDefinition
     ): List<String> {
-        val fieldNames = extractFieldNames(submission)
+        val fieldNames = transformListOfProperties(extractFieldNames(submission))
         return fieldNames.filter { fieldName ->
             fieldName !in formDefinition.inputFields.map { it["key"].asText() }
         }
@@ -97,6 +101,25 @@ class OnStartUpViewModelValidator(
             }
         }
         return results
+    }
+
+    // This transforms [a.b.c, a.b.d, a.e] into [a, b, c, d, e]
+    private fun transformListOfProperties(originalList: List<String>): List<String> {
+        val transformedList = mutableListOf<String>()
+
+        for (item in originalList) {
+            val parts = item.split('.')
+            if (parts.size == 1) {
+                transformedList.add(parts[0])
+            } else {
+                for (i in 1 until parts.size) {
+                    transformedList.add(parts[i])
+                }
+                transformedList.add(0, parts[0])
+            }
+        }
+
+        return transformedList
     }
 
     companion object {
