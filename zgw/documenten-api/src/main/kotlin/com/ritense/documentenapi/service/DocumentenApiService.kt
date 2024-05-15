@@ -34,6 +34,7 @@ import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
 import com.ritense.documentenapi.web.rest.dto.ModifyDocumentRequest
 import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
+import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -83,15 +84,18 @@ class DocumentenApiService(
 
     fun modifyInformatieObject(
         pluginConfigurationId: String,
-        documentId: String,
+        documentenApiDocumentId: String,
         modifyDocumentRequest: ModifyDocumentRequest
     ): RelatedFile? {
-        if (modifyDocumentRequest.trefwoorden?.isNotEmpty() == true) {
-            val version = documentenApiVersionService.getVersionByDocumentId(UUID.fromString(documentId))
-            check(version.supportsTrefwoorden) { "Documenten API doesn't support 'trefwoorden'" }
-        }
         val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
-        val documentUrl = documentApiPlugin.createInformatieObjectUrl(documentId)
+        if (modifyDocumentRequest.trefwoorden?.isNotEmpty() == true) {
+            val version = documentenApiVersionService.getVersionByTag(documentApiPlugin.apiVersion)
+            check(version != null && version.supportsTrefwoorden) {
+                val pluginConfiguration = pluginService.getPluginConfiguration(PluginConfigurationId.existingId(pluginConfigurationId))
+                "Documenten API plugin '${pluginConfiguration.title}' doesn't support 'trefwoorden'"
+            }
+        }
+        val documentUrl = documentApiPlugin.createInformatieObjectUrl(documentenApiDocumentId)
         val informatieObject =
             documentApiPlugin.modifyInformatieObject(documentUrl, PatchDocumentRequest(modifyDocumentRequest))
         return getRelatedFiles(informatieObject, pluginConfigurationId)
