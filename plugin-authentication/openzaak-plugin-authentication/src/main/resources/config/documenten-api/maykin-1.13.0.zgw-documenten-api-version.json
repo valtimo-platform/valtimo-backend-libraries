@@ -7,7 +7,8 @@
             "creatiedatum",
             "informatieobjecttype",
             "titel",
-            "vertrouwelijkheidaanduiding"
+            "vertrouwelijkheidaanduiding",
+            "trefwoorden"
         ],
         "sortableColumns": [
             "auteur",
