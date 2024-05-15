@@ -15,6 +15,7 @@
  */
 package com.ritense.case_.configuration
 
+import com.ritense.authorization.AuthorizationService
 import com.ritense.case_.repository.CaseWidgetTabRepository
 import com.ritense.case_.rest.CaseWidgetTabManagementResource
 import com.ritense.case_.service.CaseWidgetTabService
@@ -36,8 +37,9 @@ class CaseWidgetAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(CaseWidgetTabService::class)
     fun caseWidgetTabService(
-        caseWidgetTabRepository: CaseWidgetTabRepository
-    ) = CaseWidgetTabService(caseWidgetTabRepository)
+        caseWidgetTabRepository: CaseWidgetTabRepository,
+        authorizationService: AuthorizationService
+    ) = CaseWidgetTabService(caseWidgetTabRepository, authorizationService)
 
     @ConditionalOnMissingBean(CaseWidgetTabManagementResource::class)
     @Bean

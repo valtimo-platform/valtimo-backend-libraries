@@ -74,23 +74,23 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
         val caseDefinitionName = "some-case-type"
         val tabKey = "my-tab"
 
-        val caseTabDto = runWithoutAuthorization {
+        runWithoutAuthorization {
             caseTabService.createCaseTab(
                 caseDefinitionName,
                 CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-")
             )
-        }
 
-        caseWidgetTabService.updateWidgetTab(
-            CaseWidgetTabDto(
-                caseDefinitionName,
-                tabKey,
-                widgets = listOf(
-                    CaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false),
-                    CaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true)
+            caseWidgetTabService.updateWidgetTab(
+                CaseWidgetTabDto(
+                    caseDefinitionName,
+                    tabKey,
+                    widgets = listOf(
+                        CaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false),
+                        CaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true)
+                    )
                 )
             )
-        )
+        }
 
         val optionalWidgetTab = caseWidgetTabRepository.findById(CaseTabId(caseDefinitionName, tabKey))
 
@@ -116,35 +116,37 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
         val caseDefinitionName = "some-case-type"
         val tabKey = "my-tab"
 
-        val caseTabDto = runWithoutAuthorization {
+        runWithoutAuthorization {
             caseTabService.createCaseTab(
                 caseDefinitionName,
                 CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-")
             )
-        }
 
-        caseWidgetTabService.updateWidgetTab(
-            CaseWidgetTabDto(
-                caseDefinitionName,
-                tabKey,
-                widgets = listOf(
-                    CaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false),
-                    CaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true)
+            caseWidgetTabService.updateWidgetTab(
+                CaseWidgetTabDto(
+                    caseDefinitionName,
+                    tabKey,
+                    widgets = listOf(
+                        CaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false),
+                        CaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true)
+                    )
                 )
             )
-        )
+        }
 
         val optionalWidgetTab = caseWidgetTabRepository.findById(CaseTabId(caseDefinitionName, tabKey))
 
         assertTrue(optionalWidgetTab.isPresent)
         assertThat(optionalWidgetTab.get().widgets).hasSize(2)
 
-        caseWidgetTabService.updateWidgetTab(
-            CaseWidgetTabDto(
-                caseDefinitionName,
-                tabKey
+        runWithoutAuthorization {
+            caseWidgetTabService.updateWidgetTab(
+                CaseWidgetTabDto(
+                    caseDefinitionName,
+                    tabKey
+                )
             )
-        )
+        }
 
         val optionalUpdatedWidgetTab = caseWidgetTabRepository.findById(CaseTabId(caseDefinitionName, tabKey))
 
@@ -157,23 +159,23 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
         val caseDefinitionName = "some-case-type"
         val tabKey = "my-tab"
 
-        val caseTabDto = runWithoutAuthorization {
+        runWithoutAuthorization {
             caseTabService.createCaseTab(
                 caseDefinitionName,
                 CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-")
             )
-        }
 
-        caseWidgetTabService.updateWidgetTab(
-            CaseWidgetTabDto(
-                caseDefinitionName,
-                tabKey,
-                widgets = listOf(
-                    CaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false),
-                    CaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true)
+            caseWidgetTabService.updateWidgetTab(
+                CaseWidgetTabDto(
+                    caseDefinitionName,
+                    tabKey,
+                    widgets = listOf(
+                        CaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false),
+                        CaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true)
+                    )
                 )
             )
-        )
+        }
 
         val optionalWidgetTab = caseWidgetTabRepository.findById(CaseTabId(caseDefinitionName, tabKey))
 
@@ -187,16 +189,18 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
         assertThat(widgetTab.widgets[0].order).isEqualTo(0)
         assertThat(widgetTab.widgets[1].order).isEqualTo(1)
 
-        caseWidgetTabService.updateWidgetTab(
-            CaseWidgetTabDto(
-                caseDefinitionName,
-                tabKey,
-                widgets = listOf(
-                    CaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true),
-                    CaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false)
+        runWithoutAuthorization {
+            caseWidgetTabService.updateWidgetTab(
+                CaseWidgetTabDto(
+                    caseDefinitionName,
+                    tabKey,
+                    widgets = listOf(
+                        CaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true),
+                        CaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false)
+                    )
                 )
             )
-        )
+        }
 
         val optionalUpdatedWidgetTab = caseWidgetTabRepository.findById(CaseTabId(caseDefinitionName, tabKey))
 

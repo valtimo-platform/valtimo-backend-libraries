@@ -16,6 +16,10 @@
 
 package com.ritense.case_.service
 
+import com.ritense.authorization.Action.Companion.deny
+import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.request.EntityAuthorizationRequest
+import com.ritense.case.domain.CaseTab
 import com.ritense.case.domain.CaseTabId
 import com.ritense.case.domain.CaseTabType
 import com.ritense.case_.domain.tab.CaseWidgetTab
@@ -30,7 +34,8 @@ import kotlin.jvm.optionals.getOrElse
 
 @Transactional(readOnly = false)
 class CaseWidgetTabService(
-    private val caseWidgetTabRepository: CaseWidgetTabRepository
+    private val caseWidgetTabRepository: CaseWidgetTabRepository,
+    private val authorizationService: AuthorizationService,
 ) {
 
     @EventListener(CaseTabCreatedEvent::class)
@@ -47,6 +52,8 @@ class CaseWidgetTabService(
     }
 
     fun updateWidgetTab(tabDto: CaseWidgetTabDto): CaseWidgetTabDto? {
+        denyAuthorization()
+
         val caseWidgetTab = caseWidgetTabRepository.findById(CaseTabId(tabDto.caseDefinitionName, tabDto.key))
             .getOrElse {
                 throw RuntimeException(
@@ -66,5 +73,14 @@ class CaseWidgetTabService(
             )
 
         return CaseWidgetTabDto.of(caseWidgetTabRepository.save(caseWidgetTab))
+    }
+
+    private fun denyAuthorization() {
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                CaseTab::class.java,
+                deny()
+            )
+        )
     }
 }
