@@ -16,6 +16,10 @@
 
 package com.ritense.formviewmodel.viewmodel
 
+import com.ritense.valtimo.camunda.domain.CamundaTask
+
 interface ViewModel {
-    fun update(): ViewModel
+
+    fun update(task: CamundaTask): ViewModel
+
 }

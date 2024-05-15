@@ -1,0 +1,75 @@
+{
+    "display": "form",
+    "settings": {
+        "pdf": {
+            "id": "1ec0f8ee-6685-5d98-a847-26f67b67d6f0",
+            "src": "https://files.form.io/pdf/5692b91fd1028f01000407e3/file/1ec0f8ee-6685-5d98-a847-26f67b67d6f0"
+        }
+    },
+    "components": [
+        {
+            "label": "Firstname",
+            "key": "firstName",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Lastname",
+            "key": "lastName",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Fullname",
+            "key": "fullName",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Age",
+            "key": "age",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Container",
+            "tableView": false,
+            "key": "address",
+            "type": "container",
+            "input": true,
+            "components": [
+                {
+                    "label": "Street",
+                    "applyMaskOn": "change",
+                    "tableView": true,
+                    "key": "street",
+                    "type": "textfield",
+                    "input": true
+                },
+                {
+                    "label": "HouseNumber",
+                    "applyMaskOn": "change",
+                    "tableView": true,
+                    "key": "houseNumber",
+                    "type": "textfield",
+                    "input": true
+                },
+                {
+                    "label": "ZipCode",
+                    "applyMaskOn": "change",
+                    "tableView": true,
+                    "key": "zipCode",
+                    "type": "textfield",
+                    "input": true
+                }
+            ]
+        },
+        {
+            "type": "button",
+            "label": "Submit",
+            "key": "submit",
+            "disableOnInvalid": true,
+            "input": true
+        }
+    ]
+}

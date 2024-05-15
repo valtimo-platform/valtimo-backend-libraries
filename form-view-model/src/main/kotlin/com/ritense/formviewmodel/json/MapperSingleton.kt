@@ -24,9 +24,9 @@ import java.time.format.DateTimeFormatter
 
 object MapperSingleton {
 
-    const val DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    private const val DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
-    val customizer = Jackson2ObjectMapperBuilderCustomizer { builder ->
+    private val customizer = Jackson2ObjectMapperBuilderCustomizer { builder ->
         builder.simpleDateFormat(DATE_TIME_FORMAT)
         builder.serializers(LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)))
         builder.defaultViewInclusion(false)
