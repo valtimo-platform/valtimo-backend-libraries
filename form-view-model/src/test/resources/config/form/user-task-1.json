@@ -30,6 +30,23 @@
             }
         },
         {
+            "label": "Container",
+            "tableView": false,
+            "key": "dataContainer",
+            "type": "container",
+            "input": true,
+            "components": [
+                {
+                    "label": "Text Field",
+                    "applyMaskOn": "change",
+                    "tableView": true,
+                    "key": "nestedData",
+                    "type": "textfield",
+                    "input": true
+                }
+            ]
+        },
+        {
             "type": "button",
             "label": "Submit",
             "key": "submit",

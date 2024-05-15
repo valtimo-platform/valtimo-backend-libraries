@@ -5,7 +5,6 @@ import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formviewmodel.BaseTest
 import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
 import com.ritense.formviewmodel.event.TestSubmissionHandler
-import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.formviewmodel.viewmodel.TestViewModel
 import com.ritense.formviewmodel.viewmodel.TestViewModelLoader
 import com.ritense.formviewmodel.viewmodel.ViewModel
@@ -91,32 +90,6 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
         assertThat(missingFields).contains("age")
     }
 
-    // Example ViewModels
-    data class Person(val name: String, val address: Address)
-    data class Address(val street: String, val city: City)
-    data class City(val name: String, val code: Int)
-
-    @Test
-    fun `should extract all ViewModel field names`() {
-        onStartUpViewModelValidator.extractFieldNames(Person::class).let {
-            assertTrue(it.contains("address.city.code"))
-            assertTrue(it.contains("address.city.name"))
-            assertTrue(it.contains("address.street"))
-            assertTrue(it.contains("name"))
-        }
-    }
-
-    data class MySubmission(val name: String, val address: Address) : Submission
-
-    @Test
-    fun `should extract all field names for Submission`() {
-        onStartUpViewModelValidator.extractFieldNames(MySubmission::class).let {
-            assertTrue(it.contains("name"))
-            assertTrue(it.contains("address.city.code"))
-            assertTrue(it.contains("address.city.name"))
-        }
-    }
-
     @Test
     fun `should validate`() {
         // Redirect System.err to capture what is printed
@@ -125,8 +98,9 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
         System.setOut(printStream)
 
         mockViewModelLoader("user-task-1", true)
-        mockViewModelLoader("user-task-2", false)
+        onStartUpViewModelValidator.validate()
 
+        mockViewModelLoader("user-task-2", false)
         onStartUpViewModelValidator.validate()
 
         // Reset System.err
@@ -138,13 +112,13 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
         // Verify if the expected stack trace was printed
         assertTrue(
             printedStackTrace.contains(
-                "The following properties are missing in the view model for form (user-task-2): [age]"
+                "The following properties are missing in the view model for form (user-task-2): [age, dataContainer.nestedData]"
             )
         )
 
         assertTrue(
             printedStackTrace.contains(
-                "The following properties are missing in the submission for form (user-task-2): [age]"
+                "The following properties are missing in the submission for form (user-task-2): [age, dataContainer.nestedData]"
             )
         )
     }

@@ -27,8 +27,6 @@ import mu.KotlinLogging
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import kotlin.reflect.KClass
-import kotlin.reflect.full.memberProperties
-import kotlin.reflect.jvm.isAccessible
 
 class OnStartUpViewModelValidator(
     private val formIoFormDefinitionService: FormIoFormDefinitionService,
@@ -45,18 +43,22 @@ class OnStartUpViewModelValidator(
             val formDefinition =
                 formIoFormDefinitionService.getFormDefinitionByName(viewModelLoader.getFormName()).get()
             validateViewModel(viewModelLoader, formDefinition).let { missingProperties ->
-                logger.error {
-                    "The following properties are missing in the view model for form " +
-                        "(${viewModelLoader.getFormName()}): $missingProperties"
-                }
-                // Validate submission for the view model
-                formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler(
-                    viewModelLoader.getFormName()
-                )?.let {
-                    validateSubmission(it, formDefinition).let { missingSubmissionProperties ->
-                        logger.error {
-                            "The following properties are missing in the submission for form " +
-                                "(${viewModelLoader.getFormName()}): $missingSubmissionProperties"
+                if (missingProperties.isNotEmpty()) {
+                    logger.error {
+                        "The following properties are missing in the view model for form " +
+                            "(${viewModelLoader.getFormName()}): $missingProperties"
+                    }
+                    // Validate submission for the view model
+                    formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler(
+                        viewModelLoader.getFormName()
+                    )?.let {
+                        validateSubmission(it, formDefinition).let { missingSubmissionProperties ->
+                            if (missingSubmissionProperties.isNotEmpty()) {
+                                logger.error {
+                                    "The following properties are missing in the submission for form " +
+                                        "(${viewModelLoader.getFormName()}): $missingSubmissionProperties"
+                                }
+                            }
                         }
                     }
                 }
@@ -89,30 +91,10 @@ class OnStartUpViewModelValidator(
         submission: KClass<*>,
         formDefinition: FormIoFormDefinition
     ): List<String> {
-        val fieldNames = extractFieldNames(submission)
+        val fieldNames = DataClassPropertiesExtractor.extractProperties(submission)
         return fieldNames.filter { fieldName ->
-            fieldName !in formDefinition.inputFields.map { it["key"].asText() }
+            fieldName !in FormIOFormPropertiesExtractor.extractProperties(formDefinition.formDefinition)
         }
-    }
-
-    fun extractFieldNames(kClass: KClass<*>, prefix: String = ""): List<String> {
-        val results = mutableListOf<String>()
-
-        // Iterate over each member property of the class
-        for (prop in kClass.memberProperties) {
-            prop.isAccessible = true  // Make private properties accessible
-
-            // Determine the return type of the property
-            val returnType = prop.returnType.classifier as? KClass<*>
-            if (returnType != null && returnType.isData) {
-                // If the return type is a data class, recurse into it
-                results.addAll(extractFieldNames(returnType, "$prefix${prop.name}."))
-            } else {
-                // Otherwise, add the property name to results
-                results.add("$prefix${prop.name}")
-            }
-        }
-        return results
     }
 
     companion object {
