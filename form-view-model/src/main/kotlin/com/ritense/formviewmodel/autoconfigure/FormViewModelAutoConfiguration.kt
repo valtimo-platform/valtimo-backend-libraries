@@ -30,6 +30,7 @@ import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.formviewmodel.viewmodel.ViewModelLoader
 import com.ritense.formviewmodel.viewmodel.ViewModelLoaderFactory
 import com.ritense.formviewmodel.web.rest.FormViewModelResource
+import com.ritense.formviewmodel.web.rest.error.FormViewModelModuleExceptionTranslator
 import com.ritense.valtimo.service.CamundaTaskService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Bean
@@ -37,6 +38,9 @@ import org.springframework.core.annotation.Order
 
 @AutoConfiguration
 class FormViewModelAutoConfiguration {
+
+    @Bean
+    fun formViewModelModuleExceptionTranslator() = FormViewModelModuleExceptionTranslator()
 
     @Bean
     fun formViewModelService(

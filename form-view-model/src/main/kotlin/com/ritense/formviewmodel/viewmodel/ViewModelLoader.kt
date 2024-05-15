@@ -16,11 +16,12 @@
 
 package com.ritense.formviewmodel.viewmodel
 
+import com.ritense.valtimo.camunda.domain.CamundaTask
 import kotlin.reflect.KClass
 
 interface ViewModelLoader<T : ViewModel> {
 
-    fun load(taskInstanceId: String): T
+    fun load(task: CamundaTask): T
 
     fun supports(formName: String) = getFormName() == formName
 
