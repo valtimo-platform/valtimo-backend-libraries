@@ -19,6 +19,13 @@ package com.ritense.zakenapi.service
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.documentenapi.client.DocumentInformatieObject
+import com.ritense.documentenapi.domain.DocumentenApiColumnKey
+import com.ritense.documentenapi.domain.DocumentenApiColumnKey.AUTEUR
+import com.ritense.documentenapi.domain.DocumentenApiColumnKey.CREATIEDATUM
+import com.ritense.documentenapi.domain.DocumentenApiColumnKey.INFORMATIEOBJECTTYPE
+import com.ritense.documentenapi.domain.DocumentenApiColumnKey.TITEL
+import com.ritense.documentenapi.domain.DocumentenApiColumnKey.TREFWOORDEN
+import com.ritense.documentenapi.domain.DocumentenApiColumnKey.VERTROUWELIJKHEIDAANDUIDING
 import com.ritense.documentenapi.domain.DocumentenApiVersion
 import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.documentenapi.service.DocumentenApiVersionService
@@ -35,10 +42,10 @@ import com.ritense.zakenapi.link.ZaakInstanceLinkNotFoundException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import org.springframework.data.support.PageableExecutionUtils
 import org.springframework.transaction.annotation.Transactional
 import java.net.URI
 import java.util.UUID
+import kotlin.math.min
 
 @Transactional
 class ZaakDocumentService(
@@ -69,23 +76,46 @@ class ZaakDocumentService(
         pageable: Pageable,
     ): Page<DocumentenApiDocumentDto> {
         val zaakUri = zaakUrlProvider.getZaakUrl(documentId)
-        val documentSearchRequestWithZaakUrl = documentSearchRequest.copy(zaakUrl = zaakUri)
         val version = documentenApiVersionService.getVersionByDocumentId(documentId)
-        require(version.supportsTrefwoorden || documentSearchRequest.trefwoorden == null) {
-            "Unsupported field 'trefwoorden' on Documenten API version '$version'"
+        check(documentSearchRequest.informatieobjecttype != null, INFORMATIEOBJECTTYPE, version)
+        check(documentSearchRequest.titel != null, TITEL, version)
+        check(documentSearchRequest.vertrouwelijkheidaanduiding != null, VERTROUWELIJKHEIDAANDUIDING, version)
+        check(documentSearchRequest.creatiedatumFrom != null, CREATIEDATUM, version)
+        check(documentSearchRequest.creatiedatumTo != null, CREATIEDATUM, version)
+        check(documentSearchRequest.auteur != null, AUTEUR, version)
+        check(documentSearchRequest.trefwoorden != null, TREFWOORDEN, version)
+        if (!version.supportsTrefwoorden) {
+            require(documentSearchRequest.trefwoorden == null) {
+                "Unsupported field 'trefwoorden' on Documenten API version '$version'"
+            }
         }
         return if (version.supportsFilterableColumns() && version.supportsSortableColumns()) {
             documentenApiService.getCaseInformatieObjecten(
                 documentId,
-                documentSearchRequestWithZaakUrl,
+                documentSearchRequest.copy(zaakUrl = zaakUri),
                 pageable
             ).map { mapDocumentenApiDocument(it, version) }
         } else {
             val zakenApiPlugin = getZakenApiPlugin(zaakUri)
             val documenten = zakenApiPlugin.getZaakInformatieObjecten(zaakUri)
                 .map { mapDocumentenApiDocument(it, version) }
-            PageImpl(documenten, pageable, documenten.size.toLong())
+            return toPage(documenten, pageable)
         }
+    }
+
+    private fun check(shouldCheck: Boolean, columnKey: DocumentenApiColumnKey, version: DocumentenApiVersion) {
+        if (shouldCheck) {
+            val fieldName = columnKey.name.lowercase()
+            check(version.filterableColumns.contains(fieldName)) {
+                "Unsupported filter '$fieldName' on Documenten API with version $version"
+            }
+        }
+    }
+
+    private fun <T> toPage(list: List<T>, pageable: Pageable): Page<T> {
+        val startIndex = pageable.offset.toInt()
+        val endIndex = min(startIndex + pageable.pageSize, list.size)
+        return PageImpl(list.subList(startIndex, endIndex), pageable, list.size.toLong())
     }
 
     private fun getRelatedFiles(zaakInformatieObject: ZaakInformatieObject): RelatedFileDto {
