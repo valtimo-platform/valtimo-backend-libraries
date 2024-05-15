@@ -27,8 +27,6 @@ import mu.KotlinLogging
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import kotlin.reflect.KClass
-import kotlin.reflect.full.memberProperties
-import kotlin.reflect.jvm.isAccessible
 
 class OnStartUpViewModelValidator(
     private val formIoFormDefinitionService: FormIoFormDefinitionService,
@@ -93,49 +91,10 @@ class OnStartUpViewModelValidator(
         submission: KClass<*>,
         formDefinition: FormIoFormDefinition
     ): List<String> {
-        val fieldNames = transformListOfProperties(extractFieldNames(submission))
+        val fieldNames = DataClassPropertiesExtractor.extractProperties(submission)
         return fieldNames.filter { fieldName ->
-            fieldName !in formDefinition.inputFields.map { it["key"].asText() }
+            fieldName !in FormIOFormPropertiesExtractor.extractProperties(formDefinition.formDefinition)
         }
-    }
-
-    fun extractFieldNames(kClass: KClass<*>, prefix: String = ""): List<String> {
-        val results = mutableListOf<String>()
-
-        // Iterate over each member property of the class
-        for (prop in kClass.memberProperties) {
-            prop.isAccessible = true  // Make private properties accessible
-
-            // Determine the return type of the property
-            val returnType = prop.returnType.classifier as? KClass<*>
-            if (returnType != null && returnType.isData) {
-                // If the return type is a data class, recurse into it
-                results.addAll(extractFieldNames(returnType, "$prefix${prop.name}."))
-            } else {
-                // Otherwise, add the property name to results
-                results.add("$prefix${prop.name}")
-            }
-        }
-        return results
-    }
-
-    // This transforms [a.b.c, a.b.d, a.e] into [a, b, c, d, e]
-    private fun transformListOfProperties(originalList: List<String>): List<String> {
-        val transformedList = mutableListOf<String>()
-
-        for (item in originalList) {
-            val parts = item.split('.')
-            if (parts.size == 1) {
-                transformedList.add(parts[0])
-            } else {
-                for (i in 1 until parts.size) {
-                    transformedList.add(parts[i])
-                }
-                transformedList.add(0, parts[0])
-            }
-        }
-
-        return transformedList
     }
 
     companion object {
