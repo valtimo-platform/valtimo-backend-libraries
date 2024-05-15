@@ -19,7 +19,4 @@ class FormIOFormPropertiesExtractorTest : BaseTest() {
 
     private fun getValidFormDefinition(): Optional<FormIoFormDefinition> =
         Optional.of(formDefinitionOf("user-task-1"))
-
-    private fun getInvalidFormDefinition(): Optional<FormIoFormDefinition> =
-        Optional.of(formDefinitionOf("user-task-2"))
 }
