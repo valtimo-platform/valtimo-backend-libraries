@@ -85,7 +85,7 @@ class FormViewModelResource(
 
     @PostMapping("/submit")
     @Transactional
-    fun submitFormViewModel(
+    fun submit(
         @RequestParam(required = true) formName: String,
         @RequestParam(required = true) taskInstanceId: String,
         @RequestBody submission: ObjectNode
