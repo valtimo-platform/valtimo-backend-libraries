@@ -58,9 +58,12 @@ class FormViewModelResource(
         authorizationService.requirePermission(
             EntityAuthorizationRequest(CamundaTask::class.java, VIEW, task)
         )
-        return ResponseEntity.ok(
-            viewModelLoaderFactory.getViewModelLoader(formName)?.load(task)
-        )
+        val viewModel = viewModelLoaderFactory.getViewModelLoader(formName)?.load(task)
+        return if (viewModel != null) {
+            ResponseEntity.ok(viewModel)
+        } else {
+            ResponseEntity.notFound().build()
+        }
     }
 
     @PostMapping
@@ -73,10 +76,11 @@ class FormViewModelResource(
         authorizationService.requirePermission(
             EntityAuthorizationRequest(CamundaTask::class.java, VIEW, task)
         )
-        val viewModelType = viewModelLoaderFactory.getViewModelLoader(formName)?.getViewModelType()!!
-        return ResponseEntity.ok(
-            formViewModelService.parseViewModel(submission, viewModelType).update(task)
-        )
+        val viewModelLoader =
+            viewModelLoaderFactory.getViewModelLoader(formName) ?: return ResponseEntity.notFound().build()
+        val viewModelType = viewModelLoader.getViewModelType()
+        val updatedViewModel = formViewModelService.parseViewModel(submission, viewModelType).update(task)
+        return ResponseEntity.ok(updatedViewModel)
     }
 
     @PostMapping("/submit")

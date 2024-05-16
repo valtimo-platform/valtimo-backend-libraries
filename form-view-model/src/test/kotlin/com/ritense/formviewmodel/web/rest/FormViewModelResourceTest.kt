@@ -9,7 +9,6 @@ import com.ritense.formviewmodel.service.FormViewModelService
 import com.ritense.formviewmodel.service.FormViewModelSubmissionService
 import com.ritense.formviewmodel.viewmodel.TestViewModel
 import com.ritense.formviewmodel.viewmodel.TestViewModelLoader
-import com.ritense.formviewmodel.viewmodel.ViewModel
 import com.ritense.formviewmodel.viewmodel.ViewModelLoaderFactory
 import com.ritense.formviewmodel.web.rest.error.FormViewModelModuleExceptionTranslator
 import com.ritense.valtimo.camunda.domain.CamundaTask
@@ -45,7 +44,6 @@ class FormViewModelResourceTest : BaseTest() {
 
     @BeforeEach
     fun setUp() {
-
         camundaTask = mock()
         viewModelLoaderFactory = mock()
         camundaTaskService = mock()
@@ -73,30 +71,42 @@ class FormViewModelResourceTest : BaseTest() {
     }
 
     @Test
-    fun `should get form view model`() {
+    fun `should get view model`() {
+        whenever(viewModelLoaderFactory.getViewModelLoader("test")).thenReturn(TestViewModelLoader())
         mockMvc.perform(
-            get("/api/v1/form/view-model?formName=test&taskInstanceId=taskInstanceId")
+            get("$BASE_URL?formName=test&taskInstanceId=taskInstanceId")
                 .accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
         ).andExpect(status().isOk)
     }
 
     @Test
-    fun `should not get form view model`() {
+    fun `should return notfound for unknown view model`() {
+        whenever(viewModelLoaderFactory.getViewModelLoader("test")).thenReturn(null)
         mockMvc.perform(
-            get("/api/v1/form/view-model")
+            get("$BASE_URL?formName=test&taskInstanceId=taskInstanceId")
+                .accept(APPLICATION_JSON_UTF8_VALUE)
+                .contentType(APPLICATION_JSON_UTF8_VALUE)
+        ).andExpect(status().isNotFound)
+    }
+
+
+    @Test
+    fun `should not get view model`() {
+        mockMvc.perform(
+            get("$BASE_URL")
                 .accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
         ).andExpect(status().is4xxClientError)
     }
 
     @Test
-    fun `should update form view model`() {
+    fun `should update view model`() {
         whenever(viewModelLoaderFactory.getViewModelLoader(any())).thenReturn(TestViewModelLoader())
 
         mockMvc.perform(
             post(
-                "/api/v1/form/view-model?formName={formName}&taskInstanceId={taskInstanceId}",
+                "$BASE_URL?formName={formName}&taskInstanceId={taskInstanceId}",
                 "test", "taskInstanceId"
             ).accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
@@ -107,20 +117,20 @@ class FormViewModelResourceTest : BaseTest() {
     }
 
     @Test
-    fun `should not update form view model`() {
+    fun `should not update view model`() {
         mockMvc.perform(
-            post("/api/v1/form/view-model")
+            post("$BASE_URL")
                 .accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
         ).andExpect(status().is4xxClientError)
     }
 
     @Test
-    fun `should submit form view model`() {
+    fun `should submit view model`() {
         whenever(viewModelLoaderFactory.getViewModelLoader(any())).thenReturn(TestViewModelLoader())
         mockMvc.perform(
             post(
-                "/api/v1/form/view-model/submit?formName={formName}&taskInstanceId={taskInstanceId}",
+                "$BASE_URL/submit?formName={formName}&taskInstanceId={taskInstanceId}",
                 "test", "taskInstanceId"
             ).accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
@@ -135,12 +145,16 @@ class FormViewModelResourceTest : BaseTest() {
         }
         mockMvc.perform(
             post(
-                "/api/v1/form/view-model/submit?formName={formName}&taskInstanceId={taskInstanceId}",
+                "$BASE_URL/submit?formName={formName}&taskInstanceId={taskInstanceId}",
                 "test", "taskInstanceId"
             ).accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
                 .content(objectMapper.writeValueAsString(TestViewModel()))
         ).andExpect(status().isBadRequest)
+    }
+
+    companion object {
+        private const val BASE_URL = "/api/v1/form/view-model"
     }
 
 }
