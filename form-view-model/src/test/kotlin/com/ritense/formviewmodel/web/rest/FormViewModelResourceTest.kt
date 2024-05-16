@@ -9,6 +9,7 @@ import com.ritense.formviewmodel.service.FormViewModelService
 import com.ritense.formviewmodel.service.FormViewModelSubmissionService
 import com.ritense.formviewmodel.viewmodel.TestViewModel
 import com.ritense.formviewmodel.viewmodel.TestViewModelLoader
+import com.ritense.formviewmodel.viewmodel.ViewModel
 import com.ritense.formviewmodel.viewmodel.ViewModelLoaderFactory
 import com.ritense.formviewmodel.web.rest.error.FormViewModelModuleExceptionTranslator
 import com.ritense.valtimo.camunda.domain.CamundaTask
@@ -74,9 +75,8 @@ class FormViewModelResourceTest : BaseTest() {
     @Test
     fun `should get form view model`() {
         mockMvc.perform(
-            get(
-                "/api/v1/form/view-model?formName=test&taskInstanceId=taskInstanceId"
-            ).accept(APPLICATION_JSON_UTF8_VALUE)
+            get("/api/v1/form/view-model?formName=test&taskInstanceId=taskInstanceId")
+                .accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
         ).andExpect(status().isOk)
     }
@@ -84,9 +84,8 @@ class FormViewModelResourceTest : BaseTest() {
     @Test
     fun `should not get form view model`() {
         mockMvc.perform(
-            get(
-                "/api/v1/form/view-model"
-            ).accept(APPLICATION_JSON_UTF8_VALUE)
+            get("/api/v1/form/view-model")
+                .accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
         ).andExpect(status().is4xxClientError)
     }
@@ -97,7 +96,8 @@ class FormViewModelResourceTest : BaseTest() {
 
         mockMvc.perform(
             post(
-                "/api/v1/form/view-model?formName=test&taskInstanceId=taskInstanceId"
+                "/api/v1/form/view-model?formName={formName}&taskInstanceId={taskInstanceId}",
+                "test", "taskInstanceId"
             ).accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
                 .content(jacksonObjectMapper().writeValueAsString(TestViewModel()))
@@ -109,9 +109,8 @@ class FormViewModelResourceTest : BaseTest() {
     @Test
     fun `should not update form view model`() {
         mockMvc.perform(
-            post(
-                "/api/v1/form/view-model"
-            ).accept(APPLICATION_JSON_UTF8_VALUE)
+            post("/api/v1/form/view-model")
+                .accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
         ).andExpect(status().is4xxClientError)
     }

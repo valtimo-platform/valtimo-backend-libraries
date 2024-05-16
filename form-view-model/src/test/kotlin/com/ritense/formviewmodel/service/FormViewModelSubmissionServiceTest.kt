@@ -58,7 +58,6 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
     @Test
     fun `should not handle submission`() {
         val submission = submissionWithUnderAge()
-
         assertThrows<FormException> {
             formViewModelSubmissionService.handleSubmission(
                 formName = "test",

@@ -18,8 +18,10 @@ package com.ritense.formviewmodel.event
 
 import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.valtimo.camunda.domain.CamundaTask
+import org.springframework.transaction.annotation.Transactional
 import kotlin.reflect.KClass
 
+@Transactional
 interface FormViewModelSubmissionHandler<T : Submission> {
 
     fun supports(formName: String): Boolean
