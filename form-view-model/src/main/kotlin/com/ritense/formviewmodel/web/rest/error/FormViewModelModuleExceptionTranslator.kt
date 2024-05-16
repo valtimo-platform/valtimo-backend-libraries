@@ -1,6 +1,8 @@
 package com.ritense.formviewmodel.web.rest.error
 
+import com.ritense.formviewmodel.error.BusinessException
 import com.ritense.formviewmodel.error.FormException
+import com.ritense.formviewmodel.web.rest.dto.BusinessRuleError
 import com.ritense.formviewmodel.web.rest.dto.FormError
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
@@ -19,6 +21,14 @@ class FormViewModelModuleExceptionTranslator : ProblemHandling {
         return ResponseEntity
             .badRequest()
             .body(FormError(error = ex.message!!, component = ex.component))
+    }
+
+
+    @ExceptionHandler(BusinessException::class)
+    fun handleBusinessException(ex: FormException, request: NativeWebRequest): ResponseEntity<BusinessRuleError> {
+        return ResponseEntity
+            .badRequest()
+            .body(BusinessRuleError(error = ex.message!!))
     }
 
 }
