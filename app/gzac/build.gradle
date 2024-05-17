@@ -3,7 +3,7 @@ plugins {
 }
 
 openApiGenerate {
-    inputSpec.set("src/main/resources/inwonerplan.openapi.json")
+    remoteInputSpec = "http://localhost:4567/v3/api-docs".toString()
     generatorName.set("kotlin")
     apiPackage.set("com.inwonerplan.api")
     invokerPackage.set("com.inwonerplan.invoker")

@@ -51,6 +51,7 @@ class StamtabellenApi(basePath: kotlin.String = defaultBasePath, client: OkHttpC
     /**
      * 
      * 
+     * @param subdoel  (optional)
      * @return kotlin.collections.List<Aanbod>
      * @throws IllegalStateException If the request is not correctly configured
      * @throws IOException Rethrows the OkHttp execute method exception
@@ -60,8 +61,8 @@ class StamtabellenApi(basePath: kotlin.String = defaultBasePath, client: OkHttpC
      */
     @Suppress("UNCHECKED_CAST")
     @Throws(IllegalStateException::class, IOException::class, UnsupportedOperationException::class, ClientException::class, ServerException::class)
-    fun getAanbod() : kotlin.collections.List<Aanbod> {
-        val localVarResponse = getAanbodWithHttpInfo()
+    fun getAanbodWithSubdoel(subdoel: kotlin.String? = null) : kotlin.collections.List<Aanbod> {
+        val localVarResponse = getAanbodWithSubdoelWithHttpInfo(subdoel = subdoel)
 
         return when (localVarResponse.responseType) {
             ResponseType.Success -> (localVarResponse as Success<*>).data as kotlin.collections.List<Aanbod>
@@ -81,14 +82,15 @@ class StamtabellenApi(basePath: kotlin.String = defaultBasePath, client: OkHttpC
     /**
      * 
      * 
+     * @param subdoel  (optional)
      * @return ApiResponse<kotlin.collections.List<Aanbod>?>
      * @throws IllegalStateException If the request is not correctly configured
      * @throws IOException Rethrows the OkHttp execute method exception
      */
     @Suppress("UNCHECKED_CAST")
     @Throws(IllegalStateException::class, IOException::class)
-    fun getAanbodWithHttpInfo() : ApiResponse<kotlin.collections.List<Aanbod>?> {
-        val localVariableConfig = getAanbodRequestConfig()
+    fun getAanbodWithSubdoelWithHttpInfo(subdoel: kotlin.String?) : ApiResponse<kotlin.collections.List<Aanbod>?> {
+        val localVariableConfig = getAanbodWithSubdoelRequestConfig(subdoel = subdoel)
 
         return request<Unit, kotlin.collections.List<Aanbod>>(
             localVariableConfig
@@ -96,13 +98,19 @@ class StamtabellenApi(basePath: kotlin.String = defaultBasePath, client: OkHttpC
     }
 
     /**
-     * To obtain the request config of the operation getAanbod
+     * To obtain the request config of the operation getAanbodWithSubdoel
      *
+     * @param subdoel  (optional)
      * @return RequestConfig
      */
-    fun getAanbodRequestConfig() : RequestConfig<Unit> {
+    fun getAanbodWithSubdoelRequestConfig(subdoel: kotlin.String?) : RequestConfig<Unit> {
         val localVariableBody = null
-        val localVariableQuery: MultiValueMap = mutableMapOf()
+        val localVariableQuery: MultiValueMap = mutableMapOf<kotlin.String, kotlin.collections.List<kotlin.String>>()
+            .apply {
+                if (subdoel != null) {
+                    put("subdoel", listOf(subdoel.toString()))
+                }
+            }
         val localVariableHeaders: MutableMap<String, String> = mutableMapOf()
         
         return RequestConfig(

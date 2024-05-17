@@ -7,35 +7,14 @@ import com.ritense.formviewmodel.viewmodel.ViewModelLoader
 class AanbodViewModelLoader: ViewModelLoader<AanbodViewModel> {
 
     override fun load(taskInstanceId: String): AanbodViewModel {
-        val subdoel = POCSubmissions.subdoelen!!
-
-        val aanbodGrid = subdoel.subdoelenGrid.map {
-            AanbodGridRow(
-                it.aandachtspunt,
-                it.aandachtspunt,
-                it.subdoel!!,
-                it.subdoel,
-                getSubdoelenForAandachtspunten(it.aandachtspunt),
-                null
-            )
-        }
-
         return AanbodViewModel(
-            StamtabellenApi().getAanbod(),
-            aanbodGrid,
+            emptyList(),
             StamtabellenApi().getAandachtspunten()
         )
     }
 
-    fun getSubdoelenForAandachtspunten(aandachtsPunt: String) =
-        StamtabellenApi().getSubdoelen().filter { subdoel ->
-            subdoel.aandachtspunten!!.find { subdoelAandachtsPunt ->
-                subdoelAandachtsPunt.id!!.toString() == aandachtsPunt
-            } != null
-        }
-
     override fun supports(formName: String): Boolean {
-        return formName == "form_aanbod"
+        return formName == getFormName()
     }
 
     override fun getFormName(): String {

@@ -4,7 +4,6 @@
         {
             "label": "Selecteer aanbod",
             "reorder": false,
-            "disableAddingRemovingRows": true,
             "addAnotherPosition": "bottom",
             "layoutFixed": false,
             "enableRowGroups": false,
@@ -36,7 +35,7 @@
                                     },
                                     "type": "select",
                                     "validate": {
-                                        "custom": "console.log('aandachtpunt',input, row.aandachtspuntOriginal); if(input != row.aandachtspuntOriginal) { row.subdoel = null; form.updateViewModel(); }"
+                                        "custom": "console.log('aandachtpunt',input, row.aandachtspuntOriginal); if(input != row.aandachtspuntOriginal && input != '') { console.log('updating aandachtpunt'); row.subdoel = null; form.updateViewModel(); }"
                                     },
                                     "input": true,
                                     "label": "Aandachtspunt",
@@ -146,7 +145,7 @@
                                     },
                                     "type": "select",
                                     "validate": {
-                                        "custom": "console.log('subdoel', input, row.subdoelOriginal); if(input != row.subdoelOriginal) { form.updateViewModel(); }"
+                                        "custom": "console.log('subdoel', input, row.subdoelOriginal); if(input != row.subdoelOriginal && input != '') { console.log('updating subdoel'); form.updateViewModel(); }"
                                     },
                                     "input": true,
                                     "label": "Subdoel",
@@ -255,11 +254,28 @@
                                             "tableView": true,
                                             "dataSrc": "custom",
                                             "data": {
-                                                "custom": "values = data['vm:aanbiedingen'];"
+                                                "custom": "console.log('aanbiedingen', row); values = row.aanbiedingen;"
+                                            },
+                                            "validate": {
+                                                "custom": "console.log('aanbod', input, row.aanbodOriginal); if(input != row.aanbodOriginal && input != '') { console.log('updating aanbod'); form.updateViewModel(); }"
                                             },
                                             "valueProperty": "id",
                                             "template": "<span>{{ item.naam }}</span>",
                                             "key": "aanbod",
+                                            "type": "select",
+                                            "input": true
+                                        },
+                                        {
+                                            "label": "Activiteit",
+                                            "widget": "choicesjs",
+                                            "tableView": true,
+                                            "dataSrc": "custom",
+                                            "data": {
+                                                "custom": "values = row.activiteiten;"
+                                            },
+                                            "valueProperty": "id",
+                                            "template": "<span>{{ item.naamaanbodactiviteit }}</span>",
+                                            "key": "activiteit",
                                             "type": "select",
                                             "input": true
                                         }
