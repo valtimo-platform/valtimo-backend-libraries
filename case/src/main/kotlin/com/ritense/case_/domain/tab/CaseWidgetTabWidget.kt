@@ -32,7 +32,7 @@ import jakarta.persistence.Table
     name = "case_widget_type",
     discriminatorType = DiscriminatorType.STRING
 )
-data class CaseWidgetTabWidget(
+abstract class CaseWidgetTabWidget(
     @Id
     @Column(name = "`key`", updatable = false, nullable = false, unique = true)
     val key: String,
@@ -48,4 +48,30 @@ data class CaseWidgetTabWidget(
 
     @Column(name = "high_contrast", nullable = false)
     val highContrast: Boolean,
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is CaseWidgetTabWidget) return false
+
+        if (key != other.key) return false
+        if (title != other.title) return false
+        if (order != other.order) return false
+        if (width != other.width) return false
+        if (highContrast != other.highContrast) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = key.hashCode()
+        result = 31 * result + title.hashCode()
+        result = 31 * result + order
+        result = 31 * result + width
+        result = 31 * result + highContrast.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "CaseWidgetTabWidget(key='$key', title='$title', order=$order, width=$width, highContrast=$highContrast)"
+    }
+}

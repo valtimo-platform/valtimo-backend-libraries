@@ -8,7 +8,7 @@ import com.ritense.case.service.CaseTabService
 import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case_.repository.CaseWidgetTabRepository
 import com.ritense.case_.rest.dto.CaseWidgetTabDto
-import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
+import com.ritense.case_.web.rest.dto.TestCaseWidgetTabWidgetDto
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -85,8 +85,8 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
                     caseDefinitionName,
                     tabKey,
                     widgets = listOf(
-                        CaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false),
-                        CaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true)
+                        TestCaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false),
+                        TestCaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true)
                     )
                 )
             )
@@ -125,8 +125,8 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
                     caseDefinitionName,
                     tabKey,
                     widgets = listOf(
-                        CaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false),
-                        CaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true)
+                        TestCaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false),
+                        TestCaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true)
                     )
                 )
             )
@@ -168,8 +168,8 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
                     caseDefinitionName,
                     tabKey,
                     widgets = listOf(
-                        CaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false),
-                        CaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true)
+                        TestCaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false),
+                        TestCaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true)
                     )
                 )
             )
@@ -191,8 +191,8 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
                     caseDefinitionName,
                     tabKey,
                     widgets = listOf(
-                        CaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true),
-                        CaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false)
+                        TestCaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true),
+                        TestCaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false)
                     )
                 )
             )

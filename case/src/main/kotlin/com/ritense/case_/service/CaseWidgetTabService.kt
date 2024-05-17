@@ -23,10 +23,10 @@ import com.ritense.case.domain.CaseTab
 import com.ritense.case.domain.CaseTabId
 import com.ritense.case.domain.CaseTabType
 import com.ritense.case_.domain.tab.CaseWidgetTab
-import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 import com.ritense.case_.repository.CaseWidgetTabRepository
 import com.ritense.case_.rest.dto.CaseWidgetTabDto
 import com.ritense.case_.service.event.CaseTabCreatedEvent
+import com.ritense.case_.widget.CaseWidgetMapper
 import org.springframework.context.event.EventListener
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional
 class CaseWidgetTabService(
     private val caseWidgetTabRepository: CaseWidgetTabRepository,
     private val authorizationService: AuthorizationService,
+    private val caseWidgetMappers: List<CaseWidgetMapper>,
 ) {
 
     @EventListener(CaseTabCreatedEvent::class)
@@ -47,9 +48,10 @@ class CaseWidgetTabService(
     @Transactional(readOnly = true)
     fun getWidgetTab(caseDefinitionName: String, key: String): CaseWidgetTabDto? {
         return caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, key))
-            ?.let { CaseWidgetTabDto.of(it) }
+            ?.let { CaseWidgetTabDto.of(it, caseWidgetMappers) }
     }
 
+    @Transactional
     fun updateWidgetTab(tabDto: CaseWidgetTabDto): CaseWidgetTabDto? {
         denyAuthorization()
 
@@ -60,17 +62,11 @@ class CaseWidgetTabService(
                 )
             ).copy(
                 widgets = tabDto.widgets.mapIndexed { index, widgetDto ->
-                    CaseWidgetTabWidget(
-                        widgetDto.key,
-                        widgetDto.title,
-                        index,
-                        widgetDto.width,
-                        widgetDto.highContrast
-                    )
+                    caseWidgetMappers.firstNotNullOf { it.toEntity(widgetDto, index) }
                 }
             )
 
-        return CaseWidgetTabDto.of(caseWidgetTabRepository.save(caseWidgetTab))
+        return CaseWidgetTabDto.of(caseWidgetTabRepository.save(caseWidgetTab), caseWidgetMappers)
     }
 
     private fun denyAuthorization() {

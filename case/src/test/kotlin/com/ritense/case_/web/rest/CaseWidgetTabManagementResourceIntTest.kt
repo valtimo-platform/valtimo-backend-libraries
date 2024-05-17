@@ -22,7 +22,7 @@ import com.ritense.case.domain.CaseTabType
 import com.ritense.case.service.CaseTabService
 import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case_.rest.dto.CaseWidgetTabDto
-import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
+import com.ritense.case_.web.rest.dto.TestCaseWidgetTabWidgetDto
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.utils.TestUtil
 import org.junit.jupiter.api.BeforeEach
@@ -93,8 +93,8 @@ class CaseWidgetTabManagementResourceIntTest @Autowired constructor(
             caseDefinitionName,
             tabKey,
             widgets = listOf(
-                CaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false),
-                CaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true)
+                TestCaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false),
+                TestCaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true)
             )
         )
 

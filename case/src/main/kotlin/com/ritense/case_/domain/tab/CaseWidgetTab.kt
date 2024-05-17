@@ -34,8 +34,8 @@ data class CaseWidgetTab(
     val id: CaseTabId,
     @OneToMany(fetch = EAGER, cascade = [ALL], orphanRemoval = true)
     @JoinColumns(
-        JoinColumn(name = "case_definition_name", referencedColumnName = "case_definition_name"),
-        JoinColumn(name = "tab_key", referencedColumnName = "tab_key")
+        JoinColumn(name = "case_definition_name", referencedColumnName = "case_definition_name", updatable = false, nullable = false),
+        JoinColumn(name = "tab_key", referencedColumnName = "tab_key", updatable = false, nullable = false)
     )
     @OrderBy("order ASC")
     val widgets: List<CaseWidgetTabWidget> = listOf(),
