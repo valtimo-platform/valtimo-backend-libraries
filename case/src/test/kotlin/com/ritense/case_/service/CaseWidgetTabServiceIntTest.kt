@@ -10,9 +10,9 @@ import com.ritense.case_.repository.CaseWidgetTabRepository
 import com.ritense.case_.rest.dto.CaseWidgetTabDto
 import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
@@ -92,13 +92,11 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
             )
         }
 
-        val optionalWidgetTab = caseWidgetTabRepository.findById(CaseTabId(caseDefinitionName, tabKey))
+        val widgetTab = caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, tabKey))
 
-        assertTrue(optionalWidgetTab.isPresent)
+        assertThat(widgetTab).isNotNull
 
-        val widgetTab = optionalWidgetTab.get()
-
-        assertThat(widgetTab.widgets).hasSize(2)
+        assertThat(widgetTab!!.widgets).hasSize(2)
         assertThat(widgetTab.widgets[0].key).isEqualTo("widget-1")
         assertThat(widgetTab.widgets[1].key).isEqualTo("widget-2")
         assertThat(widgetTab.widgets[0].title).isEqualTo("Widget 1")
@@ -134,10 +132,10 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
             )
         }
 
-        val optionalWidgetTab = caseWidgetTabRepository.findById(CaseTabId(caseDefinitionName, tabKey))
+        val widgetTab = caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, tabKey))
 
-        assertTrue(optionalWidgetTab.isPresent)
-        assertThat(optionalWidgetTab.get().widgets).hasSize(2)
+        assertThat(widgetTab).isNotNull
+        assertThat(widgetTab!!.widgets).hasSize(2)
 
         runWithoutAuthorization {
             caseWidgetTabService.updateWidgetTab(
@@ -148,10 +146,10 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
             )
         }
 
-        val optionalUpdatedWidgetTab = caseWidgetTabRepository.findById(CaseTabId(caseDefinitionName, tabKey))
+        val updatedWidgetTab = caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, tabKey))
 
-        assertTrue(optionalUpdatedWidgetTab.isPresent)
-        assertThat(optionalUpdatedWidgetTab.get().widgets).isEmpty()
+        assertThat(updatedWidgetTab).isNotNull
+        assertThat(updatedWidgetTab!!.widgets).isEmpty()
     }
 
     @Test
@@ -177,13 +175,11 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
             )
         }
 
-        val optionalWidgetTab = caseWidgetTabRepository.findById(CaseTabId(caseDefinitionName, tabKey))
+        val widgetTab = caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, tabKey))
 
-        assertTrue(optionalWidgetTab.isPresent)
+        assertThat(widgetTab).isNotNull
 
-        val widgetTab = optionalWidgetTab.get()
-
-        assertThat(widgetTab.widgets).hasSize(2)
+        assertThat(widgetTab!!.widgets).hasSize(2)
         assertThat(widgetTab.widgets[0].key).isEqualTo("widget-1")
         assertThat(widgetTab.widgets[1].key).isEqualTo("widget-2")
         assertThat(widgetTab.widgets[0].order).isEqualTo(0)
@@ -202,13 +198,11 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
             )
         }
 
-        val optionalUpdatedWidgetTab = caseWidgetTabRepository.findById(CaseTabId(caseDefinitionName, tabKey))
+        val updatedWidgetTab = caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, tabKey))
 
-        assertTrue(optionalUpdatedWidgetTab.isPresent)
+        assertThat(updatedWidgetTab).isNotNull
 
-        val updatedWidgetTab = optionalUpdatedWidgetTab.get()
-
-        assertThat(updatedWidgetTab.widgets).hasSize(2)
+        assertThat(updatedWidgetTab!!.widgets).hasSize(2)
         assertThat(updatedWidgetTab.widgets[0].key).isEqualTo("widget-2")
         assertThat(updatedWidgetTab.widgets[1].key).isEqualTo("widget-1")
         assertThat(updatedWidgetTab.widgets[0].order).isEqualTo(0)

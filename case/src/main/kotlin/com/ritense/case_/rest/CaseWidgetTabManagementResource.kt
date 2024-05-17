@@ -16,7 +16,7 @@
 
 package com.ritense.case_.rest
 
-import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case_.rest.dto.CaseWidgetTabDto
 import com.ritense.case_.service.CaseWidgetTabService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
@@ -46,12 +46,12 @@ class CaseWidgetTabManagementResource(
     }
 
     @PostMapping("/v1/case-definition/{caseDefinitionName}/widget-tab/{tabKey}")
-    fun getCaseTabWidget(
+    fun updateCaseWidgetTab(
         @PathVariable caseDefinitionName: String,
         @PathVariable tabKey: String,
         @RequestBody caseWidgetTabDto: CaseWidgetTabDto
     ): ResponseEntity<CaseWidgetTabDto> {
-        val widgetTab = AuthorizationContext.runWithoutAuthorization {
+        val widgetTab = runWithoutAuthorization {
             caseWidgetTabService.updateWidgetTab(caseWidgetTabDto)
         }
         return ResponseEntity.ofNullable(widgetTab)

@@ -30,7 +30,6 @@ import com.ritense.case_.service.event.CaseTabCreatedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
-import kotlin.jvm.optionals.getOrElse
 
 @Transactional(readOnly = false)
 class CaseWidgetTabService(
@@ -54,13 +53,12 @@ class CaseWidgetTabService(
     fun updateWidgetTab(tabDto: CaseWidgetTabDto): CaseWidgetTabDto? {
         denyAuthorization()
 
-        val caseWidgetTab = caseWidgetTabRepository.findById(CaseTabId(tabDto.caseDefinitionName, tabDto.key))
-            .getOrElse {
-                throw RuntimeException(
+        val caseWidgetTab = (caseWidgetTabRepository.findByIdOrNull(CaseTabId(tabDto.caseDefinitionName, tabDto.key))
+            ?: throw RuntimeException(
                     "Failed to update dashboard. Dashboard with key '${tabDto.key}' doesn't exist " +
                         "for case definition with name '${tabDto.caseDefinitionName}'."
                 )
-            }.copy(
+            ).copy(
                 widgets = tabDto.widgets.mapIndexed { index, widgetDto ->
                     CaseWidgetTabWidget(
                         widgetDto.key,
