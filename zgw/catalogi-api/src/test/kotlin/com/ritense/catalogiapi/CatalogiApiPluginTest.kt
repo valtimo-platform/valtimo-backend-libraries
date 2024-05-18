@@ -250,7 +250,7 @@ internal class CatalogiApiPluginTest : BaseTest() {
                         URI("example.com/1"),
                         URI(zaaktypeUrl),
                         "other resultaat",
-                        "omschrijving",
+                        exampleUrl,
                         null,
                         exampleUrl,
                         null
@@ -259,7 +259,7 @@ internal class CatalogiApiPluginTest : BaseTest() {
                         URI(resultaattypeUrl),
                         URI(zaaktypeUrl),
                         resultaattype,
-                        "omschrijving",
+                        exampleUrl,
                         null,
                         exampleUrl,
                         null
@@ -268,7 +268,7 @@ internal class CatalogiApiPluginTest : BaseTest() {
                         URI("example.com/2"),
                         URI(zaaktypeUrl),
                         "yet another resultaat",
-                        "omschrijving",
+                        exampleUrl,
                         null,
                         exampleUrl,
                         null

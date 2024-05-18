@@ -159,7 +159,7 @@ class ZaakResultaatValueResolverValueIT @Autowired constructor(
         {
             "url": "http://localhost:56273/catalogi/resultaattypen/82576fa3-0832-4301-8744-f72fc49f6381",
             "omschrijving": "Toegekend",
-            "resultaattypeomschrijving": "Aanvraag toegekend",
+            "resultaattypeomschrijving": "http://localhost:56273/catalogi/resultaattypen/82576fa3-0832-4301-8744-f72fc49f6381",
             "zaaktype": "http://localhost:56273/catalogi/zaaktypen/01afac88-36e0-466b-b233-b8e2301c57e2",
             "selectielijstklasse": ""
         }

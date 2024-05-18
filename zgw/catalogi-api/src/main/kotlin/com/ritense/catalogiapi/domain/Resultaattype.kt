@@ -22,7 +22,7 @@ class Resultaattype(
     val url: URI?,
     val zaaktype: URI,
     val omschrijving: String,
-    val resultaattypeomschrijving: String,
+    val resultaattypeomschrijving: URI,
     val omschrijvingGeneriek: String?,
     val selectielijstklasse: URI,
     val toelichting: String?,
