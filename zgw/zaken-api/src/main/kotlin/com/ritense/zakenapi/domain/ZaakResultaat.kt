@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.catalogiapi.domain
+package com.ritense.zakenapi.domain
 
 import java.net.URI
+import java.util.UUID
 
-class Resultaattype(
-    val url: URI?,
-    val zaaktype: URI,
-    val omschrijving: String,
-    val resultaattypeomschrijving: String,
-    val omschrijvingGeneriek: String?,
-    val selectielijstklasse: URI,
-    val toelichting: String?,
+data class ZaakResultaat(
+    val url: URI,
+    val uuid: UUID,
+    val zaak: URI,
+    val resultaattype: URI,
+    val toelichting: String? = null,
 )

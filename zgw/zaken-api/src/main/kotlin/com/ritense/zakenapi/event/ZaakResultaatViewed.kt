@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.catalogiapi.domain
+package com.ritense.zakenapi.event
 
-import java.net.URI
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.outbox.domain.BaseEvent
 
-class Resultaattype(
-    val url: URI?,
-    val zaaktype: URI,
-    val omschrijving: String,
-    val resultaattypeomschrijving: String,
-    val omschrijvingGeneriek: String?,
-    val selectielijstklasse: URI,
-    val toelichting: String?,
+class ZaakResultaatViewed(zaakResultaat: ObjectNode) : BaseEvent(
+    type = "com.ritense.gzac.zrc.resultaat.viewed",
+    resultType = "com.ritense.zakenapi.domain.ZaakResultaat",
+    resultId = null,
+    result = zaakResultaat
 )
