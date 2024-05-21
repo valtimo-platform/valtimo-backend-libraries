@@ -14,8 +14,8 @@
                 {
                     "type": "field",
                     "field": "id.key",
-                    "operator": "==",
-                    "value": "custom-tab"
+                    "operator": "in",
+                    "value": ["custom-tab", "my-tab"]
                 }
             ]
         }

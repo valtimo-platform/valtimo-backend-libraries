@@ -9,10 +9,12 @@ import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case_.repository.CaseWidgetTabRepository
 import com.ritense.case_.rest.dto.CaseWidgetTabDto
 import com.ritense.case_.web.rest.dto.TestCaseWidgetTabWidgetDto
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
@@ -39,6 +41,7 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
     }
 
     @Test
+    @WithMockUser(username = "user@ritense.com", authorities = [USER])
     fun `should get widget tab`() {
         val caseDefinitionName = "some-case-type"
         val tabKey = "my-tab"

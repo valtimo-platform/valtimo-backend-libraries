@@ -16,13 +16,14 @@
 
 package com.ritense.case_.widget
 
-import com.ritense.case_.domain.tab.CaseWidgetTabWidget
-import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
+import com.ritense.case_.domain.tab.CaseWidgetTab
+import com.ritense.case_.domain.tab.TestCaseWidgetTabWidget
 
-interface CaseWidgetMapper<ENTITY: CaseWidgetTabWidget, DTO: CaseWidgetTabWidgetDto> {
+class TestCaseWidgetDataProvider : CaseWidgetDataProvider<TestCaseWidgetTabWidget> {
 
-    fun supportedEntityType() : Class<ENTITY>
-    fun supportedDtoType() : Class<DTO>
-    fun toEntity(dto: DTO, index: Int): ENTITY
-    fun toDto(entity: ENTITY): DTO
+    override fun supportedWidgetType() = TestCaseWidgetTabWidget::class.java
+
+    override fun getData(widgetTab: CaseWidgetTab, widget: TestCaseWidgetTabWidget): Any {
+        return mapOf("test" to "test123")
+    }
 }
