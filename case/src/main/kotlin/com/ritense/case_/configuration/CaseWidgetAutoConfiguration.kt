@@ -17,9 +17,11 @@ package com.ritense.case_.configuration
 
 import com.ritense.authorization.AuthorizationService
 import com.ritense.case.repository.CaseTabRepository
+import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 import com.ritense.case_.repository.CaseWidgetTabRepository
 import com.ritense.case_.rest.CaseWidgetTabManagementResource
 import com.ritense.case_.rest.CaseWidgetTabResource
+import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
 import com.ritense.case_.service.CaseWidgetTabService
 import com.ritense.case_.widget.CaseWidgetAnnotatedClassResolver
 import com.ritense.case_.widget.CaseWidgetDataProvider
@@ -41,20 +43,21 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 @EntityScan(basePackages = ["com.ritense.case_.domain"])
 class CaseWidgetAutoConfiguration {
 
+    @Suppress("UNCHECKED_CAST")
     @Bean
     @ConditionalOnMissingBean(CaseWidgetTabService::class)
     fun caseWidgetTabService(
         caseWidgetTabRepository: CaseWidgetTabRepository,
         caseTabRepository: CaseTabRepository,
         authorizationService: AuthorizationService,
-        caseWidgetMappers: List<CaseWidgetMapper>,
-        caseWidgetDataProviders: List<CaseWidgetDataProvider>
+        caseWidgetMappers: List<CaseWidgetMapper<*, *>>,
+        caseWidgetDataProviders: List<CaseWidgetDataProvider<*>>
     ) = CaseWidgetTabService(
         caseWidgetTabRepository,
         caseTabRepository,
         authorizationService,
-        caseWidgetMappers,
-        caseWidgetDataProviders
+        caseWidgetMappers as List<CaseWidgetMapper<CaseWidgetTabWidget, CaseWidgetTabWidgetDto>>,
+        caseWidgetDataProviders as List<CaseWidgetDataProvider<CaseWidgetTabWidget>>
     )
 
     @ConditionalOnMissingBean(CaseWidgetTabResource::class)

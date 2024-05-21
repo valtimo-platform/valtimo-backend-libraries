@@ -16,37 +16,31 @@
 
 package com.ritense.case_.widget
 
-import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 import com.ritense.case_.domain.tab.TestCaseWidgetTabWidget
-import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
 import com.ritense.case_.web.rest.dto.TestCaseWidgetTabWidgetDto
 
-class TestCaseWidgetMapper: CaseWidgetMapper {
-    override fun toEntity(dto: CaseWidgetTabWidgetDto, index: Int): CaseWidgetTabWidget? {
-        return if (dto is TestCaseWidgetTabWidgetDto) {
-            TestCaseWidgetTabWidget(
-                dto.key,
-                dto.title,
-                index,
-                dto.width,
-                dto.highContrast
-            )
-        } else {
-            null
-        }
+class TestCaseWidgetMapper: CaseWidgetMapper<TestCaseWidgetTabWidget, TestCaseWidgetTabWidgetDto> {
+
+    override fun supportedEntityType() = TestCaseWidgetTabWidget::class.java
+
+    override fun supportedDtoType() = TestCaseWidgetTabWidgetDto::class.java
+
+    override fun toEntity(dto: TestCaseWidgetTabWidgetDto, index: Int): TestCaseWidgetTabWidget {
+        return TestCaseWidgetTabWidget(
+            dto.key,
+            dto.title,
+            index,
+            dto.width,
+            dto.highContrast
+        )
     }
 
-    override fun toDto(entity: CaseWidgetTabWidget): CaseWidgetTabWidgetDto? {
-        return if (entity is TestCaseWidgetTabWidget) {
-            TestCaseWidgetTabWidgetDto(
-                entity.key,
-                entity.title,
-                entity.width,
-                entity.highContrast
-            )
-        } else {
-            null
-        }
-
+    override fun toDto(entity: TestCaseWidgetTabWidget): TestCaseWidgetTabWidgetDto {
+        return TestCaseWidgetTabWidgetDto(
+            entity.key,
+            entity.title,
+            entity.width,
+            entity.highContrast
+        )
     }
 }

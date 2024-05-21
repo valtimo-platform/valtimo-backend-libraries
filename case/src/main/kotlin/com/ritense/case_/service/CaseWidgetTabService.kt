@@ -27,8 +27,10 @@ import com.ritense.case.domain.CaseTabType
 import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.service.CaseTabActionProvider.Companion.VIEW
 import com.ritense.case_.domain.tab.CaseWidgetTab
+import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 import com.ritense.case_.repository.CaseWidgetTabRepository
 import com.ritense.case_.rest.dto.CaseWidgetTabDto
+import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
 import com.ritense.case_.service.event.CaseTabCreatedEvent
 import com.ritense.case_.widget.CaseWidgetDataProvider
 import com.ritense.case_.widget.CaseWidgetMapper
@@ -41,8 +43,8 @@ class CaseWidgetTabService(
     private val caseWidgetTabRepository: CaseWidgetTabRepository,
     private val caseTabRepository: CaseTabRepository,
     private val authorizationService: AuthorizationService,
-    private val caseWidgetMappers: List<CaseWidgetMapper>,
-    private val caseWidgetDataProviders: List<CaseWidgetDataProvider>
+    private val caseWidgetMappers: List<CaseWidgetMapper<CaseWidgetTabWidget, CaseWidgetTabWidgetDto>>,
+    private val caseWidgetDataProviders: List<CaseWidgetDataProvider<CaseWidgetTabWidget>>
 ) {
 
     @EventListener(CaseTabCreatedEvent::class)
@@ -71,7 +73,9 @@ class CaseWidgetTabService(
             )
             ).copy(
                 widgets = tabDto.widgets.mapIndexed { index, widgetDto ->
-                    caseWidgetMappers.firstNotNullOf { it.toEntity(widgetDto, index) }
+                    caseWidgetMappers.first { mapper ->
+                        mapper.supportedDtoType().isAssignableFrom(widgetDto::class.java)
+                    }.toEntity(widgetDto, index)
                 }
             )
 
@@ -83,13 +87,13 @@ class CaseWidgetTabService(
         checkCaseTabAccess(caseDefinitionName, tabKey, VIEW)
 
         val widgetTab = caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, tabKey)) ?: return null
-        val widgetConfig = widgetTab.widgets.firstOrNull { it.key == widgetKey } ?: return null
+        val widget = widgetTab.widgets.firstOrNull { it.key == widgetKey } ?: return null
 
         //TODO: Do some authorization check on the widget here?
 
-        return caseWidgetDataProviders.firstNotNullOf { provider ->
-            provider.getData(widgetTab, widgetConfig)
-        }
+        return caseWidgetDataProviders
+            .first { provider -> provider.supportedWidgetType().isAssignableFrom(widget::class.java) }
+            .getData(widgetTab, widget)
     }
 
     private fun checkCaseTabAccess(caseDefinitionName: String, key: String, action: Action<CaseTab>) {

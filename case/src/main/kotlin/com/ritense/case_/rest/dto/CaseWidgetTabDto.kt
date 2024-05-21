@@ -17,6 +17,7 @@
 package com.ritense.case_.rest.dto
 
 import com.ritense.case_.domain.tab.CaseWidgetTab
+import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 import com.ritense.case_.widget.CaseWidgetMapper
 
 data class CaseWidgetTabDto(
@@ -26,12 +27,15 @@ data class CaseWidgetTabDto(
 ) {
     companion object {
         @JvmStatic
-        fun of(tab: CaseWidgetTab, widgetMappers: List<CaseWidgetMapper>): CaseWidgetTabDto {
+        fun of(tab: CaseWidgetTab, widgetMappers: List<CaseWidgetMapper<CaseWidgetTabWidget, CaseWidgetTabWidgetDto>>): CaseWidgetTabDto {
             return CaseWidgetTabDto(
                 tab.id.caseDefinitionName,
                 tab.id.key,
-                widgets = tab.widgets.map { widget ->
-                    widgetMappers.firstNotNullOf { mapper -> mapper.toDto(widget) }
+                widgets = tab.widgets
+                    .map { widget ->
+                        widgetMappers.first { mapper ->
+                            mapper.supportedEntityType().isAssignableFrom(widget::class.java)
+                        }.toDto(widget)
                 }
             )
         }

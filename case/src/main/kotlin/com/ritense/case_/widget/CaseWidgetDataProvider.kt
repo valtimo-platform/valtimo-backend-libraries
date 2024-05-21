@@ -19,6 +19,7 @@ package com.ritense.case_.widget
 import com.ritense.case_.domain.tab.CaseWidgetTab
 import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 
-interface CaseWidgetDataProvider {
-    fun getData(widgetTab: CaseWidgetTab, widget: CaseWidgetTabWidget): Any?
+interface CaseWidgetDataProvider<WIDGET: CaseWidgetTabWidget> {
+    fun supportedWidgetType(): Class<WIDGET>
+    fun getData(widgetTab: CaseWidgetTab, widget: WIDGET): Any
 }

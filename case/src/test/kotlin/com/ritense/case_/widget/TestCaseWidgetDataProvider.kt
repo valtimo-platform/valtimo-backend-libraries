@@ -17,15 +17,13 @@
 package com.ritense.case_.widget
 
 import com.ritense.case_.domain.tab.CaseWidgetTab
-import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 import com.ritense.case_.domain.tab.TestCaseWidgetTabWidget
 
-class TestCaseWidgetDataProvider : CaseWidgetDataProvider {
-    override fun getData(widgetTab: CaseWidgetTab, widget: CaseWidgetTabWidget): Any? {
-        if (widget !is TestCaseWidgetTabWidget) {
-            return null
-        }
+class TestCaseWidgetDataProvider : CaseWidgetDataProvider<TestCaseWidgetTabWidget> {
 
+    override fun supportedWidgetType() = TestCaseWidgetTabWidget::class.java
+
+    override fun getData(widgetTab: CaseWidgetTab, widget: TestCaseWidgetTabWidget): Any {
         return mapOf("test" to "test123")
     }
 }
