@@ -20,6 +20,7 @@ import com.ritense.case.TestFormExporter
 import com.ritense.case.TestResolverFactory
 import com.ritense.case.configuration.CaseAutoConfiguration
 import com.ritense.case_.configuration.CaseWidgetAutoConfiguration
+import com.ritense.case_.widget.mapper.TestCaseWidgetMapper
 import com.ritense.resource.service.ResourceService
 import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
 import com.ritense.valueresolver.ValueResolverFactory
@@ -52,6 +53,9 @@ class TestApplication {
 
         @MockBean
         lateinit var resourceService: ResourceService
+
+        @Bean
+        fun testCaseWidgetMapper() = TestCaseWidgetMapper()
 
     }
 }

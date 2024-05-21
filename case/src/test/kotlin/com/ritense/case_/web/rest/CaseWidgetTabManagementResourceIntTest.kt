@@ -21,7 +21,10 @@ import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.domain.CaseTabType
 import com.ritense.case.service.CaseTabService
 import com.ritense.case.web.rest.dto.CaseTabDto
+import com.ritense.case_.rest.dto.CaseWidgetTabDto
+import com.ritense.case_.web.rest.dto.TestCaseWidgetTabWidgetDto
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
+import com.ritense.valtimo.contract.utils.TestUtil
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -29,6 +32,7 @@ import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -39,7 +43,7 @@ import org.springframework.web.context.WebApplicationContext
 @Transactional
 class CaseWidgetTabManagementResourceIntTest @Autowired constructor(
     private val webApplicationContext: WebApplicationContext,
-    private val tabService: CaseTabService
+    private val tabService: CaseTabService,
 ) : BaseIntegrationTest() {
 
     lateinit var mockMvc: MockMvc
@@ -75,5 +79,35 @@ class CaseWidgetTabManagementResourceIntTest @Autowired constructor(
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.caseDefinitionName").value(caseDefinitionName))
             .andExpect(jsonPath("$.key").value(tabKey))
+    }
+
+    @Test
+    @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
+    fun `should update case widget tab`() {
+        val caseDefinitionName = "some-case-type"
+        val tabKey = "my-tab"
+        runWithoutAuthorization {
+            tabService.createCaseTab(caseDefinitionName, CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-"))
+        }
+        val caseWidgetTabDto = CaseWidgetTabDto(
+            caseDefinitionName,
+            tabKey,
+            widgets = listOf(
+                TestCaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false),
+                TestCaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true)
+            )
+        )
+
+        mockMvc.perform(
+            post("/api/management/v1/case-definition/{caseDefinitionName}/widget-tab/{tabKey}", caseDefinitionName, tabKey)
+                .content(TestUtil.convertObjectToJsonBytes(caseWidgetTabDto))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.caseDefinitionName").value(caseDefinitionName))
+            .andExpect(jsonPath("$.key").value(tabKey))
+            .andExpect(jsonPath("$.widgets.length()").value(2))
+            .andExpect(jsonPath("$.widgets[0].key").value(caseWidgetTabDto.widgets[0].key))
+            .andExpect(jsonPath("$.widgets[1].key").value(caseWidgetTabDto.widgets[1].key))
     }
 }

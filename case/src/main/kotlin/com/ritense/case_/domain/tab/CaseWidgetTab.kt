@@ -17,8 +17,14 @@
 package com.ritense.case_.domain.tab
 
 import com.ritense.case.domain.CaseTabId
+import jakarta.persistence.CascadeType.ALL
 import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
+import jakarta.persistence.FetchType.EAGER
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.JoinColumns
+import jakarta.persistence.OneToMany
+import jakarta.persistence.OrderBy
 import jakarta.persistence.Table
 
 @Entity
@@ -26,4 +32,11 @@ import jakarta.persistence.Table
 data class CaseWidgetTab(
     @EmbeddedId
     val id: CaseTabId,
+    @OneToMany(fetch = EAGER, cascade = [ALL], orphanRemoval = true)
+    @JoinColumns(
+        JoinColumn(name = "case_definition_name", referencedColumnName = "case_definition_name", updatable = false, nullable = false),
+        JoinColumn(name = "tab_key", referencedColumnName = "tab_key", updatable = false, nullable = false)
+    )
+    @OrderBy("order ASC")
+    val widgets: List<CaseWidgetTabWidget> = listOf(),
 )

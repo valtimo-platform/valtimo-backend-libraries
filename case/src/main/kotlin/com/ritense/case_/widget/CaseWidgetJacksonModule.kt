@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization.autoconfigure
+package com.ritense.case_.widget
 
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.fasterxml.jackson.databind.module.SimpleModule
-import com.ritense.authorization.permission.condition.ContainerPermissionCondition
-import com.ritense.authorization.permission.condition.ExpressionPermissionCondition
-import com.ritense.authorization.permission.condition.FieldPermissionCondition
 
-class PermissionConditionTypeModule: SimpleModule("PermissionConditionTypeModule") {
-
+class CaseWidgetJacksonModule(
+    private val annotatedClassResolver: CaseWidgetAnnotatedClassResolver
+): SimpleModule("CaseWidgetModule") {
     override fun setupModule(context: SetupContext) {
         super.setupModule(context)
 
         context.registerSubtypes(
-            NamedType(ContainerPermissionCondition::class.java),
-            NamedType(ExpressionPermissionCondition::class.java),
-            NamedType(FieldPermissionCondition::class.java)
+            *annotatedClassResolver.widgetDtoClasses.map { NamedType(it) }.toTypedArray()
         )
     }
 }

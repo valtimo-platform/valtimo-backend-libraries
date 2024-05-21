@@ -59,6 +59,7 @@ class CaseHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(antMatcher(GET, "/api/management/v1/case/{caseDefinitionName}/{caseDefinitionVersion}/export")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(POST, "/api/management/v1/case/import")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "$MANAGEMENT_WIDGET_TAB_URL/{tabKey}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "$MANAGEMENT_WIDGET_TAB_URL/{tabKey}")).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

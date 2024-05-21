@@ -16,19 +16,26 @@
 
 package com.ritense.case_.service
 
+import com.ritense.authorization.Action.Companion.deny
+import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.request.EntityAuthorizationRequest
+import com.ritense.case.domain.CaseTab
 import com.ritense.case.domain.CaseTabId
 import com.ritense.case.domain.CaseTabType
 import com.ritense.case_.domain.tab.CaseWidgetTab
 import com.ritense.case_.repository.CaseWidgetTabRepository
 import com.ritense.case_.rest.dto.CaseWidgetTabDto
 import com.ritense.case_.service.event.CaseTabCreatedEvent
+import com.ritense.case_.widget.CaseWidgetMapper
 import org.springframework.context.event.EventListener
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional(readOnly = false)
 class CaseWidgetTabService(
-    private val caseWidgetTabRepository: CaseWidgetTabRepository
+    private val caseWidgetTabRepository: CaseWidgetTabRepository,
+    private val authorizationService: AuthorizationService,
+    private val caseWidgetMappers: List<CaseWidgetMapper>,
 ) {
 
     @EventListener(CaseTabCreatedEvent::class)
@@ -41,6 +48,33 @@ class CaseWidgetTabService(
     @Transactional(readOnly = true)
     fun getWidgetTab(caseDefinitionName: String, key: String): CaseWidgetTabDto? {
         return caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, key))
-            ?.let { CaseWidgetTabDto.of(it) }
+            ?.let { CaseWidgetTabDto.of(it, caseWidgetMappers) }
+    }
+
+    @Transactional
+    fun updateWidgetTab(tabDto: CaseWidgetTabDto): CaseWidgetTabDto? {
+        denyAuthorization()
+
+        val caseWidgetTab = (caseWidgetTabRepository.findByIdOrNull(CaseTabId(tabDto.caseDefinitionName, tabDto.key))
+            ?: throw RuntimeException(
+                    "Failed to update dashboard. Dashboard with key '${tabDto.key}' doesn't exist " +
+                        "for case definition with name '${tabDto.caseDefinitionName}'."
+                )
+            ).copy(
+                widgets = tabDto.widgets.mapIndexed { index, widgetDto ->
+                    caseWidgetMappers.firstNotNullOf { it.toEntity(widgetDto, index) }
+                }
+            )
+
+        return CaseWidgetTabDto.of(caseWidgetTabRepository.save(caseWidgetTab), caseWidgetMappers)
+    }
+
+    private fun denyAuthorization() {
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                CaseTab::class.java,
+                deny()
+            )
+        )
     }
 }

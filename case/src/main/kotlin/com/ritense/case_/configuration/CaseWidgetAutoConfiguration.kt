@@ -15,12 +15,17 @@
  */
 package com.ritense.case_.configuration
 
+import com.ritense.authorization.AuthorizationService
 import com.ritense.case_.repository.CaseWidgetTabRepository
 import com.ritense.case_.rest.CaseWidgetTabManagementResource
 import com.ritense.case_.service.CaseWidgetTabService
+import com.ritense.case_.widget.CaseWidgetAnnotatedClassResolver
+import com.ritense.case_.widget.CaseWidgetJacksonModule
+import com.ritense.case_.widget.CaseWidgetMapper
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
+import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
@@ -36,12 +41,26 @@ class CaseWidgetAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(CaseWidgetTabService::class)
     fun caseWidgetTabService(
-        caseWidgetTabRepository: CaseWidgetTabRepository
-    ) = CaseWidgetTabService(caseWidgetTabRepository)
+        caseWidgetTabRepository: CaseWidgetTabRepository,
+        authorizationService: AuthorizationService,
+        caseWidgetMappers: List<CaseWidgetMapper>
+    ) = CaseWidgetTabService(caseWidgetTabRepository, authorizationService, caseWidgetMappers)
 
     @ConditionalOnMissingBean(CaseWidgetTabManagementResource::class)
     @Bean
     fun caseWidgetTabManagementResource(
         caseWidgetTabService: CaseWidgetTabService
     ) = CaseWidgetTabManagementResource(caseWidgetTabService)
+
+    @ConditionalOnMissingBean(CaseWidgetAnnotatedClassResolver::class)
+    @Bean
+    fun caseWidgetAnnotatedClassResolver(
+        context: ApplicationContext
+    ) = CaseWidgetAnnotatedClassResolver(context)
+
+    @ConditionalOnMissingBean(CaseWidgetJacksonModule::class)
+    @Bean
+    fun caseWidgetJacksonModule(
+        annotatedClassResolver: CaseWidgetAnnotatedClassResolver
+    ) = CaseWidgetJacksonModule(annotatedClassResolver)
 }
