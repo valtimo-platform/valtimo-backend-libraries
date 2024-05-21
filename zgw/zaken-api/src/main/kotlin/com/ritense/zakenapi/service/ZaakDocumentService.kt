@@ -142,7 +142,7 @@ class ZaakDocumentService(
             pluginConfigurationId = pluginConfiguration.id.id,
             identification = informatieObject.identificatie,
             description = informatieObject.beschrijving,
-            informatieobjecttype = getInformatieobjecttypeByUri(informatieObject.informatieobjecttype),
+            informatieobjecttype = informatieObject.informatieobjecttype,
             keywords = informatieObject.trefwoorden,
             format = informatieObject.formaat,
             sendDate = informatieObject.verzenddatum,
@@ -175,7 +175,7 @@ class ZaakDocumentService(
             taal = informatieObject.taal,
             identificatie = informatieObject.identificatie,
             beschrijving = informatieObject.beschrijving,
-            informatieobjecttype = getInformatieobjecttypeByUri(informatieObject.informatieobjecttype),
+            informatieobjecttype = informatieObject.informatieobjecttype,
             trefwoorden = trefwoorden,
             formaat = informatieObject.formaat,
             verzenddatum = informatieObject.verzenddatum,
@@ -210,7 +210,7 @@ class ZaakDocumentService(
             taal = informatieObject.taal,
             identificatie = informatieObject.identificatie,
             beschrijving = informatieObject.beschrijving,
-            informatieobjecttype = getInformatieobjecttypeByUri(informatieObject.informatieobjecttype),
+            informatieobjecttype = informatieObject.informatieobjecttype,
             trefwoorden = trefwoorden,
             formaat = informatieObject.formaat,
             verzenddatum = informatieObject.verzenddatum,
@@ -219,10 +219,6 @@ class ZaakDocumentService(
             versie = informatieObject.versie,
             indicatieGebruiksrecht = informatieObject.indicatieGebruiksrecht
         )
-    }
-
-    private fun getInformatieobjecttypeByUri(uri: String?): String? {
-        return uri?.let { catalogiService.getInformatieobjecttype(URI(it))?.omschrijving }
     }
 
     private fun getDocumentenApiPluginByInformatieobjectUrl(informatieobjectUrl: URI): PluginConfiguration {
