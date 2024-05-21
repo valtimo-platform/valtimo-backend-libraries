@@ -11,12 +11,14 @@ class FormViewModelSubmissionHandlerFactoryTest : BaseTest() {
 
     @BeforeEach
     fun setUp() {
-        formViewModelSubmissionHandlerFactory = FormViewModelSubmissionHandlerFactory(listOf(TestEventHandler()))
+        formViewModelSubmissionHandlerFactory = FormViewModelSubmissionHandlerFactory(
+            listOf(TestSubmissionHandler())
+        )
     }
 
     @Test
     fun `should create submission handler`() {
         val handler = formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler("test")
-        assertThat(handler).isInstanceOf(TestEventHandler::class.java)
+        assertThat(handler).isInstanceOf(TestSubmissionHandler::class.java)
     }
 }

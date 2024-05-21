@@ -1,61 +1,103 @@
+/*
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ritense.formviewmodel.validation
 
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.service.impl.FormIoFormDefinitionService
+import com.ritense.formviewmodel.event.FormViewModelSubmissionHandler
+import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
+import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.formviewmodel.viewmodel.ViewModelLoader
+import mu.KotlinLogging
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
-import org.springframework.stereotype.Component
+import kotlin.reflect.KClass
 
-@Component
 class OnStartUpViewModelValidator(
     private val formIoFormDefinitionService: FormIoFormDefinitionService,
-    val viewModelLoaders: List<ViewModelLoader<*>>,
+    private val viewModelLoaders: List<ViewModelLoader<*>>,
+    private val formViewModelSubmissionHandlerFactory: FormViewModelSubmissionHandlerFactory
 ) : ApplicationRunner {
 
     override fun run(args: ApplicationArguments?) {
-        validateAllViewModels()
+        validate()
     }
 
-    fun validateAllViewModels() {
+    fun validate() {
         for (viewModelLoader in viewModelLoaders) {
-            val form = validateViewModel(viewModelLoader)
-            if (form != null) {
-                try {
-                    val missingProperties = getAllMissingProperties(viewModelLoader, form)
-                    throw IllegalArgumentException("The following properties are missing in the view model for form (${viewModelLoader.getFormName()}): $missingProperties")
-                } catch (e: Exception) {
-                    e.printStackTrace()
+            val formDefinition =
+                formIoFormDefinitionService.getFormDefinitionByName(viewModelLoader.getFormName()).get()
+            validateViewModel(viewModelLoader, formDefinition).let { missingProperties ->
+                if (missingProperties.isNotEmpty()) {
+                    logger.error {
+                        "The following properties are missing in the view model for form " +
+                            "(${viewModelLoader.getFormName()}): $missingProperties"
+                    }
+                    // Validate submission for the view model
+                    formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler(
+                        viewModelLoader.getFormName()
+                    )?.let {
+                        validateSubmission(it, formDefinition).let { missingSubmissionProperties ->
+                            if (missingSubmissionProperties.isNotEmpty()) {
+                                logger.error {
+                                    "The following properties are missing in the submission for form " +
+                                        "(${viewModelLoader.getFormName()}): $missingSubmissionProperties"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 
-    fun validateViewModel(viewModelLoader: ViewModelLoader<*>): FormIoFormDefinition? {
-        val form = formIoFormDefinitionService.getFormDefinitionByName(viewModelLoader.getFormName()).get()
-
-        if (!extractProperties(viewModelLoader.getViewModelType().java).containsAll(getFormKeys(form))) {
-            return form
-        }
-
-        return null
+    fun validateViewModel(
+        viewModelLoader: ViewModelLoader<*>,
+        formDefinition: FormIoFormDefinition
+    ): List<String> {
+        return getAllMissingProperties(viewModelLoader.getViewModelType(), formDefinition)
     }
 
-    fun getAllMissingProperties(viewModelLoader: ViewModelLoader<*>, form: FormIoFormDefinition): List<String> {
-        return extractProperties(viewModelLoader.getViewModelType().java).filter {
-            it !in form.inputFields.map {
-                it["key"].asText()
+    fun validateSubmission(
+        submissionHandler: FormViewModelSubmissionHandler<out Submission>,
+        formDefinition: FormIoFormDefinition
+    ): List<String> {
+        val submissionType = submissionHandler.getSubmissionType()::class
+        if (submissionType.simpleName == ObjectNode::class.simpleName) {
+            logger.error {
+                "Submission type for form ${formDefinition.name} is ObjectNode. " +
+                    "This is not advised. Please create a data class for the submission."
             }
         }
+        return getAllMissingProperties(submissionHandler.getSubmissionType(), formDefinition)
     }
 
-    fun getFormKeys(form: FormIoFormDefinition): List<String> {
-        return form.inputFields.map {
-            it["key"].asText()
+    private fun getAllMissingProperties(
+        submission: KClass<*>,
+        formDefinition: FormIoFormDefinition
+    ): List<String> {
+        val fieldNames = DataClassPropertiesExtractor.extractProperties(submission)
+        return fieldNames.filter { fieldName ->
+            fieldName !in FormIOFormPropertiesExtractor.extractProperties(formDefinition.formDefinition)
         }
     }
 
-    fun extractProperties(clazz: Class<*>): List<String> {
-        return clazz.declaredFields.map { it.name }
+    companion object {
+        private val logger = KotlinLogging.logger {}
     }
 }

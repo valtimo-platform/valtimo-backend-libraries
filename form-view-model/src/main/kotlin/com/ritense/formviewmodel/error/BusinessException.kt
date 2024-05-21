@@ -14,21 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.formviewmodel.event
+package com.ritense.formviewmodel.error
 
-import com.ritense.formviewmodel.viewmodel.Submission
-import com.ritense.valtimo.camunda.domain.CamundaTask
-import org.springframework.transaction.annotation.Transactional
-import kotlin.reflect.KClass
-
-@Transactional
-interface FormViewModelSubmissionHandler<T : Submission> {
-
-    fun supports(formName: String): Boolean
-
-    fun <T> handle(submission: T, task: CamundaTask)
-
-    @Suppress("UNCHECKED_CAST")
-    fun getSubmissionType(): KClass<T> = this::class.supertypes.first().arguments.first().type!!.classifier as KClass<T>
-
-}
+class BusinessException(
+    message: String,
+    cause: Throwable? = null
+) : Exception(message, cause)
