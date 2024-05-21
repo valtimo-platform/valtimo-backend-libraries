@@ -18,7 +18,6 @@ package com.ritense.case_.service
 
 import com.ritense.authorization.Action
 import com.ritense.authorization.Action.Companion.deny
-import com.ritense.authorization.AuthorizationContext
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.case.domain.CaseTab
@@ -97,16 +96,14 @@ class CaseWidgetTabService(
     }
 
     private fun checkCaseTabAccess(caseDefinitionName: String, key: String, action: Action<CaseTab>) {
-        if (!AuthorizationContext.ignoreAuthorization) {
-            caseTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, key))?.let { caseTab ->
-                authorizationService.requirePermission(
-                    EntityAuthorizationRequest(
-                        CaseTab::class.java,
-                        action,
-                        caseTab
-                    )
+        caseTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, key))?.let { caseTab ->
+            authorizationService.requirePermission(
+                EntityAuthorizationRequest(
+                    CaseTab::class.java,
+                    action,
+                    caseTab
                 )
-            }
+            )
         }
     }
 
