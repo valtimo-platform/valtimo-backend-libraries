@@ -16,7 +16,6 @@
 
 package com.ritense.case_.rest
 
-import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case_.rest.dto.CaseWidgetTabDto
 import com.ritense.case_.service.CaseWidgetTabService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
@@ -25,14 +24,12 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 
 @Controller
 @SkipComponentScan
-@RequestMapping("/api/management", produces = [APPLICATION_JSON_UTF8_VALUE])
-class CaseWidgetTabManagementResource(
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
+class CaseWidgetTabResource(
     private val caseWidgetTabService: CaseWidgetTabService
 ) {
 
@@ -41,21 +38,17 @@ class CaseWidgetTabManagementResource(
         @PathVariable caseDefinitionName: String,
         @PathVariable tabKey: String
     ): ResponseEntity<CaseWidgetTabDto> {
-        val widgetTab =  runWithoutAuthorization {
-            caseWidgetTabService.getWidgetTab(caseDefinitionName, tabKey)
-        }
+        val widgetTab = caseWidgetTabService.getWidgetTab(caseDefinitionName, tabKey)
         return ResponseEntity.ofNullable(widgetTab)
     }
 
-    @PostMapping("/v1/case-definition/{caseDefinitionName}/widget-tab/{tabKey}")
-    fun updateCaseWidgetTab(
+    @GetMapping("/v1/case-definition/{caseDefinitionName}/widget-tab/{tabKey}/widget/{widgetKey}")
+    fun getCaseWidgetData(
         @PathVariable caseDefinitionName: String,
         @PathVariable tabKey: String,
-        @RequestBody caseWidgetTabDto: CaseWidgetTabDto
-    ): ResponseEntity<CaseWidgetTabDto> {
-        val widgetTab = runWithoutAuthorization {
-            caseWidgetTabService.updateWidgetTab(caseWidgetTabDto)
-        }
-        return ResponseEntity.ofNullable(widgetTab)
+        @PathVariable widgetKey: String,
+    ) : ResponseEntity<Any> {
+        val data = caseWidgetTabService.getCaseWidgetData(caseDefinitionName, tabKey, widgetKey)
+        return ResponseEntity.ofNullable(data)
     }
 }

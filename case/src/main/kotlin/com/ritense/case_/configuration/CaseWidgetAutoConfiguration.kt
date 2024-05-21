@@ -16,10 +16,13 @@
 package com.ritense.case_.configuration
 
 import com.ritense.authorization.AuthorizationService
+import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case_.repository.CaseWidgetTabRepository
 import com.ritense.case_.rest.CaseWidgetTabManagementResource
+import com.ritense.case_.rest.CaseWidgetTabResource
 import com.ritense.case_.service.CaseWidgetTabService
 import com.ritense.case_.widget.CaseWidgetAnnotatedClassResolver
+import com.ritense.case_.widget.CaseWidgetDataProvider
 import com.ritense.case_.widget.CaseWidgetJacksonModule
 import com.ritense.case_.widget.CaseWidgetMapper
 import org.springframework.boot.autoconfigure.AutoConfiguration
@@ -42,9 +45,23 @@ class CaseWidgetAutoConfiguration {
     @ConditionalOnMissingBean(CaseWidgetTabService::class)
     fun caseWidgetTabService(
         caseWidgetTabRepository: CaseWidgetTabRepository,
+        caseTabRepository: CaseTabRepository,
         authorizationService: AuthorizationService,
-        caseWidgetMappers: List<CaseWidgetMapper>
-    ) = CaseWidgetTabService(caseWidgetTabRepository, authorizationService, caseWidgetMappers)
+        caseWidgetMappers: List<CaseWidgetMapper>,
+        caseWidgetDataProviders: List<CaseWidgetDataProvider>
+    ) = CaseWidgetTabService(
+        caseWidgetTabRepository,
+        caseTabRepository,
+        authorizationService,
+        caseWidgetMappers,
+        caseWidgetDataProviders
+    )
+
+    @ConditionalOnMissingBean(CaseWidgetTabResource::class)
+    @Bean
+    fun caseWidgetTabResource(
+        caseWidgetTabService: CaseWidgetTabService
+    ) = CaseWidgetTabResource(caseWidgetTabService)
 
     @ConditionalOnMissingBean(CaseWidgetTabManagementResource::class)
     @Bean

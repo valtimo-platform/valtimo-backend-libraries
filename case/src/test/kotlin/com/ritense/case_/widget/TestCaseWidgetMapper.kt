@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.case_.widget.mapper
+package com.ritense.case_.widget
 
 import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 import com.ritense.case_.domain.tab.TestCaseWidgetTabWidget
 import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
 import com.ritense.case_.web.rest.dto.TestCaseWidgetTabWidgetDto
-import com.ritense.case_.widget.CaseWidgetMapper
 
 class TestCaseWidgetMapper: CaseWidgetMapper {
     override fun toEntity(dto: CaseWidgetTabWidgetDto, index: Int): CaseWidgetTabWidget? {
