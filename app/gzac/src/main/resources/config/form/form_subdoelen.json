@@ -10,7 +10,7 @@
             "enableRowGroups": false,
             "initEmpty": false,
             "tableView": false,
-            "calculateValue": "value = data['vm:subdoelenGrid'];",
+            "calculateValue": "value = data['subdoelenGrid'];",
             "key": "subdoelenGrid",
             "type": "datagrid",
             "input": true,
@@ -23,7 +23,7 @@
                                 {
                                     "key": "aandachtspunt",
                                     "data": {
-                                        "custom": "values = data['vm:aandachtspunten'];",
+                                        "custom": "values = data['aandachtspunten'];",
                                         "values": [
                                             {
                                                 "label": "",
@@ -35,9 +35,6 @@
                                         "resource": ""
                                     },
                                     "type": "select",
-                                    "validate": {
-                                        "custom": "if(input != row.aandachtspuntOriginal) { row.subdoel = null; form.updateViewModel(); }"
-                                    },
                                     "input": true,
                                     "label": "Aandachtspunt",
                                     "widget": "choicesjs",

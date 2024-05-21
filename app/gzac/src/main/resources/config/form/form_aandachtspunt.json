@@ -19,7 +19,7 @@
                 {
                     "key": "aandachtspunt",
                     "data": {
-                        "custom": "values = data['vm:aandachtspunten'];",
+                        "custom": "values = data['aandachtspunten'];",
                         "values": [
                             {
                                 "label": "",
@@ -130,7 +130,7 @@
                     "label": "Notitie",
                     "tableView": true,
                     "attributes": {
-                        "data-testid": "ontwikkelwens-vm:notitie"
+                        "data-testid": "ontwikkelwens-notitie"
                     },
                     "applyMaskOn": "change",
                     "id": "ekou27i",

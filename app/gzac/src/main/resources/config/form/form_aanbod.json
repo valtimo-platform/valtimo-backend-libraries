@@ -9,7 +9,7 @@
             "enableRowGroups": false,
             "initEmpty": false,
             "tableView": false,
-            "calculateValue": "value = data['vm:aanbodGrid'];",
+            "calculateValue": "value = data['aanbodGrid'];",
             "key": "aanbodGrid",
             "type": "datagrid",
             "input": true,
@@ -22,7 +22,7 @@
                                 {
                                     "key": "aandachtspunt",
                                     "data": {
-                                        "custom": "values = data['vm:aandachtspunten'];",
+                                        "custom": "values = data['aandachtspunten'];",
                                         "values": [
                                             {
                                                 "label": "",
@@ -34,9 +34,6 @@
                                         "resource": ""
                                     },
                                     "type": "select",
-                                    "validate": {
-                                        "custom": "console.log('aandachtpunt',input, row.aandachtspuntOriginal); if(input != row.aandachtspuntOriginal && input != '') { console.log('updating aandachtpunt'); row.subdoel = null; form.updateViewModel(); }"
-                                    },
                                     "input": true,
                                     "label": "Aandachtspunt",
                                     "widget": "choicesjs",
@@ -144,9 +141,6 @@
                                         "resource": ""
                                     },
                                     "type": "select",
-                                    "validate": {
-                                        "custom": "console.log('subdoel', input, row.subdoelOriginal); if(input != row.subdoelOriginal && input != '') { console.log('updating subdoel'); form.updateViewModel(); }"
-                                    },
                                     "input": true,
                                     "label": "Subdoel",
                                     "widget": "choicesjs",
@@ -255,9 +249,6 @@
                                             "dataSrc": "custom",
                                             "data": {
                                                 "custom": "console.log('aanbiedingen', row); values = row.aanbiedingen;"
-                                            },
-                                            "validate": {
-                                                "custom": "console.log('aanbod', input, row.aanbodOriginal); if(input != row.aanbodOriginal && input != '') { console.log('updating aanbod'); form.updateViewModel(); }"
                                             },
                                             "valueProperty": "id",
                                             "template": "<span>{{ item.naam }}</span>",

@@ -6,15 +6,17 @@ import com.inwonerplan.model.Aanbod
 import com.inwonerplan.model.AanbodActiviteit
 import com.inwonerplan.model.Aandachtspunt
 import com.inwonerplan.model.Subdoel
+import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.formviewmodel.viewmodel.ViewModel
+import com.ritense.valtimo.camunda.domain.CamundaTask
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AanbodViewModel(
     val aanbodGrid: List<AanbodGridRow>,
     val aandachtspunten: List<Aandachtspunt>
-) : ViewModel {
+) : ViewModel, Submission {
 
-    override fun update(): ViewModel {
+    override fun update(task: CamundaTask): ViewModel {
         println("Updating")
         val copy = this.copy(
             aanbodGrid = aanbodGrid.map {
@@ -44,13 +46,13 @@ data class AanbodViewModel(
         return copy
     }
 
-    fun getActiviteitenForAanbod(aanbiedingen: List<Aanbod>, aanbod: String): List<AanbodActiviteit>? {
+    private fun getActiviteitenForAanbod(aanbiedingen: List<Aanbod>, aanbod: String): List<AanbodActiviteit>? {
         val aanbod = aanbiedingen.find { it.id.toString() == aanbod }
         requireNotNull(aanbod) { "No aanbod found for $aanbod" }
         return aanbod.aanbodActiviteiten
     }
 
-    fun getSubdoelenForAandachtspunten(aandachtsPunt: String) =
+    private fun getSubdoelenForAandachtspunten(aandachtsPunt: String) =
         StamtabellenApi().getSubdoelen().filter { subdoel ->
             subdoel.aandachtspunten!!.find { subdoelAandachtsPunt ->
                 subdoelAandachtsPunt.id!!.toString() == aandachtsPunt

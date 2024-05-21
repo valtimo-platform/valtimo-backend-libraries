@@ -3,10 +3,11 @@ package com.inwonerplan.poc.subdoelen
 import com.inwonerplan.api.StamtabellenApi
 import com.inwonerplan.poc.POCSubmissions
 import com.ritense.formviewmodel.viewmodel.ViewModelLoader
+import com.ritense.valtimo.camunda.domain.CamundaTask
 
 class SubdoelenViewModelLoader: ViewModelLoader<SubdoelenViewModel> {
 
-    override fun load(taskInstanceId: String): SubdoelenViewModel {
+    override fun load(task: CamundaTask): SubdoelenViewModel {
         val aandachtsPunten = POCSubmissions.aandachtsPunten!!
 
         val subdoelenGrid = aandachtsPunten.aandachtspuntenGrid!!.map {

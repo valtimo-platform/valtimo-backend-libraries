@@ -25,7 +25,6 @@ import com.ritense.formviewmodel.processlink.FormViewModelProcessLinkActivityHan
 import com.ritense.formviewmodel.security.config.FormViewModelHttpSecurityConfigurerKotlin
 import com.ritense.formviewmodel.service.FormViewModelService
 import com.ritense.formviewmodel.service.FormViewModelSubmissionService
-import com.ritense.formviewmodel.validation.OnStartUpViewModelValidator
 import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.formviewmodel.viewmodel.ViewModelLoader
 import com.ritense.formviewmodel.viewmodel.ViewModelLoaderFactory
@@ -100,14 +99,14 @@ class FormViewModelAutoConfiguration {
         loaders
     )
 
-    @Bean
-    fun onStartUpViewModelValidator(
-        formIoFormDefinitionService: FormIoFormDefinitionService,
-        viewModelLoaders: List<ViewModelLoader<*>>,
-        formViewModelSubmissionHandlerFactory: FormViewModelSubmissionHandlerFactory
-    ) = OnStartUpViewModelValidator(
-        formIoFormDefinitionService,
-        viewModelLoaders,
-        formViewModelSubmissionHandlerFactory
-    )
+//    @Bean
+//    fun onStartUpViewModelValidator(
+//        formIoFormDefinitionService: FormIoFormDefinitionService,
+//        viewModelLoaders: List<ViewModelLoader<*>>,
+//        formViewModelSubmissionHandlerFactory: FormViewModelSubmissionHandlerFactory
+//    ) = OnStartUpViewModelValidator(
+//        formIoFormDefinitionService,
+//        viewModelLoaders,
+//        formViewModelSubmissionHandlerFactory
+//    )
 }
