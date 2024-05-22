@@ -40,7 +40,7 @@ class OnStartUpViewModelValidator(
             val formDefinition =
                 formIoFormDefinitionService.getFormDefinitionByName(viewModelLoader.getFormName()).get()
 
-            // Note: Form added via console.
+            // Note: Forms added via console get a warning notice.
             if (!formDefinition.isReadOnly) {
                 logger.warn {
                     "This form (${viewModelLoader.getFormName()}) is not read-only. This means that the form definition is not added via configuration." +
