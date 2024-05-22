@@ -13,15 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package com.ritense.case_.widget
+package com.ritense.case_.widget.displayproperties
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include
-import com.ritense.case_.widget.displayproperties.FieldDisplayProperties
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 
 @JsonInclude(Include.NON_NULL)
-data class TestCaseWidgetProperties(
-    val stringProperty: String = "test123",
-    val displayProperties: FieldDisplayProperties? = null
-)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+interface FieldDisplayProperties

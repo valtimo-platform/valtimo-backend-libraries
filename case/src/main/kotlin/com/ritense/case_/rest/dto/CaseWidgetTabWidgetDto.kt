@@ -19,33 +19,9 @@ package com.ritense.case_.rest.dto
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-abstract class CaseWidgetTabWidgetDto(
-    val key: String,
-    val title: String,
-    val width: Int,
+interface CaseWidgetTabWidgetDto {
+    val key: String
+    val title: String
+    val width: Int
     val highContrast: Boolean
-) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is CaseWidgetTabWidgetDto) return false
-
-        if (key != other.key) return false
-        if (title != other.title) return false
-        if (width != other.width) return false
-        if (highContrast != other.highContrast) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = key.hashCode()
-        result = 31 * result + title.hashCode()
-        result = 31 * result + width
-        result = 31 * result + highContrast.hashCode()
-        return result
-    }
-
-    override fun toString(): String {
-        return "CaseWidgetTabWidgetDto(key='$key', title='$title', width=$width, highContrast=$highContrast)"
-    }
 }

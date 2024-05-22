@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.case_.widget
+package com.ritense.case_.widget.displayproperties
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.annotation.JsonInclude.Include
-import com.ritense.case_.widget.displayproperties.FieldDisplayProperties
+import com.fasterxml.jackson.annotation.JsonTypeName
 
-@JsonInclude(Include.NON_NULL)
-data class TestCaseWidgetProperties(
-    val stringProperty: String = "test123",
-    val displayProperties: FieldDisplayProperties? = null
-)
+@JsonTypeName("enum")
+data class EnumFieldDisplayProperties(
+    val values: Map<String, Any>
+) : FieldDisplayProperties

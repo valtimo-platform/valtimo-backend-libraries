@@ -23,6 +23,7 @@ import com.ritense.case.service.CaseTabService
 import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case_.rest.dto.CaseWidgetTabDto
 import com.ritense.case_.service.CaseWidgetTabService
+import com.ritense.case_.widget.displayproperties.BooleanFieldDisplayProperties
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
@@ -78,6 +79,8 @@ class FieldsWidgetIntTest @Autowired constructor(
             .andExpect(jsonPath("$.widgets[0].properties.columns[1][0].key").value("someOtherKey"))
             .andExpect(jsonPath("$.widgets[0].properties.columns[1][0].title").value("Some other key"))
             .andExpect(jsonPath("$.widgets[0].properties.columns[1][0].value").value("test:/myOtherKey"))
+            .andExpect(jsonPath("$.widgets[0].properties.columns[1][0].displayProperties").exists())
+            .andExpect(jsonPath("$.widgets[0].properties.columns[1][0].displayProperties.type").value("boolean"))
     }
 
     @Test
@@ -119,7 +122,10 @@ class FieldsWidgetIntTest @Autowired constructor(
                             ),
                             listOf(
                                 FieldsWidgetProperties.Field(
-                                    "someOtherKey", "Some other key", "test:/myOtherKey"
+                                    "someOtherKey",
+                                    "Some other key",
+                                    "test:/myOtherKey",
+                                    displayProperties = BooleanFieldDisplayProperties()
                                 )
                             )
                         )

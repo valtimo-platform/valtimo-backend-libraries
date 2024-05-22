@@ -16,12 +16,18 @@
 
 package com.ritense.case_.widget.fields
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonInclude.Include
+import com.ritense.case_.widget.displayproperties.FieldDisplayProperties
+
 data class FieldsWidgetProperties (
     val columns: List<List<Field>>,
 ) {
+    @JsonInclude(Include.NON_NULL)
     data class Field (
         val key: String,
         val title: String,
-        val value: String
+        val value: String,
+        val displayProperties: FieldDisplayProperties? = null
     )
 }

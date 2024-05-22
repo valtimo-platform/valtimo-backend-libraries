@@ -20,10 +20,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
 
 @JsonTypeName("fields")
-class FieldsCaseWidgetDto(
-    key: String, title: String, width: Int, highContrast: Boolean,
-
+data class FieldsCaseWidgetDto(
+    override val key: String,
+    override val title: String,
+    override val width: Int,
+    override val highContrast: Boolean,
     val properties: FieldsWidgetProperties
-) : CaseWidgetTabWidgetDto(
-    key, title, width, highContrast
-)
+) : CaseWidgetTabWidgetDto

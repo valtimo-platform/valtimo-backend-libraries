@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.case_.widget
+package com.ritense.case_.widget.displayproperties
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.annotation.JsonInclude.Include
-import com.ritense.case_.widget.displayproperties.FieldDisplayProperties
+import com.fasterxml.jackson.annotation.JsonTypeName
 
-@JsonInclude(Include.NON_NULL)
-data class TestCaseWidgetProperties(
-    val stringProperty: String = "test123",
-    val displayProperties: FieldDisplayProperties? = null
-)
+/**
+ * This data class is based on the properties accepted by https://angular.io/api/common/CurrencyPipe
+ */
+@JsonTypeName("currency")
+data class CurrencyFieldDisplayProperties(
+    val currencyCode: String? = null,
+    val display: String? = null,
+    val digitsInfo: String? = null
+) : FieldDisplayProperties

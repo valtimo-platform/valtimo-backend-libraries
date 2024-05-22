@@ -21,9 +21,10 @@ import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
 import com.ritense.case_.widget.TestCaseWidgetProperties
 
 @JsonTypeName("test")
-class TestCaseWidgetTabWidgetDto(
-    key: String, title: String, width: Int, highContrast: Boolean,
-    val properties: TestCaseWidgetProperties = TestCaseWidgetProperties("test123"),
-) : CaseWidgetTabWidgetDto(
-    key, title, width, highContrast
-)
+data class TestCaseWidgetTabWidgetDto(
+    override val key: String,
+    override val title: String,
+    override val width: Int,
+    override val highContrast: Boolean,
+    val properties: TestCaseWidgetProperties = TestCaseWidgetProperties(),
+) : CaseWidgetTabWidgetDto

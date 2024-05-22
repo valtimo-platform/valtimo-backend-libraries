@@ -24,6 +24,8 @@ import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case_.rest.dto.CaseWidgetTabDto
 import com.ritense.case_.service.CaseWidgetTabService
 import com.ritense.case_.web.rest.dto.TestCaseWidgetTabWidgetDto
+import com.ritense.case_.widget.TestCaseWidgetProperties
+import com.ritense.case_.widget.displayproperties.CurrencyFieldDisplayProperties
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.DEVELOPER
@@ -152,7 +154,17 @@ class CaseWidgetTabResourceIntTest @Autowired constructor(
         return widgetTabService.updateWidgetTab(
             CaseWidgetTabDto(
                 caseDefinitionName, tabKey, widgets = listOf(
-                    TestCaseWidgetTabWidgetDto(widgetKey, "My widget", 1, true)
+                    TestCaseWidgetTabWidgetDto(
+                        widgetKey,
+                        "My widget",
+                        1,
+                        true,
+                        TestCaseWidgetProperties(
+                            displayProperties = CurrencyFieldDisplayProperties(
+                                currencyCode = "EUR"
+                            )
+                        )
+                    )
                 )
             )
         )
