@@ -20,24 +20,30 @@ data class AanbodViewModel(
         println("Updating")
         val copy = this.copy(
             aanbodGrid = aanbodGrid.map {
-                println(it.subdoel)
                 val aanbiedingen = if(!it.subdoel.isNullOrBlank()) {
                     StamtabellenApi().getAanbodWithSubdoel(it.subdoel)
                 } else null
                 it.copy(
-                    aandachtspuntOriginal = it.aandachtspunt,
-                    subdoelOriginal = it.subdoel,
                     subdoelen = it.aandachtspunt?.let { getSubdoelenForAandachtspunten(it) },
-                    aanbiedingenGrid = it.aanbiedingenGrid?.map {
-                        if(it.aanbod != it.aanbodOriginal && !it.aanbod.isNullOrBlank()) {
-                            it.copy(
+                    aanbiedingenGrid = it.aanbiedingenGrid?.map { aanbodRow ->
+                        if(it.subdoel == null) {
+                            AanbodRow(
+                                aanbod = null,
+                                status = null,
+                                aanbiedingen = null,
+                                activiteiten = null,
+                                activiteit = null
+                            )
+                        } else if(!aanbodRow.aanbod.isNullOrBlank()) {
+                            aanbodRow.copy(
                                 aanbiedingen = aanbiedingen,
-                                aanbodOriginal = it.aanbod,
-                                activiteiten = it.aanbod?.let { aanbod -> getActiviteitenForAanbod(aanbiedingen!!, aanbod) },
+                                activiteiten = aanbodRow.aanbod?.let { aanbod -> getActiviteitenForAanbod(aanbiedingen!!, aanbod) },
                                 activiteit = null
                             )
                         } else {
-                            it.copy()
+                            aanbodRow.copy(
+                                aanbiedingen = aanbiedingen,
+                            )
                         }
                     }
                 )
@@ -62,9 +68,7 @@ data class AanbodViewModel(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AanbodGridRow(
-    val aandachtspuntOriginal: String?,
     val aandachtspunt: String?,
-    val subdoelOriginal: String?,
     val subdoel: String?,
     val subdoelen: List<Subdoel>?,
     val aanbiedingenGrid: List<AanbodRow>?
@@ -72,7 +76,6 @@ data class AanbodGridRow(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AanbodRow(
-    val aanbodOriginal: String?,
     val aanbod: String?,
     val status: String?,
     val aanbiedingen: List<Aanbod>?,

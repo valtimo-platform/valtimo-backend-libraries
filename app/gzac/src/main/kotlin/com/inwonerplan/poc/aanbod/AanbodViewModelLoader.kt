@@ -13,10 +13,6 @@ class AanbodViewModelLoader: ViewModelLoader<AanbodViewModel> {
         )
     }
 
-    override fun supports(formName: String): Boolean {
-        return formName == getFormName()
-    }
-
     override fun getFormName(): String {
         return "form_aanbod"
     }

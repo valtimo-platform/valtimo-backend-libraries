@@ -16,6 +16,7 @@
 
 package com.ritense.formviewmodel.autoconfigure
 
+import com.ritense.formviewmodel.SpringContextHelper
 import com.ritense.formviewmodel.commandhandling.Command
 import com.ritense.formviewmodel.commandhandling.CommandDispatcher
 import com.ritense.formviewmodel.commandhandling.CommandHandler
@@ -24,6 +25,9 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class CommandDispatcherAutoConfiguration {
+
+    @Bean
+    fun springContextHelper() = SpringContextHelper()
 
     @Bean
     fun commandDispatcher(handlers: List<CommandHandler<*, *>>): CommandDispatcher {
