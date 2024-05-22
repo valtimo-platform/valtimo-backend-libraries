@@ -55,4 +55,12 @@
                                  referencedTableName="case_widget_tab"
                                  referencedColumnNames="case_definition_name,tab_key"/>
     </changeSet>
+
+    <changeSet id="4" author="Ritense">
+        <addColumn tableName="case_widget_tab_widget">
+            <column name="properties" type="${jsonType}">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

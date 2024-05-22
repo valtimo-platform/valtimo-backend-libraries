@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.case_.widget
+package com.ritense.case_.widget.fields
 
-import com.ritense.case_.domain.tab.CaseWidgetTab
-import com.ritense.case_.domain.tab.TestCaseWidgetTabWidget
-import java.util.UUID
+import com.fasterxml.jackson.annotation.JsonTypeName
+import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
 
-class TestCaseWidgetDataProvider : CaseWidgetDataProvider<TestCaseWidgetTabWidget> {
+@JsonTypeName("fields")
+class FieldsCaseWidgetDto(
+    key: String, title: String, width: Int, highContrast: Boolean,
 
-    override fun supportedWidgetType() = TestCaseWidgetTabWidget::class.java
-    override fun getData(documentId: UUID, widgetTab: CaseWidgetTab, widget: TestCaseWidgetTabWidget): Any {
-        return mapOf("test" to "test123")
-    }
-}
+    val properties: FieldsWidgetProperties
+) : CaseWidgetTabWidgetDto(
+    key, title, width, highContrast
+)

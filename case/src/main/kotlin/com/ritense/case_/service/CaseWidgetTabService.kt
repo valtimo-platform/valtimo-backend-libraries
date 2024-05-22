@@ -33,12 +33,17 @@ import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
 import com.ritense.case_.service.event.CaseTabCreatedEvent
 import com.ritense.case_.widget.CaseWidgetDataProvider
 import com.ritense.case_.widget.CaseWidgetMapper
+import com.ritense.document.domain.impl.JsonSchemaDocumentId
+import com.ritense.document.service.DocumentService
+import com.ritense.document.service.findByOrNull
 import org.springframework.context.event.EventListener
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Transactional(readOnly = false)
 class CaseWidgetTabService(
+    private val documentService: DocumentService,
     private val caseWidgetTabRepository: CaseWidgetTabRepository,
     private val caseTabRepository: CaseTabRepository,
     private val authorizationService: AuthorizationService,
@@ -62,7 +67,7 @@ class CaseWidgetTabService(
     }
 
     @Transactional
-    fun updateWidgetTab(tabDto: CaseWidgetTabDto): CaseWidgetTabDto? {
+    fun updateWidgetTab(tabDto: CaseWidgetTabDto): CaseWidgetTabDto {
         denyAuthorization()
 
         val caseWidgetTab = (caseWidgetTabRepository.findByIdOrNull(CaseTabId(tabDto.caseDefinitionName, tabDto.key))
@@ -82,7 +87,10 @@ class CaseWidgetTabService(
     }
 
     @Transactional(readOnly = true)
-    fun getCaseWidgetData(caseDefinitionName: String, tabKey: String, widgetKey: String): Any? {
+    fun getCaseWidgetData(documentId: UUID, tabKey: String, widgetKey: String): Any? {
+        val document = documentService.findByOrNull(JsonSchemaDocumentId.existingId(documentId)) ?: return null
+
+        val caseDefinitionName = document.definitionId().name()
         checkCaseTabAccess(caseDefinitionName, tabKey, VIEW)
 
         val widgetTab = caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, tabKey)) ?: return null
@@ -92,7 +100,7 @@ class CaseWidgetTabService(
 
         return caseWidgetDataProviders
             .first { provider -> provider.supportedWidgetType().isAssignableFrom(widget::class.java) }
-            .getData(widgetTab, widget)
+            .getData(document.id().id, widgetTab, widget)
     }
 
     private fun checkCaseTabAccess(caseDefinitionName: String, key: String, action: Action<CaseTab>) {

@@ -9,6 +9,7 @@ import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case_.repository.CaseWidgetTabRepository
 import com.ritense.case_.rest.dto.CaseWidgetTabDto
 import com.ritense.case_.web.rest.dto.TestCaseWidgetTabWidgetDto
+import com.ritense.case_.widget.TestCaseWidgetProperties
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -78,21 +79,7 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
         val tabKey = "my-tab"
 
         runWithoutAuthorization {
-            caseTabService.createCaseTab(
-                caseDefinitionName,
-                CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-")
-            )
-
-            caseWidgetTabService.updateWidgetTab(
-                CaseWidgetTabDto(
-                    caseDefinitionName,
-                    tabKey,
-                    widgets = listOf(
-                        TestCaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false),
-                        TestCaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true)
-                    )
-                )
-            )
+            createCaseWidgetTab(caseDefinitionName, tabKey)
         }
 
         val widgetTab = caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, tabKey))
@@ -118,21 +105,7 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
         val tabKey = "my-tab"
 
         runWithoutAuthorization {
-            caseTabService.createCaseTab(
-                caseDefinitionName,
-                CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-")
-            )
-
-            caseWidgetTabService.updateWidgetTab(
-                CaseWidgetTabDto(
-                    caseDefinitionName,
-                    tabKey,
-                    widgets = listOf(
-                        TestCaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false),
-                        TestCaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true)
-                    )
-                )
-            )
+            createCaseWidgetTab(caseDefinitionName, tabKey)
         }
 
         val widgetTab = caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, tabKey))
@@ -161,21 +134,7 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
         val tabKey = "my-tab"
 
         runWithoutAuthorization {
-            caseTabService.createCaseTab(
-                caseDefinitionName,
-                CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-")
-            )
-
-            caseWidgetTabService.updateWidgetTab(
-                CaseWidgetTabDto(
-                    caseDefinitionName,
-                    tabKey,
-                    widgets = listOf(
-                        TestCaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false),
-                        TestCaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true)
-                    )
-                )
-            )
+            createCaseWidgetTab(caseDefinitionName, tabKey)
         }
 
         val widgetTab = caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, tabKey))
@@ -194,8 +153,8 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
                     caseDefinitionName,
                     tabKey,
                     widgets = listOf(
-                        TestCaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true),
-                        TestCaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false)
+                        TestCaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true, TestCaseWidgetProperties("test123")),
+                        TestCaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false, TestCaseWidgetProperties("test123"))
                     )
                 )
             )
@@ -210,6 +169,24 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
         assertThat(updatedWidgetTab.widgets[1].key).isEqualTo("widget-1")
         assertThat(updatedWidgetTab.widgets[0].order).isEqualTo(0)
         assertThat(updatedWidgetTab.widgets[1].order).isEqualTo(1)
+    }
+
+    private fun createCaseWidgetTab(caseDefinitionName: String, tabKey: String): CaseWidgetTabDto? {
+        caseTabService.createCaseTab(
+            caseDefinitionName,
+            CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-")
+        )
+
+        return caseWidgetTabService.updateWidgetTab(
+            CaseWidgetTabDto(
+                caseDefinitionName,
+                tabKey,
+                widgets = listOf(
+                    TestCaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false),
+                    TestCaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true)
+                )
+            )
+        )
     }
 
 }

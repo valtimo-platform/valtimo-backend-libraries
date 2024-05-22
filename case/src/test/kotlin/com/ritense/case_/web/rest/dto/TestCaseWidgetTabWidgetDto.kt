@@ -18,9 +18,12 @@ package com.ritense.case_.web.rest.dto
 
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
+import com.ritense.case_.widget.TestCaseWidgetProperties
 
 @JsonTypeName("test")
 class TestCaseWidgetTabWidgetDto(
-    key: String, title: String, width: Int, highContrast: Boolean
+    key: String, title: String, width: Int, highContrast: Boolean,
+    val properties: TestCaseWidgetProperties = TestCaseWidgetProperties("test123"),
 ) : CaseWidgetTabWidgetDto(
-    key, title, width, highContrast)
+    key, title, width, highContrast
+)

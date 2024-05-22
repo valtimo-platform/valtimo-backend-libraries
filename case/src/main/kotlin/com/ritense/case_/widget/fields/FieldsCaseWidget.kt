@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.case_.domain.tab
+package com.ritense.case_.widget.fields
 
-import com.ritense.case_.widget.TestCaseWidgetProperties
+import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorValue
@@ -24,13 +24,13 @@ import jakarta.persistence.Entity
 import org.hibernate.annotations.Type
 
 @Entity
-@DiscriminatorValue("test")
-class TestCaseWidgetTabWidget(
+@DiscriminatorValue("fields")
+class FieldsCaseWidget(
     key: String, title: String, order: Int, width: Int, highContrast: Boolean,
 
     @Type(value = JsonType::class)
     @Column(name = "properties", nullable = false)
-    val properties: TestCaseWidgetProperties
+    val properties: FieldsWidgetProperties
 ) : CaseWidgetTabWidget(
     key, title, order, width, highContrast
 )
