@@ -6,6 +6,6 @@ import com.ritense.formviewmodel.commandhandling.Command
 import com.ritense.valtimo.camunda.domain.CamundaTask
 
 data class SaveAanbodSubmissionCommand(
-    val aanbodSubmission: AanbodSubmission,
+    val aanbodSubmission: AanbodViewModel,
     val task: CamundaTask
 ) : Command<Unit>

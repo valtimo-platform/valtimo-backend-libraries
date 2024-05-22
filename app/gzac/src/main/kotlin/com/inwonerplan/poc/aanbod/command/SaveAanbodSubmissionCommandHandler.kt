@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.formviewmodel.commandhandling.CommandHandler
+import com.ritense.formviewmodel.error.BusinessException
 import com.ritense.formviewmodel.error.FormException
 import mu.KotlinLogging
 
@@ -25,7 +26,7 @@ class SaveAanbodSubmissionCommandHandler(
                 result.errors().forEach {
                     logger.error { "Failed updating document $it" }
                 }
-                throw FormException("Failed to update document")
+                throw BusinessException("Could not save document")
             } else {
                 logger.info { "Updated case with $payload" }
             }
