@@ -1,5 +1,5 @@
 {
-    "changesetId": "case-widget-tab-v1",
+    "changesetId": "some-other-case-type.case-widget-tab",
     "tabs": [
         {
             "caseDefinitionName": "some-other-case-type",

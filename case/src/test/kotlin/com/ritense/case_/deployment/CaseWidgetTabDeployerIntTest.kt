@@ -18,7 +18,6 @@ package com.ritense.case_.deployment
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.BaseIntegrationTest
-import com.ritense.case.domain.CaseTabId
 import com.ritense.case_.service.CaseWidgetTabService
 import com.ritense.case_.widget.fields.FieldsCaseWidgetDto
 import org.assertj.core.api.Assertions.assertThat
@@ -35,7 +34,6 @@ class CaseWidgetTabDeployerIntTest @Autowired constructor(
     fun `should auto deploy cases`() {
         val caseDefinitionName = "some-other-case-type"
         val tabKey = "widget-tab"
-        val tabId = CaseTabId(caseDefinitionName, tabKey)
 
         val widgetTab = runWithoutAuthorization {
             caseWidgetTabService.getWidgetTab(caseDefinitionName, tabKey)
