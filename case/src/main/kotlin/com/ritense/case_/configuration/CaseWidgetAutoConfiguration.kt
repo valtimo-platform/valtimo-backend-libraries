@@ -15,8 +15,10 @@
  */
 package com.ritense.case_.configuration
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.case.repository.CaseTabRepository
+import com.ritense.case_.deployment.CaseWidgetTabDeployer
 import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 import com.ritense.case_.repository.CaseWidgetTabRepository
 import com.ritense.case_.rest.CaseWidgetTabManagementResource
@@ -27,6 +29,8 @@ import com.ritense.case_.widget.CaseWidgetAnnotatedClassResolver
 import com.ritense.case_.widget.CaseWidgetDataProvider
 import com.ritense.case_.widget.CaseWidgetJacksonModule
 import com.ritense.case_.widget.CaseWidgetMapper
+import com.ritense.valtimo.changelog.service.ChangelogService
+import org.springframework.beans.factory.annotation.Value
 import com.ritense.case_.widget.fields.FieldsCaseWidgetDataProvider
 import com.ritense.case_.widget.fields.FieldsCaseWidgetMapper
 import com.ritense.document.service.DocumentService
@@ -64,6 +68,23 @@ class CaseWidgetAutoConfiguration {
         authorizationService,
         caseWidgetMappers as List<CaseWidgetMapper<CaseWidgetTabWidget, CaseWidgetTabWidgetDto>>,
         caseWidgetDataProviders as List<CaseWidgetDataProvider<CaseWidgetTabWidget>>
+    )
+
+    @Suppress("UNCHECKED_CAST")
+    @Bean
+    @ConditionalOnMissingBean(CaseWidgetTabDeployer::class)
+    fun caseWidgetTabDeployer(
+        objectMapper: ObjectMapper,
+        caseWidgetTabRepository: CaseWidgetTabRepository,
+        caseWidgetMappers: List<CaseWidgetMapper<*, *>>,
+        changelogService: ChangelogService,
+        @Value("\${valtimo.changelog.case-widget-tab.clear-tables:false}") clearTables: Boolean
+    ) = CaseWidgetTabDeployer(
+        objectMapper,
+        caseWidgetTabRepository,
+        caseWidgetMappers as List<CaseWidgetMapper<CaseWidgetTabWidget, CaseWidgetTabWidgetDto>>,
+        changelogService,
+        clearTables
     )
 
     @ConditionalOnMissingBean(CaseWidgetTabResource::class)
