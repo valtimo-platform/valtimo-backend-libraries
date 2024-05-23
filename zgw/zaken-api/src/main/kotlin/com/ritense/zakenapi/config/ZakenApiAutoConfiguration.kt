@@ -40,6 +40,7 @@ import com.ritense.zakenapi.provider.ZaakKvkProvider
 import com.ritense.zakenapi.repository.ZaakHersteltermijnRepository
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zakenapi.repository.ZaakTypeLinkRepository
+import com.ritense.zakenapi.resolver.ZaakResultaatValueResolverFactory
 import com.ritense.zakenapi.resolver.ZaakStatusValueResolverFactory
 import com.ritense.zakenapi.resolver.ZaakValueResolverFactory
 import com.ritense.zakenapi.security.ZakenApiHttpSecurityConfigurer
@@ -149,6 +150,20 @@ class ZakenApiAutoConfiguration {
         pluginService: PluginService,
     ): ZaakStatusValueResolverFactory {
         return ZaakStatusValueResolverFactory(
+            processDocumentService,
+            zaakUrlProvider,
+            pluginService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ZaakResultaatValueResolverFactory::class)
+    fun zaakResultaatValueResolverFactory(
+        processDocumentService: ProcessDocumentService,
+        zaakUrlProvider: ZaakUrlProvider,
+        pluginService: PluginService,
+    ): ZaakResultaatValueResolverFactory {
+        return ZaakResultaatValueResolverFactory(
             processDocumentService,
             zaakUrlProvider,
             pluginService
