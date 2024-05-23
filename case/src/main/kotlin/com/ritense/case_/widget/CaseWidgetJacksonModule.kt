@@ -26,7 +26,7 @@ class CaseWidgetJacksonModule(
         super.setupModule(context)
 
         context.registerSubtypes(
-            *annotatedClassResolver.widgetDtoClasses.map { NamedType(it) }.toTypedArray()
+            *(annotatedClassResolver.widgetDtoClasses + annotatedClassResolver.widgetDisplayPropertiesClasses).map { NamedType(it) }.toTypedArray()
         )
     }
 }

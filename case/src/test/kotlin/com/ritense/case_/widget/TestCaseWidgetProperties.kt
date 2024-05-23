@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.case_.rest.dto
+package com.ritense.case_.widget
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonInclude.Include
+import com.ritense.case_.widget.displayproperties.FieldDisplayProperties
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-interface CaseWidgetTabWidgetDto {
-    val key: String
-    val title: String
-    val width: Int
-    val highContrast: Boolean
-}
+@JsonInclude(Include.NON_NULL)
+data class TestCaseWidgetProperties(
+    val stringProperty: String = "test123",
+    val displayProperties: FieldDisplayProperties? = null
+)

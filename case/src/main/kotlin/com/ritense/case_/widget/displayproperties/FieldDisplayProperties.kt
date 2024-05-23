@@ -13,15 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.ritense.case_.widget.displayproperties
 
-package com.ritense.case_.rest.dto
-
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
+@JsonInclude(Include.NON_NULL)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-interface CaseWidgetTabWidgetDto {
-    val key: String
-    val title: String
-    val width: Int
-    val highContrast: Boolean
-}
+interface FieldDisplayProperties

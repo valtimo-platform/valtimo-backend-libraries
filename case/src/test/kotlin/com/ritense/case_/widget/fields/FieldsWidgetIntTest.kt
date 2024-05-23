@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.case_.web.rest
+package com.ritense.case_.widget.fields
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.BaseIntegrationTest
@@ -23,12 +23,9 @@ import com.ritense.case.service.CaseTabService
 import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case_.rest.dto.CaseWidgetTabDto
 import com.ritense.case_.service.CaseWidgetTabService
-import com.ritense.case_.web.rest.dto.TestCaseWidgetTabWidgetDto
-import com.ritense.case_.widget.TestCaseWidgetProperties
-import com.ritense.case_.widget.displayproperties.CurrencyFieldDisplayProperties
+import com.ritense.case_.widget.displayproperties.BooleanFieldDisplayProperties
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentService
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.DEVELOPER
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.BeforeEach
@@ -46,7 +43,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
 
 @Transactional
-class CaseWidgetTabResourceIntTest @Autowired constructor(
+class FieldsWidgetIntTest @Autowired constructor(
     private val webApplicationContext: WebApplicationContext,
     private val tabService: CaseTabService,
     private val widgetTabService: CaseWidgetTabService,
@@ -58,33 +55,6 @@ class CaseWidgetTabResourceIntTest @Autowired constructor(
     @BeforeEach
     fun setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build()
-    }
-
-    @Test
-    @WithMockUser(username = "user@ritense.com", authorities = [USER])
-    fun `should not find case widget tab`() {
-        val caseDefinitionName = "some-case-type"
-        val tabKey = "fake-tab"
-        mockMvc.perform(
-            get("/api/v1/case-definition/{caseDefinitionName}/widget-tab/{tabKey}", caseDefinitionName, tabKey)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-        ).andExpect(status().isNotFound)
-    }
-
-    @Test
-    @WithMockUser(username = "developer@ritense.com", authorities = [DEVELOPER])
-    fun `should deny access to widget tab when not authorized`() {
-        val caseDefinitionName = "some-case-type"
-        val tabKey = "my-tab"
-        val widgetKey = "my-widget"
-        runWithoutAuthorization {
-            createCaseWidgetTab(caseDefinitionName, tabKey, widgetKey)
-        }
-        mockMvc.perform(
-            get("/api/v1/case-definition/{caseDefinitionName}/widget-tab/{tabKey}", caseDefinitionName, tabKey)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-        ).andDo(print())
-            .andExpect(status().is5xxServerError)
     }
 
     @Test
@@ -101,30 +71,18 @@ class CaseWidgetTabResourceIntTest @Autowired constructor(
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andDo(print())
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.caseDefinitionName").value(caseDefinitionName))
-            .andExpect(jsonPath("$.key").value(tabKey))
-            .andExpect(jsonPath("$.widgets").exists())
-            .andExpect(jsonPath("$.widgets[0].type").value("test"))
-            .andExpect(jsonPath("$.widgets[0].key").value("my-widget"))
-            .andExpect(jsonPath("$.widgets[0].width").value("1"))
-            .andExpect(jsonPath("$.widgets[0].highContrast").value(true))
-    }
-
-    @Test
-    @WithMockUser(username = "developer@ritense.com", authorities = [DEVELOPER])
-    fun `should deny access to case widget data when not authorized`() {
-        val caseDefinitionName = "some-case-type"
-        val tabKey = "my-tab"
-        val widgetKey = "my-widget"
-        val documentId = runWithoutAuthorization {
-            createCaseWidgetTab(caseDefinitionName, tabKey, widgetKey)
-            documentService.createDocument(NewDocumentRequest(caseDefinitionName, MapperSingleton.get().createObjectNode())).resultingDocument().get().id()
-        }
-        mockMvc.perform(
-            get("/api/v1/document/{documentId}/widget-tab/{tabKey}/widget/{widgetKey}", documentId, tabKey, widgetKey)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-        ).andDo(print())
-            .andExpect(status().is5xxServerError)
+            .andExpect(jsonPath("$.widgets[0].type").value("fields"))
+            .andExpect(jsonPath("$.widgets[0].properties").exists())
+            .andExpect(jsonPath("$.widgets[0].properties.columns").exists())
+            .andExpect(jsonPath("$.widgets[0].properties.columns[0][0].key").value("someKey"))
+            .andExpect(jsonPath("$.widgets[0].properties.columns[0][0].title").value("Some key"))
+            .andExpect(jsonPath("$.widgets[0].properties.columns[0][0].value").value("test:/myKey"))
+            .andExpect(jsonPath("$.widgets[0].properties.columns[0][0].displayProperties").doesNotExist())
+            .andExpect(jsonPath("$.widgets[0].properties.columns[1][0].key").value("someOtherKey"))
+            .andExpect(jsonPath("$.widgets[0].properties.columns[1][0].title").value("Some other key"))
+            .andExpect(jsonPath("$.widgets[0].properties.columns[1][0].value").value("test:/myOtherKey"))
+            .andExpect(jsonPath("$.widgets[0].properties.columns[1][0].displayProperties").exists())
+            .andExpect(jsonPath("$.widgets[0].properties.columns[1][0].displayProperties.type").value("boolean"))
     }
 
     @Test
@@ -142,7 +100,8 @@ class CaseWidgetTabResourceIntTest @Autowired constructor(
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andDo(print())
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.test").value("test123"))
+            .andExpect(jsonPath("$.someKey").value("test:/myKey"))
+            .andExpect(jsonPath("$.someOtherKey").value("test:/myOtherKey"))
     }
 
     private fun createCaseWidgetTab(
@@ -153,20 +112,29 @@ class CaseWidgetTabResourceIntTest @Autowired constructor(
         tabService.createCaseTab(caseDefinitionName, CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-"))
         return widgetTabService.updateWidgetTab(
             CaseWidgetTabDto(
-                caseDefinitionName, tabKey, widgets = listOf(
-                    TestCaseWidgetTabWidgetDto(
-                        widgetKey,
-                        "My widget",
-                        1,
-                        true,
-                        TestCaseWidgetProperties(
-                            displayProperties = CurrencyFieldDisplayProperties(
-                                currencyCode = "EUR"
+                caseDefinitionName = caseDefinitionName,
+                key = tabKey,
+                widgets = listOf(
+                    FieldsCaseWidgetDto(widgetKey, "My widget", 1, true, FieldsWidgetProperties(
+                        columns = listOf(
+                            listOf(
+                                FieldsWidgetProperties.Field(
+                                    "someKey", "Some key", "test:/myKey"
+                                )
+                            ),
+                            listOf(
+                                FieldsWidgetProperties.Field(
+                                    "someOtherKey",
+                                    "Some other key",
+                                    "test:/myOtherKey",
+                                    displayProperties = BooleanFieldDisplayProperties()
+                                )
                             )
                         )
                     )
                 )
             )
+        )
         )
     }
 }

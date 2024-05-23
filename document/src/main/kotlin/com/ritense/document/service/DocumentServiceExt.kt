@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.case_.rest.dto
+package com.ritense.document.service
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.ritense.document.domain.Document
+import kotlin.jvm.optionals.getOrNull
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-interface CaseWidgetTabWidgetDto {
-    val key: String
-    val title: String
-    val width: Int
-    val highContrast: Boolean
-}
+fun DocumentService.findByOrNull(documentId: Document.Id) = this.findBy(documentId).getOrNull()

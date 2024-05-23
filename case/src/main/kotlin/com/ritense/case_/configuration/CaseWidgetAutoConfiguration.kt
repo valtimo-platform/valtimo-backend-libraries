@@ -27,6 +27,10 @@ import com.ritense.case_.widget.CaseWidgetAnnotatedClassResolver
 import com.ritense.case_.widget.CaseWidgetDataProvider
 import com.ritense.case_.widget.CaseWidgetJacksonModule
 import com.ritense.case_.widget.CaseWidgetMapper
+import com.ritense.case_.widget.fields.FieldsCaseWidgetDataProvider
+import com.ritense.case_.widget.fields.FieldsCaseWidgetMapper
+import com.ritense.document.service.DocumentService
+import com.ritense.valueresolver.ValueResolverService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -40,7 +44,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
         CaseWidgetTabRepository::class
     ]
 )
-@EntityScan(basePackages = ["com.ritense.case_.domain"])
+@EntityScan(basePackages = ["com.ritense.case_.domain", "com.ritense.case_.widget"])
 class CaseWidgetAutoConfiguration {
 
     @Suppress("UNCHECKED_CAST")
@@ -51,8 +55,10 @@ class CaseWidgetAutoConfiguration {
         caseTabRepository: CaseTabRepository,
         authorizationService: AuthorizationService,
         caseWidgetMappers: List<CaseWidgetMapper<*, *>>,
-        caseWidgetDataProviders: List<CaseWidgetDataProvider<*>>
+        caseWidgetDataProviders: List<CaseWidgetDataProvider<*>>,
+        documentService: DocumentService
     ) = CaseWidgetTabService(
+        documentService,
         caseWidgetTabRepository,
         caseTabRepository,
         authorizationService,
@@ -83,4 +89,14 @@ class CaseWidgetAutoConfiguration {
     fun caseWidgetJacksonModule(
         annotatedClassResolver: CaseWidgetAnnotatedClassResolver
     ) = CaseWidgetJacksonModule(annotatedClassResolver)
+
+    @ConditionalOnMissingBean(FieldsCaseWidgetMapper::class)
+    @Bean
+    fun fieldsCaseWidgetMapper() = FieldsCaseWidgetMapper()
+
+    @ConditionalOnMissingBean(FieldsCaseWidgetDataProvider::class)
+    @Bean
+    fun fieldsCaseWidgetDataProvider(
+        valueResolverService: ValueResolverService
+    ) = FieldsCaseWidgetDataProvider(valueResolverService)
 }

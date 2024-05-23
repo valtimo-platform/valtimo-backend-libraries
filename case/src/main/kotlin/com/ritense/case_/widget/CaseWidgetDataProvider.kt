@@ -18,8 +18,11 @@ package com.ritense.case_.widget
 
 import com.ritense.case_.domain.tab.CaseWidgetTab
 import com.ritense.case_.domain.tab.CaseWidgetTabWidget
+import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
+import java.util.UUID
 
 interface CaseWidgetDataProvider<WIDGET: CaseWidgetTabWidget> {
     fun supportedWidgetType(): Class<WIDGET>
-    fun getData(widgetTab: CaseWidgetTab, widget: WIDGET): Any
+    fun getData(documentId: UUID, widgetTab: CaseWidgetTab, widget: WIDGET): Any
 }

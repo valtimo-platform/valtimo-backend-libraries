@@ -25,6 +25,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
+import java.util.UUID
 
 @Controller
 @SkipComponentScan
@@ -42,13 +43,13 @@ class CaseWidgetTabResource(
         return ResponseEntity.ofNullable(widgetTab)
     }
 
-    @GetMapping("/v1/case-definition/{caseDefinitionName}/widget-tab/{tabKey}/widget/{widgetKey}")
+    @GetMapping("/v1/document/{documentId}/widget-tab/{tabKey}/widget/{widgetKey}")
     fun getCaseWidgetData(
-        @PathVariable caseDefinitionName: String,
+        @PathVariable documentId: UUID,
         @PathVariable tabKey: String,
         @PathVariable widgetKey: String,
     ) : ResponseEntity<Any> {
-        val data = caseWidgetTabService.getCaseWidgetData(caseDefinitionName, tabKey, widgetKey)
+        val data = caseWidgetTabService.getCaseWidgetData(documentId, tabKey, widgetKey)
         return ResponseEntity.ofNullable(data)
     }
 }
