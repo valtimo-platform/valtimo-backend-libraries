@@ -18,6 +18,7 @@ package com.ritense.case_.widget.fields
 
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
+import jakarta.validation.Valid
 
 @JsonTypeName("fields")
 data class FieldsCaseWidgetDto(
@@ -25,5 +26,5 @@ data class FieldsCaseWidgetDto(
     override val title: String,
     override val width: Int,
     override val highContrast: Boolean,
-    val properties: FieldsWidgetProperties
+    @Valid val properties: FieldsWidgetProperties
 ) : CaseWidgetTabWidgetDto

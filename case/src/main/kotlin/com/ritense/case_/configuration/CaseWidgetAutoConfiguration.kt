@@ -15,6 +15,7 @@
  */
 package com.ritense.case_.configuration
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case_.domain.tab.CaseWidgetTabWidget
@@ -29,6 +30,8 @@ import com.ritense.case_.widget.CaseWidgetJacksonModule
 import com.ritense.case_.widget.CaseWidgetMapper
 import com.ritense.case_.widget.fields.FieldsCaseWidgetDataProvider
 import com.ritense.case_.widget.fields.FieldsCaseWidgetMapper
+import com.ritense.case_.widget.table.TableCaseWidgetDataProvider
+import com.ritense.case_.widget.table.TableCaseWidgetMapper
 import com.ritense.document.service.DocumentService
 import com.ritense.valueresolver.ValueResolverService
 import org.springframework.boot.autoconfigure.AutoConfiguration
@@ -99,4 +102,15 @@ class CaseWidgetAutoConfiguration {
     fun fieldsCaseWidgetDataProvider(
         valueResolverService: ValueResolverService
     ) = FieldsCaseWidgetDataProvider(valueResolverService)
+
+    @ConditionalOnMissingBean(TableCaseWidgetMapper::class)
+    @Bean
+    fun tableCaseWidgetMapper() = TableCaseWidgetMapper()
+
+    @ConditionalOnMissingBean(TableCaseWidgetDataProvider::class)
+    @Bean
+    fun tableCaseWidgetDataProvider(
+        objectMapper: ObjectMapper,
+        valueResolverService: ValueResolverService
+    ) = TableCaseWidgetDataProvider(objectMapper, valueResolverService)
 }

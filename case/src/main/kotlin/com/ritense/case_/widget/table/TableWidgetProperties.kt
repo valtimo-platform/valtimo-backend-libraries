@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
-package com.ritense.case_.web.rest.dto
+package com.ritense.case_.widget.table
 
-import com.fasterxml.jackson.annotation.JsonTypeName
-import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
-import com.ritense.case_.widget.TestCaseWidgetProperties
-import jakarta.validation.Valid
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonInclude.Include
+import com.ritense.case_.widget.displayproperties.FieldDisplayProperties
+import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 
-@JsonTypeName("test")
-data class TestCaseWidgetTabWidgetDto(
-    @NotBlank override val key: String,
-    override val title: String,
-    override val width: Int,
-    override val highContrast: Boolean,
-    @Valid val properties: TestCaseWidgetProperties = TestCaseWidgetProperties(),
-) : CaseWidgetTabWidgetDto
+data class TableWidgetProperties (
+    @NotBlank val collection: String,
+    @Min(1) val defaultPageSize: Int,
+    val columns: List<Column>,
+) {
+    @JsonInclude(Include.NON_NULL)
+    data class Column (
+        @NotBlank val key: String,
+        val title: String,
+        @NotBlank val value: String,
+        val displayProperties: FieldDisplayProperties? = null
+    )
+}

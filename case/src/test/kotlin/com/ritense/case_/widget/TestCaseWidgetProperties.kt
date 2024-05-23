@@ -19,9 +19,10 @@ package com.ritense.case_.widget
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.ritense.case_.widget.displayproperties.FieldDisplayProperties
+import jakarta.validation.constraints.NotBlank
 
 @JsonInclude(Include.NON_NULL)
 data class TestCaseWidgetProperties(
-    val stringProperty: String = "test123",
+    @NotBlank val stringProperty: String = "test123",
     val displayProperties: FieldDisplayProperties? = null
 )
