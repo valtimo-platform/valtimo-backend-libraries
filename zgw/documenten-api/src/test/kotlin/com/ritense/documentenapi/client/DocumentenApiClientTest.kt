@@ -907,8 +907,8 @@ internal class DocumentenApiClientTest {
             informatieobjecttype = "http://example.com/informatieobjecttype/123",
             titel = "title",
             vertrouwelijkheidaanduiding = "confidential",
-            creatiedatumFrom = LocalDateTime.of(2020, 5, 3, 12, 0),
-            creatiedatumTo = LocalDateTime.of(2020, 5, 3, 13, 0),
+            creatiedatumFrom = LocalDate.of(2020, 5, 3),
+            creatiedatumTo = LocalDate.of(2020, 5, 4),
             auteur = "author",
             trefwoorden = listOf("tag1", "tag2"),
             zaakUrl = URI("http://example.com/zaak/123"),
@@ -922,8 +922,8 @@ internal class DocumentenApiClientTest {
         assertEquals("title", queryParameters["titel"])
         assertEquals("confidential", queryParameters["vertrouwelijkheidaanduiding"])
         assertEquals("author", queryParameters["auteur"])
-        assertEquals("2020-05-03T12:00", queryParameters["creatiedatum__gte"])
-        assertEquals("2020-05-03T13:00", queryParameters["creatiedatum__lte"])
+        assertEquals("2020-05-03", queryParameters["creatiedatum__gte"])
+        assertEquals("2020-05-04", queryParameters["creatiedatum__lte"])
         assertEquals("tag1,tag2", queryParameters["trefwoorden"])
     }
 
