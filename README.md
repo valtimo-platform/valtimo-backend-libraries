@@ -32,10 +32,10 @@ Starting up the Valtimo platform required three steps:
 
 #### Start Docker containers for supporting services
 1. Make sure Docker is running.
-2. Run the Gradle task `app -> gzac -> Tasks -> docker -> composeUpGzac` in the IDE, or run the following command: `./gradlew :app:gzac:composeUpGzac`
+2. Run the following command to start the supporting services: `./gradlew :app:gzac:composeUpGzac`
 
 #### Start Application
-Run the Gradle task: `app -> gzac -> Tasks -> application -> bootRun`, or run the following command `./gradlew :app:gzac:bootRun`
+Run the following command to start the Spring Boot application: `./gradlew :app:gzac:bootRun`
 
 ### Test users
 Keycloak management can be accessed on http://localhost:8081 with the default credentials of username <ins>admin</ins> and password <ins>admin</ins>.
