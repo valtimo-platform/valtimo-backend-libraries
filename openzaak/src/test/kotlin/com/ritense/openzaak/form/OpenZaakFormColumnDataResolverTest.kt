@@ -40,7 +40,7 @@ import org.springframework.http.ResponseEntity
 import java.net.URI
 import java.util.UUID
 
-internal class OpenZaakFormColumnDataResolverTest : BaseTest() {
+internal class OpenZaakFormFieldDataResolverTest : BaseTest() {
 
     val zaaktypeLinkId = ZaakTypeLinkId.existingId(UUID.randomUUID())
 
