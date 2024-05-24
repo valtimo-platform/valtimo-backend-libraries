@@ -87,7 +87,7 @@ class CaseWidgetTabService(
         return CaseWidgetTabDto.of(caseWidgetTabRepository.save(caseWidgetTab), caseWidgetMappers)
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     fun getCaseWidgetData(documentId: UUID, tabKey: String, widgetKey: String): Any? {
         val document = documentService.findByOrNull(JsonSchemaDocumentId.existingId(documentId)) ?: return null
 
