@@ -20,7 +20,9 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.module.kotlin.treeToValue
+import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.JsonPath
+import com.jayway.jsonpath.Option
 import com.ritense.case_.domain.tab.CaseWidgetTab
 import com.ritense.case_.widget.CaseWidgetDataProvider
 import com.ritense.valueresolver.ValueResolverService
@@ -39,9 +41,9 @@ class TableCaseWidgetDataProvider(
     override fun getData(documentId: UUID, widgetTab: CaseWidgetTab, widget: TableCaseWidget, pageable: Pageable): Page<Map<String, Any?>> {
         val collectionPlaceholder =
             valueResolverService.resolveValues(documentId.toString(), listOf(widget.properties.collection))[widget.properties.collection]
-        val collection = if (collectionPlaceholder is JsonNode) collectionPlaceholder else objectMapper.valueToTree<JsonNode>(collectionPlaceholder)
+        val collection = objectMapper.valueToTree<JsonNode>(collectionPlaceholder)
         if (collection !is ArrayNode) {
-            throw RuntimeException("Configured collection placeholder cannot be resolved into an array!")
+            throw InvalidCollectionException()
         }
 
         val pagedCollection = collection.chunked(
@@ -51,12 +53,12 @@ class TableCaseWidgetDataProvider(
         val result = pagedCollection.getOrElse(pageable.pageNumber, defaultValue = { _ -> listOf() })
             .onEachIndexed { index, node ->
                 if (!node.isContainerNode) {
-                    throw RuntimeException("Node at index $index is not a container node!")
+                    throw InvalidCollectionNodeTypeException(index)
                 }
             }.map { child ->
                 widget.properties.columns.associate { column ->
                     val value = if (column.value.startsWith("$")) {
-                        JsonPath.read<Any>(child.toString(), column.value)
+                        JSONPATH_CONTEXT.parse(child.toString()).read<Any>(column.value)
                     } else {
                         val pointer = if (column.value.startsWith("/")) column.value else "/${column.value}"
                         val valueNode = child.at(pointer)
@@ -75,4 +77,10 @@ class TableCaseWidgetDataProvider(
         return PageImpl(result, pageable, collection.size().toLong())
     }
 
+    class InvalidCollectionException : RuntimeException("Invalid collection value!")
+    class InvalidCollectionNodeTypeException(index:Int) : RuntimeException("Node at index $index is not a container node!")
+
+    private companion object {
+        val JSONPATH_CONTEXT = JsonPath.using(Configuration.defaultConfiguration().addOptions(Option.SUPPRESS_EXCEPTIONS))
+    }
 }
