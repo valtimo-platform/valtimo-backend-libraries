@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.documentenapi.web.rest.dto
+package com.ritense.zakenapi.domain
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import java.net.URI
-import java.time.LocalDate
+import java.util.UUID
 
-data class DocumentSearchRequest(
-    val informatieobjecttype: String? = null,
-    val titel: String? = null,
-    val vertrouwelijkheidaanduiding: String? = null,
-    val creatiedatumFrom: LocalDate? = null,
-    val creatiedatumTo: LocalDate? = null,
-    val auteur: String? = null,
-    val trefwoorden: List<String>? = null,
-    @JsonIgnore val zaakUrl: URI? = null
+data class ZaakResultaat(
+    val url: URI,
+    val uuid: UUID,
+    val zaak: URI,
+    val resultaattype: URI,
+    val toelichting: String? = null,
 )

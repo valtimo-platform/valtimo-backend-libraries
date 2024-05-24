@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.documentenapi.web.rest.dto
+package com.ritense.zakenapi.event
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import java.net.URI
-import java.time.LocalDate
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.outbox.domain.BaseEvent
 
-data class DocumentSearchRequest(
-    val informatieobjecttype: String? = null,
-    val titel: String? = null,
-    val vertrouwelijkheidaanduiding: String? = null,
-    val creatiedatumFrom: LocalDate? = null,
-    val creatiedatumTo: LocalDate? = null,
-    val auteur: String? = null,
-    val trefwoorden: List<String>? = null,
-    @JsonIgnore val zaakUrl: URI? = null
+class ZaakResultaatViewed(zaakResultaat: ObjectNode) : BaseEvent(
+    type = "com.ritense.gzac.zrc.resultaat.viewed",
+    resultType = "com.ritense.zakenapi.domain.ZaakResultaat",
+    resultId = null,
+    result = zaakResultaat
 )
