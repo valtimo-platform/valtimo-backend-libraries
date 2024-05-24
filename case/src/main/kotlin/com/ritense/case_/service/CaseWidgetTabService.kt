@@ -18,6 +18,7 @@ package com.ritense.case_.service
 
 import com.ritense.authorization.Action
 import com.ritense.authorization.Action.Companion.deny
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.case.domain.CaseTab
@@ -99,9 +100,11 @@ class CaseWidgetTabService(
 
         //TODO: Do some authorization check on the widget here?
 
-        return caseWidgetDataProviders
-            .first { provider -> provider.supportedWidgetType().isAssignableFrom(widget::class.java) }
-            .getData(document.id().id, widgetTab, widget, pageable)
+        return runWithoutAuthorization {
+            caseWidgetDataProviders
+                .first { provider -> provider.supportedWidgetType().isAssignableFrom(widget::class.java) }
+                .getData(document.id().id, widgetTab, widget, pageable)
+        }
     }
 
     private fun checkCaseTabAccess(caseDefinitionName: String, key: String, action: Action<CaseTab>) {

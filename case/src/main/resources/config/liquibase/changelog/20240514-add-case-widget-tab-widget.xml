@@ -53,7 +53,8 @@
                                  baseColumnNames="case_definition_name,tab_key"
                                  constraintName="fk_case_widget_tab_name_key"
                                  referencedTableName="case_widget_tab"
-                                 referencedColumnNames="case_definition_name,tab_key"/>
+                                 referencedColumnNames="case_definition_name,tab_key"
+                                 onDelete="CASCADE"/>
     </changeSet>
 
     <changeSet id="4" author="Ritense">
