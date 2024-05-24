@@ -24,7 +24,7 @@ import com.ritense.case_.widget.TestCaseWidgetDataProvider
 import com.ritense.case_.widget.TestCaseWidgetMapper
 import com.ritense.resource.service.ResourceService
 import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
-import com.ritense.valueresolver.ValueResolverFactory
+import org.mockito.kotlin.spy
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.boot.test.context.TestConfiguration
@@ -40,17 +40,17 @@ class TestApplication {
         runApplication<TestApplication>(*args)
     }
 
-    @Bean
-    fun testResolverFactory(): ValueResolverFactory {
-        return TestResolverFactory()
-    }
-
-    @Bean
-    fun testFormExporter() = TestFormExporter()
-
 
     @TestConfiguration
     class TestConfig {
+
+        @Bean
+        fun testResolverFactory(): TestResolverFactory {
+            return spy(TestResolverFactory())
+        }
+
+        @Bean
+        fun testFormExporter() = TestFormExporter()
 
         @MockBean
         lateinit var resourceService: ResourceService
