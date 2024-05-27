@@ -64,7 +64,8 @@ class CaseWidgetTabService(
         checkCaseTabAccess(caseDefinitionName, key, VIEW)
 
         return caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, key))
-            ?.let { CaseWidgetTabDto.of(it, caseWidgetMappers) }
+            ?.let { CaseWidgetTabDto.of(it, caseWidgetMappers, this::viewPermissionCheck) }
+
     }
 
     @Transactional
@@ -84,7 +85,7 @@ class CaseWidgetTabService(
                 }
             )
 
-        return CaseWidgetTabDto.of(caseWidgetTabRepository.save(caseWidgetTab), caseWidgetMappers)
+        return CaseWidgetTabDto.of(caseWidgetTabRepository.save(caseWidgetTab), caseWidgetMappers, this::viewPermissionCheck)
     }
 
     @Transactional
@@ -123,6 +124,16 @@ class CaseWidgetTabService(
             EntityAuthorizationRequest(
                 CaseTab::class.java,
                 deny()
+            )
+        )
+    }
+
+    private fun viewPermissionCheck(widget: CaseWidgetTabWidget): Boolean {
+        return authorizationService.hasPermission(
+            EntityAuthorizationRequest(
+                CaseWidgetTabWidget::class.java,
+                CaseWidgetTabWidgetActionProvider.VIEW,
+                listOf(widget)
             )
         )
     }

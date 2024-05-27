@@ -26,6 +26,7 @@ import com.ritense.case.domain.DateFormatDisplayTypeParameter
 import com.ritense.case.domain.EnumDisplayTypeParameter
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
+import com.ritense.case.repository.CaseTabDocumentDefinitionMapper
 import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.repository.CaseTabSpecificationFactory
 import com.ritense.case.repository.TaskListColumnRepository
@@ -365,4 +366,11 @@ class CaseAutoConfiguration {
     ) = CaseDefinitionSettingsImporter(
         deploymentService
     )
+
+    @Bean
+    fun caseTabDocumentDefinitionMapper(
+        @Lazy documentDefinitionService: DocumentDefinitionService,
+    ): CaseTabDocumentDefinitionMapper {
+        return CaseTabDocumentDefinitionMapper(documentDefinitionService)
+    }
 }

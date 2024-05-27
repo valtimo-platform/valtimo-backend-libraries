@@ -16,12 +16,25 @@
 
 package com.ritense.authorization.permission.condition
 
+import java.lang.reflect.Field
+
 abstract class ReflectingPermissionCondition(type: PermissionConditionType) : PermissionCondition(type) {
     protected fun findEntityFieldValue(entity: Any, field: String): Any? {
         var currentEntity: Any? = entity
         val fields = field.split('.')
         fields.forEachIndexed { index, value ->
-            val declaredField = currentEntity!!.javaClass.getDeclaredField(value)
+            var classToSearch: Class<*>? = entity.javaClass
+            var declaredField: Field? = null
+
+            while (declaredField == null && classToSearch != null) {
+                declaredField = classToSearch.declaredFields.firstOrNull { it.name == value }
+                if (declaredField == null)
+                    classToSearch = classToSearch.superclass
+            }
+
+            if (declaredField == null) {
+                throw IllegalArgumentException("Field $field not found in class ${entity.javaClass}")
+            }
             declaredField.trySetAccessible()
 
             // Field.get(obj) does not (always) seem to work according to spec, because it throws a NullPointerException when the value of a property is null
