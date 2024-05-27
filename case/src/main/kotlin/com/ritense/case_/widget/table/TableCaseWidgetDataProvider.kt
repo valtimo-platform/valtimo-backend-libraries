@@ -25,6 +25,8 @@ import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.Option
 import com.ritense.case_.domain.tab.CaseWidgetTab
 import com.ritense.case_.widget.CaseWidgetDataProvider
+import com.ritense.case_.widget.exception.InvalidCollectionException
+import com.ritense.case_.widget.exception.InvalidCollectionNodeTypeException
 import com.ritense.valueresolver.ValueResolverService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -77,10 +79,9 @@ class TableCaseWidgetDataProvider(
         return PageImpl(result, pageable, collection.size().toLong())
     }
 
-    class InvalidCollectionException : RuntimeException("Invalid collection value!")
-    class InvalidCollectionNodeTypeException(index:Int) : RuntimeException("Node at index $index is not a container node!")
 
     private companion object {
         val JSONPATH_CONTEXT = JsonPath.using(Configuration.defaultConfiguration().addOptions(Option.SUPPRESS_EXCEPTIONS))
     }
 }
+

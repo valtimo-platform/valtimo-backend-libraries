@@ -3,6 +3,8 @@ package com.ritense.case_.widget.table
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.case_.domain.tab.CaseWidgetTab
+import com.ritense.case_.widget.exception.InvalidCollectionException
+import com.ritense.case_.widget.exception.InvalidCollectionNodeTypeException
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valueresolver.ValueResolverService
 import org.assertj.core.api.Assertions.assertThat
@@ -129,7 +131,7 @@ class TableCaseWidgetDataProviderTest(
         val documentId = UUID.randomUUID()
         mockCollection(documentId, widget, "justAString")
 
-        assertThrows<TableCaseWidgetDataProvider.InvalidCollectionException> {
+        assertThrows<InvalidCollectionException> {
             caseWidgetDataProvider.getData(documentId, widgetTab, widget, Pageable.ofSize(widget.properties.defaultPageSize))
         }
     }
@@ -142,7 +144,7 @@ class TableCaseWidgetDataProviderTest(
         val collection = people() + listOf("")
         mockCollection(documentId, widget, collection)
 
-        assertThrows<TableCaseWidgetDataProvider.InvalidCollectionNodeTypeException> {
+        assertThrows<InvalidCollectionNodeTypeException> {
             caseWidgetDataProvider.getData(documentId, widgetTab, widget, Pageable.ofSize(widget.properties.defaultPageSize).withPage(1))
         }
     }
