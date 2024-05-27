@@ -24,24 +24,29 @@ import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
 import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.formviewmodel.viewmodel.ViewModelLoader
 import mu.KotlinLogging
-import org.springframework.boot.ApplicationArguments
-import org.springframework.boot.ApplicationRunner
+import org.springframework.boot.context.event.ApplicationReadyEvent
+import org.springframework.context.event.EventListener
 import kotlin.reflect.KClass
 
 class OnStartUpViewModelValidator(
     private val formIoFormDefinitionService: FormIoFormDefinitionService,
     private val viewModelLoaders: List<ViewModelLoader<*>>,
     private val formViewModelSubmissionHandlerFactory: FormViewModelSubmissionHandlerFactory
-) : ApplicationRunner {
+) {
 
-    override fun run(args: ApplicationArguments?) {
-        validate()
-    }
-
+    @EventListener(ApplicationReadyEvent::class)
     fun validate() {
         for (viewModelLoader in viewModelLoaders) {
             val formDefinition =
                 formIoFormDefinitionService.getFormDefinitionByName(viewModelLoader.getFormName()).get()
+
+            // Note: Forms added via console get a warning notice.
+            if (!formDefinition.isReadOnly) {
+                logger.warn {
+                    "This form (${viewModelLoader.getFormName()}) is not read-only. This means that the form definition is not added via configuration." +
+                    "Be cautious when changing the form definition because this is only validated on ApplicationReadyEvent"
+                }
+            }
             validateViewModel(viewModelLoader, formDefinition).let { missingProperties ->
                 if (missingProperties.isNotEmpty()) {
                     logger.error {

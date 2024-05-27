@@ -34,6 +34,7 @@ import com.ritense.formviewmodel.web.rest.error.FormViewModelModuleExceptionTran
 import com.ritense.valtimo.service.CamundaTaskService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Bean
+import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 
 @AutoConfiguration
@@ -101,6 +102,7 @@ class FormViewModelAutoConfiguration {
     )
 
     @Bean
+    @Order(Ordered.LOWEST_PRECEDENCE)
     fun onStartUpViewModelValidator(
         formIoFormDefinitionService: FormIoFormDefinitionService,
         viewModelLoaders: List<ViewModelLoader<*>>,

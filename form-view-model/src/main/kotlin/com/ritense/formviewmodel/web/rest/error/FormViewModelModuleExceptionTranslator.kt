@@ -17,15 +17,20 @@ import org.zalando.problem.spring.web.advice.ProblemHandling
 class FormViewModelModuleExceptionTranslator : ProblemHandling {
 
     @ExceptionHandler(FormException::class)
-    fun handleFormException(ex: FormException, request: NativeWebRequest): ResponseEntity<FormError> {
+    fun handleFormException(
+        ex: FormException,
+        request: NativeWebRequest
+    ): ResponseEntity<FormError> {
         return ResponseEntity
             .badRequest()
             .body(FormError(error = ex.message!!, component = ex.component))
     }
 
-
     @ExceptionHandler(BusinessException::class)
-    fun handleBusinessException(ex: FormException, request: NativeWebRequest): ResponseEntity<BusinessRuleError> {
+    fun handleBusinessException(
+        ex: BusinessException,
+        request: NativeWebRequest
+    ): ResponseEntity<BusinessRuleError> {
         return ResponseEntity
             .badRequest()
             .body(BusinessRuleError(error = ex.message!!))
