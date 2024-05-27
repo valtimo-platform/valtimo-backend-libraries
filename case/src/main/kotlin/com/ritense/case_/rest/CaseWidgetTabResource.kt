@@ -20,6 +20,8 @@ import com.ritense.case_.rest.dto.CaseWidgetTabDto
 import com.ritense.case_.service.CaseWidgetTabService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
@@ -48,8 +50,9 @@ class CaseWidgetTabResource(
         @PathVariable documentId: UUID,
         @PathVariable tabKey: String,
         @PathVariable widgetKey: String,
+        @PageableDefault(size = 5) pageable: Pageable
     ) : ResponseEntity<Any> {
-        val data = caseWidgetTabService.getCaseWidgetData(documentId, tabKey, widgetKey)
+        val data = caseWidgetTabService.getCaseWidgetData(documentId, tabKey, widgetKey, pageable)
         return ResponseEntity.ofNullable(data)
     }
 }

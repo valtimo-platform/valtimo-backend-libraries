@@ -34,6 +34,8 @@ import com.ritense.case_.widget.CaseWidgetJacksonModule
 import com.ritense.case_.widget.CaseWidgetMapper
 import com.ritense.case_.widget.fields.FieldsCaseWidgetDataProvider
 import com.ritense.case_.widget.fields.FieldsCaseWidgetMapper
+import com.ritense.case_.widget.table.TableCaseWidgetDataProvider
+import com.ritense.case_.widget.table.TableCaseWidgetMapper
 import com.ritense.document.service.DocumentService
 import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import com.ritense.valtimo.changelog.service.ChangelogService
@@ -139,4 +141,15 @@ class CaseWidgetAutoConfiguration {
     fun fieldsCaseWidgetDataProvider(
         valueResolverService: ValueResolverService
     ) = FieldsCaseWidgetDataProvider(valueResolverService)
+
+    @ConditionalOnMissingBean(TableCaseWidgetMapper::class)
+    @Bean
+    fun tableCaseWidgetMapper() = TableCaseWidgetMapper()
+
+    @ConditionalOnMissingBean(TableCaseWidgetDataProvider::class)
+    @Bean
+    fun tableCaseWidgetDataProvider(
+        objectMapper: ObjectMapper,
+        valueResolverService: ValueResolverService
+    ) = TableCaseWidgetDataProvider(objectMapper, valueResolverService)
 }

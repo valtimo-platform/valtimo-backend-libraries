@@ -21,6 +21,7 @@ import com.ritense.case_.rest.dto.CaseWidgetTabDto
 import com.ritense.case_.service.CaseWidgetTabService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
@@ -51,7 +52,7 @@ class CaseWidgetTabManagementResource(
     fun updateCaseWidgetTab(
         @PathVariable caseDefinitionName: String,
         @PathVariable tabKey: String,
-        @RequestBody caseWidgetTabDto: CaseWidgetTabDto
+        @Valid @RequestBody caseWidgetTabDto: CaseWidgetTabDto
     ): ResponseEntity<CaseWidgetTabDto> {
         val widgetTab = runWithoutAuthorization {
             caseWidgetTabService.updateWidgetTab(caseWidgetTabDto)

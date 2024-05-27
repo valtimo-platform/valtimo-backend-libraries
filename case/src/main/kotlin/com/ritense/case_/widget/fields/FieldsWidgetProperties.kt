@@ -19,15 +19,18 @@ package com.ritense.case_.widget.fields
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.ritense.case_.widget.displayproperties.FieldDisplayProperties
+import jakarta.validation.Valid
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotEmpty
 
 data class FieldsWidgetProperties (
-    val columns: List<List<Field>>,
+    @NotEmpty val columns: List<List<@Valid Field>>,
 ) {
     @JsonInclude(Include.NON_NULL)
     data class Field (
-        val key: String,
+        @NotBlank val key: String,
         val title: String,
-        val value: String,
-        val displayProperties: FieldDisplayProperties? = null
+        @NotBlank val value: String,
+        @Valid val displayProperties: FieldDisplayProperties? = null
     )
 }

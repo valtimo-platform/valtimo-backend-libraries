@@ -14,19 +14,6 @@
  * limitations under the License.
  */
 
-package com.ritense.case_.web.rest.dto
+package com.ritense.case_.widget.exception
 
-import com.fasterxml.jackson.annotation.JsonTypeName
-import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
-import com.ritense.case_.widget.TestCaseWidgetProperties
-import jakarta.validation.Valid
-import jakarta.validation.constraints.NotBlank
-
-@JsonTypeName("test")
-data class TestCaseWidgetTabWidgetDto(
-    @NotBlank override val key: String,
-    override val title: String,
-    override val width: Int,
-    override val highContrast: Boolean,
-    @Valid val properties: TestCaseWidgetProperties = TestCaseWidgetProperties(),
-) : CaseWidgetTabWidgetDto
+class InvalidCollectionNodeTypeException(index:Int) : RuntimeException("Node at index $index is not a container node!")

@@ -38,6 +38,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.findByOrNull
 import org.springframework.context.event.EventListener
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -88,7 +89,7 @@ class CaseWidgetTabService(
     }
 
     @Transactional
-    fun getCaseWidgetData(documentId: UUID, tabKey: String, widgetKey: String): Any? {
+    fun getCaseWidgetData(documentId: UUID, tabKey: String, widgetKey: String, pageable: Pageable): Any? {
         val document = documentService.findByOrNull(JsonSchemaDocumentId.existingId(documentId)) ?: return null
 
         val caseDefinitionName = document.definitionId().name()
@@ -102,7 +103,7 @@ class CaseWidgetTabService(
         return runWithoutAuthorization {
             caseWidgetDataProviders
                 .first { provider -> provider.supportedWidgetType().isAssignableFrom(widget::class.java) }
-                .getData(document.id().id, widgetTab, widget)
+                .getData(document.id().id, widgetTab, widget, pageable)
         }
     }
 
