@@ -6,7 +6,6 @@ import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.formviewmodel.commandhandling.CommandHandler
 import com.ritense.formviewmodel.error.BusinessException
-import com.ritense.formviewmodel.error.FormException
 import mu.KotlinLogging
 
 class SaveAanbodSubmissionCommandHandler(

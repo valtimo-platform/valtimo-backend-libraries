@@ -37,8 +37,8 @@ data class AanbodViewModel(
                         } else if(!aanbodRow.aanbod.isNullOrBlank()) {
                             aanbodRow.copy(
                                 aanbiedingen = aanbiedingen,
-                                activiteiten = aanbodRow.aanbod?.let { aanbod -> getActiviteitenForAanbod(aanbiedingen!!, aanbod) },
-                                activiteit = null
+                                activiteiten = getActiviteitenForAanbod(aanbiedingen!!, aanbodRow.aanbod),
+                                activiteit = aanbodRow.activiteit
                             )
                         } else {
                             aanbodRow.copy(
