@@ -160,16 +160,21 @@ class DocumentenApiClient(
             "Could not retrieve documents for zaak ${documentSearchRequest.zaakUrl}"
         }
 
+        // Fix issue where open-zaak responds contains duplicate results
+        val results = result.results.filter { documentInformatieObject ->
+            result.results.none { it.url == documentInformatieObject.url && it.versie != null && documentInformatieObject.versie != null && it.versie > documentInformatieObject.versie }
+        }
+
         // trying to find the chunk of the returned page that we need
         val fromIndex = (pageable.pageSize * (pageable.pageNumber)) % ITEMS_PER_PAGE
         val toIndex = fromIndex + pageable.pageSize
-        val pageItems = if (fromIndex > result.results.size) {
+        val pageItems = if (fromIndex > results.size) {
             emptyList()
         } else {
-            result.results.subList(fromIndex, min(result.results.size, toIndex))
+            results.subList(fromIndex, min(results.size, toIndex))
         }
 
-        val returnedPage  = PageImpl(pageItems, pageable, result.count.toLong())
+        val returnedPage = PageImpl(pageItems, pageable, results.size.toLong())
 
         outboxService.send {
             DocumentListed(
