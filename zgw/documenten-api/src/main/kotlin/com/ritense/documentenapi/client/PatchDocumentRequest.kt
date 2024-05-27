@@ -36,7 +36,8 @@ class PatchDocumentRequest(
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val verzenddatum: LocalDate? = null,
     val indicatieGebruiksrecht: Boolean? = false,
-    var lock : String? = null
+    val trefwoorden: List<String>? = null,
+    var lock: String? = null
 ) {
     constructor(modifyDocumentRequest: ModifyDocumentRequest) : this(
         modifyDocumentRequest.creatiedatum,
@@ -48,6 +49,7 @@ class PatchDocumentRequest(
         modifyDocumentRequest.beschrijving,
         modifyDocumentRequest.ontvangstdatum,
         modifyDocumentRequest.verzenddatum,
-        modifyDocumentRequest.indicatieGebruiksrecht
+        modifyDocumentRequest.indicatieGebruiksrecht,
+        modifyDocumentRequest.trefwoorden,
     )
 }

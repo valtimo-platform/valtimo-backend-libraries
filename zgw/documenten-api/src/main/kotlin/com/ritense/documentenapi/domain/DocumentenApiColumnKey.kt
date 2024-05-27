@@ -16,6 +16,8 @@
 
 package com.ritense.documentenapi.domain
 
+import com.fasterxml.jackson.annotation.JsonCreator
+
 enum class DocumentenApiColumnKey {
     IDENTIFICATIE,
     BRONORGANISATIE,
@@ -31,6 +33,13 @@ enum class DocumentenApiColumnKey {
     BESTANDSOMVANG,
     BESCHRIJVING,
     INFORMATIEOBJECTTYPE,
-    LOCKED
+    LOCKED,
+    TREFWOORDEN;
+
+    companion object {
+        @JvmStatic
+        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+        fun from(name: String) = entries.firstOrNull { it.name.equals(name, ignoreCase = true) }
+    }
 }
 

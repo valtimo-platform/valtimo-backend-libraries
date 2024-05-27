@@ -31,7 +31,7 @@ public enum Mapper {
     INSTANCE;
     private final ObjectMapper objectMapper = new ObjectMapper()
         .registerModule(new JavaTimeModule())
-        .registerModule(new KotlinModule());
+        .registerModule(new KotlinModule.Builder().build());
 
     Mapper() {
         // Perform any configuration on the ObjectMapper here.

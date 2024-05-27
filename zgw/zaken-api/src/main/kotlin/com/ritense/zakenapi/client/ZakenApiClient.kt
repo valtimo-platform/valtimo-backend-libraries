@@ -30,6 +30,7 @@ import com.ritense.zakenapi.domain.UpdateZaakeigenschapRequest
 import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakObject
 import com.ritense.zakenapi.domain.ZaakResponse
+import com.ritense.zakenapi.domain.ZaakResultaat
 import com.ritense.zakenapi.domain.ZaakStatus
 import com.ritense.zakenapi.domain.ZaakeigenschapResponse
 import com.ritense.zakenapi.domain.ZaakopschortingRequest
@@ -43,6 +44,7 @@ import com.ritense.zakenapi.event.ZaakObjectenListed
 import com.ritense.zakenapi.event.ZaakOpschortingUpdated
 import com.ritense.zakenapi.event.ZaakPatched
 import com.ritense.zakenapi.event.ZaakResultaatCreated
+import com.ritense.zakenapi.event.ZaakResultaatViewed
 import com.ritense.zakenapi.event.ZaakRolCreated
 import com.ritense.zakenapi.event.ZaakRollenListed
 import com.ritense.zakenapi.event.ZaakStatusCreated
@@ -333,6 +335,28 @@ class ZakenApiClient(
         if (result.hasBody()) {
             outboxService.send {
                 ZaakStatusViewed(
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
+
+        return result?.body!!
+    }
+
+    fun getZaakResultaat(
+        authentication: ZakenApiAuthentication,
+        zaakResultaatUrl: URI,
+    ): ZaakResultaat {
+        val result = buildWebClient(authentication)
+            .get()
+            .uri(zaakResultaatUrl)
+            .retrieve()
+            .toEntity(ZaakResultaat::class.java)
+            .block()
+
+        if (result.hasBody()) {
+            outboxService.send {
+                ZaakResultaatViewed(
                     objectMapper.valueToTree(result.body)
                 )
             }

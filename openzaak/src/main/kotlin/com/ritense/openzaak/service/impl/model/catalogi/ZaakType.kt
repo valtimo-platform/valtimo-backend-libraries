@@ -17,9 +17,11 @@
 package com.ritense.openzaak.service.impl.model.catalogi
 
 import java.net.URI
+import java.time.Period
 
 data class ZaakType (
     val url: URI,
     val omschrijving: String,
-    val omschrijvingGeneriek: String? = null
+    val omschrijvingGeneriek: String? = null,
+    val doorlooptijd: Period? = null
 )

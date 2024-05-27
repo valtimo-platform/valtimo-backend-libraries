@@ -27,6 +27,7 @@ import com.ritense.document.web.rest.dto.InternalCaseStatusCreateRequestDto
 import com.ritense.document.web.rest.dto.InternalCaseStatusUpdateOrderRequestDto
 import com.ritense.document.web.rest.dto.InternalCaseStatusUpdateRequestDto
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -36,6 +37,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.http.MediaType
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -64,6 +66,7 @@ class InternalCaseStatusResourceTest : BaseTest() {
         val internalCaseStatusResource = InternalCaseStatusResource(internalCaseStatusService)
         mockMvc = MockMvcBuilders.standaloneSetup(internalCaseStatusResource)
             .setCustomArgumentResolvers(PageableHandlerMethodArgumentResolver())
+            .setMessageConverters(MappingJackson2HttpMessageConverter(MapperSingleton.get()))
             .build()
 
         whenever(internalCaseStatusService.getInternalCaseStatuses(caseDefinitionName)).thenReturn(internalCaseStatuses)

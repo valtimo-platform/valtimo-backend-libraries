@@ -24,6 +24,7 @@ import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.Catalogus
 import com.ritense.openzaak.service.impl.model.catalogi.InformatieObjectType
+import com.ritense.openzaak.service.impl.model.catalogi.ZaakType
 import com.ritense.openzaak.service.impl.model.zaak.Zaak
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
@@ -34,6 +35,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.contains
 import org.mockito.Mockito.verify
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.whenever
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
@@ -41,6 +43,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import java.net.URI
+import java.time.Period
 import java.util.UUID
 
 class ZaakServiceTest : BaseTest() {
@@ -56,6 +59,15 @@ class ZaakServiceTest : BaseTest() {
     @BeforeEach
     fun setUp() {
         baseSetUp()
+        whenever(zaakTypeService.getZaakType(anyOrNull())).thenReturn(
+            ZaakType(
+                zaakTypeUrl,
+                "",
+                "",
+                Period.ofDays(1)
+            )
+        )
+
         whenever(zaakTypeLinkService.findBy(document.definitionId().name())).thenReturn(
             ZaakTypeLink(
                 zaaktypeLinkId,
@@ -81,7 +93,8 @@ class ZaakServiceTest : BaseTest() {
             openZaakTokenGeneratorService,
             zaakTypeLinkService,
             documentService,
-            zaakInstanceLinkService
+            zaakInstanceLinkService,
+            zaakTypeService
         )
     }
 
@@ -234,5 +247,4 @@ class ZaakServiceTest : BaseTest() {
             )
         ).thenReturn(responseEntity)
     }
-
 }

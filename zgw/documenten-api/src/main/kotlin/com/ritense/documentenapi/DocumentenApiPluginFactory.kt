@@ -19,6 +19,7 @@ package com.ritense.documentenapi
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.documentenapi.service.DocumentDeleteHandler
+import com.ritense.documentenapi.service.DocumentenApiVersionService
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
@@ -26,14 +27,22 @@ import org.springframework.context.ApplicationEventPublisher
 
 class DocumentenApiPluginFactory(
     pluginService: PluginService,
-    val client: DocumentenApiClient,
-    val storageService: TemporaryResourceStorageService,
-    val applicationEventPublisher: ApplicationEventPublisher,
-    val objectMapper: ObjectMapper,
-    val documentDeleteHandlers: List<DocumentDeleteHandler>
+    private val client: DocumentenApiClient,
+    private val storageService: TemporaryResourceStorageService,
+    private val applicationEventPublisher: ApplicationEventPublisher,
+    private val objectMapper: ObjectMapper,
+    private val documentDeleteHandlers: List<DocumentDeleteHandler>,
+    private val documentenApiVersionService: DocumentenApiVersionService,
 ) : PluginFactory<DocumentenApiPlugin>(pluginService) {
 
     override fun create(): DocumentenApiPlugin {
-        return DocumentenApiPlugin(client, storageService, applicationEventPublisher, objectMapper, documentDeleteHandlers)
+        return DocumentenApiPlugin(
+            client,
+            storageService,
+            applicationEventPublisher,
+            objectMapper,
+            documentDeleteHandlers,
+            documentenApiVersionService,
+        )
     }
 }

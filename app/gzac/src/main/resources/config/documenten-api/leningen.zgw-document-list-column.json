@@ -4,12 +4,24 @@
         {
             "key": "leningen",
             "columns": [
-                "AUTEUR",
-                "STATUS",
-                "FORMAAT",
-                "TAAL",
-                "VERSIE",
-                "BESTANDSNAAM"
+                {
+                    "key": "AUTEUR"
+                },
+                {
+                    "key": "STATUS"
+                },
+                {
+                    "key": "FORMAAT"
+                },
+                {
+                    "key": "TAAL"
+                },
+                {
+                    "key": "VERSIE"
+                },
+                {
+                    "key": "BESTANDSNAAM"
+                }
             ]
         }
     ]
