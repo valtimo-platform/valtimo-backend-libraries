@@ -19,11 +19,13 @@ package com.ritense.case_.rest.dto
 import com.ritense.case_.domain.tab.CaseWidgetTab
 import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 import com.ritense.case_.widget.CaseWidgetMapper
+import jakarta.validation.Valid
+import jakarta.validation.constraints.NotBlank
 
 data class CaseWidgetTabDto(
-    val caseDefinitionName: String,
-    val key: String,
-    val widgets: List<CaseWidgetTabWidgetDto> = listOf(),
+    @NotBlank val caseDefinitionName: String,
+    @NotBlank val key: String,
+    val widgets: List<@Valid CaseWidgetTabWidgetDto> = listOf(),
 ) {
     companion object {
         @JvmStatic
