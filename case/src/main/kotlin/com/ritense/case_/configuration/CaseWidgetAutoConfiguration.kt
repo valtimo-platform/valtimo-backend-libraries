@@ -26,6 +26,7 @@ import com.ritense.case_.rest.CaseWidgetTabManagementResource
 import com.ritense.case_.rest.CaseWidgetTabResource
 import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
 import com.ritense.case_.service.CaseWidgetTabExporter
+import com.ritense.case_.service.CaseWidgetTabImporter
 import com.ritense.case_.service.CaseWidgetTabService
 import com.ritense.case_.widget.CaseWidgetAnnotatedClassResolver
 import com.ritense.case_.widget.CaseWidgetDataProvider
@@ -36,6 +37,7 @@ import com.ritense.case_.widget.fields.FieldsCaseWidgetMapper
 import com.ritense.case_.widget.table.TableCaseWidgetDataProvider
 import com.ritense.case_.widget.table.TableCaseWidgetMapper
 import com.ritense.document.service.DocumentService
+import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valueresolver.ValueResolverService
 import org.springframework.beans.factory.annotation.Value
@@ -98,6 +100,13 @@ class CaseWidgetAutoConfiguration {
         caseTabService: CaseTabService,
         caseWidgetTabService: CaseWidgetTabService
     ) = CaseWidgetTabExporter(objectMapper, caseTabService, caseWidgetTabService)
+
+    @Bean
+    @ConditionalOnMissingBean(CaseWidgetTabImporter::class)
+    fun caseWidgetTabImporter(
+        caseWidgetTabDeployer: CaseWidgetTabDeployer,
+        changelogDeployer: ChangelogDeployer
+    ) = CaseWidgetTabImporter(caseWidgetTabDeployer, changelogDeployer)
 
     @ConditionalOnMissingBean(CaseWidgetTabResource::class)
     @Bean
