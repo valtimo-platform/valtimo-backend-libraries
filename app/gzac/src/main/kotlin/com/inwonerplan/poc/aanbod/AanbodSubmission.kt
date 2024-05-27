@@ -6,5 +6,16 @@ import com.ritense.formviewmodel.viewmodel.Submission
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AanbodSubmission(
-    val aanbod: String
-) : Submission
+    val aanbod: List<Aanbod>
+) : Submission {
+    data class Aanbod(
+        val aandachtspunt: String,
+        val subdoel: String,
+        val aanbiedingen: List<Aanbieding>?
+    )
+
+    data class Aanbieding(
+        val aanbod: String,
+        val activiteit: String
+    )
+}
