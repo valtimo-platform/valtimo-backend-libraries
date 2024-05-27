@@ -1,4 +1,4 @@
-# Welcome at Valtimo
+# Welcome to Valtimo
 
 ### What is Valtimo?
 Valtimo is the low-code platform for Business Process Automation. Our goal is to make implementing business process automation and case management easy.
@@ -15,10 +15,10 @@ Valtimo is the low-code platform for Business Process Automation. Our goal is to
 
 ### What are the 'Valtimo backend libraries'?
 This repository contains:
-- A collection of Java/Kotlin libraries that together form the Valtimo backend
-- The `app:gzac` module, containing a Spring Boot application, used for library development
+- A collection of Java/Kotlin libraries that together form the Valtimo backend.
+- The `app:gzac` module, containing a Spring Boot application, used for library development.
 
-### Running the Valtimo libraries from source
+### Starting the Valtimo platform
 Starting up the Valtimo platform required three steps:
 1. Starting the supporting Docker containers: Keycloak and PostgreSQL. Instructions for starting the supporting services can be found [here](app/gzac/README.md#start-docker-containers-for-supporting-services).
 2. Starting the Valtimo backend. Instructions can be found [here](app/gzac/README.md#run-spring-boot-application).
@@ -32,10 +32,10 @@ Starting up the Valtimo platform required three steps:
 
 #### Start Docker containers for supporting services
 1. Make sure Docker is running.
-2. Run the following command to start the supporting services: `./gradlew :app:gzac:composeUpGzac`
+2. Run the following command to start the supporting services: `./gradlew :app:gzac:composeUpGzac`.
 
 #### Start Application
-Run the following command to start the Spring Boot application: `./gradlew :app:gzac:bootRun`
+Run the following command to start the Spring Boot application: `./gradlew :app:gzac:bootRun`.
 
 ### Test users
 Keycloak management can be accessed on http://localhost:8081 with the default credentials of username <ins>admin</ins> and password <ins>admin</ins>.
@@ -48,28 +48,28 @@ Keycloak comes preconfigured with the following users.
 | Asha Miller  | ROLE_ADMIN     | admin     | admin     |
 | Morgan Finch | ROLE_DEVELOPER | developer | developer |
 
-### Contributing
-Contributions are welcome! To get you in the right direction, please consult the [Valtimo documentation](https://docs.valtimo.nl/readme/contributing) for guidelines on how to contribute.
-
 ### Code quality
 #### Running tests
-- Run the following command to run the unit tests: `./gradlew test`
-- Run the following command to run the integration tests using a PostgreSQL database: `./gradlew integrationTestingPostgresql`
-- Run the following command to run the integration tests using a MySQL database: `./gradlew integrationTestingMysql`
-- Run the following command to run the security tests: `./gradlew securityTesting`
+- Run the following command to run the unit tests: `./gradlew test`.
+- Run the following command to run the integration tests using a PostgreSQL database: `./gradlew integrationTestingPostgresql`.
+- Run the following command to run the integration tests using a MySQL database: `./gradlew integrationTestingMysql`.
+- Run the following command to run the security tests: `./gradlew securityTesting`.
+
+### Contributing
+Contributions are welcome! To get you in the right direction, please consult the [Valtimo documentation](https://docs.valtimo.nl/readme/contributing) for guidelines on how to contribute.
 
 #### Code guidelines
 <!--- TODO: write the coding guidelines--->
 For contributing code, please refer to the [coding guidelines](CODING-GUIDELINES.md).
 
-### Branching strategy
+#### Branching strategy
 For more information on what branches to create while working in this project, please refer
 to [this page](https://github.com/valtimo-platform/valtimo-documentation/blob/next-minor/contributing/branching-and-release-strategy.md).
 
-## License
+### License
 The source files in this repo are licensed under the [EUPL 1.2](https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12).
 If you have any questions about the use of this codebase in a larger work: please reach out through the [Valtimo website](https://www.valtimo.nl/contact/).
 
-## More information
+### More information
 - Website: https://www.valtimo.nl
 - Documentation: https://docs.valtimo.nl
