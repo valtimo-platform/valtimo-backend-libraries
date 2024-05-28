@@ -1,27 +1,27 @@
 {
-    "changesetId": "bezwaar.zgw-document-list-columns-v1",
+    "changesetId": "bezwaar.zgw-document-list-columns-v2",
     "case-definitions": [
         {
             "key": "bezwaar",
             "columns": [
                 {
-                    "key": "TITEL"
+                    "key": "titel"
                 },
                 {
-                    "key": "BESTANDSNAAM"
+                    "key": "bestandsnaam"
                 },
                 {
-                    "key": "CREATIEDATUM",
+                    "key": "creatiedatum",
                     "defaultSort": "DESC"
                 },
                 {
-                    "key": "STATUS"
+                    "key": "status"
                 },
                 {
-                    "key": "VERSIE"
+                    "key": "versie"
                 },
                 {
-                    "key": "INFORMATIEOBJECTTYPE"
+                    "key": "informatieobjecttypeOmschrijving"
                 }
             ]
         }

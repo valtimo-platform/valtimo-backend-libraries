@@ -22,7 +22,7 @@ import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.AUTEUR
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.CREATIEDATUM
-import com.ritense.documentenapi.domain.DocumentenApiColumnKey.INFORMATIEOBJECTTYPE
+import com.ritense.documentenapi.domain.DocumentenApiColumnKey.INFORMATIEOBJECTTYPE_OMSCHRIJVING
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.TITEL
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.TREFWOORDEN
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.VERTROUWELIJKHEIDAANDUIDING
@@ -77,7 +77,7 @@ class ZaakDocumentService(
     ): Page<DocumentenApiDocumentDto> {
         val zaakUri = zaakUrlProvider.getZaakUrl(documentId)
         val version = documentenApiVersionService.getVersionByDocumentId(documentId)
-        check(documentSearchRequest.informatieobjecttype != null, INFORMATIEOBJECTTYPE, version)
+        check(documentSearchRequest.informatieobjecttype != null, INFORMATIEOBJECTTYPE_OMSCHRIJVING, version)
         check(documentSearchRequest.titel != null, TITEL, version)
         check(documentSearchRequest.vertrouwelijkheidaanduiding != null, VERTROUWELIJKHEIDAANDUIDING, version)
         check(documentSearchRequest.creatiedatumFrom != null, CREATIEDATUM, version)
@@ -143,6 +143,7 @@ class ZaakDocumentService(
             identification = informatieObject.identificatie,
             description = informatieObject.beschrijving,
             informatieobjecttype = informatieObject.informatieobjecttype,
+            informatieobjecttypeOmschrijving = getInformatieobjecttypeOmschrijvingByUri(informatieObject.informatieobjecttype),
             keywords = informatieObject.trefwoorden,
             format = informatieObject.formaat,
             sendDate = informatieObject.verzenddatum,
@@ -176,6 +177,7 @@ class ZaakDocumentService(
             identificatie = informatieObject.identificatie,
             beschrijving = informatieObject.beschrijving,
             informatieobjecttype = informatieObject.informatieobjecttype,
+            informatieobjecttypeOmschrijving = getInformatieobjecttypeOmschrijvingByUri(informatieObject.informatieobjecttype),
             trefwoorden = trefwoorden,
             formaat = informatieObject.formaat,
             verzenddatum = informatieObject.verzenddatum,
@@ -211,6 +213,7 @@ class ZaakDocumentService(
             identificatie = informatieObject.identificatie,
             beschrijving = informatieObject.beschrijving,
             informatieobjecttype = informatieObject.informatieobjecttype,
+            informatieobjecttypeOmschrijving = getInformatieobjecttypeOmschrijvingByUri(informatieObject.informatieobjecttype),
             trefwoorden = trefwoorden,
             formaat = informatieObject.formaat,
             verzenddatum = informatieObject.verzenddatum,
@@ -219,6 +222,10 @@ class ZaakDocumentService(
             versie = informatieObject.versie,
             indicatieGebruiksrecht = informatieObject.indicatieGebruiksrecht
         )
+    }
+
+    private fun getInformatieobjecttypeOmschrijvingByUri(uri: String?): String? {
+        return uri?.let { catalogiService.getInformatieobjecttype(URI(it))?.omschrijving }
     }
 
     private fun getDocumentenApiPluginByInformatieobjectUrl(informatieobjectUrl: URI): PluginConfiguration {

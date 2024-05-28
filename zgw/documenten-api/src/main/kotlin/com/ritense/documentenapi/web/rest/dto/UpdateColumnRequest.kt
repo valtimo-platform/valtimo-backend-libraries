@@ -25,7 +25,7 @@ data class UpdateColumnRequest(
     val defaultSort: String?,
 ) {
     fun toEntity(caseDefinitionName: String, key: String, order: Int = 0): DocumentenApiColumn = DocumentenApiColumn(
-        id = DocumentenApiColumnId(caseDefinitionName, DocumentenApiColumnKey.valueOf(key.uppercase())),
+        id = DocumentenApiColumnId(caseDefinitionName, DocumentenApiColumnKey.from(key)!!),
         order = order,
         defaultSort = defaultSort?.let { ColumnDefaultSort.valueOf(defaultSort.uppercase()) }
     )

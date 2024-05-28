@@ -29,7 +29,7 @@ data class ColumnResponse(
     val defaultSort: String?,
 ) {
     fun toEntity(caseDefinitionName: String, order: Int = 0): DocumentenApiColumn {
-        val keyEnum = DocumentenApiColumnKey.valueOf(key.uppercase())
+        val keyEnum = DocumentenApiColumnKey.from(key)!!
         return DocumentenApiColumn(
             id = DocumentenApiColumnId(caseDefinitionName, keyEnum),
             order = order,
@@ -39,7 +39,7 @@ data class ColumnResponse(
 
     companion object {
         fun of(column: DocumentenApiColumn, version: DocumentenApiVersion): ColumnResponse = ColumnResponse(
-            key = column.id.key.name.lowercase(),
+            key = column.id.key.property,
             sortable = version.isColumnSortable(column.id.key),
             filterable = version.isColumnFilterable(column.id.key),
             defaultSort = column.defaultSort?.name

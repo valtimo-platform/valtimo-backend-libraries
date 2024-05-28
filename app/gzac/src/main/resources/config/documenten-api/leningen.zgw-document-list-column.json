@@ -5,22 +5,22 @@
             "key": "leningen",
             "columns": [
                 {
-                    "key": "AUTEUR"
+                    "key": "auteur"
                 },
                 {
-                    "key": "STATUS"
+                    "key": "status"
                 },
                 {
-                    "key": "FORMAAT"
+                    "key": "formaat"
                 },
                 {
-                    "key": "TAAL"
+                    "key": "taal"
                 },
                 {
-                    "key": "VERSIE"
+                    "key": "versie"
                 },
                 {
-                    "key": "BESTANDSNAAM"
+                    "key": "bestandsnaam"
                 }
             ]
         }
