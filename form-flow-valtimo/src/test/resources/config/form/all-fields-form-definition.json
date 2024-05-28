@@ -8,14 +8,17 @@
     },
     "components": [
         {
-            "label": "Naam",
-            "key": "person.firstName",
+            "key": "firstName",
             "type": "textfield",
             "input": true
         },
         {
-            "label": "Achternaam",
-            "key": "person.lastName",
+            "key": "street",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "key": "approval",
             "type": "textfield",
             "input": true
         },
