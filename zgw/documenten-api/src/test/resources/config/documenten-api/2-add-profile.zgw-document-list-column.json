@@ -5,13 +5,13 @@
             "key": "profile",
             "columns": [
                 {
-                    "key": "bestandsnaam"
+                    "key": "BESTANDSNAAM"
                 },
                 {
-                    "key": "taal"
+                    "key": "TAAL"
                 },
                 {
-                    "key": "versie"
+                    "key": "VERSIE"
                 }
             ]
         }

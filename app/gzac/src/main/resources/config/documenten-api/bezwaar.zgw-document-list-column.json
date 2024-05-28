@@ -5,23 +5,23 @@
             "key": "bezwaar",
             "columns": [
                 {
-                    "key": "titel"
+                    "key": "TITEL"
                 },
                 {
-                    "key": "bestandsnaam"
+                    "key": "BESTANDSNAAM"
                 },
                 {
-                    "key": "creatiedatum",
+                    "key": "CREATIEDATUM",
                     "defaultSort": "DESC"
                 },
                 {
-                    "key": "status"
+                    "key": "STATUS"
                 },
                 {
-                    "key": "versie"
+                    "key": "VERSIE"
                 },
                 {
-                    "key": "informatieobjecttypeOmschrijving"
+                    "key": "INFORMATIEOBJECTTYPE_OMSCHRIJVING"
                 }
             ]
         }

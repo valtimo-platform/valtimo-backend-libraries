@@ -5,23 +5,23 @@
             "key": "profile",
             "columns": [
                 {
-                    "key": "auteur",
+                    "key": "AUTEUR",
                     "defaultSort": "ASC"
                 },
                 {
-                    "key": "status"
+                    "key": "STATUS"
                 },
                 {
-                    "key": "formaat"
+                    "key": "FORMAAT"
                 },
                 {
-                    "key": "taal"
+                    "key": "TAAL"
                 },
                 {
-                    "key": "versie"
+                    "key": "VERSIE"
                 },
                 {
-                    "key": "bestandsnaam"
+                    "key": "BESTANDSNAAM"
                 }
             ]
         }

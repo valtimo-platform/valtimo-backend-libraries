@@ -105,7 +105,7 @@ class ZaakDocumentService(
 
     private fun check(shouldCheck: Boolean, columnKey: DocumentenApiColumnKey, version: DocumentenApiVersion) {
         if (shouldCheck) {
-            val fieldName = columnKey.name.lowercase()
+            val fieldName = columnKey.property
             check(version.filterableColumns.contains(fieldName)) {
                 "Unsupported filter '$fieldName' on Documenten API with version $version"
             }

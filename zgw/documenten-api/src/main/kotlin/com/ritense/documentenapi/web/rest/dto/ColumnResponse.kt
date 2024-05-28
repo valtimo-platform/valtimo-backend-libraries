@@ -29,7 +29,7 @@ data class ColumnResponse(
     val defaultSort: String?,
 ) {
     fun toEntity(caseDefinitionName: String, order: Int = 0): DocumentenApiColumn {
-        val keyEnum = DocumentenApiColumnKey.from(key)!!
+        val keyEnum = DocumentenApiColumnKey.fromProperty(key)!!
         return DocumentenApiColumn(
             id = DocumentenApiColumnId(caseDefinitionName, keyEnum),
             order = order,

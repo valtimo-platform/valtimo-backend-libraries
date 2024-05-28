@@ -39,7 +39,10 @@ enum class DocumentenApiColumnKey(val property: String) {
     companion object {
         @JvmStatic
         @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-        fun from(name: String) = entries.firstOrNull { it.property == name }
+        fun fromEnumName(name: String) = entries.firstOrNull { it.name == name }
+
+        @JvmStatic
+        fun fromProperty(property: String) = entries.firstOrNull { it.property == property }
     }
 }
 
