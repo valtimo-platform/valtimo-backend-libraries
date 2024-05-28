@@ -38,6 +38,7 @@ import com.ritense.valtimo.formflow.mapper.FormFlowProcessLinkMapper
 import com.ritense.valtimo.formflow.repository.FormFlowProcessLinkRepository
 import com.ritense.valtimo.formflow.security.ValtimoFormFlowHttpSecurityConfigurer
 import com.ritense.valtimo.formflow.service.FormFlowSupportedProcessLinksHandler
+import com.ritense.valtimo.formflow.service.FormFlowValtimoService
 import com.ritense.valtimo.formflow.web.rest.FormFlowManagementResource
 import com.ritense.valtimo.formflow.web.rest.FormFlowResource
 import com.ritense.valtimo.formflow.web.rest.ProcessLinkFormFlowDefinitionResource
@@ -82,9 +83,13 @@ class FormFlowValtimoAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(FormFlowResource::class)
     fun formFlowResource(
-        formFlowService: FormFlowService
+        formFlowService: FormFlowService,
+        formFlowValtimoService: FormFlowValtimoService,
     ): FormFlowResource {
-        return FormFlowResource(formFlowService)
+        return FormFlowResource(
+            formFlowService,
+            formFlowValtimoService
+        )
     }
 
     @Bean
@@ -196,6 +201,18 @@ class FormFlowValtimoAutoConfiguration {
     ): FormFlowDefinitionImporter {
         return FormFlowDefinitionImporter(
             formFlowDeploymentService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(FormFlowValtimoService::class)
+    fun formFlowValtimoService(
+        formDefinitionService: FormIoFormDefinitionService,
+        objectMapper: ObjectMapper,
+    ): FormFlowValtimoService {
+        return FormFlowValtimoService(
+            formDefinitionService,
+            objectMapper,
         )
     }
 }
