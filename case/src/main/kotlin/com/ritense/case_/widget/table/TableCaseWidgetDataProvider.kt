@@ -18,7 +18,6 @@ package com.ritense.case_.widget.table
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.JsonPath
@@ -49,7 +48,7 @@ class TableCaseWidgetDataProvider(
             return PageImpl(emptyList(), pageable, 0)
         }
 
-        if (collectionNode !is ArrayNode) {
+        if (!collectionNode.isArray) {
             throw InvalidCollectionException()
         }
 
