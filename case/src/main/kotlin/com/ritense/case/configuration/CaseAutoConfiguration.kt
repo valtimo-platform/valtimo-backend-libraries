@@ -56,6 +56,7 @@ import com.ritense.exporter.ExportService
 import com.ritense.importer.ImportService
 import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import com.ritense.valtimo.changelog.service.ChangelogService
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valueresolver.ValueResolverService
@@ -119,9 +120,13 @@ class CaseAutoConfiguration {
     @ConditionalOnMissingBean(CaseTabManagementResource::class)
     @Bean
     fun caseTabManagementResource(
-        caseTabService: CaseTabService
+        caseTabService: CaseTabService,
+        userManagementService: UserManagementService,
     ): CaseTabManagementResource {
-        return CaseTabManagementResource(caseTabService)
+        return CaseTabManagementResource(
+            caseTabService,
+            userManagementService,
+        )
     }
 
     @Bean
@@ -147,9 +152,16 @@ class CaseAutoConfiguration {
         caseTabRepository: CaseTabRepository,
         @Lazy authorizationService: AuthorizationService,
         documentDefinitionService: DocumentDefinitionService,
-        applicationEventPublisher: ApplicationEventPublisher
+        applicationEventPublisher: ApplicationEventPublisher,
+        userManagementService: UserManagementService,
     ): CaseTabService {
-        return CaseTabService(caseTabRepository, documentDefinitionService, authorizationService, applicationEventPublisher)
+        return CaseTabService(
+            caseTabRepository,
+            documentDefinitionService,
+            authorizationService,
+            applicationEventPublisher,
+            userManagementService,
+        )
     }
 
     @Bean
