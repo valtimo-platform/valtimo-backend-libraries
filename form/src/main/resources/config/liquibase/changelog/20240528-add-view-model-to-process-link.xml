@@ -19,12 +19,12 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
-    <changeSet id="1" author="Ritense">
+    <changeSet id="1" author="Tom Bokma">
         <preConditions onFail="CONTINUE">
             <tableExists tableName="process_link"/>
         </preConditions>
         <addColumn tableName="process_link">
-            <column name="form_definition_id" type="${uuidType}"/>
+            <column name="view_model_enabled" type="boolean" defaultValueBoolean="false"/>
         </addColumn>
     </changeSet>
 

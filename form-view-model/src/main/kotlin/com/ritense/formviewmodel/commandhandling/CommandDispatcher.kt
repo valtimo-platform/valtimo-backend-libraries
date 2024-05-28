@@ -19,6 +19,7 @@ package com.ritense.formviewmodel.commandhandling
 import com.ritense.formviewmodel.SpringContextHelper
 import com.ritense.formviewmodel.commandhandling.decorator.DecoratorBuilder
 import mu.KotlinLogging
+import java.util.NoSuchElementException
 import kotlin.reflect.KClass
 
 class CommandDispatcher {
@@ -33,7 +34,9 @@ class CommandDispatcher {
                 throw NoHandlerForCommandException(command)
             }
             @Suppress("UNCHECKED_CAST")
-            return commandHandlers[commandClass]!!.execute(command) as T
+            return commandHandlers[commandClass]?.let {
+                it.execute(command) as T
+            } ?: throw NoSuchElementException("No CommandHandler found for $command")
         } catch (ex: Exception) {
             logger.error(ex) {
                 "Unhandled Command error occurred in ${command.javaClass.simpleName} - ${ex.message} - ${ex.cause}"
