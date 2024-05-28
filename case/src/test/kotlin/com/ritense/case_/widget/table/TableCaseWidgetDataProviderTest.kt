@@ -150,6 +150,20 @@ class TableCaseWidgetDataProviderTest(
     }
 
     @Test
+    fun `should return empty page when resolved collection is null`() {
+        val widgetTab = mock<CaseWidgetTab>()
+        val widget = testWidget()
+        val documentId = UUID.randomUUID()
+        mockCollection(documentId, widget, null)
+
+        val data = caseWidgetDataProvider.getData(documentId, widgetTab, widget, Pageable.ofSize(1))
+
+        assertThat(data.content.size).isZero()
+        assertThat(data.number).isEqualTo(0)
+        assertThat(data.totalPages).isEqualTo(0)
+    }
+
+    @Test
     fun `should return empty page when page number is unavailable`() {
         val widgetTab = mock<CaseWidgetTab>()
         val widget = testWidget()

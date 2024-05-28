@@ -41,14 +41,19 @@ class TableCaseWidgetDataProvider(
     override fun supportedWidgetType() = TableCaseWidget::class.java
 
     override fun getData(documentId: UUID, widgetTab: CaseWidgetTab, widget: TableCaseWidget, pageable: Pageable): Page<Map<String, Any?>> {
-        val collectionPlaceholder =
+        val resolvedCollection =
             valueResolverService.resolveValues(documentId.toString(), listOf(widget.properties.collection))[widget.properties.collection]
-        val collection = objectMapper.valueToTree<JsonNode>(collectionPlaceholder)
-        if (collection !is ArrayNode) {
+        val collectionNode = objectMapper.valueToTree<JsonNode>(resolvedCollection)
+
+        if(collectionNode.isNull) {
+            return PageImpl(emptyList(), pageable, 0)
+        }
+
+        if (collectionNode !is ArrayNode) {
             throw InvalidCollectionException()
         }
 
-        val pagedCollection = collection.chunked(
+        val pagedCollection = collectionNode.chunked(
             pageable.pageSize
         )
 
@@ -76,7 +81,7 @@ class TableCaseWidgetDataProvider(
                 }
             }
 
-        return PageImpl(result, pageable, collection.size().toLong())
+        return PageImpl(result, pageable, collectionNode.size().toLong())
     }
 
 
