@@ -21,4 +21,10 @@ class FormViewModelSubmissionHandlerFactoryTest : BaseTest() {
         val handler = formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler("test")
         assertThat(handler).isInstanceOf(TestSubmissionHandler::class.java)
     }
+
+    @Test
+    fun `should return null when no submission handler found`() {
+        val handler = formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler("doesNotExist")
+        assertThat(handler).isNull()
+    }
 }
