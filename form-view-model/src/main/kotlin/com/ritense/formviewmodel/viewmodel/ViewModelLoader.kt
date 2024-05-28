@@ -28,7 +28,9 @@ interface ViewModelLoader<T : ViewModel> {
     fun supports(formName: String) = getFormName() == formName
 
     @Suppress("UNCHECKED_CAST")
-    fun getViewModelType(): KClass<T> = this::class.supertypes.first().arguments.first().type!!.classifier as KClass<T>
+    fun getViewModelType(): KClass<T> =
+        this::class.supertypes.first().arguments.first().type?.let { it.classifier as KClass<T> }
+            ?: throw IllegalArgumentException("Could not resolve ViewModelType for ${this::class}")
 
     fun getFormName(): String
 
