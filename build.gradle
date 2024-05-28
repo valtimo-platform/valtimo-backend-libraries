@@ -71,7 +71,8 @@ sonarqube {
 }
 
 dockerCompose {
-    useDockerComposeV2 = false
+    useDockerComposeV2 = true
+    removeOrphans = true
 }
 
 configurations {
