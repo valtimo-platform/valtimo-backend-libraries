@@ -22,7 +22,7 @@ This repository contains:
 Starting up the Valtimo platform required three steps:
 1. Starting the supporting Docker containers: Keycloak and PostgreSQL. Instructions for starting the supporting services can be found [here](#start-docker-containers-for-supporting-services).
 2. Starting the Valtimo backend. Instructions can be found [here](#starting-the-valtimo-backend-libraries-from-source).
-3. Starting the Valtimo frontend. Instructions can be found in the README of the [frontend libraries repository](https://github.com/valtimo-platform/valtimo-frontend-libraries)
+3. Starting the Valtimo frontend. Instructions can be found [here](https://github.com/valtimo-platform/valtimo-frontend-libraries/#starting-the-valtimo-frontend-libraries-from-source)
 
 ### Starting the Valtimo backend libraries from source
 #### Prerequisites
