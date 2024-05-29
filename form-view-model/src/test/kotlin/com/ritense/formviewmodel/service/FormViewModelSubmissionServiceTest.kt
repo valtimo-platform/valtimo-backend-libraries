@@ -18,6 +18,7 @@ import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.never
 import org.mockito.kotlin.whenever
 
@@ -48,7 +49,7 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
             camundaProcessService = camundaProcessService,
             objectMapper = objectMapper
         )
-        // Mock the nested calls to avoid NPE
+
         val processInstance = mock<CamundaExecution>()
         whenever(camundaTask.processInstance).thenReturn(processInstance)
         whenever(processInstance.businessKey).thenReturn("test")
@@ -77,6 +78,31 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
             )
         }
         verify(camundaTaskService, never()).complete(any())
+    }
+
+    @Test
+    fun `should handle start form submission`() {
+        val submission = submissionWithAdultAge()
+        formViewModelSubmissionService.handleStartFormSubmission(
+            formName = "test",
+            processDefinitionKey = "test",
+            submission = submission
+        )
+        verify(commandDispatcher).dispatch(any<ExampleCommand>())
+        verify(camundaProcessService).startProcess(eq("test"), any(), any())
+    }
+
+    @Test
+    fun `should not handle start form submission when exception thrown`() {
+        val submission = submissionWithUnderAge()
+        assertThrows<FormException> {
+            formViewModelSubmissionService.handleStartFormSubmission(
+                formName = "test",
+                processDefinitionKey = "test",
+                submission = submission
+            )
+        }
+        verify(camundaProcessService, never()).startProcess(any(), any(), any())
     }
 
     private fun submissionWithAdultAge(): ObjectNode = MapperSingleton.get().createObjectNode()

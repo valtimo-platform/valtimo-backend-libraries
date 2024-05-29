@@ -77,7 +77,7 @@ class FormViewModelResourceTest : BaseTest() {
     fun `should get user task view model`() {
         whenever(viewModelLoaderFactory.getViewModelLoader("test")).thenReturn(TestViewModelLoader())
         mockMvc.perform(
-            get("$BASE_URL/user-task?formName=test&taskInstanceId=taskInstanceId")
+            get("$BASE_URL/$USER_TASK?formName=test&taskInstanceId=taskInstanceId")
                 .accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
         ).andExpect(status().isOk)
@@ -87,7 +87,7 @@ class FormViewModelResourceTest : BaseTest() {
     fun `should return notfound for unknown user task view model`() {
         whenever(viewModelLoaderFactory.getViewModelLoader("test")).thenReturn(null)
         mockMvc.perform(
-            get("$BASE_URL/user-task?formName=test&taskInstanceId=taskInstanceId")
+            get("$BASE_URL/$USER_TASK?formName=test&taskInstanceId=taskInstanceId")
                 .accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
         ).andExpect(status().isNotFound)
@@ -96,7 +96,7 @@ class FormViewModelResourceTest : BaseTest() {
     @Test
     fun `should not get user task view model`() {
         mockMvc.perform(
-            get("$BASE_URL/user-task")
+            get("$BASE_URL/$USER_TASK")
                 .accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
         ).andExpect(status().is4xxClientError)
@@ -108,7 +108,7 @@ class FormViewModelResourceTest : BaseTest() {
 
         mockMvc.perform(
             post(
-                "$BASE_URL/user-task?formName={formName}&taskInstanceId={taskInstanceId}",
+                "$BASE_URL/$USER_TASK?formName={formName}&taskInstanceId={taskInstanceId}",
                 "test", "taskInstanceId"
             ).accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
@@ -121,7 +121,7 @@ class FormViewModelResourceTest : BaseTest() {
     @Test
     fun `should not update user task view model`() {
         mockMvc.perform(
-            post("$BASE_URL/user-task")
+            post("$BASE_URL/$USER_TASK")
                 .accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
         ).andExpect(status().is4xxClientError)
@@ -132,7 +132,7 @@ class FormViewModelResourceTest : BaseTest() {
         whenever(viewModelLoaderFactory.getViewModelLoader(any())).thenReturn(TestViewModelLoader())
         mockMvc.perform(
             post(
-                "$BASE_URL/submit/user-task?formName={formName}&taskInstanceId={taskInstanceId}",
+                "$BASE_URL/submit/$USER_TASK?formName={formName}&taskInstanceId={taskInstanceId}",
                 "test", "taskInstanceId"
             ).accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
@@ -147,8 +147,92 @@ class FormViewModelResourceTest : BaseTest() {
         }
         mockMvc.perform(
             post(
-                "$BASE_URL/submit/user-task?formName={formName}&taskInstanceId={taskInstanceId}",
+                "$BASE_URL/submit/$USER_TASK?formName={formName}&taskInstanceId={taskInstanceId}",
                 "test", "taskInstanceId"
+            ).accept(APPLICATION_JSON_UTF8_VALUE)
+                .contentType(APPLICATION_JSON_UTF8_VALUE)
+                .content(objectMapper.writeValueAsString(TestViewModel()))
+        ).andExpect(status().isBadRequest)
+    }
+
+    // start form tests
+
+    @Test
+    fun `should get start form view model`() {
+        whenever(viewModelLoaderFactory.getViewModelLoader("test")).thenReturn(TestViewModelLoader())
+        mockMvc.perform(
+            get("$BASE_URL/$START_FORM?formName=test&taskInstanceId=taskInstanceId")
+                .accept(APPLICATION_JSON_UTF8_VALUE)
+                .contentType(APPLICATION_JSON_UTF8_VALUE)
+        ).andExpect(status().isOk)
+    }
+
+    @Test
+    fun `should return notfound for unknown start form view model`() {
+        whenever(viewModelLoaderFactory.getViewModelLoader("test")).thenReturn(null)
+        mockMvc.perform(
+            get("$BASE_URL/$START_FORM?formName=test&taskInstanceId=taskInstanceId")
+                .accept(APPLICATION_JSON_UTF8_VALUE)
+                .contentType(APPLICATION_JSON_UTF8_VALUE)
+        ).andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `should not get start form view model`() {
+        mockMvc.perform(
+            get("$BASE_URL/$START_FORM")
+                .accept(APPLICATION_JSON_UTF8_VALUE)
+                .contentType(APPLICATION_JSON_UTF8_VALUE)
+        ).andExpect(status().is4xxClientError)
+    }
+
+    @Test
+    fun `should update start form view model`() {
+        whenever(viewModelLoaderFactory.getViewModelLoader(any())).thenReturn(TestViewModelLoader())
+
+        mockMvc.perform(
+            post(
+                "$BASE_URL/$START_FORM?formName={formName}&processDefinitionKey={processDefinitionKey}",
+                "test", "processDefinitionKey"
+            ).accept(APPLICATION_JSON_UTF8_VALUE)
+                .contentType(APPLICATION_JSON_UTF8_VALUE)
+                .content(jacksonObjectMapper().writeValueAsString(TestViewModel()))
+        )
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
+    }
+
+    @Test
+    fun `should not update start form view model`() {
+        mockMvc.perform(
+            post("$BASE_URL/$START_FORM")
+                .accept(APPLICATION_JSON_UTF8_VALUE)
+                .contentType(APPLICATION_JSON_UTF8_VALUE)
+        ).andExpect(status().is4xxClientError)
+    }
+
+    @Test
+    fun `should submit start form view model`() {
+        whenever(viewModelLoaderFactory.getViewModelLoader(any())).thenReturn(TestViewModelLoader())
+        mockMvc.perform(
+            post(
+                "$BASE_URL/submit/$START_FORM?formName={formName}&processDefinitionKey={processDefinitionKey}",
+                "test", "processDefinitionKey"
+            ).accept(APPLICATION_JSON_UTF8_VALUE)
+                .contentType(APPLICATION_JSON_UTF8_VALUE)
+                .content(objectMapper.writeValueAsString(TestViewModel()))
+        ).andExpect(status().isNoContent)
+    }
+
+    @Test
+    fun `should return validation error for start form submission`() {
+        whenever(formViewModelSubmissionService.handleStartFormSubmission(any(), any(), any())).then {
+            throw FormException(message = "Im a child", "age")
+        }
+        mockMvc.perform(
+            post(
+                "$BASE_URL/submit/$START_FORM?formName={formName}&processDefinitionKey={processDefinitionKey}",
+                "test", "processDefinitionKey"
             ).accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
                 .content(objectMapper.writeValueAsString(TestViewModel()))
@@ -157,6 +241,8 @@ class FormViewModelResourceTest : BaseTest() {
 
     companion object {
         private const val BASE_URL = "/api/v1/form/view-model"
+        private const val START_FORM = "start-form"
+        private const val USER_TASK = "user-task"
     }
 
 }
