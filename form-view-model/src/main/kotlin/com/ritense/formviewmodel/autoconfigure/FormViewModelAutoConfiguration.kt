@@ -88,8 +88,7 @@ class FormViewModelAutoConfiguration {
         camundaTaskService,
         authorizationService,
         formViewModelService,
-        formViewModelSubmissionService,
-        formDefinitionService
+        formViewModelSubmissionService
     )
 
     @Bean

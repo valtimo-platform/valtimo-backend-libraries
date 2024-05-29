@@ -14,7 +14,6 @@ import com.ritense.formviewmodel.viewmodel.ViewModelLoaderFactory
 import com.ritense.formviewmodel.web.rest.error.FormViewModelModuleExceptionTranslator
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
-import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -64,8 +63,7 @@ class FormViewModelResourceTest : BaseTest() {
             camundaTaskService = camundaTaskService,
             authorizationService = authorizationService,
             formViewModelService = formViewModelService,
-            formViewModelSubmissionService = formViewModelSubmissionService,
-            formDefinitionService = formIoFormDefinitionService
+            formViewModelSubmissionService = formViewModelSubmissionService
         )
         mockMvc = MockMvcBuilders
             .standaloneSetup(resource)
@@ -76,7 +74,7 @@ class FormViewModelResourceTest : BaseTest() {
     }
 
     @Test
-    fun `should get view model`() {
+    fun `should get user task view model`() {
         whenever(viewModelLoaderFactory.getViewModelLoader("test")).thenReturn(TestViewModelLoader())
         mockMvc.perform(
             get("$BASE_URL/user-task?formName=test&taskInstanceId=taskInstanceId")
@@ -86,7 +84,7 @@ class FormViewModelResourceTest : BaseTest() {
     }
 
     @Test
-    fun `should return notfound for unknown view model`() {
+    fun `should return notfound for unknown user task view model`() {
         whenever(viewModelLoaderFactory.getViewModelLoader("test")).thenReturn(null)
         mockMvc.perform(
             get("$BASE_URL/user-task?formName=test&taskInstanceId=taskInstanceId")
@@ -96,7 +94,7 @@ class FormViewModelResourceTest : BaseTest() {
     }
 
     @Test
-    fun `should not get view model`() {
+    fun `should not get user task view model`() {
         mockMvc.perform(
             get("$BASE_URL/user-task")
                 .accept(APPLICATION_JSON_UTF8_VALUE)
@@ -105,7 +103,7 @@ class FormViewModelResourceTest : BaseTest() {
     }
 
     @Test
-    fun `should update view model`() {
+    fun `should update user task view model`() {
         whenever(viewModelLoaderFactory.getViewModelLoader(any())).thenReturn(TestViewModelLoader())
 
         mockMvc.perform(
@@ -121,7 +119,7 @@ class FormViewModelResourceTest : BaseTest() {
     }
 
     @Test
-    fun `should not update view model`() {
+    fun `should not update user task view model`() {
         mockMvc.perform(
             post("$BASE_URL/user-task")
                 .accept(APPLICATION_JSON_UTF8_VALUE)
@@ -130,7 +128,7 @@ class FormViewModelResourceTest : BaseTest() {
     }
 
     @Test
-    fun `should submit view model`() {
+    fun `should submit user task view model`() {
         whenever(viewModelLoaderFactory.getViewModelLoader(any())).thenReturn(TestViewModelLoader())
         mockMvc.perform(
             post(
@@ -143,7 +141,7 @@ class FormViewModelResourceTest : BaseTest() {
     }
 
     @Test
-    fun `should return validation error for submission`() {
+    fun `should return validation error for user task submission`() {
         whenever(formViewModelSubmissionService.handleUserTaskSubmission(any(), any(), any())).then {
             throw FormException(message = "Im a child", "age")
         }

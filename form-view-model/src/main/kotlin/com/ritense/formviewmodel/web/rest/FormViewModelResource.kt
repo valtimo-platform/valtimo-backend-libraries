@@ -19,7 +19,6 @@ package com.ritense.formviewmodel.web.rest
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
-import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formviewmodel.service.FormViewModelService
 import com.ritense.formviewmodel.service.FormViewModelSubmissionService
 import com.ritense.formviewmodel.viewmodel.ViewModel
@@ -38,7 +37,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
 
 @RestController
 @SkipComponentScan
@@ -49,16 +47,14 @@ class FormViewModelResource(
     private val camundaTaskService: CamundaTaskService,
     private val authorizationService: AuthorizationService,
     private val formViewModelService: FormViewModelService,
-    private val formViewModelSubmissionService: FormViewModelSubmissionService,
-    private val formDefinitionService: FormIoFormDefinitionService
+    private val formViewModelSubmissionService: FormViewModelSubmissionService
 ) {
 
     @GetMapping("/start-form")
     fun getStartFormViewModel(
-        @RequestParam formDefinitionId: UUID
+        @RequestParam formName: String
     ): ResponseEntity<ViewModel?> {
-        val formDefinition = formDefinitionService.getFormDefinitionById(formDefinitionId).orElseThrow()
-        val viewModel = viewModelLoaderFactory.getViewModelLoader(formDefinition.name)?.load()
+        val viewModel = viewModelLoaderFactory.getViewModelLoader(formName)?.load()
         return if (viewModel != null) {
             ResponseEntity.ok(viewModel)
         } else {
@@ -139,14 +135,13 @@ class FormViewModelResource(
     @PostMapping("/submit/start-form")
     @Transactional
     fun submitStartForm(
-        @RequestParam formDefinitionId: UUID,
+        @RequestParam formName: String,
         @RequestParam processDefinitionKey: String,
         @RequestParam businessKey: String,
         @RequestBody submission: ObjectNode
     ): ResponseEntity<Void> {
-        val formDefinition = formDefinitionService.getFormDefinitionById(formDefinitionId).orElseThrow()
         formViewModelSubmissionService.handleStartFormSubmission(
-            formName = formDefinition.name,
+            formName = formName,
             processDefinitionKey = processDefinitionKey,
             businessKey = businessKey,
             submission = submission,
