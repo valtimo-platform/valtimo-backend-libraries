@@ -23,7 +23,7 @@ import kotlin.reflect.KClass
 @Transactional
 interface ViewModelLoader<T : ViewModel> {
 
-    fun load(task: CamundaTask): T
+    fun load(task: CamundaTask? = null): T
 
     fun supports(formName: String) = getFormName() == formName
 

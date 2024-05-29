@@ -21,23 +21,48 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
 import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
+import org.springframework.transaction.annotation.Transactional
 import kotlin.reflect.KClass
 
+@Transactional
 class FormViewModelSubmissionService(
     private val formViewModelSubmissionHandlerFactory: FormViewModelSubmissionHandlerFactory,
     private val camundaTaskService: CamundaTaskService,
+    private val camundaProcessService: CamundaProcessService,
     private val objectMapper: ObjectMapper
 ) {
 
-    fun handleSubmission(
+    fun handleStartFormSubmission(
+        formName: String,
+        processDefinitionKey: String,
+        businessKey: String,
+        submission: ObjectNode
+    ) {
+        val formViewModelSubmissionHandler = formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler(
+            formName = formName
+        ) ?: throw RuntimeException("No FormViewModelSubmissionHandler found for formName $formName")
+        val submissionType = formViewModelSubmissionHandler.getSubmissionType()
+        val submissionConverted = parseSubmission(submission, submissionType)
+        formViewModelSubmissionHandler.handle(
+            submission = submissionConverted,
+        )
+        camundaProcessService.startProcess(
+            processDefinitionKey,
+            businessKey,
+            emptyMap()
+        )
+    }
+
+    fun handleUserTaskSubmission(
         formName: String,
         submission: ObjectNode,
         task: CamundaTask
     ) {
         val formViewModelSubmissionHandler = formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler(
             formName = formName
-        ) ?: throw RuntimeException("No event handler found for formName $formName")
+        ) ?: throw RuntimeException("No FormViewModelSubmissionHandler found for formName $formName")
         val submissionType = formViewModelSubmissionHandler.getSubmissionType()
         val submissionConverted = parseSubmission(submission, submissionType)
         formViewModelSubmissionHandler.handle(

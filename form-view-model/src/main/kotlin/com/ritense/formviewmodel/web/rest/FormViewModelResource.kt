@@ -19,6 +19,7 @@ package com.ritense.formviewmodel.web.rest
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
+import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formviewmodel.service.FormViewModelService
 import com.ritense.formviewmodel.service.FormViewModelSubmissionService
 import com.ritense.formviewmodel.viewmodel.ViewModel
@@ -37,27 +38,46 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
 @SkipComponentScan
 @RequestMapping("/api/v1/form/view-model", produces = [APPLICATION_JSON_UTF8_VALUE])
+@Transactional
 class FormViewModelResource(
     private val viewModelLoaderFactory: ViewModelLoaderFactory,
     private val camundaTaskService: CamundaTaskService,
     private val authorizationService: AuthorizationService,
     private val formViewModelService: FormViewModelService,
-    private val formViewModelSubmissionService: FormViewModelSubmissionService
+    private val formViewModelSubmissionService: FormViewModelSubmissionService,
+    private val formDefinitionService: FormIoFormDefinitionService
 ) {
 
-    @GetMapping
-    fun getFormViewModel(
-        @RequestParam(required = true) formName: String,
-        @RequestParam(required = true) taskInstanceId: String
+    @GetMapping("/start-form")
+    fun getStartFormViewModel(
+        @RequestParam formDefinitionId: UUID
     ): ResponseEntity<ViewModel?> {
-        val task = camundaTaskService.findTaskById(taskInstanceId)
-        authorizationService.requirePermission(
-            EntityAuthorizationRequest(CamundaTask::class.java, VIEW, task)
-        )
+        val formDefinition = formDefinitionService.getFormDefinitionById(formDefinitionId).orElseThrow()
+        val viewModel = viewModelLoaderFactory.getViewModelLoader(formDefinition.name)?.load()
+        return if (viewModel != null) {
+            ResponseEntity.ok(viewModel)
+        } else {
+            ResponseEntity.notFound().build()
+        }
+    }
+
+    @GetMapping("/user-task")
+    fun getUserTaskFormViewModel(
+        @RequestParam formName: String,
+        @RequestParam taskInstanceId: String
+    ): ResponseEntity<ViewModel?> {
+        val task = taskInstanceId.let {
+            camundaTaskService.findTaskById(it).also { foundTask ->
+                authorizationService.requirePermission(
+                    EntityAuthorizationRequest(CamundaTask::class.java, VIEW, foundTask)
+                )
+            }
+        }
         val viewModel = viewModelLoaderFactory.getViewModelLoader(formName)?.load(task)
         return if (viewModel != null) {
             ResponseEntity.ok(viewModel)
@@ -66,16 +86,31 @@ class FormViewModelResource(
         }
     }
 
-    @PostMapping
-    fun updateFormViewModel(
-        @RequestParam(required = true) formName: String,
-        @RequestParam(required = true) taskInstanceId: String,
+    @PostMapping("/start-form")
+    fun updateStartFormViewModel(
+        @RequestParam formName: String,
         @RequestBody submission: ObjectNode
     ): ResponseEntity<ViewModel> {
-        val task = camundaTaskService.findTaskById(taskInstanceId)
-        authorizationService.requirePermission(
-            EntityAuthorizationRequest(CamundaTask::class.java, VIEW, task)
-        )
+        val viewModelLoader =
+            viewModelLoaderFactory.getViewModelLoader(formName) ?: return ResponseEntity.notFound().build()
+        val viewModelType = viewModelLoader.getViewModelType()
+        val updatedViewModel = formViewModelService.parseViewModel(submission, viewModelType).update()
+        return ResponseEntity.ok(updatedViewModel)
+    }
+
+    @PostMapping("/user-task")
+    fun updateUserTaskFormViewModel(
+        @RequestParam formName: String,
+        @RequestParam taskInstanceId: String? = null,
+        @RequestBody submission: ObjectNode
+    ): ResponseEntity<ViewModel> {
+        val task = taskInstanceId.let {
+            camundaTaskService.findTaskById(it).also { foundTask ->
+                authorizationService.requirePermission(
+                    EntityAuthorizationRequest(CamundaTask::class.java, VIEW, foundTask)
+                )
+            }
+        }
         val viewModelLoader =
             viewModelLoaderFactory.getViewModelLoader(formName) ?: return ResponseEntity.notFound().build()
         val viewModelType = viewModelLoader.getViewModelType()
@@ -83,21 +118,38 @@ class FormViewModelResource(
         return ResponseEntity.ok(updatedViewModel)
     }
 
-    @PostMapping("/submit")
-    @Transactional
-    fun submit(
-        @RequestParam(required = true) formName: String,
-        @RequestParam(required = true) taskInstanceId: String,
+    @PostMapping("/submit/user-task")
+    fun submitTask(
+        @RequestParam formName: String,
+        @RequestParam taskInstanceId: String? = null,
         @RequestBody submission: ObjectNode
     ): ResponseEntity<Void> {
         val task = camundaTaskService.findTaskById(taskInstanceId)
         authorizationService.requirePermission(
             EntityAuthorizationRequest(CamundaTask::class.java, COMPLETE, task)
         )
-        formViewModelSubmissionService.handleSubmission(
+        formViewModelSubmissionService.handleUserTaskSubmission(
             formName = formName,
             submission = submission,
             task = task
+        )
+        return ResponseEntity.noContent().build()
+    }
+
+    @PostMapping("/submit/start-form")
+    @Transactional
+    fun submitStartForm(
+        @RequestParam formDefinitionId: UUID,
+        @RequestParam processDefinitionKey: String,
+        @RequestParam businessKey: String,
+        @RequestBody submission: ObjectNode
+    ): ResponseEntity<Void> {
+        val formDefinition = formDefinitionService.getFormDefinitionById(formDefinitionId).orElseThrow()
+        formViewModelSubmissionService.handleStartFormSubmission(
+            formName = formDefinition.name,
+            processDefinitionKey = processDefinitionKey,
+            businessKey = businessKey,
+            submission = submission,
         )
         return ResponseEntity.noContent().build()
     }

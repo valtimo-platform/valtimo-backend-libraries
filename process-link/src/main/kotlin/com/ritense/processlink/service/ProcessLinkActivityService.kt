@@ -47,7 +47,7 @@ open class ProcessLinkActivityService(
         processDefinitionId: String,
         documentId: UUID?,
         documentDefinitionName: String?
-        ): ProcessLinkActivityResult<*>? {
+    ): ProcessLinkActivityResult<*>? {
         val processLink = processLinkService.getProcessLinksByProcessDefinitionIdAndActivityType(processDefinitionId,
             ActivityTypeWithEventName.START_EVENT_START) ?: return null
         var result: ProcessLinkActivityResult<*>? = null

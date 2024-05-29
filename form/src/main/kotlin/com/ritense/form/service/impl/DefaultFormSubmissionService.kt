@@ -157,12 +157,12 @@ open class DefaultFormSubmissionService(
 
     private fun requireCompleteTaskPermission(taskInstanceId: String?) {
         if (taskInstanceId != null) {
-            camundaTaskService.findTaskById(taskInstanceId)
+            val task = camundaTaskService.findTaskById(taskInstanceId)
             authorizationService.requirePermission(
                 EntityAuthorizationRequest(
                     CamundaTask::class.java,
                     COMPLETE,
-                    camundaTaskService.findTaskById(taskInstanceId)
+                    task
                 )
             )
         }

@@ -26,7 +26,7 @@ interface FormViewModelSubmissionHandler<T : Submission> {
 
     fun supports(formName: String): Boolean
 
-    fun <T> handle(submission: T, task: CamundaTask)
+    fun <T> handle(submission: T, task: CamundaTask? = null)
 
     @Suppress("UNCHECKED_CAST")
     fun getSubmissionType(): KClass<T> =

@@ -31,6 +31,7 @@ import com.ritense.formviewmodel.viewmodel.ViewModelLoader
 import com.ritense.formviewmodel.viewmodel.ViewModelLoaderFactory
 import com.ritense.formviewmodel.web.rest.FormViewModelResource
 import com.ritense.formviewmodel.web.rest.error.FormViewModelModuleExceptionTranslator
+import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Bean
@@ -61,10 +62,12 @@ class FormViewModelAutoConfiguration {
     fun formViewModelSubmissionService(
         formViewModelSubmissionHandlerFactory: FormViewModelSubmissionHandlerFactory,
         camundaTaskService: CamundaTaskService,
+        camundaProcessService: CamundaProcessService,
         objectMapper: ObjectMapper
     ) = FormViewModelSubmissionService(
         formViewModelSubmissionHandlerFactory,
         camundaTaskService,
+        camundaProcessService,
         objectMapper
     )
 
@@ -78,13 +81,15 @@ class FormViewModelAutoConfiguration {
         camundaTaskService: CamundaTaskService,
         authorizationService: AuthorizationService,
         formViewModelService: FormViewModelService,
-        formViewModelSubmissionService: FormViewModelSubmissionService
+        formViewModelSubmissionService: FormViewModelSubmissionService,
+        formDefinitionService: FormIoFormDefinitionService
     ) = FormViewModelResource(
         viewModelLoaderFactory,
         camundaTaskService,
         authorizationService,
         formViewModelService,
-        formViewModelSubmissionService
+        formViewModelSubmissionService,
+        formDefinitionService
     )
 
     @Bean
