@@ -47,12 +47,6 @@ Valtimo access control checks have been implemented
 - [ ] Yes
 - [ ] Not applicable
 
-### Coding guidelines
-<!-- The coding guidelines can be found in the CODING-GUIDELINES.md -->
-The changes comply with the coding guidelines
-- [ ] Yes
-- [ ] Not applicable
-
 ### Dependencies
 Newly added dependencies do not introduce known vulnerabilities/CVE's and are in line with the Valtimo license
 - [ ] Yes
