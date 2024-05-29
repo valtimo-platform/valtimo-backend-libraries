@@ -97,7 +97,7 @@ class FormViewModelResource(
     @PostMapping("/user-task")
     fun updateUserTaskFormViewModel(
         @RequestParam formName: String,
-        @RequestParam taskInstanceId: String? = null,
+        @RequestParam taskInstanceId: String,
         @RequestBody submission: ObjectNode
     ): ResponseEntity<ViewModel> {
         val task = taskInstanceId.let {
@@ -117,7 +117,7 @@ class FormViewModelResource(
     @PostMapping("/submit/user-task")
     fun submitTask(
         @RequestParam formName: String,
-        @RequestParam taskInstanceId: String? = null,
+        @RequestParam taskInstanceId: String,
         @RequestBody submission: ObjectNode
     ): ResponseEntity<Void> {
         val task = camundaTaskService.findTaskById(taskInstanceId)
