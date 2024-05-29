@@ -28,10 +28,13 @@ class FormViewModelHttpSecurityConfigurerKotlin : HttpSecurityConfigurer {
         try {
             http.authorizeHttpRequests { requests ->
                 requests.requestMatchers(
-                    antMatcher(POST, "/api/v1/form/view-model"),
-                    antMatcher(POST, "/api/v1/form/view-model/submit")
+                    antMatcher(POST, "/api/v1/form/view-model/start-form"),
+                    antMatcher(POST, "/api/v1/form/view-model/user-task"),
+                    antMatcher(GET, "/api/v1/form/view-model/start-form"),
+                    antMatcher(GET, "/api/v1/form/view-model/user-task"),
+                    antMatcher(POST, "/api/v1/form/view-model/submit/start-form"),
+                    antMatcher(POST, "/api/v1/form/view-model/submit/user-task"),
                 ).authenticated()
-                    .requestMatchers(antMatcher(GET, "/api/v1/form/view-model")).authenticated()
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

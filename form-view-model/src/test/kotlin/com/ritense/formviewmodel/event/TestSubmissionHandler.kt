@@ -11,7 +11,7 @@ class TestSubmissionHandler : FormViewModelSubmissionHandler<TestViewModel> {
         return formName == "test"
     }
 
-    override fun <T> handle(submission: T, task: CamundaTask) {
+    override fun <T> handle(submission: T, task: CamundaTask?) {
         submission as TestViewModel
         val exampleCommand = ExampleCommand(
             age = submission.age!!
