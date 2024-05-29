@@ -1,4 +1,4 @@
-# Welcome to Valtimo
+## Welcome to Valtimo
 
 ### What is Valtimo?
 Valtimo is the low-code platform for Business Process Automation. Our goal is to make implementing business process automation and case management easy.
