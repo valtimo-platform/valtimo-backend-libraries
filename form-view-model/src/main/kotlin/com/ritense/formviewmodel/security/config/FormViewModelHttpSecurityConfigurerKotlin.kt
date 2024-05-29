@@ -28,12 +28,12 @@ class FormViewModelHttpSecurityConfigurerKotlin : HttpSecurityConfigurer {
         try {
             http.authorizeHttpRequests { requests ->
                 requests.requestMatchers(
-                    antMatcher(POST, "$BASE_URL/start-form"),
-                    antMatcher(POST, "$BASE_URL/user-task"),
-                    antMatcher(GET, "$BASE_URL/start-form"),
-                    antMatcher(GET, "$BASE_URL/user-task"),
-                    antMatcher(POST, "$BASE_URL/submit/start-form"),
-                    antMatcher(POST, "$BASE_URL/submit/user-task"),
+                    antMatcher(POST, "$BASE_URL/$START_FORM"),
+                    antMatcher(POST, "$BASE_URL/$USER_TASK"),
+                    antMatcher(GET, "$BASE_URL/$START_FORM"),
+                    antMatcher(GET, "$BASE_URL/$USER_TASK"),
+                    antMatcher(POST, "$BASE_URL/submit/$START_FORM"),
+                    antMatcher(POST, "$BASE_URL/submit/$USER_TASK")
                 ).authenticated()
             }
         } catch (e: Exception) {
@@ -43,5 +43,7 @@ class FormViewModelHttpSecurityConfigurerKotlin : HttpSecurityConfigurer {
 
     companion object {
         private const val BASE_URL = "/api/v1/form/view-model"
+        private const val START_FORM = "start-form"
+        private const val USER_TASK = "user-task"
     }
 }

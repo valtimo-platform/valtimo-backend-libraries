@@ -24,6 +24,7 @@ import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 import kotlin.reflect.KClass
 
 @Transactional
@@ -37,7 +38,6 @@ class FormViewModelSubmissionService(
     fun handleStartFormSubmission(
         formName: String,
         processDefinitionKey: String,
-        businessKey: String,
         submission: ObjectNode
     ) {
         val formViewModelSubmissionHandler = formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler(
@@ -45,7 +45,9 @@ class FormViewModelSubmissionService(
         ) ?: throw RuntimeException("No FormViewModelSubmissionHandler found for formName $formName")
         val submissionType = formViewModelSubmissionHandler.getSubmissionType()
         val submissionConverted = parseSubmission(submission, submissionType)
+        val businessKey = UUID.randomUUID().toString()
         formViewModelSubmissionHandler.handle(
+            businessKey = businessKey,
             submission = submissionConverted,
         )
         camundaProcessService.startProcess(
@@ -67,7 +69,8 @@ class FormViewModelSubmissionService(
         val submissionConverted = parseSubmission(submission, submissionType)
         formViewModelSubmissionHandler.handle(
             submission = submissionConverted,
-            task = task
+            task = task,
+            businessKey = task.processInstance!!.businessKey!!
         )
         camundaTaskService.complete(task.id)
     }

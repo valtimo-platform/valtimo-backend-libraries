@@ -8,6 +8,7 @@ import com.ritense.formviewmodel.error.FormException
 import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
 import com.ritense.formviewmodel.event.TestSubmissionHandler
 import com.ritense.formviewmodel.json.MapperSingleton
+import com.ritense.valtimo.camunda.domain.CamundaExecution
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
@@ -18,6 +19,7 @@ import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
 import org.mockito.kotlin.any
 import org.mockito.kotlin.never
+import org.mockito.kotlin.whenever
 
 class FormViewModelSubmissionServiceTest : BaseTest() {
 
@@ -46,6 +48,10 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
             camundaProcessService = camundaProcessService,
             objectMapper = objectMapper
         )
+        // Mock the nested calls to avoid NPE
+        val processInstance = mock<CamundaExecution>()
+        whenever(camundaTask.processInstance).thenReturn(processInstance)
+        whenever(processInstance.businessKey).thenReturn("test")
     }
 
     @Test
