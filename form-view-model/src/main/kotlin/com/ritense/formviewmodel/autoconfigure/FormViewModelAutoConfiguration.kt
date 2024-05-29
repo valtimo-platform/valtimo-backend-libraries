@@ -81,8 +81,7 @@ class FormViewModelAutoConfiguration {
         camundaTaskService: CamundaTaskService,
         authorizationService: AuthorizationService,
         formViewModelService: FormViewModelService,
-        formViewModelSubmissionService: FormViewModelSubmissionService,
-        formDefinitionService: FormIoFormDefinitionService
+        formViewModelSubmissionService: FormViewModelSubmissionService
     ) = FormViewModelResource(
         viewModelLoaderFactory,
         camundaTaskService,
