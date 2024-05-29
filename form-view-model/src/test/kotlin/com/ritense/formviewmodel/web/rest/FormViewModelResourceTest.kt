@@ -18,6 +18,7 @@ import com.ritense.valtimo.service.CamundaTaskService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
@@ -26,6 +27,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder
@@ -142,7 +144,13 @@ class FormViewModelResourceTest : BaseTest() {
 
     @Test
     fun `should return validation error for user task submission`() {
-        whenever(formViewModelSubmissionService.handleUserTaskSubmission(any(), any(), any())).then {
+        whenever(
+            formViewModelSubmissionService.handleUserTaskSubmission(
+                formName = eq("test"),
+                submission = any(),
+                task = any()
+            )
+        ).then {
             throw FormException(message = "Im a child", "age")
         }
         mockMvc.perform(
@@ -153,6 +161,8 @@ class FormViewModelResourceTest : BaseTest() {
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
                 .content(objectMapper.writeValueAsString(TestViewModel()))
         ).andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.error").value("Im a child"))
+            .andExpect(jsonPath("$.component").value("age"))
     }
 
     // start form tests
@@ -226,7 +236,13 @@ class FormViewModelResourceTest : BaseTest() {
 
     @Test
     fun `should return validation error for start form submission`() {
-        whenever(formViewModelSubmissionService.handleStartFormSubmission(any(), any(), any())).then {
+        whenever(
+            formViewModelSubmissionService.handleStartFormSubmission(
+                formName = eq("test"),
+                processDefinitionKey = eq("processDefinitionKey"),
+                submission = any()
+            )
+        ).then {
             throw FormException(message = "Im a child", "age")
         }
         mockMvc.perform(
@@ -237,6 +253,8 @@ class FormViewModelResourceTest : BaseTest() {
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
                 .content(objectMapper.writeValueAsString(TestViewModel()))
         ).andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.error").value("Im a child"))
+            .andExpect(jsonPath("$.component").value("age"))
     }
 
     companion object {
