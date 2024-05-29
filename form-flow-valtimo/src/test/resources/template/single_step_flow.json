@@ -6,7 +6,7 @@
             "type": {
                 "name": "form",
                 "properties": {
-                    "definition": "my-form-definition"
+                    "definition": "all-fields-form-definition"
                 }
             },
             "onComplete": ["PLACEHOLDER"]
