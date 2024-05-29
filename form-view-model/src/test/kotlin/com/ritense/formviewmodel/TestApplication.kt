@@ -17,7 +17,7 @@
 package com.ritense.formviewmodel
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.formviewmodel.json.MapperSingleton
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.runApplication

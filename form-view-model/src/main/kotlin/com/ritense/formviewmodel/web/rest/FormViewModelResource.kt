@@ -42,11 +42,7 @@ import org.springframework.web.bind.annotation.RestController
 @SkipComponentScan
 @RequestMapping("/api/v1/form/view-model", produces = [APPLICATION_JSON_UTF8_VALUE])
 class FormViewModelResource(
-    private val viewModelLoaderFactory: ViewModelLoaderFactory,
-    private val camundaTaskService: CamundaTaskService,
-    private val authorizationService: AuthorizationService,
-    private val formViewModelService: FormViewModelService,
-    private val formViewModelSubmissionService: FormViewModelSubmissionService
+    private val formViewModelService: FormViewModelService
 ) {
 
     @GetMapping
@@ -54,16 +50,12 @@ class FormViewModelResource(
         @RequestParam(required = true) formName: String,
         @RequestParam(required = true) taskInstanceId: String
     ): ResponseEntity<ViewModel?> {
-        val task = camundaTaskService.findTaskById(taskInstanceId)
-        authorizationService.requirePermission(
-            EntityAuthorizationRequest(CamundaTask::class.java, VIEW, task)
-        )
-        val viewModel = viewModelLoaderFactory.getViewModelLoader(formName)?.load(task)
-        return if (viewModel != null) {
-            ResponseEntity.ok(viewModel)
-        } else {
-            ResponseEntity.notFound().build()
-        }
+        return formViewModelService.getFormViewModel(
+            formName = formName,
+            taskInstanceId = taskInstanceId
+        )?.let {
+            ResponseEntity.ok(it)
+        } ?: ResponseEntity.notFound().build()
     }
 
     @PostMapping
@@ -72,15 +64,13 @@ class FormViewModelResource(
         @RequestParam(required = true) taskInstanceId: String,
         @RequestBody submission: ObjectNode
     ): ResponseEntity<ViewModel> {
-        val task = camundaTaskService.findTaskById(taskInstanceId)
-        authorizationService.requirePermission(
-            EntityAuthorizationRequest(CamundaTask::class.java, VIEW, task)
-        )
-        val viewModelLoader =
-            viewModelLoaderFactory.getViewModelLoader(formName) ?: return ResponseEntity.notFound().build()
-        val viewModelType = viewModelLoader.getViewModelType()
-        val updatedViewModel = formViewModelService.parseViewModel(submission, viewModelType).update(task)
-        return ResponseEntity.ok(updatedViewModel)
+        return formViewModelService.updateViewModel(
+            formName = formName,
+            taskInstanceId = taskInstanceId,
+            submission = submission
+        )?.let {
+            ResponseEntity.ok(it)
+        } ?: ResponseEntity.notFound().build()
     }
 
     @PostMapping("/submit")
@@ -90,14 +80,10 @@ class FormViewModelResource(
         @RequestParam(required = true) taskInstanceId: String,
         @RequestBody submission: ObjectNode
     ): ResponseEntity<Void> {
-        val task = camundaTaskService.findTaskById(taskInstanceId)
-        authorizationService.requirePermission(
-            EntityAuthorizationRequest(CamundaTask::class.java, COMPLETE, task)
-        )
-        formViewModelSubmissionService.handleSubmission(
+        formViewModelService.submit(
             formName = formName,
-            submission = submission,
-            task = task
+            taskInstanceId = taskInstanceId,
+            submission = submission
         )
         return ResponseEntity.noContent().build()
     }
