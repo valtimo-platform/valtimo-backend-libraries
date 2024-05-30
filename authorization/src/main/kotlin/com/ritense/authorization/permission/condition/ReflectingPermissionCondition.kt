@@ -23,7 +23,10 @@ abstract class ReflectingPermissionCondition(type: PermissionConditionType) : Pe
         var currentEntity: Any? = entity
         val fields = field.split('.')
         fields.forEachIndexed { index, value ->
-            var classToSearch: Class<*>? = entity.javaClass
+            if (currentEntity == null) {
+                throw NullPointerException("Field $fields not found in class ${entity.javaClass}")
+            }
+            var classToSearch: Class<*>? = currentEntity?.javaClass
             var declaredField: Field? = null
 
             while (declaredField == null && classToSearch != null) {
@@ -33,7 +36,7 @@ abstract class ReflectingPermissionCondition(type: PermissionConditionType) : Pe
             }
 
             if (declaredField == null) {
-                throw IllegalArgumentException("Field $field not found in class ${entity.javaClass}")
+                throw NoSuchFieldException("Field $fields not found in class ${entity.javaClass}")
             }
             declaredField.trySetAccessible()
 
