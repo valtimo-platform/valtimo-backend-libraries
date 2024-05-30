@@ -28,10 +28,13 @@ import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateOrderDto
 import com.ritense.document.service.DocumentDefinitionService
+import com.ritense.valtimo.contract.Constants
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
+import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
@@ -302,5 +305,41 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
             .andExpect(jsonPath("$[0].name").value(caseTab.name))
             .andExpect(jsonPath("$[0].type").value(caseTab.type.value))
             .andExpect(jsonPath("$[0].contentKey").value(caseTab.contentKey))
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
+    fun `should get tab by id`() {
+        whenever(userManagementService.findById("system")).thenReturn(
+            ValtimoUserBuilder().id(Constants.SYSTEM_ACCOUNT).lastName(
+                Constants.SYSTEM_ACCOUNT
+            ).build()
+        )
+        val caseDefinitionName = "my-case-type"
+
+        val key = "some-key"
+        val caseTab = CaseTab(
+            id = CaseTabId(caseDefinitionName, key),
+            name = "Some tab name",
+            type = CaseTabType.STANDARD,
+            tabOrder = Integer.MAX_VALUE,
+            contentKey = "some-content-key",
+            createdBy = "system"
+        )
+
+        caseTabRepository.save(caseTab)
+
+        mockMvc.perform(
+            get("/api/management/v1/case-definition/{caseDefinitionName}/tab/{tabKey}", caseDefinitionName, key)
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.key").value(caseTab.id.key))
+            .andExpect(jsonPath("$.name").value(caseTab.name))
+            .andExpect(jsonPath("$.type").value(caseTab.type.value))
+            .andExpect(jsonPath("$.contentKey").value(caseTab.contentKey))
+            .andExpect(jsonPath("$.createdBy").value("system"))
+            .andExpect(jsonPath("$.createdOn").exists())
     }
 }

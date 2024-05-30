@@ -56,6 +56,7 @@ class CaseHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(antMatcher(PUT, MANAGEMENT_TAB_URL)).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(PUT, "$MANAGEMENT_TAB_URL/{tabKey}")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(DELETE, "$MANAGEMENT_TAB_URL/{tabKey}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "$MANAGEMENT_TAB_URL/{tabKey}")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, MANAGEMENT_TAB_URL)).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "/api/management/v1/case/{caseDefinitionName}/{caseDefinitionVersion}/export")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(POST, "/api/management/v1/case/import")).hasAuthority(ADMIN)
