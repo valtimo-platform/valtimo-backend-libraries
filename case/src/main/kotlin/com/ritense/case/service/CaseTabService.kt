@@ -31,9 +31,11 @@ import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateOrderDto
 import com.ritense.document.service.DocumentDefinitionService
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Sort
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 import kotlin.jvm.optionals.getOrNull
 
 @Transactional
@@ -41,7 +43,8 @@ class CaseTabService(
     private val caseTabRepository: CaseTabRepository,
     private val documentDefinitionService: DocumentDefinitionService,
     private val authorizationService: AuthorizationService,
-    private val applicationEventPublisher: ApplicationEventPublisher
+    private val applicationEventPublisher: ApplicationEventPublisher,
+    private val userManagementService: UserManagementService,
 ) {
     fun getCaseTab(caseDefinitionName: String, key: String): CaseTab {
         val caseTab = caseTabRepository.getReferenceById(CaseTabId(caseDefinitionName, key))
@@ -66,7 +69,7 @@ class CaseTabService(
         return caseTabRepository.findAll(spec.and(byCaseDefinitionName(caseDefinitionName)), Sort.by(TAB_ORDER))
     }
 
-    fun createCaseTab(caseDefinitionName: String, caseTabDto: CaseTabDto): CaseTabDto {
+    fun createCaseTab(caseDefinitionName: String, caseTabDto: CaseTabDto): CaseTab {
         denyAuthorization()
 
         documentDefinitionService.findLatestByName(caseDefinitionName).getOrNull()
@@ -86,14 +89,16 @@ class CaseTabService(
             caseTabDto.name,
             currentTabs.size, // Add it to the end
             caseTabDto.type,
-            caseTabDto.contentKey
+            caseTabDto.contentKey,
+            LocalDateTime.now(),
+            userManagementService.currentUserId,
         )
 
         val savedTab = caseTabRepository.save(caseTab)
 
         applicationEventPublisher.publishEvent(CaseTabCreatedEvent(savedTab))
 
-        return CaseTabDto.of(savedTab)
+        return savedTab
     }
 
     fun updateCaseTab(caseDefinitionName: String, tabKey: String, caseTab: CaseTabUpdateDto) {
