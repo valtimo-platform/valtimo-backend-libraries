@@ -7,8 +7,8 @@ import com.ritense.formviewmodel.commandhandling.ExampleCommand
 import com.ritense.formviewmodel.error.FormException
 import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
 import com.ritense.formviewmodel.event.TestSubmissionHandler
-import com.ritense.formviewmodel.json.MapperSingleton
 import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.service.CamundaTaskService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
