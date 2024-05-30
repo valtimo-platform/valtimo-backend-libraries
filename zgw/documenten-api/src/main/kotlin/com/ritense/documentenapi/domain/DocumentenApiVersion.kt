@@ -34,9 +34,9 @@ open class DocumentenApiVersion(
     open fun supportsSortableColumns(): Boolean = sortableColumns.isNotEmpty()
 
     open fun isColumnFilterable(columnKey: DocumentenApiColumnKey) =
-        filterableColumns.contains(columnKey.name.lowercase())
+        filterableColumns.contains(columnKey.property)
 
-    open fun isColumnSortable(columnKey: DocumentenApiColumnKey) = sortableColumns.contains(columnKey.name.lowercase())
+    open fun isColumnSortable(columnKey: DocumentenApiColumnKey) = sortableColumns.contains(columnKey.property)
 
     override fun compareTo(other: DocumentenApiVersion) = version.compareTo(other.version)
 
