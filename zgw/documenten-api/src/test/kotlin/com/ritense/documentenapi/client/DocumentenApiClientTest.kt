@@ -591,7 +591,9 @@ internal class DocumentenApiClientTest {
                 beschrijving = "beschrijving",
                 ontvangstdatum = LocalDate.of(2020, 5, 3),
                 verzenddatum = LocalDate.of(2020, 5, 3),
-                indicatieGebruiksrecht = true
+                indicatieGebruiksrecht = true,
+                vertrouwelijkheidaanduiding = "openbaar",
+                informatieobjecttype = "http://example.com"
             )
         )
 
