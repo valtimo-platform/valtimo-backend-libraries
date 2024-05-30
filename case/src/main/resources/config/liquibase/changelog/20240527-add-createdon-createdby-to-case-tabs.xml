@@ -21,7 +21,7 @@
 
     <changeSet id="1" author="Ritense">
         <addColumn tableName="case_tab">
-            <column name="created_by" type="varchar(50)"/>
+            <column name="created_by" type="varchar(255)"/>
         </addColumn>
     </changeSet>
 
