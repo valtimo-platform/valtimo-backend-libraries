@@ -46,6 +46,26 @@ class DocumentWidgetDataSource(
         return DocumentCountDataResult(count, total)
     }
 
+    @WidgetDataSource("case-counts", "Case counts")
+    fun getCaseCounts(caseCountsDataSourceProperties: DocumentCountsDataSourceProperties): DocumentCountsDataResult {
+        val items: List<DocumentCountsItem> = caseCountsDataSourceProperties.queryItems.map {
+            val spec = byDocumentDefinitionIdName(caseCountsDataSourceProperties.documentDefinition)
+                .and { root, _, criteriaBuilder ->
+                    criteriaBuilder.and(
+                        *it.queryConditions?.map {
+                            createConditionPredicate(root, it, criteriaBuilder)
+                        }?.toTypedArray() ?: arrayOf()
+                    )
+                }
+
+            val count = documentRepository.count(spec)
+
+            DocumentCountsItem(it.label, count)
+        }
+
+        return DocumentCountsDataResult(items)
+    }
+
     private fun <T : Comparable<T>> createConditionPredicate(
         root: Root<JsonSchemaDocument>,
         it: QueryCondition<T>,
