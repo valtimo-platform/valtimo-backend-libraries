@@ -22,6 +22,7 @@ import com.ritense.document.repository.impl.specification.JsonSchemaDocumentSpec
 import com.ritense.valtimo.contract.dashboard.WidgetDataSource
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.Path
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 
@@ -76,7 +77,11 @@ class DocumentWidgetDataSource(
         val pathPrefix = "${it.queryPath.substringBefore(":", "doc")}:"
         val expression = when (pathPrefix) {
             CASE_PREFIX -> {
-                root.get<Any>(it.queryPath.substringAfter(CASE_PREFIX)).`as`(valueClass)
+                var expr = root as Path<*>
+                it.queryPath.substringAfter(CASE_PREFIX).split('.').forEach {
+                    expr = expr.get<Any>(it)
+                }
+                expr.`as`(valueClass)
             }
 
             else -> {
@@ -89,10 +94,16 @@ class DocumentWidgetDataSource(
             }
         }
 
+        val queryValue = if (it.queryValue == "\${null}") {
+            null
+        } else {
+            it.queryValue
+        }
+
         return it.queryOperator.toPredicate(
             criteriaBuilder,
             expression,
-            it.queryValue
+            queryValue
         )
     }
 
