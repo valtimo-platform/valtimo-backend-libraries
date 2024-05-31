@@ -1,0 +1,11 @@
+{
+    "$id": "widgets.schema",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "widgets document definition",
+    "type": "object",
+    "properties": {
+        "key": {
+            "type": "string"
+        }
+    }
+}

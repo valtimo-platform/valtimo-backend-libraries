@@ -22,6 +22,7 @@ import com.ritense.case.service.CaseTabService
 import com.ritense.case_.deployment.CaseWidgetTabDeployer
 import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 import com.ritense.case_.repository.CaseWidgetTabRepository
+import com.ritense.case_.repository.CaseWidgetTabWidgetSpecificationFactory
 import com.ritense.case_.rest.CaseWidgetTabManagementResource
 import com.ritense.case_.rest.CaseWidgetTabResource
 import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
@@ -39,6 +40,7 @@ import com.ritense.case_.widget.table.TableCaseWidgetMapper
 import com.ritense.document.service.DocumentService
 import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import com.ritense.valtimo.changelog.service.ChangelogService
+import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valueresolver.ValueResolverService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration
@@ -92,6 +94,12 @@ class CaseWidgetAutoConfiguration {
         changelogService,
         clearTables
     )
+
+    @ConditionalOnMissingBean(CaseWidgetTabWidgetSpecificationFactory::class)
+    @Bean
+    fun caseWidgetTabWidgetSpecificationFactory(
+        queryDialectHelper: QueryDialectHelper
+    ) = CaseWidgetTabWidgetSpecificationFactory(queryDialectHelper)
 
     @Bean
     @ConditionalOnMissingBean(CaseWidgetTabExporter::class)

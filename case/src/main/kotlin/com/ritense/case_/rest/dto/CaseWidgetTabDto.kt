@@ -29,11 +29,16 @@ data class CaseWidgetTabDto(
 ) {
     companion object {
         @JvmStatic
-        fun of(tab: CaseWidgetTab, widgetMappers: List<CaseWidgetMapper<CaseWidgetTabWidget, CaseWidgetTabWidgetDto>>): CaseWidgetTabDto {
+        fun of(
+            tab: CaseWidgetTab,
+            widgetMappers: List<CaseWidgetMapper<CaseWidgetTabWidget, CaseWidgetTabWidgetDto>>,
+            permissionCheck: (CaseWidgetTabWidget) -> Boolean
+        ): CaseWidgetTabDto {
             return CaseWidgetTabDto(
                 tab.id.caseDefinitionName,
                 tab.id.key,
                 widgets = tab.widgets
+                    .filter { permissionCheck(it) }
                     .map { widget ->
                         widgetMappers.first { mapper ->
                             mapper.supportedEntityType().isAssignableFrom(widget::class.java)
