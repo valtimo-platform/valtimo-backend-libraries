@@ -166,7 +166,7 @@ class DocumentenApiService(
 
     fun deleteColumn(caseDefinitionName: String, columnKey: String) {
         denyAuthorization()
-        val documentenApiColumnKey = DocumentenApiColumnKey.from(columnKey)
+        val documentenApiColumnKey = DocumentenApiColumnKey.fromProperty(columnKey)
             ?: throw IllegalStateException("Unknown column '$columnKey'")
         documentenApiColumnRepository.deleteByIdCaseDefinitionNameAndIdKey(caseDefinitionName, documentenApiColumnKey)
     }

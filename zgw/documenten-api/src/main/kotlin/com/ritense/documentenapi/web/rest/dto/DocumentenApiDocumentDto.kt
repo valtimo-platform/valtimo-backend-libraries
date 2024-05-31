@@ -35,6 +35,7 @@ data class DocumentenApiDocumentDto(
     val identificatie: String? = null,
     val beschrijving: String? = null,
     val informatieobjecttype: String? = null,
+    val informatieobjecttypeOmschrijving: String? = null,
     val trefwoorden: List<String>? = null,
     val formaat: String? = null,
     val verzenddatum: LocalDate? = null,
