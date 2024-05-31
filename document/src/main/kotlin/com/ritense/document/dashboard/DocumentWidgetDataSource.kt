@@ -45,7 +45,27 @@ class DocumentWidgetDataSource(
         return DocumentCountDataResult(count)
     }
 
-    private fun <T: Comparable<T> >createConditionPredicate(
+    @WidgetDataSource("case-counts", "Case counts")
+    fun getCaseCounts(caseCountsDataSourceProperties: DocumentCountsDataSourceProperties): DocumentCountsDataResult {
+        val items: List<DocumentCountsItem> = caseCountsDataSourceProperties.queryItems.map {
+            val spec = byDocumentDefinitionIdName(caseCountsDataSourceProperties.documentDefinition)
+                .and { root, _, criteriaBuilder ->
+                    criteriaBuilder.and(
+                        *it.queryConditions?.map {
+                            createConditionPredicate(root, it, criteriaBuilder)
+                        }?.toTypedArray() ?: arrayOf()
+                    )
+                }
+
+            val count = documentRepository.count(spec)
+
+            DocumentCountsItem(it.label, count)
+        }
+
+        return DocumentCountsDataResult(items)
+    }
+
+    private fun <T : Comparable<T>> createConditionPredicate(
         root: Root<JsonSchemaDocument>,
         it: QueryCondition<T>,
         criteriaBuilder: CriteriaBuilder
@@ -53,10 +73,11 @@ class DocumentWidgetDataSource(
         val valueClass = it.queryValue::class.java as Class<T>
         //Prefix defaults to doc: when no prefix is given
         val pathPrefix = "${it.queryPath.substringBefore(":", "doc")}:"
-        val expression =  when (pathPrefix){
+        val expression = when (pathPrefix) {
             CASE_PREFIX -> {
                 root.get<Any>(it.queryPath.substringAfter(CASE_PREFIX)).`as`(valueClass)
             }
+
             else -> {
                 queryDialectHelper.getJsonValueExpression(
                     criteriaBuilder,
@@ -75,7 +96,7 @@ class DocumentWidgetDataSource(
     }
 
     companion object {
-        private const val DOC_PREFIX =  "doc:"
-        private const val CASE_PREFIX =  "case:"
+        private const val DOC_PREFIX = "doc:"
+        private const val CASE_PREFIX = "case:"
     }
 }
