@@ -27,6 +27,8 @@ import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.documentenapi.client.PatchDocumentRequest
 import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.documentenapi.service.DocumentDeleteHandler
+import com.ritense.documentenapi.service.DocumentenApiVersionService
+import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
@@ -42,6 +44,8 @@ import jakarta.validation.ValidationException
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.hibernate.validator.constraints.Length
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.web.util.UriComponentsBuilder
 import java.io.InputStream
 import java.net.URI
@@ -58,6 +62,7 @@ class DocumentenApiPlugin(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val objectMapper: ObjectMapper,
     private val documentDeleteHandlers: List<DocumentDeleteHandler>,
+    private val documentenApiVersionService: DocumentenApiVersionService,
 ) {
     @Url
     @PluginProperty(key = URL_PROPERTY, secret = false)
@@ -95,19 +100,18 @@ class DocumentenApiPlugin(
             ?: throw IllegalStateException("Failed to store document. No process variable '$localDocumentLocation' found.")
         val contentAsInputStream = storageService.getResourceContentAsInputStream(documentLocation)
         val metadata = storageService.getResourceMetadata(documentLocation)
-        val fileNameNotNull = fileName ?: metadata[MetadataType.FILE_NAME.key] as String
 
         storeDocument(
             execution = execution,
             metadata = metadata,
-            title = title ?: fileNameNotNull,
-            confidentialityLevel = confidentialityLevel,
+            titel = title,
+            vertrouwelijkheidaanduiding = confidentialityLevel,
             status = status,
-            language = taal,
-            filename = fileNameNotNull,
-            contentAsInputStream = contentAsInputStream,
-            description = description,
-            informationObjectType = informatieobjecttype,
+            taal = taal,
+            bestandsnaam = fileName,
+            inhoudAsInputStream = contentAsInputStream,
+            beschrijving = description,
+            informatieobjecttype = informatieobjecttype,
             storedDocumentUrl = storedDocumentUrl
         )
     }
@@ -129,14 +133,14 @@ class DocumentenApiPlugin(
         storeDocument(
             execution = execution,
             metadata = metadata,
-            title = metadata["title"] as String,
-            confidentialityLevel = metadata["confidentialityLevel"] as String?,
-            status = getStatusFromMetaData(metadata),
-            language = metadata["language"] as String?,
-            filename = getFilenameFromMetaData(metadata),
-            contentAsInputStream = contentAsInputStream,
-            description = metadata["description"] as String?,
-            informationObjectType = metadata["informatieobjecttype"] as String,
+            titel = null,
+            vertrouwelijkheidaanduiding = null,
+            status = null,
+            taal = null,
+            bestandsnaam = null,
+            inhoudAsInputStream = contentAsInputStream,
+            beschrijving = null,
+            informatieobjecttype = null,
             storedDocumentUrl = DOCUMENT_URL_PROCESS_VAR,
         )
     }
@@ -188,6 +192,10 @@ class DocumentenApiPlugin(
         return client.getInformatieObject(authenticationPluginConfiguration, objectUrl)
     }
 
+    fun getInformatieObjecten(documentSearchRequest: DocumentSearchRequest, pageable: Pageable): Page<DocumentInformatieObject> {
+        return client.getInformatieObjecten(authenticationPluginConfiguration, url, pageable, documentSearchRequest)
+    }
+
     fun deleteInformatieObject(objectUrl: URI) {
         documentDeleteHandlers.forEach { it.preDocumentDelete(objectUrl) }
         client.deleteInformatieObject(authenticationPluginConfiguration, objectUrl)
@@ -215,40 +223,49 @@ class DocumentenApiPlugin(
 
     @PluginEvent(invokedOn = [EventType.CREATE, EventType.UPDATE])
     fun onSave() {
-        if (apiVersion != null && !API_VERSIONS.contains(apiVersion)) {
+        if (apiVersion != null && !documentenApiVersionService.isValidVersion(apiVersion!!)) {
             throw ValidationException("Unknown API version '$apiVersion'.")
         }
     }
 
     private fun storeDocument(
         execution: DelegateExecution,
-        metadata: Map<String, Any>,
-        title: String,
-        confidentialityLevel: String?,
-        status: DocumentStatusType,
-        language: String?,
-        filename: String?,
-        contentAsInputStream: InputStream,
-        description: String?,
-        informationObjectType: String,
+        metadata: Map<String, Any?>,
+        titel: String?,
+        vertrouwelijkheidaanduiding: String?,
+        status: DocumentStatusType?,
+        taal: String?,
+        bestandsnaam: String?,
+        inhoudAsInputStream: InputStream,
+        beschrijving: String?,
+        informatieobjecttype: String?,
         storedDocumentUrl: String,
     ) {
+        val vertrouwelijkheidaanduidingEnum = Vertrouwelijkheid.fromKey(
+            vertrouwelijkheidaanduiding ?: getMetadataField(
+                metadata,
+                VERTROUWELIJKHEIDAANDUIDING_FIELD
+            )
+        )
+        val trefwoorden = (getMetadataField(metadata, TREFWOORDEN_FIELD) as String?)?.split(',')
+
         val request = CreateDocumentRequest(
             bronorganisatie = bronorganisatie,
-            creatiedatum = getLocalDateFromMetaData(metadata, "creationDate", LocalDate.now())!!,
-            titel = title,
-            vertrouwelijkheidaanduiding = Vertrouwelijkheid.fromKey(confidentialityLevel),
-            auteur = metadata["author"] as String? ?: DEFAULT_AUTHOR,
-            status = status,
-            taal = language ?: DEFAULT_LANGUAGE,
-            bestandsnaam = filename,
+            creatiedatum = getLocalDateFromMetaData(metadata, CREATIEDATUM_FIELD) ?: LocalDate.now(),
+            titel = titel ?: getMetadataField(metadata, TITEL_FIELD)!!,
+            vertrouwelijkheidaanduiding = vertrouwelijkheidaanduidingEnum,
+            auteur = getMetadataField(metadata, AUTEUR_FIELD) ?: DEFAULT_AUTHOR,
+            status = status ?: getStatusFromMetaData(metadata),
+            taal = taal ?: getMetadataField(metadata, TAAL_FIELD) ?: DEFAULT_LANGUAGE,
+            bestandsnaam = bestandsnaam ?: getMetadataField(metadata, BESTANDSNAAM_FIELD),
             bestandsomvang = (metadata[MetadataType.FILE_SIZE.key] as String?)?.toLong(),
-            inhoud = contentAsInputStream,
-            beschrijving = description,
-            ontvangstdatum = getLocalDateFromMetaData(metadata, "receiptDate"),
-            verzenddatum = getLocalDateFromMetaData(metadata, "sendDate"),
-            informatieobjecttype = informationObjectType,
-            formaat = metadata["contentType"] as String?,
+            inhoud = inhoudAsInputStream,
+            beschrijving = beschrijving ?: getMetadataField(metadata, BESCHRIJVING_FIELD),
+            ontvangstdatum = getLocalDateFromMetaData(metadata, ONTVANGSTDATUM_FIELD),
+            verzenddatum = getLocalDateFromMetaData(metadata, VERZENDDATUM_FIELD),
+            informatieobjecttype = informatieobjecttype ?: getMetadataField(metadata, INFORMATIEOBJECTTYPE_FIELD),
+            formaat = getMetadataField(metadata, FORMAAT_FIELD),
+            trefwoorden = trefwoorden,
         )
 
         val documentCreateResult = client.storeDocument(authenticationPluginConfiguration, url, request)
@@ -264,31 +281,21 @@ class DocumentenApiPlugin(
         execution.setVariable(storedDocumentUrl, documentCreateResult.url)
     }
 
-    private fun getLocalDateFromMetaData(
-        metadata: Map<String, Any>,
-        field: String,
-        default: LocalDate? = null
-    ): LocalDate? {
-        val localDateString = metadata[field] as String?
-        return if (localDateString != null) {
-            LocalDate.parse(localDateString)
-        } else {
-            default
-        }
+    private fun <T> getMetadataField(metadata: Map<String, Any?>, field: List<String>): T? =
+        field.firstNotNullOfOrNull { metadata[it] as T? }
+
+    private fun getLocalDateFromMetaData(metadata: Map<String, Any?>, field: List<String>): LocalDate? {
+        return getMetadataField<String?>(metadata, field)?.let { LocalDate.parse(it) }
     }
 
-    private fun getStatusFromMetaData(metadata: Map<String, Any>): DocumentStatusType {
-        val status = metadata["status"] as String?
+    private fun getStatusFromMetaData(metadata: Map<String, Any?>): DocumentStatusType {
+        val status: String? = getMetadataField(metadata, STATUS_FIELD)
         return if (status != null) {
-            DocumentStatusType.fromKey(status) ?:
-               throw IllegalStateException("Failed to store document. Invalid status '$status' found in metadata.")
+            DocumentStatusType.fromKey(status)
+                ?: throw IllegalStateException("Failed to store document. Invalid status '$status' found in metadata.")
         } else {
             DocumentStatusType.DEFINITIEF
         }
-    }
-
-    private fun getFilenameFromMetaData(metadata: Map<String, Any>): String? {
-        return metadata["filename"] as String? ?: metadata[MetadataType.FILE_NAME.name] as String?
     }
 
     companion object {
@@ -298,7 +305,20 @@ class DocumentenApiPlugin(
         const val DEFAULT_LANGUAGE = "nld"
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"
         const val DOCUMENT_URL_PROCESS_VAR = "documentUrl"
-        val API_VERSIONS = arrayOf("1.4.3", "1.4.1", "1.4.0", "1.3.0", "1.2.0", "1.1.0", "1.0.0", "1.0.1", "1.0.0")
+
+        val BESTANDSNAAM_FIELD = listOf("filename", "bestandsnaam", MetadataType.FILE_NAME.key)
+        val TITEL_FIELD = listOf("title", "titel") + BESTANDSNAAM_FIELD
+        val AUTEUR_FIELD = listOf("author", "auteur", MetadataType.USER.key)
+        val BESCHRIJVING_FIELD = listOf("description", "beschrijving")
+        val TAAL_FIELD = listOf("language", "taal")
+        val INFORMATIEOBJECTTYPE_FIELD = listOf("informatieobjecttype")
+        val STATUS_FIELD = listOf("status")
+        val VERTROUWELIJKHEIDAANDUIDING_FIELD = listOf("confidentialityLevel", "vertrouwelijkheidaanduiding")
+        val ONTVANGSTDATUM_FIELD = listOf("receiptDate", "ontvangstdatum")
+        val VERZENDDATUM_FIELD = listOf("sendDate", "verzenddatum")
+        val CREATIEDATUM_FIELD = listOf("creationDate", "creatiedatum")
+        val FORMAAT_FIELD = listOf("contentType", "formaat")
+        val TREFWOORDEN_FIELD = listOf("trefwoorden")
 
         fun findConfigurationByUrl(url: URI) = { properties: JsonNode ->
             url.toString().startsWith(properties.get(URL_PROPERTY).textValue())

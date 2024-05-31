@@ -43,7 +43,8 @@
         "properties": {
             "url": "${DOCUMENTEN_API_URL}",
             "bronorganisatie": "051845623",
-            "authenticationPluginConfiguration": "b609a0a3-886e-4b3d-ae0d-c01effb311ee"
+            "authenticationPluginConfiguration": "b609a0a3-886e-4b3d-ae0d-c01effb311ee",
+            "apiVersion": "1.4.2-maykin-1.13.0"
         }
     },
     {

@@ -16,24 +16,17 @@
 
 package com.ritense.documentenapi.web.rest.dto
 
+import com.ritense.documentenapi.domain.ColumnDefaultSort
 import com.ritense.documentenapi.domain.DocumentenApiColumn
 import com.ritense.documentenapi.domain.DocumentenApiColumnId
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey
 
-data class ConfiguredColumnDto(
-    val key: String,
-    val enabled: Boolean,
+data class UpdateColumnRequest(
+    val defaultSort: String?,
 ) {
-    fun toEntity(caseDefinitionName: String, order: Int = 0): DocumentenApiColumn = DocumentenApiColumn(
-        id = DocumentenApiColumnId(caseDefinitionName, DocumentenApiColumnKey.valueOf(key.uppercase())),
+    fun toEntity(caseDefinitionName: String, key: String, order: Int = 0): DocumentenApiColumn = DocumentenApiColumn(
+        id = DocumentenApiColumnId(caseDefinitionName, DocumentenApiColumnKey.fromProperty(key)!!),
         order = order,
-        enabled = enabled
+        defaultSort = defaultSort?.let { ColumnDefaultSort.valueOf(defaultSort.uppercase()) }
     )
-
-    companion object {
-        fun of(column: DocumentenApiColumn): ConfiguredColumnDto = ConfiguredColumnDto(
-            key = column.id.key.name.lowercase(),
-            enabled = column.enabled,
-        )
-    }
 }

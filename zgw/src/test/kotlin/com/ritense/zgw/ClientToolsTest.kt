@@ -17,18 +17,22 @@
 package com.ritense.zgw
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.zgw.ClientTools.Companion.optionalQueryParam
 import com.ritense.zgw.domain.ZgwErrorResponse
 import com.ritense.zgw.exceptions.ClientErrorException
 import com.ritense.zgw.exceptions.RequestFailedException
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.mockito.Mockito.RETURNS_DEEP_STUBS
+import org.mockito.Mockito.verify
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.whenever
 import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
+import org.springframework.web.util.UriBuilder
 import reactor.core.publisher.Mono
 import kotlin.test.assertEquals
 
@@ -100,5 +104,21 @@ class ClientToolsTest {
         }
         assertEquals(exception.statusCode, HttpStatus.INTERNAL_SERVER_ERROR)
         assertEquals(exception.responseBody, errorResponse)
+    }
+
+    @Test
+    fun `optionalQueryParam should add param when not null`() {
+        val builder = mock<UriBuilder>()
+        val result = builder.optionalQueryParam("test", "test")
+        verify(builder).queryParam("test", "test")
+        assertEquals(result, builder)
+    }
+
+    @Test
+    fun `optionalQueryParam should not add param when null`() {
+        val builder = mock<UriBuilder>()
+        val result = builder.optionalQueryParam("test", null)
+        verify(builder, never()).queryParam(any(), any())
+        assertEquals(result, builder)
     }
 }

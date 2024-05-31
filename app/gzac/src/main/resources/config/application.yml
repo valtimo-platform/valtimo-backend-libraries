@@ -54,7 +54,7 @@ spring:
     liquibase:
         enabled: false
     jpa:
-        database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
         show_sql: false
         open-in-view: false
         properties:
@@ -215,6 +215,8 @@ valtimo:
         case-tabs:
             clear-tables: true
         internal-case-status:
+            clear-tables: true
+        zgw-document-list-column:
             clear-tables: true
 
     outbox:

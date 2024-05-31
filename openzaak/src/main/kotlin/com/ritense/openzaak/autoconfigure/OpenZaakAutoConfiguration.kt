@@ -111,7 +111,8 @@ class OpenZaakAutoConfiguration {
         tokenGeneratorService: OpenZaakTokenGeneratorService,
         zaakTypeLinkService: ZaakTypeLinkService,
         documentService: DocumentService,
-        zaakInstanceLinkService: ZaakInstanceLinkService
+        zaakInstanceLinkService: ZaakInstanceLinkService,
+        zaakTypeService: ZaakTypeService
     ): ZaakService {
         return ZaakService(
             restTemplate,
@@ -119,7 +120,8 @@ class OpenZaakAutoConfiguration {
             tokenGeneratorService,
             zaakTypeLinkService,
             documentService,
-            zaakInstanceLinkService
+            zaakInstanceLinkService,
+            zaakTypeService
         )
     }
 
