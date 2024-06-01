@@ -18,12 +18,66 @@ package com.ritense.formviewmodel.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.formviewmodel.viewmodel.ViewModel
+import com.ritense.formviewmodel.viewmodel.ViewModelLoaderFactory
+import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider
+import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.service.CamundaTaskService
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 import kotlin.reflect.KClass
 
 class FormViewModelService(
-    val objectMapper: ObjectMapper
+    val objectMapper: ObjectMapper,
+    private val viewModelLoaderFactory: ViewModelLoaderFactory,
+    private val camundaTaskService: CamundaTaskService,
+    private val authorizationService: AuthorizationService,
+    private val formViewModelSubmissionService: FormViewModelSubmissionService
 ) {
+    fun getFormViewModel(
+        formName: String,
+        taskInstanceId: String
+    ): ViewModel? {
+        val task = camundaTaskService.findTaskById(taskInstanceId)
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(CamundaTask::class.java, CamundaTaskActionProvider.VIEW, task)
+        )
+        return viewModelLoaderFactory.getViewModelLoader(formName)?.load(task)
+    }
+
+    fun updateViewModel(
+        formName: String,
+        taskInstanceId: String,
+        submission: ObjectNode
+    ) : ViewModel? {
+        val task = camundaTaskService.findTaskById(taskInstanceId)
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(CamundaTask::class.java, CamundaTaskActionProvider.VIEW, task)
+        )
+        val viewModelLoader =
+            viewModelLoaderFactory.getViewModelLoader(formName) ?: return null
+        val viewModelType = viewModelLoader.getViewModelType()
+        return parseViewModel(submission, viewModelType).update(task)
+    }
+
+    fun submit(
+        formName: String,
+        taskInstanceId: String,
+        submission: ObjectNode
+    ) {
+        val task = camundaTaskService.findTaskById(taskInstanceId)
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(CamundaTask::class.java, CamundaTaskActionProvider.COMPLETE, task)
+        )
+        formViewModelSubmissionService.handleSubmission(
+            formName = formName,
+            submission = submission,
+            task = task
+        )
+    }
 
     inline fun <reified T : ViewModel> parseViewModel(
         submission: ObjectNode,

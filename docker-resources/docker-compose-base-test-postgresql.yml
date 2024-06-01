@@ -57,4 +57,5 @@ services:
 #   url: jdbc:postgresql://localhost:3348/outbox-rabbitmq-test
 #   url: jdbc:postgresql://localhost:3349/localization-test
 #   url: jdbc:postgresql://localhost:3351/zaakdetails-test
+#   url: jdbc:postgresql://localhost:3352/form-view-model-test
 #   url: localhost:55672 <--rabbitmq
