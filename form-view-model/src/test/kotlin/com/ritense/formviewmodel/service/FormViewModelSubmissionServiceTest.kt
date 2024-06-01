@@ -2,11 +2,13 @@ package com.ritense.formviewmodel.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.authorization.AuthorizationService
 import com.ritense.formviewmodel.BaseTest
 import com.ritense.formviewmodel.commandhandling.ExampleCommand
 import com.ritense.formviewmodel.error.FormException
 import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
 import com.ritense.formviewmodel.event.TestSubmissionHandler
+import com.ritense.valtimo.camunda.domain.CamundaExecution
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.service.CamundaProcessService
@@ -25,6 +27,7 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
 
     private lateinit var formViewModelSubmissionService: FormViewModelSubmissionService
     private lateinit var formViewModelSubmissionHandlerFactory: FormViewModelSubmissionHandlerFactory
+    private lateinit var authorizationService: AuthorizationService
     private lateinit var camundaTaskService: CamundaTaskService
     private lateinit var camundaProcessService: CamundaProcessService
     private lateinit var testSubmissionHandler: TestSubmissionHandler
@@ -34,6 +37,7 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
     @BeforeEach
     fun setUp() {
         super.baseSetup()
+        authorizationService = mock()
         camundaTask = mock()
         camundaTaskService = mock()
         camundaProcessService = mock()
@@ -44,6 +48,7 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
         )
         formViewModelSubmissionService = FormViewModelSubmissionService(
             formViewModelSubmissionHandlerFactory = formViewModelSubmissionHandlerFactory,
+            authorizationService = authorizationService,
             camundaTaskService = camundaTaskService,
             camundaProcessService = camundaProcessService,
             objectMapper = objectMapper
@@ -52,6 +57,8 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
         val processInstance = mock<CamundaExecution>()
         whenever(camundaTask.processInstance).thenReturn(processInstance)
         whenever(processInstance.businessKey).thenReturn("test")
+
+        whenever(camundaTaskService.findTaskById(any())).thenReturn(camundaTask)
     }
 
     @Test
@@ -60,7 +67,7 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
         formViewModelSubmissionService.handleUserTaskSubmission(
             formName = "test",
             submission = submission,
-            task = camundaTask
+            taskInstanceId = "taskInstanceId"
         )
         verify(commandDispatcher).dispatch(any<ExampleCommand>())
         verify(camundaTaskService).complete(camundaTask.id)
@@ -73,7 +80,7 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
             formViewModelSubmissionService.handleUserTaskSubmission(
                 formName = "test",
                 submission = submission,
-                task = camundaTask
+                taskInstanceId = "taskInstanceId"
             )
         }
         verify(camundaTaskService, never()).complete(any())

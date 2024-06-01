@@ -18,8 +18,12 @@ package com.ritense.formviewmodel.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
 import com.ritense.formviewmodel.viewmodel.Submission
+import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider
+import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Companion.COMPLETE
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
@@ -30,6 +34,7 @@ import kotlin.reflect.KClass
 @Transactional
 class FormViewModelSubmissionService(
     private val formViewModelSubmissionHandlerFactory: FormViewModelSubmissionHandlerFactory,
+    private val authorizationService: AuthorizationService,
     private val camundaTaskService: CamundaTaskService,
     private val camundaProcessService: CamundaProcessService,
     private val objectMapper: ObjectMapper
@@ -60,8 +65,12 @@ class FormViewModelSubmissionService(
     fun handleUserTaskSubmission(
         formName: String,
         submission: ObjectNode,
-        task: CamundaTask
+        taskInstanceId: String
     ) {
+        val task = camundaTaskService.findTaskById(taskInstanceId)
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(CamundaTask::class.java, COMPLETE, task)
+        )
         val formViewModelSubmissionHandler = formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler(
             formName = formName
         ) ?: throw RuntimeException("No FormViewModelSubmissionHandler found for formName $formName")

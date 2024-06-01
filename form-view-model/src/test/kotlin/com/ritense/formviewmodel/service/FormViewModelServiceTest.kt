@@ -4,11 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.AuthorizationService
 import com.ritense.formviewmodel.BaseTest
-import com.ritense.formviewmodel.error.FormException
 import com.ritense.formviewmodel.viewmodel.TestViewModel
 import com.ritense.formviewmodel.viewmodel.TestViewModelLoader
 import com.ritense.formviewmodel.viewmodel.ViewModel
-import com.ritense.formviewmodel.viewmodel.ViewModelLoader
 import com.ritense.formviewmodel.viewmodel.ViewModelLoaderFactory
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.contract.json.MapperSingleton
@@ -19,7 +17,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class FormViewModelServiceTest : BaseTest() {
@@ -45,8 +42,7 @@ class FormViewModelServiceTest : BaseTest() {
             objectMapper = objectMapper,
             viewModelLoaderFactory = viewModelLoaderFactory,
             camundaTaskService = camundaTaskService,
-            authorizationService = authorizationService,
-            formViewModelSubmissionService = formViewModelSubmissionService
+            authorizationService = authorizationService
         )
 
         camundaTask = mock()
@@ -57,7 +53,7 @@ class FormViewModelServiceTest : BaseTest() {
     fun `should get ViewModel`() {
         whenever(viewModelLoaderFactory.getViewModelLoader("test")).thenReturn(TestViewModelLoader())
 
-        val formViewModel = formViewModelService.getFormViewModel("test", "taskInstanceId")
+        val formViewModel = formViewModelService.getUserTaskFormViewModel("test", "taskInstanceId")
 
         assertThat(formViewModel).isNotNull()
         assertThat(formViewModel!!.javaClass).isEqualTo(TestViewModel::class.java)
@@ -65,8 +61,7 @@ class FormViewModelServiceTest : BaseTest() {
 
     @Test
     fun `should return null for unknown ViewModel`() {
-        val formViewModel = formViewModelService.getFormViewModel("test", "taskInstanceId")
-
+        val formViewModel = formViewModelService.getStartFormViewModel("test")
         assertThat(formViewModel).isNull()
     }
 
@@ -77,39 +72,13 @@ class FormViewModelServiceTest : BaseTest() {
 
         whenever(viewModelLoaderFactory.getViewModelLoader("formName")).thenReturn(TestViewModelLoader())
 
-        val updatedViewModel = formViewModelService.updateViewModel(
+        val updatedViewModel = formViewModelService.updateUserTaskFormViewModel(
             formName = "formName",
             taskInstanceId = "taskInstanceId",
             submission = objectMapper.valueToTree(TestViewModel())
         )
 
         assertThat(updatedViewModel).isNotNull()
-    }
-
-    @Test
-    fun `should submit ViewModel`() {
-        whenever(viewModelLoaderFactory.getViewModelLoader("test")).thenReturn(TestViewModelLoader())
-
-        formViewModelService.submit(
-            formName = "test",
-            taskInstanceId = "taskInstanceId",
-            submission = objectMapper.valueToTree(TestViewModel())
-        )
-    }
-
-    @Test
-    fun `should return validation error for submission`() {
-        whenever(formViewModelSubmissionService.handleSubmission(any(), any(), any())).then {
-            throw FormException(message = "Im a child", "age")
-        }
-
-        assertThrows<FormException> {
-            formViewModelService.submit(
-                formName = "test",
-                taskInstanceId = "taskInstanceId",
-                submission = objectMapper.valueToTree(TestViewModel())
-            )
-        }
     }
 
     @Test
@@ -135,14 +104,13 @@ class FormViewModelServiceTest : BaseTest() {
         }
     }
 
-    fun submission(): ObjectNode = MapperSingleton.get().createObjectNode()
+    private fun submission(): ObjectNode = MapperSingleton.get().createObjectNode()
         .put("test", "test")
         .put("test2", "test2")
 
     data class RandomViewModel(
         val custom: String
     ) : ViewModel {
-
         override fun update(task: CamundaTask?): ViewModel {
             return this
         }

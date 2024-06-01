@@ -5,7 +5,6 @@ import com.ritense.authorization.AuthorizationService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formviewmodel.BaseTest
 import com.ritense.formviewmodel.error.FormException
-import com.ritense.formviewmodel.json.MapperSingleton
 import com.ritense.formviewmodel.service.FormViewModelService
 import com.ritense.formviewmodel.service.FormViewModelSubmissionService
 import com.ritense.formviewmodel.viewmodel.TestViewModel
@@ -14,6 +13,7 @@ import com.ritense.formviewmodel.viewmodel.ViewModelLoaderFactory
 import com.ritense.formviewmodel.web.rest.error.FormViewModelModuleExceptionTranslator
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.service.CamundaTaskService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -55,15 +55,15 @@ class FormViewModelResourceTest : BaseTest() {
         authorizationService = mock()
         formViewModelSubmissionService = mock()
         formViewModelService = FormViewModelService(
+            viewModelLoaderFactory = viewModelLoaderFactory,
+            camundaTaskService = camundaTaskService,
+            authorizationService = authorizationService,
             objectMapper = objectMapper
         )
         formViewModelModuleExceptionTranslator = FormViewModelModuleExceptionTranslator()
         whenever(camundaTaskService.findTaskById(any())).thenReturn(camundaTask)
 
         resource = FormViewModelResource(
-            viewModelLoaderFactory = viewModelLoaderFactory,
-            camundaTaskService = camundaTaskService,
-            authorizationService = authorizationService,
             formViewModelService = formViewModelService,
             formViewModelSubmissionService = formViewModelSubmissionService
         )
@@ -148,7 +148,7 @@ class FormViewModelResourceTest : BaseTest() {
             formViewModelSubmissionService.handleUserTaskSubmission(
                 formName = eq("test"),
                 submission = any(),
-                task = any()
+                taskInstanceId = any()
             )
         ).then {
             throw FormException(message = "Im a child", "age")

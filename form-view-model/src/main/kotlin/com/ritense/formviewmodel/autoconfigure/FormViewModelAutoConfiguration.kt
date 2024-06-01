@@ -49,14 +49,12 @@ class FormViewModelAutoConfiguration {
         objectMapper: ObjectMapper,
         viewModelLoaderFactory: ViewModelLoaderFactory,
         camundaTaskService: CamundaTaskService,
-        authorizationService: AuthorizationService,
-        formViewModelSubmissionService: FormViewModelSubmissionService
+        authorizationService: AuthorizationService
     ) = FormViewModelService(
         objectMapper,
         viewModelLoaderFactory,
         camundaTaskService,
-        authorizationService,
-        formViewModelSubmissionService
+        authorizationService
     )
 
     @Bean
@@ -69,11 +67,13 @@ class FormViewModelAutoConfiguration {
     @Bean
     fun formViewModelSubmissionService(
         formViewModelSubmissionHandlerFactory: FormViewModelSubmissionHandlerFactory,
+        authorizationService: AuthorizationService,
         camundaTaskService: CamundaTaskService,
         camundaProcessService: CamundaProcessService,
         objectMapper: ObjectMapper
     ) = FormViewModelSubmissionService(
         formViewModelSubmissionHandlerFactory,
+        authorizationService,
         camundaTaskService,
         camundaProcessService,
         objectMapper
@@ -86,8 +86,10 @@ class FormViewModelAutoConfiguration {
     @Bean
     fun formViewModelRestResource(
         formViewModelService: FormViewModelService,
+        formViewModelSubmissionService: FormViewModelSubmissionService
     ) = FormViewModelResource(
-        formViewModelService
+        formViewModelService,
+        formViewModelSubmissionService
     )
 
     @Bean
