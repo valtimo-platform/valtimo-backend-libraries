@@ -22,7 +22,6 @@ import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
 import com.ritense.formviewmodel.viewmodel.Submission
-import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider
 import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Companion.COMPLETE
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.service.CamundaProcessService
