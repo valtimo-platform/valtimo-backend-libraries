@@ -1,5 +1,5 @@
 {
-    "changesetId": "bezwaar.zgw-document-list-columns-v1",
+    "changesetId": "bezwaar.zgw-document-list-columns-v2",
     "case-definitions": [
         {
             "key": "bezwaar",
@@ -21,7 +21,7 @@
                     "key": "VERSIE"
                 },
                 {
-                    "key": "INFORMATIEOBJECTTYPE"
+                    "key": "INFORMATIEOBJECTTYPE_OMSCHRIJVING"
                 }
             ]
         }

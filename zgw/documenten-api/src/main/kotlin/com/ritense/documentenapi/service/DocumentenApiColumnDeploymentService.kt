@@ -24,7 +24,7 @@ import com.ritense.documentenapi.domain.DocumentenApiColumnId
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.AUTEUR
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.BESTANDSOMVANG
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.CREATIEDATUM
-import com.ritense.documentenapi.domain.DocumentenApiColumnKey.INFORMATIEOBJECTTYPE
+import com.ritense.documentenapi.domain.DocumentenApiColumnKey.INFORMATIEOBJECTTYPE_OMSCHRIJVING
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.TITEL
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import org.springframework.context.event.EventListener
@@ -53,7 +53,7 @@ open class DocumentenApiColumnDeploymentService(
             DocumentenApiColumn(DocumentenApiColumnId(documentDefinitionName, CREATIEDATUM), 1, DESC),
             DocumentenApiColumn(DocumentenApiColumnId(documentDefinitionName, AUTEUR)),
             DocumentenApiColumn(DocumentenApiColumnId(documentDefinitionName, BESTANDSOMVANG)),
-            DocumentenApiColumn(DocumentenApiColumnId(documentDefinitionName, INFORMATIEOBJECTTYPE)),
+            DocumentenApiColumn(DocumentenApiColumnId(documentDefinitionName, INFORMATIEOBJECTTYPE_OMSCHRIJVING)),
         )
     }
 
