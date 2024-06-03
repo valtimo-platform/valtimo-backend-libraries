@@ -19,8 +19,8 @@ package com.ritense.formviewmodel.validation
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.service.impl.FormIoFormDefinitionService
-import com.ritense.formviewmodel.event.FormViewModelSubmissionHandler
-import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
+import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandler
+import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandlerFactory
 import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.formviewmodel.viewmodel.ViewModelLoader
 import mu.KotlinLogging
