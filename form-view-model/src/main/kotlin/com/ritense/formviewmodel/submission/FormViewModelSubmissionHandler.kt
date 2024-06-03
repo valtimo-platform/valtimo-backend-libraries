@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.formviewmodel.event
+package com.ritense.formviewmodel.submission
 
 import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.valtimo.camunda.domain.CamundaTask
@@ -26,7 +26,7 @@ interface FormViewModelSubmissionHandler<T : Submission> {
 
     fun supports(formName: String): Boolean
 
-    fun <T> handle(submission: T, task: CamundaTask)
+    fun <T> handle(submission: T, task: CamundaTask? = null, businessKey: String)
 
     @Suppress("UNCHECKED_CAST")
     fun getSubmissionType(): KClass<T> =

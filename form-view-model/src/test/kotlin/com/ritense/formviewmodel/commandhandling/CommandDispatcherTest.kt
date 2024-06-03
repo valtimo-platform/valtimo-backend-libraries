@@ -1,9 +1,6 @@
 package com.ritense.formviewmodel.commandhandling
 
 import com.ritense.formviewmodel.BaseTest
-import com.ritense.formviewmodel.commandhandling.Command
-import com.ritense.formviewmodel.commandhandling.CommandDispatcher
-import com.ritense.formviewmodel.commandhandling.CommandHandler
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

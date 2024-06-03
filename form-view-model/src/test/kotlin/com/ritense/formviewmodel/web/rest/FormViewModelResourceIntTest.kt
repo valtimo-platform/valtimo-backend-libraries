@@ -2,14 +2,14 @@ package com.ritense.formviewmodel.web.rest
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.authorization.ValtimoAuthorizationService
-import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.formviewmodel.BaseIntegrationTest
-import com.ritense.formviewmodel.validation.OnStartUpViewModelValidator
 import com.ritense.formviewmodel.viewmodel.TestViewModel
+import com.ritense.formviewmodel.web.rest.FormViewModelResourceTest.Companion.BASE_URL
+import com.ritense.formviewmodel.web.rest.FormViewModelResourceTest.Companion.USER_TASK
+import com.ritense.valtimo.camunda.domain.CamundaExecution
 import com.ritense.valtimo.camunda.domain.CamundaTask
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
-import com.ritense.valtimo.contract.domain.ValtimoMediaType
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.service.CamundaTaskService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -19,10 +19,10 @@ import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver
-import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 
@@ -37,6 +37,8 @@ class FormViewModelResourceIntTest : BaseIntegrationTest() {
 
     lateinit var mockMvc: MockMvc
 
+    private var objectMapper = MapperSingleton.get()
+
     @BeforeEach
     internal fun init() {
         mockMvc = MockMvcBuilders.standaloneSetup(formViewModelResource)
@@ -44,50 +46,52 @@ class FormViewModelResourceIntTest : BaseIntegrationTest() {
             .build()
 
         val task: CamundaTask = mock()
+        val execution: CamundaExecution = mock()
+        whenever(task.processInstance).thenReturn(execution)
+        whenever(execution.businessKey).thenReturn("a business Key")
         whenever(task.id).thenReturn("taskInstanceId")
         whenever(camundaTaskService.findTaskById(any())).thenReturn(task)
     }
 
     @Test
-    fun `should get FormViewModel`() {
+    fun `should get user task view model`() {
         runWithoutAuthorization {
             mockMvc.perform(
-                MockMvcRequestBuilders.get("${BASE_URL}?formName=test&taskInstanceId=taskInstanceId")
-                    .accept(ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE)
-                    .contentType(ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE)
-            ).andExpect(MockMvcResultMatchers.status().isOk)
+                get("$BASE_URL/$USER_TASK?formName=test&taskInstanceId=taskInstanceId")
+                    .accept(APPLICATION_JSON_UTF8_VALUE)
+                    .contentType(APPLICATION_JSON_UTF8_VALUE)
+            ).andExpect(status().isOk)
         }
     }
 
     @Test
-    fun `should update FormViewModel`() {
+    fun `should update user task view model`() {
         runWithoutAuthorization {
             mockMvc.perform(
-                MockMvcRequestBuilders.post("${BASE_URL}?formName=test&taskInstanceId=taskInstanceId")
-                    .accept(ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE)
+                post("$BASE_URL/$USER_TASK?formName=test&taskInstanceId=taskInstanceId")
+                    .accept(APPLICATION_JSON_UTF8_VALUE)
                     .content(jacksonObjectMapper().writeValueAsString(TestViewModel()))
-                    .contentType(ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE)
-            ).andExpect(MockMvcResultMatchers.status().isOk)
+                    .contentType(APPLICATION_JSON_UTF8_VALUE)
+            ).andExpect(status().isOk)
         }
     }
 
     @Test
-    fun `should submit FormViewModel`() {
+    fun `should submit user task view model`() {
         runWithoutAuthorization {
             mockMvc.perform(
-                MockMvcRequestBuilders.post("${BASE_URL}/submit?formName=test&taskInstanceId=taskInstanceId")
-                    .accept(ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE)
-                    .contentType(ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE)
-                    .content(jacksonObjectMapper().writeValueAsString(
-                        TestViewModel(
-                            age = 22
+                post("$BASE_URL/submit/$USER_TASK?formName=test&taskInstanceId=taskInstanceId")
+                    .accept(APPLICATION_JSON_UTF8_VALUE)
+                    .contentType(APPLICATION_JSON_UTF8_VALUE)
+                    .content(
+                        objectMapper.writeValueAsString(
+                            TestViewModel(
+                                age = 22
+                            )
                         )
-                    ))
-            ).andExpect(MockMvcResultMatchers.status().isNoContent)
+                    )
+            ).andExpect(status().isNoContent)
         }
     }
 
-    companion object {
-        private const val BASE_URL = "/api/v1/form/view-model"
-    }
 }

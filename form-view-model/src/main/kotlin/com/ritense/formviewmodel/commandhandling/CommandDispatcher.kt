@@ -19,7 +19,6 @@ package com.ritense.formviewmodel.commandhandling
 import com.ritense.formviewmodel.SpringContextHelper
 import com.ritense.formviewmodel.commandhandling.decorator.DecoratorBuilder
 import mu.KotlinLogging
-import java.util.NoSuchElementException
 import kotlin.reflect.KClass
 
 class CommandDispatcher {

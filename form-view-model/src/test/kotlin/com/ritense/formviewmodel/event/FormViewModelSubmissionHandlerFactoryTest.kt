@@ -1,6 +1,7 @@
 package com.ritense.formviewmodel.event
 
 import com.ritense.formviewmodel.BaseTest
+import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandlerFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

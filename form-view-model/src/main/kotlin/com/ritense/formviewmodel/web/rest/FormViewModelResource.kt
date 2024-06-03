@@ -17,18 +17,11 @@
 package com.ritense.formviewmodel.web.rest
 
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.ritense.authorization.AuthorizationService
-import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.formviewmodel.service.FormViewModelService
 import com.ritense.formviewmodel.service.FormViewModelSubmissionService
 import com.ritense.formviewmodel.viewmodel.ViewModel
-import com.ritense.formviewmodel.viewmodel.ViewModelLoaderFactory
-import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Companion.COMPLETE
-import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Companion.VIEW
-import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
-import com.ritense.valtimo.service.CamundaTaskService
 import org.springframework.http.ResponseEntity
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.GetMapping
@@ -41,16 +34,34 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @SkipComponentScan
 @RequestMapping("/api/v1/form/view-model", produces = [APPLICATION_JSON_UTF8_VALUE])
+@Transactional
 class FormViewModelResource(
-    private val formViewModelService: FormViewModelService
+    private val formViewModelService: FormViewModelService,
+    private val formViewModelSubmissionService: FormViewModelSubmissionService
 ) {
 
-    @GetMapping
-    fun getFormViewModel(
-        @RequestParam(required = true) formName: String,
-        @RequestParam(required = true) taskInstanceId: String
+    @GetMapping("/start-form")
+    fun getStartFormViewModel(
+        @RequestParam formName: String,
+        @RequestParam processDefinitionId: String
     ): ResponseEntity<ViewModel?> {
-        return formViewModelService.getFormViewModel(
+        val viewModel = formViewModelService.getStartFormViewModel(
+            formName = formName,
+            processDefinitionId = processDefinitionId
+        )
+        return if (viewModel != null) {
+            ResponseEntity.ok(viewModel)
+        } else {
+            ResponseEntity.notFound().build()
+        }
+    }
+
+    @GetMapping("/user-task")
+    fun getUserTaskFormViewModel(
+        @RequestParam formName: String,
+        @RequestParam taskInstanceId: String
+    ): ResponseEntity<ViewModel?> {
+        return formViewModelService.getUserTaskFormViewModel(
             formName = formName,
             taskInstanceId = taskInstanceId
         )?.let {
@@ -58,13 +69,28 @@ class FormViewModelResource(
         } ?: ResponseEntity.notFound().build()
     }
 
-    @PostMapping
-    fun updateFormViewModel(
-        @RequestParam(required = true) formName: String,
-        @RequestParam(required = true) taskInstanceId: String,
+    @PostMapping("/start-form")
+    fun updateStartFormViewModel(
+        @RequestParam formName: String,
+        @RequestBody submission: ObjectNode,
+        @RequestParam processDefinitionId: String
+    ): ResponseEntity<ViewModel> {
+        return formViewModelService.updateStartFormViewModel(
+            formName = formName,
+            submission = submission,
+            processDefinitionId = processDefinitionId
+        )?.let {
+            ResponseEntity.ok(it)
+        } ?: ResponseEntity.notFound().build()
+    }
+
+    @PostMapping("/user-task")
+    fun updateUserTaskFormViewModel(
+        @RequestParam formName: String,
+        @RequestParam taskInstanceId: String,
         @RequestBody submission: ObjectNode
     ): ResponseEntity<ViewModel> {
-        return formViewModelService.updateViewModel(
+        return formViewModelService.updateUserTaskFormViewModel(
             formName = formName,
             taskInstanceId = taskInstanceId,
             submission = submission
@@ -73,17 +99,31 @@ class FormViewModelResource(
         } ?: ResponseEntity.notFound().build()
     }
 
-    @PostMapping("/submit")
-    @Transactional
-    fun submit(
-        @RequestParam(required = true) formName: String,
-        @RequestParam(required = true) taskInstanceId: String,
+    @PostMapping("/submit/user-task")
+    fun submitTask(
+        @RequestParam formName: String,
+        @RequestParam taskInstanceId: String,
         @RequestBody submission: ObjectNode
     ): ResponseEntity<Void> {
-        formViewModelService.submit(
+        formViewModelSubmissionService.handleUserTaskSubmission(
             formName = formName,
             taskInstanceId = taskInstanceId,
             submission = submission
+        )
+        return ResponseEntity.noContent().build()
+    }
+
+    @PostMapping("/submit/start-form")
+    @Transactional
+    fun submitStartForm(
+        @RequestParam formName: String,
+        @RequestParam processDefinitionKey: String,
+        @RequestBody submission: ObjectNode
+    ): ResponseEntity<Void> {
+        formViewModelSubmissionService.handleStartFormSubmission(
+            formName = formName,
+            processDefinitionKey = processDefinitionKey,
+            submission = submission,
         )
         return ResponseEntity.noContent().build()
     }
