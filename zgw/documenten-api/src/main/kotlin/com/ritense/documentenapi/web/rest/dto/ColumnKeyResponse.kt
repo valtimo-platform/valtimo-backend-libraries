@@ -26,7 +26,7 @@ data class ColumnKeyResponse(
 ) {
     companion object {
         fun of(columnKey: DocumentenApiColumnKey, version: DocumentenApiVersion): ColumnKeyResponse = ColumnKeyResponse(
-            key = columnKey.name.lowercase(),
+            key = columnKey.property,
             sortable = version.isColumnSortable(columnKey),
             filterable = version.isColumnFilterable(columnKey),
         )

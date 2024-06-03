@@ -136,7 +136,7 @@ class DocumentenApiVersionService(
     }
 
     companion object {
-        private const val PATH = "classpath*:**/*.zgw-documenten-api-version.json"
+        private const val PATH = "classpath*:config/documenten-api/*.zgw-documenten-api-version.json"
 
         val MINIMUM_VERSION = DocumentenApiVersion("1.0.0")
     }

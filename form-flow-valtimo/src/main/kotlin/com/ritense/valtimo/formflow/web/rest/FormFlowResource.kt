@@ -23,6 +23,7 @@ import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import com.ritense.valtimo.formflow.service.FormFlowValtimoService
 import com.ritense.valtimo.formflow.web.rest.result.CompleteStepResult
 import com.ritense.valtimo.formflow.web.rest.result.FormFlowStepResult
 import com.ritense.valtimo.formflow.web.rest.result.GetFormFlowStateResult
@@ -40,7 +41,8 @@ import org.springframework.web.bind.annotation.RestController
 @SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class FormFlowResource(
-    private val formFlowService: FormFlowService
+    private val formFlowService: FormFlowService,
+    private val formFlowValtimoService: FormFlowValtimoService,
 ) {
     @GetMapping(
         value = [
@@ -77,10 +79,11 @@ class FormFlowResource(
         @RequestBody submissionData: JsonNode?
     ): ResponseEntity<CompleteStepResult> {
         val instance = formFlowService.getByInstanceIdIfExists(FormFlowInstanceId.existingId(formFlowId))!!
+        val verifiedSubmissionData = formFlowValtimoService.getVerifiedSubmissionData(submissionData, instance)
 
         val stepInstance = instance.complete(
             FormFlowStepInstanceId.existingId(stepInstanceId),
-            toJsonObject(submissionData)
+            toJsonObject(verifiedSubmissionData)
         )
         formFlowService.save(instance)
 
@@ -99,8 +102,9 @@ class FormFlowResource(
         @RequestBody incompleteSubmissionData: JsonNode?
     ): ResponseEntity<GetFormFlowStateResult> {
         val instance = formFlowService.getByInstanceIdIfExists(FormFlowInstanceId.existingId(formFlowId))!!
-        if (incompleteSubmissionData != null) {
-            instance.saveTemporary(toJsonObject(incompleteSubmissionData))
+        val verifiedSubmissionData = formFlowValtimoService.getVerifiedSubmissionData(incompleteSubmissionData, instance)
+        if (verifiedSubmissionData != null) {
+            instance.saveTemporary(toJsonObject(verifiedSubmissionData))
         }
         val stepInstance = instance.back()
         formFlowService.save(instance)
@@ -120,7 +124,8 @@ class FormFlowResource(
         @RequestBody incompleteSubmissionData: JsonNode?
     ): ResponseEntity<Unit> {
         val instance = formFlowService.getByInstanceIdIfExists(FormFlowInstanceId.existingId(formFlowId))!!
-        instance.saveTemporary(toJsonObject(incompleteSubmissionData))
+        val verifiedSubmissionData = formFlowValtimoService.getVerifiedSubmissionData(incompleteSubmissionData, instance)
+        instance.saveTemporary(toJsonObject(verifiedSubmissionData))
         formFlowService.save(instance)
 
         return ResponseEntity.noContent().build()

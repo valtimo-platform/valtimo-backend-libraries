@@ -5,7 +5,7 @@
             "auteur",
             "beschrijving",
             "creatiedatum",
-            "informatieobjecttype",
+            "informatieobjecttypeOmschrijving",
             "titel",
             "vertrouwelijkheidaanduiding",
             "trefwoorden"

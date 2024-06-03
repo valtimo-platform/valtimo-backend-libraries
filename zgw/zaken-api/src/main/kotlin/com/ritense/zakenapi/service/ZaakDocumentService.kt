@@ -22,7 +22,7 @@ import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.AUTEUR
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.CREATIEDATUM
-import com.ritense.documentenapi.domain.DocumentenApiColumnKey.INFORMATIEOBJECTTYPE
+import com.ritense.documentenapi.domain.DocumentenApiColumnKey.INFORMATIEOBJECTTYPE_OMSCHRIJVING
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.TITEL
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.TREFWOORDEN
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.VERTROUWELIJKHEIDAANDUIDING
@@ -77,7 +77,7 @@ class ZaakDocumentService(
     ): Page<DocumentenApiDocumentDto> {
         val zaakUri = zaakUrlProvider.getZaakUrl(documentId)
         val version = documentenApiVersionService.getVersionByDocumentId(documentId)
-        check(documentSearchRequest.informatieobjecttype != null, INFORMATIEOBJECTTYPE, version)
+        check(documentSearchRequest.informatieobjecttype != null, INFORMATIEOBJECTTYPE_OMSCHRIJVING, version)
         check(documentSearchRequest.titel != null, TITEL, version)
         check(documentSearchRequest.vertrouwelijkheidaanduiding != null, VERTROUWELIJKHEIDAANDUIDING, version)
         check(documentSearchRequest.creatiedatumFrom != null, CREATIEDATUM, version)
@@ -105,7 +105,7 @@ class ZaakDocumentService(
 
     private fun check(shouldCheck: Boolean, columnKey: DocumentenApiColumnKey, version: DocumentenApiVersion) {
         if (shouldCheck) {
-            val fieldName = columnKey.name.lowercase()
+            val fieldName = columnKey.property
             check(version.filterableColumns.contains(fieldName)) {
                 "Unsupported filter '$fieldName' on Documenten API with version $version"
             }
@@ -142,7 +142,8 @@ class ZaakDocumentService(
             pluginConfigurationId = pluginConfiguration.id.id,
             identification = informatieObject.identificatie,
             description = informatieObject.beschrijving,
-            informatieobjecttype = getInformatieobjecttypeByUri(informatieObject.informatieobjecttype),
+            informatieobjecttype = informatieObject.informatieobjecttype,
+            informatieobjecttypeOmschrijving = getInformatieobjecttypeOmschrijvingByUri(informatieObject.informatieobjecttype),
             keywords = informatieObject.trefwoorden,
             format = informatieObject.formaat,
             sendDate = informatieObject.verzenddatum,
@@ -175,7 +176,8 @@ class ZaakDocumentService(
             taal = informatieObject.taal,
             identificatie = informatieObject.identificatie,
             beschrijving = informatieObject.beschrijving,
-            informatieobjecttype = getInformatieobjecttypeByUri(informatieObject.informatieobjecttype),
+            informatieobjecttype = informatieObject.informatieobjecttype,
+            informatieobjecttypeOmschrijving = getInformatieobjecttypeOmschrijvingByUri(informatieObject.informatieobjecttype),
             trefwoorden = trefwoorden,
             formaat = informatieObject.formaat,
             verzenddatum = informatieObject.verzenddatum,
@@ -210,7 +212,8 @@ class ZaakDocumentService(
             taal = informatieObject.taal,
             identificatie = informatieObject.identificatie,
             beschrijving = informatieObject.beschrijving,
-            informatieobjecttype = getInformatieobjecttypeByUri(informatieObject.informatieobjecttype),
+            informatieobjecttype = informatieObject.informatieobjecttype,
+            informatieobjecttypeOmschrijving = getInformatieobjecttypeOmschrijvingByUri(informatieObject.informatieobjecttype),
             trefwoorden = trefwoorden,
             formaat = informatieObject.formaat,
             verzenddatum = informatieObject.verzenddatum,
@@ -221,7 +224,7 @@ class ZaakDocumentService(
         )
     }
 
-    private fun getInformatieobjecttypeByUri(uri: String?): String? {
+    private fun getInformatieobjecttypeOmschrijvingByUri(uri: String?): String? {
         return uri?.let { catalogiService.getInformatieobjecttype(URI(it))?.omschrijving }
     }
 
