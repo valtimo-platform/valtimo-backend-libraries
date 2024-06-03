@@ -19,8 +19,8 @@ package com.ritense.formviewmodel.autoconfigure
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
-import com.ritense.formviewmodel.event.FormViewModelSubmissionHandler
-import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
+import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandler
+import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandlerFactory
 import com.ritense.formviewmodel.processlink.FormViewModelProcessLinkActivityHandler
 import com.ritense.formviewmodel.security.config.FormViewModelHttpSecurityConfigurerKotlin
 import com.ritense.formviewmodel.service.FormViewModelService

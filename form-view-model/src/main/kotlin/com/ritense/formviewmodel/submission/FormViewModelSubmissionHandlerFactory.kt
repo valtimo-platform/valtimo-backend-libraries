@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.formviewmodel.event
+package com.ritense.formviewmodel.submission
 
 import com.ritense.formviewmodel.viewmodel.Submission
 

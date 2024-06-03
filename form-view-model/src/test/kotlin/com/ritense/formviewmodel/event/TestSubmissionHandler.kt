@@ -2,6 +2,7 @@ package com.ritense.formviewmodel.event
 
 import com.ritense.formviewmodel.commandhandling.ExampleCommand
 import com.ritense.formviewmodel.commandhandling.dispatchCommand
+import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandler
 import com.ritense.formviewmodel.viewmodel.TestViewModel
 import com.ritense.valtimo.camunda.domain.CamundaTask
 
