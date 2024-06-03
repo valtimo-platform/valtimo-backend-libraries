@@ -158,11 +158,12 @@ class FormViewModelResourceTest : BaseTest() {
     fun `should get start form view model`() {
         whenever(
             formViewModelService.getStartFormViewModel(
-                formName = eq("test")
+                formName = eq("test"),
+                processDefinitionId = eq("processDefinitionId")
             )
         ).thenReturn(TestViewModel())
         mockMvc.perform(
-            get("$BASE_URL/$START_FORM?formName=test&taskInstanceId=taskInstanceId")
+            get("$BASE_URL/$START_FORM?formName=test&processDefinitionId=processDefinitionId")
                 .accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
         ).andExpect(status().isOk)
@@ -191,13 +192,14 @@ class FormViewModelResourceTest : BaseTest() {
         whenever(
             formViewModelService.updateStartFormViewModel(
                 formName = eq("test"),
-                submission = any()
+                submission = any(),
+                processDefinitionId = eq("processDefinitionId")
             )
         ).thenReturn(TestViewModel())
         mockMvc.perform(
             post(
-                "$BASE_URL/$START_FORM?formName={formName}&processDefinitionKey={processDefinitionKey}",
-                "test", "processDefinitionKey"
+                "$BASE_URL/$START_FORM?formName={formName}&processDefinitionId={processDefinitionKey}",
+                "test", "processDefinitionId"
             ).accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
                 .content(jacksonObjectMapper().writeValueAsString(TestViewModel()))

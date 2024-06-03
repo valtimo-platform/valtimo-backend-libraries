@@ -20,9 +20,13 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
+import com.ritense.authorization.request.RelatedEntityAuthorizationRequest
 import com.ritense.formviewmodel.viewmodel.ViewModel
 import com.ritense.formviewmodel.viewmodel.ViewModelLoaderFactory
+import com.ritense.valtimo.camunda.authorization.CamundaExecutionActionProvider
 import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Companion.VIEW
+import com.ritense.valtimo.camunda.domain.CamundaExecution
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.service.CamundaTaskService
 import kotlin.reflect.KClass
@@ -36,7 +40,18 @@ class FormViewModelService(
 
     fun getStartFormViewModel(
         formName: String,
+        processDefinitionId: String
     ): ViewModel? {
+        require(
+            authorizationService.hasPermission(
+                RelatedEntityAuthorizationRequest(
+                    CamundaExecution::class.java,
+                    CamundaExecutionActionProvider.CREATE,
+                    CamundaProcessDefinition::class.java,
+                    processDefinitionId
+                )
+            )
+        )
         return viewModelLoaderFactory.getViewModelLoader(formName)?.load()
     }
 
@@ -53,8 +68,19 @@ class FormViewModelService(
 
     fun updateStartFormViewModel(
         formName: String,
-        submission: ObjectNode
+        submission: ObjectNode,
+        processDefinitionId: String
     ): ViewModel? {
+        require(
+            authorizationService.hasPermission(
+                RelatedEntityAuthorizationRequest(
+                    CamundaExecution::class.java,
+                    CamundaExecutionActionProvider.CREATE,
+                    CamundaProcessDefinition::class.java,
+                    processDefinitionId
+                )
+            )
+        )
         val viewModelLoader =
             viewModelLoaderFactory.getViewModelLoader(formName) ?: return null
         val viewModelType = viewModelLoader.getViewModelType()
