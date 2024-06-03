@@ -17,6 +17,7 @@
 package com.ritense.documentenapi.exporter
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.documentenapi.deployment.ZgwDocumentListColumn
 import com.ritense.documentenapi.deployment.ZgwDocumentListColumnChangeset
 import com.ritense.documentenapi.deployment.ZgwDocumentListColumnCollection
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
@@ -36,9 +37,7 @@ class ZgwDocumentListColumnExporter(
     override fun export(request: DocumentDefinitionExportRequest): ExportResult {
 
         val columns = documentenApiColumnRepository.findAllByIdCaseDefinitionNameOrderByOrder(request.name)
-            .map {
-                it.id.key
-            }
+            .map { ZgwDocumentListColumn(it.id.key, it.defaultSort) }
 
         if (columns.isEmpty()) {
             return ExportResult(null)

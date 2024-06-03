@@ -429,6 +429,11 @@ public class CamundaTaskService {
     }
 
     @Transactional(readOnly = true)
+    public Object getVariable(String taskInstanceId, String variableName) {
+        return findTaskById(taskInstanceId).getVariable(variableName);
+    }
+
+    @Transactional(readOnly = true)
     public List<CamundaIdentityLink> getIdentityLinksForTask(String taskId) {
         final CamundaTask task = findTaskById(taskId);
         return camundaIdentityLinkRepository.findAll(byTaskId(task.getId()));

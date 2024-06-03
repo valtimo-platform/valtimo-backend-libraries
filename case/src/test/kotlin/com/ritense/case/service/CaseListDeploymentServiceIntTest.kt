@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test
 import org.mockito.kotlin.doCallRealMethod
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.spy
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.Resource
@@ -65,7 +64,6 @@ class CaseListDeploymentServiceIntTest: BaseIntegrationTest() {
     @Test
     fun `should delete old columns in database when loading new configuration`() {
         //load initial configuration
-        val spyResolver = spy(resourcePatternResolver)
         val resource = mock<Resource>()
         val fileContent = """
             [
@@ -88,11 +86,11 @@ class CaseListDeploymentServiceIntTest: BaseIntegrationTest() {
         whenever(resource.filename).thenReturn("some-document.json")
         whenever(resource.inputStream).thenReturn(fileContent.byteInputStream())
 
-        doReturn(arrayOf(resource)).whenever(spyResolver).getResources(CASE_LIST_DEFINITIONS_PATH)
-        doCallRealMethod().whenever(spyResolver).getResource(CASE_LIST_SCHEMA_PATH)
+        doReturn(arrayOf(resource)).whenever(resourcePatternResolver).getResources(CASE_LIST_DEFINITIONS_PATH)
+        doCallRealMethod().whenever(resourcePatternResolver).getResource(CASE_LIST_SCHEMA_PATH)
 
         val service = CaseListDeploymentService(
-            spyResolver,
+            resourcePatternResolver,
             objectMapper,
             caseDefinitionService
         )
@@ -122,7 +120,7 @@ class CaseListDeploymentServiceIntTest: BaseIntegrationTest() {
         whenever(newResource.filename).thenReturn("some-document.json")
         whenever(newResource.inputStream).thenReturn(newFileContent.byteInputStream())
 
-        doReturn(arrayOf(newResource)).whenever(spyResolver).getResources(CASE_LIST_DEFINITIONS_PATH)
+        doReturn(arrayOf(newResource)).whenever(resourcePatternResolver).getResources(CASE_LIST_DEFINITIONS_PATH)
 
         runWithoutAuthorization { service.deployColumns() }
 

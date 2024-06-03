@@ -18,12 +18,17 @@ package com.ritense.documentenapi.web.rest
 
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.documentenapi.service.DocumentenApiService
-import com.ritense.documentenapi.web.rest.dto.ConfiguredColumnDto
+import com.ritense.documentenapi.service.DocumentenApiVersionService
+import com.ritense.documentenapi.web.rest.dto.ColumnKeyResponse
+import com.ritense.documentenapi.web.rest.dto.ColumnResponse
 import com.ritense.documentenapi.web.rest.dto.DocumentenApiVersionManagementDto
-import com.ritense.documentenapi.web.rest.dto.UpdatedConfiguredColumnDto
+import com.ritense.documentenapi.web.rest.dto.DocumentenApiVersionsManagementDto
+import com.ritense.documentenapi.web.rest.dto.ReorderColumnRequest
+import com.ritense.documentenapi.web.rest.dto.UpdateColumnRequest
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
@@ -35,35 +40,64 @@ import org.springframework.web.bind.annotation.RestController
 @SkipComponentScan
 @RequestMapping("/api/management", produces = [APPLICATION_JSON_UTF8_VALUE])
 class DocumentenApiManagementResource(
-    val documentenApiService: DocumentenApiService
+    private val documentenApiService: DocumentenApiService,
+    private val documentenApiVersionService: DocumentenApiVersionService
 ) {
+    @RunWithoutAuthorization
+    @GetMapping("/v1/case-definition/{caseDefinitionName}/zgw-document-column-key")
+    fun getColumnKeys(
+        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
+    ): ResponseEntity<List<ColumnKeyResponse>> {
+        val version = documentenApiVersionService.getVersion(caseDefinitionName)
+        val columns = documentenApiService.getAllColumnKeys(caseDefinitionName)
+            .map { ColumnKeyResponse.of(it, version) }
+        return ResponseEntity.ok(columns)
+    }
+
     @RunWithoutAuthorization
     @GetMapping("/v1/case-definition/{caseDefinitionName}/zgw-document-column")
     fun getConfiguredColumns(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
-    ): ResponseEntity<List<ConfiguredColumnDto>> {
-        return ResponseEntity.ok(documentenApiService.getConfiguredColumns(caseDefinitionName).map { ConfiguredColumnDto.of(it) })
+    ): ResponseEntity<List<ColumnResponse>> {
+        val version = documentenApiVersionService.getVersion(caseDefinitionName)
+        val columns = documentenApiService.getColumns(caseDefinitionName)
+            .map { ColumnResponse.of(it, version) }
+        return ResponseEntity.ok(columns)
     }
 
     @RunWithoutAuthorization
     @PutMapping("/v1/case-definition/{caseDefinitionName}/zgw-document-column")
     fun updateColumnOrder(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
-        @RequestBody columnDtos: List<ConfiguredColumnDto>,
-    ): ResponseEntity<List<ConfiguredColumnDto>> {
+        @RequestBody columnDtos: List<ReorderColumnRequest>,
+    ): ResponseEntity<List<ColumnResponse>> {
+        val version = documentenApiVersionService.getVersion(caseDefinitionName)
         val columns = columnDtos.mapIndexed { index, columnDto -> columnDto.toEntity(caseDefinitionName, index) }
-        return ResponseEntity.ok(documentenApiService.updateColumnOrder(columns).map { ConfiguredColumnDto.of(it) })
+        val updatedColumns = documentenApiService.updateColumnOrder(columns)
+            .map { ColumnResponse.of(it, version) }
+        return ResponseEntity.ok(updatedColumns)
     }
 
     @RunWithoutAuthorization
     @PutMapping("/v1/case-definition/{caseDefinitionName}/zgw-document-column/{columnKey}")
-    fun updateColumn(
+    fun createOrUpdateColumn(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
         @PathVariable(name = "columnKey") columnKey: String,
-        @RequestBody column: UpdatedConfiguredColumnDto,
-    ): ResponseEntity<ConfiguredColumnDto> {
-        val updatedColumn = documentenApiService.updateColumn(column.toEntity(caseDefinitionName, columnKey))
-        return ResponseEntity.ok(ConfiguredColumnDto.of(updatedColumn))
+        @RequestBody column: UpdateColumnRequest,
+    ): ResponseEntity<ColumnResponse> {
+        val version = documentenApiVersionService.getVersion(caseDefinitionName)
+        val updatedColumn = documentenApiService.createOrUpdateColumn(column.toEntity(caseDefinitionName, columnKey))
+        return ResponseEntity.ok(ColumnResponse.of(updatedColumn, version))
+    }
+
+    @RunWithoutAuthorization
+    @DeleteMapping("/v1/case-definition/{caseDefinitionName}/zgw-document-column/{columnKey}")
+    fun deleteColumn(
+        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
+        @PathVariable(name = "columnKey") columnKey: String,
+    ): ResponseEntity<Unit> {
+        documentenApiService.deleteColumn(caseDefinitionName, columnKey)
+        return ResponseEntity.ok().build()
     }
 
     @RunWithoutAuthorization
@@ -71,7 +105,15 @@ class DocumentenApiManagementResource(
     fun getApiVersion(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<DocumentenApiVersionManagementDto> {
-        val apiVersions = documentenApiService.getApiVersions(caseDefinitionName)
-        return ResponseEntity.ok(DocumentenApiVersionManagementDto(apiVersions.firstOrNull(), apiVersions))
+        val apiVersions = documentenApiVersionService.detectPluginVersions(caseDefinitionName)
+            .mapNotNull { it.third }
+        return ResponseEntity.ok(DocumentenApiVersionManagementDto.of(apiVersions))
+    }
+
+    @RunWithoutAuthorization
+    @GetMapping("/v1/documenten-api/versions")
+    fun getAllApiVersion(): ResponseEntity<DocumentenApiVersionsManagementDto> {
+        val versions = documentenApiVersionService.getAllVersions().map { it.version }
+        return ResponseEntity.ok(DocumentenApiVersionsManagementDto(versions))
     }
 }

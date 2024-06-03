@@ -30,11 +30,13 @@ import org.mockito.kotlin.whenever
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.http.MediaType
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+
 
 class CaseInstanceResourceTest {
     lateinit var mockMvc: MockMvc
@@ -45,8 +47,10 @@ class CaseInstanceResourceTest {
     fun setUp() {
         service = mock()
         resource = CaseInstanceResource(service)
+        MappingJackson2HttpMessageConverter(MapperSingleton.get())
         mockMvc = MockMvcBuilders.standaloneSetup(resource)
             .setCustomArgumentResolvers(PageableHandlerMethodArgumentResolver())
+            .setMessageConverters(MappingJackson2HttpMessageConverter(MapperSingleton.get()))
             .build()
     }
 

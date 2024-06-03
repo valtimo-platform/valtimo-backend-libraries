@@ -4,12 +4,25 @@
         {
             "key": "profile",
             "columns": [
-                "AUTEUR",
-                "STATUS",
-                "FORMAAT",
-                "TAAL",
-                "VERSIE",
-                "BESTANDSNAAM"
+                {
+                    "key": "AUTEUR",
+                    "defaultSort": "ASC"
+                },
+                {
+                    "key": "STATUS"
+                },
+                {
+                    "key": "FORMAAT"
+                },
+                {
+                    "key": "TAAL"
+                },
+                {
+                    "key": "VERSIE"
+                },
+                {
+                    "key": "BESTANDSNAAM"
+                }
             ]
         }
     ]

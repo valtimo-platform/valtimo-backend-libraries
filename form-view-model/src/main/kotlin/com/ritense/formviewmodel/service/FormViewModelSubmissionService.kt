@@ -37,7 +37,7 @@ class FormViewModelSubmissionService(
     ) {
         val formViewModelSubmissionHandler = formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler(
             formName = formName
-        ) ?: throw RuntimeException("No event handler found for formName $formName")
+        ) ?: throw RuntimeException("No submission handler found for formName $formName")
         val submissionType = formViewModelSubmissionHandler.getSubmissionType()
         val submissionConverted = parseSubmission(submission, submissionType)
         formViewModelSubmissionHandler.handle(

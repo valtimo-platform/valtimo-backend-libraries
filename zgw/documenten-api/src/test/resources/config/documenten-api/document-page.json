@@ -1,0 +1,172 @@
+{
+    "count": 5,
+    "next": "http://api.example.org/accounts/?page=4",
+    "previous": "http://api.example.org/accounts/?page=2",
+    "results": [
+        {
+            "url": "http://api.example.org/informatieobjecten/600a5a20-97d6-46f2-8424-15315e53e9c2",
+            "identificatie": "identificatie",
+            "bronorganisatie": "621248691",
+            "creatiedatum": "2019-08-24",
+            "titel": "titel",
+            "vertrouwelijkheidaanduiding": "openbaar",
+            "auteur": "auteur",
+            "status": "definitief",
+            "formaat": "formaat",
+            "taal": "nl",
+            "versie": 4,
+            "beginRegistratie": "2019-08-24T14:15:22Z",
+            "bestandsnaam": "bestandsnaam",
+            "inhoud": "http://example.com/inhoud",
+            "bestandsomvang": 123,
+            "link": "http://example.com/link",
+            "beschrijving": "beschrijving",
+            "ontvangstdatum": "2019-08-23",
+            "verzenddatum": "2019-08-22",
+            "indicatieGebruiksrecht": true,
+            "ondertekening": {
+                "soort": "analoog",
+                "datum": "2019-08-21"
+            },
+            "integriteit": {
+                "algoritme": "crc_16",
+                "waarde": "waarde",
+                "datum": "2019-08-20"
+            },
+            "informatieobjecttype": "http://example.com",
+            "locked": true
+        },
+        {
+            "url": "http://api.example.org/informatieobjecten/10545984-7748-4234-b7f3-7b4aa3b2721a",
+            "identificatie": "identificatie",
+            "bronorganisatie": "621248691",
+            "creatiedatum": "2019-08-24",
+            "titel": "titel",
+            "vertrouwelijkheidaanduiding": "openbaar",
+            "auteur": "auteur",
+            "status": "definitief",
+            "formaat": "formaat",
+            "taal": "nl",
+            "versie": 4,
+            "beginRegistratie": "2019-08-24T14:15:22Z",
+            "bestandsnaam": "bestandsnaam",
+            "inhoud": "http://example.com/inhoud",
+            "bestandsomvang": 123,
+            "link": "http://example.com/link",
+            "beschrijving": "beschrijving",
+            "ontvangstdatum": "2019-08-23",
+            "verzenddatum": "2019-08-22",
+            "indicatieGebruiksrecht": true,
+            "ondertekening": {
+                "soort": "analoog",
+                "datum": "2019-08-21"
+            },
+            "integriteit": {
+                "algoritme": "crc_16",
+                "waarde": "waarde",
+                "datum": "2019-08-20"
+            },
+            "informatieobjecttype": "http://example.com",
+            "locked": true
+        },
+        {
+            "url": "http://api.example.org/informatieobjecten/b8a3c2ea-097b-4b9f-a595-9d9f23cde95e",
+            "identificatie": "identificatie",
+            "bronorganisatie": "621248691",
+            "creatiedatum": "2019-08-24",
+            "titel": "titel",
+            "vertrouwelijkheidaanduiding": "openbaar",
+            "auteur": "auteur",
+            "status": "definitief",
+            "formaat": "formaat",
+            "taal": "nl",
+            "versie": 4,
+            "beginRegistratie": "2019-08-24T14:15:22Z",
+            "bestandsnaam": "bestandsnaam",
+            "inhoud": "http://example.com/inhoud",
+            "bestandsomvang": 123,
+            "link": "http://example.com/link",
+            "beschrijving": "beschrijving",
+            "ontvangstdatum": "2019-08-23",
+            "verzenddatum": "2019-08-22",
+            "indicatieGebruiksrecht": true,
+            "ondertekening": {
+                "soort": "analoog",
+                "datum": "2019-08-21"
+            },
+            "integriteit": {
+                "algoritme": "crc_16",
+                "waarde": "waarde",
+                "datum": "2019-08-20"
+            },
+            "informatieobjecttype": "http://example.com",
+            "locked": true
+        },
+        {
+            "url": "http://api.example.org/informatieobjecten/912dcb8d-2c51-4f7f-80e7-7375ab5fd2a9",
+            "identificatie": "identificatie",
+            "bronorganisatie": "621248691",
+            "creatiedatum": "2019-08-24",
+            "titel": "titel",
+            "vertrouwelijkheidaanduiding": "openbaar",
+            "auteur": "auteur",
+            "status": "definitief",
+            "formaat": "formaat",
+            "taal": "nl",
+            "versie": 4,
+            "beginRegistratie": "2019-08-24T14:15:22Z",
+            "bestandsnaam": "bestandsnaam",
+            "inhoud": "http://example.com/inhoud",
+            "bestandsomvang": 123,
+            "link": "http://example.com/link",
+            "beschrijving": "beschrijving",
+            "ontvangstdatum": "2019-08-23",
+            "verzenddatum": "2019-08-22",
+            "indicatieGebruiksrecht": true,
+            "ondertekening": {
+                "soort": "analoog",
+                "datum": "2019-08-21"
+            },
+            "integriteit": {
+                "algoritme": "crc_16",
+                "waarde": "waarde",
+                "datum": "2019-08-20"
+            },
+            "informatieobjecttype": "http://example.com",
+            "locked": true
+        },
+        {
+            "url": "http://api.example.org/informatieobjecten/ae89b3a6-b20f-43e3-aac6-b58761d56d5d",
+            "identificatie": "identificatie",
+            "bronorganisatie": "621248691",
+            "creatiedatum": "2019-08-24",
+            "titel": "titel",
+            "vertrouwelijkheidaanduiding": "openbaar",
+            "auteur": "auteur",
+            "status": "definitief",
+            "formaat": "formaat",
+            "taal": "nl",
+            "versie": 4,
+            "beginRegistratie": "2019-08-24T14:15:22Z",
+            "bestandsnaam": "bestandsnaam",
+            "inhoud": "http://example.com/inhoud",
+            "bestandsomvang": 123,
+            "link": "http://example.com/link",
+            "beschrijving": "beschrijving",
+            "ontvangstdatum": "2019-08-23",
+            "verzenddatum": "2019-08-22",
+            "indicatieGebruiksrecht": true,
+            "ondertekening": {
+                "soort": "analoog",
+                "datum": "2019-08-21"
+            },
+            "integriteit": {
+                "algoritme": "crc_16",
+                "waarde": "waarde",
+                "datum": "2019-08-20"
+            },
+            "informatieobjecttype": "http://example.com",
+            "locked": true
+        }
+    ]
+}

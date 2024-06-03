@@ -75,7 +75,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-webflux"
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-reactive:${kotlinCoroutinesVersion}"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-reactor:$kotlinCoroutinesVersion"
     implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
     implementation "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
     implementation "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"

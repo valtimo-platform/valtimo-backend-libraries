@@ -32,7 +32,7 @@ class FormProcessLinkActivityHandler(
 ) : ProcessLinkActivityHandler<FormTaskOpenResultProperties> {
 
     override fun supports(processLink: ProcessLink): Boolean {
-        return processLink is FormProcessLink && !processLink.viewModelEnabled
+        return processLink is FormProcessLink
     }
 
     override fun openTask(task: CamundaTask, processLink: ProcessLink): ProcessLinkActivityResult<FormTaskOpenResultProperties> {

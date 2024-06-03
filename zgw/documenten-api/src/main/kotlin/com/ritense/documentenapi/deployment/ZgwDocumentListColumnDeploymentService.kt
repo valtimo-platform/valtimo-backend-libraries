@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.case.deployment
+package com.ritense.documentenapi.deployment
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.documentenapi.deployment.ZgwDocumentListColumnChangeset
-import com.ritense.documentenapi.deployment.ZgwDocumentListColumnCollection
 import com.ritense.documentenapi.domain.DocumentenApiColumn
 import com.ritense.documentenapi.domain.DocumentenApiColumnId
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
@@ -62,7 +60,12 @@ open class ZgwDocumentListColumnDeploymentService(
             caseDefinitions.forEach {
                 documentenApiColumnRepository.deleteAll(documentenApiColumnRepository.findAllByIdCaseDefinitionNameOrderByOrder(it.key))
                 it.columns.forEach { column ->
-                    documentenApiService.updateColumn(DocumentenApiColumn(DocumentenApiColumnId(it.key, column)))
+                    documentenApiService.createOrUpdateColumn(
+                        DocumentenApiColumn(
+                            id = DocumentenApiColumnId(it.key, column.key),
+                            defaultSort = column.defaultSort
+                        )
+                    )
                 }
             }
         }

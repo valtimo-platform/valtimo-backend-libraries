@@ -12,7 +12,7 @@
             "url": "http://localhost:56273/documenten/",
             "bronorganisatie": "051845623",
             "authenticationPluginConfiguration": "27a399c7-9d70-4833-a651-57664e2e9e09",
-            "apiVersion": "1.2.0"
+            "apiVersion": "1.5.0-test-1.0.0"
         }
     }
 ]
