@@ -35,7 +35,6 @@ import org.springframework.web.bind.annotation.RestController
 @SkipComponentScan
 @Transactional
 @RequestMapping("/api/v1/form/view-model", produces = [APPLICATION_JSON_UTF8_VALUE])
-@Transactional
 class FormViewModelResource(
     private val formViewModelService: FormViewModelService,
     private val formViewModelSubmissionService: FormViewModelSubmissionService
