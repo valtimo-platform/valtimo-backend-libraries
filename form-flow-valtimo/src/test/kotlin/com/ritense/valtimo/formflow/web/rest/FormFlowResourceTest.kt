@@ -28,10 +28,13 @@ import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.formflow.BaseTest
 import com.ritense.valtimo.formflow.handler.FormTypeProperties
+import com.ritense.valtimo.formflow.service.FormFlowValtimoService
 import java.util.UUID
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -48,6 +51,7 @@ class FormFlowResourceTest : BaseTest() {
     lateinit var mockMvc: MockMvc
     lateinit var formFlowResource: FormFlowResource
     lateinit var formFlowService: FormFlowService
+    lateinit var formFlowValtimoService: FormFlowValtimoService
     lateinit var formFlowInstance: FormFlowInstance
     lateinit var formFlowInstanceId: FormFlowInstanceId
     lateinit var stepInstance: FormFlowStepInstance
@@ -56,6 +60,7 @@ class FormFlowResourceTest : BaseTest() {
     @BeforeEach
     fun setUp() {
         formFlowService = mock()
+        formFlowValtimoService = mock()
         whenever(formFlowService.getTypeProperties(any())).thenReturn(
             FormTypeProperties(
                 MapperSingleton.get().readTree(
@@ -73,7 +78,9 @@ class FormFlowResourceTest : BaseTest() {
         formFlowInstance = mock()
         whenever(formFlowInstance.id).thenReturn(formFlowInstanceId)
         whenever(formFlowService.getByInstanceIdIfExists(formFlowInstance.id)).thenReturn(formFlowInstance)
-        formFlowResource = FormFlowResource(formFlowService)
+        whenever(formFlowValtimoService.getVerifiedSubmissionData(anyOrNull(), eq(formFlowInstance)))
+            .thenAnswer { it.arguments[0] }
+        formFlowResource = FormFlowResource(formFlowService, formFlowValtimoService)
 
         stepInstanceId = FormFlowStepInstanceId.newId()
         stepInstance = mock()
