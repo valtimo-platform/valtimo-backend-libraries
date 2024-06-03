@@ -24,9 +24,14 @@ import com.ritense.documentenapi.DocumentenApiAuthentication
 import com.ritense.documentenapi.domain.DocumentenApiColumn
 import com.ritense.documentenapi.domain.DocumentenApiColumnId
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey
+import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
+import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
+import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import jakarta.transaction.Transactional
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -45,9 +50,10 @@ import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import org.springframework.web.reactive.function.client.ClientRequest
@@ -68,6 +74,12 @@ internal class DocumentenApiResourceIT : BaseIntegrationTest() {
 
     @Autowired
     lateinit var documentenApiService: DocumentenApiService
+
+    @Autowired
+    lateinit var documentenApiColumnRepository: DocumentenApiColumnRepository
+
+    @Autowired
+    lateinit var documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService
 
     lateinit var mockMvc: MockMvc
 
@@ -123,24 +135,48 @@ internal class DocumentenApiResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should get a list of all ordered Documenten API columns`() {
+        documentenApiColumnRepository.deleteAllByIdCaseDefinitionName("profile")
         runWithoutAuthorization {
-            documentenApiService.updateColumn(
-                DocumentenApiColumn(DocumentenApiColumnId("myCaseDefinition", DocumentenApiColumnKey.IDENTIFICATIE))
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                "profile",
+                DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
             )
-            documentenApiService.updateColumn(
-                DocumentenApiColumn(DocumentenApiColumnId("myCaseDefinition", DocumentenApiColumnKey.TITEL))
+            documentenApiService.createOrUpdateColumn(
+                DocumentenApiColumn(DocumentenApiColumnId("profile", DocumentenApiColumnKey.IDENTIFICATIE), 0)
+            )
+            documentenApiService.createOrUpdateColumn(
+                DocumentenApiColumn(DocumentenApiColumnId("profile", DocumentenApiColumnKey.TITEL), 1)
             )
         }
 
         mockMvc.perform(
-            get("/api/management/v1/case-definition/{caseDefinitionName}/zgw-document-column", "myCaseDefinition")
+            get("/api/management/v1/case-definition/{caseDefinitionName}/zgw-document-column", "profile")
         )
             .andDo(MockMvcResultHandlers.print())
-            .andExpect(MockMvcResultMatchers.jsonPath("$.size()").value(DocumentenApiColumnKey.entries.size))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].key").value("identificatie"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].enabled").value(true))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[1].key").value("titel"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[1].enabled").value(true))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$[0].key").value("identificatie"))
+            .andExpect(jsonPath("$[0].sortable").value(false))
+            .andExpect(jsonPath("$[1].key").value("titel"))
+            .andExpect(jsonPath("$[1].sortable").value(true))
+    }
+
+    @Test
+    @WithMockUser(username = USER_EMAIL, authorities = [USER])
+    fun `should get API version`() {
+        runWithoutAuthorization {
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                "profile",
+                DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
+            )
+        }
+
+        mockMvc.perform(get("/api/v1/case-definition/{caseDefinitionName}/documenten-api/version", "profile"))
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.selectedVersion").value("1.5.0-test-1.0.0"))
+            .andExpect(jsonPath("$.supportsFilterableColumns").value(true))
+            .andExpect(jsonPath("$.supportsSortableColumns").value(true))
+            .andExpect(jsonPath("$.supportsTrefwoorden").value(true))
     }
 
     private fun setupMockDocumentenApiServer() {

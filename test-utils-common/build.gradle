@@ -48,7 +48,7 @@ dependencies {
     implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
 
     implementation "org.postgresql:postgresql:${postgresqlDriverVersion}"
-    implementation "com.mysql:mysql-connector-j"
+    implementation "com.mysql:mysql-connector-j:${mysqlDriverVersion}"
 
     implementation "org.springframework:spring-test"
     implementation "org.junit.jupiter:junit-jupiter-engine"

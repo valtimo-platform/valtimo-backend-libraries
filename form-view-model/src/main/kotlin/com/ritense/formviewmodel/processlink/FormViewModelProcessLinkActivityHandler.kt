@@ -22,8 +22,11 @@ import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
 import com.ritense.valtimo.camunda.domain.CamundaTask
+import org.springframework.core.Ordered
+import org.springframework.core.annotation.Order
 import java.util.UUID
 
+@Order(Ordered.HIGHEST_PRECEDENCE)
 class FormViewModelProcessLinkActivityHandler(
     private val formDefinitionService: FormIoFormDefinitionService,
 ) : ProcessLinkActivityHandler<FormViewModelTaskOpenResultProperties> {
@@ -32,7 +35,10 @@ class FormViewModelProcessLinkActivityHandler(
         return processLink is FormProcessLink && processLink.viewModelEnabled
     }
 
-    override fun openTask(task: CamundaTask, processLink: ProcessLink): ProcessLinkActivityResult<FormViewModelTaskOpenResultProperties> {
+    override fun openTask(
+        task: CamundaTask,
+        processLink: ProcessLink
+    ): ProcessLinkActivityResult<FormViewModelTaskOpenResultProperties> {
         processLink as FormProcessLink
         val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId)
             .orElseThrow { RuntimeException("Form definition not found by id ${processLink.formDefinitionId}") }

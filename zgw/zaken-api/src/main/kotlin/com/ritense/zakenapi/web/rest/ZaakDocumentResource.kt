@@ -17,10 +17,14 @@
 package com.ritense.zakenapi.web.rest
 
 import com.ritense.document.domain.RelatedFile
+import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
+import com.ritense.documentenapi.web.rest.dto.DocumentenApiDocumentDto
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zakenapi.service.ZaakDocumentService
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -29,17 +33,26 @@ import java.util.UUID
 
 @RestController
 @SkipComponentScan
-@RequestMapping(value = ["/api/v1/zaken-api/document/{documentId}"], produces = [APPLICATION_JSON_UTF8_VALUE])
+@RequestMapping(value = ["/api"], produces = [APPLICATION_JSON_UTF8_VALUE])
 class ZaakDocumentResource(
     private val zaakDocumentService: ZaakDocumentService
 ) {
 
-    @GetMapping("/files")
+    @GetMapping("/v1/zaken-api/document/{documentId}/files")
     fun getFiles(@PathVariable(name = "documentId") documentId: UUID): List<RelatedFile> {
         return zaakDocumentService.getInformatieObjectenAsRelatedFiles(documentId)
     }
 
-    @GetMapping("/zaak")
+    @GetMapping("/v2/zaken-api/document/{documentId}/files")
+    fun getFiles(
+        @PathVariable(name = "documentId") documentId: UUID,
+        documentSearchRequest: DocumentSearchRequest,
+        pageable: Pageable,
+    ): Page<DocumentenApiDocumentDto> {
+        return zaakDocumentService.getInformatieObjectenAsRelatedFilesPage(documentId, documentSearchRequest, pageable)
+    }
+
+    @GetMapping("/v1/zaken-api/document/{documentId}/zaak")
     fun getZaakMetadata(@PathVariable(name = "documentId") documentId: UUID): ZaakResponse? {
         return zaakDocumentService.getZaakByDocumentId(documentId)
     }

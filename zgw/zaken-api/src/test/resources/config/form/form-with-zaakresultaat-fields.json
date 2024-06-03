@@ -1,0 +1,14 @@
+{
+    "display": "form",
+    "components": [
+        {
+            "key": "zaakResultaat",
+            "type": "textfield",
+            "label": "Zaak resultaat",
+            "properties": {
+                "sourceKey": "zaakresultaat:omschrijving"
+            },
+            "input": true
+        }
+    ]
+}

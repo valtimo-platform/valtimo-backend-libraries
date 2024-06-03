@@ -128,10 +128,12 @@ class ProcessLinkAutoConfiguration {
     @ConditionalOnMissingBean(ProcessLinkExporter::class)
     fun processLinkExporter(
         objectMapper: ObjectMapper,
-        processLinkService: ProcessLinkService
+        processLinkService: ProcessLinkService,
+        repositoryService: CamundaRepositoryService
     ) = ProcessLinkExporter(
         objectMapper,
-        processLinkService
+        processLinkService,
+        repositoryService
     )
 
     @Bean

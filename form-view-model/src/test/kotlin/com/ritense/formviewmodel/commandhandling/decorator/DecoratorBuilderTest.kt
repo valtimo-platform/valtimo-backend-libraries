@@ -3,7 +3,6 @@ package com.ritense.formviewmodel.commandhandling.decorator
 import com.ritense.formviewmodel.BaseTest
 import com.ritense.formviewmodel.commandhandling.Command
 import com.ritense.formviewmodel.commandhandling.CommandHandler
-import com.ritense.formviewmodel.commandhandling.decorator.DecoratorBuilder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock

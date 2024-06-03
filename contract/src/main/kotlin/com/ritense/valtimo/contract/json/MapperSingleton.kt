@@ -41,6 +41,7 @@ object MapperSingleton {
         MapperSingleton.mapper = mapper
     }
 
+    @JvmStatic
     fun get(): ObjectMapper = mapper
 
     init {

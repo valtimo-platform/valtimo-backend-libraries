@@ -33,7 +33,9 @@ class CommandDispatcher {
                 throw NoHandlerForCommandException(command)
             }
             @Suppress("UNCHECKED_CAST")
-            return commandHandlers[commandClass]!!.execute(command) as T
+            return commandHandlers[commandClass]?.let {
+                it.execute(command) as T
+            } ?: throw NoSuchElementException("No CommandHandler found for $command")
         } catch (ex: Exception) {
             logger.error(ex) {
                 "Unhandled Command error occurred in ${command.javaClass.simpleName} - ${ex.message} - ${ex.cause}"

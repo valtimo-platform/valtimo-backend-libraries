@@ -28,6 +28,7 @@ import com.ritense.openzaak.domain.connector.OpenZaakConfig
 import com.ritense.openzaak.domain.connector.OpenZaakProperties
 import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.service.ZaakTypeLinkService
+import com.ritense.openzaak.service.impl.ZaakTypeService
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
@@ -164,6 +165,8 @@ internal class TaakObjectServiceIntTest : BaseIntegrationTest() {
                     "POST /zaken/api/v1/zaken" -> mockResponseFromFile("/data/post-create-zaak.json")
                     "GET /api/v1/kanaal" -> mockResponseFromFile("/data/get-kanalen.json")
                     "POST /api/v1/abonnement" -> mockResponseFromFile("/data/post-abonnement.json")
+                    "GET /catalogi/api/v1/zaaktypen" -> mockResponseFromFile("/data/get-zaaktypen.json")
+                    "GET /catalogi/api/v1/zaaktypen/4e9c2359-83ac-4e3b-96b6-3f278f1fc773" -> mockResponseFromFile("/data/get-zaaktype.json")
                     else -> MockResponse().setResponseCode(404)
                 }
                 return response

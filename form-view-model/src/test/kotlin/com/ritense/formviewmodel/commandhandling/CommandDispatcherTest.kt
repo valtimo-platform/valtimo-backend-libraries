@@ -1,13 +1,11 @@
 package com.ritense.formviewmodel.commandhandling
 
 import com.ritense.formviewmodel.BaseTest
-import com.ritense.formviewmodel.commandhandling.Command
-import com.ritense.formviewmodel.commandhandling.CommandDispatcher
-import com.ritense.formviewmodel.commandhandling.CommandHandler
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 
@@ -55,6 +53,20 @@ internal class CommandDispatcherTest : BaseTest() {
         val afterDispatchTime = System.nanoTime()
         assertThat(commandTime).isLessThan(afterDispatchTime)
         verify(handler).execute(command)
+    }
+
+    @Test
+    fun `should not handle exception when command throws exception`() {
+        val handler = LambdaCommandHandler() as CommandHandler<Command<Unit>, Unit>
+        commandDispatcherUnderTest.registerCommandHandler(handler)
+
+        val exception = assertThrows<RuntimeException> {
+            commandDispatcherUnderTest.dispatch(LambdaCommand {
+                throw RuntimeException("UNIT TEST")
+            })
+        }
+
+        assertThat(exception.message).isEqualTo("UNIT TEST")
     }
 
 }

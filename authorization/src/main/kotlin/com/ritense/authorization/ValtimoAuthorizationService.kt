@@ -113,7 +113,7 @@ class ValtimoAuthorizationService(
     }
 
     private fun getPermissions(context: AuthorizationRequest<*>): List<Permission> {
-        val userRoles = if (context.user == null || context.user == SecurityUtils.getCurrentUserLogin()) {
+        val userRoles = if (context.user == null) {
             SecurityUtils.getCurrentUserRoles()
         } else {
             userManagementService.findById(context.user)

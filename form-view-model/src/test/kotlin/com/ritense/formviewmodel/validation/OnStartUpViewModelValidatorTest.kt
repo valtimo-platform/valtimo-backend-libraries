@@ -3,7 +3,7 @@ package com.ritense.formviewmodel.validation
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formviewmodel.BaseTest
-import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
+import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandlerFactory
 import com.ritense.formviewmodel.event.TestSubmissionHandler
 import com.ritense.formviewmodel.viewmodel.TestViewModel
 import com.ritense.formviewmodel.viewmodel.TestViewModelLoader
@@ -49,7 +49,7 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
     }
 
     @Test
-    fun `should be valid ViewModel`() {
+    fun `should not find missing fields when all ViewModel fields match form`() {
         val testViewModelLoader = TestViewModelLoader()
         val missingFields = onStartUpViewModelValidator.validateViewModel(
             testViewModelLoader,
@@ -59,7 +59,7 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
     }
 
     @Test
-    fun `should not be valid ViewModel`() {
+    fun `should find missing fields when ViewModel has extra fields`() {
         val testViewModelLoader = TestViewModelLoader()
         val missingFields = onStartUpViewModelValidator.validateViewModel(
             testViewModelLoader,
@@ -70,7 +70,7 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
     }
 
     @Test
-    fun `should be valid Submission`() {
+    fun `should not find missing fields when all Submission fields match form`() {
         val testSubmissionHandler = TestSubmissionHandler()
         val missingFields = onStartUpViewModelValidator.validateSubmission(
             testSubmissionHandler,
@@ -80,7 +80,7 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
     }
 
     @Test
-    fun `should not be valid Submission`() {
+    fun `should find missing fields when Submission has extra fields`() {
         val testSubmissionHandler = TestSubmissionHandler()
         val missingFields = onStartUpViewModelValidator.validateSubmission(
             testSubmissionHandler,
@@ -91,7 +91,7 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
     }
 
     @Test
-    fun `should validate`() {
+    fun `should log validation errors to stdout`() {
         // Redirect System.err to capture what is printed
         val outputStream = ByteArrayOutputStream()
         val printStream = PrintStream(outputStream)

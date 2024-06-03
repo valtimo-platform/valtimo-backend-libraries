@@ -18,7 +18,8 @@ package com.ritense.documentenapi.web.rest
 
 import com.ritense.document.domain.RelatedFile
 import com.ritense.documentenapi.service.DocumentenApiService
-import com.ritense.documentenapi.web.rest.dto.ColumnDto
+import com.ritense.documentenapi.service.DocumentenApiVersionService
+import com.ritense.documentenapi.web.rest.dto.ColumnResponse
 import com.ritense.documentenapi.web.rest.dto.DocumentenApiVersionDto
 import com.ritense.documentenapi.web.rest.dto.ModifyDocumentRequest
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
@@ -40,7 +41,8 @@ import java.net.URLConnection
 @SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class DocumentenApiResource(
-    val documentenApiService: DocumentenApiService
+    private val documentenApiService: DocumentenApiService,
+    private val documentenApiVersionService: DocumentenApiVersionService
 ) {
     @GetMapping("/v1/documenten-api/{pluginConfigurationId}/files/{documentId}/download")
     fun downloadDocument(
@@ -82,7 +84,7 @@ class DocumentenApiResource(
     fun deleteDocument(
         @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: String,
         @PathVariable(name = "documentId") documentId: String,
-    ): ResponseEntity<Void> {
+    ): ResponseEntity<Unit> {
         documentenApiService.deleteInformatieObject(pluginConfigurationId, documentId)
         return ResponseEntity
             .noContent()
@@ -92,15 +94,18 @@ class DocumentenApiResource(
     @GetMapping("/v1/case-definition/{caseDefinitionName}/zgw-document-column")
     fun getColumns(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
-    ): ResponseEntity<List<ColumnDto>> {
-        return ResponseEntity.ok(documentenApiService.getColumns(caseDefinitionName).map { ColumnDto.of(it) })
+    ): ResponseEntity<List<ColumnResponse>> {
+        val version = documentenApiVersionService.getVersion(caseDefinitionName)
+        val columns = documentenApiService.getColumns(caseDefinitionName)
+            .map { ColumnResponse.of(it, version) }
+        return ResponseEntity.ok(columns)
     }
 
     @GetMapping("/v1/case-definition/{caseDefinitionName}/documenten-api/version")
     fun getApiVersion(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<DocumentenApiVersionDto> {
-        val apiVersion = documentenApiService.getApiVersions(caseDefinitionName).firstOrNull()
-        return ResponseEntity.ok(DocumentenApiVersionDto(apiVersion))
+        val version = documentenApiVersionService.getVersion(caseDefinitionName)
+        return ResponseEntity.ok(DocumentenApiVersionDto.of(version))
     }
 }

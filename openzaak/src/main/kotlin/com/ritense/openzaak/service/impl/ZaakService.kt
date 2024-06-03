@@ -38,6 +38,7 @@ import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.web.client.RestTemplate
 import java.net.URI
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
@@ -48,7 +49,8 @@ class ZaakService(
     private val openZaakTokenGeneratorService: OpenZaakTokenGeneratorService,
     private val zaakTypeLinkService: ZaakTypeLinkService,
     private val documentService: DocumentService,
-    private val zaakInstanceLinkService: ZaakInstanceLinkService
+    private val zaakInstanceLinkService: ZaakInstanceLinkService,
+    private val zaakTypeService: ZaakTypeService
 ) : ZaakService {
 
     override fun createZaakWithLink(delegateExecution: DelegateExecution) {
@@ -81,6 +83,8 @@ class ZaakService(
         startdatum: LocalDateTime,
         rsin: String
     ): Zaak {
+        val uiterlijkeEinddatumAfdoening = calculateUiterlijkeEinddatumAfdoening(zaaktype, startdatum.toLocalDate())
+
         return OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
             .path("zaken/api/v1/zaken")
             .post()
@@ -89,7 +93,8 @@ class ZaakService(
                     "zaaktype" to zaaktype,
                     "startdatum" to startdatum.format(DATE_PATTERN),
                     "bronorganisatie" to rsin,
-                    "verantwoordelijkeOrganisatie" to rsin
+                    "verantwoordelijkeOrganisatie" to rsin,
+                    "uiterlijkeEinddatumAfdoening" to uiterlijkeEinddatumAfdoening
                 )
             )
             .build()
@@ -245,6 +250,14 @@ class ZaakService(
                 .build()
                 .execute(ResultaatType::class.java).omschrijving
         }
+    }
+
+    private fun calculateUiterlijkeEinddatumAfdoening(zaaktypeUrl: URI, startdatum: LocalDate): LocalDate? {
+        return zaakTypeService
+            .getZaakType(zaaktypeUrl)
+            .doorlooptijd
+            ?.let { doorlooptijd -> startdatum.atStartOfDay() + doorlooptijd }
+            ?.toLocalDate()
     }
 
 }
