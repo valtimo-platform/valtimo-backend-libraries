@@ -66,7 +66,10 @@ internal class SearchFieldV2IntTest : BaseIntegrationTest() {
                 path = "everywhere",
                 order = 1,
                 dataType = DataType.TEXT,
-                fieldType = FieldType.RANGE
+                fieldType = FieldType.RANGE,
+                ownerType = null,
+                matchType = null,
+                dropdownDataProvider = null
             )
         )
 }
