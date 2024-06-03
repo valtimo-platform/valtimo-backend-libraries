@@ -172,7 +172,7 @@ class FormViewModelResourceTest : BaseTest() {
     @Test
     fun `should return notfound for unknown start form view model`() {
         mockMvc.perform(
-            get("$BASE_URL/$START_FORM?formName=test&taskInstanceId=taskInstanceId")
+            get("$BASE_URL/$START_FORM?formName=test&processDefinitionId=processDefinitionId")
                 .accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
         ).andExpect(status().isNotFound)
