@@ -35,7 +35,10 @@ class FormViewModelProcessLinkActivityHandler(
         return processLink is FormProcessLink && processLink.viewModelEnabled
     }
 
-    override fun openTask(task: CamundaTask, processLink: ProcessLink): ProcessLinkActivityResult<FormViewModelTaskOpenResultProperties> {
+    override fun openTask(
+        task: CamundaTask,
+        processLink: ProcessLink
+    ): ProcessLinkActivityResult<FormViewModelTaskOpenResultProperties> {
         processLink as FormProcessLink
         val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId)
             .orElseThrow { RuntimeException("Form definition not found by id ${processLink.formDefinitionId}") }
