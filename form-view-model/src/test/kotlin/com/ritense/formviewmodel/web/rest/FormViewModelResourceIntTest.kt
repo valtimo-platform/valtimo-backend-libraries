@@ -6,8 +6,9 @@ import com.ritense.formviewmodel.BaseIntegrationTest
 import com.ritense.formviewmodel.viewmodel.TestViewModel
 import com.ritense.formviewmodel.web.rest.FormViewModelResourceTest.Companion.BASE_URL
 import com.ritense.formviewmodel.web.rest.FormViewModelResourceTest.Companion.USER_TASK
+import com.ritense.valtimo.camunda.domain.CamundaExecution
 import com.ritense.valtimo.camunda.domain.CamundaTask
-import com.ritense.valtimo.contract.domain.ValtimoMediaType
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.service.CamundaTaskService
 import org.junit.jupiter.api.BeforeEach
@@ -45,6 +46,9 @@ class FormViewModelResourceIntTest : BaseIntegrationTest() {
             .build()
 
         val task: CamundaTask = mock()
+        val execution: CamundaExecution = mock()
+        whenever(task.processInstance).thenReturn(execution)
+        whenever(execution.businessKey).thenReturn("a business Key")
         whenever(task.id).thenReturn("taskInstanceId")
         whenever(camundaTaskService.findTaskById(any())).thenReturn(task)
     }
@@ -54,8 +58,8 @@ class FormViewModelResourceIntTest : BaseIntegrationTest() {
         runWithoutAuthorization {
             mockMvc.perform(
                 get("$BASE_URL/$USER_TASK?formName=test&taskInstanceId=taskInstanceId")
-                    .accept(ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE)
-                    .contentType(ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE)
+                    .accept(APPLICATION_JSON_UTF8_VALUE)
+                    .contentType(APPLICATION_JSON_UTF8_VALUE)
             ).andExpect(status().isOk)
         }
     }
@@ -65,9 +69,9 @@ class FormViewModelResourceIntTest : BaseIntegrationTest() {
         runWithoutAuthorization {
             mockMvc.perform(
                 post("$BASE_URL/$USER_TASK?formName=test&taskInstanceId=taskInstanceId")
-                    .accept(ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE)
+                    .accept(APPLICATION_JSON_UTF8_VALUE)
                     .content(jacksonObjectMapper().writeValueAsString(TestViewModel()))
-                    .contentType(ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE)
+                    .contentType(APPLICATION_JSON_UTF8_VALUE)
             ).andExpect(status().isOk)
         }
     }
@@ -77,8 +81,8 @@ class FormViewModelResourceIntTest : BaseIntegrationTest() {
         runWithoutAuthorization {
             mockMvc.perform(
                 post("$BASE_URL/submit/$USER_TASK?formName=test&taskInstanceId=taskInstanceId")
-                    .accept(ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE)
-                    .contentType(ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE)
+                    .accept(APPLICATION_JSON_UTF8_VALUE)
+                    .contentType(APPLICATION_JSON_UTF8_VALUE)
                     .content(
                         objectMapper.writeValueAsString(
                             TestViewModel(
