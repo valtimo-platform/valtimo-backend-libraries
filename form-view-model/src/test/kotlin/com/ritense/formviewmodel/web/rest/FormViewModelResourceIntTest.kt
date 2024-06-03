@@ -4,6 +4,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.formviewmodel.BaseIntegrationTest
 import com.ritense.formviewmodel.viewmodel.TestViewModel
+import com.ritense.formviewmodel.web.rest.FormViewModelResourceTest.Companion.BASE_URL
+import com.ritense.formviewmodel.web.rest.FormViewModelResourceTest.Companion.USER_TASK
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.contract.domain.ValtimoMediaType
 import com.ritense.valtimo.contract.json.MapperSingleton
@@ -48,10 +50,10 @@ class FormViewModelResourceIntTest : BaseIntegrationTest() {
     }
 
     @Test
-    fun `should get FormViewModel`() {
+    fun `should get user task view model`() {
         runWithoutAuthorization {
             mockMvc.perform(
-                get("${BASE_URL}?formName=test&taskInstanceId=taskInstanceId")
+                get("$BASE_URL/$USER_TASK?formName=test&taskInstanceId=taskInstanceId")
                     .accept(ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE)
                     .contentType(ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE)
             ).andExpect(status().isOk)
@@ -59,10 +61,10 @@ class FormViewModelResourceIntTest : BaseIntegrationTest() {
     }
 
     @Test
-    fun `should update FormViewModel`() {
+    fun `should update user task view model`() {
         runWithoutAuthorization {
             mockMvc.perform(
-                post("${BASE_URL}?formName=test&taskInstanceId=taskInstanceId")
+                post("$BASE_URL/$USER_TASK?formName=test&taskInstanceId=taskInstanceId")
                     .accept(ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE)
                     .content(jacksonObjectMapper().writeValueAsString(TestViewModel()))
                     .contentType(ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -71,10 +73,10 @@ class FormViewModelResourceIntTest : BaseIntegrationTest() {
     }
 
     @Test
-    fun `should submit FormViewModel`() {
+    fun `should submit user task view model`() {
         runWithoutAuthorization {
             mockMvc.perform(
-                post("${BASE_URL}/submit?formName=test&taskInstanceId=taskInstanceId")
+                post("$BASE_URL/submit/$USER_TASK?formName=test&taskInstanceId=taskInstanceId")
                     .accept(ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE)
                     .contentType(ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE)
                     .content(
@@ -88,7 +90,4 @@ class FormViewModelResourceIntTest : BaseIntegrationTest() {
         }
     }
 
-    companion object {
-        private const val BASE_URL = "/api/v1/form/view-model"
-    }
 }

@@ -250,9 +250,9 @@ class FormViewModelResourceTest : BaseTest() {
     }
 
     companion object {
-        private const val BASE_URL = "/api/v1/form/view-model"
-        private const val START_FORM = "start-form"
-        private const val USER_TASK = "user-task"
+        const val BASE_URL = "/api/v1/form/view-model"
+        const val START_FORM = "start-form"
+        const val USER_TASK = "user-task"
     }
 
 }
