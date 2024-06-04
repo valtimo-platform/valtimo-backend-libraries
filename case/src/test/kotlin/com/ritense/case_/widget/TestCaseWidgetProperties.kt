@@ -23,6 +23,6 @@ import jakarta.validation.constraints.NotBlank
 
 @JsonInclude(Include.NON_NULL)
 data class TestCaseWidgetProperties(
-    @NotBlank val stringProperty: String = "test123",
+    @field:NotBlank val stringProperty: String = "test123",
     val displayProperties: FieldDisplayProperties? = null
 )

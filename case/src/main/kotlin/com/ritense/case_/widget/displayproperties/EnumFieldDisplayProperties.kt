@@ -17,8 +17,9 @@
 package com.ritense.case_.widget.displayproperties
 
 import com.fasterxml.jackson.annotation.JsonTypeName
+import jakarta.validation.constraints.NotEmpty
 
 @JsonTypeName("enum")
 data class EnumFieldDisplayProperties(
-    val values: Map<String, Any>
+    @field:NotEmpty val values: Map<String, Any>
 ) : FieldDisplayProperties

@@ -13,18 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.ritense.form.validation
 
-package com.ritense.case_.widget.fields
+import jakarta.validation.Constraint
+import jakarta.validation.Payload
+import kotlin.reflect.KClass
 
-import com.fasterxml.jackson.annotation.JsonTypeName
-import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
-import jakarta.validation.Valid
-
-@JsonTypeName("fields")
-data class FieldsCaseWidgetDto(
-    override val key: String,
-    override val title: String,
-    override val width: Int,
-    override val highContrast: Boolean,
-    @field:Valid val properties: FieldsWidgetProperties
-) : CaseWidgetTabWidgetDto
+@MustBeDocumented
+@Constraint(validatedBy = [FormDefinitionExistsValidator::class])
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER, AnnotationTarget.FIELD)
+@Retention(
+    AnnotationRetention.RUNTIME
+)
+annotation class FormDefinitionExists(
+    val message: String = "Form definition does not exist",
+    val groups: Array<KClass<*>> = [],
+    val payload: Array<KClass<out Payload>> = []
+)

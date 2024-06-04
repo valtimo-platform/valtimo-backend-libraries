@@ -19,19 +19,21 @@ package com.ritense.case_.widget.table
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.ritense.case_.widget.displayproperties.FieldDisplayProperties
+import jakarta.validation.Valid
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotEmpty
 
 data class TableWidgetProperties (
-    @NotBlank val collection: String,
-    @Min(1) val defaultPageSize: Int,
-    val columns: List<Column>,
+    @field:NotBlank val collection: String,
+    @field:Min(1) val defaultPageSize: Int,
+    @field:NotEmpty val columns: List<@Valid Column>,
 ) {
     @JsonInclude(Include.NON_NULL)
     data class Column (
-        @NotBlank val key: String,
+        @field:NotBlank val key: String,
         val title: String,
-        @NotBlank val value: String,
-        val displayProperties: FieldDisplayProperties? = null
+        @field:NotBlank val value: String,
+        @field:Valid val displayProperties: FieldDisplayProperties? = null
     )
 }

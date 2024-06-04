@@ -1,0 +1,15 @@
+{
+    "changesetId": "widgets-v1",
+    "permissions": [
+        {
+            "resourceType": "com.ritense.case_.domain.tab.CaseWidgetTabWidget",
+            "action": "view",
+            "roleKey": "ROLE_USER"
+        },
+        {
+            "resourceType": "com.ritense.case.domain.CaseTab",
+            "action": "view",
+            "roleKey": "ROLE_USER"
+        }
+    ]
+}
