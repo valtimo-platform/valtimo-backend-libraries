@@ -6,8 +6,8 @@ import com.ritense.authorization.AuthorizationService
 import com.ritense.formviewmodel.BaseTest
 import com.ritense.formviewmodel.commandhandling.ExampleCommand
 import com.ritense.formviewmodel.error.FormException
-import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandlerFactory
 import com.ritense.formviewmodel.event.TestSubmissionHandler
+import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandlerFactory
 import com.ritense.valtimo.camunda.domain.CamundaExecution
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.contract.json.MapperSingleton

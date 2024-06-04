@@ -18,22 +18,13 @@ package com.ritense.formviewmodel.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
-import com.ritense.authorization.request.RelatedEntityAuthorizationRequest
 import com.ritense.formviewmodel.viewmodel.ViewModel
 import com.ritense.formviewmodel.viewmodel.ViewModelLoaderFactory
-import com.ritense.valtimo.camunda.authorization.CamundaExecutionActionProvider
 import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Companion.VIEW
-import com.ritense.valtimo.camunda.domain.CamundaExecution
-import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.domain.CamundaTask
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.service.CamundaTaskService
-import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState
-import java.util.UUID
-import java.util.concurrent.Callable
 import kotlin.reflect.KClass
 
 class FormViewModelService(

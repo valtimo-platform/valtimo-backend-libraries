@@ -20,8 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.formviewmodel.autoconfigure.CommandDispatcherAutoConfiguration
 import com.ritense.formviewmodel.autoconfigure.FormViewModelAutoConfiguration
 import com.ritense.formviewmodel.commandhandling.ExampleCommandHandler
-import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandler
 import com.ritense.formviewmodel.event.TestSubmissionHandler
+import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandler
 import com.ritense.formviewmodel.viewmodel.TestViewModelLoader
 import com.ritense.valtimo.contract.json.MapperSingleton
 import org.springframework.boot.autoconfigure.SpringBootApplication
