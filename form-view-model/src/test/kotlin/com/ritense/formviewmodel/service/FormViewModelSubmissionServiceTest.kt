@@ -6,8 +6,8 @@ import com.ritense.authorization.AuthorizationService
 import com.ritense.formviewmodel.BaseTest
 import com.ritense.formviewmodel.commandhandling.ExampleCommand
 import com.ritense.formviewmodel.error.FormException
-import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandlerFactory
 import com.ritense.formviewmodel.event.TestSubmissionHandler
+import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandlerFactory
 import com.ritense.valtimo.camunda.domain.CamundaExecution
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.contract.json.MapperSingleton
@@ -33,6 +33,7 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
     private lateinit var testSubmissionHandler: TestSubmissionHandler
     private lateinit var objectMapper: ObjectMapper
     private lateinit var camundaTask: CamundaTask
+    private lateinit var processAuthorizationService: ProcessAuthorizationService
 
     @BeforeEach
     fun setUp() {
@@ -43,6 +44,7 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
         camundaProcessService = mock()
         testSubmissionHandler = TestSubmissionHandler()
         objectMapper = ObjectMapper()
+        processAuthorizationService = mock()
         formViewModelSubmissionHandlerFactory = FormViewModelSubmissionHandlerFactory(
             formViewModelSubmissionHandlers = listOf(testSubmissionHandler)
         )
@@ -51,13 +53,13 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
             authorizationService = authorizationService,
             camundaTaskService = camundaTaskService,
             camundaProcessService = camundaProcessService,
-            objectMapper = objectMapper
+            objectMapper = objectMapper,
+            processAuthorizationService = processAuthorizationService
         )
 
         val processInstance = mock<CamundaExecution>()
         whenever(camundaTask.processInstance).thenReturn(processInstance)
         whenever(processInstance.businessKey).thenReturn("test")
-
         whenever(camundaTaskService.findTaskById(any())).thenReturn(camundaTask)
     }
 

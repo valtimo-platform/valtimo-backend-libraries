@@ -44,11 +44,11 @@ class FormViewModelResource(
     @GetMapping("/start-form")
     fun getStartFormViewModel(
         @RequestParam formName: String,
-        @RequestParam processDefinitionId: String
+        @RequestParam processDefinitionKey: String
     ): ResponseEntity<ViewModel?> {
         val viewModel = formViewModelService.getStartFormViewModel(
             formName = formName,
-            processDefinitionId = processDefinitionId
+            processDefinitionKey = processDefinitionKey
         )
         return if (viewModel != null) {
             ResponseEntity.ok(viewModel)
@@ -74,12 +74,12 @@ class FormViewModelResource(
     fun updateStartFormViewModel(
         @RequestParam formName: String,
         @RequestBody submission: ObjectNode,
-        @RequestParam processDefinitionId: String
+        @RequestParam processDefinitionKey: String
     ): ResponseEntity<ViewModel> {
         return formViewModelService.updateStartFormViewModel(
             formName = formName,
             submission = submission,
-            processDefinitionId = processDefinitionId
+            processDefinitionKey = processDefinitionKey
         )?.let {
             ResponseEntity.ok(it)
         } ?: ResponseEntity.notFound().build()
