@@ -19,18 +19,20 @@ package com.ritense.formviewmodel.autoconfigure
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
-import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandler
-import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandlerFactory
 import com.ritense.formviewmodel.processlink.FormViewModelProcessLinkActivityHandler
 import com.ritense.formviewmodel.security.config.FormViewModelHttpSecurityConfigurerKotlin
 import com.ritense.formviewmodel.service.FormViewModelService
 import com.ritense.formviewmodel.service.FormViewModelSubmissionService
+import com.ritense.formviewmodel.service.ProcessAuthorizationService
+import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandler
+import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandlerFactory
 import com.ritense.formviewmodel.validation.OnStartUpViewModelValidator
 import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.formviewmodel.viewmodel.ViewModelLoader
 import com.ritense.formviewmodel.viewmodel.ViewModelLoaderFactory
 import com.ritense.formviewmodel.web.rest.FormViewModelResource
 import com.ritense.formviewmodel.web.rest.error.FormViewModelModuleExceptionTranslator
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import org.springframework.boot.autoconfigure.AutoConfiguration
@@ -49,12 +51,14 @@ class FormViewModelAutoConfiguration {
         objectMapper: ObjectMapper,
         viewModelLoaderFactory: ViewModelLoaderFactory,
         camundaTaskService: CamundaTaskService,
-        authorizationService: AuthorizationService
+        authorizationService: AuthorizationService,
+        processAuthorizationService: ProcessAuthorizationService
     ) = FormViewModelService(
         objectMapper,
         viewModelLoaderFactory,
         camundaTaskService,
-        authorizationService
+        authorizationService,
+        processAuthorizationService
     )
 
     @Bean
@@ -70,13 +74,15 @@ class FormViewModelAutoConfiguration {
         authorizationService: AuthorizationService,
         camundaTaskService: CamundaTaskService,
         camundaProcessService: CamundaProcessService,
-        objectMapper: ObjectMapper
+        objectMapper: ObjectMapper,
+        processAuthorizationService: ProcessAuthorizationService
     ) = FormViewModelSubmissionService(
         formViewModelSubmissionHandlerFactory,
         authorizationService,
         camundaTaskService,
         camundaProcessService,
-        objectMapper
+        objectMapper,
+        processAuthorizationService
     )
 
     @Order(390)
@@ -116,5 +122,14 @@ class FormViewModelAutoConfiguration {
         formIoFormDefinitionService,
         viewModelLoaders,
         formViewModelSubmissionHandlerFactory
+    )
+
+    @Bean
+    fun processAuthorizationService(
+        camundaRepositoryService: CamundaRepositoryService,
+        authorizationService: AuthorizationService
+    ) = ProcessAuthorizationService(
+        camundaRepositoryService,
+        authorizationService
     )
 }

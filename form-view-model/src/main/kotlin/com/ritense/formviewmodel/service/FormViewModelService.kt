@@ -18,6 +18,7 @@ package com.ritense.formviewmodel.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.request.RelatedEntityAuthorizationRequest
@@ -28,30 +29,26 @@ import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Compa
 import com.ritense.valtimo.camunda.domain.CamundaExecution
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.service.CamundaTaskService
+import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState
+import java.util.UUID
+import java.util.concurrent.Callable
 import kotlin.reflect.KClass
 
 class FormViewModelService(
     val objectMapper: ObjectMapper,
     private val viewModelLoaderFactory: ViewModelLoaderFactory,
     private val camundaTaskService: CamundaTaskService,
-    private val authorizationService: AuthorizationService
+    private val authorizationService: AuthorizationService,
+    private val processAuthorizationService: ProcessAuthorizationService
 ) {
 
     fun getStartFormViewModel(
         formName: String,
-        processDefinitionId: String
+        processDefinitionKey: String
     ): ViewModel? {
-        require(
-            authorizationService.hasPermission(
-                RelatedEntityAuthorizationRequest(
-                    CamundaExecution::class.java,
-                    CamundaExecutionActionProvider.CREATE,
-                    CamundaProcessDefinition::class.java,
-                    processDefinitionId
-                )
-            )
-        )
+        processAuthorizationService.checkAuthorization(processDefinitionKey)
         return viewModelLoaderFactory.getViewModelLoader(formName)?.load()
     }
 
@@ -69,18 +66,9 @@ class FormViewModelService(
     fun updateStartFormViewModel(
         formName: String,
         submission: ObjectNode,
-        processDefinitionId: String
+        processDefinitionKey: String
     ): ViewModel? {
-        require(
-            authorizationService.hasPermission(
-                RelatedEntityAuthorizationRequest(
-                    CamundaExecution::class.java,
-                    CamundaExecutionActionProvider.CREATE,
-                    CamundaProcessDefinition::class.java,
-                    processDefinitionId
-                )
-            )
-        )
+        processAuthorizationService.checkAuthorization(processDefinitionKey)
         val viewModelLoader =
             viewModelLoaderFactory.getViewModelLoader(formName) ?: return null
         val viewModelType = viewModelLoader.getViewModelType()

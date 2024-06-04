@@ -159,11 +159,11 @@ class FormViewModelResourceTest : BaseTest() {
         whenever(
             formViewModelService.getStartFormViewModel(
                 formName = eq("test"),
-                processDefinitionId = eq("processDefinitionId")
+                processDefinitionKey = eq("processDefinitionKey")
             )
         ).thenReturn(TestViewModel())
         mockMvc.perform(
-            get("$BASE_URL/$START_FORM?formName=test&processDefinitionId=processDefinitionId")
+            get("$BASE_URL/$START_FORM?formName=test&processDefinitionKey=processDefinitionKey")
                 .accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
         ).andExpect(status().isOk)
@@ -172,7 +172,7 @@ class FormViewModelResourceTest : BaseTest() {
     @Test
     fun `should return notfound for unknown start form view model`() {
         mockMvc.perform(
-            get("$BASE_URL/$START_FORM?formName=test&processDefinitionId=processDefinitionId")
+            get("$BASE_URL/$START_FORM?formName=test&processDefinitionKey=processDefinitionKey")
                 .accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
         ).andExpect(status().isNotFound)
@@ -193,13 +193,13 @@ class FormViewModelResourceTest : BaseTest() {
             formViewModelService.updateStartFormViewModel(
                 formName = eq("test"),
                 submission = any(),
-                processDefinitionId = eq("processDefinitionId")
+                processDefinitionKey = eq("processDefinitionKey")
             )
         ).thenReturn(TestViewModel())
         mockMvc.perform(
             post(
-                "$BASE_URL/$START_FORM?formName={formName}&processDefinitionId={processDefinitionKey}",
-                "test", "processDefinitionId"
+                "$BASE_URL/$START_FORM?formName={formName}&processDefinitionKey={processDefinitionKey}",
+                "test", "processDefinitionKey"
             ).accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
                 .content(jacksonObjectMapper().writeValueAsString(TestViewModel()))
