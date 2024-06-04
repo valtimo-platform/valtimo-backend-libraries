@@ -7,7 +7,7 @@ import com.ritense.valtimo.camunda.domain.CamundaTask
 
 class SubdoelenViewModelLoader: ViewModelLoader<SubdoelenViewModel> {
 
-    override fun load(task: CamundaTask): SubdoelenViewModel {
+    override fun load(task: CamundaTask?): SubdoelenViewModel {
         val aandachtsPunten = POCSubmissions.aandachtsPunten!!
 
         val subdoelenGrid = aandachtsPunten.aandachtspuntenGrid!!.map {

@@ -10,7 +10,7 @@ data class StartViewModel(
     val test: String
 ) : ViewModel, Submission {
 
-    override fun update(task: CamundaTask): ViewModel {
+    override fun update(task: CamundaTask?): ViewModel {
         return this
     }
 }

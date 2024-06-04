@@ -13,7 +13,7 @@ data class SubdoelenViewModel(
     val subdoelenGrid: List<SubdoelenGridRow>,
     val aandachtspunten: List<Aandachtspunt>
 ) : ViewModel, Submission {
-    override fun update(task: CamundaTask): ViewModel {
+    override fun update(task: CamundaTask?): ViewModel {
         println("Updating")
         return this.copy(
             subdoelenGrid = subdoelenGrid.map {

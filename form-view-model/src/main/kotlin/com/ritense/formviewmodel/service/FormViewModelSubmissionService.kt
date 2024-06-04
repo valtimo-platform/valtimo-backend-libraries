@@ -86,6 +86,7 @@ class FormViewModelSubmissionService(
             task = task,
             businessKey = task.processInstance!!.businessKey!!
         )
+        // verify camundaTaskService.complete(task.id)
         camundaTaskService.complete(task.id)
     }
 

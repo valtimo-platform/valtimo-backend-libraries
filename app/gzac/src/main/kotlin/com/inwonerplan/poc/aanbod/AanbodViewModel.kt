@@ -16,7 +16,7 @@ data class AanbodViewModel(
     val aandachtspunten: List<Aandachtspunt>
 ) : ViewModel, Submission {
 
-    override fun update(task: CamundaTask): ViewModel {
+    override fun update(task: CamundaTask?): ViewModel {
         println("Updating")
         val copy = this.copy(
             aanbodGrid = aanbodGrid.map {

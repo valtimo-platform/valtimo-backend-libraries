@@ -10,7 +10,7 @@ import com.inwonerplan.poc.start.StartViewModelLoader
 import com.inwonerplan.poc.subdoelen.OnSubdoelenSubmittedEventHandler
 import com.inwonerplan.poc.subdoelen.SubdoelenViewModelLoader
 import com.ritense.document.service.DocumentService
-import com.ritense.formviewmodel.event.FormViewModelSubmissionHandler
+import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandler
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Bean
 

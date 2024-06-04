@@ -6,7 +6,7 @@ import com.ritense.valtimo.camunda.domain.CamundaTask
 
 class AandachtsPuntenViewModelLoader: ViewModelLoader<AandachtsPuntenViewModel> {
 
-    override fun load(task: CamundaTask): AandachtsPuntenViewModel {
+    override fun load(task: CamundaTask?): AandachtsPuntenViewModel {
         return AandachtsPuntenViewModel(
             StamtabellenApi().getAandachtspunten(),
             null

@@ -11,7 +11,7 @@ data class AandachtsPuntenViewModel(
     val aandachtspunten: List<Aandachtspunt>,
     val aandachtspuntenGrid: List<AandachtsPuntGridRow>?
 ) : ViewModel, Submission {
-    override fun update(task: CamundaTask): ViewModel {
+    override fun update(task: CamundaTask?): ViewModel {
         return this
     }
 }

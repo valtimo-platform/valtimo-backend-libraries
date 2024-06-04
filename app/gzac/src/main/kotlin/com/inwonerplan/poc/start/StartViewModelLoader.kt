@@ -5,7 +5,7 @@ import com.ritense.valtimo.camunda.domain.CamundaTask
 
 class StartViewModelLoader: ViewModelLoader<StartViewModel> {
 
-    override fun load(task: CamundaTask): StartViewModel {
+    override fun load(task: CamundaTask?): StartViewModel {
         return StartViewModel(
             test = "test"
         )

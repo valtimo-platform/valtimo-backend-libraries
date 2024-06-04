@@ -6,7 +6,7 @@ import com.ritense.valtimo.camunda.domain.CamundaTask
 
 class AanbodViewModelLoader: ViewModelLoader<AanbodViewModel> {
 
-    override fun load(task: CamundaTask): AanbodViewModel {
+    override fun load(task: CamundaTask?): AanbodViewModel {
         return AanbodViewModel(
             emptyList(),
             StamtabellenApi().getAandachtspunten()
