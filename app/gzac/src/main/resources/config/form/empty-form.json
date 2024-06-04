@@ -2,6 +2,12 @@
     "display": "form",
     "components": [
         {
+            "label": "Test",
+            "key": "test",
+            "type": "textfield",
+            "input": true
+        },
+        {
             "id": "ez8wcn",
             "key": "submit",
             "size": "md",
