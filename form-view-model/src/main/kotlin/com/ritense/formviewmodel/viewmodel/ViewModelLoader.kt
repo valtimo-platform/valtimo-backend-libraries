@@ -23,12 +23,14 @@ import kotlin.reflect.KClass
 @Transactional
 interface ViewModelLoader<T : ViewModel> {
 
-    fun load(task: CamundaTask): T
+    fun load(task: CamundaTask? = null): T
 
     fun supports(formName: String) = getFormName() == formName
 
     @Suppress("UNCHECKED_CAST")
-    fun getViewModelType(): KClass<T> = this::class.supertypes.first().arguments.first().type!!.classifier as KClass<T>
+    fun getViewModelType(): KClass<T> =
+        this::class.supertypes.first().arguments.first().type?.let { it.classifier as KClass<T> }
+            ?: throw IllegalArgumentException("Could not resolve ViewModelType for ${this::class}")
 
     fun getFormName(): String
 

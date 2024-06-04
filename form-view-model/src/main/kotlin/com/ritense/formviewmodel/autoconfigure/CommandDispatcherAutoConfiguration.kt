@@ -20,10 +20,10 @@ import com.ritense.formviewmodel.SpringContextHelper
 import com.ritense.formviewmodel.commandhandling.Command
 import com.ritense.formviewmodel.commandhandling.CommandDispatcher
 import com.ritense.formviewmodel.commandhandling.CommandHandler
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 
-@Configuration
+@AutoConfiguration
 class CommandDispatcherAutoConfiguration {
 
     @Bean
@@ -35,5 +35,8 @@ class CommandDispatcherAutoConfiguration {
             handlers.map { this.registerCommandHandler(it as CommandHandler<Command<Any>, Any>) }
         }
     }
+
+    @Bean
+    fun commandSpringContextHelper() = SpringContextHelper()
 
 }

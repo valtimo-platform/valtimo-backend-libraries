@@ -17,6 +17,7 @@
 package com.ritense.processdocument.service
 
 import com.ritense.authorization.Action
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
@@ -49,14 +50,14 @@ import jakarta.persistence.criteria.Order
 import jakarta.persistence.criteria.Path
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
+import java.time.LocalDateTime
+import java.util.UUID
+import java.util.stream.Collectors
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
-import java.time.LocalDateTime
-import java.util.UUID
-import java.util.stream.Collectors
 
 
 class CaseTaskListSearchService(
@@ -97,10 +98,10 @@ class CaseTaskListSearchService(
 
         val selectCols = arrayOf(
             taskRoot.get<String>("id"),
-            taskRoot.get<LocalDateTime?>("createTime"),
-            taskRoot.get<String?>("name"),
-            taskRoot.get<String?>("assignee"),
-            taskRoot.get<LocalDateTime?>("dueDate"),
+            taskRoot.get<LocalDateTime?>(CaseTaskProperties.CREATE_TIME.propertyName),
+            taskRoot.get<String?>(CaseTaskProperties.NAME.propertyName),
+            taskRoot.get<String?>(CaseTaskProperties.ASSIGNEE.propertyName),
+            taskRoot.get<LocalDateTime?>(CaseTaskProperties.DUE_DATE.propertyName),
             taskRoot.get<CamundaExecution?>("processInstance").get<String>("id"),
             documentRoot.get<JsonSchemaDocumentId>("id").get<UUID>("id")
         )
@@ -295,22 +296,28 @@ class CaseTaskListSearchService(
         val (taskPaths, otherPaths) = paths.partition { it.startsWith(TASK_PREFIX) }
 
         val resolvedValuesMap = valueResolverService.resolveValues(caseTask.documentInstanceId.toString(), otherPaths).toMutableMap()
-
-        resolvedValuesMap.putAll(taskPaths.map { taskPath ->
-            taskPath to when (taskPath.substring(TASK_PREFIX.length)) {
-                "createTime" -> caseTask.createTime
-                "name" -> caseTask.name
-                "assignee" -> caseTask.assignee
-                "dueDate" -> caseTask.dueDate
-                else -> taskPath to taskPath
-            }
-        })
+        resolvedValuesMap.putAll(taskPaths.map { taskPath -> resolveTaskValue(caseTask, taskPath) })
 
         val items = taskListColumns.map { caseListColumn ->
             TaskListRowDto.TaskListItemDto(caseListColumn.id.key, resolvedValuesMap[caseListColumn.path])
         }.toList()
 
         return TaskListRowDto(caseTask.taskId, caseTask.documentInstanceId.toString(), caseTask.processInstanceId, caseTask.name, caseTask.createTime, items)
+    }
+
+    private fun resolveTaskValue(caseTask: CaseTask, taskPath: String): Pair<String, Any?> {
+        val value = runWithoutAuthorization {
+            when (val path = taskPath.substringAfter(TASK_PREFIX).substringBefore(".")) {
+                "assignee" -> {
+                    CaseTaskProperties.getByPropertyName("assignee")
+                        ?.getValueFromObject(caseTask)
+                        ?.let { assigneeId -> userManagementService.findById(assigneeId as String).fullName }
+                }
+
+                else -> CaseTaskProperties.getByPropertyName(path)?.getValueFromObject(caseTask)
+            }
+        }
+        return taskPath to value
     }
 
     private fun <T> stringToPath(parent: Path<*>, path: String): Path<T> {
@@ -327,7 +334,7 @@ class CaseTaskListSearchService(
             TaskListColumn(
                 id = TaskListColumnId("Default", "createTime"),
                 title = "createTime",
-                path = "task:createTime",
+                path = "task:${CaseTaskProperties.CREATE_TIME.propertyName}",
                 displayType = DisplayType("string", EmptyDisplayTypeParameter()),
                 sortable = true,
                 defaultSort = null,
@@ -336,7 +343,7 @@ class CaseTaskListSearchService(
             TaskListColumn(
                 id = TaskListColumnId("Default", "name"),
                 title = "name",
-                path = "task:name",
+                path = "task:${CaseTaskProperties.NAME.propertyName}",
                 displayType = DisplayType("string", EmptyDisplayTypeParameter()),
                 sortable = true,
                 defaultSort = null,
@@ -345,7 +352,7 @@ class CaseTaskListSearchService(
             TaskListColumn(
                 id = TaskListColumnId("Default", "assignee"),
                 title = "assignee",
-                path = "task:assignee",
+                path = "task:${CaseTaskProperties.ASSIGNEE.propertyName}",
                 displayType = DisplayType("string", EmptyDisplayTypeParameter()),
                 sortable = true,
                 defaultSort = null,
@@ -354,12 +361,38 @@ class CaseTaskListSearchService(
             TaskListColumn(
                 id = TaskListColumnId("Default", "dueDate"),
                 title = "dueDate",
-                path = "task:dueDate",
+                path = "task:${CaseTaskProperties.DUE_DATE.propertyName}",
                 displayType = DisplayType("string", EmptyDisplayTypeParameter()),
                 sortable = true,
                 defaultSort = null,
                 order = 4
             )
         )
+    }
+}
+
+enum class CaseTaskProperties(val propertyName: String) {
+    CREATE_TIME("createTime") {
+        override fun getValueFromObject(caseTask: CaseTask) = caseTask.createTime
+    },
+    NAME("name") {
+        override fun getValueFromObject(caseTask: CaseTask) = caseTask.name
+    },
+    ASSIGNEE("assignee") {
+        override fun getValueFromObject(caseTask: CaseTask) = caseTask.assignee
+    },
+    DUE_DATE("dueDate") {
+        override fun getValueFromObject(caseTask: CaseTask) = caseTask.dueDate
+    };
+
+    abstract fun getValueFromObject(caseTask: CaseTask): Any?
+
+    override fun toString(): String {
+        return propertyName
+    }
+
+    companion object {
+        fun getNames() = entries.map { it.propertyName }
+        fun getByPropertyName(propertyName: String) = entries.find { it.propertyName == propertyName }
     }
 }

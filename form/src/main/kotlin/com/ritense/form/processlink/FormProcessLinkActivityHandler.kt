@@ -19,7 +19,6 @@ package com.ritense.form.processlink
 import com.ritense.form.domain.FormProcessLink
 import com.ritense.form.domain.FormTaskOpenResultProperties
 import com.ritense.form.service.PrefillFormService
-import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
@@ -27,7 +26,6 @@ import com.ritense.valtimo.camunda.domain.CamundaTask
 import java.util.UUID
 
 class FormProcessLinkActivityHandler(
-    private val formDefinitionService: FormIoFormDefinitionService,
     private val prefillFormService: PrefillFormService,
 ) : ProcessLinkActivityHandler<FormTaskOpenResultProperties> {
 
@@ -35,7 +33,10 @@ class FormProcessLinkActivityHandler(
         return processLink is FormProcessLink && !processLink.viewModelEnabled
     }
 
-    override fun openTask(task: CamundaTask, processLink: ProcessLink): ProcessLinkActivityResult<FormTaskOpenResultProperties> {
+    override fun openTask(
+        task: CamundaTask,
+        processLink: ProcessLink
+    ): ProcessLinkActivityResult<FormTaskOpenResultProperties> {
         processLink as FormProcessLink
         val formDefinition = prefillFormService.getPrefilledFormDefinition(
             formDefinitionId = processLink.formDefinitionId,

@@ -18,32 +18,67 @@ package com.ritense.formviewmodel.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.ritense.formviewmodel.event.FormViewModelSubmissionHandler
-import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
+import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.request.EntityAuthorizationRequest
+import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandlerFactory
 import com.ritense.formviewmodel.viewmodel.Submission
+import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Companion.COMPLETE
 import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
+import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 import kotlin.reflect.KClass
 
+@Transactional
 class FormViewModelSubmissionService(
     private val formViewModelSubmissionHandlerFactory: FormViewModelSubmissionHandlerFactory,
+    private val authorizationService: AuthorizationService,
     private val camundaTaskService: CamundaTaskService,
+    private val camundaProcessService: CamundaProcessService,
     private val objectMapper: ObjectMapper
 ) {
 
-    fun handleSubmission(
+    fun handleStartFormSubmission(
         formName: String,
-        submission: ObjectNode,
-        task: CamundaTask
+        processDefinitionKey: String,
+        submission: ObjectNode
     ) {
         val formViewModelSubmissionHandler = formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler(
             formName = formName
-        ) ?: throw RuntimeException("No event handler found for formName $formName")
+        ) ?: throw RuntimeException("No FormViewModelSubmissionHandler found for formName $formName")
+        val submissionType = formViewModelSubmissionHandler.getSubmissionType()
+        val submissionConverted = parseSubmission(submission, submissionType)
+        val businessKey = UUID.randomUUID().toString()
+        formViewModelSubmissionHandler.handle(
+            businessKey = businessKey,
+            submission = submissionConverted,
+        )
+        camundaProcessService.startProcess(
+            processDefinitionKey,
+            businessKey,
+            emptyMap()
+        )
+    }
+
+    fun handleUserTaskSubmission(
+        formName: String,
+        submission: ObjectNode,
+        taskInstanceId: String
+    ) {
+        val task = camundaTaskService.findTaskById(taskInstanceId)
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(CamundaTask::class.java, COMPLETE, task)
+        )
+        val formViewModelSubmissionHandler = formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler(
+            formName = formName
+        ) ?: throw RuntimeException("No FormViewModelSubmissionHandler found for formName $formName")
         val submissionType = formViewModelSubmissionHandler.getSubmissionType()
         val submissionConverted = parseSubmission(submission, submissionType)
         formViewModelSubmissionHandler.handle(
             submission = submissionConverted,
-            task = task
+            task = task,
+            businessKey = task.processInstance!!.businessKey!!
         )
         camundaTaskService.complete(task.id)
     }

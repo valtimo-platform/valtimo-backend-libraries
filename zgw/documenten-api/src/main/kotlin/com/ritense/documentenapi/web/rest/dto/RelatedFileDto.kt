@@ -35,6 +35,7 @@ data class RelatedFileDto(
     val identification: String? = null,
     val description: String? = null,
     val informatieobjecttype: String? = null,
+    val informatieobjecttypeOmschrijving: String? = null,
     val keywords: List<String>? = null,
     val format: String? = null,
     val sendDate: LocalDate? = null,

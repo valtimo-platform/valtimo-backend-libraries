@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.formviewmodel.event
+package com.ritense.zakenapi.domain
 
-import com.ritense.formviewmodel.viewmodel.Submission
+import java.net.URI
+import java.util.UUID
 
-class FormViewModelSubmissionHandlerFactory(
-    private val formViewModelSubmissionHandlers: List<FormViewModelSubmissionHandler<*>>
-) {
-
-    fun getFormViewModelSubmissionHandler(formName: String): FormViewModelSubmissionHandler<out Submission>? {
-        return formViewModelSubmissionHandlers.find { it.supports(formName) }
-    }
-
-}
+data class ZaakResultaat(
+    val url: URI,
+    val uuid: UUID,
+    val zaak: URI,
+    val resultaattype: URI,
+    val toelichting: String? = null,
+)

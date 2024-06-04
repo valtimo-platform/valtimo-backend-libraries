@@ -17,6 +17,7 @@
 package com.ritense.documentenapi.deployment
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.ritense.documentenapi.domain.ColumnDefaultSort
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey
 
 data class ZgwDocumentListColumnChangeset(
@@ -27,5 +28,10 @@ data class ZgwDocumentListColumnChangeset(
 
 data class ZgwDocumentListColumnCollection(
     val key: String,
-    val columns: List<DocumentenApiColumnKey>
+    val columns: List<ZgwDocumentListColumn>
+)
+
+data class ZgwDocumentListColumn(
+    val key: DocumentenApiColumnKey,
+    val defaultSort: ColumnDefaultSort?
 )

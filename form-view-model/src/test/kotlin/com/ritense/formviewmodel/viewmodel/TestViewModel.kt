@@ -8,7 +8,7 @@ data class TestViewModel(
     val dataContainer: TestData? = null,
 ) : ViewModel, Submission {
 
-    override fun update(task: CamundaTask): ViewModel {
+    override fun update(task: CamundaTask?): ViewModel {
         return this
     }
 

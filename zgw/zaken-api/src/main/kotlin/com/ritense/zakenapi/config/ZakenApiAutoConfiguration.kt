@@ -20,6 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.documentenapi.service.DocumentDeleteHandler
+import com.ritense.documentenapi.service.DocumentenApiService
+import com.ritense.documentenapi.service.DocumentenApiVersionService
 import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
@@ -38,6 +40,7 @@ import com.ritense.zakenapi.provider.ZaakKvkProvider
 import com.ritense.zakenapi.repository.ZaakHersteltermijnRepository
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zakenapi.repository.ZaakTypeLinkRepository
+import com.ritense.zakenapi.resolver.ZaakResultaatValueResolverFactory
 import com.ritense.zakenapi.resolver.ZaakStatusValueResolverFactory
 import com.ritense.zakenapi.resolver.ZaakValueResolverFactory
 import com.ritense.zakenapi.security.ZakenApiHttpSecurityConfigurer
@@ -106,9 +109,17 @@ class ZakenApiAutoConfiguration {
     fun zaakDocumentService(
         zaakUrlProvider: ZaakUrlProvider,
         pluginService: PluginService,
-        catalogiService: CatalogiService
+        catalogiService: CatalogiService,
+        documentenApiService: DocumentenApiService,
+        documentenApiVersionService: DocumentenApiVersionService,
     ): ZaakDocumentService {
-        return ZaakDocumentService(zaakUrlProvider, pluginService, catalogiService)
+        return ZaakDocumentService(
+            zaakUrlProvider,
+            pluginService,
+            catalogiService,
+            documentenApiService,
+            documentenApiVersionService,
+        )
     }
 
     @Bean
@@ -139,6 +150,20 @@ class ZakenApiAutoConfiguration {
         pluginService: PluginService,
     ): ZaakStatusValueResolverFactory {
         return ZaakStatusValueResolverFactory(
+            processDocumentService,
+            zaakUrlProvider,
+            pluginService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ZaakResultaatValueResolverFactory::class)
+    fun zaakResultaatValueResolverFactory(
+        processDocumentService: ProcessDocumentService,
+        zaakUrlProvider: ZaakUrlProvider,
+        pluginService: PluginService,
+    ): ZaakResultaatValueResolverFactory {
+        return ZaakResultaatValueResolverFactory(
             processDocumentService,
             zaakUrlProvider,
             pluginService

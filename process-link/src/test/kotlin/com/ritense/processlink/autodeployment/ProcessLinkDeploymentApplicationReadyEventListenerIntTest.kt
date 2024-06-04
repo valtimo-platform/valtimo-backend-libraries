@@ -54,7 +54,7 @@ class ProcessLinkDeploymentApplicationReadyEventListenerIntTest @Autowired const
 
     private fun getLatestProcessDefinition(): CamundaProcessDefinition {
         return AuthorizationContext.runWithoutAuthorization {
-            repositoryService.findLatestProcessDefinition("auto-deploy-process-link")!!
+            repositoryService.findLatestProcessDefinition("auto-deploy-process-link-with-long-key")!!
         }
     }
 }
