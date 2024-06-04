@@ -17,11 +17,13 @@
 package com.ritense.case_.rest.dto
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
+import jakarta.validation.constraints.Min
+import jakarta.validation.constraints.NotBlank
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 interface CaseWidgetTabWidgetDto {
-    val key: String
+    @get:NotBlank val key: String
     val title: String
-    val width: Int
+    @get:Min(1) val width: Int
     val highContrast: Boolean
 }

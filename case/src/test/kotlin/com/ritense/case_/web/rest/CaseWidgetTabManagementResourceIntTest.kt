@@ -93,8 +93,8 @@ class CaseWidgetTabManagementResourceIntTest @Autowired constructor(
             caseDefinitionName,
             tabKey,
             widgets = listOf(
-                TestCaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false),
-                TestCaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true)
+                TestCaseWidgetTabWidgetDto("widget-1", "Widget 1", 1, false),
+                TestCaseWidgetTabWidgetDto("widget-2", "Widget 2", 2, true)
             )
         )
 

@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-package com.ritense.case_.widget.fields
+package com.ritense.form.exception
 
-import com.fasterxml.jackson.annotation.JsonTypeName
-import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
-import jakarta.validation.Valid
+import java.util.UUID
 
-@JsonTypeName("fields")
-data class FieldsCaseWidgetDto(
-    override val key: String,
-    override val title: String,
-    override val width: Int,
-    override val highContrast: Boolean,
-    @field:Valid val properties: FieldsWidgetProperties
-) : CaseWidgetTabWidgetDto
+class FormDefinitionNotFoundException private constructor(name: String?, id: UUID?) : RuntimeException(
+    if (id != null) {
+        "Form definition with id '$id' not found"
+    } else {
+        "Form definition with name '$name' not found"
+    }
+) {
+
+    constructor(name: String) : this(name, null)
+
+    constructor(id: UUID) : this(null, id)
+}

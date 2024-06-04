@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 
-package com.ritense.case_.widget
+package com.ritense.form.casewidget
 
-import com.ritense.case_.domain.tab.CaseWidgetTab
 import com.ritense.case_.domain.tab.CaseWidgetTabWidget
-import org.springframework.data.domain.Pageable
-import java.util.UUID
+import io.hypersistence.utils.hibernate.type.json.JsonType
+import jakarta.persistence.Column
+import jakarta.persistence.DiscriminatorValue
+import jakarta.persistence.Entity
+import org.hibernate.annotations.Type
 
-interface CaseWidgetDataProvider<WIDGET: CaseWidgetTabWidget> {
-    fun supportedWidgetType(): Class<WIDGET>
-    fun getData(documentId: UUID, widgetTab: CaseWidgetTab, widget: WIDGET, pageable: Pageable): Any?
-}
+@Entity
+@DiscriminatorValue("formio")
+class FormIoCaseWidget(
+    key: String, title: String, order: Int, width: Int, highContrast: Boolean,
+
+    @Type(value = JsonType::class)
+    @Column(name = "properties", nullable = false)
+    val properties: FormIoWidgetProperties
+) : CaseWidgetTabWidget(
+    key, title, order, width, highContrast
+)

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.ritense.case_.widget.fields
+package com.ritense.form.casewidget
 
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
 import jakarta.validation.Valid
 
-@JsonTypeName("fields")
-data class FieldsCaseWidgetDto(
+@JsonTypeName("formio")
+data class FormIoCaseWidgetDto(
     override val key: String,
     override val title: String,
     override val width: Int,
     override val highContrast: Boolean,
-    @field:Valid val properties: FieldsWidgetProperties
+    @field:Valid val properties: FormIoWidgetProperties
 ) : CaseWidgetTabWidgetDto

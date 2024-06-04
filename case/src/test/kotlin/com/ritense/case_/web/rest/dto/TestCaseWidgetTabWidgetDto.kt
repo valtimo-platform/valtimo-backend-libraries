@@ -20,13 +20,12 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
 import com.ritense.case_.widget.TestCaseWidgetProperties
 import jakarta.validation.Valid
-import jakarta.validation.constraints.NotBlank
 
 @JsonTypeName("test")
 data class TestCaseWidgetTabWidgetDto(
-    @NotBlank override val key: String,
+    override val key: String,
     override val title: String,
     override val width: Int,
     override val highContrast: Boolean,
-    @Valid val properties: TestCaseWidgetProperties = TestCaseWidgetProperties(),
+    @field:Valid val properties: TestCaseWidgetProperties = TestCaseWidgetProperties(),
 ) : CaseWidgetTabWidgetDto

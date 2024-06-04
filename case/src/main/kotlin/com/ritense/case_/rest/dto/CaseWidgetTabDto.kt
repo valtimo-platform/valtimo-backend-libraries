@@ -23,9 +23,9 @@ import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 
 data class CaseWidgetTabDto(
-    @NotBlank val caseDefinitionName: String,
-    @NotBlank val key: String,
-    val widgets: List<@Valid CaseWidgetTabWidgetDto> = listOf(),
+    @field:NotBlank val caseDefinitionName: String,
+    @field:NotBlank val key: String,
+    @field:Valid val widgets: List<@Valid CaseWidgetTabWidgetDto> = listOf(),
 ) {
     companion object {
         @JvmStatic
