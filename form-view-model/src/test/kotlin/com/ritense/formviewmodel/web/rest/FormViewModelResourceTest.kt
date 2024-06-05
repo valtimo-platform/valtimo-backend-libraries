@@ -234,6 +234,7 @@ class FormViewModelResourceTest : BaseTest() {
             formViewModelSubmissionService.handleStartFormSubmission(
                 formName = eq("test"),
                 processDefinitionKey = eq("processDefinitionKey"),
+                documentDefinitionName = eq("documentDefinitionName"),
                 submission = any()
             )
         ).then {
