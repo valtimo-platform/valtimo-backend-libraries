@@ -12,7 +12,6 @@ class TestStartFormSubmissionHandler : FormViewModelStartFormSubmissionHandler<T
     override fun <T> handle(
         documentDefinitionName: String,
         processDefinitionKey: String,
-        businessKey: String,
         submission: T
     ) {
         submission as TestViewModel

@@ -27,7 +27,6 @@ import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Compa
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.service.CamundaTaskService
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
 import kotlin.reflect.KClass
 
 @Transactional
@@ -52,11 +51,9 @@ class FormViewModelSubmissionService(
         ) ?: throw RuntimeException("No StartFormSubmissionHandler found for formName $formName")
         val submissionType = startFormSubmissionHandler.getSubmissionType()
         val submissionConverted = parseSubmission(submission, submissionType)
-        val businessKey = UUID.randomUUID().toString()
         startFormSubmissionHandler.handle(
             documentDefinitionName = documentDefinitionName,
             processDefinitionKey = processDefinitionKey,
-            businessKey = businessKey,
             submission = submissionConverted
         )
     }

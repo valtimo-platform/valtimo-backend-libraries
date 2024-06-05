@@ -48,7 +48,6 @@ interface FormViewModelStartFormSubmissionHandler<T : Submission> {
      * ```
      * @param documentDefinitionName the name of the document definition
      * @param processDefinitionKey the key of the process definition
-     * @param businessKey the business key associated with the submission
      * @param submission the submission to be handled
      * @param <T> the type of the submission
      * @see com.ritense.formviewmodel.commandhandling.StartProcessCommand}`
@@ -56,7 +55,6 @@ interface FormViewModelStartFormSubmissionHandler<T : Submission> {
     fun <T> handle(
         documentDefinitionName: String,
         processDefinitionKey: String,
-        businessKey: String,
         submission: T
     )
 
