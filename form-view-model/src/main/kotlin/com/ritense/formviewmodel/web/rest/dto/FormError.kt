@@ -16,7 +16,31 @@
 
 package com.ritense.formviewmodel.web.rest.dto
 
-data class FormError(
+data class FormError private constructor (
     val error: String,
     val component: String? = null
-)
+) {
+
+    class Builder {
+        var error: String = UNKNOWN_FORM_ERROR
+        var component: String? = null
+
+        fun setError(error: String?): Builder {
+            this.error = error ?: UNKNOWN_FORM_ERROR
+            return this
+        }
+
+        fun setComponent(component: String?): Builder {
+            this.component = component ?: UNKNOWN_FORM_ERROR
+            return this
+        }
+
+        fun build() = FormError(error, component)
+
+    }
+
+    companion object {
+        val UNKNOWN_FORM_ERROR = "Unknown Form Error"
+    }
+
+}
