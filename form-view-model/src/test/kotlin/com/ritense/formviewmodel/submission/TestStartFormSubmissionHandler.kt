@@ -1,5 +1,6 @@
 package com.ritense.formviewmodel.submission
 
+import com.ritense.formviewmodel.error.FormException
 import com.ritense.formviewmodel.viewmodel.TestViewModel
 
 class TestStartFormSubmissionHandler : FormViewModelStartFormSubmissionHandler<TestViewModel> {
@@ -15,8 +16,9 @@ class TestStartFormSubmissionHandler : FormViewModelStartFormSubmissionHandler<T
         submission: T
     ) {
         submission as TestViewModel
-
-        // Dispatch the StartProcessCommand here
+        if (submission.age!! < 18) {
+            throw FormException("Age should be 18 or older")
+        }
     }
 
 }
