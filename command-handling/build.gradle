@@ -31,7 +31,6 @@ dockerCompose {
 dependencies {
     implementation project(":contract")
     implementation 'org.springframework:spring-tx'
-    // implementation "org.springframework.boot:spring-boot"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
