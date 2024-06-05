@@ -118,11 +118,13 @@ class FormViewModelResource(
     fun submitStartForm(
         @RequestParam formName: String,
         @RequestParam processDefinitionKey: String,
+        @RequestParam documentDefinitionName: String,
         @RequestBody submission: ObjectNode
     ): ResponseEntity<Void> {
         formViewModelSubmissionService.handleStartFormSubmission(
             formName = formName,
             processDefinitionKey = processDefinitionKey,
+            documentDefinitionName = documentDefinitionName,
             submission = submission,
         )
         return ResponseEntity.noContent().build()
