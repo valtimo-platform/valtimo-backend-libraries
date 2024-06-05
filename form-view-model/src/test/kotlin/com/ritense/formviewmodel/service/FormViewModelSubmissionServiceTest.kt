@@ -56,7 +56,7 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
         )
         formViewModelSubmissionService = FormViewModelSubmissionService(
             formViewModelStartFormSubmissionHandlerFactory = formViewModelStartFormSubmissionHandlerFactory,
-            userTaskSubmissionHandlerFactory = formViewModelUserTaskSubmissionHandlerFactory,
+            formViewModelUserTaskSubmissionHandlerFactory = formViewModelUserTaskSubmissionHandlerFactory,
             authorizationService = authorizationService,
             camundaTaskService = camundaTaskService,
             objectMapper = objectMapper,
