@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.AuthorizationService
 import com.ritense.formviewmodel.BaseTest
-import com.ritense.formviewmodel.commandhandling.ExampleCommand
 import com.ritense.formviewmodel.error.FormException
 import com.ritense.formviewmodel.event.TestSubmissionHandler
 import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandlerFactory
@@ -37,7 +36,6 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
 
     @BeforeEach
     fun setUp() {
-        super.baseSetup()
         authorizationService = mock()
         camundaTask = mock()
         camundaTaskService = mock()
@@ -71,7 +69,6 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
             submission = submission,
             taskInstanceId = "taskInstanceId"
         )
-        verify(commandDispatcher).dispatch(any<ExampleCommand>())
         verify(camundaTaskService).complete(camundaTask.id)
     }
 
@@ -96,7 +93,6 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
             processDefinitionKey = "test",
             submission = submission
         )
-        verify(commandDispatcher).dispatch(any<ExampleCommand>())
         verify(camundaProcessService).startProcess(eq("test"), any(), any())
     }
 

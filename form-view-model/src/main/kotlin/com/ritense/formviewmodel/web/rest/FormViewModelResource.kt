@@ -114,7 +114,6 @@ class FormViewModelResource(
     }
 
     @PostMapping("/submit/start-form")
-    @Transactional
     fun submitStartForm(
         @RequestParam formName: String,
         @RequestParam processDefinitionKey: String,
