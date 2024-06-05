@@ -69,14 +69,14 @@ class FormViewModelAutoConfiguration {
 
     @Bean
     fun formViewModelStartFormSubmissionHandlerFactory(
-        formViewModelStartFormSubmissionHandlers: List<FormViewModelStartFormSubmissionHandler<Submission>>
+        formViewModelStartFormSubmissionHandlers: List<FormViewModelStartFormSubmissionHandler<*>>
     ) = FormViewModelStartFormSubmissionHandlerFactory(
         formViewModelStartFormSubmissionHandlers
     )
 
     @Bean
     fun formViewModelUserTaskSubmissionHandlerFactory(
-        formViewModelUserTaskSubmissionHandlers: List<FormViewModelUserTaskSubmissionHandler<Submission>>
+        formViewModelUserTaskSubmissionHandlers: List<FormViewModelUserTaskSubmissionHandler<*>>
     ) = FormViewModelUserTaskSubmissionHandlerFactory(
         formViewModelUserTaskSubmissionHandlers
     )
@@ -91,7 +91,7 @@ class FormViewModelAutoConfiguration {
         processAuthorizationService: ProcessAuthorizationService
     ) = FormViewModelSubmissionService(
         formViewModelStartFormSubmissionHandlerFactory = formViewModelStartFormSubmissionHandlerFactory,
-        userTaskSubmissionHandlerFactory = formViewModelUserTaskSubmissionHandlerFactory,
+        formViewModelUserTaskSubmissionHandlerFactory = formViewModelUserTaskSubmissionHandlerFactory,
         authorizationService = authorizationService,
         camundaTaskService = camundaTaskService,
         objectMapper = objectMapper,

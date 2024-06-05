@@ -33,7 +33,7 @@ import kotlin.reflect.KClass
 @Transactional
 class FormViewModelSubmissionService(
     private val formViewModelStartFormSubmissionHandlerFactory: FormViewModelStartFormSubmissionHandlerFactory,
-    private val userTaskSubmissionHandlerFactory: FormViewModelUserTaskSubmissionHandlerFactory,
+    private val formViewModelUserTaskSubmissionHandlerFactory: FormViewModelUserTaskSubmissionHandlerFactory,
     private val authorizationService: AuthorizationService,
     private val camundaTaskService: CamundaTaskService,
     private val objectMapper: ObjectMapper,
@@ -47,13 +47,13 @@ class FormViewModelSubmissionService(
         submission: ObjectNode
     ) {
         processAuthorizationService.checkAuthorization(processDefinitionKey)
-        val formViewModelSubmissionHandler = formViewModelStartFormSubmissionHandlerFactory.getHandler(
+        val startFormSubmissionHandler = formViewModelStartFormSubmissionHandlerFactory.getHandler(
             formName = formName
         ) ?: throw RuntimeException("No StartFormSubmissionHandler found for formName $formName")
-        val submissionType = formViewModelSubmissionHandler.getSubmissionType()
+        val submissionType = startFormSubmissionHandler.getSubmissionType()
         val submissionConverted = parseSubmission(submission, submissionType)
         runWithoutAuthorization {
-            formViewModelSubmissionHandler.handle(
+            startFormSubmissionHandler.handle(
                 documentDefinitionName = documentDefinitionName,
                 processDefinitionKey = processDefinitionKey,
                 submission = submissionConverted
@@ -70,13 +70,13 @@ class FormViewModelSubmissionService(
         authorizationService.requirePermission(
             EntityAuthorizationRequest(CamundaTask::class.java, COMPLETE, task)
         )
-        val formViewModelSubmissionHandler = userTaskSubmissionHandlerFactory.getHandler(
+        val userTaskSubmissionHandler = formViewModelUserTaskSubmissionHandlerFactory.getHandler(
             formName = formName
         ) ?: throw RuntimeException("No UserTaskSubmissionHandler found for formName $formName")
-        val submissionType = formViewModelSubmissionHandler.getSubmissionType()
+        val submissionType = userTaskSubmissionHandler.getSubmissionType()
         val submissionConverted = parseSubmission(submission, submissionType)
         runWithoutAuthorization {
-            formViewModelSubmissionHandler.handle(
+            userTaskSubmissionHandler.handle(
                 submission = submissionConverted,
                 task = task,
                 businessKey = task.processInstance!!.businessKey!!

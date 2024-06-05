@@ -10,14 +10,12 @@ import com.ritense.valtimo.camunda.domain.CamundaExecution
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.valtimo.contract.json.MapperSingleton
-import com.ritense.valtimo.service.CamundaTaskService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -28,9 +26,6 @@ import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 class FormViewModelResourceIntTest : BaseIntegrationTest() {
-
-    @MockBean
-    lateinit var camundaTaskService: CamundaTaskService
 
     @Autowired
     lateinit var formViewModelResource: FormViewModelResource

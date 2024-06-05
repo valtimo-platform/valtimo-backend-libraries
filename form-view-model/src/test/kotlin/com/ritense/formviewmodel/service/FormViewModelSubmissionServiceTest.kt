@@ -56,7 +56,7 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
         )
         formViewModelSubmissionService = FormViewModelSubmissionService(
             formViewModelStartFormSubmissionHandlerFactory = formViewModelStartFormSubmissionHandlerFactory,
-            userTaskSubmissionHandlerFactory = formViewModelUserTaskSubmissionHandlerFactory,
+            formViewModelUserTaskSubmissionHandlerFactory = formViewModelUserTaskSubmissionHandlerFactory,
             authorizationService = authorizationService,
             camundaTaskService = camundaTaskService,
             objectMapper = objectMapper,
@@ -115,18 +115,15 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
         )
         val documentDefinitionNameCaptor = argumentCaptor<String>()
         val processDefinitionKeyCaptor = argumentCaptor<String>()
-        val businessKeyCaptor = argumentCaptor<String>()
         val submissionCaptor = argumentCaptor<TestViewModel>()
 
         verify(testStartFormSubmissionHandler).handle(
             documentDefinitionName = documentDefinitionNameCaptor.capture(),
             processDefinitionKey = processDefinitionKeyCaptor.capture(),
-            businessKey = businessKeyCaptor.capture(),
             submission = submissionCaptor.capture()
         )
         assertThat(documentDefinitionNameCaptor.firstValue).isEqualTo(documentDefinitionName)
         assertThat(processDefinitionKeyCaptor.firstValue).isEqualTo(processDefinitionKey)
-        assertThat(businessKeyCaptor.firstValue).isInstanceOf(String::class.java)
         assertThat(submissionCaptor.firstValue).isInstanceOf(TestViewModel::class.java)
     }
 
