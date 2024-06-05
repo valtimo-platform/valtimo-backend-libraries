@@ -23,7 +23,12 @@ class FormViewModelModuleExceptionTranslator : ProblemHandling {
     ): ResponseEntity<FormError> {
         return ResponseEntity
             .badRequest()
-            .body(FormError(error = ex.message ?: "Unknown Form Error", component = ex.component))
+            .body(
+                FormError.Builder()
+                    .setError(ex.message)
+                    .setComponent(ex.component)
+                    .build()
+            )
     }
 
     @ExceptionHandler(BusinessException::class)
@@ -33,7 +38,11 @@ class FormViewModelModuleExceptionTranslator : ProblemHandling {
     ): ResponseEntity<BusinessRuleError> {
         return ResponseEntity
             .badRequest()
-            .body(BusinessRuleError(error = ex.message ?: "Unknown Business Rule Error"))
+            .body(
+                BusinessRuleError.Builder()
+                    .setError(ex.message)
+                    .build()
+            )
     }
 
 }
