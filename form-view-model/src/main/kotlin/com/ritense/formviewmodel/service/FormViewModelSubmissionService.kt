@@ -18,6 +18,7 @@ package com.ritense.formviewmodel.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.formviewmodel.submission.FormViewModelStartFormSubmissionHandlerFactory
@@ -51,11 +52,13 @@ class FormViewModelSubmissionService(
         ) ?: throw RuntimeException("No StartFormSubmissionHandler found for formName $formName")
         val submissionType = startFormSubmissionHandler.getSubmissionType()
         val submissionConverted = parseSubmission(submission, submissionType)
-        startFormSubmissionHandler.handle(
-            documentDefinitionName = documentDefinitionName,
-            processDefinitionKey = processDefinitionKey,
-            submission = submissionConverted
-        )
+        runWithoutAuthorization {
+            startFormSubmissionHandler.handle(
+                documentDefinitionName = documentDefinitionName,
+                processDefinitionKey = processDefinitionKey,
+                submission = submissionConverted
+            )
+        }
     }
 
     fun handleUserTaskSubmission(
@@ -72,11 +75,13 @@ class FormViewModelSubmissionService(
         ) ?: throw RuntimeException("No UserTaskSubmissionHandler found for formName $formName")
         val submissionType = userTaskSubmissionHandler.getSubmissionType()
         val submissionConverted = parseSubmission(submission, submissionType)
-        userTaskSubmissionHandler.handle(
-            submission = submissionConverted,
-            task = task,
-            businessKey = task.processInstance!!.businessKey!!
-        )
+        runWithoutAuthorization {
+            userTaskSubmissionHandler.handle(
+                submission = submissionConverted,
+                task = task,
+                businessKey = task.processInstance!!.businessKey!!
+            )
+        }
     }
 
     private inline fun <reified T : Submission> parseSubmission(
