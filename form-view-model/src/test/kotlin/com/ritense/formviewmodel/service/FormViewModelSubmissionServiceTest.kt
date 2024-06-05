@@ -4,62 +4,68 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.AuthorizationService
 import com.ritense.formviewmodel.BaseTest
-import com.ritense.formviewmodel.commandhandling.ExampleCommand
 import com.ritense.formviewmodel.error.FormException
-import com.ritense.formviewmodel.event.TestSubmissionHandler
-import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandlerFactory
+import com.ritense.formviewmodel.submission.FormViewModelStartFormSubmissionHandlerFactory
+import com.ritense.formviewmodel.submission.FormViewModelUserTaskSubmissionHandlerFactory
+import com.ritense.formviewmodel.submission.TestStartFormSubmissionHandler
+import com.ritense.formviewmodel.submission.TestUserTaskSubmissionHandler
+import com.ritense.formviewmodel.viewmodel.TestViewModel
 import com.ritense.valtimo.camunda.domain.CamundaExecution
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.contract.json.MapperSingleton
-import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.spy
 import org.mockito.Mockito.verify
 import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.never
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.whenever
 
 class FormViewModelSubmissionServiceTest : BaseTest() {
 
     private lateinit var formViewModelSubmissionService: FormViewModelSubmissionService
-    private lateinit var formViewModelSubmissionHandlerFactory: FormViewModelSubmissionHandlerFactory
+    private lateinit var formViewModelStartFormSubmissionHandlerFactory: FormViewModelStartFormSubmissionHandlerFactory
+    private lateinit var formViewModelUserTaskSubmissionHandlerFactory: FormViewModelUserTaskSubmissionHandlerFactory
     private lateinit var authorizationService: AuthorizationService
     private lateinit var camundaTaskService: CamundaTaskService
-    private lateinit var camundaProcessService: CamundaProcessService
-    private lateinit var testSubmissionHandler: TestSubmissionHandler
+    private lateinit var testStartFormSubmissionHandler: TestStartFormSubmissionHandler
+    private lateinit var testUserTaskSubmissionHandler: TestUserTaskSubmissionHandler
     private lateinit var objectMapper: ObjectMapper
     private lateinit var camundaTask: CamundaTask
     private lateinit var processAuthorizationService: ProcessAuthorizationService
+    private val businessKey = "businessKey"
 
     @BeforeEach
     fun setUp() {
-        super.baseSetup()
         authorizationService = mock()
         camundaTask = mock()
         camundaTaskService = mock()
-        camundaProcessService = mock()
-        testSubmissionHandler = TestSubmissionHandler()
+        testUserTaskSubmissionHandler = spy()
+        testStartFormSubmissionHandler = spy()
         objectMapper = ObjectMapper()
         processAuthorizationService = mock()
-        formViewModelSubmissionHandlerFactory = FormViewModelSubmissionHandlerFactory(
-            formViewModelSubmissionHandlers = listOf(testSubmissionHandler)
+        formViewModelStartFormSubmissionHandlerFactory = FormViewModelStartFormSubmissionHandlerFactory(
+            handlers = listOf(testStartFormSubmissionHandler)
+        )
+        formViewModelUserTaskSubmissionHandlerFactory = FormViewModelUserTaskSubmissionHandlerFactory(
+            handlers = listOf(testUserTaskSubmissionHandler)
         )
         formViewModelSubmissionService = FormViewModelSubmissionService(
-            formViewModelSubmissionHandlerFactory = formViewModelSubmissionHandlerFactory,
+            formViewModelStartFormSubmissionHandlerFactory = formViewModelStartFormSubmissionHandlerFactory,
+            userTaskSubmissionHandlerFactory = formViewModelUserTaskSubmissionHandlerFactory,
             authorizationService = authorizationService,
             camundaTaskService = camundaTaskService,
-            camundaProcessService = camundaProcessService,
             objectMapper = objectMapper,
             processAuthorizationService = processAuthorizationService
         )
 
         val processInstance = mock<CamundaExecution>()
         whenever(camundaTask.processInstance).thenReturn(processInstance)
-        whenever(processInstance.businessKey).thenReturn("test")
+        whenever(processInstance.businessKey).thenReturn(businessKey)
         whenever(camundaTaskService.findTaskById(any())).thenReturn(camundaTask)
     }
 
@@ -71,8 +77,17 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
             submission = submission,
             taskInstanceId = "taskInstanceId"
         )
-        verify(commandDispatcher).dispatch(any<ExampleCommand>())
-        verify(camundaTaskService).complete(camundaTask.id)
+        val submissionCaptor = argumentCaptor<TestViewModel>()
+        val taskCaptor = argumentCaptor<CamundaTask>()
+        val businessKeyCaptor = argumentCaptor<String>()
+        verify(testUserTaskSubmissionHandler).handle(
+            submission = submissionCaptor.capture(),
+            task = taskCaptor.capture(),
+            businessKey = businessKeyCaptor.capture()
+        )
+        assertThat(submissionCaptor.firstValue).isInstanceOf(TestViewModel::class.java)
+        assertThat(taskCaptor.firstValue).isEqualTo(camundaTask)
+        assertThat(businessKeyCaptor.firstValue).isEqualTo(businessKey)
     }
 
     @Test
@@ -85,19 +100,34 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
                 taskInstanceId = "taskInstanceId"
             )
         }
-        verify(camundaTaskService, never()).complete(any())
     }
 
     @Test
     fun `should handle start form submission`() {
         val submission = submissionWithAdultAge()
+        val documentDefinitionName = "documentDefinitionName"
+        val processDefinitionKey = "processDefinitionKey"
         formViewModelSubmissionService.handleStartFormSubmission(
             formName = "test",
-            processDefinitionKey = "test",
+            processDefinitionKey = processDefinitionKey,
+            documentDefinitionName = documentDefinitionName,
             submission = submission
         )
-        verify(commandDispatcher).dispatch(any<ExampleCommand>())
-        verify(camundaProcessService).startProcess(eq("test"), any(), any())
+        val documentDefinitionNameCaptor = argumentCaptor<String>()
+        val processDefinitionKeyCaptor = argumentCaptor<String>()
+        val businessKeyCaptor = argumentCaptor<String>()
+        val submissionCaptor = argumentCaptor<TestViewModel>()
+
+        verify(testStartFormSubmissionHandler).handle(
+            documentDefinitionName = documentDefinitionNameCaptor.capture(),
+            processDefinitionKey = processDefinitionKeyCaptor.capture(),
+            businessKey = businessKeyCaptor.capture(),
+            submission = submissionCaptor.capture()
+        )
+        assertThat(documentDefinitionNameCaptor.firstValue).isEqualTo(documentDefinitionName)
+        assertThat(processDefinitionKeyCaptor.firstValue).isEqualTo(processDefinitionKey)
+        assertThat(businessKeyCaptor.firstValue).isInstanceOf(String::class.java)
+        assertThat(submissionCaptor.firstValue).isInstanceOf(TestViewModel::class.java)
     }
 
     @Test
@@ -106,11 +136,11 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
         assertThrows<FormException> {
             formViewModelSubmissionService.handleStartFormSubmission(
                 formName = "test",
-                processDefinitionKey = "test",
+                processDefinitionKey = "processDefinitionKey",
+                documentDefinitionName = "documentDefinitionName",
                 submission = submission
             )
         }
-        verify(camundaProcessService, never()).startProcess(any(), any(), any())
     }
 
     private fun submissionWithAdultAge(): ObjectNode = MapperSingleton.get().createObjectNode()

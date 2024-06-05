@@ -19,23 +19,29 @@ package com.ritense.formviewmodel.autoconfigure
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
+import com.ritense.formviewmodel.commandhandling.handler.CompleteTaskCommandHandler
+import com.ritense.formviewmodel.commandhandling.handler.StartProcessCommandHandler
 import com.ritense.formviewmodel.processlink.FormViewModelProcessLinkActivityHandler
 import com.ritense.formviewmodel.security.config.FormViewModelHttpSecurityConfigurerKotlin
 import com.ritense.formviewmodel.service.FormViewModelService
 import com.ritense.formviewmodel.service.FormViewModelSubmissionService
 import com.ritense.formviewmodel.service.ProcessAuthorizationService
-import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandler
-import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandlerFactory
+import com.ritense.formviewmodel.submission.FormViewModelStartFormSubmissionHandler
+import com.ritense.formviewmodel.submission.FormViewModelStartFormSubmissionHandlerFactory
+import com.ritense.formviewmodel.submission.FormViewModelUserTaskSubmissionHandler
+import com.ritense.formviewmodel.submission.FormViewModelUserTaskSubmissionHandlerFactory
 import com.ritense.formviewmodel.validation.OnStartUpViewModelValidator
 import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.formviewmodel.viewmodel.ViewModelLoader
 import com.ritense.formviewmodel.viewmodel.ViewModelLoaderFactory
 import com.ritense.formviewmodel.web.rest.FormViewModelResource
 import com.ritense.formviewmodel.web.rest.error.FormViewModelModuleExceptionTranslator
+import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
@@ -62,27 +68,34 @@ class FormViewModelAutoConfiguration {
     )
 
     @Bean
-    fun formViewModelSubmissionHandlerFactory(
-        formViewModelSubmissionHandlers: List<FormViewModelSubmissionHandler<Submission>>,
-    ) = FormViewModelSubmissionHandlerFactory(
-        formViewModelSubmissionHandlers
+    fun formViewModelStartFormSubmissionHandlerFactory(
+        formViewModelStartFormSubmissionHandlers: List<FormViewModelStartFormSubmissionHandler<Submission>>
+    ) = FormViewModelStartFormSubmissionHandlerFactory(
+        formViewModelStartFormSubmissionHandlers
+    )
+
+    @Bean
+    fun formViewModelUserTaskSubmissionHandlerFactory(
+        formViewModelUserTaskSubmissionHandlers: List<FormViewModelUserTaskSubmissionHandler<Submission>>
+    ) = FormViewModelUserTaskSubmissionHandlerFactory(
+        formViewModelUserTaskSubmissionHandlers
     )
 
     @Bean
     fun formViewModelSubmissionService(
-        formViewModelSubmissionHandlerFactory: FormViewModelSubmissionHandlerFactory,
+        formViewModelStartFormSubmissionHandlerFactory: FormViewModelStartFormSubmissionHandlerFactory,
+        formViewModelUserTaskSubmissionHandlerFactory: FormViewModelUserTaskSubmissionHandlerFactory,
         authorizationService: AuthorizationService,
         camundaTaskService: CamundaTaskService,
-        camundaProcessService: CamundaProcessService,
         objectMapper: ObjectMapper,
         processAuthorizationService: ProcessAuthorizationService
     ) = FormViewModelSubmissionService(
-        formViewModelSubmissionHandlerFactory,
-        authorizationService,
-        camundaTaskService,
-        camundaProcessService,
-        objectMapper,
-        processAuthorizationService
+        formViewModelStartFormSubmissionHandlerFactory = formViewModelStartFormSubmissionHandlerFactory,
+        userTaskSubmissionHandlerFactory = formViewModelUserTaskSubmissionHandlerFactory,
+        authorizationService = authorizationService,
+        camundaTaskService = camundaTaskService,
+        objectMapper = objectMapper,
+        processAuthorizationService = processAuthorizationService
     )
 
     @Order(390)
@@ -117,11 +130,13 @@ class FormViewModelAutoConfiguration {
     fun onStartUpViewModelValidator(
         formIoFormDefinitionService: FormIoFormDefinitionService,
         viewModelLoaders: List<ViewModelLoader<*>>,
-        formViewModelSubmissionHandlerFactory: FormViewModelSubmissionHandlerFactory
+        formViewModelStartFormSubmissionHandlerFactory: FormViewModelStartFormSubmissionHandlerFactory,
+        formViewModelUserTaskSubmissionHandlerFactory: FormViewModelUserTaskSubmissionHandlerFactory
     ) = OnStartUpViewModelValidator(
         formIoFormDefinitionService,
         viewModelLoaders,
-        formViewModelSubmissionHandlerFactory
+        formViewModelStartFormSubmissionHandlerFactory,
+        formViewModelUserTaskSubmissionHandlerFactory
     )
 
     @Bean
@@ -131,5 +146,23 @@ class FormViewModelAutoConfiguration {
     ) = ProcessAuthorizationService(
         camundaRepositoryService,
         authorizationService
+    )
+
+    @Bean
+    @ConditionalOnMissingBean(name = ["startProcessCommandHandler"])
+    fun startProcessCommandHandler(
+        camundaProcessService: CamundaProcessService,
+        processDocumentAssociationService: ProcessDocumentAssociationService
+    ) = StartProcessCommandHandler(
+        camundaProcessService,
+        processDocumentAssociationService
+    )
+
+    @Bean
+    @ConditionalOnMissingBean(name = ["completeTaskCommandHandler"])
+    fun completeTaskCommandHandler(
+        camundaTaskService: CamundaTaskService
+    ) = CompleteTaskCommandHandler(
+        camundaTaskService
     )
 }

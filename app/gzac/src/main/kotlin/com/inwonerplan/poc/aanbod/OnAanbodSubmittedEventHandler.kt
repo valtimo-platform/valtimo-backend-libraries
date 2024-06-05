@@ -1,14 +1,15 @@
 package com.inwonerplan.poc.aanbod
 
 import com.inwonerplan.poc.aanbod.command.SaveAanbodSubmissionCommand
-import com.ritense.formviewmodel.commandhandling.dispatchCommand
+import com.ritense.commandhandling.dispatchCommands
+import com.ritense.formviewmodel.commandhandling.CompleteTaskCommand
 import com.ritense.formviewmodel.error.BusinessException
-import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandler
+import com.ritense.formviewmodel.submission.FormViewModelUserTaskSubmissionHandler
 import com.ritense.valtimo.camunda.domain.CamundaTask
 
-class OnAanbodSubmittedEventHandler : FormViewModelSubmissionHandler<AanbodViewModel> {
+class OnAanbodSubmittedEventHandler : FormViewModelUserTaskSubmissionHandler<AanbodViewModel> {
 
-    override fun <T> handle(submission: T, task: CamundaTask?, businessKey: String) {
+    override fun <T> handle(submission: T, task: CamundaTask, businessKey: String) {
         submission as AanbodViewModel
         val aanbodSubmission = AanbodSubmission(
             aanbod = submission.aanbodGrid.map {
@@ -26,7 +27,10 @@ class OnAanbodSubmittedEventHandler : FormViewModelSubmissionHandler<AanbodViewM
         )
 
         try {
-            dispatchCommand(SaveAanbodSubmissionCommand(aanbodSubmission, task!!))
+            dispatchCommands(listOf(
+                SaveAanbodSubmissionCommand(aanbodSubmission, task),
+                CompleteTaskCommand(task.id)
+            ))
         } catch(e: BusinessException) {
             throw e
         } catch(e: Exception) {

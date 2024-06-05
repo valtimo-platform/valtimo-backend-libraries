@@ -28,6 +28,7 @@ dependencies {
         api(project(":authorization"))
         api(project(":case"))
         api(project(":changelog"))
+        api(project(":command-handling"))
         api(project(":connector"))
         api(project(":contract"))
         api(project(":core"))

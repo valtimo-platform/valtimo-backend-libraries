@@ -13,6 +13,8 @@ openApiGenerate {
 dependencies {
     implementation(platform(project(":dependencies:valtimo-dependency-versions")))
 
+    implementation(project(":command-handling"))
+
     implementation(project(":dependencies:valtimo-gzac-dependencies"))
     implementation(project(":mail:local-mail"))
     implementation(project(":document-generation:smartdocuments"))

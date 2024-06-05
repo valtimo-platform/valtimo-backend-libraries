@@ -2,9 +2,9 @@ package com.inwonerplan.poc.aanbod.command
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.commandhandling.CommandHandler
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.service.DocumentService
-import com.ritense.formviewmodel.commandhandling.CommandHandler
 import com.ritense.formviewmodel.error.BusinessException
 import mu.KotlinLogging
 
