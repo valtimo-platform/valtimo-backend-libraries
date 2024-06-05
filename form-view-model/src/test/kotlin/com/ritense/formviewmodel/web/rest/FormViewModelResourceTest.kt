@@ -220,8 +220,11 @@ class FormViewModelResourceTest : BaseTest() {
     fun `should submit start form view model`() {
         mockMvc.perform(
             post(
-                "$BASE_URL/submit/$START_FORM?formName={formName}&processDefinitionKey={processDefinitionKey}",
-                "test", "processDefinitionKey"
+                "$BASE_URL/submit/$START_FORM?" +
+                    "formName={formName}&" +
+                    "processDefinitionKey={processDefinitionKey}&" +
+                    "documentDefinitionName={documentDefinitionName}",
+                "test", "processDefinitionKey", "documentDefinitionName"
             ).accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
                 .content(objectMapper.writeValueAsString(TestViewModel()))
@@ -242,8 +245,11 @@ class FormViewModelResourceTest : BaseTest() {
         }
         mockMvc.perform(
             post(
-                "$BASE_URL/submit/$START_FORM?formName={formName}&processDefinitionKey={processDefinitionKey}",
-                "test", "processDefinitionKey"
+                "$BASE_URL/submit/$START_FORM?" +
+                    "formName={formName}&" +
+                    "processDefinitionKey={processDefinitionKey}&" +
+                    "documentDefinitionName={documentDefinitionName}",
+                "test", "processDefinitionKey", "documentDefinitionName"
             ).accept(APPLICATION_JSON_UTF8_VALUE)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
                 .content(objectMapper.writeValueAsString(TestViewModel()))

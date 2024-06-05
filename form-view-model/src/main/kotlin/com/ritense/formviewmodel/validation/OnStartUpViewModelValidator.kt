@@ -19,8 +19,8 @@ package com.ritense.formviewmodel.validation
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.service.impl.FormIoFormDefinitionService
-import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandler
-import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandlerFactory
+import com.ritense.formviewmodel.submission.FormViewModelStartFormSubmissionHandler
+import com.ritense.formviewmodel.submission.FormViewModelStartFormSubmissionHandlerFactory
 import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.formviewmodel.viewmodel.ViewModelLoader
 import mu.KotlinLogging
@@ -31,7 +31,7 @@ import kotlin.reflect.KClass
 class OnStartUpViewModelValidator(
     private val formIoFormDefinitionService: FormIoFormDefinitionService,
     private val viewModelLoaders: List<ViewModelLoader<*>>,
-    private val formViewModelSubmissionHandlerFactory: FormViewModelSubmissionHandlerFactory
+    private val formViewModelStartFormSubmissionHandlerFactory: FormViewModelStartFormSubmissionHandlerFactory
 ) {
 
     @EventListener(ApplicationReadyEvent::class)
@@ -54,7 +54,7 @@ class OnStartUpViewModelValidator(
                             "(${viewModelLoader.getFormName()}): $missingProperties"
                     }
                     // Validate submission for the view model
-                    formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler(
+                    formViewModelStartFormSubmissionHandlerFactory.getHandler(
                         viewModelLoader.getFormName()
                     )?.let {
                         validateSubmission(it, formDefinition).let { missingSubmissionProperties ->
@@ -79,7 +79,7 @@ class OnStartUpViewModelValidator(
     }
 
     fun validateSubmission(
-        submissionHandler: FormViewModelSubmissionHandler<out Submission>,
+        submissionHandler: FormViewModelStartFormSubmissionHandler<out Submission>,
         formDefinition: FormIoFormDefinition
     ): List<String> {
         val submissionType = submissionHandler.getSubmissionType()::class

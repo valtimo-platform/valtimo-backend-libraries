@@ -17,20 +17,13 @@
 package com.ritense.formviewmodel.submission
 
 import com.ritense.formviewmodel.viewmodel.Submission
-import com.ritense.valtimo.camunda.domain.CamundaTask
-import org.springframework.transaction.annotation.Transactional
-import kotlin.reflect.KClass
 
-@Transactional
-interface FormViewModelSubmissionHandler<T : Submission> {
+class FormViewModelStartFormSubmissionHandlerFactory(
+    private val handlers: List<FormViewModelStartFormSubmissionHandler<*>>
+) {
 
-    fun supports(formName: String): Boolean
-
-    fun <T> handle(submission: T, task: CamundaTask? = null, businessKey: String)
-
-    @Suppress("UNCHECKED_CAST")
-    fun getSubmissionType(): KClass<T> =
-        this::class.supertypes.first().arguments.first().type?.let { it.classifier as KClass<T> }
-            ?: throw IllegalArgumentException("Could not resolve SubmissionType for ${this::class}")
+    fun getHandler(formName: String): FormViewModelStartFormSubmissionHandler<out Submission>? {
+        return handlers.find { it.supports(formName) }
+    }
 
 }

@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.formviewmodel.submission
+package com.ritense.formviewmodel.commandhandling
 
-import com.ritense.formviewmodel.viewmodel.Submission
+import com.ritense.commandhandling.Command
+import java.util.UUID
 
-class FormViewModelSubmissionHandlerFactory(
-    private val formViewModelSubmissionHandlers: List<FormViewModelSubmissionHandler<*>>
-) {
-
-    fun getFormViewModelSubmissionHandler(formName: String): FormViewModelSubmissionHandler<out Submission>? {
-        return formViewModelSubmissionHandlers.find { it.supports(formName) }
-    }
-
-}
+data class StartProcessCommand(
+    val caseInstanceId: UUID,
+    val processDefinitionKey: String,
+    val businessKey: String,
+    val processVariables: Map<String, Any> = emptyMap()
+) : Command<Unit>
