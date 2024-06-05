@@ -91,6 +91,7 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
         formViewModelSubmissionService.handleStartFormSubmission(
             formName = "test",
             processDefinitionKey = "test",
+            documentDefinitionName = "documentDefinitionName",
             submission = submission
         )
         verify(camundaProcessService).startProcess(eq("test"), any(), any())
@@ -102,7 +103,8 @@ class FormViewModelSubmissionServiceTest : BaseTest() {
         assertThrows<FormException> {
             formViewModelSubmissionService.handleStartFormSubmission(
                 formName = "test",
-                processDefinitionKey = "test",
+                processDefinitionKey = "processDefinitionKey",
+                documentDefinitionName = "documentDefinitionName",
                 submission = submission
             )
         }

@@ -23,7 +23,7 @@ include(
     "besluit",
     "case",
     "changelog",
-    "commandhandling",
+    "command-handling",
     "connector",
     "contactmoment",
     "contract",

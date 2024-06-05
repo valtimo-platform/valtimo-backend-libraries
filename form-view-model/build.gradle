@@ -35,6 +35,7 @@ dependencies {
     implementation project(":form")
     implementation project(":process-link")
     implementation project(":process-document")
+    implementation project(":command-handling")
     implementation project(":web")
 
     api "org.springframework.security:spring-security-core"

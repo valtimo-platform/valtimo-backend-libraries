@@ -15,7 +15,7 @@
  */
 
 dockerCompose {
-    projectName = "commandhandling"
+    projectName = "command-handling"
 
     integrationTestingPostgresql {
         isRequiredBy(project.tasks.integrationTestingPostgresql)
@@ -30,21 +30,8 @@ dockerCompose {
 
 dependencies {
     implementation project(":contract")
-    implementation project(":core")
-    implementation project(":authorization")
-    implementation project(":form")
-    implementation project(":process-link")
-    implementation project(":web")
-
-    api "org.springframework.security:spring-security-core"
-    api "org.springframework.boot:spring-boot"
-    api "org.springframework.data:spring-data-commons"
-    api "jakarta.inject:jakarta.inject-api:${jakartaInjectVersion}"
-
-    implementation "org.springframework.boot:spring-boot-starter"
-    implementation "org.springframework.boot:spring-boot-starter-web"
-    implementation "org.springframework.boot:spring-boot-starter-validation"
-    implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation 'org.springframework:spring-tx'
+    // implementation "org.springframework.boot:spring-boot"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
@@ -60,19 +47,14 @@ dependencies {
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
     testImplementation project(':test-utils-common')
-    testImplementation project(":keycloak-iam")
-    testImplementation project(":mail:local-mail")
     testImplementation project(":contract")
-    testImplementation project(":core")
     testImplementation project(":test-utils-common")
-    testImplementation "org.apache.httpcomponents.client5:httpclient5"
-    testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
 
     jar {
         enabled = true
         manifest {
-            attributes("Implementation-Title": "Ritense Form View Model spring boot starter")
+            attributes("Implementation-Title": "Ritense Command Handling spring boot starter")
             attributes("Implementation-Version": projectVersion)
         }
     }

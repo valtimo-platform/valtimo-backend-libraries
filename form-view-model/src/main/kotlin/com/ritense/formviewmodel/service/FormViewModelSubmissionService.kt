@@ -18,7 +18,6 @@ package com.ritense.formviewmodel.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandlerFactory
@@ -38,12 +37,13 @@ class FormViewModelSubmissionService(
     private val camundaTaskService: CamundaTaskService,
     private val camundaProcessService: CamundaProcessService,
     private val objectMapper: ObjectMapper,
-    private val processAuthorizationService: ProcessAuthorizationService
+    private val processAuthorizationService: ProcessAuthorizationService,
 ) {
 
     fun handleStartFormSubmission(
         formName: String,
         processDefinitionKey: String,
+        documentDefinitionName: String,
         submission: ObjectNode
     ) {
         processAuthorizationService.checkAuthorization(processDefinitionKey)
@@ -57,14 +57,6 @@ class FormViewModelSubmissionService(
             businessKey = businessKey,
             submission = submissionConverted,
         )
-        // run without authorization because the process is started by the system
-        runWithoutAuthorization {
-            camundaProcessService.startProcess(
-                processDefinitionKey,
-                businessKey,
-                emptyMap()
-            )
-        }
     }
 
     fun handleUserTaskSubmission(
