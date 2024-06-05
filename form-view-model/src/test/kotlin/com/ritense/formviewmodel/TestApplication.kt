@@ -18,8 +18,8 @@ package com.ritense.formviewmodel
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.formviewmodel.autoconfigure.FormViewModelAutoConfiguration
-import com.ritense.formviewmodel.submission.FormViewModelStartFormSubmissionHandler
 import com.ritense.formviewmodel.submission.TestStartFormSubmissionHandler
+import com.ritense.formviewmodel.submission.TestUserTaskSubmissionHandler
 import com.ritense.formviewmodel.viewmodel.TestViewModelLoader
 import com.ritense.valtimo.contract.json.MapperSingleton
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -50,6 +50,9 @@ class TestApplication {
         fun testViewModelLoader() = TestViewModelLoader()
 
         @Bean
-        fun testSubmissionHandler(): FormViewModelStartFormSubmissionHandler<*> = TestStartFormSubmissionHandler()
+        fun testStartFormSubmissionHandler() = TestStartFormSubmissionHandler()
+
+        @Bean
+        fun testUserTaskSubmissionHandler() = TestUserTaskSubmissionHandler()
     }
 }
