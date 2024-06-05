@@ -29,9 +29,6 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class FormViewModelResourceIntTest : BaseIntegrationTest() {
 
-    @MockBean
-    lateinit var camundaTaskService: CamundaTaskService
-
     @Autowired
     lateinit var formViewModelResource: FormViewModelResource
 

@@ -91,7 +91,7 @@ class FormViewModelAutoConfiguration {
         processAuthorizationService: ProcessAuthorizationService
     ) = FormViewModelSubmissionService(
         formViewModelStartFormSubmissionHandlerFactory = formViewModelStartFormSubmissionHandlerFactory,
-        userTaskSubmissionHandlerFactory = formViewModelUserTaskSubmissionHandlerFactory,
+        formViewModelUserTaskSubmissionHandlerFactory = formViewModelUserTaskSubmissionHandlerFactory,
         authorizationService = authorizationService,
         camundaTaskService = camundaTaskService,
         objectMapper = objectMapper,
