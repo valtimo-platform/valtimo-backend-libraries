@@ -130,11 +130,13 @@ class FormViewModelAutoConfiguration {
     fun onStartUpViewModelValidator(
         formIoFormDefinitionService: FormIoFormDefinitionService,
         viewModelLoaders: List<ViewModelLoader<*>>,
-        formViewModelStartFormSubmissionHandlerFactory: FormViewModelStartFormSubmissionHandlerFactory
+        formViewModelStartFormSubmissionHandlerFactory: FormViewModelStartFormSubmissionHandlerFactory,
+        formViewModelUserTaskSubmissionHandlerFactory: FormViewModelUserTaskSubmissionHandlerFactory
     ) = OnStartUpViewModelValidator(
         formIoFormDefinitionService,
         viewModelLoaders,
-        formViewModelStartFormSubmissionHandlerFactory
+        formViewModelStartFormSubmissionHandlerFactory,
+        formViewModelUserTaskSubmissionHandlerFactory
     )
 
     @Bean

@@ -3,8 +3,9 @@ package com.ritense.formviewmodel.validation
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formviewmodel.BaseTest
-import com.ritense.formviewmodel.submission.TestStartFormSubmissionHandler
 import com.ritense.formviewmodel.submission.FormViewModelStartFormSubmissionHandlerFactory
+import com.ritense.formviewmodel.submission.FormViewModelUserTaskSubmissionHandlerFactory
+import com.ritense.formviewmodel.submission.TestStartFormSubmissionHandler
 import com.ritense.formviewmodel.viewmodel.TestViewModel
 import com.ritense.formviewmodel.viewmodel.TestViewModelLoader
 import com.ritense.formviewmodel.viewmodel.ViewModel
@@ -34,6 +35,7 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
     private lateinit var viewModelLoaders: List<ViewModelLoader<*>>
     private lateinit var viewModelLoader: ViewModelLoader<ViewModel>
     private lateinit var formViewModelStartFormSubmissionHandlerFactory: FormViewModelStartFormSubmissionHandlerFactory
+    private lateinit var formViewModelUserTaskSubmissionHandlerFactory: FormViewModelUserTaskSubmissionHandlerFactory
 
     @BeforeEach
     fun setUp() {
@@ -41,10 +43,12 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
         viewModelLoader = mock(ViewModelLoader::class.java) as ViewModelLoader<ViewModel>
         viewModelLoaders = listOf(viewModelLoader)
         formViewModelStartFormSubmissionHandlerFactory = mock()
+        formViewModelUserTaskSubmissionHandlerFactory = mock()
         onStartUpViewModelValidator = OnStartUpViewModelValidator(
             formIoFormDefinitionService,
             viewModelLoaders,
-            formViewModelStartFormSubmissionHandlerFactory
+            formViewModelStartFormSubmissionHandlerFactory,
+            formViewModelUserTaskSubmissionHandlerFactory
         )
     }
 
@@ -72,7 +76,7 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
     @Test
     fun `should not find missing fields when all Submission fields match form`() {
         val testSubmissionHandler = TestStartFormSubmissionHandler()
-        val missingFields = onStartUpViewModelValidator.validateSubmission(
+        val missingFields = onStartUpViewModelValidator.validateStartFormSubmission(
             testSubmissionHandler,
             formDefinitionOf("user-task-1")
         )
@@ -82,7 +86,7 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
     @Test
     fun `should find missing fields when Submission has extra fields`() {
         val testSubmissionHandler = TestStartFormSubmissionHandler()
-        val missingFields = onStartUpViewModelValidator.validateSubmission(
+        val missingFields = onStartUpViewModelValidator.validateStartFormSubmission(
             testSubmissionHandler,
             formDefinitionOf("user-task-2")
         )
