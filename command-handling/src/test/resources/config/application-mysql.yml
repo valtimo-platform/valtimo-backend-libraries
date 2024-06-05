@@ -1,7 +1,7 @@
 spring:
     datasource:
         driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3352/commandhandling-test
+        url: jdbc:mysql://localhost:3353/command-handling-test
         username: valtimo
         password: password
         hikari:

@@ -2,6 +2,6 @@ version: '3.9'
 services:
     db:
         ports:
-            - "3352:5432"
+            - "3353:5432"
         environment:
-            - POSTGRES_DB=commandhandling-test
+            - POSTGRES_DB=command-handling-test
