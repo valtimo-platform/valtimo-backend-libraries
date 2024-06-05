@@ -25,20 +25,16 @@ class CommandDispatcher {
     val commandHandlers = mutableMapOf<KClass<*>, CommandHandler<Command<*>, *>>()
 
     fun <T> dispatch(command: Command<T>): T {
-        logger.info { "Dispatching command '${command.javaClass.simpleName}'" }
+        val commandName = command::class.simpleName
+        logger.info { "Dispatching command '$commandName'" }
         try {
-            val commandClass = command::class as KClass<*>
-            if (!commandHandlers.containsKey(commandClass)) {
-                throw NoHandlerForCommandException(command)
-            }
+            val commandClass = command::class
+            val handler = commandHandlers[commandClass] ?: throw NoHandlerForCommandException(command)
+
             @Suppress("UNCHECKED_CAST")
-            return commandHandlers[commandClass]?.let {
-                it.execute(command) as T
-            } ?: throw NoSuchElementException("No CommandHandler found for $command")
+            return handler.execute(command) as T
         } catch (ex: Exception) {
-            logger.error(ex) {
-                "Unhandled Command error occurred in ${command.javaClass.simpleName} - ${ex.message} - ${ex.cause}"
-            }
+            logger.error(ex) { "Unhandled Command error occurred in $commandName - ${ex.message} - ${ex.cause}" }
             throw ex
         }
     }
