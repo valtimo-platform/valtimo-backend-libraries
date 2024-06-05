@@ -20,11 +20,11 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
-import com.ritense.formviewmodel.submission.FormViewModelSubmissionHandlerFactory
+import com.ritense.formviewmodel.submission.FormViewModelStartFormSubmissionHandlerFactory
+import com.ritense.formviewmodel.submission.FormViewModelUserTaskSubmissionHandlerFactory
 import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Companion.COMPLETE
 import com.ritense.valtimo.camunda.domain.CamundaTask
-import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -32,32 +32,32 @@ import kotlin.reflect.KClass
 
 @Transactional
 class FormViewModelSubmissionService(
-    private val formViewModelSubmissionHandlerFactory: FormViewModelSubmissionHandlerFactory,
+    private val formViewModelStartFormSubmissionHandlerFactory: FormViewModelStartFormSubmissionHandlerFactory,
+    private val formViewModelUserTaskSubmissionHandlerFactory: FormViewModelUserTaskSubmissionHandlerFactory,
     private val authorizationService: AuthorizationService,
     private val camundaTaskService: CamundaTaskService,
-    private val camundaProcessService: CamundaProcessService,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val processAuthorizationService: ProcessAuthorizationService
 ) {
 
     fun handleStartFormSubmission(
         formName: String,
         processDefinitionKey: String,
+        documentDefinitionName: String,
         submission: ObjectNode
     ) {
-        val formViewModelSubmissionHandler = formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler(
+        processAuthorizationService.checkAuthorization(processDefinitionKey)
+        val startFormSubmissionHandler = formViewModelStartFormSubmissionHandlerFactory.getHandler(
             formName = formName
-        ) ?: throw RuntimeException("No FormViewModelSubmissionHandler found for formName $formName")
-        val submissionType = formViewModelSubmissionHandler.getSubmissionType()
+        ) ?: throw RuntimeException("No StartFormSubmissionHandler found for formName $formName")
+        val submissionType = startFormSubmissionHandler.getSubmissionType()
         val submissionConverted = parseSubmission(submission, submissionType)
         val businessKey = UUID.randomUUID().toString()
-        formViewModelSubmissionHandler.handle(
+        startFormSubmissionHandler.handle(
+            documentDefinitionName = documentDefinitionName,
+            processDefinitionKey = processDefinitionKey,
             businessKey = businessKey,
-            submission = submissionConverted,
-        )
-        camundaProcessService.startProcess(
-            processDefinitionKey,
-            businessKey,
-            emptyMap()
+            submission = submissionConverted
         )
     }
 
@@ -70,17 +70,16 @@ class FormViewModelSubmissionService(
         authorizationService.requirePermission(
             EntityAuthorizationRequest(CamundaTask::class.java, COMPLETE, task)
         )
-        val formViewModelSubmissionHandler = formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler(
+        val userTaskSubmissionHandler = formViewModelUserTaskSubmissionHandlerFactory.getHandler(
             formName = formName
-        ) ?: throw RuntimeException("No FormViewModelSubmissionHandler found for formName $formName")
-        val submissionType = formViewModelSubmissionHandler.getSubmissionType()
+        ) ?: throw RuntimeException("No UserTaskSubmissionHandler found for formName $formName")
+        val submissionType = userTaskSubmissionHandler.getSubmissionType()
         val submissionConverted = parseSubmission(submission, submissionType)
-        formViewModelSubmissionHandler.handle(
+        userTaskSubmissionHandler.handle(
             submission = submissionConverted,
             task = task,
             businessKey = task.processInstance!!.businessKey!!
         )
-        camundaTaskService.complete(task.id)
     }
 
     private inline fun <reified T : Submission> parseSubmission(

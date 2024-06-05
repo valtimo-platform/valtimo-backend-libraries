@@ -17,22 +17,12 @@
 package com.ritense.formviewmodel
 
 import com.ritense.form.domain.FormIoFormDefinition
-import com.ritense.formviewmodel.commandhandling.CommandDispatcher
 import org.apache.commons.io.IOUtils
-import org.mockito.kotlin.mock
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.util.UUID
 
 abstract class BaseTest {
-
-    var commandDispatcher: CommandDispatcher = mock()
-
-    fun baseSetup() {
-        SpringContextMockBuilder.Builder(
-            commandDispatcher = commandDispatcher
-        ).build()
-    }
 
     fun readFileAsString(fileName: String): String = this::class.java.getResource(fileName)!!.readText(Charsets.UTF_8)
 
