@@ -28,6 +28,7 @@ data class TableWidgetProperties (
     @field:NotBlank val collection: String,
     @field:Min(1) val defaultPageSize: Int,
     @field:NotEmpty val columns: List<@Valid Column>,
+    val firstColumnAsTitle: Boolean = false
 ) {
     @JsonInclude(Include.NON_NULL)
     data class Column (
