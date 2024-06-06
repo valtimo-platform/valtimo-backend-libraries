@@ -24,10 +24,7 @@ class FormViewModelModuleExceptionTranslator : ProblemHandling {
         return ResponseEntity
             .badRequest()
             .body(
-                FormError.Builder()
-                    .setError(ex.message)
-                    .setComponent(ex.component)
-                    .build()
+                FormError(ex.message, ex.component)
             )
     }
 
@@ -39,9 +36,7 @@ class FormViewModelModuleExceptionTranslator : ProblemHandling {
         return ResponseEntity
             .badRequest()
             .body(
-                BusinessRuleError.Builder()
-                    .setError(ex.message)
-                    .build()
+                BusinessRuleError(ex.message)
             )
     }
 
