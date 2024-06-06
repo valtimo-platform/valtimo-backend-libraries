@@ -19,7 +19,7 @@ package com.ritense.case_.widget
 import com.ritense.case_.domain.tab.TestCaseWidgetTabWidget
 import com.ritense.case_.web.rest.dto.TestCaseWidgetTabWidgetDto
 
-class TestCaseWidgetMapper: CaseWidgetMapper<TestCaseWidgetTabWidget, TestCaseWidgetTabWidgetDto> {
+class TestCaseWidgetMapper : CaseWidgetMapper<TestCaseWidgetTabWidget, TestCaseWidgetTabWidgetDto> {
 
     override fun toEntity(dto: TestCaseWidgetTabWidgetDto, index: Int): TestCaseWidgetTabWidget {
         return TestCaseWidgetTabWidget(

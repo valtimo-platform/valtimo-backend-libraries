@@ -18,7 +18,7 @@ package com.ritense.case_.widget.fields
 
 import com.ritense.case_.widget.CaseWidgetMapper
 
-class FieldsCaseWidgetMapper: CaseWidgetMapper<FieldsCaseWidget, FieldsCaseWidgetDto> {
+class FieldsCaseWidgetMapper : CaseWidgetMapper<FieldsCaseWidget, FieldsCaseWidgetDto> {
 
     override fun toDto(entity: FieldsCaseWidget) = FieldsCaseWidgetDto(
         key = entity.key,

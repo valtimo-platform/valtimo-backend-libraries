@@ -21,14 +21,14 @@ import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
 import kotlin.reflect.KClass
 import kotlin.reflect.full.allSupertypes
 
-interface CaseWidgetMapper<ENTITY: CaseWidgetTabWidget, DTO: CaseWidgetTabWidgetDto> {
+interface CaseWidgetMapper<ENTITY : CaseWidgetTabWidget, DTO : CaseWidgetTabWidgetDto> {
 
-    fun supportedEntityType() : Class<ENTITY> =
-        this::class.allSupertypes.first{ it.classifier == CaseWidgetMapper::class }.arguments[0].type?.let { it.classifier as KClass<ENTITY> }?.java
+    fun supportedEntityType(): Class<ENTITY> =
+        this::class.allSupertypes.first { it.classifier == CaseWidgetMapper::class }.arguments[0].type?.let { it.classifier as KClass<ENTITY> }?.java
             ?: throw IllegalArgumentException("Could not resolve entity type for ${this::class}")
 
-    fun supportedDtoType() : Class<DTO> =
-        this::class.allSupertypes.first{ it.classifier == CaseWidgetMapper::class }.arguments[1].type?.let { it.classifier as KClass<DTO> }?.java
+    fun supportedDtoType(): Class<DTO> =
+        this::class.allSupertypes.first { it.classifier == CaseWidgetMapper::class }.arguments[1].type?.let { it.classifier as KClass<DTO> }?.java
             ?: throw IllegalArgumentException("Could not resolve dto type for ${this::class}")
 
 

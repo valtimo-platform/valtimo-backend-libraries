@@ -18,7 +18,7 @@ package com.ritense.case_.widget.table
 
 import com.ritense.case_.widget.CaseWidgetMapper
 
-class TableCaseWidgetMapper:CaseWidgetMapper<TableCaseWidget, TableCaseWidgetDto> {
+class TableCaseWidgetMapper : CaseWidgetMapper<TableCaseWidget, TableCaseWidgetDto> {
 
     override fun toDto(entity: TableCaseWidget) = TableCaseWidgetDto(
         key = entity.key,
