@@ -8,6 +8,7 @@ import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -36,6 +37,14 @@ class IntermediateSubmissionResource(
             taskInstanceId = request.taskInstanceId
         )
         return ResponseEntity.ok(intermediateSubmission.toResponse())
+    }
+
+    @DeleteMapping
+    fun clearIntermediateSubmission(@RequestParam taskInstanceId: String): ResponseEntity<Void> {
+        intermediateSubmissionService.clear(
+            taskInstanceId = taskInstanceId
+        )
+        return ResponseEntity.ok().build()
     }
 
 }

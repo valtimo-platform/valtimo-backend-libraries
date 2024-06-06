@@ -38,6 +38,12 @@ class IntermediateSubmissionService(
         }
     }
 
+    fun clear(taskInstanceId: String) {
+        intermediateSubmissionRepository.getByTaskInstanceId(taskInstanceId)?.let { intermediateSubmission ->
+            intermediateSubmissionRepository.deleteById(intermediateSubmission.intermediateSubmissionId)
+        }
+    }
+
     companion object {
         private val logger = KotlinLogging.logger {}
     }

@@ -17,6 +17,7 @@ package com.ritense.form.security.config
 
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
+import org.springframework.http.HttpMethod.DELETE
 import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -30,7 +31,8 @@ class FormHttpSecurityConfigurerKotlin : HttpSecurityConfigurer {
                     antMatcher(POST, "$PROCESS_LINK_BASE_URL/{processLinkId}/form/submission"),
                     antMatcher(GET, "$PROCESS_LINK_BASE_URL/form-definition/{formKey}"),
                     antMatcher(GET, INTERMEDIATE_BASE_URL),
-                    antMatcher(POST, INTERMEDIATE_BASE_URL)
+                    antMatcher(POST, INTERMEDIATE_BASE_URL),
+                    antMatcher(DELETE, INTERMEDIATE_BASE_URL)
                 ).authenticated()
             }
         } catch (e: Exception) {
