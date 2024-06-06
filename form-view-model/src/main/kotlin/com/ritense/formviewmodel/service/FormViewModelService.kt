@@ -28,7 +28,7 @@ import com.ritense.valtimo.service.CamundaTaskService
 import kotlin.reflect.KClass
 
 class FormViewModelService(
-    val objectMapper: ObjectMapper,
+    private val objectMapper: ObjectMapper,
     private val viewModelLoaderFactory: ViewModelLoaderFactory,
     private val camundaTaskService: CamundaTaskService,
     private val authorizationService: AuthorizationService,
@@ -60,8 +60,7 @@ class FormViewModelService(
         processDefinitionKey: String
     ): ViewModel? {
         processAuthorizationService.checkAuthorization(processDefinitionKey)
-        val viewModelLoader =
-            viewModelLoaderFactory.getViewModelLoader(formName) ?: return null
+        val viewModelLoader = viewModelLoaderFactory.getViewModelLoader(formName) ?: return null
         val viewModelType = viewModelLoader.getViewModelType()
         return parseViewModel(submission, viewModelType).update()
     }
@@ -75,13 +74,12 @@ class FormViewModelService(
         authorizationService.requirePermission(
             EntityAuthorizationRequest(CamundaTask::class.java, VIEW, task)
         )
-        val viewModelLoader =
-            viewModelLoaderFactory.getViewModelLoader(formName) ?: return null
+        val viewModelLoader = viewModelLoaderFactory.getViewModelLoader(formName) ?: return null
         val viewModelType = viewModelLoader.getViewModelType()
         return parseViewModel(submission, viewModelType).update(task)
     }
 
-    inline fun <reified T : ViewModel> parseViewModel(
+    fun <T : ViewModel> parseViewModel(
         submission: ObjectNode,
         viewModelType: KClass<out T>
     ): ViewModel {
