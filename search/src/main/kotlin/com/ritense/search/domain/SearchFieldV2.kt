@@ -30,20 +30,61 @@ data class SearchFieldV2(
     @Id
     @Column(name = "id")
     val id: UUID = UUID.randomUUID(),
+
     @Column(name = "owner_id")
     val ownerId: String,
+
+    @Column(name = "owner_type")
+    val ownerType: String?,
+
     @Column(name = "column_key")
     val key: String,
+
     @Column(name = "title")
     val title: String?,
+
     @Column(name = "path")
     val path: String,
+
     @Column(name = "column_order")
     val order: Int,
+
     @Column(name = "data_type")
     @Enumerated(EnumType.STRING)
     val dataType: DataType,
+
     @Column(name = "field_type")
     @Enumerated(EnumType.STRING)
-    val fieldType: FieldType
-)
+    val fieldType: FieldType,
+
+    @Column(name = "matchtype", nullable = true, updatable = true)
+    @Enumerated(EnumType.STRING)
+    val matchType: SearchFieldMatchType? = null,
+
+    @Column(name = "dropdown_data_provider", length = 255, nullable = true, updatable = true)
+    val dropdownDataProvider: String? = null
+) {
+    @Deprecated("Replaced by the primary constructor")
+    constructor(
+        id: UUID = UUID.randomUUID(),
+        ownerId: String,
+        key: String,
+        title: String?,
+        path: String,
+        order: Int,
+        dataType: DataType,
+        fieldType: FieldType
+    ): this(
+        id = id,
+        ownerId = ownerId,
+        key = key,
+        title = title,
+        path = path,
+        order = order,
+        dataType = dataType,
+        fieldType = fieldType,
+        ownerType = null,
+        matchType = null,
+        dropdownDataProvider = null
+    )
+}

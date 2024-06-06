@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 import kotlin.test.assertEquals
+import org.skyscreamer.jsonassert.JSONAssert
 
 @Transactional
 internal class FormProcessLinkActivityHandlerIntTest : BaseIntegrationTest() {
@@ -81,7 +82,7 @@ internal class FormProcessLinkActivityHandlerIntTest : BaseIntegrationTest() {
         )
         assertEquals("form",result.type)
         assertEquals(formDefinition.id?.toString(),result.properties.formDefinitionId.toString())
-        assertEquals(getForm(),objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(result.properties.prefilledForm))
+        JSONAssert.assertEquals(getForm(), objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(result.properties.prefilledForm), true)
     }
 
     private fun getDocument(): String {
