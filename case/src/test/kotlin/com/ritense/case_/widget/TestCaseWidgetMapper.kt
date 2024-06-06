@@ -21,10 +21,6 @@ import com.ritense.case_.web.rest.dto.TestCaseWidgetTabWidgetDto
 
 class TestCaseWidgetMapper: CaseWidgetMapper<TestCaseWidgetTabWidget, TestCaseWidgetTabWidgetDto> {
 
-    override fun supportedEntityType() = TestCaseWidgetTabWidget::class.java
-
-    override fun supportedDtoType() = TestCaseWidgetTabWidgetDto::class.java
-
     override fun toEntity(dto: TestCaseWidgetTabWidgetDto, index: Int): TestCaseWidgetTabWidget {
         return TestCaseWidgetTabWidget(
             dto.key,

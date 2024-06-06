@@ -19,9 +19,6 @@ package com.ritense.case_.widget.table
 import com.ritense.case_.widget.CaseWidgetMapper
 
 class TableCaseWidgetMapper:CaseWidgetMapper<TableCaseWidget, TableCaseWidgetDto> {
-    override fun supportedEntityType() = TableCaseWidget::class.java
-
-    override fun supportedDtoType() = TableCaseWidgetDto::class.java
 
     override fun toDto(entity: TableCaseWidget) = TableCaseWidgetDto(
         key = entity.key,
