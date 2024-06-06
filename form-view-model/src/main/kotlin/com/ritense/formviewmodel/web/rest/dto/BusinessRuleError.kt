@@ -16,24 +16,14 @@
 
 package com.ritense.formviewmodel.web.rest.dto
 
-data class BusinessRuleError private constructor (
-    val error: String
+class BusinessRuleError (
+    error: String?
 ) {
 
-    class Builder {
-        var error: String = UNKNOWN_BUSINESS_RULE_ERROR
-
-        fun setError(error: String?): Builder {
-            this.error = error ?: UNKNOWN_BUSINESS_RULE_ERROR
-            return this
-        }
-
-        fun build() = BusinessRuleError(error)
-
-    }
+    var error: String = error ?: UNKNOWN_BUSINESS_RULE_ERROR
 
     companion object {
-        val UNKNOWN_BUSINESS_RULE_ERROR = "Unknown Business Rule Error"
+        const val UNKNOWN_BUSINESS_RULE_ERROR = "Unknown Business Rule Error"
     }
 
 }
