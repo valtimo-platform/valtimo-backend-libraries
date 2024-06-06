@@ -26,11 +26,7 @@ import kotlin.reflect.KClass
 import kotlin.test.assertTrue
 
 class OnStartUpViewModelValidatorTest : BaseTest() {
-
-    @Mock
     private lateinit var formIoFormDefinitionService: FormIoFormDefinitionService
-
-    @InjectMocks
     private lateinit var onStartUpViewModelValidator: OnStartUpViewModelValidator
     private lateinit var viewModelLoaders: List<ViewModelLoader<*>>
     private lateinit var viewModelLoader: ViewModelLoader<ViewModel>
