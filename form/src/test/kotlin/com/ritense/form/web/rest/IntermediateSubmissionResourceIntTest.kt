@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
@@ -84,6 +85,22 @@ class IntermediateSubmissionResourceIntTest : BaseIntegrationTest() {
             .andExpect(jsonPath("$.createdOn").isNotEmpty)
             .andExpect(jsonPath("$.editedBy").isEmpty)
             .andExpect(jsonPath("$.editedOn").isEmpty)
+    }
+
+    @Test
+    @WithMockUser
+    fun `should return 200 deleting intermediate submission`() {
+        val intermediateSubmission = intermediateSubmissionService.store(
+            submission = objectMapper.createObjectNode(),
+            taskInstanceId = "taskInstanceId"
+        )
+        mockMvc.perform(
+            delete(
+                "$BASE_URL?taskInstanceId={taskInstanceId}",
+                intermediateSubmission.taskInstanceId
+            ).accept(APPLICATION_JSON_UTF8_VALUE)
+                .contentType(APPLICATION_JSON_UTF8_VALUE)
+        ).andExpect(status().isOk)
     }
 
     companion object {
