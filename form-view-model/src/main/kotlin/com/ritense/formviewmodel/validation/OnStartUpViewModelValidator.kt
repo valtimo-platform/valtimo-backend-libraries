@@ -63,7 +63,7 @@ class OnStartUpViewModelValidator(
                         validateStartFormSubmission(it, formDefinition).let { missingSubmissionProperties ->
                             if (missingSubmissionProperties.isNotEmpty()) {
                                 logger.error {
-                                    "The following properties are missing in the submission for form " +
+                                    "The following properties are missing in the start form submission for form " +
                                         "(${viewModelLoader.getFormName()}): $missingSubmissionProperties"
                                 }
                             }
@@ -76,7 +76,7 @@ class OnStartUpViewModelValidator(
                         validateUserTaskSubmission(it, formDefinition).let { missingSubmissionProperties ->
                             if (missingSubmissionProperties.isNotEmpty()) {
                                 logger.error {
-                                    "The following properties are missing in the submission for form " +
+                                    "The following properties are missing in the user task submission for form " +
                                         "(${viewModelLoader.getFormName()}): $missingSubmissionProperties"
                                 }
                             }

@@ -13,8 +13,6 @@ import com.ritense.formviewmodel.viewmodel.ViewModelLoader
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.InjectMocks
-import org.mockito.Mock
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -115,11 +113,8 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
                 "The following properties are missing in the view model for form (user-task-2): [age, dataContainer.nestedData]"
             )
         )
-
-        assertTrue(
-            printedStackTrace.contains(
-                "The following properties are missing in the submission for form (user-task-2): [age, dataContainer.nestedData]"
-            )
+        assertThat(printedStackTrace).contains(
+            "The following properties are missing in the start form submission for form (user-task-2): [age, dataContainer.nestedData]"
         )
     }
 
