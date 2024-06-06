@@ -16,12 +16,24 @@
 
 package com.ritense.formviewmodel
 
+import com.ritense.formviewmodel.validation.OnStartUpViewModelValidator
+import com.ritense.valtimo.service.CamundaTaskService
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
 @Tag("integration")
-class BaseIntegrationTest : BaseTest()
+class BaseIntegrationTest : BaseTest() {
+
+    // Mock the validator to prevent it from validating
+    @MockBean
+    lateinit var validator: OnStartUpViewModelValidator
+
+    @MockBean
+    lateinit var camundaTaskService: CamundaTaskService
+
+}

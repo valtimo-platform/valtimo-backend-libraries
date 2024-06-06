@@ -19,8 +19,10 @@ package com.ritense.formviewmodel.validation
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.service.impl.FormIoFormDefinitionService
-import com.ritense.formviewmodel.event.FormViewModelSubmissionHandler
-import com.ritense.formviewmodel.event.FormViewModelSubmissionHandlerFactory
+import com.ritense.formviewmodel.submission.FormViewModelStartFormSubmissionHandler
+import com.ritense.formviewmodel.submission.FormViewModelStartFormSubmissionHandlerFactory
+import com.ritense.formviewmodel.submission.FormViewModelUserTaskSubmissionHandler
+import com.ritense.formviewmodel.submission.FormViewModelUserTaskSubmissionHandlerFactory
 import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.formviewmodel.viewmodel.ViewModelLoader
 import mu.KotlinLogging
@@ -31,7 +33,8 @@ import kotlin.reflect.KClass
 class OnStartUpViewModelValidator(
     private val formIoFormDefinitionService: FormIoFormDefinitionService,
     private val viewModelLoaders: List<ViewModelLoader<*>>,
-    private val formViewModelSubmissionHandlerFactory: FormViewModelSubmissionHandlerFactory
+    private val formViewModelStartFormSubmissionHandlerFactory: FormViewModelStartFormSubmissionHandlerFactory,
+    private val formViewModelUserTaskSubmissionHandlerFactory: FormViewModelUserTaskSubmissionHandlerFactory
 ) {
 
     @EventListener(ApplicationReadyEvent::class)
@@ -44,7 +47,7 @@ class OnStartUpViewModelValidator(
             if (!formDefinition.isReadOnly) {
                 logger.warn {
                     "This form (${viewModelLoader.getFormName()}) is not read-only. This means that the form definition is not added via configuration." +
-                    "Be cautious when changing the form definition because this is only validated on ApplicationReadyEvent"
+                        "Be cautious when changing the form definition because this is only validated on ApplicationReadyEvent"
                 }
             }
             validateViewModel(viewModelLoader, formDefinition).let { missingProperties ->
@@ -53,14 +56,27 @@ class OnStartUpViewModelValidator(
                         "The following properties are missing in the view model for form " +
                             "(${viewModelLoader.getFormName()}): $missingProperties"
                     }
-                    // Validate submission for the view model
-                    formViewModelSubmissionHandlerFactory.getFormViewModelSubmissionHandler(
+                    // Validate Start form submission for the view model
+                    formViewModelStartFormSubmissionHandlerFactory.getHandler(
                         viewModelLoader.getFormName()
                     )?.let {
-                        validateSubmission(it, formDefinition).let { missingSubmissionProperties ->
+                        validateStartFormSubmission(it, formDefinition).let { missingSubmissionProperties ->
                             if (missingSubmissionProperties.isNotEmpty()) {
                                 logger.error {
-                                    "The following properties are missing in the submission for form " +
+                                    "The following properties are missing in the start form submission for form " +
+                                        "(${viewModelLoader.getFormName()}): $missingSubmissionProperties"
+                                }
+                            }
+                        }
+                    }
+
+                    formViewModelUserTaskSubmissionHandlerFactory.getHandler(
+                        viewModelLoader.getFormName()
+                    )?.let {
+                        validateUserTaskSubmission(it, formDefinition).let { missingSubmissionProperties ->
+                            if (missingSubmissionProperties.isNotEmpty()) {
+                                logger.error {
+                                    "The following properties are missing in the user task submission for form " +
                                         "(${viewModelLoader.getFormName()}): $missingSubmissionProperties"
                                 }
                             }
@@ -78,8 +94,22 @@ class OnStartUpViewModelValidator(
         return getAllMissingProperties(viewModelLoader.getViewModelType(), formDefinition)
     }
 
-    fun validateSubmission(
-        submissionHandler: FormViewModelSubmissionHandler<out Submission>,
+    fun validateStartFormSubmission(
+        submissionHandler: FormViewModelStartFormSubmissionHandler<out Submission>,
+        formDefinition: FormIoFormDefinition
+    ): List<String> {
+        val submissionType = submissionHandler.getSubmissionType()::class
+        if (submissionType.simpleName == ObjectNode::class.simpleName) {
+            logger.error {
+                "Submission type for form ${formDefinition.name} is ObjectNode. " +
+                    "This is not advised. Please create a data class for the submission."
+            }
+        }
+        return getAllMissingProperties(submissionHandler.getSubmissionType(), formDefinition)
+    }
+
+    fun validateUserTaskSubmission(
+        submissionHandler: FormViewModelUserTaskSubmissionHandler<out Submission>,
         formDefinition: FormIoFormDefinition
     ): List<String> {
         val submissionType = submissionHandler.getSubmissionType()::class

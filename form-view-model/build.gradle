@@ -17,8 +17,14 @@
 dockerCompose {
     projectName = "form-view-model"
 
-    securityTesting {
-        isRequiredBy(project.tasks.securityTesting)
+    integrationTestingPostgresql {
+        isRequiredBy(project.tasks.integrationTestingPostgresql)
+        useComposeFiles.addAll("../docker-resources/docker-compose-base-test-postgresql.yml", "docker-compose-override-postgresql.yml")
+    }
+
+    integrationTestingMysql {
+        isRequiredBy(project.tasks.integrationTestingMysql)
+        useComposeFiles.addAll("../docker-resources/docker-compose-base-test-mysql.yml", "docker-compose-override-mysql.yml")
     }
 }
 
@@ -28,6 +34,8 @@ dependencies {
     implementation project(":authorization")
     implementation project(":form")
     implementation project(":process-link")
+    implementation project(":process-document")
+    implementation project(":command-handling")
     implementation project(":web")
 
     api "org.springframework.security:spring-security-core"
@@ -54,6 +62,12 @@ dependencies {
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
     testImplementation project(':test-utils-common')
+    testImplementation project(":keycloak-iam")
+    testImplementation project(":mail:local-mail")
+    testImplementation project(":contract")
+    testImplementation project(":core")
+    testImplementation project(":test-utils-common")
+    testImplementation "org.apache.httpcomponents.client5:httpclient5"
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
 
