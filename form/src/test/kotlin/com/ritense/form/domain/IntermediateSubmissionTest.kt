@@ -15,17 +15,17 @@ internal class IntermediateSubmissionTest : BaseTest() {
         mockStatic(SecurityUtils::class.java).use { mockedUtils ->
             mockedUtils.`when`<Any> { SecurityUtils.getCurrentUserLogin() }.thenReturn("userId")
 
-            val submissionId = SubmissionId.newId(UUID.fromString("f04d58c2-8f40-4ff2-a34a-7ae2d16a42f6"))
+            val intermediateSubmissionId = IntermediateSubmissionId.newId(UUID.fromString("f04d58c2-8f40-4ff2-a34a-7ae2d16a42f6"))
             val content = JsonNodeFactory.instance.objectNode().apply { put("key", "value") }
             val taskInstanceId = "taskInstanceId"
             val intermediateSubmission = IntermediateSubmission.new(
-                submissionId = submissionId,
+                intermediateSubmissionId = intermediateSubmissionId,
                 content = content,
                 taskInstanceId = taskInstanceId
             )
 
             assertThat(intermediateSubmission).isNotNull
-            assertThat(intermediateSubmission.submissionId).isEqualTo(submissionId)
+            assertThat(intermediateSubmission.intermediateSubmissionId).isEqualTo(intermediateSubmissionId)
             assertThat(intermediateSubmission.content).isEqualTo(content)
             assertThat(intermediateSubmission.taskInstanceId).isEqualTo(taskInstanceId)
             assertThat(intermediateSubmission.createdOn).isNotNull
@@ -39,11 +39,11 @@ internal class IntermediateSubmissionTest : BaseTest() {
         mockStatic(SecurityUtils::class.java).use { mockedUtils ->
             mockedUtils.`when`<Any> { SecurityUtils.getCurrentUserLogin() }.thenReturn("userId")
 
-            val submissionId = SubmissionId.newId(UUID.fromString("f04d58c2-8f40-4ff2-a34a-7ae2d16a42f6"))
+            val intermediateSubmissionId = IntermediateSubmissionId.newId(UUID.fromString("f04d58c2-8f40-4ff2-a34a-7ae2d16a42f6"))
             val content = JsonNodeFactory.instance.objectNode().apply { put("key", "original") }
             val taskInstanceId = "taskInstanceId"
             var intermediateSubmission = IntermediateSubmission.new(
-                submissionId = submissionId,
+                intermediateSubmissionId = intermediateSubmissionId,
                 content = content,
                 taskInstanceId = taskInstanceId
             )

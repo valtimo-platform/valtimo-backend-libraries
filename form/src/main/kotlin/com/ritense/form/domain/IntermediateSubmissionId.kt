@@ -6,19 +6,19 @@ import jakarta.persistence.Embeddable
 import java.util.UUID
 
 @Embeddable
-class SubmissionId(
-    @Column(name = "submission_id", updatable = false)
+class IntermediateSubmissionId(
+    @Column(name = "id", updatable = false)
     val id: UUID
-) : AbstractId<SubmissionId>() {
+) : AbstractId<IntermediateSubmissionId>() {
 
     companion object {
 
-        fun existingId(id: UUID): SubmissionId {
-            return SubmissionId(id)
+        fun existingId(id: UUID): IntermediateSubmissionId {
+            return IntermediateSubmissionId(id)
         }
 
-        fun newId(id: UUID): SubmissionId {
-            return SubmissionId(id).newIdentity()
+        fun newId(id: UUID): IntermediateSubmissionId {
+            return IntermediateSubmissionId(id).newIdentity()
         }
 
     }
@@ -27,7 +27,7 @@ class SubmissionId(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as SubmissionId
+        other as IntermediateSubmissionId
 
         if (id != other.id) return false
 

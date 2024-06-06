@@ -3,21 +3,24 @@ package com.ritense.form.domain
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.valtimo.contract.utils.SecurityUtils
 import com.ritense.valtimo.contract.validation.Validatable
+import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.Column
 import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
 import jakarta.persistence.Table
+import org.hibernate.annotations.Type
 import java.io.Serializable
 import java.time.LocalDateTime
 import java.util.UUID
 
 @Entity
-@Table(name = "form_submission")
+@Table(name = "intermediate_submission")
 class IntermediateSubmission(
     @EmbeddedId
-    val submissionId: SubmissionId,
+    val intermediateSubmissionId: IntermediateSubmissionId,
 
-    @Column(name = "content", columnDefinition = "json")
+    @Type(value = JsonType::class)
+    @Column(name = "content")
     val content: ObjectNode,
 
     @Column(name = "task_instance_id", updatable = false)
@@ -44,14 +47,14 @@ class IntermediateSubmission(
     companion object {
 
         fun new(
-            submissionId: SubmissionId = SubmissionId.newId(UUID.randomUUID()),
+            intermediateSubmissionId: IntermediateSubmissionId = IntermediateSubmissionId.newId(UUID.randomUUID()),
             content: ObjectNode,
             taskInstanceId: String,
             createdBy: String = SecurityUtils.getCurrentUserLogin(),
             createdOn: LocalDateTime = LocalDateTime.now()
         ): IntermediateSubmission {
             return IntermediateSubmission(
-                submissionId = submissionId,
+                intermediateSubmissionId = intermediateSubmissionId,
                 content = content,
                 taskInstanceId = taskInstanceId,
                 createdBy = createdBy,
@@ -66,7 +69,7 @@ class IntermediateSubmission(
         editedOn: LocalDateTime = LocalDateTime.now()
     ): IntermediateSubmission {
         return IntermediateSubmission(
-            submissionId = submissionId,
+            intermediateSubmissionId = intermediateSubmissionId,
             content = content,
             createdOn = createdOn,
             createdBy = createdBy,
@@ -82,7 +85,7 @@ class IntermediateSubmission(
 
         other as IntermediateSubmission
 
-        if (submissionId != other.submissionId) return false
+        if (intermediateSubmissionId != other.intermediateSubmissionId) return false
         if (content != other.content) return false
         if (createdOn != other.createdOn) return false
         if (createdBy != other.createdBy) return false
@@ -94,7 +97,7 @@ class IntermediateSubmission(
     }
 
     override fun hashCode(): Int {
-        var result = submissionId.hashCode()
+        var result = intermediateSubmissionId.hashCode()
         result = 31 * result + content.hashCode()
         result = 31 * result + createdOn.hashCode()
         result = 31 * result + createdBy.hashCode()

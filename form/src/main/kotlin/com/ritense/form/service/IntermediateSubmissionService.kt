@@ -2,24 +2,24 @@ package com.ritense.form.service
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.form.domain.IntermediateSubmission
-import com.ritense.form.repository.SubmissionRepository
+import com.ritense.form.repository.IntermediateSubmissionRepository
 import mu.KotlinLogging
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 class IntermediateSubmissionService(
-    private val submissionRepository: SubmissionRepository,
+    private val intermediateSubmissionRepository: IntermediateSubmissionRepository
 ) {
 
-    fun get(taskInstanceId: String) = submissionRepository.getByTaskInstanceId(taskInstanceId)
+    fun get(taskInstanceId: String) = intermediateSubmissionRepository.getByTaskInstanceId(taskInstanceId)
 
     fun store(
         submission: ObjectNode,
         taskInstanceId: String,
     ): IntermediateSubmission {
-        val existingIntermediateSubmission = submissionRepository.getByTaskInstanceId(taskInstanceId)
+        val existingIntermediateSubmission = intermediateSubmissionRepository.getByTaskInstanceId(taskInstanceId)
         if (existingIntermediateSubmission != null) {
-            return submissionRepository.save(
+            return intermediateSubmissionRepository.save(
                 existingIntermediateSubmission.changeSubmissionContent(
                     content = submission
                 )
@@ -27,7 +27,7 @@ class IntermediateSubmissionService(
                 logger.info { "Updated existing intermediate submission for taskInstanceId($taskInstanceId)" }
             }
         } else {
-            return submissionRepository.save(
+            return intermediateSubmissionRepository.save(
                 IntermediateSubmission.new(
                     content = submission,
                     taskInstanceId = taskInstanceId

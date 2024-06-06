@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @SkipComponentScan
-@RequestMapping(value = ["/v1/api/form/intermediate/submission"], produces = [APPLICATION_JSON_UTF8_VALUE])
+@RequestMapping(value = ["/api/v1/form/intermediate/submission"], produces = [APPLICATION_JSON_UTF8_VALUE])
 @Transactional
 class IntermediateSubmissionResource(
     private val intermediateSubmissionService: IntermediateSubmissionService
@@ -30,7 +30,7 @@ class IntermediateSubmissionResource(
     }
 
     @PostMapping
-    fun intermediateSave(@RequestBody request: IntermediateSaveRequest): ResponseEntity<IntermediateSubmission> {
+    fun storeIntermediateSubmission(@RequestBody request: IntermediateSaveRequest): ResponseEntity<IntermediateSubmission> {
         val intermediateSubmission = intermediateSubmissionService.store(
             submission = request.submission,
             taskInstanceId = request.taskInstanceId

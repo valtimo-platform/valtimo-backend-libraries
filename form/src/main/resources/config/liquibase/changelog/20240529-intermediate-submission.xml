@@ -20,11 +20,11 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
     <changeSet author="Ritense" id="1">
-        <createTable tableName="form_submission">
+        <createTable tableName="intermediate_submission">
             <column name="id" type="${uuidType}">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="form_submissionPK"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="intermediate_submissionPK"/>
             </column>
-            <column name="content" type="JSON">
+            <column name="content" type="${jsonType}">
                 <constraints nullable="false"/>
             </column>
             <column name="task_instance_id" type="VARCHAR">
@@ -46,7 +46,7 @@
     </changeSet>
 
     <changeSet author="Ritense" id="2">
-        <createIndex indexName="task_instance_id_index" tableName="form_submission">
+        <createIndex indexName="task_instance_id_index" tableName="intermediate_submission">
             <column name="task_instance_id"/>
         </createIndex>
     </changeSet>
