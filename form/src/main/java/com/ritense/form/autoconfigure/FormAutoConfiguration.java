@@ -166,9 +166,8 @@ public class FormAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(FormProcessLinkActivityHandler.class)
     public FormProcessLinkActivityHandler formProcessLinkTaskProvider(
-        FormIoFormDefinitionService formDefinitionService,
         PrefillFormService prefillFormService
     ) {
-        return new FormProcessLinkActivityHandler(formDefinitionService,prefillFormService);
+        return new FormProcessLinkActivityHandler(prefillFormService);
     }
 }
