@@ -20,6 +20,7 @@ import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import org.springframework.transaction.annotation.Transactional
 import kotlin.reflect.KClass
+import kotlin.reflect.full.allSupertypes
 
 @Transactional
 interface FormViewModelUserTaskSubmissionHandler<T : Submission> {
@@ -66,7 +67,7 @@ interface FormViewModelUserTaskSubmissionHandler<T : Submission> {
      */
     @Suppress("UNCHECKED_CAST")
     fun getSubmissionType(): KClass<T> =
-        this::class.allSupertypes.first { it.classifier == FormViewModelUserTaskSubmissionHandler::class }.arguments.first().type?.let { it.classifier as KClass<C> }
+        this::class.allSupertypes.first().arguments.first().type?.let { it.classifier as KClass<T> }
             ?: throw IllegalArgumentException("Could not resolve SubmissionType for ${this::class}")
 
 }
