@@ -18,6 +18,7 @@ package com.ritense.commandhandling
 
 import org.springframework.transaction.annotation.Transactional
 import kotlin.reflect.KClass
+import kotlin.reflect.full.allSupertypes
 
 @Transactional
 interface CommandHandler<C : Command<T>, out T> {
@@ -26,7 +27,7 @@ interface CommandHandler<C : Command<T>, out T> {
 
     @Suppress("UNCHECKED_CAST")
     fun getCommandType() =
-        this::class.supertypes.first().arguments.first().type?.let { it.classifier as KClass<C> }
+        this::class.allSupertypes.first { it.classifier == CommandHandler::class }.arguments.first().type?.let { it.classifier as KClass<C> }
             ?: throw IllegalArgumentException("Could not resolve CommandType for ${this::class}")
 
 }

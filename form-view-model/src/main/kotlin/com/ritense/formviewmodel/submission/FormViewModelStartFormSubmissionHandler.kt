@@ -19,6 +19,7 @@ package com.ritense.formviewmodel.submission
 import com.ritense.formviewmodel.viewmodel.Submission
 import org.springframework.transaction.annotation.Transactional
 import kotlin.reflect.KClass
+import kotlin.reflect.full.allSupertypes
 
 @Transactional
 interface FormViewModelStartFormSubmissionHandler<T : Submission> {
@@ -68,7 +69,7 @@ interface FormViewModelStartFormSubmissionHandler<T : Submission> {
      */
     @Suppress("UNCHECKED_CAST")
     fun getSubmissionType(): KClass<T> =
-        this::class.supertypes.first().arguments.first().type?.let { it.classifier as KClass<T> }
+        this::class.allSupertypes.first { it.classifier == FormViewModelStartFormSubmissionHandler::class }.arguments.first().type?.let { it.classifier as KClass<T> }
             ?: throw IllegalArgumentException("Could not resolve SubmissionType for ${this::class}")
 
 }
