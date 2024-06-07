@@ -19,6 +19,7 @@ package com.ritense.formviewmodel.viewmodel
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import org.springframework.transaction.annotation.Transactional
 import kotlin.reflect.KClass
+import kotlin.reflect.full.allSupertypes
 
 @Transactional
 interface ViewModelLoader<T : ViewModel> {
@@ -29,7 +30,7 @@ interface ViewModelLoader<T : ViewModel> {
 
     @Suppress("UNCHECKED_CAST")
     fun getViewModelType(): KClass<T> =
-        this::class.supertypes.first().arguments.first().type?.let { it.classifier as KClass<T> }
+        this::class.allSupertypes.first().arguments.first().type?.let { it.classifier as KClass<T> }
             ?: throw IllegalArgumentException("Could not resolve ViewModelType for ${this::class}")
 
     fun getFormName(): String
