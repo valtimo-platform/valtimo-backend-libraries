@@ -66,7 +66,7 @@ interface FormViewModelUserTaskSubmissionHandler<T : Submission> {
      */
     @Suppress("UNCHECKED_CAST")
     fun getSubmissionType(): KClass<T> =
-        this::class.supertypes.first().arguments.first().type?.let { it.classifier as KClass<T> }
+        this::class.allSupertypes.first { it.classifier == FormViewModelUserTaskSubmissionHandler::class }.arguments.first().type?.let { it.classifier as KClass<C> }
             ?: throw IllegalArgumentException("Could not resolve SubmissionType for ${this::class}")
 
 }

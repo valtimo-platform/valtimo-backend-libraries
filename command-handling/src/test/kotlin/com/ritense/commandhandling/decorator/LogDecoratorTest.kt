@@ -19,7 +19,7 @@ internal class LogDecoratorTest : BaseTest() {
         )
 
         commandHandler.execute(LambdaCommand {
-            Thread.sleep(1000)
+            Thread.sleep(100)
         })
 
         assertThat(output).contains("Handler 'LambdaCommandHandler' executing 'LambdaCommand'")

@@ -29,7 +29,7 @@ interface ViewModelLoader<T : ViewModel> {
 
     @Suppress("UNCHECKED_CAST")
     fun getViewModelType(): KClass<T> =
-        this::class.supertypes.first().arguments.first().type?.let { it.classifier as KClass<T> }
+        this::class.allSupertypes.first { it.classifier == ViewModelLoader::class }.arguments.first().type?.let { it.classifier as KClass<C> }
             ?: throw IllegalArgumentException("Could not resolve ViewModelType for ${this::class}")
 
     fun getFormName(): String
