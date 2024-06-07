@@ -19,7 +19,7 @@ pluginManager.withPlugin('maven-publish') {
         publications {
             maven(MavenPublication) {
                 pom {
-                    name = 'CommandHandling module'
+                    name = 'Command handling module'
                     description = 'The command handling module of the Valtimo framework'
                     developers {
                         developer {

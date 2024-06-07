@@ -30,6 +30,7 @@ dependencies {
     api(project(":form-flow"))
     api(project(":form-flow-valtimo"))
     api(project(":form-view-model"))
+    api(project(":command-handling"))
     api(project(":importer"))
     api(project(":keycloak-iam"))
     api(project(":localization"))
