@@ -19,9 +19,6 @@ package com.ritense.case_.widget.custom
 import com.ritense.case_.widget.CaseWidgetMapper
 
 class CustomCaseWidgetMapper : CaseWidgetMapper<CustomCaseWidget, CustomCaseWidgetDto> {
-    override fun supportedEntityType() = CustomCaseWidget::class.java
-
-    override fun supportedDtoType() = CustomCaseWidgetDto::class.java
 
     override fun toDto(entity: CustomCaseWidget) = CustomCaseWidgetDto(
         key = entity.key,
