@@ -33,6 +33,8 @@ import com.ritense.case_.widget.CaseWidgetAnnotatedClassResolver
 import com.ritense.case_.widget.CaseWidgetDataProvider
 import com.ritense.case_.widget.CaseWidgetJacksonModule
 import com.ritense.case_.widget.CaseWidgetMapper
+import com.ritense.case_.widget.collection.CollectionCaseWidgetDataProvider
+import com.ritense.case_.widget.collection.CollectionCaseWidgetMapper
 import com.ritense.case_.widget.custom.CustomCaseWidgetMapper
 import com.ritense.case_.widget.fields.FieldsCaseWidgetDataProvider
 import com.ritense.case_.widget.fields.FieldsCaseWidgetMapper
@@ -161,6 +163,17 @@ class CaseWidgetAutoConfiguration {
         objectMapper: ObjectMapper,
         valueResolverService: ValueResolverService
     ) = TableCaseWidgetDataProvider(objectMapper, valueResolverService)
+
+    @ConditionalOnMissingBean(CollectionCaseWidgetMapper::class)
+    @Bean
+    fun collectionCaseWidgetMapper() = CollectionCaseWidgetMapper()
+
+    @ConditionalOnMissingBean(CollectionCaseWidgetDataProvider::class)
+    @Bean
+    fun collectionCaseWidgetDataProvider(
+        objectMapper: ObjectMapper,
+        valueResolverService: ValueResolverService
+    ) = CollectionCaseWidgetDataProvider(objectMapper, valueResolverService)
 
     @ConditionalOnMissingBean(CustomCaseWidgetMapper::class)
     @Bean
