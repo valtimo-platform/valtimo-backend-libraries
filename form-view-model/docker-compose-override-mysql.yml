@@ -1,0 +1,6 @@
+services:
+    db:
+        ports:
+            - "3352:3306"
+        environment:
+            - MYSQL_DATABASE=form-view-model-test

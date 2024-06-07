@@ -26,15 +26,15 @@ import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.formflow.domain.FormFlowProcessLink
-import java.util.UUID
 import org.camunda.bpm.engine.RuntimeService
+import java.util.UUID
 
 class FormFlowProcessLinkActivityHandler(
     private val formFlowService: FormFlowService,
     private val repositoryService: CamundaRepositoryService,
     documentService: DocumentService,
     runtimeService: RuntimeService,
-): AbstractFormFlowLinkTaskProvider(
+) : AbstractFormFlowLinkTaskProvider(
     documentService, runtimeService
 ), ProcessLinkActivityHandler<FormFlowTaskOpenResultProperties> {
 
@@ -42,7 +42,10 @@ class FormFlowProcessLinkActivityHandler(
         return processLink is FormFlowProcessLink
     }
 
-    override fun openTask(task: CamundaTask, processLink: ProcessLink): ProcessLinkActivityResult<FormFlowTaskOpenResultProperties> {
+    override fun openTask(
+        task: CamundaTask,
+        processLink: ProcessLink
+    ): ProcessLinkActivityResult<FormFlowTaskOpenResultProperties> {
         processLink as FormFlowProcessLink
 
         val instances = formFlowService.findInstances(mapOf("taskInstanceId" to task.id))
@@ -51,13 +54,19 @@ class FormFlowProcessLinkActivityHandler(
             1 -> instances[0]
             else -> throw IllegalStateException("Multiple form flow instances linked to task: ${task.id}")
         }
-        return ProcessLinkActivityResult(processLink.id, FORM_FLOW_TASK_TYPE_KEY, FormFlowTaskOpenResultProperties(instance.id.id))
+        return ProcessLinkActivityResult(
+            processLink.id,
+            FORM_FLOW_TASK_TYPE_KEY,
+            FormFlowTaskOpenResultProperties(instance.id.id)
+        )
     }
+
     override fun getStartEventObject(
         processDefinitionId: String,
         documentId: UUID?,
         documentDefinitionName: String?,
-        processLink: ProcessLink): ProcessLinkActivityResult<FormFlowTaskOpenResultProperties> {
+        processLink: ProcessLink
+    ): ProcessLinkActivityResult<FormFlowTaskOpenResultProperties> {
         processLink as FormFlowProcessLink
         val formFlowDefinition = formFlowService.findDefinition(processLink.formFlowDefinitionId)!!
         val processDefinition = AuthorizationContext.runWithoutAuthorization {
@@ -68,10 +77,14 @@ class FormFlowProcessLinkActivityHandler(
         documentId?.let { additionalProperties["documentId"] = it }
         documentDefinitionName?.let { additionalProperties["documentDefinitionName"] = it }
 
-        return ProcessLinkActivityResult(processLink.id, FORM_FLOW_TASK_TYPE_KEY,FormFlowTaskOpenResultProperties(
-            formFlowService.save(
-                formFlowDefinition.createInstance(additionalProperties)
-            ).id.id)
+        return ProcessLinkActivityResult(
+            processLink.id,
+            FORM_FLOW_TASK_TYPE_KEY,
+            FormFlowTaskOpenResultProperties(
+                formFlowService.save(
+                    formFlowDefinition.createInstance(additionalProperties)
+                ).id.id
+            )
         )
     }
 
