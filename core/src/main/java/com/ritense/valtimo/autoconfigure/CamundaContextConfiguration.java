@@ -16,7 +16,7 @@
 
 package com.ritense.valtimo.autoconfigure;
 
-import com.ritense.valtimo.CamundaBeansPlugin;
+import com.ritense.valtimo.CamundaWhitelistedBeansPlugin;
 import com.ritense.valtimo.contract.annotation.ProcessBean;
 import java.util.Map;
 import org.camunda.bpm.spring.boot.starter.configuration.Ordering;
@@ -33,11 +33,11 @@ public class CamundaContextConfiguration {
 
     @Bean
     @Order(Ordering.DEFAULT_ORDER - 1)
-    public CamundaBeansPlugin camundaBeansPlugin(
+    public CamundaWhitelistedBeansPlugin camundaWhitelistedBeansPlugin(
         @Lazy @ProcessBean Map<String, Object> processBeans,
         ApplicationContext applicationContext
     ) {
-        return new CamundaBeansPlugin(processBeans, applicationContext);
+        return new CamundaWhitelistedBeansPlugin(processBeans, applicationContext);
     }
 
 }
