@@ -70,5 +70,10 @@ class ClientTools {
                 .path(uri.path)
                 .port(uri.port)
         }
+
+        fun UriBuilder.optionalQueryParam(name: String, value: Any?): UriBuilder {
+            value?.let { this.queryParam(name, it) }
+            return this
+        }
     }
 }

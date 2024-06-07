@@ -1,0 +1,23 @@
+[
+    {
+        "version": "1.5.0-test-1.0.0",
+        "filterableColumns": [
+            "auteur",
+            "beschrijving",
+            "creatiedatum",
+            "informatieobjecttype",
+            "titel",
+            "vertrouwelijkheidaanduiding"
+        ],
+        "sortableColumns": [
+            "auteur",
+            "bestandsomvang",
+            "creatiedatum",
+            "formaat",
+            "status",
+            "titel",
+            "vertrouwelijkheidaanduiding"
+        ],
+        "supportsTrefwoorden": true
+    }
+]

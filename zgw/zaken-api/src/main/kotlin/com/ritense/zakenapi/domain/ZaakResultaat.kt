@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.resource.domain
+package com.ritense.zakenapi.domain
 
-data class TemporaryResourceUploadedEvent(
-    val resourceId: String,
+import java.net.URI
+import java.util.UUID
+
+data class ZaakResultaat(
+    val url: URI,
+    val uuid: UUID,
+    val zaak: URI,
+    val resultaattype: URI,
+    val toelichting: String? = null,
 )

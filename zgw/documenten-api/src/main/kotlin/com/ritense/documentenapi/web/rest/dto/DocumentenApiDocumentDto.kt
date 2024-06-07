@@ -16,23 +16,30 @@
 
 package com.ritense.documentenapi.web.rest.dto
 
-import com.fasterxml.jackson.annotation.JsonFormat
-import com.ritense.documentenapi.client.DocumentStatusType
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.util.UUID
 
-class ModifyDocumentRequest(
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    val creatiedatum: LocalDate,
-    val titel: String,
-    val auteur: String,
-    val status: DocumentStatusType? = null,
-    val taal: String,
-    val bestandsnaam: String? = null,
+data class DocumentenApiDocumentDto(
+    // valtimo fields
+    val fileId: UUID,
+    val pluginConfigurationId: UUID,
+    // document api fields
+    val bestandsnaam: String?,
+    val bestandsomvang: Long?,
+    val creatiedatum: LocalDateTime,
+    val auteur: String? = null,
+    val titel: String? = null,
+    val status: String? = null,
+    val taal: String? = null,
+    val identificatie: String? = null,
     val beschrijving: String? = null,
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    val ontvangstdatum: LocalDate? = null,
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    val verzenddatum: LocalDate? = null,
-    val indicatieGebruiksrecht: Boolean? = false,
+    val informatieobjecttype: String? = null,
     val trefwoorden: List<String>? = null,
+    val formaat: String? = null,
+    val verzenddatum: LocalDate? = null,
+    val ontvangstdatum: LocalDate? = null,
+    val vertrouwelijkheidaanduiding: String? = null,
+    val versie: Int? = null,
+    val indicatieGebruiksrecht: Boolean? = null,
 )

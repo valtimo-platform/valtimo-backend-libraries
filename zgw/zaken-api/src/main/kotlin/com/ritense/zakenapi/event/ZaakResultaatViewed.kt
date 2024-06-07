@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.resource.domain
+package com.ritense.zakenapi.event
 
-data class TemporaryResourceUploadedEvent(
-    val resourceId: String,
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.outbox.domain.BaseEvent
+
+class ZaakResultaatViewed(zaakResultaat: ObjectNode) : BaseEvent(
+    type = "com.ritense.gzac.zrc.resultaat.viewed",
+    resultType = "com.ritense.zakenapi.domain.ZaakResultaat",
+    resultId = null,
+    result = zaakResultaat
 )

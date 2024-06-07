@@ -14,8 +14,19 @@
  * limitations under the License.
  */
 
-package com.ritense.resource.domain
+package com.ritense.documentenapi.web.rest.dto
 
-data class TemporaryResourceUploadedEvent(
-    val resourceId: String,
+import com.fasterxml.jackson.annotation.JsonIgnore
+import java.net.URI
+import java.time.LocalDate
+
+data class DocumentSearchRequest(
+    val informatieobjecttype: String? = null,
+    val titel: String? = null,
+    val vertrouwelijkheidaanduiding: String? = null,
+    val creatiedatumFrom: LocalDate? = null,
+    val creatiedatumTo: LocalDate? = null,
+    val auteur: String? = null,
+    val trefwoorden: List<String>? = null,
+    @JsonIgnore val zaakUrl: URI? = null
 )
