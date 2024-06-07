@@ -23,7 +23,6 @@ import com.ritense.documentenapi.client.CreateDocumentResult
 import com.ritense.documentenapi.client.DocumentStatusType
 import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.documentenapi.event.DocumentCreated
-import com.ritense.documentenapi.service.DocumentenApiVersionService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zgw.domain.Vertrouwelijkheid
@@ -43,6 +42,7 @@ import java.time.LocalDateTime
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 internal class DocumentenApiPluginTest {
 
@@ -52,8 +52,6 @@ internal class DocumentenApiPluginTest {
         val storageService: TemporaryResourceStorageService = mock()
         val applicationEventPublisher: ApplicationEventPublisher= mock()
         val authenticationMock = mock<DocumentenApiAuthentication>()
-        val objectMapper = MapperSingleton.get()
-        val documentenApiVersionService: DocumentenApiVersionService = mock()
         val executionMock = mock<DelegateExecution>()
         val content = "contentForRequest"
         val inputStream = ByteArrayInputStream(content.toByteArray())
@@ -71,14 +69,7 @@ internal class DocumentenApiPluginTest {
             .thenReturn(inputStream)
         whenever(client.storeDocument(any(), any(), any())).thenReturn(result)
 
-        val plugin = DocumentenApiPlugin(
-            client,
-            storageService,
-            applicationEventPublisher,
-            objectMapper,
-            mutableListOf(),
-            documentenApiVersionService,
-        )
+        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher, MapperSingleton.get(), listOf())
         plugin.url = URI("http://some-url")
         plugin.bronorganisatie = "123456789"
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -129,7 +120,6 @@ internal class DocumentenApiPluginTest {
         val storageService: TemporaryResourceStorageService = mock()
         val applicationEventPublisher: ApplicationEventPublisher= mock()
         val authenticationMock = mock<DocumentenApiAuthentication>()
-        val documentenApiVersionService: DocumentenApiVersionService = mock()
         val executionMock = mock<DelegateExecution>()
         val content = "contentForRequest"
         val inputStream = ByteArrayInputStream(content.toByteArray())
@@ -159,14 +149,7 @@ internal class DocumentenApiPluginTest {
                 "informatieobjecttype" to "type"))
         whenever(client.storeDocument(any(), any(), any())).thenReturn(result)
 
-        val plugin = DocumentenApiPlugin(
-            client,
-            storageService,
-            applicationEventPublisher,
-            MapperSingleton.get(),
-            mutableListOf(),
-            documentenApiVersionService,
-        )
+        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher, MapperSingleton.get(), listOf())
         plugin.url = URI("http://some-url")
         plugin.bronorganisatie = "123456789"
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -200,7 +183,6 @@ internal class DocumentenApiPluginTest {
         val storageService: TemporaryResourceStorageService = mock()
         val applicationEventPublisher: ApplicationEventPublisher= mock()
         val authenticationMock = mock<DocumentenApiAuthentication>()
-        val documentenApiVersionService: DocumentenApiVersionService = mock()
         val executionMock = mock<DelegateExecution>()
         val content = "contentForRequest"
         val inputStream = ByteArrayInputStream(content.toByteArray())
@@ -224,14 +206,7 @@ internal class DocumentenApiPluginTest {
                 "informatieobjecttype" to "type"))
         whenever(client.storeDocument(any(), any(), any())).thenReturn(result)
 
-        val plugin = DocumentenApiPlugin(
-            client,
-            storageService,
-            applicationEventPublisher,
-            MapperSingleton.get(),
-            listOf(),
-            documentenApiVersionService
-        )
+        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher, MapperSingleton.get(), listOf())
         plugin.url = URI("http://some-url")
         plugin.bronorganisatie = "123456789"
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -265,16 +240,8 @@ internal class DocumentenApiPluginTest {
         val storageService: TemporaryResourceStorageService = mock()
         val applicationEventPublisher: ApplicationEventPublisher= mock()
         val authenticationMock = mock<DocumentenApiAuthentication>()
-        val documentenApiVersionService: DocumentenApiVersionService = mock()
 
-        val plugin = DocumentenApiPlugin(
-            client,
-            storageService,
-            applicationEventPublisher,
-            MapperSingleton.get(),
-            listOf(),
-            documentenApiVersionService
-        )
+        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher, MapperSingleton.get(), listOf())
         plugin.url = URI("http://some-url")
         plugin.bronorganisatie = "123456789"
         plugin.authenticationPluginConfiguration = authenticationMock

@@ -5,10 +5,6 @@ Welcome at the Valtimo repository. Valtimo is the less-code platform for Busines
 ## What are the 'Valtimo backend libraries'?
 The backend, being the Java / Kotlin application. Install the Valtimo frontend as well if you need the UI.
 
-## Branching
-For more information on what branches to create while working in this project, please refer
-to [this page](https://github.com/valtimo-platform/valtimo-documentation/blob/next-minor/contributing/branching-and-release-strategy.md).
-
 ## When to use it?
 When you work with Cases. Typical use cases are in handling requests from citizens (governmental use) or customers (commercial). But also for internal processes like employee onboarding or production processes. There is a special Edition for Dutch governmental use, 'GZAC'. 
 

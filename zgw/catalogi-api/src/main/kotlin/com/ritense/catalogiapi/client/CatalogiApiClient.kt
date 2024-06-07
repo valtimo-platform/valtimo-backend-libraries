@@ -126,12 +126,12 @@ open class CatalogiApiClient(
     open fun getStatustype(
         authentication: CatalogiApiAuthentication,
         baseUrl: URI,
-        statustypeUrl: URI
+        informatieobjecttypeUrl: URI
     ): Statustype {
-        validateUrlHost(baseUrl, statustypeUrl)
+        validateUrlHost(baseUrl, informatieobjecttypeUrl)
         val result = buildWebclient(authentication)
             .get()
-            .uri(statustypeUrl)
+            .uri(informatieobjecttypeUrl)
             .retrieve()
             .toEntity(Statustype::class.java)
             .block()
@@ -156,22 +156,6 @@ open class CatalogiApiClient(
                     .build()
             }.retrieve()
             .toEntity(ClientTools.getTypedPage(Statustype::class.java))
-            .block()
-
-        return result?.body!!
-    }
-
-    open fun getResultaattype(
-        authentication: CatalogiApiAuthentication,
-        baseUrl: URI,
-        resultaattypeUrl: URI
-    ): Resultaattype {
-        validateUrlHost(baseUrl, resultaattypeUrl)
-        val result = buildWebclient(authentication)
-            .get()
-            .uri(resultaattypeUrl)
-            .retrieve()
-            .toEntity(Resultaattype::class.java)
             .block()
 
         return result?.body!!

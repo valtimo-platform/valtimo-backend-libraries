@@ -38,7 +38,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
-import kotlin.test.assertEquals
 
 @Transactional
 internal class ZgwDocumentTrefwoordResourceIT : BaseIntegrationTest() {
@@ -142,27 +141,5 @@ internal class ZgwDocumentTrefwoordResourceIT : BaseIntegrationTest() {
         mockMvc.perform(delete("/api/management/v1/case-definition/{caseDefinitionName}/zgw-document/trefwoord/{trefwoord}", caseDefinitionName, trefwoord)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent)
-    }
-
-    @Test
-    @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
-    fun `test deleteTrefwoorden`() {
-        val caseDefinitionName = "TestDefinition"
-
-        caseDefinitionSettingsRepository.save(CaseDefinitionSettings(caseDefinitionName))
-
-        service.createTrefwoord(caseDefinitionName, "Trefwoord1")
-        service.createTrefwoord(caseDefinitionName, "Trefwoord2")
-        service.createTrefwoord(caseDefinitionName, "Trefwoord3")
-
-        mockMvc.perform(delete("/api/management/v1/case-definition/{caseDefinitionName}/zgw-document/trefwoord", caseDefinitionName)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("[\"Trefwoord1\", \"Trefwoord2\"]"))
-            .andExpect(status().isNoContent)
-
-        service.getTrefwoorden(caseDefinitionName).let {
-            assertEquals(1, it.size)
-            assertEquals("Trefwoord3", it[0].value)
-        }
     }
 }

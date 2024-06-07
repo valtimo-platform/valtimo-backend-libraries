@@ -18,36 +18,27 @@ package com.ritense.documentenapi.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.documentenapi.DocumentenApiAuthentication
-import com.ritense.documentenapi.domain.DocumentenApiColumn
-import com.ritense.documentenapi.domain.DocumentenApiColumnKey
 import com.ritense.documentenapi.event.DocumentDeleted
 import com.ritense.documentenapi.event.DocumentInformatieObjectDownloaded
 import com.ritense.documentenapi.event.DocumentInformatieObjectViewed
-import com.ritense.documentenapi.event.DocumentListed
 import com.ritense.documentenapi.event.DocumentStored
 import com.ritense.documentenapi.event.DocumentUpdated
-import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
 import com.ritense.outbox.OutboxService
 import com.ritense.zgw.ClientTools
-import com.ritense.zgw.ClientTools.Companion.optionalQueryParam
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferUtils
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToFlux
-import org.springframework.web.util.UriBuilder
 import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Flux
 import java.io.InputStream
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
 import java.net.URI
-import kotlin.math.min
 
 class DocumentenApiClient(
     private val webclientBuilder: WebClient.Builder,
@@ -116,73 +107,6 @@ class DocumentenApiClient(
         }
 
         return result
-    }
-
-    fun getInformatieObjecten(
-        authentication: DocumentenApiAuthentication,
-        baseUrl: URI,
-        pageable: Pageable,
-        documentSearchRequest: DocumentSearchRequest,
-    ): org.springframework.data.domain.Page<DocumentInformatieObject> {
-        // because the documenten api only supports a fixed page size, we will try to calculate the page we need to request
-        // the only page sizes that are supported are those that can fit n times in the itemsPerPage
-        if (ITEMS_PER_PAGE % pageable.pageSize != 0) {
-            throw IllegalArgumentException("Page size is not supported")
-        }
-        if (documentSearchRequest.zaakUrl == null) {
-            throw IllegalArgumentException("Zaak URL is required")
-        }
-
-        val pageToRequest = ((pageable.pageSize * pageable.pageNumber) / ITEMS_PER_PAGE) + 1
-
-        val result = checkNotNull(
-            buildFilteredClient(authentication)
-                .get()
-                .uri {
-                    ClientTools.baseUrlToBuilder(it, baseUrl)
-                        .path("enkelvoudiginformatieobjecten")
-                        .optionalQueryParam("titel", documentSearchRequest.titel)
-                        .optionalQueryParam("informatieobjecttype", documentSearchRequest.informatieobjecttype)
-                        .optionalQueryParam("vertrouwelijkheidaanduiding", documentSearchRequest.vertrouwelijkheidaanduiding)
-                        .optionalQueryParam("auteur", documentSearchRequest.auteur)
-                        .optionalQueryParam("creatiedatum__gte", documentSearchRequest.creatiedatumFrom)
-                        .optionalQueryParam("creatiedatum__lte", documentSearchRequest.creatiedatumTo)
-                        .optionalQueryParam("trefwoorden", documentSearchRequest.trefwoorden?.joinToString(","))
-                        .queryParam("objectinformatieobjecten__object", documentSearchRequest.zaakUrl)
-                        .queryParam("page", pageToRequest)
-                        .addSortParameter(pageable)
-                        .build()
-                }
-                .retrieve()
-                .toEntity(ClientTools.getTypedPage(DocumentInformatieObject::class.java))
-                .block()?.body
-        ) {
-            "Could not retrieve documents for zaak ${documentSearchRequest.zaakUrl}"
-        }
-
-        // Fix issue where open-zaak responds contains duplicate results
-        val results = result.results.filter { documentInformatieObject ->
-            result.results.none { it.url == documentInformatieObject.url && it.versie != null && documentInformatieObject.versie != null && it.versie > documentInformatieObject.versie }
-        }
-
-        // trying to find the chunk of the returned page that we need
-        val fromIndex = (pageable.pageSize * (pageable.pageNumber)) % ITEMS_PER_PAGE
-        val toIndex = fromIndex + pageable.pageSize
-        val pageItems = if (fromIndex > results.size) {
-            emptyList()
-        } else {
-            results.subList(fromIndex, min(results.size, toIndex))
-        }
-
-        val returnedPage = PageImpl(pageItems, pageable, results.size.toLong())
-
-        outboxService.send {
-            DocumentListed(
-                objectMapper.valueToTree(pageItems)
-            )
-        }
-
-        return returnedPage
     }
 
     fun downloadInformatieObjectContent(
@@ -320,22 +244,5 @@ class DocumentenApiClient(
             .doOnComplete(doOnComplete)
         DataBufferUtils.write(flux, osPipe).subscribe(DataBufferUtils.releaseConsumer())
         return isPipe
-    }
-
-    fun UriBuilder.addSortParameter(pageable: Pageable): UriBuilder {
-        val sortString = pageable.sort.map {
-            val property = DocumentenApiColumnKey.from(it.property)
-                ?: throw IllegalArgumentException("Unknown Documenten API property ${it.property}")
-            val directionMarker = if (it.isAscending) "" else "-"
-            "$directionMarker${property.name.lowercase()}"
-        }.joinToString(",")
-        if (sortString.isNotBlank()) {
-            this.queryParam("ordering", sortString)
-        }
-        return this
-    }
-
-    companion object {
-        const val ITEMS_PER_PAGE = 100
     }
 }

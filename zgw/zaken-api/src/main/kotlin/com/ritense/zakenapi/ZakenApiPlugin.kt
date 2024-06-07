@@ -43,7 +43,6 @@ import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
 import com.ritense.zakenapi.domain.ZaakObject
 import com.ritense.zakenapi.domain.ZaakResponse
-import com.ritense.zakenapi.domain.ZaakResultaat
 import com.ritense.zakenapi.domain.ZaakStatus
 import com.ritense.zakenapi.domain.ZaakopschortingRequest
 import com.ritense.zakenapi.domain.rol.BetrokkeneType
@@ -532,15 +531,6 @@ class ZakenApiPlugin(
             null
         } else {
             client.getZaakStatus(authenticationPluginConfiguration, URI(zaak.status))
-        }
-    }
-
-    fun getZaakResultaat(zaakUrl: URI): ZaakResultaat? {
-        val zaak = getZaak(zaakUrl)
-        return if (zaak.resultaat == null) {
-            null
-        } else {
-            client.getZaakResultaat(authenticationPluginConfiguration, zaak.resultaat)
         }
     }
 

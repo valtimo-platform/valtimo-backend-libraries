@@ -34,5 +34,4 @@ class ModifyDocumentRequest(
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val verzenddatum: LocalDate? = null,
     val indicatieGebruiksrecht: Boolean? = false,
-    val trefwoorden: List<String>? = null,
 )

@@ -45,6 +45,4 @@ interface ZgwDocumentTrefwoordRepository : JpaRepository<ZgwDocumentTrefwoord, Z
     fun findAllByCaseDefinitionNameAndValue(caseDefinitionName: String, value: String): ZgwDocumentTrefwoord?
 
     fun deleteByCaseDefinitionNameAndValue(caseDefinitionName: String, value: String)
-
-    fun deleteByCaseDefinitionNameAndValueIn(caseDefinitionName: String, values: List<String>)
 }

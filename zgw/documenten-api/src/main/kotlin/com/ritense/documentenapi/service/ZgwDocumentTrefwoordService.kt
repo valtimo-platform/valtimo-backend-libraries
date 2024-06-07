@@ -53,8 +53,4 @@ class ZgwDocumentTrefwoordService(
     fun deleteTrefwoord(caseDefinitionName: String, trefwoord: String) {
         return zgwDocumentTrefwoordRepository.deleteByCaseDefinitionNameAndValue(caseDefinitionName, trefwoord)
     }
-
-    fun deleteTrefwoorden(caseDefinitionName: String, trefwoorden: List<String>) {
-        return zgwDocumentTrefwoordRepository.deleteByCaseDefinitionNameAndValueIn(caseDefinitionName, trefwoorden)
-    }
 }

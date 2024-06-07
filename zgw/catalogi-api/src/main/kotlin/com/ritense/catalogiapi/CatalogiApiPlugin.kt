@@ -246,10 +246,6 @@ class CatalogiApiPlugin(
         return results
     }
 
-    fun getResultaattype(resultaatTypeUrl: URI): Resultaattype {
-        return client.getResultaattype(authenticationPluginConfiguration, url, resultaatTypeUrl)
-    }
-
     fun getResultaattypeByOmschrijving(zaakTypeUrl: URI, omschrijving: String): Resultaattype {
         return getResultaattypen(zaakTypeUrl)
             .singleOrNull { it.omschrijving.equals(omschrijving, ignoreCase = true) }
