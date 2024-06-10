@@ -37,7 +37,7 @@ class ValtimoHttpAutoConfiguration {
     @Bean
     fun restTemplateBuilderSingleton(
         restTemplateBuilder: RestTemplateBuilder,
-        valtimoHttpRestTemplatesConfigurationProperties: ValtimoHttpRestTemplatesConfigurationProperties
+        valtimoHttpRestTemplatesConfigurationProperties: ValtimoHttpRestTemplateConfigurationProperties
     ): RestTemplateBuilderSingleton {
         val valtimoRestTemplateBuilder =
             RestTemplateBuilder()

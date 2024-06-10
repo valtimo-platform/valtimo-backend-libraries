@@ -17,7 +17,7 @@
 package com.ritense.valtimo.contract.config
 
 import com.ritense.valtimo.contract.BaseIntegrationTest
-import com.ritense.valtimo.contract.http.ValtimoHttpRestTemplatesConfigurationProperties
+import com.ritense.valtimo.contract.http.ValtimoHttpRestTemplateConfigurationProperties
 import com.ritense.valtimo.contract.http.ValtimoHttpWebClientConfigurationProperties
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,7 +27,7 @@ import kotlin.test.assertEquals
 class ValtimoHttpConfigurationIntTest : BaseIntegrationTest() {
 
     @Autowired
-    lateinit var valtimoHttpRestTemplatesConfigurationProperties: ValtimoHttpRestTemplatesConfigurationProperties
+    lateinit var valtimoHttpRestTemplatesConfigurationProperties: ValtimoHttpRestTemplateConfigurationProperties
 
     @Autowired
     lateinit var valtimoHttpWebClientConfigurationProperties: ValtimoHttpWebClientConfigurationProperties
