@@ -34,7 +34,6 @@ import java.util.UUID
 import java.util.function.Supplier
 import kotlin.text.Charsets.UTF_8
 
-
 open class ValtimoOutboxService(
     private val outboxMessageRepository: OutboxMessageRepository,
     private val objectMapper: ObjectMapper,
@@ -48,7 +47,8 @@ open class ValtimoOutboxService(
 
         val userId = baseEvent.userId ?: userProvider.getCurrentUserLogin() ?: "System"
         val roles = baseEvent.roles.ifEmpty { userProvider.getCurrentUserRoles() }
-        val cloudEventData = CloudEventData(userId, roles.toSet(), baseEvent.resultType, baseEvent.resultId, baseEvent.result)
+        val cloudEventData =
+            CloudEventData(userId, roles.toSet(), baseEvent.resultType, baseEvent.resultId, baseEvent.result)
         val cloudEvent = CloudEventBuilder.v1()
             .withId(baseEvent.id.toString())
             .withSource(URI(cloudEventSource))

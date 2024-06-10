@@ -1,6 +1,26 @@
+/*
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ritense.form.domain
 
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.form.event.IntermediateSubmissionChangedEvent
+import com.ritense.form.event.IntermediateSubmissionCreatedEvent
+import com.ritense.outbox.domain.BaseEvent
+import com.ritense.valtimo.contract.domain.AggregateRoot
 import com.ritense.valtimo.contract.utils.SecurityUtils
 import com.ritense.valtimo.contract.validation.Validatable
 import io.hypersistence.utils.hibernate.type.json.JsonType
@@ -19,12 +39,12 @@ class IntermediateSubmission(
     @EmbeddedId
     val intermediateSubmissionId: IntermediateSubmissionId,
 
+    @Column(name = "task_instance_id", updatable = false)
+    val taskInstanceId: String,
+
     @Type(value = JsonType::class)
     @Column(name = "content")
     val content: ObjectNode,
-
-    @Column(name = "task_instance_id", updatable = false)
-    val taskInstanceId: String,
 
     @Column(name = "created_on", updatable = false)
     val createdOn: LocalDateTime,
@@ -38,7 +58,7 @@ class IntermediateSubmission(
     @Column(name = "edited_on")
     val editedOn: LocalDateTime? = null
 
-) : Validatable, Serializable {
+) : AggregateRoot<BaseEvent>(), Validatable, Serializable {
 
     init {
         validate()
@@ -53,13 +73,25 @@ class IntermediateSubmission(
             createdBy: String = SecurityUtils.getCurrentUserLogin(),
             createdOn: LocalDateTime = LocalDateTime.now()
         ): IntermediateSubmission {
-            return IntermediateSubmission(
+            val intermediateSubmission = IntermediateSubmission(
                 intermediateSubmissionId = intermediateSubmissionId,
-                content = content,
                 taskInstanceId = taskInstanceId,
+                content = content,
                 createdBy = createdBy,
                 createdOn = createdOn
             )
+            intermediateSubmission.registerEvent(
+                IntermediateSubmissionCreatedEvent(
+                    intermediateSubmissionId = intermediateSubmissionId.id,
+                    taskInstanceId = intermediateSubmission.taskInstanceId,
+                    content = intermediateSubmission.content,
+                    createdOn = intermediateSubmission.createdOn,
+                    createdBy = intermediateSubmission.createdBy,
+                    editedBy = intermediateSubmission.editedBy,
+                    editedOn = intermediateSubmission.editedOn
+                )
+            )
+            return intermediateSubmission
         }
     }
 
@@ -68,12 +100,23 @@ class IntermediateSubmission(
         editedBy: String = SecurityUtils.getCurrentUserLogin(),
         editedOn: LocalDateTime = LocalDateTime.now()
     ): IntermediateSubmission {
+        this.registerEvent(
+            IntermediateSubmissionChangedEvent(
+                intermediateSubmissionId = intermediateSubmissionId.id,
+                taskInstanceId = this.taskInstanceId,
+                content = content,
+                createdOn = createdOn,
+                createdBy = createdBy,
+                editedBy = editedBy,
+                editedOn = editedOn
+            )
+        )
         return IntermediateSubmission(
             intermediateSubmissionId = intermediateSubmissionId,
+            taskInstanceId = taskInstanceId,
             content = content,
             createdOn = createdOn,
             createdBy = createdBy,
-            taskInstanceId = taskInstanceId,
             editedBy = editedBy,
             editedOn = editedOn
         )

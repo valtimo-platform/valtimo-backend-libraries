@@ -135,4 +135,5 @@ class FormAutoConfigurationKotlin {
     ) = IntermediateSubmissionResource(
         intermediateSubmissionService
     )
+
 }
