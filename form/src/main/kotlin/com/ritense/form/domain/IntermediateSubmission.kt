@@ -100,7 +100,16 @@ class IntermediateSubmission(
         editedBy: String = SecurityUtils.getCurrentUserLogin(),
         editedOn: LocalDateTime = LocalDateTime.now()
     ): IntermediateSubmission {
-        this.registerEvent(
+        val intermediateSubmission = IntermediateSubmission(
+            intermediateSubmissionId = intermediateSubmissionId,
+            taskInstanceId = taskInstanceId,
+            content = content,
+            createdOn = createdOn,
+            createdBy = createdBy,
+            editedBy = editedBy,
+            editedOn = editedOn
+        )
+        intermediateSubmission.registerEvent(
             IntermediateSubmissionChangedEvent(
                 intermediateSubmissionId = intermediateSubmissionId.id,
                 taskInstanceId = this.taskInstanceId,
@@ -111,15 +120,7 @@ class IntermediateSubmission(
                 editedOn = editedOn
             )
         )
-        return IntermediateSubmission(
-            intermediateSubmissionId = intermediateSubmissionId,
-            taskInstanceId = taskInstanceId,
-            content = content,
-            createdOn = createdOn,
-            createdBy = createdBy,
-            editedBy = editedBy,
-            editedOn = editedOn
-        )
+        return intermediateSubmission
     }
 
     override fun equals(other: Any?): Boolean {

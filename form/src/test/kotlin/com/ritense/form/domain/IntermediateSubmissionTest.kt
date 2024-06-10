@@ -2,6 +2,8 @@ package com.ritense.form.domain
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.ritense.form.BaseTest
+import com.ritense.form.event.IntermediateSubmissionChangedEvent
+import com.ritense.form.event.IntermediateSubmissionCreatedEvent
 import com.ritense.valtimo.contract.utils.SecurityUtils
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -15,22 +17,23 @@ internal class IntermediateSubmissionTest : BaseTest() {
         mockStatic(SecurityUtils::class.java).use { mockedUtils ->
             mockedUtils.`when`<Any> { SecurityUtils.getCurrentUserLogin() }.thenReturn("userId")
 
-            val intermediateSubmissionId = IntermediateSubmissionId.newId(UUID.fromString("f04d58c2-8f40-4ff2-a34a-7ae2d16a42f6"))
+            val id = IntermediateSubmissionId.newId(UUID.fromString("f04d58c2-8f40-4ff2-a34a-7ae2d16a42f6"))
             val content = JsonNodeFactory.instance.objectNode().apply { put("key", "value") }
             val taskInstanceId = "taskInstanceId"
             val intermediateSubmission = IntermediateSubmission.new(
-                intermediateSubmissionId = intermediateSubmissionId,
+                intermediateSubmissionId = id,
                 content = content,
                 taskInstanceId = taskInstanceId
             )
 
             assertThat(intermediateSubmission).isNotNull
-            assertThat(intermediateSubmission.intermediateSubmissionId).isEqualTo(intermediateSubmissionId)
+            assertThat(intermediateSubmission.intermediateSubmissionId).isEqualTo(id)
             assertThat(intermediateSubmission.content).isEqualTo(content)
             assertThat(intermediateSubmission.taskInstanceId).isEqualTo(taskInstanceId)
             assertThat(intermediateSubmission.createdOn).isNotNull
             assertThat(intermediateSubmission.editedOn).isNull()
             assertThat(intermediateSubmission.editedBy).isNull()
+            assertThat(intermediateSubmission.domainEvents()).anyMatch { it is IntermediateSubmissionCreatedEvent }
         }
     }
 
@@ -39,7 +42,8 @@ internal class IntermediateSubmissionTest : BaseTest() {
         mockStatic(SecurityUtils::class.java).use { mockedUtils ->
             mockedUtils.`when`<Any> { SecurityUtils.getCurrentUserLogin() }.thenReturn("userId")
 
-            val intermediateSubmissionId = IntermediateSubmissionId.newId(UUID.fromString("f04d58c2-8f40-4ff2-a34a-7ae2d16a42f6"))
+            val intermediateSubmissionId =
+                IntermediateSubmissionId.newId(UUID.fromString("f04d58c2-8f40-4ff2-a34a-7ae2d16a42f6"))
             val content = JsonNodeFactory.instance.objectNode().apply { put("key", "original") }
             val taskInstanceId = "taskInstanceId"
             var intermediateSubmission = IntermediateSubmission.new(
@@ -54,6 +58,7 @@ internal class IntermediateSubmissionTest : BaseTest() {
             assertThat(intermediateSubmission.content).isEqualTo(contentChanged)
             assertThat(intermediateSubmission.editedOn).isNotNull
             assertThat(intermediateSubmission.editedBy).isNotNull
+            assertThat(intermediateSubmission.domainEvents()).anyMatch { it is IntermediateSubmissionChangedEvent }
         }
     }
 

@@ -19,6 +19,7 @@ package com.ritense.form.event
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.outbox.domain.BaseEvent
 import com.ritense.valtimo.contract.domain.DomainEvent
+import com.ritense.valtimo.contract.json.MapperSingleton
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -34,5 +35,13 @@ data class IntermediateSubmissionCreatedEvent(
     type = "com.ritense.form.submission.created",
     resultType = "com.ritense.document.domain.IntermediateSubmissionCreated",
     resultId = intermediateSubmissionId.toString(),
-    result = null
+    result = MapperSingleton.get().createObjectNode().apply {
+        put("intermediateSubmissionId", intermediateSubmissionId.toString())
+        put("taskInstanceId", taskInstanceId)
+        put("content", content.toString())
+        put("createdOn", createdOn.toString())
+        put("createdBy", createdBy)
+        put("editedBy", editedBy)
+        put("editedOn", editedOn.toString())
+    }
 )
