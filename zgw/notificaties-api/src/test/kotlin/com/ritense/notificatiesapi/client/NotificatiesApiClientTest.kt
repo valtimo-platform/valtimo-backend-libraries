@@ -20,6 +20,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.notificatiesapi.NotificatiesApiAuthentication
 import com.ritense.notificatiesapi.domain.Abonnement
 import com.ritense.notificatiesapi.domain.Kanaal
+import com.ritense.valtimo.contract.http.WebClientBuilderSingleton
 import com.ritense.valtimo.contract.json.MapperSingleton
 import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse
@@ -47,7 +48,7 @@ class NotificatiesApiClientTest {
     fun setup() {
         mockNotificatiesApi = MockWebServer()
         mockNotificatiesApi.start()
-        webclientBuilder = WebClient.builder()
+        webclientBuilder = WebClientBuilderSingleton.get()
         client = NotificatiesApiClient(webclientBuilder)
     }
 

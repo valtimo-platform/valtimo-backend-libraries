@@ -1,6 +1,7 @@
 package com.ritense.openzaak.liquibase.changelog
 
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
+import com.ritense.valtimo.contract.http.WebClientBuilderSingleton
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
@@ -21,17 +22,18 @@ class ChangeLog20220415ZaakInstanceLinkSetZaakTypeUrl : CustomTaskChange {
 
         val zaakToken = getOpenZaakToken(connection)
         val zaakWebClient = getOpenZaakWebClient(zaakToken)
-        var statement = connection.prepareStatement("SELECT zaak_instance_url FROM zaak_instance_link WHERE zaak_type_url IS NULL")
+        var statement =
+            connection.prepareStatement("SELECT zaak_instance_url FROM zaak_instance_link WHERE zaak_type_url IS NULL")
         val result = statement.executeQuery()
 
         while (result.next()) {
             val zaakInstanceUrl = result.getString(1)
             val zaakTypeUrl = getZaakTypeUrl(zaakWebClient, zaakInstanceUrl)
-                statement =
-                    connection.prepareStatement("UPDATE zaak_instance_link SET zaak_type_url = ? WHERE zaak_instance_url = ?")
-                statement.setString(1, zaakTypeUrl)
-                statement.setString(2, zaakInstanceUrl)
-                statement.execute()
+            statement =
+                connection.prepareStatement("UPDATE zaak_instance_link SET zaak_type_url = ? WHERE zaak_instance_url = ?")
+            statement.setString(1, zaakTypeUrl)
+            statement.setString(2, zaakInstanceUrl)
+            statement.execute()
         }
     }
 
@@ -64,7 +66,7 @@ class ChangeLog20220415ZaakInstanceLinkSetZaakTypeUrl : CustomTaskChange {
     }
 
     private fun getOpenZaakWebClient(openZaakToken: String): WebClient {
-        return WebClient.builder().defaultHeader("Authorization", "Bearer $openZaakToken")
+        return WebClientBuilderSingleton.get().defaultHeader("Authorization", "Bearer $openZaakToken")
             .defaultHeader("Accept-Crs", "EPSG:4326").build()
     }
 

@@ -4,4 +4,7 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.ritense.valtimo.contract.upload.ValtimoUploadAutoConfiguration, \
   com.ritense.valtimo.contract.database.DatabaseAutoConfiguration, \
   com.ritense.valtimo.contract.client.WebclientAutoConfiguration, \
-  com.ritense.valtimo.contract.json.MapperSingletonAutoConfiguration
+  com.ritense.valtimo.contract.json.MapperSingletonAutoConfiguration, \
+  com.ritense.valtimo.contract.http.ValtimoHttpAutoConfiguration, \
+  com.ritense.valtimo.contract.http.ValtimoHttpRestTemplatesConfigurationProperties, \
+  com.ritense.valtimo.contract.http.ValtimoHttpWebClientConfigurationProperties

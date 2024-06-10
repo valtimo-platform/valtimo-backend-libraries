@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.outbox.OutboxService
 import com.ritense.outbox.domain.BaseEvent
+import com.ritense.valtimo.contract.http.WebClientBuilderSingleton
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zakenapi.ZakenApiAuthentication
 import com.ritense.zakenapi.domain.CreateZaakRequest
@@ -70,7 +71,6 @@ import org.mockito.kotlin.verify
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
-import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
 import java.net.URI
@@ -110,7 +110,7 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should send link document request and parse response`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val responseBody = """
@@ -162,7 +162,7 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should not include null fields when creating zaakstatus`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         mockApi.enqueue(mockResponse("").setResponseCode(400))
@@ -192,7 +192,7 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should send outbox message on linking document`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
         val uuid = "095be615-a8ad-4c33-8e9c-c7612fbf6c9f"
         val responseBody = """
@@ -238,7 +238,7 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should not send outbox message on failing to link document`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         mockApi.enqueue(mockResponse("").setResponseCode(400))
@@ -266,7 +266,7 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should send get zaakobjecten request and parse response`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val responseBody = """
@@ -318,7 +318,7 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should send outbox message on retrieving zaakobjecten`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val responseBody = """
@@ -359,12 +359,13 @@ internal class ZakenApiClientTest {
         val mappedFirstEventResult: List<ZaakObject> = objectMapper.readValue(firstEventValue.result.toString())
 
         Assertions.assertThat(firstEventValue).isInstanceOf(ZaakObjectenListed::class.java)
-        Assertions.assertThat(result.results.first().relatieomschrijving).isEqualTo(mappedFirstEventResult.first().relatieomschrijving)
+        Assertions.assertThat(result.results.first().relatieomschrijving)
+            .isEqualTo(mappedFirstEventResult.first().relatieomschrijving)
     }
 
     @Test
     fun `should not send outbox message on failing to retrieve zaakobjecten`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         mockApi.enqueue(mockResponse("").setResponseCode(400))
@@ -388,7 +389,7 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should send get zaakinformatieobjecten request and parse response`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val informatieObjectJson = """
@@ -441,7 +442,7 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should send outbox message on retrieving zaakinformatieobjecten`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val informatieObjectJson = """
@@ -479,7 +480,8 @@ internal class ZakenApiClientTest {
         verify(outboxService).send(eventCapture.capture())
 
         val firstEventValue = eventCapture.firstValue.get()
-        val mappedFirstEventResult: List<ZaakInformatieObject> = objectMapper.readValue(firstEventValue.result.toString())
+        val mappedFirstEventResult: List<ZaakInformatieObject> =
+            objectMapper.readValue(firstEventValue.result.toString())
 
         Assertions.assertThat(firstEventValue).isInstanceOf(ZaakInformatieObjectenListed::class.java)
         Assertions.assertThat(result.first().beschrijving).isEqualTo(mappedFirstEventResult.first().beschrijving)
@@ -487,7 +489,7 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should not send outbox message on failing to retrieve zaakinformatieobjecten`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         mockApi.enqueue(mockResponse("").setResponseCode(400))
@@ -510,7 +512,7 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should send get zaakrollen request and parse response`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val responseBody = """
@@ -564,7 +566,7 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should send outbox message on retrieving zaakrollen`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val responseBody = """
@@ -608,12 +610,13 @@ internal class ZakenApiClientTest {
         val mappedFirstEventResult: List<Rol> = objectMapper.readValue(firstEventValue.result.toString())
 
         Assertions.assertThat(firstEventValue).isInstanceOf(ZaakRollenListed::class.java)
-        Assertions.assertThat(result.results.first().roltoelichting).isEqualTo(mappedFirstEventResult.first().roltoelichting)
+        Assertions.assertThat(result.results.first().roltoelichting)
+            .isEqualTo(mappedFirstEventResult.first().roltoelichting)
     }
 
     @Test
     fun `should not send outbox message on failing to retrieve zaakrollen`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
@@ -638,7 +641,7 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should send create natuurlijk persoon zaakrol request and parse response`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val responseBody = """
@@ -730,7 +733,7 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should send create niet-natuurlijk persoon zaakrol request and parse response`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val responseBody = """
@@ -799,7 +802,7 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should send outbox message on creating zaakrol`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val responseBody = """
@@ -858,7 +861,7 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should not send outbox message on failing to create zaakrol`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
@@ -889,7 +892,7 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should send outbox message on creating zaak`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val responseBody = """
@@ -932,7 +935,7 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should send outbox message on creating zaakstatus`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val responseBody = """
@@ -974,7 +977,7 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should not send outbox message on failing to create zaakstatus`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
@@ -1001,7 +1004,7 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should send outbox message on creating zaakresultaat`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val responseBody = """
@@ -1032,7 +1035,8 @@ internal class ZakenApiClientTest {
         verify(outboxService).send(eventCapture.capture())
 
         val firstEventValue = eventCapture.firstValue.get()
-        val mappedFirstEventResult: CreateZaakResultaatResponse = objectMapper.readValue(firstEventValue.result.toString())
+        val mappedFirstEventResult: CreateZaakResultaatResponse =
+            objectMapper.readValue(firstEventValue.result.toString())
 
         Assertions.assertThat(firstEventValue).isInstanceOf(ZaakResultaatCreated::class.java)
         Assertions.assertThat(result.url.toString()).isEqualTo(firstEventValue.resultId)
@@ -1041,7 +1045,7 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should not send outbox message on failing to create zaakresultaat`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
@@ -1067,7 +1071,7 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should send outbox message on setting zaak opschorting`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val responseBody = """
@@ -1134,7 +1138,7 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should not send outbox message on failing to set zaak opschorting`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
@@ -1166,7 +1170,7 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should send outbox message on retrieving zaak`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val responseBody = """
@@ -1223,7 +1227,7 @@ internal class ZakenApiClientTest {
 
     @Test
     fun `should not send outbox message on failing to retrieve zaak`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderSingleton.get()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()

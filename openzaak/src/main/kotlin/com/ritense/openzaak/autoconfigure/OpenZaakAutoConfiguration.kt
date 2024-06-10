@@ -56,12 +56,12 @@ import com.ritense.openzaak.web.rest.impl.ZaakTypeLinkResource
 import com.ritense.openzaak.web.rest.impl.ZaakTypeResource
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.valtimo.contract.http.RestTemplateBuilderSingleton
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.camunda.bpm.engine.RepositoryService
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
-import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
@@ -77,7 +77,7 @@ class OpenZaakAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(RestTemplate::class)
     fun restTemplate(): RestTemplate {
-        return RestTemplateBuilder().build()
+        return RestTemplateBuilderSingleton.get().build()
     }
 
     // FormFieldDataResolver
