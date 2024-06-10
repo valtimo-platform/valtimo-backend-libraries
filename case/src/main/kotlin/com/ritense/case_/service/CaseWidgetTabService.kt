@@ -20,6 +20,7 @@ import com.ritense.authorization.Action
 import com.ritense.authorization.Action.Companion.deny
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.request.CompositeEntityAuthorizationRequest
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.case.domain.CaseTab
 import com.ritense.case.domain.CaseTabId
@@ -69,6 +70,17 @@ class CaseWidgetTabService(
 
     }
 
+    @Transactional(readOnly = true)
+    fun getWidgetTab(documentId: JsonSchemaDocumentId, key: String): CaseWidgetTabDto? {
+        documentService.findByOrNull(documentId)?.let {
+            checkCaseTabAccess(it.definitionId().name(), documentId, key, VIEW)
+        }
+
+        return caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, key))
+            ?.let { CaseWidgetTabDto.of(it, caseWidgetMappers, this::viewPermissionCheck) }
+
+    }
+
     @Transactional
     fun updateWidgetTab(tabDto: CaseWidgetTabDto): CaseWidgetTabDto {
         denyAuthorization()
@@ -95,6 +107,7 @@ class CaseWidgetTabService(
 
         val caseDefinitionName = document.definitionId().name()
         checkCaseTabAccess(caseDefinitionName, tabKey, VIEW)
+        //TODO: Determine if this is necessary, as we are checking the permissions on a widget already
 
         val widgetTab = caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, tabKey)) ?: return null
         val widget = widgetTab.widgets.firstOrNull { it.key == widgetKey } ?: return null
@@ -115,6 +128,24 @@ class CaseWidgetTabService(
                     CaseTab::class.java,
                     action,
                     caseTab
+                )
+            )
+        }
+    }
+
+    private fun checkCaseTabAccess(
+        caseDefinitionName: String,
+        documentId: JsonSchemaDocumentId,
+        key: String,
+        action: Action<CaseTab>
+    ) {
+        caseTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, key))?.let { caseTab ->
+            authorizationService.requirePermission(
+                CompositeEntityAuthorizationRequest(
+                    CaseTab::class.java,
+                    action,
+                    listOf(caseTab),
+                    listOf()
                 )
             )
         }

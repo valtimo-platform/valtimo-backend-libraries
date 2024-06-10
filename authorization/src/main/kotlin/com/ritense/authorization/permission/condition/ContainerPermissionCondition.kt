@@ -52,6 +52,13 @@ data class ContainerPermissionCondition<TO : Any>(
         }
     }
 
+    fun isValid(relatedEntities: List<TO>): Boolean {
+        return relatedEntities.any { relatedEntity ->
+            val spec = findChildSpecification(relatedEntity)
+            spec.isAuthorized()
+        }
+    }
+
     override fun <T : Any> toPredicate(
         root: Root<T>,
         query: AbstractQuery<*>,

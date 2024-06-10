@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.annotation.JsonView
 import com.ritense.authorization.permission.PermissionView
 import com.ritense.authorization.permission.condition.FieldPermissionCondition.Companion.FIELD
+import com.ritense.authorization.request.NestedEntity
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
@@ -43,6 +44,10 @@ data class FieldPermissionCondition<V>(
         val fieldValue = findEntityFieldValue(entity, field)
         val resolvedValue = resolveValue()
         return operator.evaluate(fieldValue, resolvedValue)
+    }
+
+    override fun <T : Any> isValid(entity: T, nestedEntities: List<NestedEntity<*>>): Boolean {
+        return isValid(entity)
     }
 
     override fun <T : Any> toPredicate(

@@ -18,6 +18,7 @@ package com.ritense.authorization.permission
 
 import com.ritense.authorization.Action
 import com.ritense.authorization.criteriabuilder.AbstractQueryWrapper
+import com.ritense.authorization.request.NestedEntity
 import com.ritense.authorization.role.Role
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import io.hypersistence.utils.hibernate.type.json.JsonType
@@ -57,15 +58,44 @@ data class Permission(
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     val role: Role,
+
+    @Column(name = "context_resource_type")
+    val contextResourceType: Class<*>? = null,
+
+    @Type(value = JsonType::class)
+    @Column(name = "context_conditions", columnDefinition = "json")
+    val contextConditionContainer: ConditionContainer? = null,
 ) {
+    init {
+        require(
+            (
+                (contextResourceType != null && contextConditionContainer != null)
+                    || (contextResourceType == null
+                        && (contextConditionContainer == null || contextConditionContainer.conditions.isEmpty())
+                )
+            )
+        )
+    }
+
     fun <T> appliesTo(resourceType: Class<T>, entity: Any?): Boolean {
         return if (this.resourceType == resourceType) {
             if (entity == null && conditionContainer.conditions.isNotEmpty()) {
                 return false
             }
             conditionContainer.conditions
-                .map { it.isValid(entity!!) }
-                .all { it }
+                .all { it.isValid(entity!!) }
+        } else {
+            false
+        }
+    }
+
+    fun <T,U> appliesTo(resourceType: Class<T>, entity: Any?, contextResourceType: Class<U>, contextEntity: Any?): Boolean {
+        return if (this.resourceType == resourceType) {
+            if (entity == null && conditionContainer.conditions.isNotEmpty()) {
+                return false
+            }
+            conditionContainer.conditions
+                .all { it.isValid(entity!!) }
         } else {
             false
         }
@@ -78,6 +108,38 @@ data class Permission(
         resourceType: Class<T>,
         queryDialectHelper: QueryDialectHelper
     ): Predicate {
+        val customQuery = AbstractQueryWrapper(query)
+        return criteriaBuilder
+            .and(
+                *conditionContainer.conditions.map {
+                    it.toPredicate(
+                        root,
+                        customQuery,
+                        criteriaBuilder,
+                        resourceType,
+                        queryDialectHelper
+                    )
+                }.toTypedArray()
+            )
+    }
+
+    fun <T : Any, U> toPredicateForContext(
+        root: Root<T>,
+        query: AbstractQuery<*>,
+        criteriaBuilder: CriteriaBuilder,
+        resourceType: Class<T>,
+        queryDialectHelper: QueryDialectHelper,
+        contextResourceType: Class<U>,
+        contextEntity: Any?
+    ): Predicate {
+        require(
+            contextResourceType == this.contextResourceType
+            && (contextConditionContainer?.let {
+                it.conditions
+                    .all { it.isValid(contextEntity!!) }
+            })
+        )
+
         val customQuery = AbstractQueryWrapper(query)
         return criteriaBuilder
             .and(
