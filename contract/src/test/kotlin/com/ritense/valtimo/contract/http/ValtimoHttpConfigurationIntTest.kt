@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.contract.config
+package com.ritense.valtimo.contract.http
 
 import com.ritense.valtimo.contract.BaseIntegrationTest
-import com.ritense.valtimo.contract.http.ValtimoHttpRestTemplateConfigurationProperties
-import com.ritense.valtimo.contract.http.ValtimoHttpWebClientConfigurationProperties
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import kotlin.test.assertEquals
