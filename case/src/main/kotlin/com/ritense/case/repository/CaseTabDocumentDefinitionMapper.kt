@@ -27,12 +27,13 @@ import com.ritense.document.service.DocumentDefinitionService
 import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Root
+import kotlin.jvm.optionals.getOrNull
 
 class CaseTabDocumentDefinitionMapper(
     private val documentDefinitionService: DocumentDefinitionService
 ) : AuthorizationEntityMapper<CaseTab, JsonSchemaDocumentDefinition> {
     override fun mapRelated(entity: CaseTab): List<JsonSchemaDocumentDefinition> {
-        return runWithoutAuthorization { listOf(documentDefinitionService.findLatestByName(entity.id.caseDefinitionName) as JsonSchemaDocumentDefinition) }
+        return runWithoutAuthorization { listOfNotNull(documentDefinitionService.findLatestByName(entity.id.caseDefinitionName).map { it as JsonSchemaDocumentDefinition}.getOrNull()) }
     }
 
     override fun mapQuery(root: Root<CaseTab>, query: AbstractQuery<*>, criteriaBuilder: CriteriaBuilder): AuthorizationEntityMapperResult<JsonSchemaDocumentDefinition> {
