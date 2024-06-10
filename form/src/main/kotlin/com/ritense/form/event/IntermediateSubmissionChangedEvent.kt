@@ -14,26 +14,25 @@
  * limitations under the License.
  */
 
-package com.ritense.form.web.rest.dto
+package com.ritense.form.event
 
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.outbox.domain.BaseEvent
+import com.ritense.valtimo.contract.domain.DomainEvent
 import java.time.LocalDateTime
-import com.ritense.form.domain.IntermediateSubmission as IntermediateSubmissionDomain
+import java.util.UUID
 
-data class IntermediateSubmission(
-    val submission: ObjectNode,
+data class IntermediateSubmissionChangedEvent(
+    val intermediateSubmissionId: UUID,
     val taskInstanceId: String,
-    val createdBy: String,
+    val content: ObjectNode,
     val createdOn: LocalDateTime,
-    val editedBy: String?,
-    val editedOn: LocalDateTime?
-)
-
-fun IntermediateSubmissionDomain.toResponse() = IntermediateSubmission(
-    submission = this.content,
-    taskInstanceId = this.taskInstanceId,
-    createdBy = this.createdBy,
-    createdOn = this.createdOn,
-    editedBy = this.editedBy,
-    editedOn = this.editedOn
+    val createdBy: String,
+    val editedBy: String? = null,
+    val editedOn: LocalDateTime? = null
+) : DomainEvent, BaseEvent(
+    type = "com.ritense.form.submission.changed",
+    resultType = "com.ritense.document.domain.IntermediateSubmissionChanged",
+    resultId = intermediateSubmissionId.toString(),
+    result = null
 )

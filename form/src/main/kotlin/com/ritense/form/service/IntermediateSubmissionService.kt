@@ -3,6 +3,7 @@ package com.ritense.form.service
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.form.domain.IntermediateSubmission
 import com.ritense.form.repository.IntermediateSubmissionRepository
+import com.ritense.form.util.EventDispatcherHelper.Companion.dispatchEvents
 import mu.KotlinLogging
 import org.springframework.transaction.annotation.Transactional
 
@@ -24,6 +25,7 @@ class IntermediateSubmissionService(
                     content = submission
                 )
             ).also {
+                dispatchEvents(it)
                 logger.info { "Updated existing intermediate submission for taskInstanceId($taskInstanceId)" }
             }
         } else {
@@ -33,6 +35,7 @@ class IntermediateSubmissionService(
                     taskInstanceId = taskInstanceId
                 )
             ).also {
+                dispatchEvents(it)
                 logger.info { "Inserted intermediate submission for taskInstanceId($taskInstanceId)" }
             }
         }

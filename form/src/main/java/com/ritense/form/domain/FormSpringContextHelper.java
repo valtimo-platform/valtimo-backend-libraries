@@ -39,4 +39,12 @@ public class FormSpringContextHelper implements ApplicationContextAware {
         return applicationContext.getBeansOfType(FormFieldDataResolver.class);
     }
 
+    static public <T> T getBean(Class<T> beanClass) {
+        if (applicationContext != null) {
+            return applicationContext.getBean(beanClass);
+        } else {
+            throw new IllegalStateException("Cannot getBean " + beanClass);
+        }
+    }
+
 }
