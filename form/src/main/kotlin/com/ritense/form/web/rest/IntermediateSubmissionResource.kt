@@ -35,7 +35,6 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @SkipComponentScan
 @RequestMapping(value = ["/api/v1/form/intermediate/submission"], produces = [APPLICATION_JSON_UTF8_VALUE])
-@Transactional
 class IntermediateSubmissionResource(
     private val intermediateSubmissionService: IntermediateSubmissionService
 ) {
