@@ -22,5 +22,5 @@ import jakarta.validation.constraints.NotBlank
 data class FormIoWidgetProperties (
     @field:NotBlank
     @field:FormDefinitionExists
-    val formDefinition: String,
+    val formDefinitionName: String,
 )
