@@ -38,11 +38,6 @@ public class CoreTestConfiguration {
     public static class TestConfig {
 
         @Bean
-        public FakeUserRepository fakeUserRepository() {
-            return new FakeUserRepository();
-        }
-
-        @Bean
         public MailSender mailSender() {
             return mock(MailSender.class);
         }
