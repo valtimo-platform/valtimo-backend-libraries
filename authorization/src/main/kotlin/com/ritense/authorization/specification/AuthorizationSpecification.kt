@@ -23,7 +23,7 @@ import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.permission.condition.ContainerPermissionCondition
 import com.ritense.authorization.permission.condition.PermissionCondition
 import com.ritense.authorization.request.AuthorizationRequest
-import com.ritense.authorization.request.CompositeEntityAuthorizationRequest
+import com.ritense.authorization.request.ContextualEntityAuthorizationRequest
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.request.RelatedEntityAuthorizationRequest
 import com.ritense.authorization.role.Role
@@ -42,6 +42,7 @@ abstract class AuthorizationSpecification<T : Any>(
         return when (authRequest) {
             is EntityAuthorizationRequest<T> -> isAuthorizedForEntity(authRequest)
             is RelatedEntityAuthorizationRequest<T> -> isAuthorizedForRelatedEntity(authRequest)
+            is ContextualEntityAuthorizationRequest<T> -> isAuthorizedForEntity(authRequest)
             else -> false
         }
     }
@@ -88,7 +89,7 @@ abstract class AuthorizationSpecification<T : Any>(
             } != null
     }
 
-    private fun isAuthorizedForEntity(authorizationRequest: CompositeEntityAuthorizationRequest<T>): Boolean {
+    private fun isAuthorizedForEntity(authorizationRequest: ContextualEntityAuthorizationRequest<T>): Boolean {
         if (authorizationRequest.entities.isEmpty()) {
             return false
         }
@@ -97,7 +98,12 @@ abstract class AuthorizationSpecification<T : Any>(
         }
         return authorizationRequest.entities.all { entity ->
             permissions.any {
-                permission -> permission.appliesTo(authorizationRequest.resourceType, entity, authorizationRequest.nestedEntities)
+                permission -> permission.appliesTo(
+                    authorizationRequest.resourceType,
+                    entity,
+                    authorizationRequest.context.resourceType,
+                    authorizationRequest.context.entity
+                )
             }
         }
     }

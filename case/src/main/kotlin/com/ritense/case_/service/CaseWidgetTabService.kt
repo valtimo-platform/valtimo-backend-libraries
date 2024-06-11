@@ -20,7 +20,8 @@ import com.ritense.authorization.Action
 import com.ritense.authorization.Action.Companion.deny
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
-import com.ritense.authorization.request.CompositeEntityAuthorizationRequest
+import com.ritense.authorization.request.AuthorizationResourceContext
+import com.ritense.authorization.request.ContextualEntityAuthorizationRequest
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.case.domain.CaseTab
 import com.ritense.case.domain.CaseTabId
@@ -35,6 +36,7 @@ import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
 import com.ritense.case_.service.event.CaseTabCreatedEvent
 import com.ritense.case_.widget.CaseWidgetDataProvider
 import com.ritense.case_.widget.CaseWidgetMapper
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.findByOrNull
@@ -72,11 +74,13 @@ class CaseWidgetTabService(
 
     @Transactional(readOnly = true)
     fun getWidgetTab(documentId: JsonSchemaDocumentId, key: String): CaseWidgetTabDto? {
-        documentService.findByOrNull(documentId)?.let {
-            checkCaseTabAccess(it.definitionId().name(), documentId, key, VIEW)
+        val document = documentService.findByOrNull(documentId)
+
+        document?.let {
+            checkCaseTabAccess(it.definitionId().name(), it as JsonSchemaDocument, key, VIEW)
         }
 
-        return caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, key))
+        return caseWidgetTabRepository.findByIdOrNull(CaseTabId(document!!.definitionId().name(), key))
             ?.let { CaseWidgetTabDto.of(it, caseWidgetMappers, this::viewPermissionCheck) }
 
     }
@@ -135,17 +139,20 @@ class CaseWidgetTabService(
 
     private fun checkCaseTabAccess(
         caseDefinitionName: String,
-        documentId: JsonSchemaDocumentId,
+        document: JsonSchemaDocument,
         key: String,
         action: Action<CaseTab>
     ) {
         caseTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, key))?.let { caseTab ->
             authorizationService.requirePermission(
-                CompositeEntityAuthorizationRequest(
+                ContextualEntityAuthorizationRequest(
                     CaseTab::class.java,
                     action,
-                    listOf(caseTab),
-                    listOf()
+                    AuthorizationResourceContext(
+                        JsonSchemaDocument::class.java,
+                        document
+                    ),
+                    caseTab
                 )
             )
         }

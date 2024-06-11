@@ -18,19 +18,24 @@ package com.ritense.authorization.request
 
 import com.ritense.authorization.Action
 
-// Checks against more than one resource type and entity
-open class CompositeEntityAuthorizationRequest<T>(
+// Checks against a resource type in the context of another resource type and resource
+open class ContextualEntityAuthorizationRequest<T>(
     override val resourceType: Class<T>,
     override val action: Action<T>,
+    val context: AuthorizationResourceContext<*>,
     val entities: List<T>,
-    val nestedEntities: List<NestedEntity<*>>,
 ) : AuthorizationRequest<T> {
 
-    constructor(resourceType: Class<T>, action: Action<T>, vararg entities: T?) : this(
+    constructor(
+        resourceType: Class<T>,
+        action: Action<T>,
+        context: AuthorizationResourceContext<*>,
+        vararg entities: T?
+    ) : this(
         resourceType,
         action,
-        if (entities.any { it == null }) emptyList() else entities.filterNotNull().toList(),
-        listOf()
+        context,
+        if (entities.any { it == null }) emptyList() else entities.filterNotNull().toList()
     )
 
     override val user: String?

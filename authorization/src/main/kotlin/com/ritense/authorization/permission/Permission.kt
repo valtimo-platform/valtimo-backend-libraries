@@ -18,7 +18,6 @@ package com.ritense.authorization.permission
 
 import com.ritense.authorization.Action
 import com.ritense.authorization.criteriabuilder.AbstractQueryWrapper
-import com.ritense.authorization.request.NestedEntity
 import com.ritense.authorization.role.Role
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import io.hypersistence.utils.hibernate.type.json.JsonType
@@ -89,16 +88,22 @@ data class Permission(
         }
     }
 
-    fun <T,U> appliesTo(resourceType: Class<T>, entity: Any?, contextResourceType: Class<U>, contextEntity: Any?): Boolean {
-        return if (this.resourceType == resourceType) {
-            if (entity == null && conditionContainer.conditions.isNotEmpty()) {
-                return false
+    fun <T,U> appliesTo(
+        resourceType: Class<T>,
+        entity: Any?,
+        contextResourceType: Class<U>,
+        contextEntity: Any?
+    ): Boolean {
+        return appliesInContext(contextResourceType, contextEntity)
+            && if (this.resourceType == resourceType) {
+                if (entity == null && conditionContainer.conditions.isNotEmpty()) {
+                    return false
+                }
+                conditionContainer.conditions
+                    .all { it.isValid(entity!!) }
+            } else {
+                false
             }
-            conditionContainer.conditions
-                .all { it.isValid(entity!!) }
-        } else {
-            false
-        }
     }
 
     fun <T : Any> toPredicate(
@@ -133,11 +138,7 @@ data class Permission(
         contextEntity: Any?
     ): Predicate {
         require(
-            contextResourceType == this.contextResourceType
-            && (contextConditionContainer?.let {
-                it.conditions
-                    .all { it.isValid(contextEntity!!) }
-            })
+            appliesInContext(contextResourceType, contextEntity)
         )
 
         val customQuery = AbstractQueryWrapper(query)
@@ -153,5 +154,17 @@ data class Permission(
                     )
                 }.toTypedArray()
             )
+    }
+
+    private fun <U> appliesInContext(
+        contextResourceType: Class<U>,
+        contextEntity: Any?
+    ): Boolean {
+        return (this.contextResourceType == null
+            || (contextResourceType == this.contextResourceType
+                && (contextConditionContainer?.let { container ->
+                    container.conditions
+                        .all { it.isValid(contextEntity!!) }
+                    } == true)))
     }
 }
