@@ -99,7 +99,13 @@ class CaseWidgetTabService(
         val widgetTab = caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, tabKey)) ?: return null
         val widget = widgetTab.widgets.firstOrNull { it.key == widgetKey } ?: return null
 
-        //TODO: Do some authorization check on the widget here?
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                CaseWidgetTabWidget::class.java,
+                CaseWidgetTabWidgetActionProvider.VIEW,
+                widget
+            )
+        )
 
         return runWithoutAuthorization {
             caseWidgetDataProviders
@@ -109,6 +115,18 @@ class CaseWidgetTabService(
     }
 
     private fun checkCaseTabAccess(caseDefinitionName: String, key: String, action: Action<CaseTab>) {
+        caseTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, key))?.let { caseTab ->
+            authorizationService.requirePermission(
+                EntityAuthorizationRequest(
+                    CaseTab::class.java,
+                    action,
+                    caseTab
+                )
+            )
+        }
+    }
+
+    private fun checkCaseTabWidgetAccess(caseDefinitionName: String, key: String, action: Action<CaseTab>) {
         caseTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, key))?.let { caseTab ->
             authorizationService.requirePermission(
                 EntityAuthorizationRequest(
