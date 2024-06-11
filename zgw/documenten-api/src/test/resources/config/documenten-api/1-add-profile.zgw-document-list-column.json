@@ -1,0 +1,29 @@
+{
+    "changesetId": "profile.zgw-document-list-columns-v1",
+    "case-definitions": [
+        {
+            "key": "profile",
+            "columns": [
+                {
+                    "key": "AUTEUR",
+                    "defaultSort": "ASC"
+                },
+                {
+                    "key": "STATUS"
+                },
+                {
+                    "key": "FORMAAT"
+                },
+                {
+                    "key": "TAAL"
+                },
+                {
+                    "key": "VERSIE"
+                },
+                {
+                    "key": "BESTANDSNAAM"
+                }
+            ]
+        }
+    ]
+}

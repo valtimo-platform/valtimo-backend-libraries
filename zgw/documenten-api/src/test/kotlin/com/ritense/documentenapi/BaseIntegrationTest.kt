@@ -16,6 +16,7 @@
 
 package com.ritense.documentenapi
 
+import com.ritense.documentenapi.deployment.ZgwDocumentListColumnDeploymentService
 import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.service.PluginService
@@ -49,6 +50,9 @@ class BaseIntegrationTest {
 
     @MockBean
     lateinit var userManagementService: UserManagementService
+
+    @SpyBean
+    lateinit var zgwDocumentListColumnDeploymentService: ZgwDocumentListColumnDeploymentService
 
     @TestComponent
     class Consumer {
