@@ -48,7 +48,6 @@ class DocumentenApiAutoConfiguration {
         objectMapper: ObjectMapper,
         platformTransactionManager: PlatformTransactionManager
     ): DocumentenApiClient {
-        //TODO: Replace the use of this with WebClientBuilderHolder.get()
         val httpClient = HttpClient
             .create()
             .doOnConnected { conn: Connection ->

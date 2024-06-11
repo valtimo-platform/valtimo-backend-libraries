@@ -33,7 +33,7 @@ import java.time.Duration
 @Configuration
 class ValtimoHttpAutoConfiguration {
 
-    @ConditionalOnMissingBean(name = ["restTemplateBuilderSingleton"])
+    @ConditionalOnMissingBean(RestTemplateBuilder::class)
     @Bean
     fun restTemplateBuilderHolder(
         restTemplateBuilder: RestTemplateBuilder,
