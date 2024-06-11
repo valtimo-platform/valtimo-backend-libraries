@@ -216,6 +216,33 @@
                             }
                         ]
                     }
+                },
+                {
+                    "key": "children1",
+                    "type": "collection",
+                    "title": "Children1",
+                    "width": 4,
+                    "highContrast": false,
+                    "properties": {
+                        "collection": "doc:children",
+                        "defaultPageSize": 5,
+                        "fields": [
+                            {
+                                "key": "name",
+                                "title": "Name",
+                                "value": "name"
+                            },
+                            {
+                                "key": "dateOfBirth",
+                                "title": "Netto bedrag",
+                                "value": "nettoBedrag",
+                                "displayProperties": {
+                                    "type": "date",
+                                    "format": "DD-MM-YYYY"
+                                }
+                            }
+                        ]
+                    }
                 }
             ]
         }
