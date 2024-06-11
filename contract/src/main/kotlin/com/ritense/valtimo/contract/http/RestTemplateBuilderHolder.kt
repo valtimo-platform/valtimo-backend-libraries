@@ -16,19 +16,19 @@
 
 package com.ritense.valtimo.contract.http
 
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.boot.web.client.RestTemplateBuilder
 
-object WebClientBuilderSingleton {
-    private var builder: WebClient.Builder
+object RestTemplateBuilderHolder {
+    private var builder: RestTemplateBuilder
 
-    fun set(builder: WebClient.Builder) {
-        WebClientBuilderSingleton.builder = builder
+    fun set(builder: RestTemplateBuilder) {
+        RestTemplateBuilderHolder.builder = builder
     }
 
-    fun get(): WebClient.Builder = builder
+    fun get(): RestTemplateBuilder = builder
 
     init {
-        builder = WebClient.builder()
+        builder = RestTemplateBuilder()
     }
 
 }

@@ -24,7 +24,7 @@ import com.ritense.notificatiesapi.service.NotificatiesApiService
 import com.ritense.notificatiesapi.web.rest.NotificatiesApiResource
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.service.PluginService
-import com.ritense.valtimo.contract.http.WebClientBuilderSingleton
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.ApplicationEventPublisher
@@ -40,7 +40,7 @@ class NotificatiesApiAutoConfiguration {
 
     @Bean
     fun notificatiesApiClient(): NotificatiesApiClient {
-        return NotificatiesApiClient(WebClientBuilderSingleton.get())
+        return NotificatiesApiClient(WebClientBuilderHolder.get())
     }
 
     @Bean

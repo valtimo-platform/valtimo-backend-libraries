@@ -23,7 +23,7 @@ import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.catalogiapi.web.rest.CatalogiResource
 import com.ritense.document.service.DocumentService
 import com.ritense.plugin.service.PluginService
-import com.ritense.valtimo.contract.http.WebClientBuilderSingleton
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -34,7 +34,7 @@ class CatalogiApiAutoConfiguration {
 
     @Bean
     fun catalogiApiClient(): CatalogiApiClient {
-        return CatalogiApiClient(WebClientBuilderSingleton.get())
+        return CatalogiApiClient(WebClientBuilderHolder.get())
     }
 
     @Bean

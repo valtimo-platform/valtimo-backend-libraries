@@ -23,7 +23,7 @@ import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import com.ritense.smartdocuments.domain.SmartDocumentsTemplateData
 import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
-import com.ritense.valtimo.contract.http.WebClientBuilderSingleton
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
 import okhttp3.mockwebserver.MockResponse
@@ -75,7 +75,7 @@ internal class SmartDocumentsClientTest : BaseTest() {
         client = spy(
             SmartDocumentsClient(
                 properties,
-                WebClientBuilderSingleton.get(),
+                WebClientBuilderHolder.get(),
                 5,
                 temporaryResourceStorageService,
             )

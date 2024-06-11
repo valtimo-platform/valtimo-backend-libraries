@@ -19,7 +19,7 @@ package com.ritense.catalogiapi.client
 import com.ritense.catalogiapi.CatalogiApiAuthentication
 import com.ritense.catalogiapi.domain.InformatieobjecttypeRichting
 import com.ritense.catalogiapi.domain.InformatieobjecttypeVertrouwelijkheid
-import com.ritense.valtimo.contract.http.WebClientBuilderSingleton
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
@@ -86,7 +86,7 @@ internal class CatalogiApiClientTes {
 
     @Test
     fun `should send get informatieobjecttype request and parse response`() {
-        val webclientBuilder = WebClientBuilderSingleton.get()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = CatalogiApiClient(webclientBuilder)
 
         val responseBody = """
@@ -126,7 +126,7 @@ internal class CatalogiApiClientTes {
 
     @Test
     fun `should not send get informatieobjecttype request when url and baseUrl dont match`() {
-        val webclientBuilder = WebClientBuilderSingleton.get()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = CatalogiApiClient(webclientBuilder)
 
         val baseUrl = "http://example.com"
@@ -148,7 +148,7 @@ internal class CatalogiApiClientTes {
 
     @Test
     fun `should send get roltypen request and parse response`() {
-        val webclientBuilder = WebClientBuilderSingleton.get()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = CatalogiApiClient(webclientBuilder)
         val baseUrl = mockApi.url("api").toString()
         val zaakTypeUrl = "$baseUrl/zaaktypen/${UUID.randomUUID()}"
@@ -191,7 +191,7 @@ internal class CatalogiApiClientTes {
 
     @Test
     fun `should get statustypen request and parse response`() {
-        val webclientBuilder = WebClientBuilderSingleton.get()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = CatalogiApiClient(webclientBuilder)
         val baseUrl = mockApi.url("api").toString()
         val zaakTypeUrl = "$baseUrl/zaaktypen/${UUID.randomUUID()}"
@@ -241,7 +241,7 @@ internal class CatalogiApiClientTes {
 
     @Test
     fun `should get resultaattypen request and parse response`() {
-        val webclientBuilder = WebClientBuilderSingleton.get()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = CatalogiApiClient(webclientBuilder)
         val baseUrl = mockApi.url("api").toString()
         val zaakTypeUrl = "$baseUrl/zaaktypen/${UUID.randomUUID()}"
@@ -302,7 +302,7 @@ internal class CatalogiApiClientTes {
 
     @Test
     fun `should get beluittypen request and parse response`() {
-        val webclientBuilder = WebClientBuilderSingleton.get()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = CatalogiApiClient(webclientBuilder)
         val baseUrl = mockApi.url("api").toString()
         val zaakTypeUrl = "$baseUrl/zaaktypen/${UUID.randomUUID()}"
@@ -361,7 +361,7 @@ internal class CatalogiApiClientTes {
     private fun sendGetZaaktypeInformatieobjecttypeRequest(
         request: ZaaktypeInformatieobjecttypeRequest
     ): RecordedRequest {
-        val webclientBuilder = WebClientBuilderSingleton.get()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = CatalogiApiClient(webclientBuilder)
 
         val responseBody = """
@@ -423,7 +423,7 @@ internal class CatalogiApiClientTes {
 
     @Test
     fun `should get eigenschappen request and parse response`() {
-        val webclientBuilder = WebClientBuilderSingleton.get()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = CatalogiApiClient(webclientBuilder)
         val baseUrl = mockApi.url("api").toString()
         val responseBody = """

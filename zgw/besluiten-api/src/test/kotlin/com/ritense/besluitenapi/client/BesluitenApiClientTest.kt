@@ -19,7 +19,7 @@ package com.ritense.besluitenapi.client
 import com.jayway.jsonpath.matchers.JsonPathMatchers
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath
 import com.ritense.besluitenapi.BesluitenApiAuthentication
-import com.ritense.valtimo.contract.http.WebClientBuilderSingleton
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.hamcrest.CoreMatchers
@@ -55,7 +55,7 @@ class BesluitenApiClientTest {
 
     @Test
     fun `should send create besluit request and parse response`() {
-        val webclientBuilder = WebClientBuilderSingleton.get()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = BesluitenApiClient(webclientBuilder)
 
         val responseBody = """
@@ -138,7 +138,7 @@ class BesluitenApiClientTest {
 
     @Test
     fun `should send create besluit request and parse response when vervalreden is null`() {
-        val webclientBuilder = WebClientBuilderSingleton.get()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = BesluitenApiClient(webclientBuilder)
 
         val responseBody = """

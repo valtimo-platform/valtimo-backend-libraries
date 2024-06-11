@@ -17,7 +17,7 @@
 package com.ritense.klant.client
 
 import com.ritense.klant.domain.ResultPage
-import com.ritense.valtimo.contract.http.RestTemplateBuilderSingleton
+import com.ritense.valtimo.contract.http.RestTemplateBuilderHolder
 import com.ritense.valtimo.contract.json.MapperSingleton
 import mu.KotlinLogging
 import org.springframework.core.ParameterizedTypeReference
@@ -32,7 +32,7 @@ import org.springframework.web.util.UriComponentsBuilder
 class RequestBuilder {
 
     companion object {
-        fun builder() = Builder(restTemplate = RestTemplateBuilderSingleton.get().build())
+        fun builder() = Builder(restTemplate = RestTemplateBuilderHolder.get().build())
     }
 
     data class Builder(

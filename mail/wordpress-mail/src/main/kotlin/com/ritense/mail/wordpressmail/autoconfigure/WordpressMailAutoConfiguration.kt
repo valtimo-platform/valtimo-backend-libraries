@@ -23,7 +23,7 @@ import com.ritense.mail.wordpressmail.connector.WordpressMailConnector
 import com.ritense.mail.wordpressmail.connector.WordpressMailConnectorProperties
 import com.ritense.mail.wordpressmail.service.WordpressMailClient
 import com.ritense.mail.wordpressmail.service.WordpressMailDispatcher
-import com.ritense.valtimo.contract.http.WebClientBuilderSingleton
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -49,7 +49,7 @@ class WordpressMailAutoConfiguration {
     fun wordpressMailClient(
         wordpressMailConnectorProperties: WordpressMailConnectorProperties
     ): WordpressMailClient {
-        return WordpressMailClient(wordpressMailConnectorProperties, WebClientBuilderSingleton.get())
+        return WordpressMailClient(wordpressMailConnectorProperties, WebClientBuilderHolder.get())
     }
 
     //Connector

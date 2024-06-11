@@ -24,7 +24,7 @@ import com.ritense.documentenapi.event.DocumentInformatieObjectViewed
 import com.ritense.documentenapi.event.DocumentStored
 import com.ritense.outbox.OutboxService
 import com.ritense.outbox.domain.BaseEvent
-import com.ritense.valtimo.contract.http.WebClientBuilderSingleton
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zgw.Rsin
 import com.ritense.zgw.domain.Vertrouwelijkheid
@@ -84,7 +84,7 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `should send request and parse response`() {
-        val webclientBuilder = WebClientBuilderSingleton.get()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper, mock())
 
         val responseBody = """
@@ -151,7 +151,7 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `should send outbox message on saving document`() {
-        val webclientBuilder = WebClientBuilderSingleton.get()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper, mock())
         val documentURL = "http://example.com"
 
@@ -227,7 +227,7 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `should not send outbox message on error when saving document`() {
-        val webclientBuilder = WebClientBuilderSingleton.get()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper, mock())
 
         mockDocumentenApi.enqueue(mockResponse("").setResponseCode(400))
@@ -262,7 +262,7 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `should send get document request and parse response`() {
-        val webclientBuilder = WebClientBuilderSingleton.get()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper, mock())
 
         val responseBody = """
@@ -334,7 +334,7 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `should send outbox message on retrieving document informatieobject`() {
-        val webclientBuilder = WebClientBuilderSingleton.get()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper, mock())
         val documentInformatieObjectUrl = "http://example.com/informatie-object/123"
         val responseBody = """
@@ -395,7 +395,7 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `should not send outbox message on error retrieving document informatieobject`() {
-        val webclientBuilder = WebClientBuilderSingleton.get()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper, mock())
 
         mockDocumentenApi.enqueue(mockResponse("").setResponseCode(400))
@@ -417,7 +417,7 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `should send outbox message on download document informatieobject content`() {
-        val webclientBuilder = WebClientBuilderSingleton.get()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper, mock())
         val documentInformatieObjectId = "123"
         val buffer = Buffer()
@@ -448,7 +448,7 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `should not send outbox message on error download document informatieobject content`() {
-        val webclientBuilder = WebClientBuilderSingleton.get()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper, mock())
         val documentInformatieObjectId = "123"
 

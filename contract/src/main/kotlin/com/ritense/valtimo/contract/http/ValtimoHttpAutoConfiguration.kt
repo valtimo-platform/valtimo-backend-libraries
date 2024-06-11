@@ -35,25 +35,26 @@ class ValtimoHttpAutoConfiguration {
 
     @ConditionalOnMissingBean(name = ["restTemplateBuilderSingleton"])
     @Bean
-    fun restTemplateBuilderSingleton(
+    fun restTemplateBuilderHolder(
         restTemplateBuilder: RestTemplateBuilder,
         valtimoHttpRestTemplatesConfigurationProperties: ValtimoHttpRestTemplateConfigurationProperties
-    ): RestTemplateBuilderSingleton {
+    ): RestTemplateBuilderHolder {
         val valtimoRestTemplateBuilder =
             RestTemplateBuilder()
                 .setConnectTimeout(Duration.ofSeconds(valtimoHttpRestTemplatesConfigurationProperties.connectionTimeout))
                 .setReadTimeout(Duration.ofSeconds(valtimoHttpRestTemplatesConfigurationProperties.connectionTimeout))
 
-        RestTemplateBuilderSingleton.set(valtimoRestTemplateBuilder)
+        RestTemplateBuilderHolder.set(valtimoRestTemplateBuilder)
 
-        return RestTemplateBuilderSingleton
+        return RestTemplateBuilderHolder
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = ["valtimoWebClientBuilder"])
-    fun valtimoWebclientBuilder(
-        valtimoHttpWebClientConfigurationProperties: ValtimoHttpWebClientConfigurationProperties
-    ): WebClient.Builder {
+    @ConditionalOnMissingBean(WebClientBuilderHolder::class)
+    fun valtimoWebclientBuilderHolder(
+        valtimoHttpWebClientConfigurationProperties: ValtimoHttpWebClientConfigurationProperties,
+        webClientBuilder: WebClient.Builder
+    ): WebClientBuilderHolder {
         val objectMapper = MapperSingleton.get()
         val httpClient = HttpClient
             .create()
@@ -63,8 +64,7 @@ class ValtimoHttpAutoConfiguration {
                 )
             }
 
-        val webClientBuilder = WebClient
-            .builder()
+        webClientBuilder
             .clientConnector(
                 ReactorClientHttpConnector(httpClient)
             )
@@ -79,7 +79,7 @@ class ValtimoHttpAutoConfiguration {
                 }
             }
 
-        WebClientBuilderSingleton.set(webClientBuilder)
-        return webClientBuilder
+        WebClientBuilderHolder.set(webClientBuilder)
+        return WebClientBuilderHolder
     }
 }

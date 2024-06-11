@@ -18,7 +18,7 @@ package com.ritense.objecttypenapi
 
 import com.ritense.objecttypenapi.client.ObjecttypenApiClient
 import com.ritense.plugin.service.PluginService
-import com.ritense.valtimo.contract.http.WebClientBuilderSingleton
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -29,7 +29,7 @@ class ObjecttypenApiAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ObjecttypenApiClient::class)
     fun objecttypenApiClient(): ObjecttypenApiClient {
-        return ObjecttypenApiClient(WebClientBuilderSingleton.get())
+        return ObjecttypenApiClient(WebClientBuilderHolder.get())
     }
 
     @Bean

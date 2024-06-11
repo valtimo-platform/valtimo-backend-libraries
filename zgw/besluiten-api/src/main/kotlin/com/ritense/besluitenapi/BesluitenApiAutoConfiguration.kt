@@ -18,7 +18,7 @@ package com.ritense.besluitenapi
 
 import com.ritense.besluitenapi.client.BesluitenApiClient
 import com.ritense.plugin.service.PluginService
-import com.ritense.valtimo.contract.http.WebClientBuilderSingleton
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import com.ritense.zakenapi.ZaakUrlProvider
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -29,7 +29,7 @@ class BesluitenApiAutoConfiguration {
     @Bean
     fun besluitenApiClient(
     ): BesluitenApiClient {
-        return BesluitenApiClient(WebClientBuilderSingleton.get())
+        return BesluitenApiClient(WebClientBuilderHolder.get())
     }
 
     @Bean

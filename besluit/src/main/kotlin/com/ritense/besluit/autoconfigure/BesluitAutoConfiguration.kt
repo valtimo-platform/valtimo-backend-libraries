@@ -28,7 +28,7 @@ import com.ritense.document.service.DocumentService
 import com.ritense.openzaak.catalogi.CatalogiClient
 import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.resource.service.OpenZaakService
-import com.ritense.valtimo.contract.http.WebClientBuilderSingleton
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.camunda.bpm.engine.RepositoryService
 import org.springframework.beans.factory.annotation.Value
@@ -47,7 +47,7 @@ class BesluitAutoConfiguration {
     fun besluitClient(
         besluitTokenGenerator: BesluitTokenGenerator,
     ): BesluitClient {
-        return BesluitClient(WebClientBuilderSingleton.get(), besluitTokenGenerator)
+        return BesluitClient(WebClientBuilderHolder.get(), besluitTokenGenerator)
     }
 
     @Bean

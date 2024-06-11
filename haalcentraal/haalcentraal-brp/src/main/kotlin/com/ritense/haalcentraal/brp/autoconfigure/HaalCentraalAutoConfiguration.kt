@@ -21,7 +21,7 @@ import com.ritense.haalcentraal.brp.client.HaalCentraalBrpClient
 import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpConnector
 import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpProperties
 import com.ritense.haalcentraal.brp.web.rest.HaalCentraalBrpResource
-import com.ritense.valtimo.contract.http.WebClientBuilderSingleton
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -53,7 +53,7 @@ internal class HaalCentraalAutoConfiguration {
     @ConditionalOnMissingBean(HaalCentraalBrpClient::class)
     fun haalCentraalBrpClient(
     ): HaalCentraalBrpClient {
-        return HaalCentraalBrpClient(WebClientBuilderSingleton.get())
+        return HaalCentraalBrpClient(WebClientBuilderHolder.get())
     }
 
     // Resource

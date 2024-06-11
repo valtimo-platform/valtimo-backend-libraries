@@ -17,7 +17,7 @@
 package com.ritense.objecttypenapi.client
 
 import com.ritense.objecttypenapi.ObjecttypenApiAuthentication
-import com.ritense.valtimo.contract.http.WebClientBuilderSingleton
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.AfterAll
@@ -51,7 +51,7 @@ internal class ObjecttypenApiClientTest {
 
     @Test
     fun `should send get single objecttype request and parse response`() {
-        val webclientBuilder = WebClientBuilderSingleton.get()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = ObjecttypenApiClient(webclientBuilder)
 
         val responseBody = """

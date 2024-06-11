@@ -29,7 +29,7 @@ import com.ritense.contactmoment.web.rest.MessageResource
 import com.ritense.klant.service.KlantService
 import com.ritense.valtimo.contract.authentication.CurrentUserService
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import com.ritense.valtimo.contract.http.WebClientBuilderSingleton
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import com.ritense.valtimo.contract.mail.MailSender
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.BeanDefinition
@@ -48,7 +48,7 @@ class ContactMomentAutoConfiguration {
     fun contactMomentClient(
         contactMomentTokenGenerator: ContactMomentTokenGenerator,
     ): ContactMomentClient {
-        return ContactMomentClient(WebClientBuilderSingleton.get(), contactMomentTokenGenerator)
+        return ContactMomentClient(WebClientBuilderHolder.get(), contactMomentTokenGenerator)
     }
 
     @Bean

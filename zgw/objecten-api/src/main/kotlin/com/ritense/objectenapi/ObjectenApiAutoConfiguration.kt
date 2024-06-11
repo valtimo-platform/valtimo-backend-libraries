@@ -31,7 +31,7 @@ import com.ritense.objectenapi.web.rest.ZaakObjectResource
 import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.valtimo.contract.http.WebClientBuilderSingleton
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import com.ritense.zakenapi.ZaakUrlProvider
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -58,7 +58,7 @@ class ObjectenApiAutoConfiguration {
         outboxService: OutboxService,
         objectMapper: ObjectMapper
     ): ObjectenApiClient {
-        return ObjectenApiClient(WebClientBuilderSingleton.get(), outboxService, objectMapper)
+        return ObjectenApiClient(WebClientBuilderHolder.get(), outboxService, objectMapper)
     }
 
     @Bean

@@ -1,7 +1,7 @@
 package com.ritense.openzaak.liquibase.changelog
 
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
-import com.ritense.valtimo.contract.http.WebClientBuilderSingleton
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
@@ -66,7 +66,7 @@ class ChangeLog20220415ZaakInstanceLinkSetZaakTypeUrl : CustomTaskChange {
     }
 
     private fun getOpenZaakWebClient(openZaakToken: String): WebClient {
-        return WebClientBuilderSingleton.get().defaultHeader("Authorization", "Bearer $openZaakToken")
+        return WebClientBuilderHolder.get().defaultHeader("Authorization", "Bearer $openZaakToken")
             .defaultHeader("Accept-Crs", "EPSG:4326").build()
     }
 

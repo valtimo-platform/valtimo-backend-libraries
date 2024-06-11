@@ -21,7 +21,7 @@ import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.TemporaryResourceStorageService
-import com.ritense.valtimo.contract.http.WebClientBuilderSingleton
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPluginFactory
 import com.ritense.zakenapi.client.ZakenApiClient
@@ -51,7 +51,7 @@ class ZakenApiAutoConfiguration {
         outboxService: OutboxService,
         objectMapper: ObjectMapper
     ): ZakenApiClient {
-        return ZakenApiClient(WebClientBuilderSingleton.get(), outboxService, objectMapper)
+        return ZakenApiClient(WebClientBuilderHolder.get(), outboxService, objectMapper)
     }
 
     @Bean
