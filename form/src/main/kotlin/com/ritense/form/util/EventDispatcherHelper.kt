@@ -18,6 +18,7 @@ package com.ritense.form.util
 
 import com.ritense.form.domain.FormSpringContextHelper
 import com.ritense.outbox.ValtimoOutboxService
+import com.ritense.outbox.config.condition.OnOutboxEnabledCondition.Companion.PROPERTY_NAME
 import com.ritense.outbox.domain.BaseEvent
 import com.ritense.valtimo.contract.domain.AggregateRoot
 import mu.KotlinLogging
@@ -27,6 +28,8 @@ class EventDispatcherHelper {
     companion object {
 
         fun dispatchEvents(aggregateRoot: AggregateRoot<BaseEvent>) {
+            assertOutboxEnabled()
+            // Feature toggle: outbox
             val outboxService = FormSpringContextHelper.getBean(ValtimoOutboxService::class.java)
             aggregateRoot.domainEvents()
                 .forEach { domainEvent ->
@@ -36,10 +39,15 @@ class EventDispatcherHelper {
             aggregateRoot.clearDomainEvents()
         }
 
-        fun dispatchEvent(domainEvent: BaseEvent) {
-            logger.trace { "Dispatch domain event  $domainEvent" }
-            val outboxService = FormSpringContextHelper.getBean(ValtimoOutboxService::class.java)
-            outboxService.send { domainEvent }
+        private fun assertOutboxEnabled() {
+            if (
+                !FormSpringContextHelper.applicationContext.environment.getProperty(
+                    PROPERTY_NAME,
+                    "false"
+                ).toBoolean()
+            ) {
+                logger.warn { "Skipping dispatchEvents because outbox is disabled" }
+            }
         }
 
         private val logger = KotlinLogging.logger {}

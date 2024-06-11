@@ -24,7 +24,7 @@ import org.springframework.context.ApplicationContextAware;
 
 public class FormSpringContextHelper implements ApplicationContextAware {
 
-    private static ApplicationContext applicationContext;
+    public static ApplicationContext applicationContext;
 
     @Override
     public void setApplicationContext(@Nonnull ApplicationContext applicationContext) {
