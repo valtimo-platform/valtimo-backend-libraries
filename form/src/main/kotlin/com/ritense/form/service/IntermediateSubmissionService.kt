@@ -7,16 +7,16 @@ import com.ritense.form.util.EventDispatcherHelper.Companion.dispatchEvents
 import mu.KotlinLogging
 import org.springframework.transaction.annotation.Transactional
 
-@Transactional
-class IntermediateSubmissionService(
+open class IntermediateSubmissionService(
     private val intermediateSubmissionRepository: IntermediateSubmissionRepository
 ) {
 
-    fun get(taskInstanceId: String) = intermediateSubmissionRepository.getByTaskInstanceId(taskInstanceId)
+    open fun get(taskInstanceId: String) = intermediateSubmissionRepository.getByTaskInstanceId(taskInstanceId)
 
-    fun store(
+    @Transactional
+    open fun store(
         submission: ObjectNode,
-        taskInstanceId: String,
+        taskInstanceId: String
     ): IntermediateSubmission {
         val existingIntermediateSubmission = intermediateSubmissionRepository.getByTaskInstanceId(taskInstanceId)
         if (existingIntermediateSubmission != null) {
@@ -41,7 +41,8 @@ class IntermediateSubmissionService(
         }
     }
 
-    fun clear(taskInstanceId: String) {
+    @Transactional
+    open fun clear(taskInstanceId: String) {
         intermediateSubmissionRepository.getByTaskInstanceId(taskInstanceId)?.let { intermediateSubmission ->
             intermediateSubmissionRepository.deleteById(intermediateSubmission.intermediateSubmissionId)
         }
