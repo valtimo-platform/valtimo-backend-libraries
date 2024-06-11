@@ -4,7 +4,15 @@
         {
             "resourceType": "com.ritense.case_.domain.tab.CaseWidgetTabWidget",
             "action": "view",
-            "roleKey": "ROLE_ALL_WIDGETS"
+            "roleKey": "ROLE_ALL_WIDGETS",
+            "conditions": [
+                {
+                    "type": "field",
+                    "field": "key",
+                    "operator": "!=",
+                    "value": "deny"
+                }
+            ]
         },
         {
             "resourceType": "com.ritense.case_.domain.tab.CaseWidgetTabWidget",
@@ -22,7 +30,15 @@
         {
             "resourceType": "com.ritense.case_.domain.tab.CaseWidgetTabWidget",
             "action": "view",
-            "roleKey": "ROLE_USER"
+            "roleKey": "ROLE_USER",
+            "conditions": [
+                {
+                    "type": "field",
+                    "field": "key",
+                    "operator": "!=",
+                    "value": "deny"
+                }
+            ]
         },
         {
             "resourceType": "com.ritense.case.domain.CaseTab",
