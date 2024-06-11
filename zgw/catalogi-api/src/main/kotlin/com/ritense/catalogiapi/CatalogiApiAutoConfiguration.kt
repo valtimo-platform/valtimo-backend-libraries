@@ -23,18 +23,18 @@ import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.catalogiapi.web.rest.CatalogiResource
 import com.ritense.document.service.DocumentService
 import com.ritense.plugin.service.PluginService
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
-import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 class CatalogiApiAutoConfiguration {
 
     @Bean
-    fun catalogiApiClient(webclientBuilder: WebClient.Builder): CatalogiApiClient {
-        return CatalogiApiClient(webclientBuilder)
+    fun catalogiApiClient(): CatalogiApiClient {
+        return CatalogiApiClient(WebClientBuilderHolder.get())
     }
 
     @Bean
@@ -51,7 +51,7 @@ class CatalogiApiAutoConfiguration {
     @ConditionalOnMissingBean(CatalogiService::class)
     fun catalogiService(
         zaaktypeUrlProvider: ZaaktypeUrlProvider,
-        pluginService : PluginService
+        pluginService: PluginService
     ): CatalogiService {
         return CatalogiService(zaaktypeUrlProvider, pluginService)
     }

@@ -23,6 +23,7 @@ import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import com.ritense.smartdocuments.domain.SmartDocumentsTemplateData
 import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
 import okhttp3.mockwebserver.MockResponse
@@ -45,7 +46,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.web.client.HttpClientErrorException
-import org.springframework.web.reactive.function.client.WebClient
 import java.time.Instant
 import java.util.concurrent.TimeUnit.MILLISECONDS
 
@@ -65,17 +65,21 @@ internal class SmartDocumentsClientTest : BaseTest() {
             url = mockDocumentenApi.url("/").toString()
         )
 
-        temporaryResourceStorageService = spy( TemporaryResourceStorageService(
-            uploadProperties = ValtimoUploadProperties(),
-            objectMapper = MapperSingleton.get(),
-        ))
+        temporaryResourceStorageService = spy(
+            TemporaryResourceStorageService(
+                uploadProperties = ValtimoUploadProperties(),
+                objectMapper = MapperSingleton.get(),
+            )
+        )
 
-        client = spy( SmartDocumentsClient(
-            properties,
-            WebClient.builder(),
-            5,
-            temporaryResourceStorageService,
-        ))
+        client = spy(
+            SmartDocumentsClient(
+                properties,
+                WebClientBuilderHolder.get(),
+                5,
+                temporaryResourceStorageService,
+            )
+        )
     }
 
     @BeforeEach
@@ -169,7 +173,7 @@ internal class SmartDocumentsClientTest : BaseTest() {
 
         assertEquals(
             "401 The request has not been applied because it lacks valid authentication credentials for the target " +
-                    "resource. Response received from server:\n" + responseBody,
+                "resource. Response received from server:\n" + responseBody,
             exception.message
         )
     }
@@ -218,8 +222,8 @@ internal class SmartDocumentsClientTest : BaseTest() {
 
         assertEquals(
             "400 The server cannot or will not process the request due to something that is perceived to be a client " +
-                    "error (e.g., no valid template specified, user has no privileges for the template, malformed request syntax, " +
-                    "invalid request message framing, or deceptive request routing). Response received from server:\n" + responseBody,
+                "error (e.g., no valid template specified, user has no privileges for the template, malformed request syntax, " +
+                "invalid request message framing, or deceptive request routing). Response received from server:\n" + responseBody,
             exception.message
         )
     }
@@ -249,13 +253,13 @@ internal class SmartDocumentsClientTest : BaseTest() {
 
         mockDocumentenApi.enqueue(mockResponse)
 
-        lateinit var storeFileInstant : Instant
+        lateinit var storeFileInstant: Instant
         doAnswer {
             storeFileInstant = Instant.now()
             it.callRealMethod()
         }.whenever(temporaryResourceStorageService).store(any(), any())
 
-        lateinit var responseStartInstant : Instant
+        lateinit var responseStartInstant: Instant
         // getThrottlePeriod is used because it's called right before sending the response
         doAnswer {
             responseStartInstant = Instant.now()
@@ -320,11 +324,13 @@ internal class SmartDocumentsClientTest : BaseTest() {
         )
 
         // when
-        val response = client.getSmartDocumentsTemplateData(SmartDocumentsPropertiesDto(
-            username = "username",
-            password = "password",
-            url = mockDocumentenApi.url("").toString()
-        ))
+        val response = client.getSmartDocumentsTemplateData(
+            SmartDocumentsPropertiesDto(
+                username = "username",
+                password = "password",
+                url = mockDocumentenApi.url("").toString()
+            )
+        )
 
         // then
         assertThat(response).isNotNull

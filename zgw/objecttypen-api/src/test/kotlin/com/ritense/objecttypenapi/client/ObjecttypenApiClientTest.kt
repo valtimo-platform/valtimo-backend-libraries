@@ -17,6 +17,7 @@
 package com.ritense.objecttypenapi.client
 
 import com.ritense.objecttypenapi.ObjecttypenApiAuthentication
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.AfterAll
@@ -27,7 +28,6 @@ import org.junit.jupiter.api.TestInstance
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
-import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 import java.net.URI
 import java.time.LocalDate
@@ -51,7 +51,7 @@ internal class ObjecttypenApiClientTest {
 
     @Test
     fun `should send get single objecttype request and parse response`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = ObjecttypenApiClient(webclientBuilder)
 
         val responseBody = """

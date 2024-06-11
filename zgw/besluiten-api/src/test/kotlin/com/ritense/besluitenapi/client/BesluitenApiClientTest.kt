@@ -19,6 +19,7 @@ package com.ritense.besluitenapi.client
 import com.jayway.jsonpath.matchers.JsonPathMatchers
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath
 import com.ritense.besluitenapi.BesluitenApiAuthentication
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.hamcrest.CoreMatchers
@@ -33,7 +34,6 @@ import org.junit.jupiter.api.TestInstance
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
-import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 import java.net.URI
 import java.time.LocalDate
@@ -55,7 +55,7 @@ class BesluitenApiClientTest {
 
     @Test
     fun `should send create besluit request and parse response`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = BesluitenApiClient(webclientBuilder)
 
         val responseBody = """
@@ -138,7 +138,7 @@ class BesluitenApiClientTest {
 
     @Test
     fun `should send create besluit request and parse response when vervalreden is null`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = BesluitenApiClient(webclientBuilder)
 
         val responseBody = """
@@ -186,19 +186,19 @@ class BesluitenApiClientTest {
         val body = recordedRequest.body.readUtf8()
 
         //validate request
-       assertThat(body, jsonPathMissingOrNull("$.identificatie"))
-       assertThat(body, hasJsonPath("$.verantwoordelijkeOrganisatie", equalTo("633182801")))
-       assertThat(body, hasJsonPath("$.besluittype", equalTo("http://catalogus.api/besluittype")))
-       assertThat(body, hasJsonPath("$.zaak", equalTo("http://zaken.api/zaak")))
-       assertThat(body, hasJsonPath("$.datum", equalTo("2024-04-20")))
-       assertThat(body, hasJsonPath("$.toelichting", equalTo("toelichting")))
-       assertThat(body, hasJsonPath("$.bestuursorgaan", equalTo("680572442")))
-       assertThat(body, hasJsonPath("$.ingangsdatum", equalTo("2024-04-21")))
-       assertThat(body, hasJsonPath("$.vervaldatum", equalTo("2024-04-22")))
-       assertThat(body, jsonPathMissingOrNull("$.vervalreden"))
-       assertThat(body, hasJsonPath("$.publicatiedatum", equalTo("2024-04-23")))
-       assertThat(body, hasJsonPath("$.verzenddatum", equalTo("2024-04-24")))
-       assertThat(body, hasJsonPath("$.uiterlijkeReactiedatum", equalTo("2024-04-25")))
+        assertThat(body, jsonPathMissingOrNull("$.identificatie"))
+        assertThat(body, hasJsonPath("$.verantwoordelijkeOrganisatie", equalTo("633182801")))
+        assertThat(body, hasJsonPath("$.besluittype", equalTo("http://catalogus.api/besluittype")))
+        assertThat(body, hasJsonPath("$.zaak", equalTo("http://zaken.api/zaak")))
+        assertThat(body, hasJsonPath("$.datum", equalTo("2024-04-20")))
+        assertThat(body, hasJsonPath("$.toelichting", equalTo("toelichting")))
+        assertThat(body, hasJsonPath("$.bestuursorgaan", equalTo("680572442")))
+        assertThat(body, hasJsonPath("$.ingangsdatum", equalTo("2024-04-21")))
+        assertThat(body, hasJsonPath("$.vervaldatum", equalTo("2024-04-22")))
+        assertThat(body, jsonPathMissingOrNull("$.vervalreden"))
+        assertThat(body, hasJsonPath("$.publicatiedatum", equalTo("2024-04-23")))
+        assertThat(body, hasJsonPath("$.verzenddatum", equalTo("2024-04-24")))
+        assertThat(body, hasJsonPath("$.uiterlijkeReactiedatum", equalTo("2024-04-25")))
 
         //validate response
         assertEquals(URI("http://besluit.api/besluit"), besluit.url)

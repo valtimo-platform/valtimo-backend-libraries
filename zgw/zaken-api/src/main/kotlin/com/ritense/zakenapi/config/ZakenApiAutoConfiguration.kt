@@ -21,6 +21,7 @@ import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPluginFactory
 import com.ritense.zakenapi.client.ZakenApiClient
@@ -39,7 +40,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.transaction.PlatformTransactionManager
-import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 @EnableJpaRepositories(basePackages = ["com.ritense.zakenapi.repository"])
@@ -48,11 +48,10 @@ class ZakenApiAutoConfiguration {
 
     @Bean
     fun zakenApiClient(
-        webclientBuilder: WebClient.Builder,
         outboxService: OutboxService,
         objectMapper: ObjectMapper
     ): ZakenApiClient {
-        return ZakenApiClient(webclientBuilder, outboxService, objectMapper)
+        return ZakenApiClient(WebClientBuilderHolder.get(), outboxService, objectMapper)
     }
 
     @Bean
