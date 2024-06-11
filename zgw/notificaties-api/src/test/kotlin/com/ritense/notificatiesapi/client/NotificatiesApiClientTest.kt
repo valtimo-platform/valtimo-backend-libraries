@@ -21,6 +21,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.notificatiesapi.NotificatiesApiAuthentication
 import com.ritense.notificatiesapi.domain.Abonnement
 import com.ritense.notificatiesapi.domain.Kanaal
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -47,7 +48,7 @@ class NotificatiesApiClientTest {
     fun setup() {
         mockNotificatiesApi = MockWebServer()
         mockNotificatiesApi.start()
-        webclientBuilder = WebClient.builder()
+        webclientBuilder = WebClientBuilderHolder.get()
         client = NotificatiesApiClient(webclientBuilder)
     }
 

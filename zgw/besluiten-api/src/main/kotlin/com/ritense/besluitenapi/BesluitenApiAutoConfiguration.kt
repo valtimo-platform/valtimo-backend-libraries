@@ -18,19 +18,18 @@ package com.ritense.besluitenapi
 
 import com.ritense.besluitenapi.client.BesluitenApiClient
 import com.ritense.plugin.service.PluginService
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import com.ritense.zakenapi.ZaakUrlProvider
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 class BesluitenApiAutoConfiguration {
 
     @Bean
     fun besluitenApiClient(
-        webclientBuilder: WebClient.Builder
     ): BesluitenApiClient {
-        return BesluitenApiClient(webclientBuilder)
+        return BesluitenApiClient(WebClientBuilderHolder.get())
     }
 
     @Bean

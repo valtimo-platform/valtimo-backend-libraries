@@ -21,6 +21,7 @@ import com.ritense.smartdocuments.BaseTest
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
 import java.time.Instant
 import java.util.concurrent.TimeUnit.MILLISECONDS
@@ -70,7 +71,7 @@ internal class SmartDocumentsClientTest : BaseTest() {
 
         client = spy( SmartDocumentsClient(
             properties,
-            WebClient.builder(),
+            WebClientBuilderHolder.get(),
             5,
             temporaryResourceStorageService
         ))

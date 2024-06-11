@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.node.TextNode
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath
 import com.ritense.objectenapi.ObjectenApiAuthentication
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.hamcrest.CoreMatchers
@@ -60,7 +61,7 @@ internal class ObjectenApiClientTest {
 
     @Test
     fun `should send get single object request and parse response`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = ObjectenApiClient(webclientBuilder)
 
         val responseBody = """
@@ -128,7 +129,7 @@ internal class ObjectenApiClientTest {
 
     @Test
     fun `should get objectslist`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = ObjectenApiClient(webclientBuilder)
 
         val responseBody = """
@@ -205,7 +206,7 @@ internal class ObjectenApiClientTest {
 
     @Test
     fun `should send post request when creating object`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = ObjectenApiClient(webclientBuilder)
 
         val responseBody = """
@@ -264,7 +265,7 @@ internal class ObjectenApiClientTest {
 
     @Test
     fun `should send post request with uuid when uuid has been provided when creating object`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = ObjectenApiClient(webclientBuilder)
 
         val responseBody = """
@@ -325,7 +326,7 @@ internal class ObjectenApiClientTest {
 
     @Test
     fun `should send patch request`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = ObjectenApiClient(webclientBuilder)
 
         val responseBody = """
