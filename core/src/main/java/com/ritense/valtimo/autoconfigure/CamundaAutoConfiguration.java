@@ -28,6 +28,7 @@ import com.ritense.valtimo.camunda.task.service.impl.NotificationServiceImpl;
 import com.ritense.valtimo.camunda.task.service.impl.ReminderServiceImpl;
 import com.ritense.valtimo.config.CamundaConfiguration;
 import com.ritense.valtimo.config.CustomFormTypesProcessEnginePlugin;
+import com.ritense.valtimo.contract.annotation.ProcessBean;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.config.LiquibaseRunner;
 import com.ritense.valtimo.contract.config.ValtimoProperties;
@@ -46,6 +47,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 
 @AutoConfiguration
