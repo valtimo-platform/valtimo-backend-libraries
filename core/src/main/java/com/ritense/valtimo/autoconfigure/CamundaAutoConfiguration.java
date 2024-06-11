@@ -92,12 +92,14 @@ public class CamundaAutoConfiguration {
         return new ValtimoSchemaOperationsCommand(liquibaseRunner);
     }
 
+    @Primary
     @Bean
     @ConditionalOnMissingBean(CustomRepositoryServiceImpl.class)
     public CustomRepositoryServiceImpl customRepositoryServiceImpl(final ApplicationEventPublisher applicationEventPublisher) {
         return new CustomRepositoryServiceImpl(applicationEventPublisher);
     }
 
+    @ProcessBean
     @Bean
     @ConditionalOnMissingBean(NotificationService.class)
     public NotificationService notificationService(
