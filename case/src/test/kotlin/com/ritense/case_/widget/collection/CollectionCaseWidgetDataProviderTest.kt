@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.case_.domain.tab.CaseWidgetTab
 import com.ritense.case_.widget.exception.InvalidCollectionException
 import com.ritense.case_.widget.exception.InvalidCollectionNodeTypeException
-import com.ritense.case_.widget.fields.FieldsWidgetProperties
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valueresolver.ValueResolverService
 import org.assertj.core.api.Assertions.assertThat
@@ -188,14 +187,14 @@ class CollectionCaseWidgetDataProviderTest(
     )
 
     private fun testFields() = listOf(
-        FieldsWidgetProperties.Field("firstName", "", "$.firstName"),
-        FieldsWidgetProperties.Field("lastName", "", "/lastName"),
-        FieldsWidgetProperties.Field("real", "", "real"),
-        FieldsWidgetProperties.Field("age", "", "$.age"),
-        FieldsWidgetProperties.Field("partnerFirstName", "", "$.partner.firstName"),
-        FieldsWidgetProperties.Field("partnerLastName", "", "/partner/lastName"),
-        FieldsWidgetProperties.Field("partnerReal", "", "partner/real"),
-        FieldsWidgetProperties.Field("partnerAge", "", "$.partner.age"),
+        CollectionWidgetProperties.Field("firstName", "", "$.firstName"),
+        CollectionWidgetProperties.Field("lastName", "", "/lastName"),
+        CollectionWidgetProperties.Field("real", "", "real"),
+        CollectionWidgetProperties.Field("age", "", "$.age"),
+        CollectionWidgetProperties.Field("partnerFirstName", "", "$.partner.firstName"),
+        CollectionWidgetProperties.Field("partnerLastName", "", "/partner/lastName"),
+        CollectionWidgetProperties.Field("partnerReal", "", "partner/real"),
+        CollectionWidgetProperties.Field("partnerAge", "", "$.partner.age"),
     )
 
     private fun mockCollection(documentId: UUID, widget: CollectionCaseWidget, collectionValue: Any?) {

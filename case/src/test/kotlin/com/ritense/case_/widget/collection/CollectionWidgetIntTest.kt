@@ -143,15 +143,17 @@ class CollectionWidgetIntTest @Autowired constructor(
                             collection = "test:myCollection",
                             defaultPageSize = 5,
                             fields = listOf(
-                                FieldsWidgetProperties.Field(
+                                CollectionWidgetProperties.Field(
                                     "someKey",
                                     "Some key",
-                                    "$.someKey"
+                                    "$.someKey",
+                                    CollectionWidgetProperties.FieldWidth.FULL
                                 ),
-                                FieldsWidgetProperties.Field(
+                                CollectionWidgetProperties.Field(
                                     "someOtherKey",
                                     "Some other key",
                                     "/someOtherKey",
+                                    CollectionWidgetProperties.FieldWidth.HALF,
                                     displayProperties = BooleanFieldDisplayProperties()
                                 )
                             )

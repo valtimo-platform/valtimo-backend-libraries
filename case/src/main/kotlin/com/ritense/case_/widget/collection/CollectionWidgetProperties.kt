@@ -16,7 +16,10 @@
 
 package com.ritense.case_.widget.collection
 
-import com.ritense.case_.widget.fields.FieldsWidgetProperties.Field
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonInclude.Include
+import com.fasterxml.jackson.annotation.JsonValue
+import com.ritense.case_.widget.displayproperties.FieldDisplayProperties
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
@@ -26,4 +29,21 @@ data class CollectionWidgetProperties (
     @field:NotBlank val collection: String,
     @field:Min(1) val defaultPageSize: Int,
     @field:NotEmpty val fields: List<@Valid Field>,
-)
+) {
+    @JsonInclude(Include.NON_NULL)
+    data class Field (
+        @field:NotBlank val key: String,
+        val title: String,
+        @field:NotBlank val value: String,
+        val width: FieldWidth = FieldWidth.FULL,
+        @field:Valid val displayProperties: FieldDisplayProperties? = null
+    )
+
+    enum class FieldWidth {
+        FULL,
+        HALF;
+
+        val value: String
+            @JsonValue get() = name.lowercase()
+    }
+}
