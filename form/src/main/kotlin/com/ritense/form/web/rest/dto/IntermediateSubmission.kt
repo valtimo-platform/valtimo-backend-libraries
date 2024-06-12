@@ -17,6 +17,8 @@
 package com.ritense.form.web.rest.dto
 
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.form.domain.FormSpringContextHelper
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import java.time.LocalDateTime
 import com.ritense.form.domain.IntermediateSubmission as IntermediateSubmissionDomain
 
@@ -29,11 +31,14 @@ data class IntermediateSubmission(
     val editedOn: LocalDateTime?
 )
 
-fun IntermediateSubmissionDomain.toResponse() = IntermediateSubmission(
-    submission = this.content,
-    taskInstanceId = this.taskInstanceId,
-    createdBy = this.createdBy,
-    createdOn = this.createdOn,
-    editedBy = this.editedBy,
-    editedOn = this.editedOn
-)
+fun IntermediateSubmissionDomain.toResponse(): IntermediateSubmission {
+    val userManagementService = FormSpringContextHelper.getBean(UserManagementService::class.java)
+    return IntermediateSubmission(
+        submission = this.content,
+        taskInstanceId = this.taskInstanceId,
+        createdBy = this.createdBy.let { userManagementService.findById(it).fullName },
+        createdOn = this.createdOn,
+        editedBy = this.editedBy?.let { userManagementService.findById(it).fullName },
+        editedOn = this.editedOn
+    )
+}

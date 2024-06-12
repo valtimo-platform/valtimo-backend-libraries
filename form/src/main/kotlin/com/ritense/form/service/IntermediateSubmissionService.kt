@@ -1,27 +1,50 @@
 package com.ritense.form.service
 
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.form.domain.IntermediateSubmission
 import com.ritense.form.repository.IntermediateSubmissionRepository
 import com.ritense.form.util.EventDispatcherHelper.Companion.dispatchEvents
+import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Companion.COMPLETE
+import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Companion.VIEW
+import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.service.CamundaTaskService
 import mu.KotlinLogging
 import org.springframework.transaction.annotation.Transactional
 
 open class IntermediateSubmissionService(
-    private val intermediateSubmissionRepository: IntermediateSubmissionRepository
+    private val intermediateSubmissionRepository: IntermediateSubmissionRepository,
+    private val userManagementService: UserManagementService,
+    private val authorizationService: AuthorizationService,
+    private val camundaTaskService: CamundaTaskService
 ) {
 
-    open fun get(taskInstanceId: String) = intermediateSubmissionRepository.getByTaskInstanceId(taskInstanceId)
+    open fun get(taskInstanceId: String): IntermediateSubmission? {
+        val task = camundaTaskService.findTaskById(taskInstanceId)
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(CamundaTask::class.java, VIEW, task)
+        )
+        return intermediateSubmissionRepository.getByTaskInstanceId(taskInstanceId)
+    }
 
     @Transactional
     open fun store(
         submission: ObjectNode,
         taskInstanceId: String
     ): IntermediateSubmission {
+        val task = camundaTaskService.findTaskById(taskInstanceId)
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(CamundaTask::class.java, COMPLETE, task)
+        )
+
+        val currentUser: String = userManagementService.currentUserId
         val existingIntermediateSubmission = intermediateSubmissionRepository.getByTaskInstanceId(taskInstanceId)
         if (existingIntermediateSubmission != null) {
             return intermediateSubmissionRepository.save(
                 existingIntermediateSubmission.changeSubmissionContent(
+                    editedBy = currentUser,
                     content = submission
                 )
             ).also {
@@ -31,6 +54,7 @@ open class IntermediateSubmissionService(
         } else {
             return intermediateSubmissionRepository.save(
                 IntermediateSubmission.new(
+                    createdBy = currentUser,
                     content = submission,
                     taskInstanceId = taskInstanceId
                 )
@@ -43,6 +67,10 @@ open class IntermediateSubmissionService(
 
     @Transactional
     open fun clear(taskInstanceId: String) {
+        val task = camundaTaskService.findTaskById(taskInstanceId)
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(CamundaTask::class.java, COMPLETE, task)
+        )
         intermediateSubmissionRepository.getByTaskInstanceId(taskInstanceId)?.let { intermediateSubmission ->
             intermediateSubmissionRepository.deleteById(intermediateSubmission.intermediateSubmissionId)
         }

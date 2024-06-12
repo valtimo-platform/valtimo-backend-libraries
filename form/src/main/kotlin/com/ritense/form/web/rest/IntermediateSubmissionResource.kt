@@ -23,7 +23,6 @@ import com.ritense.form.web.rest.dto.toResponse
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -46,7 +45,9 @@ class IntermediateSubmissionResource(
     }
 
     @PostMapping
-    fun storeIntermediateSubmission(@RequestBody request: IntermediateSaveRequest): ResponseEntity<IntermediateSubmission> {
+    fun storeIntermediateSubmission(
+        @RequestBody request: IntermediateSaveRequest
+    ): ResponseEntity<IntermediateSubmission> {
         val intermediateSubmission = intermediateSubmissionService.store(
             submission = request.submission,
             taskInstanceId = request.taskInstanceId
