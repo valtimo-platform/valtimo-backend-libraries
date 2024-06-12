@@ -172,7 +172,7 @@ class CaseWidgetTabService(
             EntityAuthorizationRequest(
                 CaseWidgetTabWidget::class.java,
                 CaseWidgetTabWidgetActionProvider.VIEW,
-                listOf(widget)
+                widget
             )
         )
     }

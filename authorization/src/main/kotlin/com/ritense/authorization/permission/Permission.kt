@@ -77,7 +77,7 @@ data class Permission(
     }
 
     fun <T> appliesTo(resourceType: Class<T>, entity: Any?): Boolean {
-        return if (this.resourceType == resourceType) {
+        return if ( this.resourceType == resourceType && contextResourceType == null) {
             if (entity == null && conditionContainer.conditions.isNotEmpty()) {
                 return false
             }
@@ -113,6 +113,8 @@ data class Permission(
         resourceType: Class<T>,
         queryDialectHelper: QueryDialectHelper
     ): Predicate {
+        require(contextResourceType == null)
+
         val customQuery = AbstractQueryWrapper(query)
         return criteriaBuilder
             .and(
