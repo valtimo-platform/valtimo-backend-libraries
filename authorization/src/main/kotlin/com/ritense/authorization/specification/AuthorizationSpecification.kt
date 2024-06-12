@@ -95,7 +95,6 @@ abstract class AuthorizationSpecification<T : Any>(
             } != null
     }
 
-
     private fun isAuthorizedForRelatedEntityRecursive(
         relatedEntityAuthorizationRequest: RelatedEntityAuthorizationRequest<T>,
         permissionCondition: PermissionCondition
