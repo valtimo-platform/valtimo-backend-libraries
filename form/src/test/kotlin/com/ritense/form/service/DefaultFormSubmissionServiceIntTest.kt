@@ -44,8 +44,6 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
     private val objectMapper: ObjectMapper,
 ) : BaseIntegrationTest() {
 
-
-
     @Test
     @Transactional
     fun `should successfully submit form for new document and process`() {

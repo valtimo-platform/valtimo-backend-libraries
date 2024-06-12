@@ -29,7 +29,6 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
-
 class RabbitMessagePublisher(
     private val rabbitTemplate: RabbitTemplate,
     routingKey: String? = null,
