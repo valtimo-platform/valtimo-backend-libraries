@@ -44,6 +44,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
+import java.util.UUID
 
 @Transactional
 class CaseWidgetTabResourceIntTest @Autowired constructor(
@@ -63,10 +64,10 @@ class CaseWidgetTabResourceIntTest @Autowired constructor(
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = [USER])
     fun `should not find case widget tab`() {
-        val caseDefinitionName = "some-case-type"
+        val documentId = UUID.randomUUID().toString()
         val tabKey = "fake-tab"
         mockMvc.perform(
-            get("/api/v1/case-definition/{caseDefinitionName}/widget-tab/{tabKey}", caseDefinitionName, tabKey)
+            get("/api/v1/document/{documentId}/widget-tab/{tabKey}", documentId, tabKey)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andExpect(status().isNotFound)
     }
@@ -77,11 +78,12 @@ class CaseWidgetTabResourceIntTest @Autowired constructor(
         val caseDefinitionName = "some-case-type"
         val tabKey = "my-tab"
         val widgetKey = "my-widget"
-        runWithoutAuthorization {
+        val documentId = runWithoutAuthorization {
             createCaseWidgetTab(caseDefinitionName, tabKey, widgetKey)
+            documentService.createDocument(NewDocumentRequest(caseDefinitionName, MapperSingleton.get().createObjectNode())).resultingDocument().get().id()
         }
         mockMvc.perform(
-            get("/api/v1/case-definition/{caseDefinitionName}/widget-tab/{tabKey}", caseDefinitionName, tabKey)
+            get("/api/v1/document/{documentId}/widget-tab/{tabKey}", documentId, tabKey)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andDo(print())
             .andExpect(status().is5xxServerError)
@@ -93,11 +95,12 @@ class CaseWidgetTabResourceIntTest @Autowired constructor(
         val caseDefinitionName = "some-case-type"
         val tabKey = "my-tab"
         val widgetKey = "my-widget"
-        runWithoutAuthorization {
+        val documentId = runWithoutAuthorization {
             createCaseWidgetTab(caseDefinitionName, tabKey, widgetKey)
+            documentService.createDocument(NewDocumentRequest(caseDefinitionName, MapperSingleton.get().createObjectNode())).resultingDocument().get().id()
         }
         mockMvc.perform(
-            get("/api/v1/case-definition/{caseDefinitionName}/widget-tab/{tabKey}", caseDefinitionName, tabKey)
+            get("/api/v1/document/{documentId}/widget-tab/{tabKey}", documentId, tabKey)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andDo(print())
             .andExpect(status().isOk)

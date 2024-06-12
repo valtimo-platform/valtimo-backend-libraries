@@ -23,7 +23,10 @@ import com.ritense.case.service.CaseTabService
 import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case_.rest.dto.CaseWidgetTabDto
 import com.ritense.case_.service.CaseWidgetTabService
+import com.ritense.document.domain.impl.request.NewDocumentRequest
+import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -43,6 +46,7 @@ class CustomWidgetIntTest @Autowired constructor(
     private val webApplicationContext: WebApplicationContext,
     private val tabService: CaseTabService,
     private val widgetTabService: CaseWidgetTabService,
+    private val documentService: JsonSchemaDocumentService
 ) : BaseIntegrationTest() {
 
     lateinit var mockMvc: MockMvc
@@ -58,11 +62,12 @@ class CustomWidgetIntTest @Autowired constructor(
         val caseDefinitionName = "some-case-type"
         val tabKey = "my-tab"
         val widgetKey = "my-widget"
-        runWithoutAuthorization {
+        val documentId = runWithoutAuthorization {
             createCaseWidgetTab(caseDefinitionName, tabKey, widgetKey)
+            documentService.createDocument(NewDocumentRequest(caseDefinitionName, MapperSingleton.get().createObjectNode())).resultingDocument().get().id()
         }
         mockMvc.perform(
-            get("/api/v1/case-definition/{caseDefinitionName}/widget-tab/{tabKey}", caseDefinitionName, tabKey)
+            get("/api/v1/document/{documentId}/widget-tab/{tabKey}", documentId, tabKey)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andDo(print())
             .andExpect(status().isOk)
