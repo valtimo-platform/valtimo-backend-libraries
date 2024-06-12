@@ -39,7 +39,7 @@ class IntermediateSubmission(
     @EmbeddedId
     val intermediateSubmissionId: IntermediateSubmissionId,
 
-    @Column(name = "task_instance_id", updatable = false)
+    @Column(name = "task_instance_id", updatable = false, unique = true)
     val taskInstanceId: String,
 
     @Type(value = JsonType::class)

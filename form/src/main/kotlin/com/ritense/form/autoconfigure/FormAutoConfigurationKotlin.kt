@@ -38,6 +38,7 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -123,9 +124,15 @@ class FormAutoConfigurationKotlin {
     @Bean
     @ConditionalOnMissingBean(IntermediateSubmissionService::class)
     fun intermediateSubmissionService(
-        intermediateSubmissionRepository: IntermediateSubmissionRepository
+        intermediateSubmissionRepository: IntermediateSubmissionRepository,
+        userManagementService: UserManagementService,
+        authorizationService: AuthorizationService,
+        camundaTaskService: CamundaTaskService
     ) = IntermediateSubmissionService(
-        intermediateSubmissionRepository
+        intermediateSubmissionRepository = intermediateSubmissionRepository,
+        userManagementService = userManagementService,
+        authorizationService = authorizationService,
+        camundaTaskService = camundaTaskService
     )
 
     @Bean
