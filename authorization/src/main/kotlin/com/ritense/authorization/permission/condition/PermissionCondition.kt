@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonView
 import com.ritense.authorization.permission.PermissionView
-import com.ritense.authorization.request.NestedEntity
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
@@ -39,9 +38,8 @@ abstract class PermissionCondition(
     @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val type: PermissionConditionType
 ) {
-    abstract fun <T: Any> isValid(entity: T): Boolean
-    abstract fun <T: Any> isValid(entity: T, nestedEntities: List<NestedEntity<*>>): Boolean
-    abstract fun <T: Any> toPredicate(
+    abstract fun <T : Any> isValid(entity: T): Boolean
+    abstract fun <T : Any> toPredicate(
         root: Root<T>,
         query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder,

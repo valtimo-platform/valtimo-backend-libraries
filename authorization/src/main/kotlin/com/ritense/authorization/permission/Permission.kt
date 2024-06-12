@@ -65,6 +65,17 @@ data class Permission(
     @Column(name = "context_conditions", columnDefinition = "json")
     val contextConditionContainer: ConditionContainer? = null,
 ) {
+    @Deprecated("Since 12.2.0")
+    constructor(
+        id: UUID,
+        resourceType: Class<*>,
+        action: Action<*>,
+        conditionContainer: ConditionContainer,
+        role: Role
+    ) : this(id, resourceType, action, conditionContainer, role, null, null) {
+
+    }
+
     init {
         require(
             (
@@ -76,23 +87,17 @@ data class Permission(
         )
     }
 
-    fun <T> appliesTo(resourceType: Class<T>, entity: Any?): Boolean {
-        return if ( this.resourceType == resourceType && contextResourceType == null) {
-            if (entity == null && conditionContainer.conditions.isNotEmpty()) {
-                return false
-            }
-            conditionContainer.conditions
-                .all { it.isValid(entity!!) }
-        } else {
-            false
-        }
-    }
-
-    fun <T,U> appliesTo(
+    @Deprecated("Since 12.2.0")
+    fun <T> appliesTo(
         resourceType: Class<T>,
         entity: Any?,
-        contextResourceType: Class<U>,
-        contextEntity: Any?
+    ): Boolean = appliesTo(resourceType, entity, null, null)
+
+    fun <T> appliesTo(
+        resourceType: Class<T>,
+        entity: Any?,
+        contextResourceType: Class<*>? = null,
+        contextEntity: Any? = null,
     ): Boolean {
         return appliesInContext(contextResourceType, contextEntity)
             && if (this.resourceType == resourceType) {
@@ -106,38 +111,23 @@ data class Permission(
             }
     }
 
+    @Deprecated("Since 12.2.0")
     fun <T : Any> toPredicate(
         root: Root<T>,
         query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder,
         resourceType: Class<T>,
-        queryDialectHelper: QueryDialectHelper
-    ): Predicate {
-        require(contextResourceType == null)
+        queryDialectHelper: QueryDialectHelper,
+    ): Predicate = toPredicate(root, query, criteriaBuilder, resourceType, queryDialectHelper, null, null)
 
-        val customQuery = AbstractQueryWrapper(query)
-        return criteriaBuilder
-            .and(
-                *conditionContainer.conditions.map {
-                    it.toPredicate(
-                        root,
-                        customQuery,
-                        criteriaBuilder,
-                        resourceType,
-                        queryDialectHelper
-                    )
-                }.toTypedArray()
-            )
-    }
-
-    fun <T : Any, U> toPredicateForContext(
+    fun <T : Any> toPredicate(
         root: Root<T>,
         query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder,
         resourceType: Class<T>,
         queryDialectHelper: QueryDialectHelper,
-        contextResourceType: Class<U>,
-        contextEntity: Any?
+        contextResourceType: Class<*>? = null,
+        contextEntity: Any? = null
     ): Predicate {
         require(
             appliesInContext(contextResourceType, contextEntity)
@@ -159,7 +149,7 @@ data class Permission(
     }
 
     private fun <U> appliesInContext(
-        contextResourceType: Class<U>,
+        contextResourceType: Class<U>?,
         contextEntity: Any?
     ): Boolean {
         return (this.contextResourceType == null

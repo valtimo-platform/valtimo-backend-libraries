@@ -23,7 +23,6 @@ import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.permission.condition.ContainerPermissionCondition
 import com.ritense.authorization.permission.condition.PermissionCondition
 import com.ritense.authorization.request.AuthorizationRequest
-import com.ritense.authorization.request.ContextualEntityAuthorizationRequest
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.request.RelatedEntityAuthorizationRequest
 import com.ritense.authorization.role.Role
@@ -42,7 +41,6 @@ abstract class AuthorizationSpecification<T : Any>(
         return when (authRequest) {
             is EntityAuthorizationRequest<T> -> isAuthorizedForEntity(authRequest)
             is RelatedEntityAuthorizationRequest<T> -> isAuthorizedForRelatedEntity(authRequest)
-            is ContextualEntityAuthorizationRequest<T> -> isAuthorizedForEntity(authRequest)
             else -> false
         }
     }
@@ -55,7 +53,15 @@ abstract class AuthorizationSpecification<T : Any>(
             entityAuthorizationRequest.resourceType == permission.resourceType && entityAuthorizationRequest.action == permission.action
         }
         return entityAuthorizationRequest.entities.all { entity ->
-            permissions.any { permission -> permission.appliesTo(entityAuthorizationRequest.resourceType, entity) }
+            permissions.any { permission ->
+                permission
+                    .appliesTo(
+                        entityAuthorizationRequest.resourceType,
+                        entity,
+                        entityAuthorizationRequest.context?.resourceType,
+                        entityAuthorizationRequest.context?.entity
+                    )
+            }
         }
     }
 
@@ -89,24 +95,6 @@ abstract class AuthorizationSpecification<T : Any>(
             } != null
     }
 
-    private fun isAuthorizedForEntity(authorizationRequest: ContextualEntityAuthorizationRequest<T>): Boolean {
-        if (authorizationRequest.entities.isEmpty()) {
-            return false
-        }
-        val permissions = permissions.filter { permission ->
-            authorizationRequest.resourceType == permission.resourceType && authorizationRequest.action == permission.action
-        }
-        return authorizationRequest.entities.all { entity ->
-            permissions.any {
-                permission -> permission.appliesTo(
-                    authorizationRequest.resourceType,
-                    entity,
-                    authorizationRequest.context.resourceType,
-                    authorizationRequest.context.entity
-                )
-            }
-        }
-    }
 
     private fun isAuthorizedForRelatedEntityRecursive(
         relatedEntityAuthorizationRequest: RelatedEntityAuthorizationRequest<T>,
@@ -168,7 +156,9 @@ abstract class AuthorizationSpecification<T : Any>(
         root: Root<T>,
         query: CriteriaQuery<*>,
         criteriaBuilder: CriteriaBuilder
-    ): Predicate { return toPredicate(root, query as AbstractQuery<*>, criteriaBuilder) }
+    ): Predicate {
+        return toPredicate(root, query as AbstractQuery<*>, criteriaBuilder)
+    }
 
     /**
      * Creates a WHERE clause for a query of the referenced entity in form of a Predicate for the given Root and

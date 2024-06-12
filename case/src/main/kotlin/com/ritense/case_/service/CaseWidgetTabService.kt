@@ -21,7 +21,6 @@ import com.ritense.authorization.Action.Companion.deny
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.AuthorizationResourceContext
-import com.ritense.authorization.request.ContextualEntityAuthorizationRequest
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.case.domain.CaseTab
 import com.ritense.case.domain.CaseTabId
@@ -102,7 +101,11 @@ class CaseWidgetTabService(
                 }
             )
 
-        return CaseWidgetTabDto.of(caseWidgetTabRepository.save(caseWidgetTab), caseWidgetMappers, this::viewPermissionCheck)
+        return CaseWidgetTabDto.of(
+            caseWidgetTabRepository.save(caseWidgetTab),
+            caseWidgetMappers,
+            this::viewPermissionCheck
+        )
     }
 
     @Transactional
@@ -145,14 +148,15 @@ class CaseWidgetTabService(
     ) {
         caseTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, key))?.let { caseTab ->
             authorizationService.requirePermission(
-                ContextualEntityAuthorizationRequest(
+                EntityAuthorizationRequest(
                     CaseTab::class.java,
                     action,
+                    caseTab
+                ).withContext(
                     AuthorizationResourceContext(
                         JsonSchemaDocument::class.java,
                         document
-                    ),
-                    caseTab
+                    )
                 )
             )
         }

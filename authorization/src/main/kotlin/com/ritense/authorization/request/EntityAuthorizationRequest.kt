@@ -23,6 +23,7 @@ open class EntityAuthorizationRequest<T>(
     override val action: Action<T>,
     val entities: List<T>,
 ) : AuthorizationRequest<T> {
+    var context: AuthorizationResourceContext<*>? = null
 
     constructor(resourceType: Class<T>, action: Action<T>, vararg entities: T?) : this(
         resourceType,
@@ -32,4 +33,9 @@ open class EntityAuthorizationRequest<T>(
 
     override val user: String?
         get() = null
+
+    open fun withContext(context: AuthorizationResourceContext<*>): EntityAuthorizationRequest<T> {
+        this.context = context
+        return this
+    }
 }
