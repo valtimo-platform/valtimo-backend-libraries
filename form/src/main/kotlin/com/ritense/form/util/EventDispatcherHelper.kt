@@ -28,26 +28,26 @@ class EventDispatcherHelper {
     companion object {
 
         fun dispatchEvents(aggregateRoot: AggregateRoot<BaseEvent>) {
-            assertOutboxEnabled()
-            // Feature toggle: outbox
-            val outboxService = FormSpringContextHelper.getBean(ValtimoOutboxService::class.java)
-            aggregateRoot.domainEvents()
-                .forEach { domainEvent ->
-                    logger.trace { "Dispatch domain event $domainEvent" }
-                    outboxService.send { domainEvent }
-                }
-            aggregateRoot.clearDomainEvents()
+            if (assertOutboxEnabled()) {
+                val outboxService = FormSpringContextHelper.getBean(ValtimoOutboxService::class.java)
+                aggregateRoot.domainEvents()
+                    .forEach { domainEvent ->
+                        logger.trace { "Dispatch domain event $domainEvent" }
+                        outboxService.send { domainEvent }
+                    }
+                aggregateRoot.clearDomainEvents()
+            }
         }
 
-        private fun assertOutboxEnabled() {
-            if (
-                !FormSpringContextHelper.applicationContext.environment.getProperty(
-                    PROPERTY_NAME,
-                    "false"
-                ).toBoolean()
-            ) {
+        private fun assertOutboxEnabled(): Boolean {
+            val isEnabled = FormSpringContextHelper.applicationContext.environment.getProperty(
+                PROPERTY_NAME,
+                "false"
+            ).toBoolean()
+            if (!isEnabled) {
                 logger.warn { "Skipping dispatchEvents because outbox is disabled" }
             }
+            return isEnabled
         }
 
         private val logger = KotlinLogging.logger {}
