@@ -23,6 +23,7 @@ import java.util.UUID
 class FormDefinitionExistsValidator(
     private val formDefinitionService: FormDefinitionService
 ) : ConstraintValidator<FormDefinitionExists, Any> {
+
     override fun isValid(value: Any?, context: ConstraintValidatorContext): Boolean {
         if (value == null) {
             return true
@@ -30,11 +31,7 @@ class FormDefinitionExistsValidator(
 
         return when (value) {
             is String -> {
-                try {
-                    formDefinitionService.formDefinitionExistsById(UUID.fromString(value))
-                } catch (e: IllegalArgumentException) {
-                    formDefinitionService.getFormDefinitionByName(value).isPresent
-                }
+                formDefinitionService.getFormDefinitionByName(value).isPresent
             }
 
             is UUID -> {

@@ -1,0 +1,6 @@
+services:
+    db:
+        ports:
+            - "3353:5432"
+        environment:
+            - POSTGRES_DB=command-handling-test

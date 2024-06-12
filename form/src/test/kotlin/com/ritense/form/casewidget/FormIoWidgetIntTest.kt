@@ -72,7 +72,7 @@ class FormIoWidgetIntTest @Autowired constructor(
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.widgets[0].type").value("formio"))
             .andExpect(jsonPath("$.widgets[0].properties").exists())
-            .andExpect(jsonPath("$.widgets[0].properties.formDefinition").value("form-example"))
+            .andExpect(jsonPath("$.widgets[0].properties.formDefinitionName").value("form-example"))
     }
 
     @Test

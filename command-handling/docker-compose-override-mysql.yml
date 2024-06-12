@@ -1,0 +1,6 @@
+services:
+    db:
+        ports:
+            - "3353:3306"
+        environment:
+            - MYSQL_DATABASE=command-handling-test

@@ -24,18 +24,30 @@ import com.ritense.case.domain.CaseTabId
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.service.DocumentDefinitionService
+import jakarta.persistence.EntityNotFoundException
 import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Root
+import kotlin.jvm.optionals.getOrNull
 
 class CaseTabDocumentDefinitionMapper(
     private val documentDefinitionService: DocumentDefinitionService
 ) : AuthorizationEntityMapper<CaseTab, JsonSchemaDocumentDefinition> {
     override fun mapRelated(entity: CaseTab): List<JsonSchemaDocumentDefinition> {
-        return runWithoutAuthorization { listOf(documentDefinitionService.findLatestByName(entity.id.caseDefinitionName) as JsonSchemaDocumentDefinition) }
+        return runWithoutAuthorization {
+            listOf(
+                documentDefinitionService.findLatestByName(entity.id.caseDefinitionName)
+                    .map { it as JsonSchemaDocumentDefinition }
+                    .getOrNull() ?: throw EntityNotFoundException("JsonSchemaDocumentDefinition with name ${entity.id.caseDefinitionName} not found")
+            )
+        }
     }
 
-    override fun mapQuery(root: Root<CaseTab>, query: AbstractQuery<*>, criteriaBuilder: CriteriaBuilder): AuthorizationEntityMapperResult<JsonSchemaDocumentDefinition> {
+    override fun mapQuery(
+        root: Root<CaseTab>,
+        query: AbstractQuery<*>,
+        criteriaBuilder: CriteriaBuilder
+    ): AuthorizationEntityMapperResult<JsonSchemaDocumentDefinition> {
         val documentDefinitionRoot: Root<JsonSchemaDocumentDefinition> = query.from(JsonSchemaDocumentDefinition::class.java)
         return AuthorizationEntityMapperResult(
             documentDefinitionRoot,

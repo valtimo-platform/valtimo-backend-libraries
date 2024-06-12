@@ -31,10 +31,10 @@ class FormProcessLink(
     processDefinitionId: String,
     activityId: String,
     activityType: ActivityTypeWithEventName,
-
     @Column(name = "form_definition_id")
-    val formDefinitionId: UUID
-
+    val formDefinitionId: UUID,
+    @Column(name = "view_model_enabled")
+    val viewModelEnabled: Boolean = false
 ) : ProcessLink(
     id,
     processDefinitionId,
@@ -57,13 +57,15 @@ class FormProcessLink(
         processDefinitionId: String = this.processDefinitionId,
         activityId: String = this.activityId,
         activityType: ActivityTypeWithEventName = this.activityType,
-        formDefinitionId: UUID = this.formDefinitionId
+        formDefinitionId: UUID = this.formDefinitionId,
+        viewModelEnabled: Boolean = this.viewModelEnabled
     ) = FormProcessLink(
         id = id,
         processDefinitionId = processDefinitionId,
         activityId = activityId,
         activityType = activityType,
-        formDefinitionId = formDefinitionId
+        formDefinitionId = formDefinitionId,
+        viewModelEnabled = viewModelEnabled
     )
 
     override fun equals(other: Any?): Boolean {
@@ -73,12 +75,16 @@ class FormProcessLink(
 
         other as FormProcessLink
 
-        return formDefinitionId == other.formDefinitionId
+        if (formDefinitionId != other.formDefinitionId) return false
+        if (viewModelEnabled != other.viewModelEnabled) return false
+
+        return true
     }
 
     override fun hashCode(): Int {
         var result = super.hashCode()
         result = 31 * result + formDefinitionId.hashCode()
+        result = 31 * result + viewModelEnabled.hashCode()
         return result
     }
 }

@@ -353,7 +353,6 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         this.formDefinition = formDefinition;
     }
 
-
     private void fill(ObjectNode field, JsonNode content) {
         assertArgumentNotNull(field, "field is required");
         assertArgumentNotNull(content, "content is required");

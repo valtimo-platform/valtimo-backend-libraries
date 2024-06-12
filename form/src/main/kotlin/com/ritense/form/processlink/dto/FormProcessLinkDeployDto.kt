@@ -27,6 +27,7 @@ data class FormProcessLinkDeployDto(
     override val activityId: String,
     override val activityType: ActivityTypeWithEventName,
     val formDefinitionName: String,
+    val viewModelEnabled: Boolean
 ) : ProcessLinkDeployDto {
     override val processLinkType: String
         get() = PROCESS_LINK_TYPE_FORM
