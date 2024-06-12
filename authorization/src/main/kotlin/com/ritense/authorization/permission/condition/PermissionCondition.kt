@@ -38,8 +38,8 @@ abstract class PermissionCondition(
     @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val type: PermissionConditionType
 ) {
-    abstract fun <T : Any> isValid(entity: T): Boolean
-    abstract fun <T : Any> toPredicate(
+    abstract fun <T: Any> isValid(entity: T): Boolean
+    abstract fun <T: Any> toPredicate(
         root: Root<T>,
         query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder,
