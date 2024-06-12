@@ -38,7 +38,6 @@ open class IntermediateSubmissionService(
         authorizationService.requirePermission(
             EntityAuthorizationRequest(CamundaTask::class.java, COMPLETE, task)
         )
-
         val currentUser: String = userManagementService.currentUserId
         val existingIntermediateSubmission = intermediateSubmissionRepository.getByTaskInstanceId(taskInstanceId)
         if (existingIntermediateSubmission != null) {
