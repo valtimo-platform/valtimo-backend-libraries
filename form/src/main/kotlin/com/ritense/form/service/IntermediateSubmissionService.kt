@@ -14,14 +14,15 @@ import com.ritense.valtimo.service.CamundaTaskService
 import mu.KotlinLogging
 import org.springframework.transaction.annotation.Transactional
 
-open class IntermediateSubmissionService(
+@Transactional
+class IntermediateSubmissionService(
     private val intermediateSubmissionRepository: IntermediateSubmissionRepository,
     private val userManagementService: UserManagementService,
     private val authorizationService: AuthorizationService,
     private val camundaTaskService: CamundaTaskService
 ) {
 
-    open fun get(taskInstanceId: String): IntermediateSubmission? {
+    fun get(taskInstanceId: String): IntermediateSubmission? {
         val task = camundaTaskService.findTaskById(taskInstanceId)
         authorizationService.requirePermission(
             EntityAuthorizationRequest(CamundaTask::class.java, VIEW, task)
@@ -29,8 +30,7 @@ open class IntermediateSubmissionService(
         return intermediateSubmissionRepository.getByTaskInstanceId(taskInstanceId)
     }
 
-    @Transactional
-    open fun store(
+    fun store(
         submission: ObjectNode,
         taskInstanceId: String
     ): IntermediateSubmission {
@@ -64,8 +64,7 @@ open class IntermediateSubmissionService(
         }
     }
 
-    @Transactional
-    open fun clear(taskInstanceId: String) {
+    fun clear(taskInstanceId: String) {
         val task = camundaTaskService.findTaskById(taskInstanceId)
         authorizationService.requirePermission(
             EntityAuthorizationRequest(CamundaTask::class.java, COMPLETE, task)
