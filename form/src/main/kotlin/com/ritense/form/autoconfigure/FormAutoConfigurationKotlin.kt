@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.form.autodeployment.FormDefinitionDeploymentService
+import com.ritense.form.repository.IntermediateSubmissionRepository
 import com.ritense.form.casewidget.FormIoCaseWidgetDataProvider
 import com.ritense.form.casewidget.FormIoCaseWidgetMapper
 import com.ritense.form.security.config.FormHttpSecurityConfigurerKotlin
@@ -29,15 +30,18 @@ import com.ritense.form.service.FormDefinitionImporter
 import com.ritense.form.service.FormDefinitionService
 import com.ritense.form.service.FormSubmissionService
 import com.ritense.form.service.FormSupportedProcessLinksHandler
+import com.ritense.form.service.IntermediateSubmissionService
 import com.ritense.form.service.PrefillFormService
 import com.ritense.form.service.impl.DefaultFormSubmissionService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.form.validation.FormDefinitionExistsValidator
 import com.ritense.form.web.rest.FormResource
+import com.ritense.form.web.rest.IntermediateSubmissionResource
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -134,4 +138,26 @@ class FormAutoConfigurationKotlin {
     @ConditionalOnMissingBean(FormDefinitionExistsValidator::class)
     @Bean
     fun formDefinitionExistsValidator(formDefinitionService: FormDefinitionService) = FormDefinitionExistsValidator(formDefinitionService)
+    @Bean
+    @ConditionalOnMissingBean(IntermediateSubmissionService::class)
+    fun intermediateSubmissionService(
+        intermediateSubmissionRepository: IntermediateSubmissionRepository,
+        userManagementService: UserManagementService,
+        authorizationService: AuthorizationService,
+        camundaTaskService: CamundaTaskService
+    ) = IntermediateSubmissionService(
+        intermediateSubmissionRepository = intermediateSubmissionRepository,
+        userManagementService = userManagementService,
+        authorizationService = authorizationService,
+        camundaTaskService = camundaTaskService
+    )
+
+    @Bean
+    @ConditionalOnMissingBean(IntermediateSubmissionResource::class)
+    fun intermediateSubmissionResource(
+        intermediateSubmissionService: IntermediateSubmissionService
+    ) = IntermediateSubmissionResource(
+        intermediateSubmissionService
+    )
+
 }
