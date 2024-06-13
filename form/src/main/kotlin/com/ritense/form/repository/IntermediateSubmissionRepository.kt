@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.outbox
+package com.ritense.form.repository;
 
-import com.ritense.outbox.domain.BaseEvent
-import java.util.function.Supplier
+import com.ritense.form.domain.IntermediateSubmission
+import com.ritense.form.domain.IntermediateSubmissionId
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
 
-class NoopOutboxService : OutboxService {
-    override fun send(eventSupplier: Supplier<BaseEvent>) {
-        // Nothing to do
-    }
+@Repository
+interface IntermediateSubmissionRepository : JpaRepository<IntermediateSubmission, IntermediateSubmissionId> {
+    fun getByTaskInstanceId(taskInstanceId: String): IntermediateSubmission?
 }
