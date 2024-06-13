@@ -21,9 +21,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.form.autodeployment.FormDefinitionDeploymentService
-import com.ritense.form.repository.IntermediateSubmissionRepository
 import com.ritense.form.casewidget.FormIoCaseWidgetDataProvider
 import com.ritense.form.casewidget.FormIoCaseWidgetMapper
+import com.ritense.form.repository.IntermediateSubmissionRepository
 import com.ritense.form.security.config.FormHttpSecurityConfigurerKotlin
 import com.ritense.form.service.FormDefinitionExporter
 import com.ritense.form.service.FormDefinitionImporter
@@ -138,6 +138,7 @@ class FormAutoConfigurationKotlin {
     @ConditionalOnMissingBean(FormDefinitionExistsValidator::class)
     @Bean
     fun formDefinitionExistsValidator(formDefinitionService: FormDefinitionService) = FormDefinitionExistsValidator(formDefinitionService)
+
     @Bean
     @ConditionalOnMissingBean(IntermediateSubmissionService::class)
     fun intermediateSubmissionService(
@@ -159,5 +160,4 @@ class FormAutoConfigurationKotlin {
     ) = IntermediateSubmissionResource(
         intermediateSubmissionService
     )
-
 }
