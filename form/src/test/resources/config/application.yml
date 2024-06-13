@@ -48,6 +48,8 @@ aws:
         bucketRegion: eu-central-1
 
 valtimo:
+    outbox:
+        enabled: true
     mandrill:
         apiKey: some-key
         dateFormat: dd-MM-yyyy

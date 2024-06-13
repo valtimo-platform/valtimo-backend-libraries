@@ -19,15 +19,22 @@ package com.ritense.valtimo
 import mu.KotlinLogging
 import org.camunda.bpm.engine.impl.cfg.AbstractProcessEnginePlugin
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl
+import org.camunda.bpm.engine.spring.SpringExpressionManager
+import org.springframework.context.ApplicationContext
 
-class CamundaBeansPlugin : AbstractProcessEnginePlugin() {
+class CamundaWhitelistedBeansPlugin(
+    private val processBeans: Map<String, Any>,
+    private val applicationContext: ApplicationContext
+) : AbstractProcessEnginePlugin() {
     override fun preInit(processEngineConfiguration: ProcessEngineConfigurationImpl?) {
+        logger.info("Registering process beans...")
         requireNotNull(processEngineConfiguration) { "No process engine configuration found. Failed to register process beans." }
 
-        // Register custom command interceptor to be able to use the beans without authorization
-        processEngineConfiguration.setCustomPreCommandInterceptorsTxRequired(
-            listOf(ValtimoCommandInterceptor())
-        )
+        val processBeansAny = processBeans as Map<Any, Any>
+        processEngineConfiguration.beans = processBeansAny
+        processEngineConfiguration.setExpressionManager(SpringExpressionManager(applicationContext, processBeansAny))
+
+        logger.info("Successfully registered process beans.")
     }
 
     companion object {

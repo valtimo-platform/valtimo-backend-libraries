@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.outbox
+package com.ritense.form.web.rest.dto
 
-import com.ritense.outbox.domain.BaseEvent
-import java.util.function.Supplier
+import com.fasterxml.jackson.databind.node.ObjectNode
 
-class NoopOutboxService : OutboxService {
-    override fun send(eventSupplier: Supplier<BaseEvent>) {
-        // Nothing to do
-    }
-}
+data class IntermediateSaveRequest(
+    val submission: ObjectNode,
+    val taskInstanceId: String
+)

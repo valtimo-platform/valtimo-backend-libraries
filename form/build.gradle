@@ -45,6 +45,7 @@ dependencies {
     implementation project(":value-resolver")
     implementation project(":exporter")
     implementation project(":importer")
+    implementation project(":outbox")
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
