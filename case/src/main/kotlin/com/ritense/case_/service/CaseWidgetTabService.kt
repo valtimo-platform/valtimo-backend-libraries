@@ -62,7 +62,6 @@ class CaseWidgetTabService(
         }
     }
 
-    @Transactional(readOnly = true)
     fun getWidgetTab(caseDefinitionName: String, key: String): CaseWidgetTabDto? {
         checkCaseTabAccess(caseDefinitionName, key, VIEW)
 
@@ -71,7 +70,6 @@ class CaseWidgetTabService(
 
     }
 
-    @Transactional(readOnly = true)
     fun getWidgetTab(documentId: JsonSchemaDocumentId, key: String): CaseWidgetTabDto? {
         val document = runWithoutAuthorization { documentService.findByOrNull(documentId) }
 
