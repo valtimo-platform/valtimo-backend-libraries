@@ -19,6 +19,7 @@ package com.ritense.case_.rest.dto
 import com.ritense.case_.domain.tab.CaseWidgetTab
 import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 import com.ritense.case_.widget.CaseWidgetMapper
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 
@@ -44,6 +45,26 @@ data class CaseWidgetTabDto(
                             mapper.supportedEntityType().isAssignableFrom(widget::class.java)
                         }.toDto(widget)
                 }
+            )
+        }
+
+        @JvmStatic
+        fun ofWithContext(
+            tab: CaseWidgetTab,
+            widgetMappers: List<CaseWidgetMapper<CaseWidgetTabWidget, CaseWidgetTabWidgetDto>>,
+            permissionCheck: (CaseWidgetTabWidget, JsonSchemaDocument) -> Boolean,
+            document: JsonSchemaDocument
+        ): CaseWidgetTabDto {
+            return CaseWidgetTabDto(
+                tab.id.caseDefinitionName,
+                tab.id.key,
+                widgets = tab.widgets
+                    .filter { permissionCheck(it, document) }
+                    .map { widget ->
+                        widgetMappers.first { mapper ->
+                            mapper.supportedEntityType().isAssignableFrom(widget::class.java)
+                        }.toDto(widget)
+                    }
             )
         }
     }

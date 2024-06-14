@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization.testimpl
+package com.ritense.authorization.request
 
-class TestDocument(var name: String)
+class AuthorizationResourceContext<T>(
+    val resourceType: Class<T>,
+    val entity: T,
+)

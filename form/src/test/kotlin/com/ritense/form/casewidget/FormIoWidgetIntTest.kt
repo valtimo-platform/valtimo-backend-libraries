@@ -62,11 +62,12 @@ class FormIoWidgetIntTest @Autowired constructor(
         val caseDefinitionName = "person"
         val tabKey = "my-tab"
         val widgetKey = "my-widget"
-        runWithoutAuthorization {
+        val documentId = runWithoutAuthorization {
             createCaseWidgetTab(caseDefinitionName, tabKey, widgetKey)
+            documentService.createDocument(NewDocumentRequest(caseDefinitionName, MapperSingleton.get().createObjectNode())).resultingDocument().get().id()
         }
         mockMvc.perform(
-            get("/api/v1/case-definition/{caseDefinitionName}/widget-tab/{tabKey}", caseDefinitionName, tabKey)
+            get("/api/v1/document/{documentId}/widget-tab/{tabKey}", documentId, tabKey)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andDo(print())
             .andExpect(status().isOk)

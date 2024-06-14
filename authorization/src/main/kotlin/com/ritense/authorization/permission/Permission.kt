@@ -57,27 +57,82 @@ data class Permission(
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     val role: Role,
+
+    @Column(name = "context_resource_type")
+    val contextResourceType: Class<*>? = null,
+
+    @Type(value = JsonType::class)
+    @Column(name = "context_conditions", columnDefinition = "json")
+    val contextConditionContainer: ConditionContainer? = null,
 ) {
-    fun <T> appliesTo(resourceType: Class<T>, entity: Any?): Boolean {
-        return if (this.resourceType == resourceType) {
-            if (entity == null && conditionContainer.conditions.isNotEmpty()) {
-                return false
-            }
-            conditionContainer.conditions
-                .map { it.isValid(entity!!) }
-                .all { it }
-        } else {
-            false
-        }
+    @Deprecated("Since 12.2.0")
+    constructor(
+        id: UUID,
+        resourceType: Class<*>,
+        action: Action<*>,
+        conditionContainer: ConditionContainer,
+        role: Role
+    ) : this(id, resourceType, action, conditionContainer, role, null, null) {
+
     }
+
+    init {
+        require(
+            (
+                (contextResourceType != null && contextConditionContainer != null)
+                    || (contextResourceType == null
+                        && (contextConditionContainer == null || contextConditionContainer.conditions.isEmpty())
+                )
+            )
+        )
+    }
+
+    @Deprecated("Since 12.2.0")
+    fun <T> appliesTo(
+        resourceType: Class<T>,
+        entity: Any?,
+    ): Boolean = appliesTo(resourceType, entity, null, null)
+
+    fun <T> appliesTo(
+        resourceType: Class<T>,
+        entity: Any?,
+        contextResourceType: Class<*>? = null,
+        contextEntity: Any? = null,
+    ): Boolean {
+        return appliesInContext(contextResourceType, contextEntity)
+            && if (this.resourceType == resourceType) {
+                if (entity == null && conditionContainer.conditions.isNotEmpty()) {
+                    return false
+                }
+                conditionContainer.conditions
+                    .all { it.isValid(entity!!) }
+            } else {
+                false
+            }
+    }
+
+    @Deprecated("Since 12.2.0")
+    fun <T : Any> toPredicate(
+        root: Root<T>,
+        query: AbstractQuery<*>,
+        criteriaBuilder: CriteriaBuilder,
+        resourceType: Class<T>,
+        queryDialectHelper: QueryDialectHelper,
+    ): Predicate = toPredicate(root, query, criteriaBuilder, resourceType, queryDialectHelper, null, null)
 
     fun <T : Any> toPredicate(
         root: Root<T>,
         query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder,
         resourceType: Class<T>,
-        queryDialectHelper: QueryDialectHelper
+        queryDialectHelper: QueryDialectHelper,
+        contextResourceType: Class<*>? = null,
+        contextEntity: Any? = null
     ): Predicate {
+        require(
+            appliesInContext(contextResourceType, contextEntity)
+        )
+
         val customQuery = AbstractQueryWrapper(query)
         return criteriaBuilder
             .and(
@@ -91,5 +146,17 @@ data class Permission(
                     )
                 }.toTypedArray()
             )
+    }
+
+    private fun <U> appliesInContext(
+        contextResourceType: Class<U>?,
+        contextEntity: Any?
+    ): Boolean {
+        return (this.contextResourceType == null
+            || (contextResourceType == this.contextResourceType
+                && (contextConditionContainer?.let { container ->
+                    container.conditions
+                        .all { it.isValid(contextEntity!!) }
+                    } == true)))
     }
 }

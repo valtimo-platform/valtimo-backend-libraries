@@ -32,12 +32,18 @@ data class PermissionDto(
     @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val conditions: List<PermissionCondition> = emptyList(),
     @field:JsonView(PermissionView.PermissionManagement::class)
-    val roleKey: String
+    val roleKey: String,
+    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
+    val contextResourceType: Class<*>? = null,
+    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
+    val contextConditions: List<PermissionCondition> = emptyList(),
 ) {
     fun toPermission(roleRepository: RoleRepository) = Permission(
         resourceType = resourceType,
         action = Action<Any>(action),
         conditionContainer = ConditionContainer(conditions = conditions),
-        role = roleRepository.findByKey(roleKey)!!
+        role = roleRepository.findByKey(roleKey)!!,
+        contextResourceType = contextResourceType,
+        contextConditionContainer = ConditionContainer(conditions = contextConditions)
     )
 }

@@ -20,6 +20,7 @@ import com.ritense.authorization.Action
 import com.ritense.authorization.Action.Companion.deny
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.request.AuthorizationResourceContext
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.case.domain.CaseTab
 import com.ritense.case.domain.CaseTabId
@@ -34,6 +35,7 @@ import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
 import com.ritense.case_.service.event.CaseTabCreatedEvent
 import com.ritense.case_.widget.CaseWidgetDataProvider
 import com.ritense.case_.widget.CaseWidgetMapper
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.findByOrNull
@@ -60,12 +62,31 @@ class CaseWidgetTabService(
         }
     }
 
-    @Transactional(readOnly = true)
     fun getWidgetTab(caseDefinitionName: String, key: String): CaseWidgetTabDto? {
         checkCaseTabAccess(caseDefinitionName, key, VIEW)
 
         return caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, key))
             ?.let { CaseWidgetTabDto.of(it, caseWidgetMappers, this::viewPermissionCheck) }
+
+    }
+
+    fun getWidgetTab(documentId: JsonSchemaDocumentId, key: String): CaseWidgetTabDto? {
+        val document = runWithoutAuthorization { documentService.findByOrNull(documentId) }
+
+        return document?.let { existingDocument ->
+            caseTabRepository.findByIdOrNull(CaseTabId(document.definitionId().name(), key))?.let {
+                checkCaseTabAccess(existingDocument as JsonSchemaDocument, it, VIEW)
+                caseWidgetTabRepository.findByIdOrNull(CaseTabId(existingDocument.definitionId().name(), key))
+                    ?.let { CaseWidgetTabDto
+                        .ofWithContext(
+                            it,
+                            caseWidgetMappers,
+                            this::viewPermissionCheckForContext,
+                            document as JsonSchemaDocument
+                        )
+                    }
+            }
+        }
 
     }
 
@@ -86,12 +107,18 @@ class CaseWidgetTabService(
                 }
             )
 
-        return CaseWidgetTabDto.of(caseWidgetTabRepository.save(caseWidgetTab), caseWidgetMappers, this::viewPermissionCheck)
+        return CaseWidgetTabDto.of(
+            caseWidgetTabRepository.save(caseWidgetTab),
+            caseWidgetMappers,
+            this::viewPermissionCheck
+        )
     }
 
     @Transactional
     fun getCaseWidgetData(documentId: UUID, tabKey: String, widgetKey: String, pageable: Pageable): Any? {
-        val document = documentService.findByOrNull(JsonSchemaDocumentId.existingId(documentId)) ?: return null
+        val document = runWithoutAuthorization {
+            documentService.findByOrNull(JsonSchemaDocumentId.existingId(documentId))
+        } ?: return null
 
         val caseDefinitionName = document.definitionId().name()
         checkCaseTabAccess(caseDefinitionName, tabKey, VIEW)
@@ -104,6 +131,11 @@ class CaseWidgetTabService(
                 CaseWidgetTabWidget::class.java,
                 CaseWidgetTabWidgetActionProvider.VIEW,
                 widget
+            ).withContext(
+                AuthorizationResourceContext(
+                    JsonSchemaDocument::class.java,
+                    document as JsonSchemaDocument
+                )
             )
         )
 
@@ -126,16 +158,23 @@ class CaseWidgetTabService(
         }
     }
 
-    private fun checkCaseTabWidgetAccess(caseDefinitionName: String, key: String, action: Action<CaseTab>) {
-        caseTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, key))?.let { caseTab ->
-            authorizationService.requirePermission(
-                EntityAuthorizationRequest(
-                    CaseTab::class.java,
-                    action,
-                    caseTab
+    private fun checkCaseTabAccess(
+        document: JsonSchemaDocument,
+        caseTab: CaseTab,
+        action: Action<CaseTab>
+    ) {
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                CaseTab::class.java,
+                action,
+                caseTab
+            ).withContext(
+                AuthorizationResourceContext(
+                    JsonSchemaDocument::class.java,
+                    document
                 )
             )
-        }
+        )
     }
 
     private fun denyAuthorization() {
@@ -152,7 +191,22 @@ class CaseWidgetTabService(
             EntityAuthorizationRequest(
                 CaseWidgetTabWidget::class.java,
                 CaseWidgetTabWidgetActionProvider.VIEW,
-                listOf(widget)
+                widget
+            )
+        )
+    }
+
+    private fun viewPermissionCheckForContext(widget: CaseWidgetTabWidget, document: JsonSchemaDocument): Boolean {
+        return authorizationService.hasPermission(
+            EntityAuthorizationRequest(
+                CaseWidgetTabWidget::class.java,
+                CaseWidgetTabWidgetActionProvider.VIEW,
+                widget
+            ).withContext(
+                AuthorizationResourceContext(
+                    JsonSchemaDocument::class.java,
+                    document
+                )
             )
         )
     }

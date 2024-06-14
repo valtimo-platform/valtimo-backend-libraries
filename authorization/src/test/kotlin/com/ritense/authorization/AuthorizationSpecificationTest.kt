@@ -113,11 +113,11 @@ class AuthorizationSpecificationTest {
             mock()
         )
 
-        whenever(permission.appliesTo(eq(TestEntity::class.java), any())).thenReturn(false)
+        whenever(permission.appliesTo(eq(TestEntity::class.java), any(), eq(null), eq(null))).thenReturn(false)
 
         val authorized = spec.isAuthorized()
         assertEquals(false, authorized)
 
-        verify(permission).appliesTo(eq(TestEntity::class.java), any())
+        verify(permission).appliesTo(eq(TestEntity::class.java), any(), eq(null), eq(null))
     }
 }

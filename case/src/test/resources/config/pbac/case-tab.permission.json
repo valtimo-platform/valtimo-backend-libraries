@@ -37,6 +37,36 @@
                     ]
                 }
             ]
+        },
+        {
+            "resourceType": "com.ritense.case.domain.CaseTab",
+            "action": "view",
+            "roleKey": "ROLE_ONLY_TEST_WIDGETS_FOR_CONTEXT",
+            "conditions": [
+                {
+                    "type": "container",
+                    "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocumentDefinition",
+                    "conditions": [
+                        {
+                            "type": "field",
+                            "field": "id.name",
+                            "operator": "==",
+                            "value": "widgets"
+                        }
+                    ]
+                }
+            ],
+            "contextResourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "contextConditions": [
+                {
+                    "type": "expression",
+                    "field": "content.content",
+                    "path": "$.key",
+                    "operator": "in",
+                    "value": ["CONTEXT", "CONTEXTWITHOUTWIDGETS"],
+                    "clazz": "java.lang.String"
+                }
+            ]
         }
     ]
 }
