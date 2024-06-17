@@ -50,8 +50,7 @@ data class CaseTab(
         tabOrder: Int,
         type: CaseTabType,
         contentKey: String,
-        showTasks: Boolean
-    ) : this(id, name, tabOrder, type, contentKey, LocalDateTime.now(), null, showTasks)
+    ) : this(id, name, tabOrder, type, contentKey, LocalDateTime.now(), null, false)
 
     init {
         require(name == null || name.isNotBlank()) { "name was blank!" }
