@@ -24,13 +24,15 @@ data class CaseTabDto(
     val name: String? = null,
     val type: CaseTabType,
     val contentKey: String,
+    val showTasks: Boolean = false
 ) {
     companion object {
         fun of(caseTab: CaseTab) = CaseTabDto(
             caseTab.id.key,
             caseTab.name,
             caseTab.type,
-            caseTab.contentKey
+            caseTab.contentKey,
+            caseTab.showTasks
         )
     }
 }
