@@ -29,11 +29,14 @@ import org.springframework.http.MediaType
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 
-class RequestBuilder {
+class RequestBuilder(private val restTemplateBuilder: RestTemplateBuilder) {
 
     companion object {
+        @Deprecated("Please use the Spring bean version of this class.", replaceWith = ReplaceWith("requestBuilder.builder()"))
         fun builder() = Builder(restTemplate = RestTemplateBuilder().build())
     }
+
+    fun builder() = Builder(restTemplate = restTemplateBuilder.build())
 
     data class Builder(
         val restTemplate: RestTemplate,

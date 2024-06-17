@@ -32,13 +32,14 @@ import org.springframework.core.ParameterizedTypeReference
 
 open class ObjectsApiService(
     protected open var objectsApiProperties: ObjectsApiProperties,
+    protected open var requestBuilder: RequestBuilder
 ) {
 
     /**
      * Retrieve a list of OBJECTTYPEs.
      */
     fun objectTypes(): Collection<ObjectTypes> {
-        return RequestBuilder
+        return requestBuilder
             .builder()
             .baseUrl(objectsApiProperties.objectsTypeApi.url)
             .token(objectsApiProperties.objectsTypeApi.token)
@@ -55,7 +56,7 @@ open class ObjectsApiService(
      * @param request the <code>CreateObjectRequest</code> to use when creating new requests
      */
     fun createObject(request: CreateObjectRequest): Object {
-        return RequestBuilder
+        return requestBuilder
             .builder()
             .baseUrl(objectsApiProperties.objectsApi.url)
             .token(objectsApiProperties.objectsApi.token)
@@ -71,7 +72,7 @@ open class ObjectsApiService(
      * @param request the <code>ModifyObjectRequest</code> to use when modifying an Objects record
      */
     fun modifyObject(request: ModifyObjectRequest): Object {
-        return RequestBuilder
+        return requestBuilder
             .builder()
             .baseUrl(objectsApiProperties.objectsApi.url)
             .token(objectsApiProperties.objectsApi.token)
@@ -117,7 +118,7 @@ open class ObjectsApiService(
      * @param type the <code>type name as String</code> to filter
      */
     fun getObjectsWrapped(type: URI?, searchParams: List<ObjectSearchParameter> = emptyList(), page:Int?): ResultWrapper<Object> {
-        return RequestBuilder
+        return requestBuilder
             .builder()
             .baseUrl(objectsApiProperties.objectsApi.url)
             .token(objectsApiProperties.objectsApi.token)
@@ -135,7 +136,7 @@ open class ObjectsApiService(
      * @param uuid the ID of the object
      */
     fun getObject(uuid: UUID): Object {
-        return RequestBuilder
+        return requestBuilder
             .builder()
             .baseUrl(objectsApiProperties.objectsApi.url)
             .token(objectsApiProperties.objectsApi.token)
@@ -151,7 +152,7 @@ open class ObjectsApiService(
      * @param type the type that the data property of the Object should be deserialized to
      */
     fun <T> getTypedObject(uuid: UUID, type: ParameterizedTypeReference<GenericObject<T>>): GenericObject<T> {
-        return RequestBuilder
+        return requestBuilder
             .builder()
             .baseUrl(objectsApiProperties.objectsApi.url)
             .token(objectsApiProperties.objectsApi.token)
@@ -166,7 +167,7 @@ open class ObjectsApiService(
      * @param uuid the ID of the object
      */
     fun deleteObject(uuid: UUID) {
-        RequestBuilder
+        requestBuilder
             .builder()
             .baseUrl(objectsApiProperties.objectsApi.url)
             .token(objectsApiProperties.objectsApi.token)
