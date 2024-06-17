@@ -33,8 +33,8 @@ class ValtimoHttpConfigurationIntTest : BaseIntegrationTest() {
     @Test
     fun `should set default values`() {
 
-        assertEquals(10, valtimoHttpRestTemplatesConfigurationProperties.connectionTimeout)
-        assertEquals(10, valtimoHttpRestTemplatesConfigurationProperties.readTimeout)
-        assertEquals(10, valtimoHttpWebClientConfigurationProperties.connectionTimeout)
+        assertEquals(30, valtimoHttpRestTemplatesConfigurationProperties.connectionTimeout)
+        assertEquals(30, valtimoHttpRestTemplatesConfigurationProperties.readTimeout)
+        assertEquals(30, valtimoHttpWebClientConfigurationProperties.connectionTimeout)
     }
 }

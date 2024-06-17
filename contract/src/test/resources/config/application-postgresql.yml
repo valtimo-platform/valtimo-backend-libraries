@@ -12,3 +12,9 @@ spring:
 
 valtimo:
     database: postgres
+    http:
+        rest-templates:
+            connection-timeout: 30
+            read-timeout: 30
+        web-client:
+            connection-timeout: 30

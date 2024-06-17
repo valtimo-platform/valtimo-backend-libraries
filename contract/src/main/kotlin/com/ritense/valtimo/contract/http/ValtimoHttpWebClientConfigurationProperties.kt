@@ -20,5 +20,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "valtimo.http.web-client")
 class ValtimoHttpWebClientConfigurationProperties(
-    val connectionTimeout: Int = 10
+    var connectionTimeout: Int = 10
 )
