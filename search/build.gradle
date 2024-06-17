@@ -34,10 +34,13 @@ dockerCompose {
 }
 
 dependencies {
+
+    implementation project(':authorization')
     implementation project(':plugin')
     implementation project(':contract')
     implementation project(":web")
     implementation project(':zgw')
+    implementation project(':changelog')
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter-webflux"

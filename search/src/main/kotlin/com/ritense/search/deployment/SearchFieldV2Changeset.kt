@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.search.repository
+package com.ritense.search.deployment
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.ritense.search.domain.SearchFieldV2
-import org.springframework.data.jpa.repository.JpaRepository
-import java.util.UUID
 
-interface SearchFieldV2Repository : JpaRepository<SearchFieldV2, UUID> {
-
-    fun findByOwnerIdAndKeyOrderByOrder(ownerId: String, key: String): SearchFieldV2?
-
-    fun findAllByOwnerIdOrderByOrder(ownerId: String): List<SearchFieldV2>?
-
-    fun deleteAllByOwnerType(ownerType: String)
-
-}
+class CaseTabChangeset(
+    val changesetId: String,
+    @JsonProperty("case-definitions")
+    val searchFields: List<SearchFieldV2>
+)
