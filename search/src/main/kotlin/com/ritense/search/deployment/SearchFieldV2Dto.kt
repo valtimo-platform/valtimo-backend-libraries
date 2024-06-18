@@ -16,11 +16,19 @@
 
 package com.ritense.search.deployment
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.ritense.search.domain.SearchFieldV2
+import com.ritense.search.domain.DataType
+import com.ritense.search.domain.FieldType
+import com.ritense.search.domain.SearchFieldMatchType
+import java.util.UUID
 
-class SearchFieldV2Changeset(
-    val changesetId: String,
-    @JsonProperty("search-fields")
-    val searchFields: List<SearchFieldV2>
+data class SearchFieldV2Dto(
+    val ownerId: UUID, // What is a correct value for this?
+    val ownerType: String, // Should this have a default value?
+    val key: String,
+    val title: String,
+    val path: String,
+    val dataType: DataType,
+    val fieldType: FieldType,
+    val matchType: SearchFieldMatchType?,
+    val dropdownDataProvider: String?
 )

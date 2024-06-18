@@ -41,7 +41,7 @@ open class SearchFieldV2DeploymentService(
     }
 
     override fun getChangelogDetails(filename: String, content: String): List<ChangesetDetails> {
-        val changeset = objectMapper.readValue<CaseTabChangeset>(content)
+        val changeset = objectMapper.readValue<SearchFieldV2Changeset>(content)
         return listOf(
             ChangesetDetails(
                 changesetId = changeset.changesetId,
