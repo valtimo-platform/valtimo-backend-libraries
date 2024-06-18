@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.search.repository
+package com.ritense.processdocument.tasksearch;
 
-import com.ritense.search.domain.SearchFieldV2
-import org.springframework.data.jpa.repository.JpaRepository
-import java.util.UUID
+import com.ritense.search.domain.SearchFieldV2;
+import jakarta.validation.ValidationException;
 
-interface SearchFieldV2Repository : JpaRepository<SearchFieldV2, UUID> {
+public class SearchConfigRequestException extends ValidationException {
 
-    fun findByOwnerIdAndKeyOrderByOrder(ownerId: String, key: String): SearchFieldV2?
-
-    fun findAllByOwnerTypeOrderByOrder(ownerType: String?): List<SearchFieldV2>
-
-    fun findAllByOwnerIdOrderByOrder(ownerId: String): List<SearchFieldV2>
-
-    fun findAllByOwnerTypeAndOwnerIdOrderByOrder(ownerType: String?, ownerId: String): List<SearchFieldV2>
-
+    public SearchConfigRequestException(SearchFieldV2 searchField, String type, String message) {
+        super("Configured to search for " + type + " but " + message + ". For SearchField '" + searchField.getKey() + "'.");
+    }
 }
