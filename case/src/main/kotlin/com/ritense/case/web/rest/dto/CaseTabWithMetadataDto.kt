@@ -28,6 +28,7 @@ data class CaseTabWithMetadataDto(
     val contentKey: String,
     val createdOn: LocalDateTime?,
     val createdBy: String?,
+    val showTasks: Boolean = false
 ) {
     companion object {
         fun of(caseTab: CaseTab, userManagementService: UserManagementService) = CaseTabWithMetadataDto(
@@ -36,7 +37,8 @@ data class CaseTabWithMetadataDto(
             caseTab.type,
             caseTab.contentKey,
             caseTab.createdOn,
-            caseTab.createdBy?.let { userManagementService.findById(caseTab.createdBy) }?.fullName
+            caseTab.createdBy?.let { userManagementService.findById(caseTab.createdBy) }?.fullName,
+            caseTab.showTasks
         )
     }
 }
