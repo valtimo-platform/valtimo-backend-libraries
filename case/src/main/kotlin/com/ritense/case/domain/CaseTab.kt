@@ -42,6 +42,7 @@ data class CaseTab(
     val createdOn: LocalDateTime? = LocalDateTime.now(),
 
     val createdBy: String? = null,
+    val showTasks: Boolean = false
 ) {
     constructor(
         id: CaseTabId,
@@ -49,7 +50,7 @@ data class CaseTab(
         tabOrder: Int,
         type: CaseTabType,
         contentKey: String,
-    ) : this(id, name, tabOrder, type, contentKey, LocalDateTime.now(), null)
+    ) : this(id, name, tabOrder, type, contentKey, LocalDateTime.now(), null, false)
 
     init {
         require(name == null || name.isNotBlank()) { "name was blank!" }

@@ -16,7 +16,6 @@
 
 package com.ritense.case.service
 
-import com.ritense.case_.service.event.CaseTabCreatedEvent
 import com.ritense.authorization.Action.Companion.deny
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
@@ -30,6 +29,7 @@ import com.ritense.case.service.exception.TabAlreadyExistsException
 import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateOrderDto
+import com.ritense.case_.service.event.CaseTabCreatedEvent
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import org.springframework.context.ApplicationEventPublisher
@@ -92,6 +92,7 @@ class CaseTabService(
             caseTabDto.contentKey,
             LocalDateTime.now(),
             userManagementService.currentUserId,
+            caseTabDto.showTasks
         )
 
         val savedTab = caseTabRepository.save(caseTab)
@@ -110,7 +111,8 @@ class CaseTabService(
             existingTab.copy(
                 name = caseTab.name,
                 type = caseTab.type,
-                contentKey = caseTab.contentKey
+                contentKey = caseTab.contentKey,
+                showTasks = caseTab.showTasks
             )
         )
     }
@@ -130,7 +132,8 @@ class CaseTabService(
                 name = caseTabDto.name,
                 tabOrder = index,
                 type = caseTabDto.type,
-                contentKey = caseTabDto.contentKey
+                contentKey = caseTabDto.contentKey,
+                showTasks = caseTabDto.showTasks
             )
         }
 
@@ -149,7 +152,7 @@ class CaseTabService(
 
     private fun reorderTabs(caseDefinitionName: String) {
         val caseTabs = caseTabRepository.findAll(byCaseDefinitionName(caseDefinitionName), Sort.by(TAB_ORDER))
-            .mapIndexed { index, caseTab -> caseTab.copy(tabOrder = index)  }
+            .mapIndexed { index, caseTab -> caseTab.copy(tabOrder = index) }
         caseTabRepository.saveAll(caseTabs)
     }
 
