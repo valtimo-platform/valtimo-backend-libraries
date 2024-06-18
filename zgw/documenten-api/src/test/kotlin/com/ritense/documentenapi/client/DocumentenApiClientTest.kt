@@ -17,6 +17,7 @@
 package com.ritense.documentenapi.client
 
 import com.ritense.documentenapi.DocumentenApiAuthentication
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import com.ritense.zgw.Rsin
 import com.ritense.zgw.domain.Vertrouwelijkheid
 import okhttp3.mockwebserver.MockResponse
@@ -53,7 +54,7 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `should send request and parse response`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = DocumentenApiClient(webclientBuilder)
 
         val responseBody = """
@@ -120,7 +121,7 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `should send get document request and parse response`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = DocumentenApiClient(webclientBuilder)
 
         val responseBody = """

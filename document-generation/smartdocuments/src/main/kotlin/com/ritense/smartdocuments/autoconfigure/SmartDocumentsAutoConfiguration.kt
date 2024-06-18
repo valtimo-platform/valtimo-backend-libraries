@@ -27,6 +27,7 @@ import com.ritense.smartdocuments.connector.SmartDocumentsConnector
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.service.CamundaSmartDocumentGenerator
 import com.ritense.smartdocuments.service.SmartDocumentGenerator
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -34,7 +35,6 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
-import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 class SmartDocumentsAutoConfiguration {
@@ -73,13 +73,12 @@ class SmartDocumentsAutoConfiguration {
     @ConditionalOnMissingBean(SmartDocumentsClient::class)
     fun smartDocumentsClient(
         smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties,
-        smartDocumentsWebClientBuilder: WebClient.Builder,
         @Value("\${valtimo.smartdocuments.max-file-size-mb:10}") maxFileSize: Int,
         temporaryResourceStorageService: TemporaryResourceStorageService,
     ): SmartDocumentsClient {
         return SmartDocumentsClient(
             smartDocumentsConnectorProperties,
-            smartDocumentsWebClientBuilder,
+            WebClientBuilderHolder.get(),
             maxFileSize,
             temporaryResourceStorageService
         )

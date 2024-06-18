@@ -18,18 +18,18 @@ package com.ritense.objecttypenapi
 
 import com.ritense.objecttypenapi.client.ObjecttypenApiClient
 import com.ritense.plugin.service.PluginService
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 class ObjecttypenApiAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ObjecttypenApiClient::class)
-    fun objecttypenApiClient(webclientBuilder: WebClient.Builder): ObjecttypenApiClient {
-        return ObjecttypenApiClient(webclientBuilder)
+    fun objecttypenApiClient(): ObjecttypenApiClient {
+        return ObjecttypenApiClient(WebClientBuilderHolder.get())
     }
 
     @Bean

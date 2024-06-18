@@ -18,6 +18,7 @@ package com.ritense.zakenapi.config
 
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPluginFactory
 import com.ritense.zakenapi.client.ZakenApiClient
@@ -32,7 +33,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 @EnableJpaRepositories(basePackages = ["com.ritense.zakenapi.repository"])
@@ -40,10 +40,8 @@ import org.springframework.web.reactive.function.client.WebClient
 class ZakenApiAutoConfiguration {
 
     @Bean
-    fun zakenApiClient(
-        webclientBuilder: WebClient.Builder
-    ): ZakenApiClient {
-        return ZakenApiClient(webclientBuilder)
+    fun zakenApiClient(): ZakenApiClient {
+        return ZakenApiClient(WebClientBuilderHolder.get())
     }
 
     @Bean

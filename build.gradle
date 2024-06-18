@@ -70,6 +70,11 @@ sonarqube {
     }
 }
 
+dockerCompose {
+    useDockerComposeV2 = true
+    removeOrphans = true
+}
+
 configurations {
     testImplementation {
         // Globally exclude JUnit4, will not be on the testCompileClasspath thus
@@ -133,6 +138,9 @@ subprojects { subproject ->
         apply plugin: "org.owasp.dependencycheck"
 
         tasks.register("allDeps", DependencyReportTask) {}
+        tasks.register("allDepInsight", DependencyInsightReportTask) {
+            showingAllVariants.set(false)
+        }
 
         java {
             withSourcesJar()
@@ -145,6 +153,10 @@ subprojects { subproject ->
             tasks.getByName('javadocJar') {
                 from dokkaJavadoc
             }
+        }
+
+        dockerCompose {
+            useDockerComposeV2 = true
         }
 
         tasks.withType(KotlinCompile).configureEach {

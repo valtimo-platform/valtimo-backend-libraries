@@ -28,6 +28,7 @@ import com.ritense.contactmoment.web.rest.ContactMomentResource
 import com.ritense.contactmoment.web.rest.MessageResource
 import com.ritense.klant.service.KlantService
 import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import com.ritense.valtimo.contract.mail.MailSender
 import com.ritense.valtimo.service.CurrentUserService
 import io.netty.handler.logging.LogLevel
@@ -38,10 +39,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
-import org.springframework.http.client.reactive.ReactorClientHttpConnector
-import org.springframework.web.reactive.function.client.WebClient
-import reactor.netty.http.client.HttpClient
-import reactor.netty.transport.logging.AdvancedByteBufFormat
 
 @SpringBootConfiguration
 @Configuration
@@ -50,10 +47,9 @@ class ContactMomentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ContactMomentClient::class)
     fun contactMomentClient(
-        webclientBuilder: WebClient.Builder,
         contactMomentTokenGenerator: ContactMomentTokenGenerator,
     ): ContactMomentClient {
-        return ContactMomentClient(webclientBuilder, contactMomentTokenGenerator)
+        return ContactMomentClient(WebClientBuilderHolder.get(), contactMomentTokenGenerator)
     }
 
     @Bean
@@ -71,7 +67,12 @@ class ContactMomentAutoConfiguration {
         currentUserService: CurrentUserService,
         userManagementService: UserManagementService,
     ): Connector {
-        return ContactMomentConnector(contactMomentProperties, contactMomentClient, currentUserService, userManagementService)
+        return ContactMomentConnector(
+            contactMomentProperties,
+            contactMomentClient,
+            currentUserService,
+            userManagementService
+        )
     }
 
     @Bean

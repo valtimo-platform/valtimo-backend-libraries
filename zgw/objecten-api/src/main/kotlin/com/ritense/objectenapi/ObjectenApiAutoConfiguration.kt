@@ -30,6 +30,7 @@ import com.ritense.objectenapi.web.rest.ObjectResource
 import com.ritense.objectenapi.web.rest.ZaakObjectResource
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import com.ritense.zakenapi.ZaakUrlProvider
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -37,7 +38,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
-import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 class ObjectenApiAutoConfiguration {
@@ -53,8 +53,8 @@ class ObjectenApiAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ObjectenApiClient::class)
-    fun objectenApiClient(webclientBuilder: WebClient.Builder): ObjectenApiClient {
-        return ObjectenApiClient(webclientBuilder)
+    fun objectenApiClient(): ObjectenApiClient {
+        return ObjectenApiClient(WebClientBuilderHolder.get())
     }
 
     @Bean
