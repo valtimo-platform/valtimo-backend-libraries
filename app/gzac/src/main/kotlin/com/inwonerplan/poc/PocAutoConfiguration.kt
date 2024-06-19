@@ -18,7 +18,7 @@ class PocAutoConfiguration {
     @Bean
     fun aanbodViewModelLoader() = AanbodViewModelLoader()
     @Bean
-    fun onAanbodSubmittedEventHandler() : FormViewModelUserTaskSubmissionHandler<*> = OnAanbodSubmittedEventHandler()
+    fun formViewModelUserTaskSubmissionHandler() : FormViewModelUserTaskSubmissionHandler<*> = OnAanbodSubmittedEventHandler()
 
     @Bean
     fun startViewModelLoader() = StartViewModelLoader()
