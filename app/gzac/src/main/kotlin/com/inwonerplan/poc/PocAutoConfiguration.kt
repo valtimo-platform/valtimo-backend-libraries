@@ -23,7 +23,7 @@ class PocAutoConfiguration {
     @Bean
     fun startViewModelLoader() = StartViewModelLoader()
     @Bean
-    fun startSubmissionHandler(
+    fun formViewModelStartFormSubmissionHandler(
         jsonSchemaDocumentService: JsonSchemaDocumentService
     ) : FormViewModelStartFormSubmissionHandler<*> = StartSubmissionHandler(
         jsonSchemaDocumentService
