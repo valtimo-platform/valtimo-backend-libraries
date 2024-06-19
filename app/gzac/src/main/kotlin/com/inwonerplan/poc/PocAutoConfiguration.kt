@@ -30,7 +30,7 @@ class PocAutoConfiguration {
     )
 
     @Bean
-    fun saveAanbodSubmissionCommandHandler(
+    fun completeIntakeGesprekCommandHandler(
         documentService: DocumentService
     ) = CompleteIntakeGesprekCommandHandler(
         documentService
