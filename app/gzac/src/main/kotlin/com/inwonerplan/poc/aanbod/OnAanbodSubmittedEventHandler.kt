@@ -1,23 +1,26 @@
 package com.inwonerplan.poc.aanbod
 
-import com.inwonerplan.poc.aanbod.command.SaveAanbodSubmissionCommand
+import com.inwonerplan.poc.aanbod.command.CompleteIntakeGesprekCommand
+import com.inwonerplan.poc.model.Aanbieding
+import com.inwonerplan.poc.model.Aanbod
+import com.inwonerplan.poc.model.Inwonerplan
 import com.ritense.commandhandling.dispatchCommands
 import com.ritense.formviewmodel.commandhandling.CompleteTaskCommand
 import com.ritense.formviewmodel.error.BusinessException
 import com.ritense.formviewmodel.submission.FormViewModelUserTaskSubmissionHandler
 import com.ritense.valtimo.camunda.domain.CamundaTask
 
-class OnAanbodSubmittedEventHandler : FormViewModelUserTaskSubmissionHandler<AanbodViewModel> {
+class OnAanbodSubmittedEventHandler : FormViewModelUserTaskSubmissionHandler<AanbodSubmission> {
 
     override fun <T> handle(submission: T, task: CamundaTask, businessKey: String) {
-        submission as AanbodViewModel
-        val aanbodSubmission = AanbodSubmission(
+        submission as AanbodSubmission
+        val intakeGesprekSubmission = Inwonerplan(
             aanbod = submission.aanbodGrid.map {
-                AanbodSubmission.Aanbod(
+                Aanbod(
                     aandachtspunt = it.aandachtspunt!!,
                     subdoel = it.subdoel!!,
                     aanbiedingen = it.aanbiedingenGrid?.map { aanbodRow ->
-                        AanbodSubmission.Aanbieding(
+                        Aanbieding(
                             aanbod = aanbodRow.aanbod!!,
                             activiteit = aanbodRow.activiteit!!
                         )
@@ -28,7 +31,7 @@ class OnAanbodSubmittedEventHandler : FormViewModelUserTaskSubmissionHandler<Aan
 
         try {
             dispatchCommands(listOf(
-                SaveAanbodSubmissionCommand(aanbodSubmission, task),
+                CompleteIntakeGesprekCommand(intakeGesprekSubmission, task),
                 CompleteTaskCommand(task.id)
             ))
         } catch(e: BusinessException) {

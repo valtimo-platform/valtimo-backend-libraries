@@ -8,16 +8,16 @@ import com.ritense.document.service.DocumentService
 import com.ritense.formviewmodel.error.BusinessException
 import mu.KotlinLogging
 
-class SaveAanbodSubmissionCommandHandler(
+class CompleteIntakeGesprekCommandHandler(
     val documentService: DocumentService
-) : CommandHandler<SaveAanbodSubmissionCommand, Unit> {
+) : CommandHandler<CompleteIntakeGesprekCommand, Unit> {
 
-    override fun execute(command: SaveAanbodSubmissionCommand) {
+    override fun execute(command: CompleteIntakeGesprekCommand) {
         command.task.execution?.businessKey.let { caseId ->
             val document = documentService.get(caseId)
 
             val objectMapper = jacksonObjectMapper()
-            val payload = objectMapper.valueToTree(command.aanbodSubmission) as ObjectNode
+            val payload = objectMapper.valueToTree(command.intakeGesprekSubmission) as ObjectNode
             val modifyRequest = ModifyDocumentRequest.create(document, payload)
 
             val result = documentService.modifyDocument(modifyRequest)

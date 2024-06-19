@@ -1,21 +1,25 @@
 package com.inwonerplan.poc.aanbod
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.inwonerplan.model.Aanbod
+import com.inwonerplan.model.AanbodActiviteit
+import com.inwonerplan.model.Subdoel
 import com.ritense.formviewmodel.viewmodel.Submission
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AanbodSubmission(
-    val aanbod: List<Aanbod>
+    val aanbodGrid: List<AanbodGridRow>,
 ) : Submission {
-    data class Aanbod(
-        val aandachtspunt: String,
-        val subdoel: String,
-        val aanbiedingen: List<Aanbieding>?
+    data class AanbodGridRow(
+        val aandachtspunt: String?,
+        val subdoel: String?,
+        val aanbiedingenGrid: List<AanbodRow>?
     )
 
-    data class Aanbieding(
-        val aanbod: String,
-        val activiteit: String
+    data class AanbodRow(
+        val aanbod: String?,
+        val status: String?,
+        val activiteit: String?
     )
 }

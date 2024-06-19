@@ -2,7 +2,7 @@ package com.inwonerplan.poc
 
 import com.inwonerplan.poc.aanbod.AanbodViewModelLoader
 import com.inwonerplan.poc.aanbod.OnAanbodSubmittedEventHandler
-import com.inwonerplan.poc.aanbod.command.SaveAanbodSubmissionCommandHandler
+import com.inwonerplan.poc.aanbod.command.CompleteIntakeGesprekCommandHandler
 import com.inwonerplan.poc.start.StartSubmissionHandler
 import com.inwonerplan.poc.start.StartViewModelLoader
 import com.ritense.document.service.DocumentService
@@ -32,7 +32,7 @@ class PocAutoConfiguration {
     @Bean
     fun saveAanbodSubmissionCommandHandler(
         documentService: DocumentService
-    ) = SaveAanbodSubmissionCommandHandler(
+    ) = CompleteIntakeGesprekCommandHandler(
         documentService
     )
 
