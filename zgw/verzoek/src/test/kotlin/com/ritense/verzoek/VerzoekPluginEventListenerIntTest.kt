@@ -398,7 +398,7 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
             verzoekPluginEventListener.createZaakFromNotificatie(createEvent())
         }
         //assertions
-        assertEquals("Could not find properties of type otherType", exception.message)
+        assertEquals("Failed to find verzoek configuration of type otherType. For object aResource", exception.message)
     }
 
     @Test
