@@ -38,6 +38,7 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.ProcessDocumentsService
 import com.ritense.processdocument.service.ValueResolverDelegateService
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService
+import com.ritense.processdocument.tasksearch.TaskListSearchFieldV2Mapper
 import com.ritense.processdocument.web.TaskListResource
 import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
@@ -230,5 +231,13 @@ class ProcessDocumentsAutoConfiguration {
             caseTaskListSearchService,
             camundaTaskService
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(TaskListSearchFieldV2Mapper::class)
+    fun taskListSearchFieldV2Mapper(
+        objectMapper: ObjectMapper
+    ): TaskListSearchFieldV2Mapper {
+        return TaskListSearchFieldV2Mapper(objectMapper)
     }
 }

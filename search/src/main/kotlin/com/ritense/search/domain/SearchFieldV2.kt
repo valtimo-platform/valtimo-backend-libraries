@@ -24,6 +24,8 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import java.util.UUID
 
+const val LEGACY_OWNER_TYPE = "Legacy"
+
 @Entity
 @Table(name = "search_field_v2")
 data class SearchFieldV2(
@@ -35,7 +37,7 @@ data class SearchFieldV2(
     val ownerId: String,
 
     @Column(name = "owner_type")
-    val ownerType: String?,
+    val ownerType: String,
 
     @Column(name = "column_key")
     val key: String,
@@ -83,7 +85,7 @@ data class SearchFieldV2(
         order = order,
         dataType = dataType,
         fieldType = fieldType,
-        ownerType = null,
+        ownerType = LEGACY_OWNER_TYPE,
         matchType = null,
         dropdownDataProvider = null
     )

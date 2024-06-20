@@ -27,5 +27,6 @@
     <include file="changelog/20230131-add-search-field-table.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20230426-migrate-path.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20240523-add-ownertype-matchtype-dropdown.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20240620-replace-uq-constraint-remove-null.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
