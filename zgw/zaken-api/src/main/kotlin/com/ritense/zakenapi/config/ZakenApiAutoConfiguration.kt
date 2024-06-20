@@ -49,9 +49,10 @@ class ZakenApiAutoConfiguration {
     @Bean
     fun zakenApiClient(
         outboxService: OutboxService,
-        objectMapper: ObjectMapper
+        objectMapper: ObjectMapper,
+        holder: WebClientBuilderHolder
     ): ZakenApiClient {
-        return ZakenApiClient(WebClientBuilderHolder.get(), outboxService, objectMapper)
+        return ZakenApiClient(holder.get(), outboxService, objectMapper)
     }
 
     @Bean

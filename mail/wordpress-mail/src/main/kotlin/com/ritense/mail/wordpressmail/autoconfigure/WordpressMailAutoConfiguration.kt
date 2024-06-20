@@ -47,9 +47,10 @@ class WordpressMailAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(WordpressMailClient::class)
     fun wordpressMailClient(
-        wordpressMailConnectorProperties: WordpressMailConnectorProperties
+        wordpressMailConnectorProperties: WordpressMailConnectorProperties,
+        holder: WebClientBuilderHolder
     ): WordpressMailClient {
-        return WordpressMailClient(wordpressMailConnectorProperties, WebClientBuilderHolder.get())
+        return WordpressMailClient(wordpressMailConnectorProperties, holder.get())
     }
 
     //Connector

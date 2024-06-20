@@ -56,9 +56,10 @@ class ObjectenApiAutoConfiguration {
     @ConditionalOnMissingBean(ObjectenApiClient::class)
     fun objectenApiClient(
         outboxService: OutboxService,
-        objectMapper: ObjectMapper
+        objectMapper: ObjectMapper,
+        holder: WebClientBuilderHolder
     ): ObjectenApiClient {
-        return ObjectenApiClient(WebClientBuilderHolder.get(), outboxService, objectMapper)
+        return ObjectenApiClient(holder.get(), outboxService, objectMapper)
     }
 
     @Bean

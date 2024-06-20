@@ -47,8 +47,9 @@ class ContactMomentAutoConfiguration {
     @ConditionalOnMissingBean(ContactMomentClient::class)
     fun contactMomentClient(
         contactMomentTokenGenerator: ContactMomentTokenGenerator,
+        holder: WebClientBuilderHolder
     ): ContactMomentClient {
-        return ContactMomentClient(WebClientBuilderHolder.get(), contactMomentTokenGenerator)
+        return ContactMomentClient(holder.get(), contactMomentTokenGenerator)
     }
 
     @Bean
