@@ -53,7 +53,11 @@ class SearchFieldV2Service(
             ))
         }
 
+    fun findAllByOwnerType(ownerId: String) = searchFieldV2Repository.findAllByOwnerTypeOrderByOrder(ownerId)
+
     fun findAllByOwnerId(ownerId: String) = searchFieldV2Repository.findAllByOwnerIdOrderByOrder(ownerId)
+
+    fun findAllByOwnerTypeAndOwnerId(ownerType: String, ownerId: String) = searchFieldV2Repository.findAllByOwnerTypeAndOwnerIdOrderByOrder(ownerType, ownerId)
 
     fun findByOwnerIdAndKey(ownerId: String, key: String) = searchFieldV2Repository.findByOwnerIdAndKeyOrderByOrder(ownerId, key)
 

@@ -39,6 +39,7 @@ import com.ritense.processdocument.service.ProcessDocumentsService
 import com.ritense.processdocument.service.ValueResolverDelegateService
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService
 import com.ritense.processdocument.web.TaskListResource
+import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
 import com.ritense.valtimo.contract.annotation.ProcessBean
@@ -205,6 +206,7 @@ class ProcessDocumentsAutoConfiguration {
         taskListColumnRepository: TaskListColumnRepository,
         userManagementService: UserManagementService,
         authorizationService: AuthorizationService,
+        searchFieldV2Service: SearchFieldV2Service,
         queryDialectHelper: QueryDialectHelper
     ): CaseTaskListSearchService {
         return CaseTaskListSearchService(
@@ -213,6 +215,7 @@ class ProcessDocumentsAutoConfiguration {
             taskListColumnRepository,
             userManagementService,
             authorizationService,
+            searchFieldV2Service,
             queryDialectHelper
         )
     }
