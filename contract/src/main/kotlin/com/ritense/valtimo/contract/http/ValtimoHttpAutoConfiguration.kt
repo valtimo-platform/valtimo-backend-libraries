@@ -42,7 +42,7 @@ class ValtimoHttpAutoConfiguration {
         val valtimoRestTemplateBuilder =
             RestTemplateBuilder()
                 .setConnectTimeout(Duration.ofSeconds(valtimoHttpRestTemplatesConfigurationProperties.connectionTimeout))
-                .setReadTimeout(Duration.ofSeconds(valtimoHttpRestTemplatesConfigurationProperties.connectionTimeout))
+                .setReadTimeout(Duration.ofSeconds(valtimoHttpRestTemplatesConfigurationProperties.readTimeout))
 
         RestTemplateBuilderHolder.set(valtimoRestTemplateBuilder)
 
@@ -58,9 +58,14 @@ class ValtimoHttpAutoConfiguration {
         val objectMapper = MapperSingleton.get()
         val httpClient = HttpClient
             .create()
+            .responseTimeout(
+                Duration.ofSeconds(
+                    valtimoHttpWebClientConfigurationProperties.connectionTimeout.toLong()
+                )
+            )
             .doOnConnected { conn: Connection ->
                 conn.addHandlerLast(
-                    ReadTimeoutHandler(valtimoHttpWebClientConfigurationProperties.connectionTimeout)
+                    ReadTimeoutHandler(valtimoHttpWebClientConfigurationProperties.readTimeout)
                 )
             }
 
