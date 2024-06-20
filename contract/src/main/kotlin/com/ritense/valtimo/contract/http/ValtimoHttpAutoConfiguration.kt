@@ -17,7 +17,7 @@
 package com.ritense.valtimo.contract.http
 
 import com.ritense.valtimo.contract.json.MapperSingleton
-import io.netty.handler.timeout.ReadTimeoutHandler
+import io.netty.handler.timeout.IdleStateHandler
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
@@ -65,7 +65,11 @@ class ValtimoHttpAutoConfiguration {
             )
             .doOnConnected { conn: Connection ->
                 conn.addHandlerLast(
-                    ReadTimeoutHandler(valtimoHttpWebClientConfigurationProperties.readTimeout)
+                    IdleStateHandler(
+                        valtimoHttpWebClientConfigurationProperties.readTimeout,
+                        valtimoHttpWebClientConfigurationProperties.readTimeout,
+                        valtimoHttpWebClientConfigurationProperties.readTimeout
+                    )
                 )
             }
 
