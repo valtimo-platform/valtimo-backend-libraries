@@ -8,7 +8,6 @@ import com.ritense.search.domain.SearchFieldMatchType
 import com.ritense.search.web.rest.dto.SearchFieldV2Dto
 import java.util.UUID
 
-@Suppress("unused")
 @JsonTypeName(SEARCH_FIELD_OWNER_TYPE)
 data class TaskListSearchFieldV2Dto(
     override val id: UUID = UUID.randomUUID(),
