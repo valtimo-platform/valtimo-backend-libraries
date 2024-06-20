@@ -19,8 +19,8 @@ class LegacySearchFieldV2Mapper(
 
     override fun supportsOwnerType(ownerType: String) = ownerType == LEGACY_OWNER_TYPE
 
-    override fun toNewSearchFieldV2(searchFieldV2Dto: SearchFieldV2Dto): SearchFieldV2 {
-        return SearchFieldV2(
+    override fun toNewSearchFieldV2(searchFieldV2Dto: SearchFieldV2Dto): SearchFieldV2 =
+        SearchFieldV2(
             id = searchFieldV2Dto.id,
             ownerId = searchFieldV2Dto.ownerId,
             ownerType = LEGACY_OWNER_TYPE,
@@ -33,6 +33,4 @@ class LegacySearchFieldV2Mapper(
             matchType = searchFieldV2Dto.matchType,
             dropdownDataProvider = searchFieldV2Dto.dropdownDataProvider
         )
-    }
-
 }

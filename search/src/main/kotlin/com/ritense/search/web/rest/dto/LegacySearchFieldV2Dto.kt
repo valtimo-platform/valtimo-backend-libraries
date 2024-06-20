@@ -23,7 +23,7 @@ import com.ritense.search.domain.LEGACY_OWNER_TYPE
 import com.ritense.search.domain.SearchFieldMatchType
 import java.util.UUID
 
-@JsonTypeName("")
+@JsonTypeName
 data class LegacySearchFieldV2Dto(
     override val id: UUID = UUID.randomUUID(),
     override val ownerId: String,
