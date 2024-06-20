@@ -24,12 +24,21 @@ import jakarta.validation.Valid
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotEmpty
+import jakarta.validation.constraints.NotNull
 
 data class CollectionWidgetProperties (
     @field:NotBlank val collection: String,
     @field:Min(1) val defaultPageSize: Int,
+    @field:NotNull val title: TitleField,
     @field:NotEmpty val fields: List<@Valid Field>,
 ) {
+
+    @JsonInclude(Include.NON_NULL)
+    data class TitleField (
+        @field:NotBlank val value: String,
+        @field:Valid val displayProperties: FieldDisplayProperties? = null
+    )
+
     @JsonInclude(Include.NON_NULL)
     data class Field (
         @field:NotBlank val key: String,

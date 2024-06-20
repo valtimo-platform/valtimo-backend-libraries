@@ -39,7 +39,7 @@ class CollectionCaseWidgetDataProvider(
 
     override fun supportedWidgetType() = CollectionCaseWidget::class.java
 
-    override fun getData(documentId: UUID, widgetTab: CaseWidgetTab, widget: CollectionCaseWidget, pageable: Pageable): Page<Map<String, Any?>> {
+    override fun getData(documentId: UUID, widgetTab: CaseWidgetTab, widget: CollectionCaseWidget, pageable: Pageable): Page<CollectionCaseWidgetDataResult> {
         val resolvedCollection =
             valueResolverService.resolveValues(documentId.toString(), listOf(widget.properties.collection))[widget.properties.collection]
         val collectionNode = objectMapper.valueToTree<JsonNode>(resolvedCollection)
@@ -62,25 +62,30 @@ class CollectionCaseWidgetDataProvider(
                     throw InvalidCollectionNodeTypeException(index)
                 }
             }.map { child ->
-                widget.properties.fields.associate { column ->
-                    val value = if (column.value.startsWith("$")) {
-                        JSONPATH_CONTEXT.parse(child.toString()).read<Any>(column.value)
-                    } else {
-                        val pointer = if (column.value.startsWith("/")) column.value else "/${column.value}"
-                        val valueNode = child.at(pointer)
-
-                        if (valueNode.isValueNode && !valueNode.isNull) {
-                            objectMapper.treeToValue<Any?>(valueNode)
-                        } else {
-                            null
-                        }
+                CollectionCaseWidgetDataResult(
+                    title = resolveValueRef(widget.properties.title.value, child),
+                    fields = widget.properties.fields.associate { column ->
+                        column.key to resolveValueRef(column.value, child)
                     }
-
-                    column.key to value
-                }
+                )
             }
 
         return PageImpl(result, pageable, collectionNode.size().toLong())
+    }
+
+    private fun resolveValueRef(valueRef: String, child: JsonNode): Any? {
+        return if (valueRef.startsWith("$")) {
+            JSONPATH_CONTEXT.parse(child.toString()).read<Any>(valueRef)
+        } else {
+            val pointer = if (valueRef.startsWith("/")) valueRef else "/$valueRef"
+            val valueNode = child.at(pointer)
+
+            if (valueNode.isValueNode && !valueNode.isNull) {
+                objectMapper.treeToValue<Any?>(valueNode)
+            } else {
+                null
+            }
+        }
     }
 
 
