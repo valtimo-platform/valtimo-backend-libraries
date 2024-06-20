@@ -39,8 +39,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 class NotificatiesApiAutoConfiguration {
 
     @Bean
-    fun notificatiesApiClient(): NotificatiesApiClient {
-        return NotificatiesApiClient(WebClientBuilderHolder.get())
+    fun notificatiesApiClient(
+        holder: WebClientBuilderHolder
+    ): NotificatiesApiClient {
+        return NotificatiesApiClient(holder.get())
     }
 
     @Bean

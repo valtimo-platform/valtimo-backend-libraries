@@ -28,8 +28,10 @@ class ObjecttypenApiAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ObjecttypenApiClient::class)
-    fun objecttypenApiClient(): ObjecttypenApiClient {
-        return ObjecttypenApiClient(WebClientBuilderHolder.get())
+    fun objecttypenApiClient(
+        holder: WebClientBuilderHolder
+    ): ObjecttypenApiClient {
+        return ObjecttypenApiClient(holder.get())
     }
 
     @Bean

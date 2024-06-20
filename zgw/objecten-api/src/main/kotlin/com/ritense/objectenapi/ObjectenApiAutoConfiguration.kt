@@ -53,8 +53,10 @@ class ObjectenApiAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ObjectenApiClient::class)
-    fun objectenApiClient(): ObjectenApiClient {
-        return ObjectenApiClient(WebClientBuilderHolder.get())
+    fun objectenApiClient(
+        holder: WebClientBuilderHolder
+    ): ObjectenApiClient {
+        return ObjectenApiClient(holder.get())
     }
 
     @Bean
