@@ -40,8 +40,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 class ZakenApiAutoConfiguration {
 
     @Bean
-    fun zakenApiClient(): ZakenApiClient {
-        return ZakenApiClient(WebClientBuilderHolder.get())
+    fun zakenApiClient(
+        holder: WebClientBuilderHolder
+    ): ZakenApiClient {
+        return ZakenApiClient(holder.get())
     }
 
     @Bean

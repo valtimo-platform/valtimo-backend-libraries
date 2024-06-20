@@ -31,7 +31,6 @@ import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import com.ritense.valtimo.contract.mail.MailSender
 import com.ritense.valtimo.service.CurrentUserService
-import io.netty.handler.logging.LogLevel
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.SpringBootConfiguration
@@ -48,8 +47,9 @@ class ContactMomentAutoConfiguration {
     @ConditionalOnMissingBean(ContactMomentClient::class)
     fun contactMomentClient(
         contactMomentTokenGenerator: ContactMomentTokenGenerator,
+        holder: WebClientBuilderHolder
     ): ContactMomentClient {
-        return ContactMomentClient(WebClientBuilderHolder.get(), contactMomentTokenGenerator)
+        return ContactMomentClient(holder.get(), contactMomentTokenGenerator)
     }
 
     @Bean

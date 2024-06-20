@@ -46,8 +46,9 @@ class BesluitAutoConfiguration {
     @ConditionalOnMissingBean(BesluitClient::class)
     fun besluitClient(
         besluitTokenGenerator: BesluitTokenGenerator,
+        holder: WebClientBuilderHolder
     ): BesluitClient {
-        return BesluitClient(WebClientBuilderHolder.get(), besluitTokenGenerator)
+        return BesluitClient(holder.get(), besluitTokenGenerator)
     }
 
     @Bean

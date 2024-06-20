@@ -33,8 +33,10 @@ import org.springframework.core.annotation.Order
 class CatalogiApiAutoConfiguration {
 
     @Bean
-    fun catalogiApiClient(): CatalogiApiClient {
-        return CatalogiApiClient(WebClientBuilderHolder.get())
+    fun catalogiApiClient(
+        holder: WebClientBuilderHolder
+    ): CatalogiApiClient {
+        return CatalogiApiClient(holder.get())
     }
 
     @Bean
