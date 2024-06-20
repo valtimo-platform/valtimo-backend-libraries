@@ -51,6 +51,7 @@ import com.ritense.valueresolver.ValueResolverService
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
+import org.springframework.core.env.Environment
 import org.springframework.data.repository.findByIdOrNull
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
@@ -71,6 +72,7 @@ class PluginService(
     private val valueResolverService: ValueResolverService,
     private val pluginConfigurationSearchRepository: PluginConfigurationSearchRepository,
     private val validator: Validator,
+    private val environment: Environment
 ) {
 
     fun getObjectMapper(): ObjectMapper {
@@ -150,7 +152,8 @@ class PluginService(
         if (node != null && node.isTextual) {
             val value = node.textValue()
             if (value?.startsWith("\${") == true && value.endsWith("}")) {
-                return TextNode(System.getenv()[value.substringAfterLast("\${").substringBeforeLast("}")])
+                val substring = value.substringAfterLast("\${").substringBeforeLast("}")
+                return TextNode(environment.getProperty(substring) ?: System.getenv()[substring])
             }
         }
         return node
