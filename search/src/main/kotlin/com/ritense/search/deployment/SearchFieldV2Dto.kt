@@ -16,19 +16,22 @@
 
 package com.ritense.search.deployment
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.ritense.search.domain.DataType
 import com.ritense.search.domain.FieldType
 import com.ritense.search.domain.SearchFieldMatchType
-import java.util.UUID
 
-data class SearchFieldV2Dto(
-    val ownerId: UUID, // What is a correct value for this?
-    val ownerType: String, // Should this have a default value?
-    val key: String,
-    val title: String,
-    val path: String,
-    val dataType: DataType,
-    val fieldType: FieldType,
-    val matchType: SearchFieldMatchType?,
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "ownerType")
+@JsonIgnoreProperties("ownerType", allowSetters = true)
+interface SearchFieldV2Dto {
+    val ownerId: String
+    val ownerType: String
+    val key: String
+    val title: String
+    val path: String
+    val dataType: DataType
+    val fieldType: FieldType
+    val matchType: SearchFieldMatchType?
     val dropdownDataProvider: String?
-)
+}

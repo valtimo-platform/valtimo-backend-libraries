@@ -22,5 +22,5 @@ import com.ritense.search.domain.SearchFieldV2
 class SearchFieldV2Changeset(
     val changesetId: String,
     @JsonProperty("search-fields")
-    val searchFields: List<SearchFieldV2>
+    val searchFields: List<SearchFieldV2Dto>
 )
