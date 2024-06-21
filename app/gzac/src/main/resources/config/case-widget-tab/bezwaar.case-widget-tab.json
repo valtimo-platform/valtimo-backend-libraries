@@ -226,12 +226,10 @@
                     "properties": {
                         "collection": "doc:children",
                         "defaultPageSize": 5,
+                        "title": {
+                            "value": "name"
+                        },
                         "fields": [
-                            {
-                                "key": "name",
-                                "title": "Name",
-                                "value": "name"
-                            },
                             {
                                 "key": "dateOfBirth",
                                 "title": "Netto bedrag",

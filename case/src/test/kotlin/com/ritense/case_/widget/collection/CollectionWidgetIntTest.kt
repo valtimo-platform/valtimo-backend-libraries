@@ -109,6 +109,7 @@ class CollectionWidgetIntTest @Autowired constructor(
             assertThat(collectionPlaceholder).isEqualTo("myCollection")
 
             listOf(mapOf(
+                "someTitleKey" to "z",
                 "someKey" to "x",
                 "someOtherKey" to "y"
             ))
@@ -124,8 +125,9 @@ class CollectionWidgetIntTest @Autowired constructor(
             .andExpect(jsonPath("$.numberOfElements").value(1))
             .andExpect(jsonPath("$.size").value(1337))
             .andExpect(jsonPath("$.number").value(0))
-            .andExpect(jsonPath("$.content[0].someKey").value("x"))
-            .andExpect(jsonPath("$.content[0].someOtherKey").value("y"))
+            .andExpect(jsonPath("$.content[0].title").value("z"))
+            .andExpect(jsonPath("$.content[0].fields.someKey").value("x"))
+            .andExpect(jsonPath("$.content[0].fields.someOtherKey").value("y"))
     }
 
     private fun createCaseWidgetTab(
@@ -143,6 +145,9 @@ class CollectionWidgetIntTest @Autowired constructor(
                         widgetKey, "My widget", 1, false, CollectionWidgetProperties(
                             collection = "test:myCollection",
                             defaultPageSize = 5,
+                            title = CollectionWidgetProperties.TitleField(
+                                "$.someTitleKey"
+                            ),
                             fields = listOf(
                                 CollectionWidgetProperties.Field(
                                     "someKey",

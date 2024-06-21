@@ -41,24 +41,28 @@ class CollectionCaseWidgetDataProviderTest(
             {
               "content": [
                 {
-                  "firstName": "John",
-                  "lastName": "Doe",
-                  "real": false,
-                  "age": 30,
-                  "partnerFirstName": "Jane",
-                  "partnerLastName": "Doe",
-                  "partnerReal": true,
-                  "partnerAge": 25
+                  "title": "John",
+                  "fields": {
+                    "lastName": "Doe",
+                    "real": false,
+                    "age": 30,
+                    "partnerFirstName": "Jane",
+                    "partnerLastName": "Doe",
+                    "partnerReal": true,
+                    "partnerAge": 25
+                  }
                 },
                 {
-                  "firstName": "John",
-                  "lastName": "Doe",
-                  "real": false,
-                  "age": 30,
-                  "partnerFirstName": null,
-                  "partnerLastName": null,
-                  "partnerReal": null,
-                  "partnerAge": null
+                  "title": "John",
+                  "fields": {
+                    "lastName": "Doe",
+                    "real": false,
+                    "age": 30,
+                    "partnerFirstName": null,
+                    "partnerLastName": null,
+                    "partnerReal": null,
+                    "partnerAge": null
+                  }
                 }
               ],
               "first": true,
@@ -76,14 +80,16 @@ class CollectionCaseWidgetDataProviderTest(
             {
               "content": [
                 {
-                  "firstName": null,
-                  "lastName": null,
-                  "real": null,
-                  "age": null,
-                  "partnerFirstName": null,
-                  "partnerLastName": null,
-                  "partnerReal": null,
-                  "partnerAge": null
+                  "title": null,
+                  "fields": {
+                    "lastName": null,
+                    "real": null,
+                    "age": null,
+                    "partnerFirstName": null,
+                    "partnerLastName": null,
+                    "partnerReal": null,
+                    "partnerAge": null
+                  }
                 }
               ],
               "first": false,
@@ -107,7 +113,9 @@ class CollectionCaseWidgetDataProviderTest(
         mockCollection(documentId, widget, collection)
 
         val page = caseWidgetDataProvider.getData(documentId, widgetTab, widget, Pageable.ofSize(widget.properties.defaultPageSize))
-        assertThat(page.content.first()).containsEntry("firstName", "John")
+        val first = page.content.first()
+        assertThat(first.title).isEqualTo("John")
+        assertThat(first.fields).containsEntry("lastName", "Doe")
     }
 
     @Test
@@ -117,11 +125,14 @@ class CollectionCaseWidgetDataProviderTest(
         val documentId = UUID.randomUUID()
         val collection = listOf(mapOf(
             "firstName" to TextNode.valueOf("John"),
+            "lastName" to TextNode.valueOf("Doe"),
         ))
         mockCollection(documentId, widget, collection)
 
         val page = caseWidgetDataProvider.getData(documentId, widgetTab, widget, Pageable.ofSize(widget.properties.defaultPageSize))
-        assertThat(page.content.first()).containsEntry("firstName", "John")
+        val first = page.content.first()
+        assertThat(first.title).isEqualTo("John")
+        assertThat(first.fields).containsEntry("lastName", "Doe")
     }
 
     @Test
@@ -182,12 +193,12 @@ class CollectionCaseWidgetDataProviderTest(
         "test", "Test", 0, 1, true, CollectionWidgetProperties(
             collection = "test:someCollection",
             defaultPageSize = 2,
+            title = CollectionWidgetProperties.TitleField("$.firstName"),
             fields = testFields()
         )
     )
 
     private fun testFields() = listOf(
-        CollectionWidgetProperties.Field("firstName", "", "$.firstName"),
         CollectionWidgetProperties.Field("lastName", "", "/lastName"),
         CollectionWidgetProperties.Field("real", "", "real"),
         CollectionWidgetProperties.Field("age", "", "$.age"),
