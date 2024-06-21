@@ -18,6 +18,7 @@ package com.ritense.zaakdetails
 
 import com.ritense.document.service.DocumentService
 import com.ritense.objectenapi.management.ObjectManagementInfoProvider
+import com.ritense.objectsapi.service.ObjectSyncService
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.zaakdetails.documentobjectenapisync.DocumentObjectenApiSyncManagementResource
@@ -54,12 +55,14 @@ class ZaakDetailsAutoConfiguration {
         objectObjectManagementInfoProvider: ObjectManagementInfoProvider,
         documentService: DocumentService,
         pluginService: PluginService,
+        objectSyncService: ObjectSyncService,
     ): DocumentObjectenApiSyncService {
         return DocumentObjectenApiSyncService(
             documentObjectenApiSyncRepository,
             objectObjectManagementInfoProvider,
             documentService,
             pluginService,
+            objectSyncService,
         )
     }
 
