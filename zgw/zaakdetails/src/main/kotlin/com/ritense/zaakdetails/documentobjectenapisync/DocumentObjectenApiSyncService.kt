@@ -27,6 +27,7 @@ import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectRequest
 import com.ritense.objectenapi.client.ObjectSearchParameter
 import com.ritense.objectenapi.management.ObjectManagementInfoProvider
+import com.ritense.objectsapi.service.ObjectSyncService
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.service.PluginService
 import org.springframework.context.event.EventListener
@@ -40,6 +41,7 @@ class DocumentObjectenApiSyncService(
     private val objectObjectManagementInfoProvider: ObjectManagementInfoProvider,
     private val documentService: DocumentService,
     private val pluginService: PluginService,
+    private val objectSyncService: ObjectSyncService,
 ) {
     fun getSyncConfiguration(
         documentDefinitionName: String,
@@ -58,6 +60,10 @@ class DocumentObjectenApiSyncService(
                 enabled = sync.enabled
             )
             ?: sync
+
+        // Remove old connector configuration
+        objectSyncService.getObjectSyncConfig(sync.documentDefinitionName).content
+            .forEach { objectSyncService.removeObjectSyncConfig(it.id.id) }
 
         documentObjectenApiSyncRepository.save(modifiedSync)
     }
