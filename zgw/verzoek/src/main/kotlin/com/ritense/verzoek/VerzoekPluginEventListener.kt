@@ -76,7 +76,7 @@ open class VerzoekPluginEventListener(
                 .any { it.get("objectManagementId").textValue().equals(objectManagement.id.toString()) }
         }?.run {
             val verzoekObjectData = getVerzoekObjectData(objectManagement, event)
-            val verzoekTypeProperties = getVerzoekTypeProperties(verzoekObjectData)
+            val verzoekTypeProperties = getVerzoekTypeProperties(verzoekObjectData, event) ?: return
             val document = createDocument(verzoekTypeProperties, verzoekObjectData)
             val zaakTypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
             val initiatorType = if (verzoekObjectData.has("kvk")) {
@@ -136,12 +136,14 @@ open class VerzoekPluginEventListener(
         return verzoekObjectData
     }
 
-    private fun VerzoekPlugin.getVerzoekTypeProperties(verzoekObjectData: JsonNode): VerzoekProperties {
+    private fun VerzoekPlugin.getVerzoekTypeProperties(verzoekObjectData: JsonNode, event: NotificatiesApiNotificationReceivedEvent): VerzoekProperties? {
         val verzoekType = verzoekObjectData.get("type")?.textValue()
         val verzoekTypeProperties = verzoekProperties.firstOrNull { props -> props.type.equals(verzoekType, true) }
-            ?: throw NotificatiesNotificationEventException(
-                "Could not find properties of type $verzoekType"
+        if (verzoekTypeProperties == null && verzoekType != null) {
+            throw NotificatiesNotificationEventException(
+                "Failed to find verzoek configuration of type $verzoekType. For object ${event.resourceUrl}"
             )
+        }
         return verzoekTypeProperties
     }
 
