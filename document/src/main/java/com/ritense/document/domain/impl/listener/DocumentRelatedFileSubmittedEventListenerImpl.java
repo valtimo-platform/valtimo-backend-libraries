@@ -25,26 +25,29 @@ import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileSubmittedEvent;
 import com.ritense.valtimo.contract.listener.DocumentRelatedFileEventListener;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
+import java.util.Optional;
 
 public class DocumentRelatedFileSubmittedEventListenerImpl implements DocumentRelatedFileEventListener {
 
     private final DocumentService documentService;
     private final ResourceService resourceService;
 
-    public DocumentRelatedFileSubmittedEventListenerImpl(DocumentService documentService, ResourceService resourceService) {
+    public DocumentRelatedFileSubmittedEventListenerImpl(DocumentService documentService, Optional<ResourceService> resourceServiceOpt) {
         this.documentService = documentService;
-        this.resourceService = resourceService;
+        this.resourceService = resourceServiceOpt.orElse(null);
     }
 
     @Override
     public void handle(DocumentRelatedFileSubmittedEvent event) {
-        var resource = resourceService.getResource(event.getResourceId());
-        runWithoutAuthorization(() -> {
-            documentService.assignRelatedFile(
-                JsonSchemaDocumentId.existingId(event.getDocumentId()),
-                JsonSchemaRelatedFile.from(resource).withCreatedBy(SecurityUtils.getCurrentUserLogin())
-            );
-            return null;
-        });
+        if (resourceService != null) {
+            var resource = resourceService.getResource(event.getResourceId());
+            runWithoutAuthorization(() -> {
+                documentService.assignRelatedFile(
+                    JsonSchemaDocumentId.existingId(event.getDocumentId()),
+                    JsonSchemaRelatedFile.from(resource).withCreatedBy(SecurityUtils.getCurrentUserLogin())
+                );
+                return null;
+            });
+        }
     }
 }
