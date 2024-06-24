@@ -20,6 +20,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "valtimo.http.rest-templates")
 data class ValtimoHttpRestTemplateConfigurationProperties(
-    var connectionTimeout: Long = 10,
-    var readTimeout: Long = 10
+    var connectionTimeout: Long = 60,
+    var readTimeout: Long = 60
 )
