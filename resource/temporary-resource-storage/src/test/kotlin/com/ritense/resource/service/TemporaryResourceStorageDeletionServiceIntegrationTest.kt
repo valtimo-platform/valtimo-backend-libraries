@@ -19,7 +19,6 @@ package com.ritense.resource.service
 import com.ritense.resource.BaseIntegrationTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import java.nio.file.Files
@@ -28,7 +27,6 @@ import java.nio.file.attribute.FileTime
 import java.time.Duration
 import java.time.Instant
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TemporaryResourceStorageDeletionServiceIntegrationTest @Autowired constructor(
     private val temporaryResourceStorageService: TemporaryResourceStorageService,
     private val temporaryResourceStorageDeletionService: TemporaryResourceStorageDeletionService
