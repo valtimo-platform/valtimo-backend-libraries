@@ -24,6 +24,8 @@ interface SearchFieldV2Repository : JpaRepository<SearchFieldV2, UUID> {
 
     fun findByOwnerIdAndKeyOrderByOrder(ownerId: String, key: String): SearchFieldV2?
 
+    fun findByOwnerTypeAndOwnerIdAndKeyOrderByOrder(ownerType: String, ownerId: String, key: String): SearchFieldV2?
+
     fun findAllByOwnerTypeOrderByOrder(ownerType: String?): List<SearchFieldV2>
 
     fun findAllByOwnerIdOrderByOrder(ownerId: String): List<SearchFieldV2>

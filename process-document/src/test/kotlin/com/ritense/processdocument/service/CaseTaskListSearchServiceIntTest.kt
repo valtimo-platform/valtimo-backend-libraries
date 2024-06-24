@@ -28,14 +28,13 @@ import com.ritense.processdocument.BaseIntegrationTest
 import com.ritense.processdocument.domain.CaseTask
 import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest
 import com.ritense.processdocument.tasksearch.SearchWithConfigRequest
+import com.ritense.processdocument.tasksearch.TaskListSearchFieldV2Dto
 import com.ritense.search.domain.DataType
 import com.ritense.search.domain.FieldType
 import com.ritense.search.domain.SearchFieldMatchType
-import com.ritense.search.domain.SearchFieldV2
 import com.ritense.search.service.SearchFieldV2Service
 import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
-import org.camunda.bpm.engine.TaskService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -89,10 +88,9 @@ class CaseTaskListSearchServiceIntTest: BaseIntegrationTest() {
             result
         }
 
-        searchFieldV2Service.create(SearchFieldV2(
+        searchFieldV2Service.create(TaskListSearchFieldV2Dto(
             id = UUID.randomUUID(),
             ownerId = definition!!.id!!.name(),
-            ownerType = SEARCH_FIELD_OWNER_TYPE,
             key = "street",
             title = "Street",
             path = "doc:street",
@@ -103,10 +101,9 @@ class CaseTaskListSearchServiceIntTest: BaseIntegrationTest() {
             dropdownDataProvider = null)
         )
 
-        searchFieldV2Service.create(SearchFieldV2(
+        searchFieldV2Service.create(TaskListSearchFieldV2Dto(
             id = UUID.randomUUID(),
             ownerId = definition!!.id!!.name(),
-            ownerType = SEARCH_FIELD_OWNER_TYPE,
             key = "number",
             title = "House number",
             path = "doc:houseNumber",
