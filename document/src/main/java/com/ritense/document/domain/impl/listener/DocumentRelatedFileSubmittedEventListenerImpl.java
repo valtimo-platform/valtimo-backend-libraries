@@ -30,16 +30,16 @@ import java.util.Optional;
 public class DocumentRelatedFileSubmittedEventListenerImpl implements DocumentRelatedFileEventListener {
 
     private final DocumentService documentService;
-    private final ResourceService resourceService;
+    private final Optional<ResourceService> resourceServiceOpt;
 
     public DocumentRelatedFileSubmittedEventListenerImpl(DocumentService documentService, Optional<ResourceService> resourceServiceOpt) {
         this.documentService = documentService;
-        this.resourceService = resourceServiceOpt.orElse(null);
+        this.resourceServiceOpt = resourceServiceOpt;
     }
 
     @Override
     public void handle(DocumentRelatedFileSubmittedEvent event) {
-        if (resourceService != null) {
+        resourceServiceOpt.ifPresent(resourceService -> {
             var resource = resourceService.getResource(event.getResourceId());
             runWithoutAuthorization(() -> {
                 documentService.assignRelatedFile(
@@ -48,6 +48,6 @@ public class DocumentRelatedFileSubmittedEventListenerImpl implements DocumentRe
                 );
                 return null;
             });
-        }
+        });
     }
 }
