@@ -184,8 +184,6 @@ class TaskListResourceIntTest : BaseIntegrationTest() {
             .andExpect(jsonPath("$.sort[0].direction").value("ASC"))
     }
 
-
-
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = [AuthoritiesConstants.USER])
     @Transactional
@@ -278,7 +276,7 @@ class TaskListResourceIntTest : BaseIntegrationTest() {
 
         assertThat(taskList).hasSize(testUserData.size)
 
-        val expectedUserData = testUserData.find { it["firstName"] == firstNameToSearch }
+        val expectedUserData = testUserData.find { it["firstName"] == firstNameToSearch }!!
 
         val filter = SearchWithConfigRequest.SearchWithConfigFilter()
         filter.key = "firstName"
@@ -299,7 +297,7 @@ class TaskListResourceIntTest : BaseIntegrationTest() {
             .andExpect(jsonPath("$.content", hasSize<Any>(1)))
             .andExpect(jsonPath("$.content[0].items").isArray)
             .andExpect(jsonPath("$.content[0].items[0].key").value("col1"))
-            .andExpect(jsonPath("$.content[0].items[0].value").value(expectedUserData!!["firstName"]))
+            .andExpect(jsonPath("$.content[0].items[0].value").value(expectedUserData["firstName"]))
             .andExpect(jsonPath("$.content[0].items[1].key").value("col2"))
             .andExpect(jsonPath("$.content[0].items[1].value").value(expectedUserData["lastName"]))
             .andExpect(jsonPath("$.content[0].items[2].key").value("col3"))
