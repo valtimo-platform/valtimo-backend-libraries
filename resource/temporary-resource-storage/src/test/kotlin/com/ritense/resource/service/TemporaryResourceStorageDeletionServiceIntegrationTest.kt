@@ -40,7 +40,7 @@ class TemporaryResourceStorageDeletionServiceIntegrationTest @Autowired construc
         val resourceId = temporaryResourceStorageService.store("My file data".byteInputStream())
         val resourceFile = temporaryResourceStorageService.getMetaDataFileFromResourceId(resourceId)
         val attributes = Files.getFileAttributeView(resourceFile, BasicFileAttributeView::class.java)
-        val time = FileTime.from(Instant.now().minus(Duration.ofMinutes(60).truncatedTo(ChronoUnit.MINUTES)))
+        val time = FileTime.from(Instant.now().minus(Duration.ofMinutes(61).truncatedTo(ChronoUnit.MINUTES)))
         attributes.setTimes(time, time, time)
 
         temporaryResourceStorageDeletionService.deleteOldTemporaryResources()
