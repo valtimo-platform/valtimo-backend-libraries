@@ -25,7 +25,7 @@ object WebClientBuilderHolder {
         WebClientBuilderHolder.builder = builder
     }
 
-    fun get(): WebClient.Builder = builder
+    fun get(): WebClient.Builder = builder.clone()
 
     init {
         builder = WebClient.builder()
