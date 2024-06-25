@@ -37,9 +37,10 @@ class CatalogiApiAutoConfiguration {
 
     @Bean
     fun catalogiApiClient(
+        holder: WebClientBuilderHolder,
         cacheManager: CacheManager
     ): CatalogiApiClient {
-        return CatalogiApiClient(WebClientBuilderHolder.get(), cacheManager)
+        return CatalogiApiClient(holder.get(), cacheManager)
     }
 
     @Bean

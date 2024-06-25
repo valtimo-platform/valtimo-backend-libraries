@@ -53,8 +53,9 @@ internal class HaalCentraalAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(HaalCentraalBrpClient::class)
     fun haalCentraalBrpClient(
+        holder: WebClientBuilderHolder
     ): HaalCentraalBrpClient {
-        return HaalCentraalBrpClient(WebClientBuilderHolder.get())
+        return HaalCentraalBrpClient(holder.get())
     }
 
     // Resource

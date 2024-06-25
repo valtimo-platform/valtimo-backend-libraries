@@ -81,10 +81,11 @@ class SmartDocumentsAutoConfiguration {
         smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties,
         @Value("\${valtimo.smartdocuments.max-file-size-mb:10}") maxFileSize: Int,
         temporaryResourceStorageService: TemporaryResourceStorageService,
+        holder: WebClientBuilderHolder
     ): SmartDocumentsClient {
         return SmartDocumentsClient(
             smartDocumentsConnectorProperties,
-            WebClientBuilderHolder.get(),
+            holder.get(),
             maxFileSize,
             temporaryResourceStorageService,
         )

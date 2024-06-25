@@ -28,8 +28,9 @@ class BesluitenApiAutoConfiguration {
 
     @Bean
     fun besluitenApiClient(
+        holder: WebClientBuilderHolder
     ): BesluitenApiClient {
-        return BesluitenApiClient(WebClientBuilderHolder.get())
+        return BesluitenApiClient(holder.get())
     }
 
     @Bean

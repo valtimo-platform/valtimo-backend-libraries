@@ -15,6 +15,7 @@ valtimo:
     http:
         rest-templates:
             connection-timeout: 30
-            read-timeout: 30
+            read-timeout: 40
         web-client:
-            connection-timeout: 30
+            connection-timeout: 50
+            read-timeout: 60

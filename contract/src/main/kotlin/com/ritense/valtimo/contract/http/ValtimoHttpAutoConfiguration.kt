@@ -16,8 +16,8 @@
 
 package com.ritense.valtimo.contract.http
 
-import com.ritense.valtimo.contract.json.MapperSingleton
-import io.netty.handler.timeout.ReadTimeoutHandler
+import com.fasterxml.jackson.databind.ObjectMapper
+import io.netty.handler.timeout.IdleStateHandler
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
@@ -42,7 +42,7 @@ class ValtimoHttpAutoConfiguration {
         val valtimoRestTemplateBuilder =
             RestTemplateBuilder()
                 .setConnectTimeout(Duration.ofSeconds(valtimoHttpRestTemplatesConfigurationProperties.connectionTimeout))
-                .setReadTimeout(Duration.ofSeconds(valtimoHttpRestTemplatesConfigurationProperties.connectionTimeout))
+                .setReadTimeout(Duration.ofSeconds(valtimoHttpRestTemplatesConfigurationProperties.readTimeout))
 
         RestTemplateBuilderHolder.set(valtimoRestTemplateBuilder)
 
@@ -53,14 +53,23 @@ class ValtimoHttpAutoConfiguration {
     @ConditionalOnMissingBean(WebClientBuilderHolder::class)
     fun valtimoWebclientBuilderHolder(
         valtimoHttpWebClientConfigurationProperties: ValtimoHttpWebClientConfigurationProperties,
-        webClientBuilder: WebClient.Builder
+        webClientBuilder: WebClient.Builder,
+        objectMapper: ObjectMapper
     ): WebClientBuilderHolder {
-        val objectMapper = MapperSingleton.get()
         val httpClient = HttpClient
             .create()
+            .responseTimeout(
+                Duration.ofSeconds(
+                    valtimoHttpWebClientConfigurationProperties.connectionTimeout.toLong()
+                )
+            )
             .doOnConnected { conn: Connection ->
                 conn.addHandlerLast(
-                    ReadTimeoutHandler(valtimoHttpWebClientConfigurationProperties.connectionTimeout)
+                    IdleStateHandler(
+                        valtimoHttpWebClientConfigurationProperties.readTimeout,
+                        valtimoHttpWebClientConfigurationProperties.readTimeout,
+                        valtimoHttpWebClientConfigurationProperties.readTimeout
+                    )
                 )
             }
 
