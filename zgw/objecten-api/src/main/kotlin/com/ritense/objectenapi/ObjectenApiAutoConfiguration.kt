@@ -31,13 +31,13 @@ import com.ritense.objectenapi.web.rest.ZaakObjectResource
 import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import com.ritense.zakenapi.ZaakUrlProvider
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.DependsOn
 import org.springframework.core.annotation.Order
-import org.springframework.web.reactive.function.client.WebClient
 
 @AutoConfiguration
 class ObjectenApiAutoConfiguration {
@@ -54,11 +54,10 @@ class ObjectenApiAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ObjectenApiClient::class)
     fun objectenApiClient(
-        webclientBuilder: WebClient.Builder,
         outboxService: OutboxService,
         objectMapper: ObjectMapper
     ): ObjectenApiClient {
-        return ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+        return ObjectenApiClient(WebClientBuilderHolder.get(), outboxService, objectMapper)
     }
 
     @Bean
@@ -79,7 +78,8 @@ class ObjectenApiAutoConfiguration {
         formDefinitionService: FormDefinitionService,
         objectManagementInfoProvider: ObjectManagementInfoProvider
     ): ZaakObjectService {
-        return ZaakObjectService(zaakUrlProvider,
+        return ZaakObjectService(
+            zaakUrlProvider,
             pluginService,
             formDefinitionService,
             objectManagementInfoProvider

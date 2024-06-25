@@ -229,6 +229,44 @@ open class CatalogiApiClient(
         return result?.body!!
     }
 
+    fun getZaaktype(
+        authentication: CatalogiApiAuthentication,
+        baseUrl: URI,
+        zaaktypeUrl: URI
+    ): Zaaktype {
+        validateUrlHost(baseUrl, zaaktypeUrl)
+        val result = buildWebclient(authentication)
+            .get()
+            .uri(zaaktypeUrl)
+            .retrieve()
+            .toEntity(Zaaktype::class.java)
+            .block()
+
+        return result?.body!!
+    }
+
+    open fun getEigenschappen(
+        authentication: CatalogiApiAuthentication,
+        baseUrl: URI,
+        request: EigenschapRequest,
+    ): Page<Eigenschap> {
+        validateUrlHost(baseUrl, request.zaaktype)
+        val result = buildWebclient(authentication)
+            .get()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, baseUrl)
+                    .pathSegment("eigenschappen")
+                    .addOptionalQueryParamFromRequest("zaaktype", request.zaaktype)
+                    .addOptionalQueryParamFromRequest("status", request.status?.getSearchValue())
+                    .addOptionalQueryParamFromRequest("page", request.page)
+                    .build()
+            }.retrieve()
+            .toEntity(ClientTools.getTypedPage(Eigenschap::class.java))
+            .block()
+
+        return result?.body!!
+    }
+
     open fun getZaaktypen(
         authentication: CatalogiApiAuthentication,
         baseUrl: URI,

@@ -30,6 +30,8 @@ import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.valtimo.contract.http.ValtimoHttpWebClientConfigurationProperties
+import io.netty.handler.timeout.ReadTimeoutHandler
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valtimo.processlink.service.PluginProcessLinkService
@@ -41,9 +43,12 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.annotation.Order
+import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.web.reactive.function.client.WebClient
+import reactor.netty.Connection
+import reactor.netty.http.client.HttpClient
 import javax.sql.DataSource
 
 @AutoConfiguration
@@ -53,11 +58,22 @@ class DocumentenApiAutoConfiguration {
 
     @Bean
     fun documentenApiClient(
+        valtimoHttpWebClientConfigurationProperties: ValtimoHttpWebClientConfigurationProperties,
         webclientBuilder: WebClient.Builder,
         outboxService: OutboxService,
         objectMapper: ObjectMapper,
         platformTransactionManager: PlatformTransactionManager
     ): DocumentenApiClient {
+        val httpClient = HttpClient
+            .create()
+            .doOnConnected { conn: Connection ->
+                conn.addHandlerLast(
+                    ReadTimeoutHandler(valtimoHttpWebClientConfigurationProperties.connectionTimeout)
+                )
+            }
+        webclientBuilder.clientConnector(
+            ReactorClientHttpConnector(httpClient)
+        )
         return DocumentenApiClient(
             webclientBuilder,
             outboxService,

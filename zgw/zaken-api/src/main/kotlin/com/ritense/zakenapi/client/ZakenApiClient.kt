@@ -288,6 +288,35 @@ class ZakenApiClient(
         return result?.body!!
     }
 
+    fun patchZaak(
+        authentication: ZakenApiAuthentication,
+        baseUrl: URI,
+        zaakUrl: URI,
+        request: PatchZaakRequest,
+    ): ZaakResponse {
+        validateUrlHost(baseUrl, zaakUrl)
+        val result = buildWebClient(authentication)
+            .patch()
+            .uri(zaakUrl)
+            .headers(this::defaultHeaders)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(BodyInserters.fromValue(request))
+            .retrieve()
+            .toEntity(ZaakResponse::class.java)
+            .block()
+
+        if (result.hasBody()) {
+            outboxService.send {
+                ZaakPatched(
+                    result.body.url.toString(),
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
+
+        return result?.body!!
+    }
+
     fun createZaakStatus(
         authentication: ZakenApiAuthentication,
         baseUrl: URI,

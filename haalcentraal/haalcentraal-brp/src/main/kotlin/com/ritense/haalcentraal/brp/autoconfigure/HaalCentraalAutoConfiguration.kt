@@ -21,12 +21,12 @@ import com.ritense.haalcentraal.brp.client.HaalCentraalBrpClient
 import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpConnector
 import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpProperties
 import com.ritense.haalcentraal.brp.web.rest.HaalCentraalBrpResource
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Scope
-import org.springframework.web.reactive.function.client.WebClient
 
 @Deprecated("Since 12.0.0")
 @AutoConfiguration
@@ -39,23 +39,22 @@ internal class HaalCentraalAutoConfiguration {
     fun haalCentraalBrpConnector(
         haalCentraalBrpProperties: HaalCentraalBrpProperties,
         haalCentraalBrpClient: HaalCentraalBrpClient
-    ) : HaalCentraalBrpConnector {
+    ): HaalCentraalBrpConnector {
         return HaalCentraalBrpConnector(haalCentraalBrpProperties, haalCentraalBrpClient)
     }
 
     @Bean
     @ConditionalOnMissingBean(HaalCentraalBrpProperties::class)
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    fun haalCentraalBrpProperties() : HaalCentraalBrpProperties {
+    fun haalCentraalBrpProperties(): HaalCentraalBrpProperties {
         return HaalCentraalBrpProperties()
     }
 
     @Bean
     @ConditionalOnMissingBean(HaalCentraalBrpClient::class)
     fun haalCentraalBrpClient(
-        webclientBuilder: WebClient.Builder
-    ) : HaalCentraalBrpClient {
-        return HaalCentraalBrpClient(webclientBuilder)
+    ): HaalCentraalBrpClient {
+        return HaalCentraalBrpClient(WebClientBuilderHolder.get())
     }
 
     // Resource
@@ -64,7 +63,7 @@ internal class HaalCentraalAutoConfiguration {
     @ConditionalOnMissingBean(HaalCentraalBrpResource::class)
     fun haalCentraalBrpResource(
         connectorService: ConnectorService
-    ) : HaalCentraalBrpResource {
+    ): HaalCentraalBrpResource {
         return HaalCentraalBrpResource(connectorService)
     }
 }

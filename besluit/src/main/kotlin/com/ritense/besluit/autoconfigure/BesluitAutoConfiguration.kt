@@ -28,6 +28,7 @@ import com.ritense.document.service.DocumentService
 import com.ritense.openzaak.catalogi.CatalogiClient
 import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.resource.service.OpenZaakService
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.camunda.bpm.engine.RepositoryService
 import org.springframework.beans.factory.annotation.Value
@@ -37,7 +38,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Scope
-import org.springframework.web.reactive.function.client.WebClient
 
 @Deprecated("Since 12.0.0. Please use the Besluiten API module instead.")
 @AutoConfiguration
@@ -46,15 +46,14 @@ class BesluitAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(BesluitClient::class)
     fun besluitClient(
-        webclientBuilder: WebClient.Builder,
         besluitTokenGenerator: BesluitTokenGenerator,
     ): BesluitClient {
-        return BesluitClient(webclientBuilder, besluitTokenGenerator)
+        return BesluitClient(WebClientBuilderHolder.get(), besluitTokenGenerator)
     }
 
     @Bean
     @ConditionalOnMissingBean(BesluitTokenGenerator::class)
-    fun besluitTokenGenerator() : BesluitTokenGenerator {
+    fun besluitTokenGenerator(): BesluitTokenGenerator {
         return BesluitTokenGenerator()
     }
 
@@ -67,14 +66,14 @@ class BesluitAutoConfiguration {
         besluitProperties: BesluitProperties,
         besluitClient: BesluitClient,
         applicationEventPublisher: ApplicationEventPublisher
-    ) : BesluitConnector {
+    ): BesluitConnector {
         return BesluitConnector(besluitProperties, besluitClient, applicationEventPublisher)
     }
 
     @Bean
     @ConditionalOnMissingBean(BesluitProperties::class)
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    fun besluitProperties() : BesluitProperties {
+    fun besluitProperties(): BesluitProperties {
         return BesluitProperties()
     }
 

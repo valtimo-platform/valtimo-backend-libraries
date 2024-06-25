@@ -26,11 +26,11 @@ import com.ritense.mail.flowmailer.connector.FlowmailerConnectorProperties
 import com.ritense.mail.flowmailer.service.FlowmailerMailDispatcher
 import com.ritense.mail.flowmailer.service.FlowmailerTokenService
 import com.ritense.resource.service.ResourceService
+import com.ritense.valtimo.contract.http.RestTemplateBuilderHolder
 import org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties
-import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Scope
 import org.springframework.web.client.RestTemplate
@@ -42,7 +42,7 @@ class FlowmailerAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(RestTemplate::class)
     fun restTemplate(): RestTemplate {
-        return RestTemplateBuilder().build()
+        return RestTemplateBuilderHolder.get().build()
     }
 
     @Bean

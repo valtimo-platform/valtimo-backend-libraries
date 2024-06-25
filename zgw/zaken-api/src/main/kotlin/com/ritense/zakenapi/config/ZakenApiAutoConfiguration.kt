@@ -25,6 +25,7 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPluginFactory
 import com.ritense.zakenapi.client.ZakenApiClient
@@ -57,7 +58,6 @@ import org.springframework.context.annotation.Primary
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.transaction.PlatformTransactionManager
-import org.springframework.web.reactive.function.client.WebClient
 import kotlin.contracts.ExperimentalContracts
 
 @AutoConfiguration
@@ -67,11 +67,10 @@ class ZakenApiAutoConfiguration {
 
     @Bean
     fun zakenApiClient(
-        webclientBuilder: WebClient.Builder,
         outboxService: OutboxService,
         objectMapper: ObjectMapper
     ): ZakenApiClient {
-        return ZakenApiClient(webclientBuilder, outboxService, objectMapper)
+        return ZakenApiClient(WebClientBuilderHolder.get(), outboxService, objectMapper)
     }
 
     @Bean

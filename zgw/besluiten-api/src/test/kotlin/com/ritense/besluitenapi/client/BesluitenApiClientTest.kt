@@ -19,6 +19,7 @@ package com.ritense.besluitenapi.client
 import com.jayway.jsonpath.matchers.JsonPathMatchers
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath
 import com.ritense.besluitenapi.BesluitenApiAuthentication
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.hamcrest.CoreMatchers
@@ -33,7 +34,6 @@ import org.junit.jupiter.api.TestInstance
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
-import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 import java.net.URI
 import java.time.LocalDate
@@ -55,7 +55,7 @@ class BesluitenApiClientTest {
 
     @Test
     fun `should send create besluit request and parse response`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = BesluitenApiClient(webclientBuilder)
 
         val responseBody = """
@@ -138,7 +138,7 @@ class BesluitenApiClientTest {
 
     @Test
     fun `should send create besluit request and parse response when vervalreden is null`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = BesluitenApiClient(webclientBuilder)
 
         val responseBody = """

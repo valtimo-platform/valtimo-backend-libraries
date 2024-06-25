@@ -29,6 +29,7 @@ import com.ritense.contactmoment.web.rest.MessageResource
 import com.ritense.klant.service.KlantService
 import com.ritense.valtimo.contract.authentication.CurrentUserService
 import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.contract.http.WebClientBuilderHolder
 import com.ritense.valtimo.contract.mail.MailSender
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.BeanDefinition
@@ -37,7 +38,6 @@ import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Scope
-import org.springframework.web.reactive.function.client.WebClient
 
 @Deprecated("Since 12.0.0. No replacement available.")
 @SpringBootConfiguration
@@ -47,10 +47,9 @@ class ContactMomentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ContactMomentClient::class)
     fun contactMomentClient(
-        webclientBuilder: WebClient.Builder,
         contactMomentTokenGenerator: ContactMomentTokenGenerator,
     ): ContactMomentClient {
-        return ContactMomentClient(webclientBuilder, contactMomentTokenGenerator)
+        return ContactMomentClient(WebClientBuilderHolder.get(), contactMomentTokenGenerator)
     }
 
     @Bean
@@ -68,7 +67,12 @@ class ContactMomentAutoConfiguration {
         currentUserService: CurrentUserService,
         userManagementService: UserManagementService,
     ): Connector {
-        return ContactMomentConnector(contactMomentProperties, contactMomentClient, currentUserService, userManagementService)
+        return ContactMomentConnector(
+            contactMomentProperties,
+            contactMomentClient,
+            currentUserService,
+            userManagementService
+        )
     }
 
     @Bean
