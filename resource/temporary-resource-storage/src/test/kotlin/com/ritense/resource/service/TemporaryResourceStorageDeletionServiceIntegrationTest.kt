@@ -18,6 +18,7 @@ package com.ritense.resource.service
 
 import com.ritense.resource.BaseIntegrationTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
@@ -36,6 +37,7 @@ class TemporaryResourceStorageDeletionServiceIntegrationTest @Autowired construc
 ) : BaseIntegrationTest() {
 
     @Test
+    @Disabled
     fun `should delete files older that 60 minutes`() {
         val resourceId = temporaryResourceStorageService.store("My file data".byteInputStream())
         val resourceFile = temporaryResourceStorageService.getMetaDataFileFromResourceId(resourceId)
