@@ -198,17 +198,6 @@ class ZaakServiceTest : BaseTest() {
         )
     }
 
-    private fun getZaaktypen(): List<ZaakType> {
-        return listOf(
-            ZaakType(
-                zaakTypeUrl,
-                "example",
-                "example",
-                Period.ofDays(1)
-            )
-        )
-    }
-
     private fun httpGetCatalogus() {
         val responseEntity = ResponseEntity(
             Catalogus(

@@ -16,7 +16,6 @@
 
 package com.ritense.objectsapi.opennotificaties
 
-import com.ritense.objectsapi.domain.ResultWrapper
 import com.ritense.valtimo.contract.http.RestTemplateBuilderHolder
 import com.ritense.valtimo.contract.json.MapperSingleton
 import mu.KotlinLogging

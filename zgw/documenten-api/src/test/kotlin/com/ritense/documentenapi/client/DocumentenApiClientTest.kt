@@ -478,7 +478,7 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `should send delete document request and send event`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper, mock())
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
@@ -506,7 +506,7 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `should not send outbox message on error deleting document informatieobject`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper, mock())
 
         mockDocumentenApi.enqueue(mockResponse("{}").setResponseCode(400))
@@ -527,7 +527,7 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `should send patch document object request and send event`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper, mock())
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
@@ -627,7 +627,7 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `should not send patch document when document status is definitief`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper, mock())
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
@@ -708,7 +708,7 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `should not send outbox message on error updating document informatieobject`() {
-        val webclientBuilder = WebClient.builder()
+        val webclientBuilder = WebClientBuilderHolder.get()
         val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper, mock())
 
         mockDocumentenApi.enqueue(mockResponse("{}").setResponseCode(400))

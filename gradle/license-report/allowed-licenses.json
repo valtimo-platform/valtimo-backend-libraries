@@ -136,6 +136,5 @@
             "moduleVersion": "2.*",
             "moduleName": "software.amazon.awssdk:bom"
         }
-
     ]
 }
