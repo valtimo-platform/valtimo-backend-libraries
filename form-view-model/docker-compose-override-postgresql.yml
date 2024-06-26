@@ -1,0 +1,6 @@
+services:
+    db:
+        ports:
+            - "3352:5432"
+        environment:
+            - POSTGRES_DB=form-view-model-test

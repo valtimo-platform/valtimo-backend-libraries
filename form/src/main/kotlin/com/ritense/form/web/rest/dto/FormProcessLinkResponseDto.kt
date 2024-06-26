@@ -28,4 +28,5 @@ data class FormProcessLinkResponseDto(
     override val activityType: ActivityTypeWithEventName,
     override val processLinkType: String = PROCESS_LINK_TYPE_FORM,
     val formDefinitionId: UUID,
+    val viewModelEnabled: Boolean
 ) : ProcessLinkResponseDto

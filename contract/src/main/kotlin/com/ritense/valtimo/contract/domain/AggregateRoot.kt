@@ -17,9 +17,9 @@
 package com.ritense.valtimo.contract.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import java.util.Collections
 import org.springframework.data.domain.AfterDomainEventPublication
 import org.springframework.data.domain.DomainEvents
+import java.util.Collections
 
 /**
  * Aggregate Root base class based on the Spring Data one {@link org.springframework.data.domain.AbstractAggregateRoot}.
@@ -51,7 +51,7 @@ abstract class AggregateRoot<EventType> {
      * repositories.
      */
     @AfterDomainEventPublication
-    protected fun clearDomainEvents() {
+    fun clearDomainEvents() {
         this.domainEvents.clear()
     }
 

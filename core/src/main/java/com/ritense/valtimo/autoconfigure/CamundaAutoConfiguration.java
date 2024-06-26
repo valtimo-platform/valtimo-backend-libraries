@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.autoconfigure;
 
+import com.ritense.valtimo.CamundaBeansPlugin;
 import com.ritense.valtimo.camunda.ProcessDefinitionDeployedEventPublisher;
 import com.ritense.valtimo.camunda.command.ValtimoSchemaOperationsCommand;
 import com.ritense.valtimo.camunda.processaudit.HistoryEventAuditProcessEnginePlugin;
@@ -27,6 +28,7 @@ import com.ritense.valtimo.camunda.task.service.impl.NotificationServiceImpl;
 import com.ritense.valtimo.camunda.task.service.impl.ReminderServiceImpl;
 import com.ritense.valtimo.config.CamundaConfiguration;
 import com.ritense.valtimo.config.CustomFormTypesProcessEnginePlugin;
+import com.ritense.valtimo.contract.annotation.ProcessBean;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.config.LiquibaseRunner;
 import com.ritense.valtimo.contract.config.ValtimoProperties;
@@ -38,12 +40,15 @@ import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.web.rest.error.CamundaExceptionTranslator;
 import org.camunda.bpm.application.impl.event.ProcessApplicationEventListenerPlugin;
 import org.camunda.bpm.spring.boot.starter.CamundaBpmAutoConfiguration;
+import org.camunda.bpm.spring.boot.starter.configuration.Ordering;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
+import org.springframework.core.annotation.Order;
 
 @AutoConfiguration
 @AutoConfigureAfter(CamundaBpmAutoConfiguration.class)
@@ -89,12 +94,14 @@ public class CamundaAutoConfiguration {
         return new ValtimoSchemaOperationsCommand(liquibaseRunner);
     }
 
+    @Primary
     @Bean
     @ConditionalOnMissingBean(CustomRepositoryServiceImpl.class)
     public CustomRepositoryServiceImpl customRepositoryServiceImpl(final ApplicationEventPublisher applicationEventPublisher) {
         return new CustomRepositoryServiceImpl(applicationEventPublisher);
     }
 
+    @ProcessBean
     @Bean
     @ConditionalOnMissingBean(NotificationService.class)
     public NotificationService notificationService(
@@ -150,5 +157,11 @@ public class CamundaAutoConfiguration {
     @ConditionalOnMissingBean(CamundaExceptionTranslator.class)
     public CamundaExceptionTranslator camundaExceptionTranslator() {
         return new CamundaExceptionTranslator();
+    }
+
+    @Bean
+    @Order(Ordering.DEFAULT_ORDER - 2)
+    public CamundaBeansPlugin camundaBeansPlugin() {
+        return new CamundaBeansPlugin();
     }
 }
