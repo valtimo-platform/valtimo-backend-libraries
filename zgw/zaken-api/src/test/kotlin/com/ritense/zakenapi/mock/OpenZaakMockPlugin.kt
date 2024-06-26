@@ -33,4 +33,8 @@ class OpenZaakMockPlugin : ZakenApiAuthentication, CatalogiApiAuthentication {
     override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
         return next.exchange(ClientRequest.from(request).build())
     }
+
+    override fun getToken(): String {
+        return "token"
+    }
 }

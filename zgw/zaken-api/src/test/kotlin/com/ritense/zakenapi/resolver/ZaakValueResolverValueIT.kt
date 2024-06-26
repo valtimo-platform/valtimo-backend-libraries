@@ -156,6 +156,10 @@ class ZaakValueResolverValueIT @Autowired constructor(
         override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
             return next.exchange(request)
         }
+
+        override fun getToken(): String {
+            return "test-token"
+        }
     }
 
     companion object {

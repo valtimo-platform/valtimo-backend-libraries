@@ -1260,5 +1260,9 @@ internal class ZakenApiClientTest {
             }.build()
             return next.exchange(filteredRequest)
         }
+
+        override fun getToken(): String {
+            return "test"
+        }
     }
 }

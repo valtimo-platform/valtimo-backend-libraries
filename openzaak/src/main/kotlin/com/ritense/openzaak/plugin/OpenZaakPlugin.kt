@@ -43,6 +43,8 @@ class OpenZaakPlugin(
     @PluginProperty(key = "clientSecret", secret = true, required = true)
     lateinit var clientSecret: String
 
+    override fun getToken() = tokenGeneratorService.generateToken(clientSecret, clientId)
+
     override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
         val generatedToken = tokenGeneratorService.generateToken(
             clientSecret,
