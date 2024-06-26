@@ -18,6 +18,7 @@ package com.ritense.zakenapi.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.outbox.OutboxService
+import com.ritense.valtimo.contract.http.RestTemplateBuilderHolder
 import com.ritense.zakenapi.ZakenApiAuthentication
 import com.ritense.zakenapi.domain.CreateZaakRequest
 import com.ritense.zakenapi.domain.CreateZaakResponse
@@ -55,10 +56,14 @@ import com.ritense.zakenapi.event.ZaakeigenschapListed
 import com.ritense.zakenapi.event.ZaakeigenschapUpdated
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
+import org.springframework.core.ParameterizedTypeReference
+import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
 class ZakenApiClient(
@@ -132,17 +137,27 @@ class ZakenApiClient(
         baseUrl: URI,
         zaakUrl: URI
     ): List<ZaakInformatieObject> {
-        val result = buildWebClient(authentication)
+
+        val requestUri = UriComponentsBuilder.fromUri(baseUrl)
+            .path("zaakinformatieobjecten")
+            .queryParam("zaak", zaakUrl)
+            .build()
+            .toString()
+
+        val headers = HttpHeaders()
+        headers.setBearerAuth(authentication.getToken())
+
+        val request = HttpEntity<Void>(headers)
+
+        val result = RestTemplateBuilderHolder
             .get()
-            .uri {
-                ClientTools.baseUrlToBuilder(it, baseUrl)
-                    .path("zaakinformatieobjecten")
-                    .queryParam("zaak", zaakUrl)
-                    .build()
-            }
-            .retrieve()
-            .toEntityList(ZaakInformatieObject::class.java)
-            .block()
+            .build()
+            .exchange(
+                requestUri,
+                HttpMethod.GET,
+                request,
+                object : ParameterizedTypeReference<List<ZaakInformatieObject>>() {}
+            );
 
         if (result.hasBody()) {
             outboxService.send {
@@ -152,7 +167,7 @@ class ZakenApiClient(
             }
         }
 
-        return result?.body!!
+        return result.body!!
     }
 
     fun getZaakRollen(

@@ -388,6 +388,10 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
             return next.exchange(request)
         }
+
+        override fun getToken(): String {
+            return "token"
+        }
     }
 
     companion object {

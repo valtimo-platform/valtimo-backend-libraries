@@ -68,6 +68,7 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
@@ -502,7 +503,7 @@ internal class ZakenApiClientTest {
                 URI(mockApi.url("/").toString()),
                 URI("https://example.com")
             )
-        } catch (_: WebClientResponseException) {
+        } catch (_: HttpClientErrorException.BadRequest) {
         }
 
         mockApi.takeRequest()
@@ -1259,6 +1260,10 @@ internal class ZakenApiClientTest {
                 headers.setBearerAuth("test")
             }.build()
             return next.exchange(filteredRequest)
+        }
+
+        override fun getToken(): String {
+            return "test"
         }
     }
 }

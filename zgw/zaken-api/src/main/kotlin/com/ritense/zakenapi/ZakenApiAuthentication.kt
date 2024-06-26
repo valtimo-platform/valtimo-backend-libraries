@@ -20,4 +20,6 @@ import com.ritense.plugin.annotation.PluginCategory
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction
 
 @PluginCategory("zaken-api-authentication")
-interface ZakenApiAuthentication : ExchangeFilterFunction
+interface ZakenApiAuthentication : ExchangeFilterFunction {
+    fun getToken(): String
+}
