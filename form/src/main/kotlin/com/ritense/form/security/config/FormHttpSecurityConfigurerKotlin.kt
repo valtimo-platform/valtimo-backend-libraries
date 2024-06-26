@@ -17,6 +17,7 @@ package com.ritense.form.security.config
 
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
+import org.springframework.http.HttpMethod.DELETE
 import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -26,11 +27,21 @@ class FormHttpSecurityConfigurerKotlin : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeHttpRequests { requests ->
-                requests.requestMatchers(antMatcher(POST, "/api/v1/process-link/{processLinkId}/form/submission")).authenticated()
-                    .requestMatchers(antMatcher(GET, "/api/v1/process-link/form-definition/{formKey}")).authenticated()
+                requests.requestMatchers(
+                    antMatcher(POST, "$PROCESS_LINK_BASE_URL/{processLinkId}/form/submission"),
+                    antMatcher(GET, "$PROCESS_LINK_BASE_URL/form-definition/{formKey}"),
+                    antMatcher(GET, INTERMEDIATE_BASE_URL),
+                    antMatcher(POST, INTERMEDIATE_BASE_URL),
+                    antMatcher(DELETE, INTERMEDIATE_BASE_URL)
+                ).authenticated()
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
+    }
+
+    companion object {
+        const val PROCESS_LINK_BASE_URL = "/api/v1/process-link"
+        const val INTERMEDIATE_BASE_URL = "/api/v1/form/intermediate/submission"
     }
 }

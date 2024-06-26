@@ -59,7 +59,8 @@ class FormProcessLinkMapper(
             processDefinitionId = processLink.processDefinitionId,
             activityId = processLink.activityId,
             activityType = processLink.activityType,
-            formDefinitionId = processLink.formDefinitionId
+            formDefinitionId = processLink.formDefinitionId,
+            viewModelEnabled = processLink.viewModelEnabled
         )
     }
 
@@ -71,7 +72,8 @@ class FormProcessLinkMapper(
             processDefinitionId = deployDto.processDefinitionId,
             activityId = deployDto.activityId,
             activityType = deployDto.activityType,
-            formDefinitionId = formDefinition.id
+            formDefinitionId = formDefinition.id,
+            viewModelEnabled = deployDto.viewModelEnabled
         )
     }
 
@@ -95,7 +97,8 @@ class FormProcessLinkMapper(
             processDefinitionId = createRequestDto.processDefinitionId,
             activityId = createRequestDto.activityId,
             activityType = createRequestDto.activityType,
-            formDefinitionId = createRequestDto.formDefinitionId
+            formDefinitionId = createRequestDto.formDefinitionId,
+            viewModelEnabled = createRequestDto.viewModelEnabled
         )
     }
 
@@ -113,7 +116,8 @@ class FormProcessLinkMapper(
             processDefinitionId = processLinkToUpdate.processDefinitionId,
             activityId = processLinkToUpdate.activityId,
             activityType = processLinkToUpdate.activityType,
-            formDefinitionId = updateRequestDto.formDefinitionId
+            formDefinitionId = updateRequestDto.formDefinitionId,
+            viewModelEnabled = updateRequestDto.viewModelEnabled
         )
     }
 

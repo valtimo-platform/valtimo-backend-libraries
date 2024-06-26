@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2015-2024 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="1" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <comment>mysql_engine_7.18_to_7.19.sql</comment>
+        <sqlFile path="mysql/mysql_engine_7.18_to_7.19.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="2" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <comment>postgres_engine_7.18_to_7.19.sql</comment>
+        <sqlFile path="postgresql/postgres_engine_7.18_to_7.19.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="3" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <comment>mysql_engine_7.19_to_7.20.sql</comment>
+        <sqlFile path="mysql/mysql_engine_7.19_to_7.20.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="4" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <comment>postgres_engine_7.19_to_7.20.sql</comment>
+        <sqlFile path="postgresql/postgres_engine_7.19_to_7.20.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="5" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <not>
+                <columnExists tableName="ACT_RU_JOB" columnName="ROOT_PROC_INST_ID_"/>
+            </not>
+        </preConditions>
+        <comment>mysql_engine_7.20_to_7.21.sql</comment>
+        <sqlFile path="mysql/mysql_engine_7.20_to_7.21.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="6" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+            <not>
+                <columnExists tableName="ACT_RU_JOB" columnName="ROOT_PROC_INST_ID_"/>
+            </not>
+        </preConditions>
+        <comment>postgres_engine_7.20_to_7.21.sql</comment>
+        <sqlFile path="postgresql/postgres_engine_7.20_to_7.21.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -18,7 +18,6 @@ package com.ritense.outbox.config.condition
 
 import org.springframework.context.annotation.Conditional
 
-
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 @MustBeDocumented

@@ -33,5 +33,7 @@
     <include file="changelog/20210107-add-readonly-column.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20220123-add-name-unique-constraint-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20230330-add-form-process-link.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20240528-add-view-model-to-process-link.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20240529-intermediate-submission.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
