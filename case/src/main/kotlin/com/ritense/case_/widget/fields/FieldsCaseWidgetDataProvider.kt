@@ -38,8 +38,8 @@ class FieldsCaseWidgetDataProvider(
         val resolvedValues = valueResolverService.resolveValues(documentId.toString(), valueKeyMap.keys)
 
         return widget.properties.columns.flatMap { column ->
-            column.map { field ->
-                field.key to resolvedValues[field.value]
+            column.mapNotNull { field ->
+                resolvedValues[field.value]?.let { field.key to it }
             }
         }.toMap()
     }

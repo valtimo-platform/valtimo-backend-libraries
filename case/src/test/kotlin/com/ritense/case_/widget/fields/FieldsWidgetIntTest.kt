@@ -103,6 +103,7 @@ class FieldsWidgetIntTest @Autowired constructor(
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.someKey").value("test:/myKey"))
             .andExpect(jsonPath("$.someOtherKey").value("test:/myOtherKey"))
+            .andExpect(jsonPath("$.nullValue").doesNotExist())
     }
 
     private fun createCaseWidgetTab(
@@ -128,6 +129,12 @@ class FieldsWidgetIntTest @Autowired constructor(
                                     "someOtherKey",
                                     "Some other key",
                                     "test:/myOtherKey",
+                                    displayProperties = BooleanFieldDisplayProperties()
+                                ),
+                                FieldsWidgetProperties.Field(
+                                    "nullValue",
+                                    "nullValue",
+                                    "test:null",
                                     displayProperties = BooleanFieldDisplayProperties()
                                 )
                             )
