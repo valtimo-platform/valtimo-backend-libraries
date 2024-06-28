@@ -13,6 +13,8 @@ import com.ritense.formviewmodel.viewmodel.ViewModelLoader
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -49,7 +51,7 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
     @Test
     fun `should not find missing fields when all ViewModel fields match form`() {
         val testViewModelLoader = TestViewModelLoader()
-        val missingFields = onStartUpViewModelValidator.validateViewModel(
+        val missingFields = onStartUpViewModelValidator.getAllMissingProperties(
             testViewModelLoader,
             formDefinitionOf("user-task-1")
         )
@@ -59,7 +61,7 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
     @Test
     fun `should find missing fields when ViewModel has extra fields`() {
         val testViewModelLoader = TestViewModelLoader()
-        val missingFields = onStartUpViewModelValidator.validateViewModel(
+        val missingFields = onStartUpViewModelValidator.getAllMissingProperties(
             testViewModelLoader,
             formDefinitionOf("user-task-2")
         )
@@ -86,6 +88,19 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
         )
         assertThat(missingFields).isNotEmpty()
         assertThat(missingFields).contains("age")
+    }
+
+    @Test
+    fun `should throw exception when form could not be found`() {
+        val viewModelLoader: ViewModelLoader<*> = Mockito.mock()
+        whenever(viewModelLoader.getFormName()).thenReturn("I do not exist")
+
+        val exception = assertThrows<NoSuchElementException> {
+            onStartUpViewModelValidator.validateViewModelLoader(
+                viewModelLoader
+            )
+        }
+        assertThat(exception.message).contains("Could not find form [I do not exist] declared in class com.ritense.formviewmodel.viewmodel.ViewModelLoader\$MockitoMock")
     }
 
     @Test
