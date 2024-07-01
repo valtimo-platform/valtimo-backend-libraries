@@ -193,7 +193,7 @@ class CaseTaskListSearchService(
         countQuery.where(constructWhere(cb, countQuery, countTaskRoot, countDocumentRoot, caseDefinitionName, advancedSearchRequest))
 
         // Can't use singleResult here due to the group by issue mentioned above.
-        val count = entityManager.createQuery(countQuery).resultList.elementAtOrElse(0) { 0 }
+        val count = entityManager.createQuery(countQuery).resultList.sum()
 
         val pagedQuery = entityManager.createQuery(
             query,
