@@ -1,7 +1,6 @@
 package com.ritense.search.deployment
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.ritense.search.domain.DataType
 import com.ritense.search.domain.FieldType
@@ -16,6 +15,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -182,7 +182,7 @@ class SearchFieldDeployerTest() {
         val dtoCaptor = argumentCaptor<SearchFieldV2Dto>()
 
         verify(repository).findByOwnerTypeAndOwnerIdAndKeyOrderByOrder("some-owner-type", "test-case", "voornaam")
-        verify(searchFieldService).update("test-case", "voornaam", dtoCaptor.capture())
+        verify(searchFieldService).update(eq("test-case"), eq("voornaam"), dtoCaptor.capture())
 
         val dto = dtoCaptor.firstValue
         assertEquals("test-case", dto.ownerId)

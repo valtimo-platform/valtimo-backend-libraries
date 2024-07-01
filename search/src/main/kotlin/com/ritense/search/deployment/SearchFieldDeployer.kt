@@ -58,7 +58,7 @@ abstract class SearchFieldDeployer(
                 val mappedField = it.toSearchFieldDto(ownerId, ownerTypeKey())
                 repository.findByOwnerTypeAndOwnerIdAndKeyOrderByOrder(ownerTypeKey(), ownerId, mappedField.key)
                     ?.let { existingField ->
-                        searchFieldService.update(existingField.id.toString(), existingField.key, mappedField)
+                        searchFieldService.update(ownerId, it.key, mappedField)
                     } ?: searchFieldService.create(mappedField)
             }
         }
