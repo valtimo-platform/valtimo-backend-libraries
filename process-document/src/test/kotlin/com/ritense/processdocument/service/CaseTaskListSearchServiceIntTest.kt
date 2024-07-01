@@ -33,17 +33,20 @@ import com.ritense.search.domain.DataType
 import com.ritense.search.domain.FieldType
 import com.ritense.search.domain.SearchFieldMatchType
 import com.ritense.search.service.SearchFieldV2Service
-import java.util.UUID
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
+import com.ritense.valtimo.service.CamundaTaskService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Transactional
-class CaseTaskListSearchServiceIntTest: BaseIntegrationTest() {
+class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var caseTaskListSearchService: CaseTaskListSearchService
@@ -88,30 +91,34 @@ class CaseTaskListSearchServiceIntTest: BaseIntegrationTest() {
             result
         }
 
-        searchFieldV2Service.create(TaskListSearchFieldV2Dto(
-            id = UUID.randomUUID(),
-            ownerId = definition!!.id!!.name(),
-            key = "street",
-            title = "Street",
-            path = "doc:street",
-            order = 1,
-            dataType = DataType.TEXT,
-            fieldType = FieldType.TEXT_CONTAINS,
-            matchType = SearchFieldMatchType.LIKE,
-            dropdownDataProvider = null)
+        searchFieldV2Service.create(
+            TaskListSearchFieldV2Dto(
+                id = UUID.randomUUID(),
+                ownerId = definition!!.id!!.name(),
+                key = "street",
+                title = "Street",
+                path = "doc:street",
+                order = 1,
+                dataType = DataType.TEXT,
+                fieldType = FieldType.TEXT_CONTAINS,
+                matchType = SearchFieldMatchType.LIKE,
+                dropdownDataProvider = null
+            )
         )
 
-        searchFieldV2Service.create(TaskListSearchFieldV2Dto(
-            id = UUID.randomUUID(),
-            ownerId = definition!!.id!!.name(),
-            key = "number",
-            title = "House number",
-            path = "doc:houseNumber",
-            order = 1,
-            dataType = DataType.NUMBER,
-            fieldType = FieldType.RANGE,
-            matchType = null,
-            dropdownDataProvider = null)
+        searchFieldV2Service.create(
+            TaskListSearchFieldV2Dto(
+                id = UUID.randomUUID(),
+                ownerId = definition!!.id!!.name(),
+                key = "number",
+                title = "House number",
+                path = "doc:houseNumber",
+                order = 1,
+                dataType = DataType.NUMBER,
+                fieldType = FieldType.RANGE,
+                matchType = null,
+                dropdownDataProvider = null
+            )
         )
 
         runWithoutAuthorization {
@@ -177,15 +184,76 @@ class CaseTaskListSearchServiceIntTest: BaseIntegrationTest() {
         assertThat(searchResult).hasSize(0)
     }
 
+    @Test
+    @WithMockUser(username = "user@ritense.com", authorities = [AuthoritiesConstants.USER])
+    fun shouldReturnMoreThan10Results() {
+        createDocumentAndTwoProcesses("Funenpark1")
+        createDocumentAndTwoProcesses("Funenpark2")
+        createDocumentAndTwoProcesses("Funenpark3")
+        createDocumentAndTwoProcesses("Funenpark4")
+        createDocumentAndTwoProcesses("Funenpark5")
+        createDocumentAndTwoProcesses("Funenpark6")
+        createDocumentAndTwoProcesses("Funenpark7")
+        createDocumentAndTwoProcesses("Funenpark8")
+        createDocumentAndTwoProcesses("Funenpark9")
+        createDocumentAndTwoProcesses("Funenpark10")
+        createDocumentAndTwoProcesses("Funenpark11")
+        createDocumentAndTwoProcesses("Funenpark12")
+
+        val filter = CamundaTaskService.TaskFilter.ALL
+        val searchResult = caseTaskListSearchService.getTasksByCaseDefinition(
+            definition!!.id().name(),
+            filter,
+            PageRequest.of(0, 10)
+        )
+        assertThat(searchResult.totalElements).isEqualTo(25) // 1 is being created in init, 24 made in test
+        assertThat(searchResult.numberOfElements).isEqualTo(10)
+    }
+
+    private fun createDocumentAndTwoProcesses(streetName: String) {
+        val content2 = JsonDocumentContent("{\"street\": \"$streetName\"}")
+
+        val document = runWithoutAuthorization<CreateDocumentResult> {
+            val result: CreateDocumentResult = documentService.createDocument(
+                NewDocumentRequest(
+                    definition!!.id().name(),
+                    content2.asJson()
+                )
+            )
+            result
+        }
+
+        runWithoutAuthorization {
+            camundaProcessJsonSchemaDocumentService.startProcessForDocument(
+                StartProcessForDocumentRequest(
+                    document.resultingDocument().orElseThrow().id(),
+                    "loan-process-demo",
+                    mapOf()
+                )
+            )
+        }
+
+        runWithoutAuthorization {
+            camundaProcessJsonSchemaDocumentService.startProcessForDocument(
+                StartProcessForDocumentRequest(
+                    document.resultingDocument().orElseThrow().id(),
+                    "loan-process-demo",
+                    mapOf()
+                )
+            )
+        }
+    }
+
     private fun searchTasks(
-        filter: SearchWithConfigRequest.SearchWithConfigFilter
+        filter: SearchWithConfigRequest.SearchWithConfigFilter,
+        pageSize: Int = 50
     ): Page<CaseTask>? {
         val searchWithConfigRequest = SearchWithConfigRequest()
 
         searchWithConfigRequest.otherFilters = listOf(filter)
 
         val searchResult = runWithoutAuthorization {
-            caseTaskListSearchService.search("house", searchWithConfigRequest, PageRequest.of(0, 50))
+            caseTaskListSearchService.search("house", searchWithConfigRequest, PageRequest.of(0, pageSize))
         }
         return searchResult
     }
