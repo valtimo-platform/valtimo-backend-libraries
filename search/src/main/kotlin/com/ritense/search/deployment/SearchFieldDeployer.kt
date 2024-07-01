@@ -45,7 +45,7 @@ abstract class SearchFieldDeployer(
             ChangesetDetails(
                 changesetId = changeset.changesetId,
                 valueToChecksum = changeset.collection,
-                key = ownerTypeKey(),
+                key = changeSetKey(),
                 deploy = { deploy(changeset.collection) }
             )
         )
