@@ -187,36 +187,37 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = [AuthoritiesConstants.USER])
     fun shouldReturnMoreThan10Results() {
-        createDocumentAndTwoProcesses("Funenpark1")
-        createDocumentAndTwoProcesses("Funenpark2")
-        createDocumentAndTwoProcesses("Funenpark3")
-        createDocumentAndTwoProcesses("Funenpark4")
-        createDocumentAndTwoProcesses("Funenpark5")
-        createDocumentAndTwoProcesses("Funenpark6")
-        createDocumentAndTwoProcesses("Funenpark7")
-        createDocumentAndTwoProcesses("Funenpark8")
-        createDocumentAndTwoProcesses("Funenpark9")
-        createDocumentAndTwoProcesses("Funenpark10")
-        createDocumentAndTwoProcesses("Funenpark11")
-        createDocumentAndTwoProcesses("Funenpark12")
+        val definition2 = definition("notahouse")
+        createDocumentAndTwoProcesses("Funenpark1", definition2.id().name())
+        createDocumentAndTwoProcesses("Funenpark2", definition2.id().name())
+        createDocumentAndTwoProcesses("Funenpark3", definition2.id().name())
+        createDocumentAndTwoProcesses("Funenpark4", definition2.id().name())
+        createDocumentAndTwoProcesses("Funenpark5", definition2.id().name())
+        createDocumentAndTwoProcesses("Funenpark6", definition2.id().name())
+        createDocumentAndTwoProcesses("Funenpark7", definition2.id().name())
+        createDocumentAndTwoProcesses("Funenpark8", definition2.id().name())
+        createDocumentAndTwoProcesses("Funenpark9", definition2.id().name())
+        createDocumentAndTwoProcesses("Funenpark10", definition2.id().name())
+        createDocumentAndTwoProcesses("Funenpark11", definition2.id().name())
+        createDocumentAndTwoProcesses("Funenpark12", definition2.id().name())
 
         val filter = CamundaTaskService.TaskFilter.ALL
         val searchResult = caseTaskListSearchService.getTasksByCaseDefinition(
-            definition!!.id().name(),
+            definition2.id().name(),
             filter,
             PageRequest.of(0, 10)
         )
-        assertThat(searchResult.totalElements).isEqualTo(25) // 1 is being created in init, 24 made in test
+        assertThat(searchResult.totalElements).isEqualTo(24)
         assertThat(searchResult.numberOfElements).isEqualTo(10)
     }
 
-    private fun createDocumentAndTwoProcesses(streetName: String) {
+    private fun createDocumentAndTwoProcesses(streetName: String, documentName: String) {
         val content2 = JsonDocumentContent("{\"street\": \"$streetName\"}")
 
         val document = runWithoutAuthorization<CreateDocumentResult> {
             val result: CreateDocumentResult = documentService.createDocument(
                 NewDocumentRequest(
-                    definition!!.id().name(),
+                    documentName,
                     content2.asJson()
                 )
             )

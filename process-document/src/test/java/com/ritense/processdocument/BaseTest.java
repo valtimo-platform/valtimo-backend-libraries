@@ -83,6 +83,12 @@ public abstract class BaseTest {
         return new JsonSchemaDocumentDefinition(jsonSchemaDocumentDefinitionId, jsonSchema);
     }
 
+    protected JsonSchemaDocumentDefinition definition(String name) {
+        final JsonSchemaDocumentDefinitionId jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.newId(name);
+        final JsonSchema jsonSchema = JsonSchema.fromResourceUri(path(jsonSchemaDocumentDefinitionId.name()));
+        return new JsonSchemaDocumentDefinition(jsonSchemaDocumentDefinitionId, jsonSchema);
+    }
+
     protected JsonSchemaDocument.CreateDocumentResultImpl createDocument(JsonSchemaDocumentDefinition definition, JsonDocumentContent content) {
         return JsonSchemaDocument.create(definition, content, USERNAME, documentSequenceGeneratorService, null);
     }
