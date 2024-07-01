@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.search.domain
-
-import com.fasterxml.jackson.annotation.JsonProperty
+package com.ritense.search.deployment
 
 class SearchFieldChangeset(
     val changesetId: String,
-    @JsonProperty("case-definitions")
-    val searchfields: List<SearchFieldCollection>
+    val collection: List<SearchFieldCollection>
 )
 
 class SearchFieldCollection(
-    @JsonProperty(  )
     val ownerId: String,
-    val tabs: List<CaseTabDto>
+    val searchFields: List<ReadFileSearchFieldDto>
 )

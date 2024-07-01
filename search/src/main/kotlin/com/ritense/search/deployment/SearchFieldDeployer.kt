@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.search.service
+package com.ritense.search.deployment
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.ritense.search.domain.SearchFieldChangeset
-import com.ritense.search.domain.SearchFieldV2
 import com.ritense.search.repository.SearchFieldV2Repository
+import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
 import com.ritense.valtimo.changelog.service.ChangelogService
@@ -29,6 +28,7 @@ abstract class SearchFieldDeployer(
     private val objectMapper: ObjectMapper,
     private val changelogService: ChangelogService,
     private val repository: SearchFieldV2Repository,
+    private val searchFieldService: SearchFieldV2Service,
     private val clearTables: Boolean,
 ): ChangesetDeployer {
 
@@ -44,15 +44,24 @@ abstract class SearchFieldDeployer(
         return listOf(
             ChangesetDetails(
                 changesetId = changeset.changesetId,
-                valueToChecksum = changeset.caseDefinitions,
+                valueToChecksum = changeset.collection,
                 key = ownerTypeKey(),
-                deploy = { deploy(changeset.caseDefinitions) }
+                deploy = { deploy(changeset.collection) }
             )
         )
     }
 
-    fun deploy(searchFields: List<SearchFieldV2>) {
-        repository.saveAll(searchFields)
+    fun deploy(searchFields: List<SearchFieldCollection>) {
+        searchFields.forEach { searchFieldCollection ->
+            val ownerId = searchFieldCollection.ownerId
+            searchFieldCollection.searchFields.map {
+                val mappedField = it.toSearchFieldDto(ownerId, ownerTypeKey())
+                repository.findByOwnerTypeAndOwnerIdAndKeyOrderByOrder(ownerTypeKey(), ownerId, mappedField.key)
+                    ?.let { existingField ->
+                        searchFieldService.update(existingField.id.toString(), existingField.key, mappedField)
+                    } ?: searchFieldService.create(mappedField)
+            }
+        }
     }
 
     abstract fun ownerTypeKey(): String
