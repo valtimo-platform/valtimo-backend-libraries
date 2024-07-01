@@ -357,7 +357,7 @@ class CaseTaskListSearchService(
         documentRoot: Root<JsonSchemaDocument>,
         searchCriteria: AdvancedSearchRequest.OtherFilter
     ): Expression<Comparable<Any>> {
-        val jsonPath = "$." + quoteJsonPath(searchCriteria.path.substring(DOC_PREFIX.length))
+        val jsonPath = "$." + searchCriteria.path.substring(DOC_PREFIX.length)
         return queryDialectHelper.getJsonValueExpression(
             cb,
             documentRoot.get<Any>("content")
@@ -514,8 +514,7 @@ class CaseTaskListSearchService(
                 val property = order.property
                 when {
                     property.startsWith(DOC_PREFIX) -> {
-                        val quotedPath = quoteJsonPath(property.substring(DOC_PREFIX.length))
-                        val jsonPath = "$.${quotedPath}"
+                        val jsonPath = "$." + property.substring(DOC_PREFIX.length)
                         expression = queryDialectHelper.getJsonValueExpression(
                             cb,
                             documentRoot.get<JsonDocumentContent>(CONTENT)
@@ -643,9 +642,6 @@ class CaseTaskListSearchService(
         }
         return result as Path<T>
     }
-
-    private fun quoteJsonPath(property: String): String =
-        property.split(".").joinToString(".") { "\"${it}\"" }
 
     companion object {
         val defaultColumns: List<TaskListColumn> = listOf(
