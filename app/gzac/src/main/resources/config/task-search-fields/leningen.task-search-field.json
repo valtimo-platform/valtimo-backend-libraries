@@ -2,11 +2,9 @@
     "changesetId": "leningen-searchfields-v1",
     "collection": [
         {
-            "key": "leningen",
+            "ownerId": "leningen",
             "searchFields": [
                 {
-                    "ownerType": "TaskListSearchColumns",
-                    "ownerId": "leningen",
                     "title": "Voornaam",
                     "key": "voornaam",
                     "path": "doc:voornaam",
@@ -15,8 +13,6 @@
                     "matchType": "LIKE"
                 },
                 {
-                    "ownerType": "TaskListSearchColumns",
-                    "ownerId": "leningen",
                     "title": "Achternaam",
                     "key": "achternaam",
                     "path": "doc:achternaam",
