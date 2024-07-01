@@ -247,7 +247,7 @@ class ProcessDocumentsAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(TaskSearchFieldDeployer::class)
-    fun TaskSearchFieldDeployer(
+    fun taskSearchFieldDeployer(
         objectMapper: ObjectMapper,
         changelogService: ChangelogService,
         repository: SearchFieldV2Repository,
