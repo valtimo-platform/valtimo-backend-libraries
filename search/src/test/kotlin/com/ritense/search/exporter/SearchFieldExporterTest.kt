@@ -105,7 +105,7 @@ class SearchFieldExporterTest {
 
         val result = testExporter.export(request)
 
-        val path = testExporter.getPath().format(request.name)
+        val path = testExporter.getPath(request.name)
         val ownerTypeKey = testExporter.ownerTypeKey()
         val caseTaskListExport = result.exportFiles.singleOrNull {
             it.path == path
