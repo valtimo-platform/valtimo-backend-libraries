@@ -39,10 +39,10 @@ class DocumentObjectenApiSyncManagementResource(
     fun getSyncConfiguration(
         @PathVariable(name = "name") documentDefinitionName: String,
         @PathVariable(name = "version") documentDefinitionVersion: Long,
-    ): ResponseEntity<DocumentObjectenApiSyncResponse> {
+    ): ResponseEntity<DocumentObjectenApiSyncResponse?> {
         val syncConfiguration =
             documentObjectenApiSyncService.getSyncConfiguration(documentDefinitionName, documentDefinitionVersion)
-                ?: return ResponseEntity.notFound().build()
+                ?: return ResponseEntity.ok(null)
         val objectManagementConfiguration =
             objectManagementInfoProvider.getObjectManagementInfo(syncConfiguration.objectManagementConfigurationId)
         return ResponseEntity.ok(
