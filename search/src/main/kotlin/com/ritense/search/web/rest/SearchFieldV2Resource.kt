@@ -60,6 +60,7 @@ class SearchFieldV2Resource(
     ) =
         ResponseEntity.ok(searchFieldV2Service.updateList(ownerId, searchFieldV2Dtos))
 
+    @Deprecated("Since 12.1.0")
     @GetMapping("/{ownerId}")
     fun getAllByOwnerId(@PathVariable ownerId: String) =
         ResponseEntity.ok(searchFieldV2Service.findAllByOwnerId(ownerId))
@@ -68,6 +69,7 @@ class SearchFieldV2Resource(
     fun getAllByOwnerTypeAndOwnerId(@PathVariable ownerType: String, @PathVariable ownerId: String) =
         ResponseEntity.ok(searchFieldV2Service.findAllByOwnerTypeAndOwnerId(ownerType, ownerId))
 
+    @Deprecated("Since 12.1.0")
     @DeleteMapping("/{ownerId}/{key}")
     fun delete(
         @PathVariable ownerId: String,

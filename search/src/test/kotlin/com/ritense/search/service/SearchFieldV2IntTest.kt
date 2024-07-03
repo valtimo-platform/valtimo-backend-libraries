@@ -21,7 +21,6 @@ import com.ritense.search.domain.DataType
 import com.ritense.search.domain.FieldType
 import com.ritense.search.domain.SearchFieldV2
 import com.ritense.search.web.rest.dto.LegacySearchFieldV2Dto
-import com.ritense.search.web.rest.dto.SearchFieldV2Dto
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
