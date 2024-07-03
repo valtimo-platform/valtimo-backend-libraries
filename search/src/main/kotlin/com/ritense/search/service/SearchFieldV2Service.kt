@@ -38,21 +38,23 @@ class SearchFieldV2Service(
     fun update(ownerId: String, key: String, searchFieldV2Dto: SearchFieldV2Dto): SearchFieldV2? {
         val searchFieldV2 = getSearchFieldMapper(searchFieldV2Dto.ownerType).toNewSearchFieldV2(searchFieldV2Dto)
 
-        return with(findByOwnerIdAndKey(ownerId, key)) {
-            if (this != null) {
-                if (searchFieldV2.ownerId != ownerId) {
-                    throw ResponseStatusException(
-                        HttpStatus.CONFLICT,
-                        "This ownerId already exists. Please choose another ownerId"
-                    )
-                } else if (searchFieldV2.key != key) {
-                    throw ResponseStatusException(
-                        HttpStatus.CONFLICT,
-                        "This key already exists. Please choose another key"
-                    )
-                }
-            }
-            searchFieldV2Repository.save(this?.copy(
+        if (searchFieldV2.ownerId != ownerId) {
+            throw ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "Failed to update search field. Mismatching ownerId's"
+            )
+        } else if (searchFieldV2.key != key) {
+            throw ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "Failed to update search field. Mismatching key's"
+            )
+        }
+
+        val existingSearchFieldV2 = findByOwnerIdAndKey(ownerId, key)
+            ?: throw IllegalStateException("Failed to update search field. No Search field found with ownerId '$ownerId' and key '$key'")
+
+        return searchFieldV2Repository.save(
+            existingSearchFieldV2.copy(
                 ownerId = searchFieldV2.ownerId,
                 key = searchFieldV2.key,
                 path = searchFieldV2.path,
@@ -60,8 +62,8 @@ class SearchFieldV2Service(
                 order = searchFieldV2.order,
                 dataType = searchFieldV2.dataType,
                 fieldType = searchFieldV2.fieldType
-            ))
-        }
+            )
+        )
     }
 
     fun findAllByOwnerType(ownerId: String) = searchFieldV2Repository.findAllByOwnerTypeOrderByOrder(ownerId)
