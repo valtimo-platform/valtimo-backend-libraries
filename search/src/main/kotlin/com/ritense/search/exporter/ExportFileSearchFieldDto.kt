@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.search.deployment
+package com.ritense.search.exporter
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.ritense.search.domain.DataType
 import com.ritense.search.domain.FieldType
 import com.ritense.search.domain.SearchFieldMatchType
-import com.ritense.search.web.rest.dto.SearchFieldV2Dto
-import java.util.UUID
+import com.ritense.search.domain.SearchFieldV2
 
-class ReadFileSearchFieldDto(
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class ExportFileSearchFieldDto(
     val key: String,
     val title: String?,
     val path: String,
@@ -31,19 +32,15 @@ class ReadFileSearchFieldDto(
     val matchType: SearchFieldMatchType?,
     val dropdownDataProvider: String?,
 ) {
-    fun toSearchFieldDto(ownerId: String, ownerType: String, order: Int): SearchFieldV2Dto {
-        return DeploySearchFieldDto(
-            id = UUID.randomUUID(),
-            ownerId = ownerId,
-            ownerType = ownerType,
-            key = key,
-            title = title,
-            path = path,
-            order = order,
-            dataType = dataType,
-            fieldType = fieldType,
-            matchType = matchType,
-            dropdownDataProvider = dropdownDataProvider
+    companion object {
+        fun from(entity: SearchFieldV2): ExportFileSearchFieldDto = ExportFileSearchFieldDto(
+            key = entity.key,
+            title = entity.title,
+            path = entity.path,
+            dataType = entity.dataType,
+            fieldType = entity.fieldType,
+            matchType = entity.matchType,
+            dropdownDataProvider = entity.dropdownDataProvider,
         )
     }
 }

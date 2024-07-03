@@ -54,11 +54,11 @@ abstract class SearchFieldDeployer(
     fun deploy(searchFields: List<SearchFieldCollection>) {
         searchFields.forEach { searchFieldCollection ->
             val ownerId = searchFieldCollection.ownerId
-            searchFieldCollection.searchFields.map {
-                val mappedField = it.toSearchFieldDto(ownerId, ownerTypeKey())
+            searchFieldCollection.searchFields.mapIndexed { index, searchField ->
+                val mappedField = searchField.toSearchFieldDto(ownerId, ownerTypeKey(), index)
                 repository.findByOwnerTypeAndOwnerIdAndKeyOrderByOrder(ownerTypeKey(), ownerId, mappedField.key)
                     ?.let { existingField ->
-                        searchFieldService.update(ownerId, it.key, mappedField)
+                        searchFieldService.update(ownerId, searchField.key, mappedField)
                     } ?: searchFieldService.create(mappedField)
             }
         }

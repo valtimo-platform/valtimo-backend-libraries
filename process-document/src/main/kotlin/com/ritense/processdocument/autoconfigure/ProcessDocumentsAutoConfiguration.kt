@@ -40,11 +40,14 @@ import com.ritense.processdocument.service.ValueResolverDelegateService
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService
 import com.ritense.processdocument.tasksearch.TaskListSearchFieldV2Mapper
 import com.ritense.processdocument.tasksearch.TaskSearchFieldDeployer
+import com.ritense.processdocument.tasksearch.TaskSearchFieldExporter
+import com.ritense.processdocument.tasksearch.TaskSearchFieldImporter
 import com.ritense.processdocument.web.TaskListResource
 import com.ritense.search.repository.SearchFieldV2Repository
 import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
+import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.annotation.ProcessBean
 import com.ritense.valtimo.contract.authentication.UserManagementService
@@ -260,6 +263,30 @@ class ProcessDocumentsAutoConfiguration {
             repository,
             searchFieldService,
             clearTables
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(TaskSearchFieldExporter::class)
+    fun taskSearchFieldExporter(
+        objectMapper: ObjectMapper,
+        searchFieldService: SearchFieldV2Service,
+    ): TaskSearchFieldExporter {
+        return TaskSearchFieldExporter(
+            objectMapper,
+            searchFieldService,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(TaskSearchFieldImporter::class)
+    fun taskSearchFieldImporter(
+        taskSearchFieldDeployer: TaskSearchFieldDeployer,
+        changelogDeployer: ChangelogDeployer
+    ): TaskSearchFieldImporter {
+        return TaskSearchFieldImporter(
+            taskSearchFieldDeployer,
+            changelogDeployer,
         )
     }
 }
