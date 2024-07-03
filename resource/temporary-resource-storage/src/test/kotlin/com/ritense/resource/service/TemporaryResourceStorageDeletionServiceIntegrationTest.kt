@@ -38,7 +38,6 @@ class TemporaryResourceStorageDeletionServiceIntegrationTest @Autowired construc
 
     @Disabled("https://github.com/gradle/gradle/issues/27871")
     @Test
-    @Disabled
     fun `should delete files older that 60 minutes`() {
         val resourceId = temporaryResourceStorageService.store("My file data".byteInputStream())
         val resourceFile = temporaryResourceStorageService.getMetaDataFileFromResourceId(resourceId)
