@@ -198,13 +198,12 @@ public class DocumentAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnBean(ResourceService.class)
     @ConditionalOnMissingBean(DocumentRelatedFileSubmittedEventListenerImpl.class)
     public DocumentRelatedFileSubmittedEventListenerImpl documentRelatedFileSubmittedEventListener(
         final DocumentService documentService,
-        final ResourceService resourceService
+        final Optional<ResourceService> resourceServiceOpt
     ) {
-        return new DocumentRelatedFileSubmittedEventListenerImpl(documentService, resourceService);
+        return new DocumentRelatedFileSubmittedEventListenerImpl(documentService, resourceServiceOpt);
     }
 
     //API

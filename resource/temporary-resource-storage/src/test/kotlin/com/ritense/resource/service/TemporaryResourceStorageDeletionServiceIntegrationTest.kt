@@ -36,6 +36,7 @@ class TemporaryResourceStorageDeletionServiceIntegrationTest @Autowired construc
     private val temporaryResourceStorageDeletionService: TemporaryResourceStorageDeletionService
 ) : BaseIntegrationTest() {
 
+    @Disabled("https://github.com/gradle/gradle/issues/27871")
     @Test
     @Disabled
     fun `should delete files older that 60 minutes`() {
