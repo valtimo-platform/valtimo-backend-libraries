@@ -20,6 +20,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
     <changeSet author="Ritense" id="1">
+        <validCheckSum>9:0ae2fc9fbf122cd73acbf6c4ee1d9f2f</validCheckSum>
         <createTable tableName="intermediate_submission">
             <column name="id" type="${uuidType}">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="intermediate_submissionPK"/>
@@ -27,19 +28,19 @@
             <column name="content" type="${jsonType}">
                 <constraints nullable="false"/>
             </column>
-            <column name="task_instance_id" type="VARCHAR">
+            <column name="task_instance_id" type="VARCHAR(64)">
                 <constraints nullable="false"/>
             </column>
             <column name="created_on" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="created_by" type="VARCHAR">
+            <column name="created_by" type="VARCHAR(256)">
                 <constraints nullable="false"/>
             </column>
             <column name="edited_on" type="TIMESTAMP">
                 <constraints nullable="true"/>
             </column>
-            <column name="edited_by" type="VARCHAR">
+            <column name="edited_by" type="VARCHAR(256)">
                 <constraints nullable="true"/>
             </column>
         </createTable>
