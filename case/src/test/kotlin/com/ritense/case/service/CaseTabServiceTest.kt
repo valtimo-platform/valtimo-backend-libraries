@@ -26,6 +26,7 @@ import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case_.service.event.CaseTabCreatedEvent
 import com.ritense.document.service.DocumentDefinitionService
+import com.ritense.document.service.DocumentService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -49,7 +50,8 @@ class CaseTabServiceTest(
     @Mock private val documentDefinitionService: DocumentDefinitionService,
     @Mock private val authorizationService: AuthorizationService,
     @Mock private val applicationEventPublisher: ApplicationEventPublisher,
-    @Mock private val userManagementService: UserManagementService
+    @Mock private val userManagementService: UserManagementService,
+    @Mock private val documentService: DocumentService
 ) {
     private lateinit var caseTabService: CaseTabService
 
@@ -60,7 +62,8 @@ class CaseTabServiceTest(
             documentDefinitionService,
             authorizationService,
             applicationEventPublisher,
-            userManagementService
+            userManagementService,
+            documentService
         )
     }
 

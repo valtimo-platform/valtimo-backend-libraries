@@ -18,6 +18,7 @@ package com.ritense.case.web.rest
 
 import com.ritense.case.service.CaseTabService
 import com.ritense.case.web.rest.dto.CaseTabDto
+import com.ritense.document.domain.impl.JsonSchemaDocumentId.existingId
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
+import java.util.UUID
 
 @Controller
 @SkipComponentScan
@@ -38,6 +40,15 @@ class CaseTabResource(
         @PathVariable caseDefinitionName: String
     ): ResponseEntity<List<CaseTabDto>> {
         val tabs = caseTabService.getCaseTabs(caseDefinitionName)
+            .map { CaseTabDto.of(it) }
+        return ResponseEntity.ok(tabs)
+    }
+
+    @GetMapping("/v1/document/{documentId}/tab")
+    fun getCaseTabsForDocument(
+        @PathVariable documentId: UUID
+    ): ResponseEntity<List<CaseTabDto>> {
+        val tabs = caseTabService.getCaseTabs(existingId(documentId))
             .map { CaseTabDto.of(it) }
         return ResponseEntity.ok(tabs)
     }

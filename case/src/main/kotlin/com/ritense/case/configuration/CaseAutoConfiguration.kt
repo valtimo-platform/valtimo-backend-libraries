@@ -53,6 +53,7 @@ import com.ritense.case.web.rest.CaseTabResource
 import com.ritense.case.web.rest.TaskListResource
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentSearchService
+import com.ritense.document.service.DocumentService
 import com.ritense.exporter.ExportService
 import com.ritense.importer.ImportService
 import com.ritense.valtimo.changelog.service.ChangelogDeployer
@@ -155,6 +156,7 @@ class CaseAutoConfiguration {
         documentDefinitionService: DocumentDefinitionService,
         applicationEventPublisher: ApplicationEventPublisher,
         userManagementService: UserManagementService,
+        documentService: DocumentService
     ): CaseTabService {
         return CaseTabService(
             caseTabRepository,
@@ -162,6 +164,7 @@ class CaseAutoConfiguration {
             authorizationService,
             applicationEventPublisher,
             userManagementService,
+            documentService
         )
     }
 

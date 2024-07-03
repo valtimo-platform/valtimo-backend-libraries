@@ -17,7 +17,9 @@
 package com.ritense.case.service
 
 import com.ritense.authorization.Action.Companion.deny
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.request.AuthorizationResourceContext
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.case.domain.CaseTab
 import com.ritense.case.domain.CaseTabId
@@ -30,7 +32,11 @@ import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateOrderDto
 import com.ritense.case_.service.event.CaseTabCreatedEvent
+import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentDefinitionService
+import com.ritense.document.service.DocumentService
+import com.ritense.document.service.findByOrNull
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Sort
@@ -45,6 +51,7 @@ class CaseTabService(
     private val authorizationService: AuthorizationService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val userManagementService: UserManagementService,
+    private val documentService: DocumentService
 ) {
     fun getCaseTab(caseDefinitionName: String, key: String): CaseTab {
         val caseTab = caseTabRepository.getReferenceById(CaseTabId(caseDefinitionName, key))
@@ -67,6 +74,31 @@ class CaseTabService(
             )
         )
         return caseTabRepository.findAll(spec.and(byCaseDefinitionName(caseDefinitionName)), Sort.by(TAB_ORDER))
+    }
+
+    @Transactional(readOnly = true)
+    fun getCaseTabs(documentId: JsonSchemaDocumentId): List<CaseTab> {
+        val document = runWithoutAuthorization { documentService.findByOrNull(documentId) }
+
+        val spec = authorizationService.getAuthorizationSpecification(
+            EntityAuthorizationRequest(
+                CaseTab::class.java,
+                CaseTabActionProvider.VIEW
+            ).withContext(
+                AuthorizationResourceContext(
+                    JsonSchemaDocument::class.java,
+                    document as JsonSchemaDocument
+                )
+            )
+        )
+        
+        return caseTabRepository.findAll(
+            spec.and(
+                byCaseDefinitionName(
+                    document.definitionId().name()
+                )
+            ), Sort.by(TAB_ORDER)
+        )
     }
 
     fun createCaseTab(caseDefinitionName: String, caseTabDto: CaseTabDto): CaseTab {
