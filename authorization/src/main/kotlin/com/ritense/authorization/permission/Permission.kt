@@ -35,8 +35,8 @@ import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
-import java.util.UUID
 import org.hibernate.annotations.Type
+import java.util.UUID
 
 @Entity
 @Table(name = "permission")
@@ -181,11 +181,11 @@ data class Permission(
         contextResourceType: Class<U>?,
         contextEntity: Any?
     ): Boolean {
-        return (this.contextResourceType == null
+        return this.contextResourceType == null
             || (contextResourceType == this.contextResourceType
-                && (contextConditionContainer?.let { container ->
+                && contextConditionContainer?.let { container ->
                     container.conditions
                         .all { it.isValid(contextEntity!!) }
-                    } == true)))
+                    }?: false)
     }
 }
