@@ -24,7 +24,7 @@ import org.springframework.context.ApplicationContextAware;
 
 public class FormSpringContextHelper implements ApplicationContextAware {
 
-    private static ApplicationContext applicationContext;
+    public static ApplicationContext applicationContext;
 
     @Override
     public void setApplicationContext(@Nonnull ApplicationContext applicationContext) {
@@ -37,6 +37,14 @@ public class FormSpringContextHelper implements ApplicationContextAware {
 
     static Map<String, FormFieldDataResolver> getFormFieldDataResolver() {
         return applicationContext.getBeansOfType(FormFieldDataResolver.class);
+    }
+
+    static public <T> T getBean(Class<T> beanClass) {
+        if (applicationContext != null) {
+            return applicationContext.getBean(beanClass);
+        } else {
+            throw new IllegalStateException("Cannot getBean " + beanClass);
+        }
     }
 
 }

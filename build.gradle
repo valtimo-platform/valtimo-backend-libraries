@@ -71,7 +71,8 @@ sonar {
 }
 
 dockerCompose {
-    useDockerComposeV2 = false
+    useDockerComposeV2 = true
+    removeOrphans = true
 }
 
 configurations {
@@ -159,7 +160,7 @@ subprojects { subproject ->
         }
 
         dockerCompose {
-            useDockerComposeV2 = false
+            useDockerComposeV2 = true
         }
 
         tasks.withType(KotlinCompile).configureEach {

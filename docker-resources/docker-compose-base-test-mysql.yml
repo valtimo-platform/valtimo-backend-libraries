@@ -1,4 +1,3 @@
-version: '3.9'
 services:
     db:
         image: mysql:8.3.0
@@ -65,4 +64,6 @@ services:
 #   url: jdbc:mysql://localhost:3348/outbox-rabbitmq-test
 #   url: jdbc:mysql://localhost:3349/localization-test
 #   url: jdbc:mysql://localhost:3351/zaakdetails-test
+#   url: jdbc:mysql://localhost:3352/form-view-model-test
+#   url: jdbc:mysql://localhost:3352/command-handling-test
 #   url: localhost:55672 <--rabbitmq
