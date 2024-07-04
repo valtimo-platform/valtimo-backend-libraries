@@ -18,6 +18,8 @@ package com.ritense.authorization.permission
 
 import com.ritense.authorization.Action
 import com.ritense.authorization.criteriabuilder.AbstractQueryWrapper
+import com.ritense.authorization.request.AuthorizationRequest
+import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.role.Role
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import io.hypersistence.utils.hibernate.type.json.JsonType
@@ -33,8 +35,8 @@ import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
-import java.util.UUID
 import org.hibernate.annotations.Type
+import java.util.UUID
 
 @Entity
 @Table(name = "permission")
@@ -118,19 +120,12 @@ data class Permission(
         criteriaBuilder: CriteriaBuilder,
         resourceType: Class<T>,
         queryDialectHelper: QueryDialectHelper,
-    ): Predicate = toPredicate(root, query, criteriaBuilder, resourceType, queryDialectHelper, null, null)
-
-    fun <T : Any> toPredicate(
-        root: Root<T>,
-        query: AbstractQuery<*>,
-        criteriaBuilder: CriteriaBuilder,
-        resourceType: Class<T>,
-        queryDialectHelper: QueryDialectHelper,
-        contextResourceType: Class<*>? = null,
-        contextEntity: Any? = null
     ): Predicate {
+        val requestContextResourceType: Class<*>? = null
+        val requestContextEntity: Any? = null
+
         require(
-            appliesInContext(contextResourceType, contextEntity)
+            appliesInContext(requestContextResourceType, requestContextEntity)
         )
 
         val customQuery = AbstractQueryWrapper(query)
@@ -148,15 +143,49 @@ data class Permission(
             )
     }
 
-    private fun <U> appliesInContext(
+    fun <T : Any> toPredicate(
+        root: Root<T>,
+        query: AbstractQuery<*>,
+        criteriaBuilder: CriteriaBuilder,
+        request: AuthorizationRequest<T>,
+        queryDialectHelper: QueryDialectHelper,
+    ): Predicate {
+        var requestContextResourceType: Class<*>? = null
+        var requestContextEntity: Any? = null
+
+        if (request is EntityAuthorizationRequest) {
+            requestContextResourceType = request.context?.resourceType
+            requestContextEntity = request.context?.entity
+        }
+
+        require(
+            appliesInContext(requestContextResourceType, requestContextEntity)
+        )
+
+        val customQuery = AbstractQueryWrapper(query)
+        return criteriaBuilder
+            .and(
+                *conditionContainer.conditions.map {
+                    it.toPredicate(
+                        root,
+                        customQuery,
+                        criteriaBuilder,
+                        request.resourceType,
+                        queryDialectHelper
+                    )
+                }.toTypedArray()
+            )
+    }
+
+    fun <U> appliesInContext(
         contextResourceType: Class<U>?,
         contextEntity: Any?
     ): Boolean {
-        return (this.contextResourceType == null
+        return this.contextResourceType == null
             || (contextResourceType == this.contextResourceType
-                && (contextConditionContainer?.let { container ->
+                && contextConditionContainer?.let { container ->
                     container.conditions
                         .all { it.isValid(contextEntity!!) }
-                    } == true)))
+                    }?: false)
     }
 }

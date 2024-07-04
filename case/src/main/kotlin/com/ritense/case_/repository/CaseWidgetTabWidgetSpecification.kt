@@ -46,8 +46,8 @@ class CaseWidgetTabWidgetSpecification(
                     root,
                     query,
                     criteriaBuilder,
-                    authRequest.resourceType,
-                    queryDialectHelper
+                    authRequest,
+                    queryDialectHelper,
                 )
             }.toList()
         return combinePredicates(criteriaBuilder, predicates)

@@ -56,7 +56,7 @@ class NoteSpecification(
                     root,
                     query,
                     criteriaBuilder,
-                    authRequest.resourceType,
+                    authRequest,
                     queryDialectHelper
                 )
             }.toList()

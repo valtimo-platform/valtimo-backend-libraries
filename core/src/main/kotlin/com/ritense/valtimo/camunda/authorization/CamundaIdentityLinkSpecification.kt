@@ -50,7 +50,7 @@ class CamundaIdentityLinkSpecification(
                     root,
                     query,
                     criteriaBuilder,
-                    authRequest.resourceType,
+                    authRequest,
                     queryDialectHelper
                 )
             }
