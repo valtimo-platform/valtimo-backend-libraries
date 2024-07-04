@@ -25,7 +25,7 @@ import org.hibernate.annotations.Type
 
 @Entity
 @DiscriminatorValue("custom")
-class CustomCaseWidget(
+open class CustomCaseWidget(
     key: String, title: String, order: Int, width: Int, highContrast: Boolean,
     @Type(value = JsonType::class)
     @Column(name = "properties", nullable = false)
