@@ -50,7 +50,7 @@ class SearchFieldV2Service(
             )
         }
 
-        val existingSearchFieldV2 = findByOwnerIdAndKey(ownerId, key)
+        val existingSearchFieldV2 = findByOwnerTypeAndOwnerIdAndKey(searchFieldV2Dto.ownerType, ownerId, key)
             ?: throw IllegalStateException("Failed to update search field. No Search field found with ownerId '$ownerId' and key '$key'")
 
         return searchFieldV2Repository.save(
@@ -68,14 +68,17 @@ class SearchFieldV2Service(
 
     fun findAllByOwnerType(ownerId: String) = searchFieldV2Repository.findAllByOwnerTypeOrderByOrder(ownerId)
 
+    @Deprecated("Since 12.1.0", ReplaceWith("com.ritense.search.service.SearchFieldV2Service.findAllByOwnerTypeAndOwnerId()"))
     fun findAllByOwnerId(ownerId: String) = searchFieldV2Repository.findAllByOwnerTypeAndOwnerIdOrderByOrder(LEGACY_OWNER_TYPE, ownerId)
 
     fun findAllByOwnerTypeAndOwnerId(ownerType: String, ownerId: String) = searchFieldV2Repository.findAllByOwnerTypeAndOwnerIdOrderByOrder(ownerType, ownerId)
 
+    @Deprecated("Since 12.1.0", ReplaceWith("com.ritense.search.service.SearchFieldV2Service.findByOwnerTypeAndOwnerIdAndKey()"))
     fun findByOwnerIdAndKey(ownerId: String, key: String) = searchFieldV2Repository.findByOwnerTypeAndOwnerIdAndKeyOrderByOrder(LEGACY_OWNER_TYPE, ownerId, key)
 
     fun findByOwnerTypeAndOwnerIdAndKey(ownerType: String, ownerId: String, key: String) = searchFieldV2Repository.findByOwnerTypeAndOwnerIdAndKeyOrderByOrder(ownerType, ownerId, key)
 
+    @Deprecated("Since 12.1.0", ReplaceWith("com.ritense.search.service.SearchFieldV2Service.delete()"))
     fun delete(ownerId: String, key: String) =
         with(findByOwnerIdAndKey(ownerId, key)) {
             this?.let { searchFieldV2Repository.delete(it) }

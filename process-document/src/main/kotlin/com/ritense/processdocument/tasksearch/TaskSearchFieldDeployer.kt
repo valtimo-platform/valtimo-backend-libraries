@@ -17,6 +17,7 @@
 package com.ritense.processdocument.tasksearch
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.processdocument.service.SEARCH_FIELD_OWNER_TYPE
 import com.ritense.search.deployment.SearchFieldDeployer
 import com.ritense.search.repository.SearchFieldV2Repository
 import com.ritense.search.service.SearchFieldV2Service
@@ -34,7 +35,7 @@ class TaskSearchFieldDeployer(
     }
 
     override fun ownerTypeKey(): String {
-        return "TaskListSearchColumns"
+        return SEARCH_FIELD_OWNER_TYPE
     }
 
     override fun changeSetKey(): String {
