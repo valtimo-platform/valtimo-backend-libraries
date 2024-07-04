@@ -35,6 +35,7 @@ class CaseTabResource(
     private val caseTabService: CaseTabService
 ) {
 
+    @Deprecated("Since 12.2.0")
     @GetMapping("/v1/case-definition/{caseDefinitionName}/tab")
     fun getCaseTabs(
         @PathVariable caseDefinitionName: String
