@@ -1,7 +1,7 @@
 spring:
     datasource:
         driver-class-name: org.postgresql.Driver
-        url: jdbc:postgresql://localhost:3349/script-test
+        url: jdbc:postgresql://localhost:3360/script-test
         username: valtimo
         password: password
         hikari:

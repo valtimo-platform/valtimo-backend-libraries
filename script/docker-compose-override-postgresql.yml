@@ -2,6 +2,6 @@ version: '3.9'
 services:
     db:
         ports:
-            - "3349:5432"
+            - "3360:5432"
         environment:
             - POSTGRES_DB=script-test
