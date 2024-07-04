@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,12 @@ package com.ritense.importer
 
 class ValtimoImportTypes {
     companion object {
+        // CORE
         const val CASE_DEFINITION_SETTINGS = "casesettings"
         const val CASE_LIST = "caselist"
         const val CASE_TAB = "casetab"
+        const val CASE_TASK_LIST = "casetasklist"
+        const val INTERNAL_CASE_STATUS = "internalcasestatus"
         const val DECISION_DEFINITION = "decisiondefinition"
         const val DOCUMENT_DEFINITION = "documentdefinition"
         const val FORM = "form"
@@ -29,5 +32,8 @@ class ValtimoImportTypes {
         const val PROCESS_DOCUMENT_LINK = "processdocumentlink"
         const val PROCESS_LINK = "processlink"
         const val SEARCH = "search"
+
+        // ZGW
+        const val ZGW_DOCUMENT_LIST_COLUMN = "zgwdocumentlistcolumn"
     }
 }

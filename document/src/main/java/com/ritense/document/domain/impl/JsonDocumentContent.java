@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,11 @@
 
 package com.ritense.document.domain.impl;
 
+import static com.ritense.document.domain.patch.JsonPatchFilterFlag.allowArrayRemovalOperations;
+import static com.ritense.document.domain.patch.JsonPatchFilterFlag.allowRemovalOperations;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.document.domain.DocumentContent;
@@ -23,15 +28,12 @@ import com.ritense.document.domain.diff.JsonDifferenceService;
 import com.ritense.document.domain.patch.JsonPatchService;
 import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.valtimo.contract.json.patch.JsonPatch;
-import java.util.Objects;
-import java.util.Optional;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import java.util.Objects;
+import java.util.Optional;
 import org.hibernate.annotations.Type;
-import static com.ritense.document.domain.patch.JsonPatchFilterFlag.allowArrayRemovalOperations;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable
 public class JsonDocumentContent implements DocumentContent {
@@ -56,7 +58,7 @@ public class JsonDocumentContent implements DocumentContent {
     public static JsonDocumentContent build(JsonNode currentContent, JsonNode modifiedContent, JsonPatch prePatch) {
         //Pre patching
         if (prePatch != null && !prePatch.patches().isEmpty()) {
-            JsonPatchService.apply(prePatch, currentContent);
+            JsonPatchService.apply(prePatch, currentContent, allowRemovalOperations());
         }
         return build(currentContent, modifiedContent);
     }

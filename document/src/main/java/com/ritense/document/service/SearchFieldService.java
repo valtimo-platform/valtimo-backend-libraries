@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package com.ritense.document.service;
 
+import static com.ritense.document.repository.SearchFieldRepository.byIdDocumentDefinitionName;
+import static com.ritense.document.service.SearchFieldActionProvider.VIEW_LIST;
+
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
@@ -28,18 +31,14 @@ import com.ritense.document.domain.impl.searchfield.SearchFieldMatchType;
 import com.ritense.document.exception.InvalidSearchFieldException;
 import com.ritense.document.repository.SearchFieldRepository;
 import com.ritense.document.web.rest.impl.SearchFieldMapper;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
-import org.zalando.problem.Status;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import static com.ritense.document.repository.SearchFieldRepository.byIdDocumentDefinitionName;
-import static com.ritense.document.service.SearchFieldActionProvider.VIEW_LIST;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.zalando.problem.Status;
 
 public class SearchFieldService {
 
@@ -155,16 +154,16 @@ public class SearchFieldService {
         if (!searchFieldDto.getDataType().equals(SearchFieldDataType.TEXT)
             && !searchFieldDto.getMatchType().equals(SearchFieldMatchType.EXACT)) {
             throw new InvalidSearchFieldException(
-                "Match type " + searchFieldDto.getMatchType().toString()
-                    + " is invalid for data type " + searchFieldDto.getDataType(),
+                "Match type " + searchFieldDto.getMatchType().toString() +
+                    " is invalid for data type " + searchFieldDto.getDataType(),
                 Status.BAD_REQUEST
             );
         }
         if (searchFieldDto.getDataType().equals(SearchFieldDataType.BOOLEAN)
             && searchFieldDto.getFieldType().equals(SearchFieldFieldType.RANGE)) {
             throw new InvalidSearchFieldException(
-                "Field type " + searchFieldDto.getFieldType().toString()
-                    + " is invalid for data type " + searchFieldDto.getDataType(),
+                "Field type " + searchFieldDto.getFieldType().toString() +
+                    " is invalid for data type " + searchFieldDto.getDataType(),
                 Status.BAD_REQUEST
             );
         }
@@ -172,8 +171,8 @@ public class SearchFieldService {
             || searchFieldDto.getFieldType().equals(SearchFieldFieldType.SINGLE_SELECT_DROPDOWN))
             && searchFieldDto.getDropdownDataProvider() == null) {
             throw new InvalidSearchFieldException(
-                "Field type " + searchFieldDto.getFieldType().toString()
-                    + " must have a datasource for the dropdown list.",
+                "Field type " + searchFieldDto.getFieldType().toString() +
+                    " must have a datasource for the dropdown list.",
                 Status.BAD_REQUEST
             );
         }

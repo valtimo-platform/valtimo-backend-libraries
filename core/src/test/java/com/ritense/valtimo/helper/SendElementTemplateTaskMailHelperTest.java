@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,14 @@
 
 package com.ritense.valtimo.helper;
 
-import com.ritense.valtimo.exception.ExpectedElementTemplatePropertyNotFoundException;
-import com.ritense.valtimo.exception.IllegalElementTemplatePropertyValueException;
-import org.junit.jupiter.api.Test;
-import java.util.HashMap;
-import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
+
+import com.ritense.valtimo.exception.ExpectedElementTemplatePropertyNotFoundException;
+import com.ritense.valtimo.exception.IllegalElementTemplatePropertyValueException;
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
 
 class SendElementTemplateTaskMailHelperTest {
 

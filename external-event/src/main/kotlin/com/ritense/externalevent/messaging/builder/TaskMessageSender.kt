@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.camunda.bpm.engine.delegate.DelegateTask
 import java.util.UUID
 
 /* Fluent API helper for sending a public/non-public task to the portal via email */
+@Deprecated("Since 12.0.0. No replacement available.")
 data class TaskMessageSender(
     val externalTaskService: ExternalTaskService,
     val documentService: JsonSchemaDocumentService,
@@ -54,6 +55,7 @@ data class TaskMessageSender(
     var document: JsonSchemaDocument? = null
 ) {
 
+    @Deprecated("Since 12.0.0")
     fun task(delegateTask: DelegateTask): TaskMessageSender {
         this.delegateTask = delegateTask
         val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(UUID.fromString(delegateTask.execution!!.processBusinessKey!!))
@@ -61,41 +63,49 @@ data class TaskMessageSender(
         return this
     }
 
+    @Deprecated("Since 12.0.0")
     fun form(formDefinitionName: String): TaskMessageSender {
         this.formDefinitionName = formDefinitionName
         return this
     }
 
+    @Deprecated("Since 12.0.0")
     fun mailTemplate(mailTemplate: String): TaskMessageSender {
         this.mailTemplate = mailTemplate
         return this
     }
 
+    @Deprecated("Since 12.0.0")
     fun mailTo(mailTo: String): TaskMessageSender {
         this.mailTo = document!!.content().getValueBy(JsonPointer.valueOf(mailTo)).orElseThrow().textValue()
         return this
     }
 
+    @Deprecated("Since 12.0.0")
     fun firstName(firstName: String): TaskMessageSender {
         this.firstName = document!!.content().getValueBy(JsonPointer.valueOf(firstName)).orElseThrow().textValue()
         return this
     }
 
+    @Deprecated("Since 12.0.0")
     fun lastName(lastName: String): TaskMessageSender {
         this.lastName = document!!.content().getValueBy(JsonPointer.valueOf(lastName)).orElseThrow().textValue()
         return this
     }
 
+    @Deprecated("Since 12.0.0")
     fun public(): TaskMessageSender {
         this.isPublicTask = true
         return this
     }
 
+    @Deprecated("Since 12.0.0")
     fun languageKey(languageKey: String): TaskMessageSender {
         this.languageKey = languageKey
         return this
     }
 
+    @Deprecated("Since 12.0.0")
     fun sendEmail(): TaskMessageSender {
         if (this.mailTemplate == null) {
             mailSender.send(createRawMailMessage())
@@ -105,6 +115,7 @@ data class TaskMessageSender(
         return this
     }
 
+    @Deprecated("Since 12.0.0")
     fun publishTask() {
         externalTaskService.publishPortalTask(
             formDefinitionName!!,

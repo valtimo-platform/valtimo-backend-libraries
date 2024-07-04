@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,8 +62,7 @@ public class AuditSearchServiceImpl implements AuditSearchService {
 
         final List<Predicate> predicateList = criteriaList
             .stream()
-            .map((searchCriteria) ->
-                cb.and(
+            .map(searchCriteria -> cb.and(
                     isNotNull(cb, root, searchCriteria.getPath(), searchCriteria.getValue()),
                     isNotNull(cb, root, "$.className", searchCriteria.getAuditEvent().getName())
                 )

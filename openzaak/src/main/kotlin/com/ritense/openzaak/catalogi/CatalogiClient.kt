@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import com.ritense.openzaak.service.impl.model.catalogi.BesluitType
 import org.springframework.web.client.RestTemplate
 import java.net.URI
 
+@Deprecated("Since 12.0.0. Please use the catalogi-api module.")
 class CatalogiClient(
     private val restTemplate: RestTemplate,
     private val openZaakConfigService: OpenZaakConfigService,

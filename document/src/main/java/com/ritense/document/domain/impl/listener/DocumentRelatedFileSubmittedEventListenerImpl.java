@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@
 
 package com.ritense.document.domain.impl.listener;
 
-import com.ritense.authorization.AuthorizationContext;
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
+
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.JsonSchemaRelatedFile;
 import com.ritense.document.service.DocumentService;
@@ -24,27 +25,29 @@ import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileSubmittedEvent;
 import com.ritense.valtimo.contract.listener.DocumentRelatedFileEventListener;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
+import java.util.Optional;
 
 public class DocumentRelatedFileSubmittedEventListenerImpl implements DocumentRelatedFileEventListener {
 
     private final DocumentService documentService;
-    private final ResourceService resourceService;
+    private final Optional<ResourceService> resourceServiceOpt;
 
-    public DocumentRelatedFileSubmittedEventListenerImpl(DocumentService documentService, ResourceService resourceService) {
+    public DocumentRelatedFileSubmittedEventListenerImpl(DocumentService documentService, Optional<ResourceService> resourceServiceOpt) {
         this.documentService = documentService;
-        this.resourceService = resourceService;
+        this.resourceServiceOpt = resourceServiceOpt;
     }
 
     @Override
     public void handle(DocumentRelatedFileSubmittedEvent event) {
-        var resource = resourceService.getResource(event.getResourceId());
-        AuthorizationContext.runWithoutAuthorization(() ->
-        {
-            documentService.assignRelatedFile(
-                JsonSchemaDocumentId.existingId(event.getDocumentId()),
-                JsonSchemaRelatedFile.from(resource).withCreatedBy(SecurityUtils.getCurrentUserLogin())
-            );
-            return null;
+        resourceServiceOpt.ifPresent(resourceService -> {
+            var resource = resourceService.getResource(event.getResourceId());
+            runWithoutAuthorization(() -> {
+                documentService.assignRelatedFile(
+                    JsonSchemaDocumentId.existingId(event.getDocumentId()),
+                    JsonSchemaRelatedFile.from(resource).withCreatedBy(SecurityUtils.getCurrentUserLogin())
+                );
+                return null;
+            });
         });
     }
 }

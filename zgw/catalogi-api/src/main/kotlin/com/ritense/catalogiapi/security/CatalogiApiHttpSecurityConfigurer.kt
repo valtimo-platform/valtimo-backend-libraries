@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.ritense.catalogiapi.security
 
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod.GET
@@ -32,6 +33,9 @@ class CatalogiApiHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/statustype")).authenticated()
                     .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/resultaattype")).authenticated()
                     .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/besluittype")).authenticated()
+
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/zgw/zaaktype")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionName}/catalogi-eigenschappen")).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

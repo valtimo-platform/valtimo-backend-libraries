@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,14 @@ package com.ritense.valtimo.processlink
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.service.PluginService
+import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.processlink.mapper.PluginProcessLinkMapper
+import com.ritense.valtimo.processlink.service.PluginProcessLinkService
+import com.ritense.valtimo.processlink.service.PluginProcessLinkServiceImpl
 import com.ritense.valtimo.processlink.service.PluginSupportedProcessLinksHandler
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 
 @AutoConfiguration
 class ProcessLinkAutoConfiguration {
@@ -75,5 +78,17 @@ class ProcessLinkAutoConfiguration {
     @ConditionalOnMissingBean(PluginSupportedProcessLinksHandler::class)
     fun pluginSupportedProcessLinksHandler(pluginService: PluginService): PluginSupportedProcessLinksHandler {
         return PluginSupportedProcessLinksHandler(pluginService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PluginProcessLinkService::class)
+    fun pluginProcessLinkService(
+        processLinkService: ProcessLinkService,
+        pluginProcessLinkMapper: PluginProcessLinkMapper,
+    ): PluginProcessLinkService {
+        return PluginProcessLinkServiceImpl(
+            processLinkService,
+            pluginProcessLinkMapper
+        )
     }
 }

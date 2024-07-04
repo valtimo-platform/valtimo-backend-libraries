@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,14 @@ package com.ritense.form.repository;
 import com.ritense.form.domain.FormDefinition;
 import com.ritense.form.domain.FormIoFormDefinition;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import java.util.Optional;
-import java.util.UUID;
 
 @Repository
 public interface FormDefinitionRepository extends JpaRepository<FormIoFormDefinition, UUID> {
@@ -35,5 +37,6 @@ public interface FormDefinitionRepository extends JpaRepository<FormIoFormDefini
 
     Optional<FormIoFormDefinition> findByNameIgnoreCase(String name);
 
-    Page<FormDefinition> findAllByNameContainingIgnoreCase(String name, Pageable pageable);
+    @Query("SELECT f FROM FormIoFormDefinition f WHERE upper(f.name) LIKE upper(concat('%', :name, '%'))")
+    Page<FormDefinition> findAllByNameContainingIgnoreCase(@Param("name") String name, Pageable pageable);
 }

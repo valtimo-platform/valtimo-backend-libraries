@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package com.ritense.document.service.impl;
 
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
@@ -23,9 +26,12 @@ import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
-import com.ritense.document.repository.impl.PostgresJsonSchemaDocumentSnapshotRepository;
+import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
+import com.ritense.document.repository.DocumentSnapshotRepository;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSnapshotService;
+import jakarta.inject.Inject;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -33,10 +39,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.test.context.support.WithMockUser;
-import jakarta.inject.Inject;
-import java.time.LocalDateTime;
-import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("integration")
 @SpringBootTest(properties = {"valtimo.versioning.enabled=true"})
@@ -47,7 +49,7 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
     @Inject
     private DocumentDefinitionService documentDefinitionService;
     @Inject
-    private PostgresJsonSchemaDocumentSnapshotRepository documentSnapshotRepository;
+    private DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository;
     @Inject
     protected DocumentSnapshotService documentSnapshotService;
 
@@ -110,6 +112,7 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
             new JsonDocumentContent("{\"street\": \"Kanaalkade\"}").asJson()
         );
 
+        documentService.setInternalStatus(document.id(), "started");
         final var modifiedDocument = (JsonSchemaDocument) documentService.modifyDocument(request).resultingDocument().orElseThrow();
         final var page = documentSnapshotService.getDocumentSnapshots(
             null,
@@ -122,10 +125,17 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
         assertThat(page).isNotNull();
         assertThat(page.getTotalElements()).isEqualTo(2);
         assertThat(page.getTotalPages()).isEqualTo(1);
-        assertThat(page.getContent().get(0).document().content().asJson().toString())
-            .isIn(document.content().asJson().toString(), modifiedDocument.content().asJson().toString());
-        assertThat(page.getContent().get(1).document().content().asJson().toString())
-            .isIn(document.content().asJson().toString(), modifiedDocument.content().asJson().toString());
+        var originalSnapshot = page.getContent()
+            .stream()
+            .filter(snapshot -> snapshot.document().content().asJson().toString().equals(document.content().asJson().toString()))
+            .findFirst().orElse(null);
+        assertThat(originalSnapshot).isNotNull();
+        var modifiedSnapshot = page.getContent()
+            .stream()
+            .filter(snapshot -> snapshot.document().content().asJson().toString().equals(modifiedDocument.content().asJson().toString()))
+            .findFirst().orElse(null);
+        assertThat(modifiedSnapshot).isNotNull();
+        assertThat(modifiedSnapshot.document().internalStatus()).isEqualTo("started");
     }
 
     private Document createDocument(String content) {

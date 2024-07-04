@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,29 +19,36 @@ package com.ritense.documentenapi
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
+import com.ritense.documentenapi.DocumentenApiPlugin.Companion.PLUGIN_KEY
 import com.ritense.documentenapi.client.CreateDocumentRequest
 import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.client.DocumentStatusType
 import com.ritense.documentenapi.client.DocumentenApiClient
+import com.ritense.documentenapi.client.PatchDocumentRequest
 import com.ritense.documentenapi.event.DocumentCreated
+import com.ritense.documentenapi.service.DocumentDeleteHandler
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
+import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.annotation.PluginProperty
-import com.ritense.plugin.domain.ActivityType
+import com.ritense.plugin.domain.EventType
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zgw.domain.Vertrouwelijkheid
+import jakarta.validation.ValidationException
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.hibernate.validator.constraints.Length
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.web.util.UriComponentsBuilder
 import java.io.InputStream
 import java.net.URI
 import java.time.LocalDate
 
 @Plugin(
-    key = "documentenapi",
+    key = PLUGIN_KEY,
     title = "Documenten API",
     description = "Connects to the Documenten API to store documents"
 )
@@ -50,6 +57,7 @@ class DocumentenApiPlugin(
     private val storageService: TemporaryResourceStorageService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val objectMapper: ObjectMapper,
+    private val documentDeleteHandlers: List<DocumentDeleteHandler>,
 ) {
     @Url
     @PluginProperty(key = URL_PROPERTY, secret = false)
@@ -62,11 +70,14 @@ class DocumentenApiPlugin(
     @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
     lateinit var authenticationPluginConfiguration: DocumentenApiAuthentication
 
+    @PluginProperty(key = "apiVersion", secret = false, required = false)
+    var apiVersion: String? = null
+
     @PluginAction(
         key = "store-temp-document",
         title = "Store temporary document",
         description = "Store a temporary document in the Documenten API",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun storeTemporaryDocument(
         execution: DelegateExecution,
@@ -105,7 +116,7 @@ class DocumentenApiPlugin(
         key = "store-uploaded-document",
         title = "Store uploaded document",
         description = "Store an uploaded document in the Documenten API",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun storeUploadedDocument(
         execution: DelegateExecution
@@ -126,7 +137,7 @@ class DocumentenApiPlugin(
             contentAsInputStream = contentAsInputStream,
             description = metadata["description"] as String?,
             informationObjectType = metadata["informatieobjecttype"] as String,
-            storedDocumentUrl = DOCUMENT_URL_PROCESS_VAR
+            storedDocumentUrl = DOCUMENT_URL_PROCESS_VAR,
         )
     }
 
@@ -134,7 +145,7 @@ class DocumentenApiPlugin(
         key = "download-document",
         title = "Download document",
         description = "Download a document from the Documenten API and store it as a temporary document",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun downloadInformatieObject(
         execution: DelegateExecution,
@@ -177,6 +188,38 @@ class DocumentenApiPlugin(
         return client.getInformatieObject(authenticationPluginConfiguration, objectUrl)
     }
 
+    fun deleteInformatieObject(objectUrl: URI) {
+        documentDeleteHandlers.forEach { it.preDocumentDelete(objectUrl) }
+        client.deleteInformatieObject(authenticationPluginConfiguration, objectUrl)
+    }
+
+    fun createInformatieObjectUrl(objectId: String): URI {
+        return UriComponentsBuilder
+            .fromUri(url)
+            .pathSegment("enkelvoudiginformatieobjecten", objectId)
+            .build()
+            .toUri()
+    }
+
+    fun modifyInformatieObject(documentUrl: URI, patchDocumentRequest: PatchDocumentRequest): DocumentInformatieObject {
+        val documentLock = client.lockInformatieObject(authenticationPluginConfiguration, documentUrl)
+        try {
+            patchDocumentRequest.lock = documentLock.lock
+            val modifiedDocument =
+                client.modifyInformatieObject(authenticationPluginConfiguration, documentUrl, patchDocumentRequest)
+            return modifiedDocument
+        } finally {
+            client.unlockInformatieObject(authenticationPluginConfiguration, documentUrl, documentLock)
+        }
+    }
+
+    @PluginEvent(invokedOn = [EventType.CREATE, EventType.UPDATE])
+    fun onSave() {
+        if (apiVersion != null && !API_VERSIONS.contains(apiVersion)) {
+            throw ValidationException("Unknown API version '$apiVersion'.")
+        }
+    }
+
     private fun storeDocument(
         execution: DelegateExecution,
         metadata: Map<String, Any>,
@@ -188,7 +231,7 @@ class DocumentenApiPlugin(
         contentAsInputStream: InputStream,
         description: String?,
         informationObjectType: String,
-        storedDocumentUrl: String
+        storedDocumentUrl: String,
     ) {
         val request = CreateDocumentRequest(
             bronorganisatie = bronorganisatie,
@@ -199,11 +242,13 @@ class DocumentenApiPlugin(
             status = status,
             taal = language ?: DEFAULT_LANGUAGE,
             bestandsnaam = filename,
+            bestandsomvang = (metadata[MetadataType.FILE_SIZE.key] as String?)?.toLong(),
             inhoud = contentAsInputStream,
             beschrijving = description,
             ontvangstdatum = getLocalDateFromMetaData(metadata, "receiptDate"),
             verzenddatum = getLocalDateFromMetaData(metadata, "sendDate"),
             informatieobjecttype = informationObjectType,
+            formaat = metadata["contentType"] as String?,
         )
 
         val documentCreateResult = client.storeDocument(authenticationPluginConfiguration, url, request)
@@ -235,7 +280,8 @@ class DocumentenApiPlugin(
     private fun getStatusFromMetaData(metadata: Map<String, Any>): DocumentStatusType {
         val status = metadata["status"] as String?
         return if (status != null) {
-            DocumentStatusType.fromKey(status)
+            DocumentStatusType.fromKey(status) ?:
+               throw IllegalStateException("Failed to store document. Invalid status '$status' found in metadata.")
         } else {
             DocumentStatusType.DEFINITIEF
         }
@@ -246,11 +292,13 @@ class DocumentenApiPlugin(
     }
 
     companion object {
+        const val PLUGIN_KEY = "documentenapi"
         const val URL_PROPERTY = "url"
         const val DEFAULT_AUTHOR = "GZAC"
         const val DEFAULT_LANGUAGE = "nld"
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"
         const val DOCUMENT_URL_PROCESS_VAR = "documentUrl"
+        val API_VERSIONS = arrayOf("1.4.3", "1.4.1", "1.4.0", "1.3.0", "1.2.0", "1.1.0", "1.0.0", "1.0.1", "1.0.0")
 
         fun findConfigurationByUrl(url: URI) = { properties: JsonNode ->
             url.toString().startsWith(properties.get(URL_PROPERTY).textValue())

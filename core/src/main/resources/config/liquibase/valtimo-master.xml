@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright 2015-2023 Ritense BV, the Netherlands.
+  ~ Copyright 2015-2024 Ritense BV, the Netherlands.
   ~
   ~ Licensed under EUPL, Version 1.2 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -51,6 +51,7 @@
     <include file="changelog/20230511-add-user-settings.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20230901-remove-authority.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20230904-choice-field-values-change-deprecated-datatype.xml" relativeToChangelogFile="true"/>
+    <include file="camunda/20240607-camunda-upgrade-7-21-0-changelog.xml" relativeToChangelogFile="true"/>
 
 
 </databaseChangeLog>

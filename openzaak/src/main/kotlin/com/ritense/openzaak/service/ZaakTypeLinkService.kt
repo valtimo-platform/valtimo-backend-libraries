@@ -25,6 +25,7 @@ import com.ritense.openzaak.service.result.ModifyServiceTaskHandlerResult
 import com.ritense.openzaak.service.result.RemoveServiceTaskHandlerResult
 import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
 
+@Deprecated("Since 12.0.0. Use ZaakTypeLinkService in zaken-api module instead")
 interface ZaakTypeLinkService {
 
     fun get(documentDefinitionName: String): ZaakTypeLink?
@@ -42,5 +43,7 @@ interface ZaakTypeLinkService {
     fun modify(zaakTypeLink: ZaakTypeLink)
 
     fun removeServiceTaskHandler(zaakTypeLinkId: ZaakTypeLinkId, processDefinitionKey: String, serviceTaskId: String): RemoveServiceTaskHandlerResult
+
+    fun getByProcess(processDefinitionKey: String): List<ZaakTypeLink?>?
 
 }

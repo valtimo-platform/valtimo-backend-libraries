@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import com.ritense.openzaak.domain.connector.OpenZaakConfig
 import com.ritense.openzaak.domain.connector.OpenZaakProperties
 import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.service.ZaakTypeLinkService
+import com.ritense.openzaak.service.impl.ZaakTypeService
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
@@ -39,10 +40,13 @@ import okhttp3.mockwebserver.RecordedRequest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpMethod
 import java.net.URI
+import kotlin.contracts.ExperimentalContracts
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -79,10 +83,14 @@ internal class TaakObjectServiceIntTest : BaseIntegrationTest() {
     private val PROCESS_DEFINITION_KEY = "portal-task"
     private val DOCUMENT_DEFINITION_KEY = "testschema"
 
+    @OptIn(ExperimentalContracts::class)
     @BeforeEach
     internal fun setUp() {
         startMockServer()
         setupTaakConnector()
+
+        whenever(bsnProvider.getBurgerServiceNummer(any())).thenReturn("12345")
+        whenever(kvkProvider.getKvkNummer(any())).thenReturn(null)
     }
 
     @AfterEach
@@ -155,9 +163,10 @@ internal class TaakObjectServiceIntTest : BaseIntegrationTest() {
                 val response = when (request.method + " " + request.path?.substringBefore('?')) {
                     "POST /api/v2/objects" -> mockResponseFromFile("/data/post-create-object.json")
                     "POST /zaken/api/v1/zaken" -> mockResponseFromFile("/data/post-create-zaak.json")
-                    "GET /zaken/api/v1/rollen" -> mockResponseFromFile("/data/get-rol.json")
                     "GET /api/v1/kanaal" -> mockResponseFromFile("/data/get-kanalen.json")
                     "POST /api/v1/abonnement" -> mockResponseFromFile("/data/post-abonnement.json")
+                    "GET /catalogi/api/v1/zaaktypen" -> mockResponseFromFile("/data/get-zaaktypen.json")
+                    "GET /catalogi/api/v1/zaaktypen/4e9c2359-83ac-4e3b-96b6-3f278f1fc773" -> mockResponseFromFile("/data/get-zaaktype.json")
                     else -> MockResponse().setResponseCode(404)
                 }
                 return response

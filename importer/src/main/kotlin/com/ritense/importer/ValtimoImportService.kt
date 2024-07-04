@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,18 +60,20 @@ open class ValtimoImportService(
         var result = importers
 
         while (result.isNotEmpty()) {
+            //Filter out importers of which any of the dependencies cannot be resolved
             val filtered = result.filter { importer ->
                 importer.dependsOn().all { type ->
-                    result.any { it.type() == type }.apply {
-                        if (this) {
-                            logger.warn { "Importer ${importer.type()} depends on '$type', which cannot be resolved. Importer will not be used!" }
+                    result.any { it.type() == type }
+                        .also { dependencyFound ->
+                            if (!dependencyFound) {
+                                logger.warn { "Importer ${importer.type()} depends on '$type', which cannot be resolved. Importer will not be used!" }
+                            }
                         }
-                    }
                 }
             }.toSet()
 
             // Check if any importer was filtered. If not, we can stop the loop
-            if(filtered.size == result.size) {
+            if (filtered.size == result.size) {
                 break
             }
 
@@ -89,8 +91,8 @@ open class ValtimoImportService(
         val orderedImporters = LinkedHashMap<String, Importer>()
         while (orderedImporters.size < importers.size) {
             importers.filter {
-                !orderedImporters.containsKey(it.type()) &&
-                    orderedImporters.keys.containsAll(it.dependsOn())
+                !orderedImporters.containsKey(it.type())
+                    && orderedImporters.keys.containsAll(it.dependsOn())
             }.apply {
                 if (this.isEmpty()) {
                     throw CyclicImporterDependencyException(orderedImporters.keys)
@@ -127,7 +129,7 @@ open class ValtimoImportService(
         } catch (ex: Exception) {
             throw InvalidImportZipException(ex.message)
         }.apply {
-            if(this.isEmpty()) {
+            if (this.isEmpty()) {
                 throw InvalidImportZipException("Archive was empty or not a zip")
             }
         }
@@ -143,7 +145,7 @@ open class ValtimoImportService(
             orderedImporters.filter { importer ->
                 importer.supports(entry.fileName)
             }.apply {
-                if(this.isEmpty()) {
+                if (this.isEmpty()) {
                     logger.info { "No importer candidate found for file ${entry.fileName}." }
                 } else if (this.size > 1) {
                     throw TooManyImportCandidatesException(
@@ -168,6 +170,7 @@ open class ValtimoImportService(
 
     private companion object {
         val logger: KLogger = KotlinLogging.logger {}
+
         class WrappedImporter(
 
             private val importer: Importer

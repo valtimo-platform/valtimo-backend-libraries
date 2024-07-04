@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,14 +35,14 @@ import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.service.BpmnModelService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
+import jakarta.persistence.EntityNotFoundException
+import java.net.MalformedURLException
+import java.net.URI
 import mu.KotlinLogging
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.VariableScope
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 import org.springframework.context.event.EventListener
-import java.net.MalformedURLException
-import java.net.URI
-import jakarta.persistence.EntityNotFoundException
 
 class TaakObjectListener(
     private val openNotificatieService: OpenNotificatieService,

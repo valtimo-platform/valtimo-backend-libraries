@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,21 +26,26 @@ import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
+@Deprecated("Since 12.0.0")
 class ConnectorHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeHttpRequests { requests ->
-                requests.requestMatchers(antMatcher(GET, "/api/v1/connector/instance")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(POST, "/api/v1/connector/instance")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(PUT, "/api/v1/connector/instance")).hasAuthority(ADMIN)
+                requests.requestMatchers(antMatcher(GET, INSTANCE_URL)).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, INSTANCE_URL)).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, INSTANCE_URL)).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "/api/v1/connector/type")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(GET, "/api/v1/connector/instance/{typeId}")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(GET, "/api/v1/connector/instance/{instanceId}")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(DELETE, "/api/v1/connector/instance/{instanceId}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "$INSTANCE_URL/{typeId}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "$INSTANCE_URL/{instanceId}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, "$INSTANCE_URL/{instanceId}")).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
+    }
+
+    companion object {
+        private const val INSTANCE_URL = "/api/v1/connector/instance"
     }
 }

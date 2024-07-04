@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package com.ritense.case
 
 import com.ritense.case.deployment.CaseTabDeploymentService
+import com.ritense.case.deployment.CaseTaskListDeploymentService
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
@@ -44,5 +45,8 @@ class BaseIntegrationTest {
 
     @SpyBean
     lateinit var caseTabDeploymentService: CaseTabDeploymentService
+
+    @SpyBean
+    lateinit var caseTaskListDeploymentService: CaseTaskListDeploymentService
 }
 

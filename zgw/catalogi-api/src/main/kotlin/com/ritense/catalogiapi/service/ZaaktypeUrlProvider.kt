@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,12 @@
 
 package com.ritense.catalogiapi.service
 
+import com.ritense.catalogiapi.exception.ZaakTypeLinkNotFoundException
 import java.net.URI
 
 interface ZaaktypeUrlProvider {
+    @Throws(ZaakTypeLinkNotFoundException::class)
     fun getZaaktypeUrl(documentDefinitionName: String): URI
+    @Throws(ZaakTypeLinkNotFoundException::class)
     fun getZaaktypeUrlByCaseDefinitionName(caseDefinitionName: String): URI
 }

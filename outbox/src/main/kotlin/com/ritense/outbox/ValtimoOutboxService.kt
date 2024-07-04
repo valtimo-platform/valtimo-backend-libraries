@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.outbox.domain.BaseEvent
 import com.ritense.outbox.domain.CloudEventData
 import com.ritense.outbox.exception.OutboxTransactionReadOnlyException
+import com.ritense.outbox.repository.OutboxMessageRepository
 import io.cloudevents.core.builder.CloudEventBuilder
 import io.cloudevents.core.provider.EventFormatProvider
 import io.cloudevents.jackson.JsonFormat
@@ -90,7 +91,7 @@ open class ValtimoOutboxService(
         outboxMessageRepository.save(outboxMessage)
     }
 
-    open fun getOldestMessage() = outboxMessageRepository.findTopByOrderByCreatedOnAsc()
+    open fun getOldestMessage() = outboxMessageRepository.findOutboxMessage()
 
     open fun deleteMessage(id: UUID) = outboxMessageRepository.deleteById(id)
 

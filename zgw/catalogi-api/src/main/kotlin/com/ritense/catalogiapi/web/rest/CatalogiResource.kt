@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,12 @@ package com.ritense.catalogiapi.web.rest
 
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.catalogiapi.web.rest.result.BesluittypeDto
+import com.ritense.catalogiapi.web.rest.result.EigenschapDto
 import com.ritense.catalogiapi.web.rest.result.InformatieobjecttypeDto
 import com.ritense.catalogiapi.web.rest.result.ResultaattypeDto
 import com.ritense.catalogiapi.web.rest.result.RoltypeDto
 import com.ritense.catalogiapi.web.rest.result.StatustypeDto
+import com.ritense.catalogiapi.web.rest.result.ZaaktypeDto
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
@@ -34,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController
 @SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class CatalogiResource(
-    val catalogiService: CatalogiService
+    private val catalogiService: CatalogiService
 ) {
     @GetMapping("/v1/documentdefinition/{documentDefinitionName}/zaaktype/documenttype")
     fun getZaakObjecttypes(
@@ -99,5 +101,21 @@ class CatalogiResource(
             )
         }
         return ResponseEntity.ok(zaakBesluitTypes)
+    }
+
+    @GetMapping("/management/v1/zgw/zaaktype")
+    fun getZaakTypen(): ResponseEntity<List<ZaaktypeDto>> {
+        val zaakTypen = catalogiService.getZaakTypen().map { ZaaktypeDto.of(it) }
+        return ResponseEntity.ok(zaakTypen)
+    }
+
+    @GetMapping("/management/v1/case-definition/{caseDefinitionName}/catalogi-eigenschappen")
+    fun getEigenschappen(
+        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
+    ): ResponseEntity<List<EigenschapDto>> {
+        val eigenschappen = catalogiService.getEigenschappen(caseDefinitionName)
+            .map { EigenschapDto.of(it) }
+            .sortedBy { it.name }
+        return ResponseEntity.ok(eigenschappen)
     }
 }

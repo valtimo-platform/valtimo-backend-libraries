@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package com.ritense.document.domain.impl.event;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -29,7 +31,6 @@ import com.ritense.valtimo.contract.audit.view.AuditView;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class JsonSchemaDocumentCreatedEvent extends AuditMetaData implements DocumentCreatedEvent, AuditEvent {
 
@@ -81,16 +82,15 @@ public class JsonSchemaDocumentCreatedEvent extends AuditMetaData implements Doc
         if (this == o) {
             return true;
         }
-        if (!(o instanceof JsonSchemaDocumentCreatedEvent)) {
+        if (!(o instanceof JsonSchemaDocumentCreatedEvent that)) {
             return false;
         }
         if (!super.equals(o)) {
             return false;
         }
-        JsonSchemaDocumentCreatedEvent that = (JsonSchemaDocumentCreatedEvent) o;
-        return documentId.equals(that.documentId) &&
-            definitionId.equals(that.definitionId) &&
-            version.equals(that.version);
+        return documentId.equals(that.documentId)
+            && definitionId.equals(that.definitionId)
+            && version.equals(that.version);
     }
 
     @Override

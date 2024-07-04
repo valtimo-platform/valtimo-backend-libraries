@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,14 @@
 
 package com.ritense.openzaak.listener
 
-import com.ritense.openzaak.service.impl.ZaakTypeLinkService
+import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.valtimo.contract.event.UndeployDocumentDefinitionEvent
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
 
+@Deprecated("Since 12.0.0")
 open class OpenZaakUndeployDocumentDefinitionEventListener(
     val zaakTypeLinkService: ZaakTypeLinkService
 ) {

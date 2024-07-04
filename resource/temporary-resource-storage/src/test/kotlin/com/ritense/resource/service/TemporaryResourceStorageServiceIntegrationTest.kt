@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,6 +80,8 @@ class TemporaryResourceStorageServiceIntegrationTest : BaseIntegrationTest() {
         val metadata = temporaryResourceStorageService.getResourceMetadata(resourceId)
         assertThat(metadata[MetadataType.FILE_NAME.key]).isEqualTo(fileName)
         assertThat(metadata).doesNotContainKey(MetadataType.FILE_PATH.key)
+        assertThat(metadata[MetadataType.FILE_SIZE.key]).isNotNull
+        assertThat(metadata[MetadataType.FILE_SIZE.key]).isEqualTo(fileData.length.toString())
     }
 
     @Test

@@ -18,6 +18,7 @@ package com.ritense.openzaak.service
 
 import com.ritense.openzaak.domain.connector.OpenZaakConfig
 
+@Deprecated("Since 12.0.0. Replace with the Open Zaak plugin and ZGW plugins")
 interface OpenZaakConfigService {
 
     fun getOpenZaakConfig(): OpenZaakConfig?

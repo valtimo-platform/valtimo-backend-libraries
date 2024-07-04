@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2023 Ritense BV, the Netherlands.
+ *  Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  *  Licensed under EUPL, Version 1.2 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package com.ritense.valtimo.camunda.domain
 
-import java.time.LocalDateTime
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
@@ -25,6 +24,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import jakarta.persistence.Transient
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "ACT_HI_PROCINST")

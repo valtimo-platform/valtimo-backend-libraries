@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,26 @@
 
 package com.ritense.valtimo.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.valtimo.BaseIntegrationTest;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.exception.FileExtensionNotSupportedException;
 import com.ritense.valtimo.exception.NoFileExtensionFoundException;
 import com.ritense.valtimo.exception.ProcessNotDeployableException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.repository.DecisionDefinition;
 import org.camunda.bpm.model.bpmn.Bpmn;
+import org.camunda.bpm.model.bpmn.BpmnModelInstance;
+import org.camunda.bpm.model.bpmn.instance.Process;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +43,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
 
 @Transactional
 class CamundaProcessServiceIntTest extends BaseIntegrationTest {
@@ -55,7 +61,9 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
     private CamundaProcessService camundaProcessService;
 
     @Test
-    void shouldDeployNewProcess() {
+    void shouldDeployNewProcess() throws IOException {
+        var latestDeploymentId = findLatestProcessDefinitionDeployedProcess("deployedProcess")
+            .map(CamundaProcessDefinition::getDeploymentId);
         List<Resource> processes = List.of(bpmn);
         AuthorizationContext.runWithoutAuthorization(() -> {
             camundaProcessService.deploy(
@@ -65,9 +73,29 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
             );
             return null;
         });
-        List<CamundaProcessDefinition> definitions = AuthorizationContext
-            .runWithoutAuthorization(() -> camundaProcessService.getDeployedDefinitions());
-        Assertions.assertTrue(definitions.stream().anyMatch(processDefinition -> processDefinition.getKey().equals("deployedProcess")));
+        var definition = findLatestProcessDefinitionDeployedProcess("deployedProcess").orElseThrow();
+        //Make sure we have deployed a new version if one already existed (autodeployment)
+        latestDeploymentId.ifPresent(
+            deploymentId -> assertThat(deploymentId).isNotEqualTo(definition.getDeploymentId())
+        );
+
+        try (InputStream inputStream = repositoryService.getProcessModel(definition.getId())) {
+            BpmnModelInstance model = Bpmn.readModelFromStream(inputStream);
+            Process processModel = model.getDefinitions().getChildElementsByType(Process.class).stream()
+                .filter(process -> process.getId().equals(definition.getKey()))
+                .findFirst()
+                .orElseThrow();
+            assertThat(processModel.isExecutable()).isTrue();
+        }
+    }
+
+    @NotNull
+    private Optional<CamundaProcessDefinition> findLatestProcessDefinitionDeployedProcess(String processName) {
+        return AuthorizationContext
+            .runWithoutAuthorization(() -> camundaProcessService.getDeployedDefinitions())
+            .stream()
+            .filter(processDefinition -> processDefinition.getKey().equals(processName))
+            .findFirst();
     }
 
     @Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,31 @@
 
 package com.ritense.valtimo.web.rest;
 
-import com.ritense.valtimo.BaseIntegrationTest;
-import org.camunda.bpm.engine.RepositoryService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import jakarta.inject.Inject;
-
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ritense.valtimo.BaseIntegrationTest;
+import com.ritense.valtimo.repository.camunda.dto.ProcessInstance;
+import com.ritense.valtimo.web.rest.dto.ProcessInstanceSearchDTO;
+import jakarta.inject.Inject;
+import java.util.Date;
+import java.util.List;
+import org.camunda.bpm.engine.RepositoryService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 class ProcessResourceIntTest extends BaseIntegrationTest {
 
@@ -40,11 +50,16 @@ class ProcessResourceIntTest extends BaseIntegrationTest {
     @Inject
     public RepositoryService repositoryService;
 
+    @Inject
+    private ObjectMapper objectMapper;
+
     private MockMvc mockMvc;
 
     @BeforeEach
     void init() {
-        mockMvc = MockMvcBuilders.standaloneSetup(processResource).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(processResource)
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .build();
     }
 
     @Test
@@ -91,4 +106,49 @@ class ProcessResourceIntTest extends BaseIntegrationTest {
             .andExpect(status().isForbidden());
     }
 
+    @Test
+    void shouldGetProcessInstances() throws Exception {
+
+        List<ProcessInstance> processInstances = List.of(
+            new ProcessInstance(
+                "1",
+                "businessKey",
+                new Date(),
+                null,
+                "processDefinitionKey",
+                "startUserId",
+                "deleteReason"
+            ),
+            new ProcessInstance(
+                "2",
+                "businessKey",
+                new Date(),
+                null,
+                "processDefinitionKey",
+                "startUserId",
+                "deleteReason"
+            )
+        );
+
+        Pageable pageable = PageRequest.of(1, 1);
+
+        doReturn(new PageImpl<>(processInstances, pageable, 5)).when(camundaSearchProcessInstanceRepository).searchInstances(any(), any(), any());
+
+        mockMvc.perform(post("/api/v2/process/test-process/search")
+            .content(objectMapper.writeValueAsString(new ProcessInstanceSearchDTO()))
+            .contentType(APPLICATION_JSON_VALUE)
+            .accept(APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content").isArray())
+            .andExpect(jsonPath("$.content[0].id").value("1"))
+            .andExpect(jsonPath("$.content[0].businessKey").value("businessKey"))
+            .andExpect(jsonPath("$.content[0].startTime").isNotEmpty())
+            .andExpect(jsonPath("$.content[0].endTime").isEmpty())
+            .andExpect(jsonPath("$.content[0].processDefinitionKey").value("processDefinitionKey"))
+            .andExpect(jsonPath("$.content[0].startUserId").value("startUserId"))
+            .andExpect(jsonPath("$.content[0].deleteReason").value("deleteReason"))
+            .andExpect(jsonPath("$.totalElements").value(5))
+            .andExpect(jsonPath("$.totalElements").value(5));
+    }
 }

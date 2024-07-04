@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,12 +64,12 @@ class FormFlowService(
         return formFlowDefinitionRepository.findFirstByIdKeyOrderByIdVersionDesc(formFlowKey)
     }
 
-    fun save(formFlowDefinition: FormFlowDefinition) {
-        formFlowDefinitionRepository.findById(formFlowDefinition.id).ifPresentOrElse({
+    fun save(formFlowDefinition: FormFlowDefinition): FormFlowDefinition {
+        if (formFlowDefinitionRepository.existsById(formFlowDefinition.id)) {
             throw UnsupportedOperationException("Failed to save From Flow. Form Flow already exists: ${formFlowDefinition.id}")
-        }, {
-            formFlowDefinitionRepository.save(formFlowDefinition)
-        })
+        } else {
+            return formFlowDefinitionRepository.save(formFlowDefinition)
+        }
     }
 
     fun getInstanceById(formFlowInstanceId: FormFlowInstanceId): FormFlowInstance {
@@ -95,5 +95,9 @@ class FormFlowService(
 
     fun getTypeProperties(stepInstance: FormFlowStepInstance): TypeProperties {
         return getFormFlowStepTypeHandler(stepInstance.definition.type).getTypeProperties(stepInstance)
+    }
+
+    fun deleteByKey(definitionKey: String) {
+        formFlowDefinitionRepository.deleteAllByIdKey(definitionKey)
     }
 }

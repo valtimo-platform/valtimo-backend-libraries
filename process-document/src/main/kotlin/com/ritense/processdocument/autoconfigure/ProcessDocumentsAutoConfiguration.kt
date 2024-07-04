@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package com.ritense.processdocument.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.authorization.AuthorizationService
+import com.ritense.case.repository.TaskListColumnRepository
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
@@ -26,6 +28,7 @@ import com.ritense.processdocument.exporter.ProcessDocumentLinkExporter
 import com.ritense.processdocument.importer.ProcessDocumentLinkImporter
 import com.ritense.processdocument.listener.CaseAssigneeListener
 import com.ritense.processdocument.listener.CaseAssigneeTaskCreatedListener
+import com.ritense.processdocument.service.CaseTaskListSearchService
 import com.ritense.processdocument.service.CorrelationService
 import com.ritense.processdocument.service.CorrelationServiceImpl
 import com.ritense.processdocument.service.DocumentDelegateService
@@ -35,6 +38,7 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.ProcessDocumentsService
 import com.ritense.processdocument.service.ValueResolverDelegateService
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService
+import com.ritense.processdocument.web.TaskListResource
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
 import com.ritense.valtimo.contract.annotation.ProcessBean
@@ -43,12 +47,13 @@ import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
+import jakarta.persistence.EntityManager
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.TaskService
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Lazy
 
 @AutoConfiguration
@@ -189,6 +194,38 @@ class ProcessDocumentsAutoConfiguration {
     ): ProcessDocumentLinkImporter {
         return ProcessDocumentLinkImporter(
             processDocumentDeploymentService,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CaseTaskListSearchService::class)
+    fun caseTaskListSearchService(
+        entityManager: EntityManager,
+        valueResolverService: ValueResolverService,
+        taskListColumnRepository: TaskListColumnRepository,
+        userManagementService: UserManagementService,
+        authorizationService: AuthorizationService,
+        queryDialectHelper: QueryDialectHelper
+    ): CaseTaskListSearchService {
+        return CaseTaskListSearchService(
+            entityManager,
+            valueResolverService,
+            taskListColumnRepository,
+            userManagementService,
+            authorizationService,
+            queryDialectHelper
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(TaskListResource::class)
+    fun processDocumentTaskListResource(
+        caseTaskListSearchService: CaseTaskListSearchService,
+        camundaTaskService: CamundaTaskService
+    ): TaskListResource {
+        return TaskListResource(
+            caseTaskListSearchService,
+            camundaTaskService
         )
     }
 }

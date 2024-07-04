@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.ritense.zakenapi.service
 
+import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.plugin.domain.PluginConfiguration
@@ -45,12 +46,14 @@ class ZaakDocumentServiceTest {
     lateinit var service: ZaakDocumentService
     lateinit var zaakUrlProvider: ZaakUrlProvider
     lateinit var pluginService: PluginService
+    lateinit var catalogiService: CatalogiService
 
     @BeforeEach
     fun init() {
         zaakUrlProvider = mock()
         pluginService = mock()
-        service = ZaakDocumentService(zaakUrlProvider, pluginService)
+        catalogiService = mock()
+        service = ZaakDocumentService(zaakUrlProvider, pluginService, catalogiService)
     }
 
     @Test
@@ -82,6 +85,11 @@ class ZaakDocumentServiceTest {
 
             createDocumentInformatieObject(uri)
         }
+        whenever(catalogiService.getInformatieobjecttype(any<URI>())).doAnswer { answer ->
+            mock {
+                on { omschrijving } doReturn "omschrijving"
+            }
+        }
 
         val relatedFiles = service.getInformatieObjectenAsRelatedFiles(documentId)
 
@@ -89,6 +97,7 @@ class ZaakDocumentServiceTest {
         relatedFiles.forEachIndexed { index, relatedFile ->
             assertEquals(UUID.fromString("b059092c-9557-431a-9118-97f147903270"), relatedFile.fileId)
             assertEquals(documentenApiPluginConfiguration.id.id, relatedFile.pluginConfigurationId)
+            assertEquals("omschrijving", relatedFile.informatieobjecttype)
         }
     }
 
@@ -140,6 +149,7 @@ class ZaakDocumentServiceTest {
         creatiedatum = LocalDate.now(),
         taal = "nl",
         titel = "titel",
-        versie = 1
+        versie = 1,
+        informatieobjecttype = "http://localhost/informatieobjecttype",
     )
 }

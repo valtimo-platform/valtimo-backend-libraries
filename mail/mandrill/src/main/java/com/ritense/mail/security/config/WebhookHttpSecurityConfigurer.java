@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,22 @@
 
 package com.ritense.mail.security.config;
 
-import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
-import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
+import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
+import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 public class WebhookHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeHttpRequests((requests) -> {
-                requests.requestMatchers(antMatcher(GET, "/api/v1/mandrill/webhook")).permitAll()
-                    .requestMatchers(antMatcher(POST, "/api/v1/mandrill/webhook")).permitAll();
-            });
+            http.authorizeHttpRequests(requests -> requests
+                .requestMatchers(antMatcher(GET, "/api/v1/mandrill/webhook")).permitAll()
+                .requestMatchers(antMatcher(POST, "/api/v1/mandrill/webhook")).permitAll());
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

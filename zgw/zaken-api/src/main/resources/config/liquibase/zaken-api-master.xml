@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <!--
-  ~ Copyright 2015-2023 Ritense BV, the Netherlands.
+  ~ Copyright 2015-2024 Ritense BV, the Netherlands.
   ~
   ~ Licensed under EUPL, Version 1.2 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -22,7 +22,11 @@
 
     <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
     <property name="uuidType" value="uuid" dbms="h2,postgresql"/>
+    <property name="jsonType" value="JSON" dbms="mysql"/>
+    <property name="jsonType" value="JSON" dbms="postgresql"/>
 
     <include file="changelog/20230117-add-zaak-instance-link.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20240131-zaaktype-link-domain-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20240214-create-table-zaak-hersteltermijn.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,10 @@ class OnOutboxEnabledCondition : Condition {
     override fun matches(context: ConditionContext, metadata: AnnotatedTypeMetadata): Boolean {
         val annotationName = ConditionalOnOutboxEnabled::class.java.name
         val value = (metadata.getAnnotationAttributes(annotationName)?.get("value") as? Boolean) ?: true
-        return context.environment.getProperty(PROPERTY_NAME, "true").toBoolean() == value
+        return context.environment.getProperty(PROPERTY_NAME, "false").toBoolean() == value
     }
 
     companion object {
-        internal const val PROPERTY_NAME = "valtimo.outbox.enabled"
+        const val PROPERTY_NAME = "valtimo.outbox.enabled"
     }
 }

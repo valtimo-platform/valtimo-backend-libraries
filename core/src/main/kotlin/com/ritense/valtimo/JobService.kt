@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  *  Licensed under EUPL, Version 1.2 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,13 +17,13 @@
 
 package com.ritense.valtimo
 
-import java.time.ZonedDateTime
-import java.util.Date
 import mu.KotlinLogging
 import org.camunda.bpm.engine.ManagementService
 import org.camunda.bpm.engine.ProcessEngineException
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.runtime.Job
+import java.time.ZonedDateTime
+import java.util.Date
 
 class JobService(private val managementService: ManagementService) {
 

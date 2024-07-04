@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package com.ritense.valtimo.web.rest;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.data.domain.Sort.Direction.DESC;
+
 import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.camunda.dto.TaskExtended;
 import com.ritense.valtimo.contract.annotation.SkipComponentScan;
@@ -29,8 +32,12 @@ import com.ritense.valtimo.web.rest.dto.BatchAssignTaskDTO;
 import com.ritense.valtimo.web.rest.dto.CustomTaskDto;
 import com.ritense.valtimo.web.rest.dto.TaskCompletionDTO;
 import com.ritense.valtimo.web.rest.util.PaginationUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import java.beans.PropertyEditorSupport;
+import java.util.List;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.task.Comment;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -43,13 +50,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import jakarta.servlet.http.HttpServletRequest;
-import java.beans.PropertyEditorSupport;
-import java.util.List;
-
-import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
-import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @RestController
 @SkipComponentScan
@@ -64,14 +64,29 @@ public class TaskResource extends AbstractTaskResource {
         super(formService, camundaTaskService, camundaProcessService);
     }
 
+    /**
+     * Endpoint that return a list of tasks.
+     *
+     * @deprecated since 12.0.0, use v2 instead
+     */
     @GetMapping("/v1/task")
-    public ResponseEntity<List<? extends TaskExtended>> getTasks(
+    @Deprecated(since = "12.0.0", forRemoval = true)
+    public ResponseEntity<List<TaskExtended>> getTasks(
         @RequestParam CamundaTaskService.TaskFilter filter,
         @PageableDefault(sort = {"created"}, direction = DESC) Pageable pageable
     ) throws Exception {
         var page = camundaTaskService.findTasksFiltered(filter, pageable);
         var headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/v1/task");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/v2/task")
+    public ResponseEntity<Page<TaskExtended>> getTasksPaged(
+        @RequestParam CamundaTaskService.TaskFilter filter,
+        @PageableDefault(sort = {"created"}, direction = DESC) Pageable pageable
+    ) {
+        var page = camundaTaskService.findTasksFiltered(filter, pageable);
+        return ResponseEntity.ok(page);
     }
 
     @GetMapping("/v1/task/{taskId}")

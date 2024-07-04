@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,17 @@
 
 package com.ritense.gzac;
 
-import com.ritense.connector.service.ConnectorService;
-import com.ritense.gzac.listener.ApplicationReadyEventListener;
-import com.ritense.objectsapi.service.ObjectSyncService;
-import com.ritense.openzaak.service.InformatieObjectTypeLinkService;
-import com.ritense.openzaak.service.ZaakTypeLinkService;
-import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService;
 import com.ritense.valtimo.config.DefaultProfileUtil;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import org.camunda.bpm.spring.boot.starter.annotation.EnableProcessApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 @SpringBootApplication
 @EnableScheduling
@@ -58,23 +51,6 @@ public class GzacApplication {
             environment.getProperty("server.port"),
             InetAddress.getLocalHost().getHostAddress(),
             environment.getProperty("server.port")
-        );
-    }
-
-    @Bean
-    public ApplicationReadyEventListener setupListener(
-        ConnectorService connectorService,
-        ObjectSyncService objectSyncService,
-        ZaakTypeLinkService zaakTypeLinkService,
-        InformatieObjectTypeLinkService informatieObjectTypeLinkService,
-        DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService
-    ) {
-        return new ApplicationReadyEventListener(
-            connectorService,
-            objectSyncService,
-            zaakTypeLinkService,
-            informatieObjectTypeLinkService,
-            documentDefinitionProcessLinkService
         );
     }
 }

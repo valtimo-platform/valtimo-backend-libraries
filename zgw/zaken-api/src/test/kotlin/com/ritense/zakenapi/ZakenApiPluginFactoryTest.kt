@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,13 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zakenapi.client.ZakenApiClient
+import com.ritense.zakenapi.repository.ZaakHersteltermijnRepository
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.springframework.transaction.PlatformTransactionManager
 import kotlin.test.assertEquals
 
 internal class ZakenApiPluginFactoryTest {
@@ -45,6 +47,8 @@ internal class ZakenApiPluginFactoryTest {
         val zaakUrlProvider: ZaakUrlProvider = mock()
         val storageService: TemporaryResourceStorageService = mock()
         val zaakInstanceLinkRepository: ZaakInstanceLinkRepository = mock()
+        val zaakHersteltermijnRepository: ZaakHersteltermijnRepository = mock()
+        val platformTransactionManager: PlatformTransactionManager = mock()
 
         val factory = ZakenApiPluginFactory(
             pluginService,
@@ -52,6 +56,8 @@ internal class ZakenApiPluginFactoryTest {
             zaakUrlProvider,
             storageService,
             zaakInstanceLinkRepository,
+            zaakHersteltermijnRepository,
+            platformTransactionManager
         )
         val zakenApiPluginProperties: String = """
             {

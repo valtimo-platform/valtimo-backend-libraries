@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package com.ritense.verzoek
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
+import com.ritense.processdocument.resolver.DocumentJsonValueResolverFactory.Companion.PREFIX as DOC_PREFIX
+import com.ritense.valueresolver.ProcessVariableValueResolverFactory.Companion.PREFIX as PV_PREFIX
 import com.ritense.notificatiesapi.NotificatiesApiPlugin
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginEvent
@@ -57,12 +59,15 @@ class VerzoekPlugin(
             .filter { it.copyStrategy == CopyStrategy.SPECIFIED }
             .forEach { property ->
                 property.mapping?.forEach {
-                    if (!it.target.startsWith("doc:")) {
+                    if (!it.target.startsWith(DOC_PREFIX) && !it.target.startsWith(PV_PREFIX)) {
                         throw ValidationException("Failed to set mapping. Unknown prefix '${it.target.substringBefore(":")}:'.")
                     }
-                    val documentPath = it.target.substringAfter(delimiter = ":")
-                    runWithoutAuthorization {
-                        documentDefinitionService.validateJsonPointer(property.caseDefinitionName, documentPath)
+
+                    if (it.target.startsWith(DOC_PREFIX)) {
+                        val documentPath = it.target.substringAfter(delimiter = ":")
+                        runWithoutAuthorization {
+                            documentDefinitionService.validateJsonPointer(property.caseDefinitionName, documentPath)
+                        }
                     }
                 }
             }

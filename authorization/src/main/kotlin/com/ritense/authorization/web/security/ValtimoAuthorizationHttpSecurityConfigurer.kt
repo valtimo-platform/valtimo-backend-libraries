@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2023 Ritense BV, the Netherlands.
+ *  Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  *  Licensed under EUPL, Version 1.2 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,34 +16,36 @@
 
 package com.ritense.authorization.web.security
 
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
-import org.springframework.http.HttpMethod
+import org.springframework.http.HttpMethod.DELETE
+import org.springframework.http.HttpMethod.GET
+import org.springframework.http.HttpMethod.POST
+import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 class ValtimoAuthorizationHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeHttpRequests { requests ->
-                requests.requestMatchers(antMatcher(HttpMethod.GET, "/api/management/v1/roles")).hasAuthority(AuthoritiesConstants.ADMIN)
-                    .requestMatchers(antMatcher(HttpMethod.POST, "/api/management/v1/roles")).hasAuthority(AuthoritiesConstants.ADMIN)
-                    .requestMatchers(antMatcher(HttpMethod.PUT, "/api/management/v1/roles/{oldRoleKey}")).hasAuthority(
-                        AuthoritiesConstants.ADMIN)
-                    .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/management/v1/roles")).hasAuthority(AuthoritiesConstants.ADMIN)
-                    .requestMatchers(antMatcher(HttpMethod.GET, "/api/management/v1/roles/{roleKey}/permissions")).hasAuthority(
-                        AuthoritiesConstants.ADMIN)
-                    .requestMatchers(antMatcher(HttpMethod.PUT, "/api/management/v1/roles/{roleKey}/permissions")).hasAuthority(
-                        AuthoritiesConstants.ADMIN)
-                    .requestMatchers(antMatcher(HttpMethod.POST, "/api/management/v1/permissions/search")).hasAuthority(
-                        AuthoritiesConstants.ADMIN)
-                    .requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/permissions")).authenticated()
+                requests.requestMatchers(antMatcher(GET, ROLES_URL)).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, ROLES_URL)).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, "$ROLES_URL/{oldRoleKey}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, ROLES_URL)).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "$ROLES_URL/{roleKey}/permissions")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, "$ROLES_URL/{roleKey}/permissions")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/management/v1/permissions/search")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/v1/permissions")).authenticated()
             }
 
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
+    }
+
+    companion object {
+        private const val ROLES_URL = "/api/management/v1/roles"
     }
 }

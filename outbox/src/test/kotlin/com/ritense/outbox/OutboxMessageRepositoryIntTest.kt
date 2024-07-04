@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ class OutboxMessageRepositoryIntTest : BaseIntegrationTest() {
 
         val outboxMessage1Ref = async(Dispatchers.IO) {
             TransactionTemplate(platformTransactionManager).execute {
-                val outboxMessage = outboxMessageRepository.findTopByOrderByCreatedOnAsc()
+                val outboxMessage = outboxMessageRepository.findOutboxMessage()
                 Thread.sleep(1000)
                 outboxMessage
             }
@@ -45,7 +45,7 @@ class OutboxMessageRepositoryIntTest : BaseIntegrationTest() {
 
         val outboxMessage2Ref = async(Dispatchers.IO) {
             TransactionTemplate(platformTransactionManager).execute {
-                val outboxMessage = outboxMessageRepository.findTopByOrderByCreatedOnAsc()
+                val outboxMessage = outboxMessageRepository.findOutboxMessage()
                 Thread.sleep(1000)
                 outboxMessage
             }

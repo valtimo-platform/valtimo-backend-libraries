@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  *  Licensed under EUPL, Version 1.2 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ import com.ritense.valtimo.contract.script.ScriptPrefiller
 import com.ritense.valtimo.script.CamundaScriptFactory
 import com.ritense.valtimo.service.CamundaTaskService
 import org.camunda.bpm.engine.HistoryService
+import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl
 import org.springframework.boot.autoconfigure.AutoConfiguration
@@ -92,9 +93,14 @@ class ValtimoCamundaAutoConfiguration {
     @ConditionalOnMissingBean(CamundaRepositoryService::class)
     fun camundaRepositoryService(
         camundaProcessDefinitionRepository: CamundaProcessDefinitionRepository,
-        authorizationService: AuthorizationService
+        authorizationService: AuthorizationService,
+        repositoryService: RepositoryService,
     ): CamundaRepositoryService {
-        return CamundaRepositoryService(camundaProcessDefinitionRepository, authorizationService)
+        return CamundaRepositoryService(
+            camundaProcessDefinitionRepository,
+            authorizationService,
+            repositoryService
+        )
     }
 
     @Bean

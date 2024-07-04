@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,10 @@ import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.search.SearchConfigurationDto;
 import com.ritense.document.exception.SearchConfigurationDeploymentException;
 import com.ritense.document.exception.SearchFieldConfigurationDeploymentException;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Objects;
 import org.everit.json.schema.loader.SchemaLoader;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -34,11 +38,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StreamUtils;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Objects;
 
 @Transactional
 public class SearchConfigurationDeploymentService {

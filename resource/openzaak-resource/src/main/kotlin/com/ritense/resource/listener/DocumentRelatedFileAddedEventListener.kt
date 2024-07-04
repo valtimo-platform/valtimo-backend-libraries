@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,13 @@ import com.ritense.resource.service.OpenZaakService
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileAddedEvent
 import org.springframework.context.event.EventListener
 
+@Deprecated("Since 12.0.0. Replaced by Documenten API module.")
 class DocumentRelatedFileAddedEventListener(
     private val openZaakService: OpenZaakService,
     private val documentenService: DocumentenService
 ) {
+
+    @Deprecated("Since 12.0.0")
     @EventListener(DocumentRelatedFileAddedEvent::class)
     fun handle(event: DocumentRelatedFileAddedEvent) {
         if (event.documentId != null) {

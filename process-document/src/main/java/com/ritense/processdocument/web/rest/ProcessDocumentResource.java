@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,9 @@
  */
 
 package com.ritense.processdocument.web.rest;
+
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.Document;
@@ -36,6 +39,10 @@ import com.ritense.processdocument.service.result.ModifyDocumentAndCompleteTaskR
 import com.ritense.processdocument.service.result.ModifyDocumentAndStartProcessResult;
 import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult;
 import com.ritense.valtimo.contract.annotation.SkipComponentScan;
+import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -45,14 +52,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import jakarta.validation.Valid;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import javax.annotation.Nullable;
 
 @RestController
 @SkipComponentScan
@@ -97,9 +99,10 @@ public class ProcessDocumentResource {
 
     @GetMapping("/v1/process-document/definition/document/{document-definition-name}")
     public ResponseEntity<List<? extends ProcessDocumentDefinition>> findProcessDocumentDefinitions(
-        @PathVariable(name = "document-definition-name") String documentDefinitionName
+        @PathVariable(name = "document-definition-name") String documentDefinitionName,
+        @RequestParam(value = "startableByUser", required = false) @Nullable Boolean startableByUser
     ) {
-        return ResponseEntity.ok(processDocumentAssociationService.findProcessDocumentDefinitions(documentDefinitionName));
+        return ResponseEntity.ok(processDocumentAssociationService.findProcessDocumentDefinitions(documentDefinitionName, startableByUser));
     }
 
     @GetMapping("/v1/process-document/definition/document/{document-definition-name}/version/{document-definition-version}")
@@ -112,10 +115,11 @@ public class ProcessDocumentResource {
 
     @GetMapping("/management/v1/process-document/definition/document/{document-definition-name}")
     public ResponseEntity<List<? extends ProcessDocumentDefinition>> findManagementProcessDocumentDefinitions(
-        @PathVariable(name = "document-definition-name") String documentDefinitionName
+        @PathVariable(name = "document-definition-name") String documentDefinitionName,
+        @RequestParam(value = "startableByUser", required = false) Boolean startableByUser
     ) {
         return ResponseEntity.ok(AuthorizationContext.runWithoutAuthorization(() ->
-            processDocumentAssociationService.findProcessDocumentDefinitions(documentDefinitionName)));
+            processDocumentAssociationService.findProcessDocumentDefinitions(documentDefinitionName, startableByUser)));
     }
 
     @GetMapping("/v1/process-document/definition/process/{process-definition-key}")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +16,6 @@
 
 package com.ritense.document.web.rest;
 
-import com.ritense.document.BaseTest;
-import com.ritense.document.domain.impl.JsonDocumentContent;
-import com.ritense.document.domain.impl.JsonSchemaDocument;
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
-import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
-import com.ritense.document.service.DocumentDefinitionService;
-import com.ritense.document.service.impl.JsonSchemaDocumentSnapshotService;
-import com.ritense.document.web.rest.impl.JsonSchemaDocumentSnapshotResource;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -50,6 +29,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.ritense.document.BaseTest;
+import com.ritense.document.domain.impl.JsonDocumentContent;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
+import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
+import com.ritense.document.service.DocumentDefinitionService;
+import com.ritense.document.service.impl.JsonSchemaDocumentSnapshotService;
+import com.ritense.document.web.rest.impl.JsonSchemaDocumentSnapshotResource;
+import com.ritense.valtimo.contract.json.MapperSingleton;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 public class JsonSchemaDocumentSnapshotResourceTest extends BaseTest {
 
@@ -70,6 +71,7 @@ public class JsonSchemaDocumentSnapshotResourceTest extends BaseTest {
 
         mockMvc = MockMvcBuilders.standaloneSetup(documentSnapshotResource)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setMessageConverters(new MappingJackson2HttpMessageConverter(MapperSingleton.get()))
             .build();
 
         document = spy(createDocument(new JsonDocumentContent("{\"street\": \"Funenpark\"}")));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,36 +16,6 @@
 
 package com.ritense.document.service.impl;
 
-import com.ritense.authorization.AuthorizationService;
-import com.ritense.document.BaseTest;
-import com.ritense.document.domain.impl.JsonDocumentContent;
-import com.ritense.document.domain.impl.JsonSchemaDocument;
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
-import com.ritense.document.domain.impl.request.NewDocumentRequest;
-import com.ritense.document.event.DocumentUnassignedEvent;
-import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
-import com.ritense.document.service.result.CreateDocumentResult;
-import com.ritense.outbox.OutboxService;
-import com.ritense.resource.service.ResourceService;
-import com.ritense.valtimo.contract.authentication.UserManagementService;
-import com.ritense.valtimo.contract.json.MapperSingleton;
-import com.ritense.valtimo.contract.resource.Resource;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -57,6 +27,36 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.ritense.authorization.AuthorizationService;
+import com.ritense.document.BaseTest;
+import com.ritense.document.domain.impl.JsonDocumentContent;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
+import com.ritense.document.domain.impl.request.NewDocumentRequest;
+import com.ritense.document.event.DocumentUnassignedEvent;
+import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
+import com.ritense.document.service.InternalCaseStatusService;
+import com.ritense.document.service.result.CreateDocumentResult;
+import com.ritense.outbox.OutboxService;
+import com.ritense.resource.service.ResourceService;
+import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.json.MapperSingleton;
+import com.ritense.valtimo.contract.resource.Resource;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 class JsonSchemaDocumentServiceTest extends BaseTest {
 
@@ -73,6 +73,8 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
     private OutboxService outboxService;
     private JsonSchemaDocument jsonSchemaDocument;
 
+    private InternalCaseStatusService internalCaseStatusService;
+
     private final String documentDefinitionName = "name";
 
     @BeforeEach
@@ -85,6 +87,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         userManagementService = mock(UserManagementService.class);
         applicationEventPublisher = mock(ApplicationEventPublisher.class);
         outboxService = mock(OutboxService.class);
+        internalCaseStatusService = mock();
 
         jsonSchemaDocumentService = spy(new JsonSchemaDocumentService(
             documentRepository,
@@ -95,7 +98,8 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
             authorizationService,
             applicationEventPublisher,
             outboxService,
-            MapperSingleton.INSTANCE.get()
+            MapperSingleton.INSTANCE.get(),
+            internalCaseStatusService
         ));
 
         var content = new JsonDocumentContent("{\"firstname\": \"aName\"}");
@@ -115,7 +119,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         when(documentSequenceGeneratorService.next(definition.id())).thenReturn(123L);
 
         CreateDocumentResult result = jsonSchemaDocumentService.createDocument(documentRequest);
-        JsonSchemaDocument document = (JsonSchemaDocument)result.resultingDocument().orElseThrow();
+        JsonSchemaDocument document = (JsonSchemaDocument) result.resultingDocument().orElseThrow();
 
         assertEquals(content.asJson(), document.content().asJson());
         assertEquals(definition.id(), document.definitionId());
@@ -128,18 +132,17 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
     @Test
     void shouldCreateDocumentWithResources() {
         SecurityContextHolder.getContext()
-                .setAuthentication(new TestingAuthenticationToken("user@ritense.com", USER));
+            .setAuthentication(new TestingAuthenticationToken("user@ritense.com", USER));
         final var content = new JsonDocumentContent("{\"addresses\" : [{\"streetName\" : \"Funenpark\"}]}");
 
         LocalDateTime createdOn = LocalDateTime.now();
         UUID resourceId = UUID.randomUUID();
-        Resource resource = new Resource() {
-            @Override public UUID id() {return resourceId;}
-            @Override public String name() {return "name.txt";}
-            @Override public String extension() {return "txt";}
-            @Override public Long sizeInBytes() {return 123L;}
-            @Override public LocalDateTime createdOn() {return createdOn;}
-        };
+        Resource resource = mock(Resource.class);
+        when(resource.id()).thenReturn(resourceId);
+        when(resource.name()).thenReturn("name.txt");
+        when(resource.extension()).thenReturn("txt");
+        when(resource.sizeInBytes()).thenReturn(123L);
+        when(resource.createdOn()).thenReturn(createdOn);
 
         NewDocumentRequest documentRequest = new NewDocumentRequest(
             "document-definition",
@@ -152,7 +155,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         when(documentSequenceGeneratorService.next(definition.id())).thenReturn(123L);
 
         CreateDocumentResult result = jsonSchemaDocumentService.createDocument(documentRequest);
-        JsonSchemaDocument document = (JsonSchemaDocument)result.resultingDocument().orElseThrow();
+        JsonSchemaDocument document = (JsonSchemaDocument) result.resultingDocument().orElseThrow();
 
         assertEquals(content.asJson(), document.content().asJson());
         assertEquals(definition.id(), document.definitionId());

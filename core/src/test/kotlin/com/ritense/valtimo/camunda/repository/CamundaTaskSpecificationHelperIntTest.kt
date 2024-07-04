@@ -1,17 +1,17 @@
 package com.ritense.valtimo.camunda.repository
 
 import com.ritense.valtimo.BaseIntegrationTest
-import java.time.LocalDateTime
-import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.TaskService
 import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState
 import org.camunda.bpm.engine.runtime.ProcessInstance
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
+import java.util.UUID
 
 class CamundaTaskSpecificationHelperIntTest @Autowired constructor(
     private val taskService: TaskService,
@@ -25,6 +25,7 @@ class CamundaTaskSpecificationHelperIntTest @Autowired constructor(
     @BeforeEach
     fun prepare() {
         createDate = LocalDateTime.now()
+        Thread.sleep(1000)
 
         oneTaskInstances = (1..3)
             .map {
@@ -176,6 +177,7 @@ class CamundaTaskSpecificationHelperIntTest @Autowired constructor(
     @Test
     @Transactional
     fun byCreateTimeBefore() {
+        Thread.sleep(1000)
         val camundaTaskIds = camundaTaskRepository.findAll(CamundaTaskSpecificationHelper.byCreateTimeBefore(LocalDateTime.now()))
             .map { it.id }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@
 package com.ritense.outbox.publisher
 
 import com.ritense.outbox.ValtimoOutboxService
-import java.util.concurrent.atomic.AtomicBoolean
 import mu.KotlinLogging
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
+import java.util.concurrent.atomic.AtomicBoolean
 
 open class PollingPublisherService(
     private val outboxService: ValtimoOutboxService,

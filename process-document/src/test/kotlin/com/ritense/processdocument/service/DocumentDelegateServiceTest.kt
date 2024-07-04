@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -221,7 +221,19 @@ internal class DocumentDelegateServiceTest : BaseTest() {
         val jsonSchemaDocument = createDocument()
         val defaultValue = "DEFAULT_VALUE"
         whenever(documentService.findBy(any<JsonSchemaDocumentId>())).thenReturn(Optional.of(jsonSchemaDocument))
-        val value: Any = documentDelegateService.findValueByJsonPointerOrDefault(
+        val value: Any? = documentDelegateService.findValueByJsonPointerOrDefault(
+            "/incorrectpath", delegateExecutionFake, defaultValue
+        )
+
+        assertEquals(defaultValue, value)
+    }
+
+    @Test
+    fun `should accept null for default value`() {
+        val jsonSchemaDocument = createDocument()
+        val defaultValue = null
+        whenever(documentService.findBy(any<JsonSchemaDocumentId>())).thenReturn(Optional.of(jsonSchemaDocument))
+        val value: Any? = documentDelegateService.findValueByJsonPointerOrDefault(
             "/incorrectpath", delegateExecutionFake, defaultValue
         )
 
@@ -244,6 +256,23 @@ internal class DocumentDelegateServiceTest : BaseTest() {
         documentDelegateService.setAssignee(delegateExecutionFake, "john@example.com")
 
         verify(documentService, times(1)).assignUserToDocument(UUID.fromString(documentId), "anId")
+    }
+
+    @Test
+    fun `should set status to document`() {
+        val documentId = JsonSchemaDocumentId.existingId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
+        val processInstanceId = "00000000-0000-0000-0000-000000000000"
+        val delegateExecutionFake = DelegateExecutionFake("id")
+            .withProcessInstanceId(processInstanceId)
+            .withProcessBusinessKey(documentId.toString())
+        whenever(
+            processDocumentService.getDocumentId(CamundaProcessInstanceId(processInstanceId), delegateExecutionFake)
+        ).thenReturn(documentId)
+
+        val newStatus = "test"
+        documentDelegateService.setInternalStatus(delegateExecutionFake, newStatus)
+
+        verify(documentService).setInternalStatus(documentId, newStatus)
     }
 
     @Test

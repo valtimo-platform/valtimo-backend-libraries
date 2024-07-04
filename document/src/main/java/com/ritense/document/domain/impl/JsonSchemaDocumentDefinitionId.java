@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,11 @@
 
 package com.ritense.document.domain.impl;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentRange;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentTrue;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.valtimo.contract.domain.AbstractId;
@@ -24,11 +29,6 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.Transient;
 import java.util.Objects;
 
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentRange;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentTrue;
-
 @Embeddable
 public class JsonSchemaDocumentDefinitionId extends AbstractId<JsonSchemaDocumentDefinitionId>
     implements DocumentDefinition.Id {
@@ -36,10 +36,10 @@ public class JsonSchemaDocumentDefinitionId extends AbstractId<JsonSchemaDocumen
     @Transient
     private static final long INITIAL_VERSION = 1;
 
-    @Column(name = "document_definition_name", length = 50, columnDefinition = "VARCHAR(50)", nullable = false, updatable = false)
+    @Column(name = "document_definition_name", length = 50, columnDefinition = "VARCHAR(50)", nullable = false, updatable = true)
     private String name;
 
-    @Column(name = "document_definition_version", columnDefinition = "BIGINT", nullable = false, updatable = false)
+    @Column(name = "document_definition_version", columnDefinition = "BIGINT", nullable = false, updatable = true)
     private long version;
 
     private JsonSchemaDocumentDefinitionId(String id) {

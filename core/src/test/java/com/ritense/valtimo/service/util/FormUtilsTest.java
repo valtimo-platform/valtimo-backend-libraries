@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,15 @@
 
 package com.ritense.valtimo.service.util;
 
-import org.camunda.bpm.engine.variable.VariableMap;
-import org.hamcrest.collection.IsMapContaining;
-import org.junit.jupiter.api.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.CombinableMatcher.both;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.CombinableMatcher.both;
+import org.camunda.bpm.engine.variable.VariableMap;
+import org.hamcrest.collection.IsMapContaining;
+import org.junit.jupiter.api.Test;
 
 class FormUtilsTest {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package com.ritense.valtimo.web.rest;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+
 import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import com.ritense.valtimo.domain.choicefield.ChoiceField;
 import com.ritense.valtimo.service.ChoiceFieldService;
@@ -24,6 +26,11 @@ import com.ritense.valtimo.web.rest.dto.ChoiceFieldDTO;
 import com.ritense.valtimo.web.rest.dto.ChoiceFieldUpdateRequestDTO;
 import com.ritense.valtimo.web.rest.util.HeaderUtil;
 import com.ritense.valtimo.web.rest.util.PaginationUtil;
+import jakarta.validation.Valid;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -39,14 +46,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import jakarta.validation.Valid;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
-
-import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @RestController
 @SkipComponentScan
@@ -81,12 +80,25 @@ public class ChoiceFieldResource {
             .body(result);
     }
 
+    /**
+     * Endpoint that returns all choicefields.
+     *
+     * @deprecated since 12.0.0, use v2 instead
+     */
     @GetMapping("/v1/choice-fields")
+    @Deprecated(since = "12.0.0", forRemoval = true)
     public ResponseEntity<List<ChoiceField>> getAllChoiceFields(Pageable pageable) {
         logger.debug("REST request to get a page of ChoiceFields");
         Page<ChoiceField> page = choiceFieldService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/v1/choice-fields");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+
+    @GetMapping("/v2/choice-fields")
+    public ResponseEntity<Page<ChoiceField>> getAllChoiceFieldsPaged(Pageable pageable) {
+        logger.debug("REST request to get a page of ChoiceFields");
+        Page<ChoiceField> page = choiceFieldService.findAll(pageable);
+        return ResponseEntity.ok(page);
     }
 
     @GetMapping("/v1/choice-fields/{id}")

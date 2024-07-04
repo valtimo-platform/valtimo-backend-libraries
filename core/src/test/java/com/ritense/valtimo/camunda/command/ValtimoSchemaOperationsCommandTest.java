@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,19 @@
 
 package com.ritense.valtimo.camunda.command;
 
-import com.ritense.valtimo.contract.config.LiquibaseRunner;
-import liquibase.exception.DatabaseException;
-import org.camunda.bpm.engine.impl.db.PersistenceSession;
-import org.camunda.bpm.engine.impl.interceptor.CommandContext;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import java.sql.SQLException;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.ritense.valtimo.contract.config.LiquibaseRunner;
+import java.sql.SQLException;
+import liquibase.exception.DatabaseException;
+import org.camunda.bpm.engine.impl.db.PersistenceSession;
+import org.camunda.bpm.engine.impl.interceptor.CommandContext;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class ValtimoSchemaOperationsCommandTest {
 

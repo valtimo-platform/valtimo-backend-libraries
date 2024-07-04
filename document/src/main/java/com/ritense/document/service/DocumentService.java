@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,13 +25,13 @@ import com.ritense.document.domain.relation.DocumentRelation;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
 import com.ritense.valtimo.contract.authentication.NamedUser;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
+import jakarta.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface DocumentService {
 
@@ -68,6 +68,8 @@ public interface DocumentService {
     void assignUserToDocuments(List<UUID> documentIds, String assigneeId);
 
     void unassignUserFromDocument(UUID documentId);
+
+    void setInternalStatus(Document.Id documentId, @Nullable String internalStatusKey);
 
     List<NamedUser> getCandidateUsers(Document.Id documentId);
 

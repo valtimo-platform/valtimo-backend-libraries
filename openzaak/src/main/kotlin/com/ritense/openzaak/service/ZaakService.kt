@@ -28,37 +28,51 @@ import java.net.URI
 import java.time.LocalDateTime
 import java.util.UUID
 
+@Deprecated("Since 12.0.0. Replace with the Zaken API plugin")
 interface ZaakService {
 
+
+    @Deprecated("Since 12.0.0.", ReplaceWith("com.ritense.zakenapi.ZakenApiPlugin.createZaak"))
     fun createZaakWithLink(delegateExecution: DelegateExecution)
 
+    @Deprecated("Since 12.0.0.", ReplaceWith("com.ritense.zakenapi.ZakenApiPlugin.createZaak"))
     fun createZaakWithLink(documentId: Document.Id): Zaak
 
+    @Deprecated("Since 12.0.0.", ReplaceWith("com.ritense.zakenapi.client.ZakenApiClient.createZaak"))
     fun createZaak(
         zaaktype: URI,
         startdatum: LocalDateTime,
         rsin: String,
     ): Zaak
 
+    @Deprecated("Since 12.0.0.", ReplaceWith("com.ritense.zakenapi.client.ZakenApiClient.getZaak"))
     fun getZaak(id: UUID): Zaak
 
+    @Deprecated("Since 12.0.0. This method will not be replaced.")
     fun getZaakByDocumentId(documentId: UUID): Zaak
 
     fun getZaakEigenschappen(id: UUID): Collection<Eigenschap>
 
+    @Deprecated("Since 12.0.0.", ReplaceWith("com.ritense.zakenapi.ZakenApiPlugin.setZaakStatus"))
     fun setZaakStatus(zaak: URI, statusType: URI, datumStatusGezet: LocalDateTime)
 
+    @Deprecated("Since 12.0.0.", ReplaceWith("com.ritense.zakenapi.ZakenApiPlugin.createZaakResultaat"))
     fun setZaakResultaat(zaak: URI, resultaatType: URI)
 
     fun modifyEigenschap(zaakUrl: URI, zaakId: UUID, eigenschappen: Map<URI, String>)
 
+    @Deprecated("Since 12.0.0.", ReplaceWith("com.ritense.catalogiapi.ZakenApiPlugin.createZaakResultaat"))
     fun getInformatieobjecttypes(catalogus: UUID): Collection<InformatieObjectType?>
 
+    @Deprecated("Since 12.0.0. This method will not be replaced.")
     fun getCatalogus(catalogus: UUID): Catalogus
 
+    @Deprecated("Since 12.0.0. This method will not be replaced.")
     fun getInformatieObjectTypen(catalogus: URI): ResultWrapper<InformatieObjectType>
 
+    @Deprecated("Since 12.0.0.", ReplaceWith("com.ritense.documentenapi.client.DocumentenApiClient.getInformatieObject"))
     fun getInformatieObject(documentId: UUID): InformatieObject
 
+    @Deprecated("Since 12.0.0.", ReplaceWith("com.ritense.documentenapi.client.DocumentenApiClient.getInformatieObject"))
     fun getInformatieObject(file: URI): InformatieObject
 }

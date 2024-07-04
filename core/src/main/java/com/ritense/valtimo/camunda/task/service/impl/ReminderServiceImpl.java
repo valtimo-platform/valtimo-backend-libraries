@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,11 @@
 
 package com.ritense.valtimo.camunda.task.service.impl;
 
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byAssignee;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byCandidateGroups;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byUnassigned;
+import static java.util.stream.Collectors.toList;
+
 import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.camunda.task.domain.reminder.AssignedTask;
 import com.ritense.valtimo.camunda.task.domain.reminder.ReminderNotification;
@@ -25,14 +30,10 @@ import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.mail.MailSender;
 import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSettingsService;
 import com.ritense.valtimo.service.CamundaTaskService;
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
-import org.springframework.scheduling.annotation.Scheduled;
 import java.util.List;
 import java.util.stream.Collectors;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byAssignee;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byCandidateGroups;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byUnassigned;
-import static java.util.stream.Collectors.toList;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
+import org.springframework.scheduling.annotation.Scheduled;
 
 public class ReminderServiceImpl implements ReminderService {
 

@@ -18,10 +18,11 @@ package com.ritense.openzaak.listener
 
 import com.ritense.document.domain.event.DocumentCreatedEvent
 import com.ritense.openzaak.service.impl.ZaakService
-import com.ritense.openzaak.service.impl.ZaakTypeLinkService
+import com.ritense.openzaak.service.ZaakTypeLinkService
 import org.springframework.context.event.EventListener
 import org.springframework.core.annotation.Order
 
+@Deprecated("Since 12.0.0")
 class DocumentCreatedListener(
     val zaakService: ZaakService,
     val zaakTypeLinkService: ZaakTypeLinkService
@@ -31,7 +32,7 @@ class DocumentCreatedListener(
     fun handle(event: DocumentCreatedEvent) {
         val zaakTypeLink = zaakTypeLinkService.get(event.definitionId().name())
         zaakTypeLink?.let {
-            if (it.createWithDossier) {
+            if (it.createWithDossier && it.zakenApiPluginConfigurationId == null) {
                 zaakService.createZaakWithLink(event.documentId())
             }
         }

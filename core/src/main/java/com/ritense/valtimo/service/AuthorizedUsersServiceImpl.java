@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ package com.ritense.valtimo.service;
 import com.ritense.valtimo.contract.authentication.AuthorizedUserRepository;
 import com.ritense.valtimo.contract.authentication.AuthorizedUsersService;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
-import org.springframework.security.core.Authentication;
 import java.util.Collection;
+import org.springframework.security.core.Authentication;
 
 public class AuthorizedUsersServiceImpl implements AuthorizedUsersService {
 

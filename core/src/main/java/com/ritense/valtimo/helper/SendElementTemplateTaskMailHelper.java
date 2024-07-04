@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@ package com.ritense.valtimo.helper;
 
 import com.ritense.valtimo.exception.ExpectedElementTemplatePropertyNotFoundException;
 import com.ritense.valtimo.exception.IllegalElementTemplatePropertyValueException;
-import org.apache.commons.lang3.StringUtils;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 
 public class SendElementTemplateTaskMailHelper {
 
@@ -40,7 +40,7 @@ public class SendElementTemplateTaskMailHelper {
     }
 
     public static void validateExpectedKeys(Map<String, Object> camundaProperties)
-        throws ExpectedElementTemplatePropertyNotFoundException, IllegalElementTemplatePropertyValueException {
+            throws ExpectedElementTemplatePropertyNotFoundException, IllegalElementTemplatePropertyValueException {
         validateExpectedKey(RECEIVER_KEY, camundaProperties);
         validateExpectedKey(SENDER_KEY, camundaProperties);
         validateExpectedKey(SUBJECT_KEY, camundaProperties);
@@ -61,7 +61,7 @@ public class SendElementTemplateTaskMailHelper {
 
     public static Collection<String> getAttachmentsKeyValue(Map<String, Object> camundaProperties, Map<String, Object> processVariables) {
         String keyValue = getKeyValue(ATTACHMENTS_KEY, camundaProperties, processVariables);
-        return keyValue == null || keyValue.length() == 0
+        return keyValue == null || keyValue.isEmpty()
             ? Collections.singletonList(keyValue)
             : Arrays.asList(keyValue.split("\\s*,\\s*"));
     }
@@ -71,7 +71,7 @@ public class SendElementTemplateTaskMailHelper {
     }
 
     private static void validateExpectedKey(String keyName, Map<String, Object> camundaProperties)
-        throws ExpectedElementTemplatePropertyNotFoundException, IllegalElementTemplatePropertyValueException {
+            throws ExpectedElementTemplatePropertyNotFoundException, IllegalElementTemplatePropertyValueException {
         if (!camundaProperties.containsKey(keyName)) {
             throw new ExpectedElementTemplatePropertyNotFoundException("Expected property key '" + keyName + "' not found!");
         }

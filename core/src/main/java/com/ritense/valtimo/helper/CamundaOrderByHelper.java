@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,15 @@
 
 package com.ritense.valtimo.helper;
 
+import static org.apache.commons.lang3.exception.ExceptionUtils.asRuntimeException;
+
+import java.util.ArrayList;
+import java.util.List;
 import org.camunda.bpm.engine.impl.Direction;
 import org.camunda.bpm.engine.impl.HistoricProcessInstanceQueryProperty;
 import org.camunda.bpm.engine.impl.QueryOrderingProperty;
 import org.camunda.bpm.engine.query.QueryProperty;
 import org.springframework.data.domain.Sort;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.apache.commons.lang3.exception.ExceptionUtils.rethrow;
 
 public class CamundaOrderByHelper {
 
@@ -59,7 +59,7 @@ public class CamundaOrderByHelper {
                     queryOrderingProperties.add(queryOrderingProperty);
 
                 } catch (IllegalArgumentException e) {
-                    rethrow(e);
+                    asRuntimeException(e);
                 }
             } else {
                 throw (new IllegalArgumentException("Invalid query property name: " + property));

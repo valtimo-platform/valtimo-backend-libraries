@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 import com.ritense.valtimo.contract.validation.Validatable
 
+@Deprecated("Since 12.0.0", replaceWith = ReplaceWith("com.ritense.zgw.Rsin"))
 data class Rsin(private val value: String) : Validatable {
     companion object {
         @JvmStatic

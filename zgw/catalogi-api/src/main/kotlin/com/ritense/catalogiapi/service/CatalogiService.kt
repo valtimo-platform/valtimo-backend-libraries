@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,18 @@ package com.ritense.catalogiapi.service
 
 import com.ritense.catalogiapi.CatalogiApiPlugin
 import com.ritense.catalogiapi.domain.Besluittype
+import com.ritense.catalogiapi.domain.Eigenschap
 import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.exception.ZaakTypeLinkNotFoundException
+import com.ritense.plugin.service.PluginConfigurationSearchParameters
 import com.ritense.plugin.service.PluginService
 import java.net.URI
 import mu.KotlinLogging
+import org.springframework.boot.context.event.ApplicationReadyEvent
+import org.springframework.context.event.EventListener
 
 class CatalogiService(
     val zaaktypeUrlProvider: ZaaktypeUrlProvider,
@@ -37,6 +41,13 @@ class CatalogiService(
         val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
 
         return catalogiApiPluginInstance.getInformatieobjecttypes(zaakTypeUrl)
+    }
+
+    fun getInformatieobjecttype(typeUrl: URI): Informatieobjecttype? {
+        logger.debug { "Getting documenttype for with URL $typeUrl" }
+        val catalogiApiPluginInstance = findCatalogiApiPlugin(typeUrl)
+
+        return catalogiApiPluginInstance?.getInformatieobjecttype(typeUrl)
     }
 
     fun getRoltypes(caseDefinitionName: String): List<Roltype> {
@@ -71,12 +82,38 @@ class CatalogiService(
         return catalogiApiPluginInstance.getBesluittypen(zaakTypeUrl)
     }
 
-    private fun findCatalogiApiPlugin(zaakTypeUrl: URI): CatalogiApiPlugin? {
+    fun getEigenschappen(caseDefinitionName: String): List<Eigenschap> {
+        logger.debug { "Getting zgw eigenschappen for case definition $caseDefinitionName" }
+        val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionName(caseDefinitionName) ?: return emptyList()
+        val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
+
+        return catalogiApiPluginInstance.getEigenschappen(zaakTypeUrl)
+    }
+
+    @EventListener(ApplicationReadyEvent::class)
+    fun prefillCache() {
+        logger.debug { "Prefilling catalogi api cache" }
+        try {
+            pluginService.getPluginConfigurations(
+                PluginConfigurationSearchParameters(
+                    pluginDefinitionKey = "catalogiapi"
+                )
+            ).forEach {
+                val catalogiApiPluginInstance = pluginService.createInstance(it) as CatalogiApiPlugin
+                catalogiApiPluginInstance.prefillCache()
+            }
+        } catch (e: Exception) {
+            // We don't want to crash the application if the cache prefilling fails
+            logger.warn(e) { "Error while prefilling catalogi api cache" }
+        }
+    }
+
+    private fun findCatalogiApiPlugin(catalogiContentUrl: URI): CatalogiApiPlugin? {
         val catalogiApiPluginInstance = pluginService
-            .createInstance(CatalogiApiPlugin::class.java, CatalogiApiPlugin.findConfigurationByUrl(zaakTypeUrl))
+            .createInstance(CatalogiApiPlugin::class.java, CatalogiApiPlugin.findConfigurationByUrl(catalogiContentUrl))
 
         if (catalogiApiPluginInstance == null) {
-            logger.error {"No catalogi plugin configuration was found for zaaktype with URL $zaakTypeUrl" }
+            logger.error { "No catalogi plugin configuration was found for zaaktype with URL $catalogiContentUrl" }
         }
 
         return catalogiApiPluginInstance
@@ -99,6 +136,13 @@ class CatalogiService(
             null
         }
     }
+
+    fun getZaakTypen() =
+        pluginService.findPluginConfigurations(CatalogiApiPlugin::class.java)
+            .map { config ->
+                pluginService.createInstance(config) as CatalogiApiPlugin
+            }
+            .flatMap { plugin -> plugin.getZaaktypen() }
 
     companion object {
         val logger = KotlinLogging.logger {}

@@ -7,3 +7,5 @@ com.ritense.document.autoconfigure.SearchFieldAutoConfiguration
 com.ritense.document.autoconfiguration.DocumentAuthorizationAutoConfiguration
 com.ritense.document.autoconfiguration.DocumentEventAutoConfiguration
 com.ritense.document.autoconfiguration.DocumentWidgetAutoConfiguration
+com.ritense.document.autoconfiguration.InternalCaseStatusAutoConfiguration
+com.ritense.document.autoconfiguration.DocumentMigrationAutoConfiguration

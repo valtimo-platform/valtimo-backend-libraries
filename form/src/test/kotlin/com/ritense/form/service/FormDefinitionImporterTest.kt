@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 
 @ExtendWith(MockitoExtension::class)
@@ -68,7 +69,7 @@ class FormDefinitionImporterTest(
         val formFlowKeyCaptor = argumentCaptor<String>()
         val jsonCaptor = argumentCaptor<String>()
 
-        verify(formDefinitionDeploymentService).deploy(formFlowKeyCaptor.capture(), jsonCaptor.capture())
+        verify(formDefinitionDeploymentService).deploy(formFlowKeyCaptor.capture(), jsonCaptor.capture(), eq(false))
 
         assertThat(formFlowKeyCaptor.firstValue).isEqualTo("my-form")
         assertThat(jsonCaptor.firstValue).isEqualTo(jsonContent)

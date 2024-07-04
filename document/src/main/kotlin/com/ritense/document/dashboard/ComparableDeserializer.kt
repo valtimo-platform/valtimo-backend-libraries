@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,17 @@ package com.ritense.document.dashboard
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
 class ComparableDeserializer : StdDeserializer<Comparable<*>>(Comparable::class.java) {
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Comparable<*> {
         return ctxt.readValue(p, Any::class.java) as Comparable<*>
+    }
+}
+
+class ZonedToLocalDateTime : StdDeserializer<LocalDateTime>(LocalDateTime::class.java) {
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): LocalDateTime {
+        return ctxt.readValue(p, ZonedDateTime::class.java).toLocalDateTime()
     }
 }

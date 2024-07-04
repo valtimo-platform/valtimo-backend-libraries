@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,12 @@
 
 package com.ritense.document.domain.impl;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentTrue;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ritense.document.domain.Document;
+import com.ritense.document.domain.InternalCaseStatus;
 import com.ritense.document.domain.RelatedFile;
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentCreatedEvent;
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentModifiedEvent;
@@ -29,24 +33,23 @@ import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.DocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
 import com.ritense.document.service.result.error.DocumentOperationError;
+import com.ritense.valtimo.contract.Constants;
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileAddedEvent;
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileRemovedEvent;
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Type;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.AbstractAggregateRoot;
-import org.springframework.data.domain.Persistable;
-
 import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import java.time.LocalDateTime;
@@ -58,11 +61,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentTrue;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.AbstractAggregateRoot;
+import org.springframework.data.domain.Persistable;
 
 @Entity
 @Table(
@@ -102,6 +107,15 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
 
     @Column(name = "sequence", columnDefinition = "BIGINT")
     private Long sequence;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumns(
+        {
+            @JoinColumn(name="case_definition_name", referencedColumnName="case_definition_name"),
+            @JoinColumn(name="internal_case_status_key", referencedColumnName="internal_case_status_key")
+        }
+    )
+    private InternalCaseStatus internalStatus;
 
     @Column(name = "assignee_id", columnDefinition = "varchar(64)")
     private String assigneeId;
@@ -217,7 +231,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
             final List<JsonSchemaDocumentFieldChangedEvent> changes = StreamSupport
                 .stream(diff.spliterator(), false)
                 .map(JsonSchemaDocumentFieldChangedEvent::fromJsonNode)
-                .collect(Collectors.toList());
+                .toList();
 
             registerEvent(
                 new JsonSchemaDocumentModifiedEvent(
@@ -303,6 +317,13 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
         this.assigneeFullName = null;
     }
 
+    public void setInternalStatus(@Nullable InternalCaseStatus internalCaseStatus) {
+        if (internalCaseStatus != null && !internalCaseStatus.getId().getKey().matches(Constants.KEY_REGEX)) {
+            throw new IllegalArgumentException("Invalid status key: '" + internalCaseStatus.getId().getKey() + "'.");
+        }
+        this.internalStatus = internalCaseStatus;
+    }
+
     @Override
     public JsonSchemaDocumentId id() {
         return id;
@@ -326,6 +347,20 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     @Override
     public JsonSchemaDocumentDefinitionId definitionId() {
         return documentDefinitionId;
+    }
+
+    public void setDefinitionId(JsonSchemaDocumentDefinitionId documentDefinitionId) {
+        this.documentDefinitionId = documentDefinitionId;
+    }
+
+    @Override
+    @Nullable
+    public String internalStatus() {
+        if (internalStatus == null) {
+            return null;
+        } else {
+            return internalStatus.getId().getKey();
+        }
     }
 
     @Override

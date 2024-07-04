@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,11 @@
  */
 
 dependencies {
-    api(project(":besluit"))
-    api(project(":contactmoment"))
     api(project(":dependencies:valtimo-dependencies"))
     api(project(":haalcentraal:haalcentraal-brp"))
-    api(project(":klant"))
-    api(project(":objects-api"))
-    api(project(":openzaak"))
     api(project(":plugin-authentication:notificaties-api-authentication"))
     api(project(":plugin-authentication:objecten-api-authentication"))
-    api(project(":resource:openzaak-resource"))
+    api(project(":plugin-authentication:openzaak-plugin-authentication"))
     api(project(":zgw:besluiten-api"))
     api(project(":zgw:catalogi-api"))
     api(project(":zgw:documenten-api"))
@@ -34,6 +29,7 @@ dependencies {
     api(project(":zgw:objecttypen-api"))
     api(project(":zgw:portaaltaak"))
     api(project(":zgw:verzoek"))
+    api(project(":zgw:zaakdetails"))
     api(project(":zgw:zaken-api"))
 }
 

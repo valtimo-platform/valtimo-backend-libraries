@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -120,7 +120,8 @@ public final class JsonPatchBuilder {
     }
 
     private void addJsonNodeValueInternal(JsonNode destination, JsonPointer path, JsonNode value) {
-        if (destination.at(path.head()).isMissingNode()) {
+        var head = destination.at(path.head());
+        if (!head.isObject() && !head.isArray()) {
             var propertyName = path.last().getMatchingProperty();
             JsonNode newValue;
             if (propertyName.matches("\\d+")) {

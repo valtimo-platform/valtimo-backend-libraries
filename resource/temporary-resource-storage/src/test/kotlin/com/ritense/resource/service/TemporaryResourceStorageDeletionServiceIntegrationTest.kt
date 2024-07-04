@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.ritense.resource.service
 
 import com.ritense.resource.BaseIntegrationTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
@@ -34,6 +35,7 @@ class TemporaryResourceStorageDeletionServiceIntegrationTest @Autowired construc
     private val temporaryResourceStorageDeletionService: TemporaryResourceStorageDeletionService
 ) : BaseIntegrationTest() {
 
+    @Disabled("https://github.com/gradle/gradle/issues/27871")
     @Test
     fun `should delete files older that 60 minutes`() {
         val resourceId = temporaryResourceStorageService.store("My file data".byteInputStream())

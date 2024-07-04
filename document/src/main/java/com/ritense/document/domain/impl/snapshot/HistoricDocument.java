@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.ritense.document.domain.impl.snapshot;
 
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.DocumentDefinition;
+import com.ritense.document.domain.InternalCaseStatusId;
 import com.ritense.document.domain.RelatedFile;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
@@ -26,8 +27,6 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.relation.DocumentRelation;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
-import org.hibernate.annotations.Type;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
@@ -37,6 +36,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import org.hibernate.annotations.Type;
 
 @Embeddable
 public class HistoricDocument implements Document {
@@ -52,6 +52,9 @@ public class HistoricDocument implements Document {
 
     @Transient
     private DocumentDefinition documentDefinition;
+
+    @Embedded
+    private InternalCaseStatusId internalStatus;
 
     @Transient
     private int version;
@@ -90,6 +93,7 @@ public class HistoricDocument implements Document {
         this.content = new JsonDocumentContent(document.content());
         this.documentDefinitionId = document.definitionId();
         this.documentDefinition = documentDefinition;
+        this.internalStatus = InternalCaseStatusId.of(document.definitionId().name(), document.internalStatus());
         this.version = document.version();
         this.createdOn = document.createdOn();
         this.modifiedOn = document.modifiedOn().orElse(null);
@@ -132,6 +136,15 @@ public class HistoricDocument implements Document {
     @Override
     public JsonSchemaDocumentDefinitionId definitionId() {
         return documentDefinitionId;
+    }
+
+    @Override
+    public String internalStatus() {
+        if (internalStatus == null) {
+            return null;
+        } else {
+            return internalStatus.getKey();
+        }
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,22 @@
 
 package com.ritense.note
 
+import com.ritense.authorization.permission.ConditionContainer
+import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.permission.PermissionRepository
+import com.ritense.authorization.permission.condition.FieldPermissionCondition
+import com.ritense.authorization.permission.condition.PermissionConditionOperator
 import com.ritense.authorization.role.Role
 import com.ritense.authorization.role.RoleRepository
-import com.ritense.authorization.permission.ConditionContainer
-import com.ritense.authorization.permission.condition.FieldPermissionCondition
-import com.ritense.authorization.permission.Permission
-import com.ritense.authorization.permission.condition.PermissionConditionOperator
 import com.ritense.note.domain.Note
 import com.ritense.note.service.NoteActionProvider.Companion.CREATE
 import com.ritense.note.service.NoteActionProvider.Companion.DELETE
-import com.ritense.note.service.NoteActionProvider.Companion.VIEW_LIST
 import com.ritense.note.service.NoteActionProvider.Companion.MODIFY
+import com.ritense.note.service.NoteActionProvider.Companion.VIEW_LIST
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
+import jakarta.inject.Inject
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
@@ -40,7 +41,6 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.web.servlet.config.annotation.EnableWebMvc
 import java.util.UUID
-import jakarta.inject.Inject
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class, LiquibaseRunnerExtension::class)

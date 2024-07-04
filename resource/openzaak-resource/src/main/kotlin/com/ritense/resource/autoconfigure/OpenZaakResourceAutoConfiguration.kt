@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,14 @@ import com.ritense.resource.service.OpenZaakService
 import com.ritense.resource.web.rest.OpenZaakResource
 import com.ritense.resource.web.rest.OpenZaakUploadResource
 import com.ritense.resource.web.rest.ResourceResource
+import jakarta.servlet.http.HttpServletRequest
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import jakarta.servlet.http.HttpServletRequest
 
+@Deprecated("Since 12.0.0. Replaced by Documenten API module.")
 @AutoConfiguration
 @EnableJpaRepositories(basePackages = ["com.ritense.resource.repository"])
 @EntityScan("com.ritense.resource.domain")

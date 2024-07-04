@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package com.ritense.document.domain.impl;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -25,9 +27,6 @@ import com.ritense.document.domain.impl.event.JsonSchemaDocumentDefinitionDeploy
 import com.ritense.document.domain.validation.DocumentContentValidationError;
 import com.ritense.document.domain.validation.DocumentContentValidationResult;
 import com.ritense.document.exception.DocumentDefinitionNameMismatchException;
-import org.everit.json.schema.ValidationException;
-import org.springframework.data.domain.AbstractAggregateRoot;
-import org.springframework.data.domain.Persistable;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -39,7 +38,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+import org.everit.json.schema.ValidationException;
+import org.springframework.data.domain.AbstractAggregateRoot;
+import org.springframework.data.domain.Persistable;
 
 @Entity
 @Table(name = "json_schema_document_definition")
@@ -188,6 +189,10 @@ public class JsonSchemaDocumentDefinition extends AbstractAggregateRoot<JsonSche
             return message;
         }
 
+        @Override
+        public String toString() {
+            return asString();
+        }
     }
 
     public static class DocumentContentValidationResultImpl implements DocumentContentValidationResult {

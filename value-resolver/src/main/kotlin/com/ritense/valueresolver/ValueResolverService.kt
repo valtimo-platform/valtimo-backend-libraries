@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,17 +81,17 @@ interface ValueResolverService {
     fun handleValues(
         processInstanceId: String,
         variableScope: VariableScope?,
-        values: Map<String, Any>
+        values: Map<String, Any?>
     )
 
     fun handleValues(
         documentId: UUID,
-        values: Map<String, Any>
+        values: Map<String, Any?>
     )
 
     fun preProcessValuesForNewCase(
-        values: Map<String, Any>
-    ): Map<String, Any>
+        values: Map<String, Any?>
+    ): Map<String, Any?>
 
     fun supportsValue(value: String): Boolean
 }

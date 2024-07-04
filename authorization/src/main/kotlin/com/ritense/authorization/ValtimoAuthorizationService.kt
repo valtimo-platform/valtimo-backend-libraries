@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,10 +113,10 @@ class ValtimoAuthorizationService(
     }
 
     private fun getPermissions(context: AuthorizationRequest<*>): List<Permission> {
-        val userRoles = if (context.user == null || context.user == SecurityUtils.getCurrentUserLogin()) {
+        val userRoles = if (context.user == null) {
             SecurityUtils.getCurrentUserRoles()
         } else {
-            userManagementService.findByEmail(context.user).orElse(null)
+            userManagementService.findById(context.user)
                 ?.roles
                 ?: return emptyList()
         }

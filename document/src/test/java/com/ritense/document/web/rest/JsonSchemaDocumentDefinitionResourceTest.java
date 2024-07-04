@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,37 +15,6 @@
  */
 
 package com.ritense.document.web.rest;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ritense.document.BaseTest;
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
-import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
-import com.ritense.document.service.DocumentStatisticService;
-import com.ritense.document.service.UndeployDocumentDefinitionService;
-import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
-import com.ritense.document.service.impl.UndeployJsonSchemaDocumentDefinitionService;
-import com.ritense.document.service.request.DocumentDefinitionCreateRequest;
-import com.ritense.document.service.result.DeployDocumentDefinitionResultFailed;
-import com.ritense.document.service.result.DeployDocumentDefinitionResultSucceeded;
-import com.ritense.document.service.result.UndeployDocumentDefinitionResultFailed;
-import com.ritense.document.service.result.UndeployDocumentDefinitionResultSucceeded;
-import com.ritense.document.web.rest.impl.JsonSchemaDocumentDefinitionResource;
-import com.ritense.valtimo.contract.json.MapperSingleton;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Optional;
 
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -63,6 +32,38 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ritense.document.BaseTest;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
+import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
+import com.ritense.document.domain.impl.template.DocumentDefinitionTemplateRequestDto;
+import com.ritense.document.service.DocumentStatisticService;
+import com.ritense.document.service.UndeployDocumentDefinitionService;
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
+import com.ritense.document.service.impl.UndeployJsonSchemaDocumentDefinitionService;
+import com.ritense.document.service.request.DocumentDefinitionCreateRequest;
+import com.ritense.document.service.result.DeployDocumentDefinitionResultFailed;
+import com.ritense.document.service.result.DeployDocumentDefinitionResultSucceeded;
+import com.ritense.document.service.result.UndeployDocumentDefinitionResultFailed;
+import com.ritense.document.service.result.UndeployDocumentDefinitionResultSucceeded;
+import com.ritense.document.web.rest.impl.JsonSchemaDocumentDefinitionResource;
+import com.ritense.valtimo.contract.json.MapperSingleton;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
 
@@ -89,6 +90,7 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
 
         mockMvc = MockMvcBuilders.standaloneSetup(documentDefinitionResource)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setMessageConverters(new MappingJackson2HttpMessageConverter(MapperSingleton.get()))
             .build();
 
         definition = definition();
@@ -107,6 +109,49 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$").isNotEmpty());
+    }
+
+    @Test
+    void shouldReturnTemplate() throws Exception {
+        var objectMapper = MapperSingleton.get();
+        var requestDto = new DocumentDefinitionTemplateRequestDto("123", "456");
+
+        mockMvc.perform(
+            post("/api/management/v1/document-definition-template")
+                .content(objectMapper.writeValueAsString(requestDto))
+                .characterEncoding(StandardCharsets.UTF_8.name())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(content().json(
+                """
+                {
+                    "$id": "123.schema",
+                    "type": "object",
+                    "title": "456",
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "properties": {},
+                    "additionalProperties":false
+                }
+                """
+            ));
+    }
+
+    @Test
+    void shouldNotReturnTemplateWhenIdEndsOnPeriod() throws Exception {
+        var objectMapper = MapperSingleton.get();
+        var requestDto = new DocumentDefinitionTemplateRequestDto("123.", "456");
+
+        mockMvc.perform(
+                post("/api/management/v1/document-definition-template")
+                    .content(objectMapper.writeValueAsString(requestDto))
+                    .characterEncoding(StandardCharsets.UTF_8.name())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest());
     }
 
     @Test

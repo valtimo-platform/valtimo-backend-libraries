@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,13 @@
 
 package com.ritense.catalogiapi.web.rest
 
+import com.ritense.catalogiapi.BaseTest
 import com.ritense.catalogiapi.domain.Besluittype
+import com.ritense.catalogiapi.domain.Eigenschap
 import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Roltype
+import com.ritense.catalogiapi.domain.Specificatie
 import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.service.CatalogiService
 import org.hamcrest.Matchers
@@ -36,7 +39,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.net.URI
 import java.nio.charset.StandardCharsets
 
-internal class CatalogiResourceTest {
+internal class CatalogiResourceTest : BaseTest() {
 
     lateinit var mockMvc: MockMvc
     lateinit var catalogiService: CatalogiService
@@ -215,6 +218,73 @@ internal class CatalogiResourceTest {
             .andExpect(MockMvcResultMatchers.jsonPath("$.[1].url").value("http://example.com/2"))
             .andExpect(MockMvcResultMatchers.jsonPath("$.[0].name").value("name 1"))
             .andExpect(MockMvcResultMatchers.jsonPath("$.[1].name").value("name 2"))
+    }
+
+    @Test
+    fun `should get zaaktypen`() {
+
+        val zaaktypen = IntRange(1, 2).map { n ->
+            newZaaktype(
+                URI("http://example.com/$n"),
+                "Zaaktype $n"
+            )
+        }
+
+        whenever(catalogiService.getZaakTypen()).thenReturn(zaaktypen)
+
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/api/management/v1/zgw/zaaktype")
+                .characterEncoding(StandardCharsets.UTF_8.name())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isArray)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.*", Matchers.hasSize<Int>(2)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[0].url").value("http://example.com/1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[0].omschrijving").value("Zaaktype 1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[1].url").value("http://example.com/2"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[1].omschrijving").value("Zaaktype 2"))
+    }
+
+    @Test
+    fun `should get eigenschappen`() {
+        val caseDefinitionName = "test-case"
+
+        val eigenschappen = IntRange(1, 2).map { n ->
+            Eigenschap(
+                URI("http://ritense.com/$n"),
+                naam = "naam $n",
+                definitie = "definitie",
+                specificatie = Specificatie(
+                    groep = "groep",
+                    formaat = "formaat",
+                    lengte = "lengte",
+                    kardinaliteit = "kardinaliteit",
+                ),
+                zaaktype = URI("www.ritense.com/zaaktype"),
+            )
+        }
+
+        whenever(catalogiService.getEigenschappen(caseDefinitionName)).thenReturn(eigenschappen)
+
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/api/management/v1/case-definition/{caseDefinitionName}/catalogi-eigenschappen", caseDefinitionName)
+                .characterEncoding(StandardCharsets.UTF_8.name())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isArray)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.*", Matchers.hasSize<Int>(2)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[0].url").value("http://ritense.com/1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[0].name").value("naam 1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[1].url").value("http://ritense.com/2"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[1].name").value("naam 2"))
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,18 +23,17 @@ import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DateFormatDisplayTypeParameter
 import com.ritense.case.service.CaseListDeploymentService.Companion.CASE_LIST_DEFINITIONS_PATH
 import com.ritense.case.service.CaseListDeploymentService.Companion.CASE_LIST_SCHEMA_PATH
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.doCallRealMethod
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.spy
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.Resource
 import org.springframework.transaction.annotation.Transactional
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @Transactional
 class CaseListDeploymentServiceIntTest: BaseIntegrationTest() {
@@ -65,7 +64,6 @@ class CaseListDeploymentServiceIntTest: BaseIntegrationTest() {
     @Test
     fun `should delete old columns in database when loading new configuration`() {
         //load initial configuration
-        val spyResolver = spy(resourcePatternResolver)
         val resource = mock<Resource>()
         val fileContent = """
             [
@@ -88,11 +86,11 @@ class CaseListDeploymentServiceIntTest: BaseIntegrationTest() {
         whenever(resource.filename).thenReturn("some-document.json")
         whenever(resource.inputStream).thenReturn(fileContent.byteInputStream())
 
-        doReturn(arrayOf(resource)).whenever(spyResolver).getResources(CASE_LIST_DEFINITIONS_PATH)
-        doCallRealMethod().whenever(spyResolver).getResource(CASE_LIST_SCHEMA_PATH)
+        doReturn(arrayOf(resource)).whenever(resourcePatternResolver).getResources(CASE_LIST_DEFINITIONS_PATH)
+        doCallRealMethod().whenever(resourcePatternResolver).getResource(CASE_LIST_SCHEMA_PATH)
 
         val service = CaseListDeploymentService(
-            spyResolver,
+            resourcePatternResolver,
             objectMapper,
             caseDefinitionService
         )
@@ -122,7 +120,7 @@ class CaseListDeploymentServiceIntTest: BaseIntegrationTest() {
         whenever(newResource.filename).thenReturn("some-document.json")
         whenever(newResource.inputStream).thenReturn(newFileContent.byteInputStream())
 
-        doReturn(arrayOf(newResource)).whenever(spyResolver).getResources(CASE_LIST_DEFINITIONS_PATH)
+        doReturn(arrayOf(newResource)).whenever(resourcePatternResolver).getResources(CASE_LIST_DEFINITIONS_PATH)
 
         runWithoutAuthorization { service.deployColumns() }
 

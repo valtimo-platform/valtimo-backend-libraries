@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,13 +48,19 @@ public class MysqlQueryDialectHelper implements QueryDialectHelper {
 
     @Override
     public Predicate getJsonValueExistsExpression(CriteriaBuilder cb, Path column, String value) {
+        Expression<?> searchColumn = column;
+        Expression<?> searchValue = cb.literal("%" + value.trim() + "%");
+        if (column.getJavaType() == String.class) {
+            searchColumn = cb.function(LOWER_CASE_FUNCTION, String.class, searchColumn);
+            searchValue = cb.function(LOWER_CASE_FUNCTION, String.class, searchValue);
+        }
         return cb.isNotNull(
             cb.function(
                 "JSON_SEARCH",
                 String.class,
-                cb.function(LOWER_CASE_FUNCTION, String.class, column),
+                searchColumn,
                 cb.literal("all"),
-                cb.function(LOWER_CASE_FUNCTION, String.class, cb.literal("%" + value.trim() + "%"))
+                searchValue
             )
         );
     }
@@ -62,15 +68,23 @@ public class MysqlQueryDialectHelper implements QueryDialectHelper {
     @Override
     public Predicate getJsonValueExistsInPathExpression(CriteriaBuilder cb, Path column, String path,
         String value) {
+        Expression<?> searchColumn = column;
+        Expression<?> searchPath = cb.literal(path);
+        Expression<?> searchValue = cb.literal("%" + value.trim() + "%");
+        if (column.getJavaType() == String.class) {
+            searchColumn = cb.function(LOWER_CASE_FUNCTION, String.class, searchColumn);
+            searchPath = cb.function(LOWER_CASE_FUNCTION, String.class, searchPath);
+            searchValue = cb.function(LOWER_CASE_FUNCTION, String.class, searchValue);
+        }
         return cb.isNotNull(
             cb.function(
                 "JSON_SEARCH",
                 String.class,
-                cb.function(LOWER_CASE_FUNCTION, String.class, column),
+                searchColumn,
                 cb.literal("all"),
-                cb.function(LOWER_CASE_FUNCTION, String.class, cb.literal("%" + value.trim() + "%")),
+                searchValue,
                 cb.nullLiteral(String.class),
-                cb.function(LOWER_CASE_FUNCTION, String.class, cb.literal(path))
+                searchPath
             )
         );
     }

@@ -95,7 +95,6 @@ dependencies {
     testImplementation "org.mockito:mockito-inline:${mockitoInlineVersion}"
 
     testImplementation project(':test-utils-common')
-    testImplementation("com.mysql:mysql-connector-j")
 
     jar {
         enabled = true

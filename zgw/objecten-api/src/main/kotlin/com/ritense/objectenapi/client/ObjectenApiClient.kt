@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ class ObjectenApiClient(
                 type = URI.create(
                     responseBody.type.toString().replace(HOST_DOCKER_INTERNAL, "localhost")
                 )
-        ) else responseBody
+            ) else responseBody
 
         if (result.hasBody()) {
             outboxService.send {
@@ -260,6 +260,17 @@ class ObjectenApiClient(
         objectUrl: URI,
         objectRequest: ObjectRequest
     ): ObjectWrapper {
+        val objectRequestCorrectedHost = if (objectRequest.type.host == "localhost") {
+            objectRequest.copy(
+                type = UriComponentsBuilder
+                    .fromUri(objectRequest.type)
+                    .host(HOST_DOCKER_INTERNAL)
+                    .build()
+                    .toUri()
+            )
+        } else {
+            objectRequest
+        }
         val result = webclientBuilder
             .clone()
             .filter(authentication)
@@ -267,7 +278,7 @@ class ObjectenApiClient(
             .put()
             .uri(objectUrl)
             .header(CONTENT_CRS, EPSG_4326)
-            .bodyValue(objectRequest)
+            .bodyValue(objectRequestCorrectedHost)
             .retrieve()
             .toEntity(ObjectWrapper::class.java)
             .block()

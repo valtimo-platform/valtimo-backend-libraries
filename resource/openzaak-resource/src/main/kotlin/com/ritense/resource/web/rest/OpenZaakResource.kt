@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,12 @@ package com.ritense.resource.web.rest
 import com.ritense.resource.service.ResourceService
 import com.ritense.resource.web.ObjectUrlDTO
 import com.ritense.resource.web.ResourceDTO
-import java.net.URLConnection
-import java.util.UUID
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import java.net.URLConnection
+import java.util.UUID
 
+@Deprecated("Since 12.0.0. Replaced by Documenten API module.")
 class OpenZaakResource(
     val resourceService: ResourceService
 ) : ResourceResource {

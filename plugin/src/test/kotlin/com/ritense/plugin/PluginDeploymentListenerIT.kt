@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package com.ritense.plugin
 
-import com.ritense.plugin.domain.ActivityType
-import com.ritense.plugin.domain.ActivityType.SERVICE_TASK_START
 import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginCategory
 import com.ritense.plugin.domain.PluginDefinition
@@ -25,6 +23,9 @@ import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
+import com.ritense.processlink.domain.ActivityTypeWithEventName
+import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
+import jakarta.transaction.Transactional
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.containsInAnyOrder
@@ -37,7 +38,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import jakarta.transaction.Transactional
 
 internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
 
@@ -197,7 +197,7 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
         title: String,
         description: String,
         methodName: String,
-        activityTypes: Array<ActivityType>
+        activityTypes: Array<ActivityTypeWithEventName>
     ) {
         assertThat(
             deployedActions,

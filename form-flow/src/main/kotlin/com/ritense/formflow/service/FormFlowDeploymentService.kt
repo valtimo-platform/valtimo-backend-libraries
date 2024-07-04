@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,6 +89,12 @@ class FormFlowDeploymentService(
         } catch (e: Exception) {
             throw RuntimeException("Failed to deploy Form Flow $formFlowKey", e)
         }
+    }
+
+    fun isAutoDeployed(formFlowDefinitionKey: String): Boolean {
+        return ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
+            .getResource(FORM_FLOW_DEFINITIONS_PATH.replace("*", formFlowDefinitionKey))
+            .exists()
     }
 
     private fun validate(formFlowJson: String) {

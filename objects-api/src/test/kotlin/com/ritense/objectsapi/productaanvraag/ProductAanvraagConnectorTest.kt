@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ import com.ritense.objectsapi.opennotificaties.OpenNotificatieConnector
 import com.ritense.objectsapi.repository.AbonnementLinkRepository
 import com.ritense.objectsapi.service.ObjectsApiConnector
 import com.ritense.valtimo.contract.json.MapperSingleton
+import java.net.URI
+import java.util.UUID
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -40,8 +42,6 @@ import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.whenever
 import org.springframework.core.ParameterizedTypeReference
-import java.net.URI
-import java.util.UUID
 
 class ProductAanvraagConnectorTest : BaseTest() {
     lateinit var productAanvraagProperties: ProductAanvraagProperties

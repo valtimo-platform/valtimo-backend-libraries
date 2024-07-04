@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@
 
 package com.ritense.mail.domain.webhook;
 
+import static com.ritense.mail.domain.webhook.SyncEventEnum.ADD;
+import static com.ritense.mail.domain.webhook.SyncEventEnum.BLACKLIST;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
-
-import static com.ritense.mail.domain.webhook.SyncEventEnum.ADD;
-import static com.ritense.mail.domain.webhook.SyncEventEnum.BLACKLIST;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MandrillSyncEvent {

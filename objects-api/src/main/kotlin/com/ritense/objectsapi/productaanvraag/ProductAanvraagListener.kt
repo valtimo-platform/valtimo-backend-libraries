@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@ import com.ritense.authorization.AuthorizationContext
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieConnector.Companion.OBJECTEN_KANAAL_NAME
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
 import com.ritense.objectsapi.opennotificaties.OpenNotificationEvent
+import jakarta.persistence.EntityNotFoundException
 import mu.KotlinLogging
 import org.springframework.context.event.EventListener
-import jakarta.persistence.EntityNotFoundException
 
 class ProductAanvraagListener(
     private val productAanvraagService: ProductAanvraagService,

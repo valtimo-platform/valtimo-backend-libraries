@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ class ProcessLinkExporterIntTest @Autowired constructor(
 
     @Test
     fun `should export process links`(): Unit = runWithoutAuthorization {
-        val processDefinitionKey = "auto-deploy-process-link"
+        val processDefinitionKey = "auto-deploy-process-link-with-long-key"
         val processDefinitionId = getProcessDefinitionId(processDefinitionKey)
 
         val result = processLinkExporter.export(ProcessDefinitionExportRequest(processDefinitionId))
@@ -55,7 +55,7 @@ class ProcessLinkExporterIntTest @Autowired constructor(
         assertThat(result.exportFiles).isNotEmpty()
 
         val exportFile = result.exportFiles.single {
-            it.path == "config/processlink/auto-deploy-process-link.processlink.json"
+            it.path == "config/processlink/auto-deploy-process-link-with-long-key.processlink.json"
         }
 
         val createRequestDtos: List<ProcessLinkExportResponseDto> = objectMapper.readValue(exportFile.content)

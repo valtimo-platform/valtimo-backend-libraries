@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ritense.exact.plugin
 
 import com.ritense.exact.client.endpoints.ExactGetRequest
@@ -12,7 +28,7 @@ import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginCategory
 import com.ritense.plugin.annotation.PluginProperty
-import com.ritense.plugin.domain.ActivityType
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.context.ApplicationContext
 import org.springframework.web.reactive.function.client.WebClient
@@ -82,7 +98,7 @@ class ExactPlugin(
         key = "exact-get-request",
         title = "A GET call to Exact",
         description = "Make a GET call to Exact",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun getCallExact(execution: DelegateExecution, @PluginActionProperty properties: ExactCallProperties) {
         val token = exactService.refreshAccessTokens(exactService.getPluginConfiguration(this))
@@ -106,7 +122,7 @@ class ExactPlugin(
         key = "exact-post-request",
         title = "A POST call to Exact",
         description = "Make a POST call to Exact",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun postCallExact(execution: DelegateExecution, @PluginActionProperty properties: ExactCallProperties) {
         val token = exactService.refreshAccessTokens(exactService.getPluginConfiguration(this))
@@ -131,7 +147,7 @@ class ExactPlugin(
         key = "exact-put-request",
         title = "A PUT call to Exact",
         description = "Make a PUT call to Exact",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun putCallExact(execution: DelegateExecution, @PluginActionProperty properties: ExactCallProperties) {
         val token = exactService.refreshAccessTokens(exactService.getPluginConfiguration(this))

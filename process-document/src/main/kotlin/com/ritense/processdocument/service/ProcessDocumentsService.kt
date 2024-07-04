@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,16 +44,19 @@ class ProcessDocumentsService(
         val processInstance = runWithoutAuthorization {
             camundaProcessService.startProcess(processDefinitionKey, businessKey, variables)
         }
+        require(processInstance.processDefinition.name != null) {
+            "Process definition with id '${processInstance.processDefinition.id}' doesn't have a name"
+        }
         associateDocumentToProcess(
             processInstance.processInstanceDto.id,
-            processInstance.processDefinition.name,
+            processInstance.processDefinition.name!!,
             businessKey
         )
     }
 
     private fun associateDocumentToProcess(
         processInstanceId: String?,
-        processName: String?,
+        processName: String,
         businessKey: String
     ) {
         runWithoutAuthorization {

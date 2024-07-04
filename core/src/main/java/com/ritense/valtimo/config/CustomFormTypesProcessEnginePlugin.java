@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,12 @@ package com.ritense.valtimo.config;
 import com.ritense.valtimo.domain.formfields.ChoiceFieldFormFieldType;
 import com.ritense.valtimo.domain.formfields.FileUploadFormFieldType;
 import com.ritense.valtimo.domain.formfields.TextAreaFormFieldType;
+import java.util.ArrayList;
+import java.util.List;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.engine.impl.cfg.ProcessEnginePlugin;
 import org.camunda.bpm.engine.impl.form.type.AbstractFormFieldType;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CustomFormTypesProcessEnginePlugin implements ProcessEnginePlugin {
 

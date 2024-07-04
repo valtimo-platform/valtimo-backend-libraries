@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ class PollingPublisherServiceIntTest : BaseIntegrationTest() {
         insertOutboxMessage(OrderCreatedEvent("event 1"))
         insertOutboxMessage(OrderCreatedEvent("event 2"))
         whenever(messagePublisher.publish(any())).then { Thread.sleep(1000) }
-        verify(outboxMessageRepository, times(0)).findTopByOrderByCreatedOnAsc()
+        verify(outboxMessageRepository, times(0)).findOutboxMessage()
 
         listOf(
             async(Dispatchers.IO) { pollingPublisherService.pollAndPublishAll() },
@@ -60,7 +60,7 @@ class PollingPublisherServiceIntTest : BaseIntegrationTest() {
         // Poller 2: Polling is blocked. NO database read
         // Poller 1: read database. Find event 2
         // Poller 1: read database. Find NULL
-        verify(outboxMessageRepository, times(3)).findTopByOrderByCreatedOnAsc()
+        verify(outboxMessageRepository, times(3)).findOutboxMessage()
     }
 
     @Test
@@ -68,7 +68,7 @@ class PollingPublisherServiceIntTest : BaseIntegrationTest() {
         insertOutboxMessage(OrderCreatedEvent("event 1"))
         insertOutboxMessage(OrderCreatedEvent("event 2"))
         whenever(messagePublisher.publish(any())).then { Thread.sleep(1000) }
-        verify(outboxMessageRepository, times(0)).findTopByOrderByCreatedOnAsc()
+        verify(outboxMessageRepository, times(0)).findOutboxMessage()
 
         pollingPublisherService.pollAndPublishAll()
         pollingPublisherService.pollAndPublishAll()
@@ -78,6 +78,6 @@ class PollingPublisherServiceIntTest : BaseIntegrationTest() {
         // Poller 1: read database. Find event 2
         // Poller 1: read database. Find NULL
         // Poller 2: read database. Find NULL
-        verify(outboxMessageRepository, times(4)).findTopByOrderByCreatedOnAsc()
+        verify(outboxMessageRepository, times(4)).findOutboxMessage()
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package com.ritense.form.autodeployment;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,6 +26,10 @@ import com.ritense.form.domain.event.FormsAutoDeploymentFinishedEvent;
 import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.form.service.FormDefinitionService;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,13 +37,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class FormDefinitionDeploymentService {
 
@@ -80,7 +79,7 @@ public class FormDefinitionDeploymentService {
                 return Optional.empty();
             }
             var name = getFormName(resource);
-            return deploy(name, IOUtils.toString(resource.getInputStream(), UTF_8));
+            return deploy(name, IOUtils.toString(resource.getInputStream(), UTF_8), true);
         } catch (IOException e) {
             logger.error("Error while deploying form definition {}", getFormName(resource), e);
         }
@@ -88,7 +87,12 @@ public class FormDefinitionDeploymentService {
         return Optional.empty();
     }
 
+    @Deprecated(since = "12.0.0", forRemoval = true)
     public Optional<FormDefinition> deploy(String name, String formDefinitionAsString) throws JsonProcessingException {
+        return deploy(name, formDefinitionAsString, true);
+    }
+
+    public Optional<FormDefinition> deploy(String name, String formDefinitionAsString, boolean readOnly) throws JsonProcessingException {
         var rawFormDefinition = getJson(formDefinitionAsString);
         var optionalFormDefinition = formDefinitionRepository.findByName(name);
         if (optionalFormDefinition.isPresent()) {
@@ -98,7 +102,7 @@ public class FormDefinitionDeploymentService {
                     existingFormDefinition.getId(),
                     name,
                     rawFormDefinition.toString(),
-                    true
+                    readOnly
                 );
                 logger.info("Modified existing form definition {}", name);
                 return Optional.of(formDefinition);
@@ -108,7 +112,7 @@ public class FormDefinitionDeploymentService {
                 new CreateFormDefinitionRequest(
                     name,
                     rawFormDefinition.toString(),
-                    true
+                    readOnly
                 )
             );
             logger.info("Deployed form definition {}", name);

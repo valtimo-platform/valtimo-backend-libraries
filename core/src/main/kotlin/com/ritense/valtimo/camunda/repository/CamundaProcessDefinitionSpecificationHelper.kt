@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,6 +53,11 @@ class CamundaProcessDefinitionSpecificationHelper {
         @JvmStatic
         fun byVersion(version: Int) = Specification<CamundaProcessDefinition> { root, _, cb ->
             cb.equal(root.get<Any>(VERSION), version)
+        }
+
+        @JvmStatic
+        fun byVersionTag(versionTag: String) = Specification<CamundaProcessDefinition> { root, _, cb ->
+            cb.equal(root.get<Any>(VERSION_TAG), versionTag)
         }
 
         @JvmStatic

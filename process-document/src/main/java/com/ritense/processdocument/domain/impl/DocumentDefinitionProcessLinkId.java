@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,12 @@
 
 package com.ritense.processdocument.domain.impl;
 
-import com.ritense.valtimo.contract.domain.AbstractId;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
+import com.ritense.valtimo.contract.domain.AbstractId;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.util.Objects;
-
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable
 public class DocumentDefinitionProcessLinkId
@@ -34,11 +33,13 @@ public class DocumentDefinitionProcessLinkId
     @Column(name = "process_definition_key", nullable = false)
     private String processDefinitionKey;
 
-    public DocumentDefinitionProcessLinkId() {}
+    public DocumentDefinitionProcessLinkId() {
+    }
 
     private DocumentDefinitionProcessLinkId(
         final String documentDefinitionName,
-        final String processDefinitionKey) {
+        final String processDefinitionKey
+    ) {
         assertArgumentNotNull(documentDefinitionName, "The documentDefinitionName is required");
         assertArgumentNotNull(processDefinitionKey, "The processDefinitionKey is required");
         this.documentDefinitionName = documentDefinitionName;
@@ -72,12 +73,11 @@ public class DocumentDefinitionProcessLinkId
         if (this == o) {
             return true;
         }
-        if (!(o instanceof DocumentDefinitionProcessLinkId)) {
+        if (!(o instanceof DocumentDefinitionProcessLinkId that)) {
             return false;
         }
-        DocumentDefinitionProcessLinkId that = (DocumentDefinitionProcessLinkId) o;
-        return documentDefinitionName.equals(that.documentDefinitionName) &&
-            processDefinitionKey.equals(that.processDefinitionKey);
+        return documentDefinitionName.equals(that.documentDefinitionName)
+            && processDefinitionKey.equals(that.processDefinitionKey);
     }
 
     @Override

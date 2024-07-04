@@ -1,0 +1,19 @@
+{
+    "changesetId": "leningen-internal-case-status-v1",
+    "internalCaseStatuses": [
+        {
+            "key": "closed",
+            "caseDefinitionName": "leningen",
+            "title": "Closed",
+            "visibleInCaseListByDefault": false,
+            "color": "RED"
+        },
+        {
+            "key": "started",
+            "caseDefinitionName": "leningen",
+            "title": "Started",
+            "visibleInCaseListByDefault": true,
+            "color": "PURPLE"
+        }
+    ]
+}

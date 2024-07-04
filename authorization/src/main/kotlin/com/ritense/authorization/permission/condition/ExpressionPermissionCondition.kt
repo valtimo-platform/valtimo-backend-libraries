@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,8 @@ package com.ritense.authorization.permission.condition
 
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.annotation.JsonView
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.PathNotFoundException
-import com.ritense.authorization.jackson.ComparableDeserializer
 import com.ritense.authorization.permission.PermissionView
 import com.ritense.authorization.permission.condition.ExpressionPermissionCondition.Companion.EXPRESSION
 import com.ritense.valtimo.contract.database.QueryDialectHelper
@@ -34,7 +32,7 @@ import jakarta.persistence.criteria.Root
 
 
 @JsonTypeName(EXPRESSION)
-data class ExpressionPermissionCondition<V : Comparable<V>>(
+data class ExpressionPermissionCondition<V>(
     @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val field: String,
     @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
@@ -42,11 +40,14 @@ data class ExpressionPermissionCondition<V : Comparable<V>>(
     @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val operator: PermissionConditionOperator,
     @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
-    @JsonDeserialize(using = ComparableDeserializer::class)
     val value: V?,
     @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val clazz: Class<V>
 ) : ReflectingPermissionCondition(PermissionConditionType.EXPRESSION) {
+    init {
+        require(value == null || value is Comparable<*> || value is List<*>)
+    }
+
     override fun <E : Any> isValid(entity: E): Boolean {
         val jsonValue = toJsonString(entity)
             ?: return value == null
@@ -110,8 +111,18 @@ data class ExpressionPermissionCondition<V : Comparable<V>>(
     private fun evaluateExpression(pathValue: Any?): Boolean {
         return operator.evaluate(
             pathValue,
-            PermissionConditionValueResolver.resolveValue(value)
+            resolveValue()
         )
+    }
+
+    private fun resolveValue(): Any? {
+        return if (this.value is List<*>) {
+            this.value.map {
+                PermissionConditionValueResolver.resolveValue(it)
+            }
+        } else {
+            PermissionConditionValueResolver.resolveValue(this.value)
+        }
     }
 
     companion object {

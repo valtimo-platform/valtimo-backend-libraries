@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package com.ritense.valtimo.contract;
 public final class Constants {
 
     public static final String LOGIN_REGEX = "^[_'.@A-Za-z0-9-]*$";
+    public static final String KEY_REGEX = "[a-z][a-z0-9-_]+";
     public static final String SPRING_PROFILE_DEVELOPMENT = "dev";
     public static final String SPRING_PROFILE_ACCEPTANCE = "acc";
     public static final String SPRING_PROFILE_PRODUCTION = "prod";

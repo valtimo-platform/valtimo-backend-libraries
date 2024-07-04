@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Sinks
 import java.util.UUID
 
+@Deprecated("Since 12.0.0")
 @Transactional
 class ExternalCaseService(
     private val documentService: DocumentService,
@@ -51,6 +52,7 @@ class ExternalCaseService(
      * Supplier/Consumer method: Creates case in Valtimo Core,
      * and publishes message back to Portal to update the externalId.
      */
+    @Deprecated("Since 12.0.0")
     fun createExternalCase(createExternalCaseMessage: CreateExternalCaseMessage) {
         val portalMapping = mappedCasesConfig
             .links[createExternalCaseMessage.caseDefinitionId]!!
@@ -83,6 +85,7 @@ class ExternalCaseService(
      * Supplier method: Publishes the specified status 'FreeText' back to the Portal case.
      * note this freetext should match a status in the portal otherwise it will not update.
      */
+    @Deprecated("Since 12.0.0")
     fun publishCaseStatus(status: String, execution: DelegateExecution) {
         val externalId = getExternalId(execution)
         sink.tryEmitNext(UpdateStatusPortalCaseMessage(externalId, status))
@@ -92,6 +95,7 @@ class ExternalCaseService(
      * Supplier method: Publishes the case properties to be updated in the portal.
      * note properties should match by name otherwise it will not update.
      */
+    @Deprecated("Since 12.0.0")
     fun publishCaseUpdate(properties: Map<JsonPointer, JsonNode>, execution: DelegateExecution) {
         val externalId = getExternalId(execution)
         sink.tryEmitNext(UpdatePortalCaseMessage(externalId, properties))
@@ -103,12 +107,14 @@ class ExternalCaseService(
         return document.id().toString()
     }
 
+    @Deprecated("Since 12.0.0")
     fun getCaseValue(execution: DelegateExecution, jsonPointer: JsonPointer): JsonNode {
         val documentId = JsonSchemaDocumentId.existingId(UUID.fromString(execution.processBusinessKey))
         val document = AuthorizationContext.runWithoutAuthorization { documentService.findBy(documentId) }.orElseThrow()
         return document.content().getValueBy(jsonPointer).orElseThrow()
     }
 
+    @Deprecated("Since 12.0.0")
     fun processExternalIdUpdateConfirmation(externalIdUpdatedConfirmation: ExternalIdUpdatedConfirmationMessage) {
         runtimeService.createMessageCorrelation("externalIdUpdatedConfirmation")
             .processInstanceBusinessKey(externalIdUpdatedConfirmation.externalId)

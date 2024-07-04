@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,13 @@ import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.resource.domain.OpenZaakResource
 import com.ritense.resource.service.OpenZaakService
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
-import java.net.URI
-import java.util.UUID
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.transaction.annotation.Transactional
+import java.net.URI
+import java.util.UUID
 
+@Deprecated("Since 12.0.0. Please use the Besluiten API module instead.")
 open class BesluitServiceTaskListener(
     zaakTypeLinkService: ZaakTypeLinkService,
     documentService: DocumentService,

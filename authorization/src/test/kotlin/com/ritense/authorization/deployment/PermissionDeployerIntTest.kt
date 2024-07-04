@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,11 @@ import com.ritense.authorization.permission.condition.FieldPermissionCondition
 import com.ritense.authorization.permission.condition.PermissionConditionOperator
 import com.ritense.authorization.testimpl.TestDocument
 import com.ritense.valtimo.changelog.repository.ChangesetRepository
+import java.time.Instant
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import java.time.Instant
 
 internal class PermissionDeployerIntTest : BaseIntegrationTest() {
 
@@ -47,7 +47,7 @@ internal class PermissionDeployerIntTest : BaseIntegrationTest() {
         assertThat(changeset.get().filename).endsWith("/testdocument.permission.json")
         assertThat(changeset.get().dateExecuted).isBetween(Instant.parse("2023-06-13T00:00:00Z"), Instant.now())
         assertThat(changeset.get().orderExecuted).isBetween(0, 1000)
-        assertThat(changeset.get().md5sum).isEqualTo("b524bfc65d24e1d3b4ff79d2cd846275")
+        assertThat(changeset.get().md5sum).isEqualTo("ec0f3428909e35d0f9eac83b72cad697")
     }
 
     @Test
@@ -64,7 +64,7 @@ internal class PermissionDeployerIntTest : BaseIntegrationTest() {
         assertTrue(permissions[0].conditionContainer.conditions[0] is FieldPermissionCondition<*>)
         val condition = permissions[0].conditionContainer.conditions[0] as FieldPermissionCondition<*>
         assertThat(condition.field).isEqualTo("document.name")
-        assertThat(condition.operator).isEqualTo(PermissionConditionOperator.EQUAL_TO)
-        assertThat(condition.value).isEqualTo("loan")
+        assertThat(condition.operator).isEqualTo(PermissionConditionOperator.IN)
+        assertThat(condition.value).isEqualTo(listOf("loan", "gift"))
     }
 }

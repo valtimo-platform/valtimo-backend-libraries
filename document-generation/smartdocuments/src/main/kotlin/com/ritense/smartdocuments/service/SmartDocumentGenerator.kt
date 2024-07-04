@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,11 @@ import com.ritense.valtimo.contract.audit.utils.AuditHelper
 import com.ritense.valtimo.contract.documentgeneration.event.DossierDocumentGeneratedEvent
 import com.ritense.valtimo.contract.utils.RequestHelper
 import com.ritense.valtimo.contract.utils.SecurityUtils
-import org.springframework.context.ApplicationEventPublisher
 import java.time.LocalDateTime
 import java.util.UUID
+import org.springframework.context.ApplicationEventPublisher
 
+@Deprecated("Since 12.0.0")
 class SmartDocumentGenerator(
     private val connectorService: ConnectorService,
     private val documentService: DocumentService,
@@ -41,6 +42,7 @@ class SmartDocumentGenerator(
     private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
 
+    @Deprecated("Since 12.0.0", ReplaceWith("com.ritense.smartdocuments.plugin.SmartDocumentsPlugin"))
     fun generateAndStoreDocument(
         documentId: Document.Id,
         templateGroup: String,

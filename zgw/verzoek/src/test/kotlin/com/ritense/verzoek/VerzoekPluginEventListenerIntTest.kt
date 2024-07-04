@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,10 @@ import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
+import jakarta.transaction.Transactional
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.RuntimeService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -49,7 +51,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
-import jakarta.transaction.Transactional
 
 @Transactional
 internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
@@ -219,6 +220,116 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
     }
 
     @Test
+    fun `should support copying the root object in the Verzoek mapping`() {
+        createPluginConfiguration(
+            "verzoek",
+            """
+            {
+              "notificatiesApiPluginConfiguration": "${notificatiesApiPluginConfiguration.id.id}",
+              "processToStart": "verzoek-process",
+              "rsin": "$rsin",
+              "verzoekProperties": [{
+                "type": "objection",
+                "caseDefinitionName": "${documentDefinition.id().name()}",
+                "processDefinitionKey": "objection-process",
+                "objectManagementId": "${objectManagement.id}",
+                "initiatorRoltypeUrl": "$initiatoRolType",
+                "initiatorRolDescription": "Initiator",
+                "copyStrategy": "specified",
+                "mapping": [{
+                    "source": "",
+                    "target": "doc:/verzoekObject"
+                }]
+              }]
+            }
+            """.trimIndent()
+        )
+        //mocks
+        val mockObjectenApiPlugin = mock<ObjectenApiPlugin>()
+        doCallRealMethod().whenever(pluginService).createInstance(any<Class<VerzoekPlugin>>(), any())
+
+        doReturn(mockObjectenApiPlugin).whenever(pluginService)
+            .createInstance(eq(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)))
+        doReturn(createObjectWrapper(withMetaData = true, verzoekObjectType, true)).whenever(mockObjectenApiPlugin)
+            .getObject(any())
+        //tested method
+        val event = createEvent()
+        verzoekPluginEventListener.createZaakFromNotificatie(event)
+
+        //assertions
+        val processList = processService.createProcessInstanceQuery().processDefinitionKey("verzoek-process").list()
+        assertEquals(1, processList.size)
+        val processVariableMap =
+            processService.createVariableInstanceQuery()
+                .processInstanceIdIn(processList[0].id).list().associate { it.name to it.value }
+        assertEquals(rsin, processVariableMap["RSIN"])
+        assertEquals(zaakTypeUrl, processVariableMap["zaakTypeUrl"])
+        assertEquals(initiatoRolType, processVariableMap["rolTypeUrl"])
+        assertEquals(event.resourceUrl, processVariableMap["verzoekObjectUrl"])
+        assertEquals("bsn", processVariableMap["initiatorType"])
+        assertEquals(bsn, processVariableMap["initiatorValue"])
+
+        val documentInstance = runWithoutAuthorization { documentService.get(processList[0].businessKey) }
+        assertEquals(
+            "John Doe",
+            documentInstance.content().getValueBy(JsonPointer.valueOf("/verzoekObject/name")).get().textValue()
+        )
+    }
+
+    @Test
+    fun `should add the verzoek data to the process variables`() {
+        createPluginConfiguration(
+            "verzoek",
+            """
+            {
+              "notificatiesApiPluginConfiguration": "${notificatiesApiPluginConfiguration.id.id}",
+              "processToStart": "verzoek-process",
+              "rsin": "$rsin",
+              "verzoekProperties": [{
+                "type": "objection",
+                "caseDefinitionName": "${documentDefinition.id().name()}",
+                "processDefinitionKey": "objection-process",
+                "objectManagementId": "${objectManagement.id}",
+                "initiatorRoltypeUrl": "$initiatoRolType",
+                "initiatorRolDescription": "Initiator",
+                "copyStrategy": "specified",
+                "mapping": [{
+                    "target": "doc:/email",
+                    "source": "/email"
+                },
+                {
+                    "target": "pv:/fullname",
+                    "source": "/name"
+                }]
+              }]
+            }
+            """.trimIndent()
+        )
+        //mocks
+        val mockObjectenApiPlugin = mock<ObjectenApiPlugin>()
+        doCallRealMethod().whenever(pluginService).createInstance(any<Class<VerzoekPlugin>>(), any())
+
+        doReturn(mockObjectenApiPlugin).whenever(pluginService)
+            .createInstance(eq(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)))
+        doReturn(createObjectWrapper(withMetaData = true, verzoekObjectType, true)).whenever(mockObjectenApiPlugin)
+            .getObject(any())
+        //tested method
+        val event = createEvent()
+        verzoekPluginEventListener.createZaakFromNotificatie(event)
+
+        //assertions
+        val processList = processService.createProcessInstanceQuery().processDefinitionKey("verzoek-process").list()
+        assertEquals(1, processList.size)
+        val processVariableMap =
+            processService.createVariableInstanceQuery()
+                .processInstanceIdIn(processList[0].id).list().associate { it.name to it.value }
+        assertThat(processVariableMap).hasSize(10)
+        assertThat(processVariableMap).containsKey("fullname")
+        assertThat(processVariableMap).doesNotContainKey("email")
+        assertEquals("John Doe", processVariableMap["fullname"])
+    }
+
+    @Test
     fun `should throw exception when data is not present on retrieved object`() {
         createPluginConfiguration(
             "verzoek",
@@ -287,7 +398,7 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
             verzoekPluginEventListener.createZaakFromNotificatie(createEvent())
         }
         //assertions
-        assertEquals("Could not find properties of type otherType", exception.message)
+        assertEquals("Failed to find verzoek configuration of type otherType. For object aResource", exception.message)
     }
 
     @Test

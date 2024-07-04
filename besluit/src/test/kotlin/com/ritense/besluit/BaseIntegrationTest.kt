@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,11 @@ import com.ritense.openzaak.catalogi.CatalogiClient
 import com.ritense.openzaak.domain.configuration.Rsin
 import com.ritense.openzaak.domain.connector.OpenZaakConnector
 import com.ritense.openzaak.domain.connector.OpenZaakProperties
+import com.ritense.openzaak.service.impl.model.ResultWrapper
+import com.ritense.openzaak.service.impl.model.catalogi.ZaakType
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.mail.MailSender
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -44,6 +47,8 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpMethod
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import java.net.URI
+import java.time.Period
 import java.util.UUID
 
 @SpringBootTest
@@ -106,9 +111,13 @@ class BaseIntegrationTest : BaseTest() {
                 val response = when (request.method + " " + request.path?.substringBefore('?')) {
                     "POST /api/v1/besluiten" -> mockResponseFromFile("/data/post-create-besluit.json")
                     "POST /zaken/api/v1/zaken" -> mockResponseFromFile("/data/post-create-zaak.json")
-                    "GET /documenten/api/v1/enkelvoudiginformatieobjecten/429cd502-3ddc-43de-aa1b-791404cd2913" -> mockResponseFromFile("/data/get-enkelvoudiginformatieobject.json")
+                    "GET /documenten/api/v1/enkelvoudiginformatieobjecten/429cd502-3ddc-43de-aa1b-791404cd2913" -> mockResponseFromFile(
+                        "/data/get-enkelvoudiginformatieobject.json"
+                    )
                     "POST /zaken/api/v1/zaakinformatieobjecten" -> mockResponseFromFile("/data/post-relation-zaak-informatieobject.json")
                     "POST /api/v1/besluitinformatieobjecten" -> mockResponseFromFile("/data/post-relation-besluit-informatieobject.json")
+                    "GET /catalogi/api/v1/zaaktypen" -> mockZaakTypeResponse()
+                    "GET /catalogi/api/v1/zaaktypen/4e9c2359-83ac-4e3b-96b6-3f278f1fc773" -> mockSingleZaakTypeResponse()
                     else -> MockResponse().setResponseCode(404)
                 }
                 return response
@@ -162,6 +171,53 @@ class BaseIntegrationTest : BaseTest() {
             .addHeader("Content-Type", "application/json; charset=utf-8")
             .setResponseCode(200)
             .setBody(readFileAsString(fileName))
+    }
+
+    private fun mockZaakTypeResponse(): MockResponse {
+        return MockResponse()
+            .addHeader("Content-Type", "application/json; charset=utf-8")
+            .setResponseCode(200)
+            .setBody(
+                MapperSingleton.get().writeValueAsString(
+                    ResultWrapper(
+                        1,
+                        URI(""),
+                        URI(""),
+                        listOf(
+                            ZaakType(
+                                URI(
+                                    "http://localhost:" +
+                                        server.port +
+                                        "/catalogi/api/v1/zaaktypen/4e9c2359-83ac-4e3b-96b6-3f278f1fc773"
+                                ),
+                                "omschrijving",
+                                "omschrijvingGeneriek",
+                                Period.of(0, 1, 0)
+                            )
+                        )
+                    )
+                )
+            )
+    }
+
+    private fun mockSingleZaakTypeResponse(): MockResponse {
+        return MockResponse()
+            .addHeader("Content-Type", "application/json; charset=utf-8")
+            .setResponseCode(200)
+            .setBody(
+                MapperSingleton.get().writeValueAsString(
+                    ZaakType(
+                        URI(
+                            "http://localhost:" +
+                                server.port +
+                                "/catalogi/api/v1/zaaktypen/4e9c2359-83ac-4e3b-96b6-3f278f1fc773"
+                        ),
+                        "omschrijving",
+                        "omschrijvingGeneriek",
+                        Period.of(0, 1, 0)
+                    )
+                )
+            )
     }
 
     fun findRequest(method: HttpMethod, path: String): RecordedRequest? {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,6 @@
 
 package com.ritense.document.service.impl;
 
-import com.ritense.authorization.AuthorizationContext;
-import com.ritense.authorization.AuthorizationService;
-import com.ritense.document.BaseTest;
-import com.ritense.document.domain.impl.JsonSchema;
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
-import com.ritense.document.exception.DocumentDefinitionNameMismatchException;
-import com.ritense.document.repository.impl.JsonSchemaDocumentDefinitionRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.ResourceLoader;
-import jakarta.validation.ValidationException;
-import java.net.URI;
-import java.util.Collections;
-import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -44,6 +27,24 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.ritense.authorization.AuthorizationContext;
+import com.ritense.authorization.AuthorizationService;
+import com.ritense.document.BaseTest;
+import com.ritense.document.domain.impl.JsonSchema;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
+import com.ritense.document.exception.DocumentDefinitionNameMismatchException;
+import com.ritense.document.repository.impl.JsonSchemaDocumentDefinitionRepository;
+import jakarta.validation.ValidationException;
+import java.net.URI;
+import java.util.Collections;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.ResourceLoader;
 
 class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
 
@@ -66,7 +67,8 @@ class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
     }
 
     @Test
-    @Disabled //TODO try to mock resource loading or refactor
+    @Disabled
+        //TODO try to mock resource loading or refactor
     void shouldDeployAll() {
         when(jsonSchemaDocumentDefinitionRepository.findAllByIdName(anyString())).thenReturn(Collections.emptyList());
         when(jsonSchemaDocumentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(anyString())).thenReturn(Optional.empty());
@@ -177,7 +179,10 @@ class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
         var exception = assertThrows(ValidationException.class, () ->
             documentDefinitionService.validateJsonPointer(definitionName, "/address/nonExistent")
         );
-        assertEquals("JsonPointer '/address/nonExistent' doesn't point to any property inside document definition 'combined-schema-additional-property-example'", exception.getMessage());
+        assertEquals(
+            "JsonPointer '/address/nonExistent' doesn't point to any property inside document definition 'combined-schema-additional-property-example'",
+            exception.getMessage()
+        );
     }
 
     @Test
@@ -189,7 +194,10 @@ class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
         var exception = assertThrows(ValidationException.class, () ->
             documentDefinitionService.validateJsonPointer(definitionName, "/nonExistent")
         );
-        assertEquals("JsonPointer '/nonExistent' doesn't point to any property inside document definition 'allows-additional-properties'", exception.getMessage());
+        assertEquals(
+            "JsonPointer '/nonExistent' doesn't point to any property inside document definition 'allows-additional-properties'",
+            exception.getMessage()
+        );
     }
 
     public void mockDefinition(String definitionName) {

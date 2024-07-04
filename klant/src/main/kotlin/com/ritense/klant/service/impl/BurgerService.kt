@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,15 @@ import com.ritense.klant.domain.KlantCreationRequest
 import com.ritense.klant.domain.NatuurlijkPersoonSubjectIdentificatie
 import com.ritense.klant.service.BurgerService
 
+@Deprecated("Since 12.0.0")
 class BurgerService(
     private val openKlantClientProperties: OpenKlantClientProperties,
     private val openKlantClient: OpenKlantClient
 ) : OpenKlantService(openKlantClient), BurgerService {
+    @Deprecated("Since 12.0.0")
     override fun getBurger(bsn: String) = openKlantClient.getKlant(bsn = bsn)
 
+    @Deprecated("Since 12.0.0")
     override fun createBurger(bsn: String): Klant {
         val klantRequest = KlantCreationRequest(
             openKlantClientProperties.rsin,
@@ -43,6 +46,7 @@ class BurgerService(
         return openKlantClient.postKlant(klantRequest)
     }
 
+    @Deprecated("Since 12.0.0")
     override fun ensureBurgerExists(bsn: String): Klant {
         var klant = getBurger(bsn)
         if (klant == null) {

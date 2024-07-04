@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,19 +32,20 @@ import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.config.ValtimoProperties
 import com.ritense.valtimo.contract.mail.MailSender
+import java.util.function.Consumer
+import java.util.function.Supplier
 import mu.KotlinLogging
 import org.camunda.bpm.engine.RuntimeService
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
-import org.springframework.context.annotation.Bean
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Scope
 import org.springframework.messaging.Message
 import org.springframework.messaging.support.MessageBuilder
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Sinks
-import java.util.function.Consumer
-import java.util.function.Supplier
 
+@Deprecated("Since 12.0.0")
 @AutoConfiguration
 class ExternalEventAutoConfiguration {
 

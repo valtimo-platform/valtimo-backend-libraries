@@ -24,6 +24,7 @@ import com.ritense.openzaak.domain.event.StatusSetEvent
 import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.repository.converter.UriAttributeConverter
 import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
+import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.valtimo.contract.domain.AggregateRoot
 import com.ritense.valtimo.contract.domain.DomainEvent
 import com.ritense.valtimo.contract.validation.Validatable
@@ -35,15 +36,17 @@ import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotBlank
-import java.net.URI
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.hibernate.annotations.Type
 import org.hibernate.validator.constraints.Length
 import org.springframework.data.domain.Persistable
+import java.net.URI
+import java.util.UUID
 
-@Entity
+@Entity(name = "DeprecatedZaakTypeLink")
 @Table(name = "zaak_type_link")
+@Deprecated("Since 12.0.0. Use ZaakTypeLink in zaken-api module instead")
 data class ZaakTypeLink(
 
     @EmbeddedId
@@ -61,10 +64,13 @@ data class ZaakTypeLink(
 
     @Type(value = JsonType::class)
     @Column(name = "service_task_handlers", columnDefinition = "json")
-    var serviceTaskHandlers: ServiceTaskHandlers,
+    var serviceTaskHandlers: ServiceTaskHandlers?,
 
     @Column(name = "create_with_dossier", columnDefinition = "BOOLEAN", nullable = false)
-    var createWithDossier: Boolean = false
+    var createWithDossier: Boolean = false,
+
+    @Column(name = "zaken_api_plugin_configuration_id", nullable = true)
+    var zakenApiPluginConfigurationId: UUID? = null,
 ) : Persistable<ZaakTypeLinkId>, Validatable, AggregateRoot<DomainEvent>() {
 
     init {
@@ -77,8 +83,11 @@ data class ZaakTypeLink(
     }
 
     fun assignZaakServiceHandler(request: ServiceTaskHandlerRequest) {
-        serviceTaskHandlers.removeIf { handler -> handler.processDefinitionKey == request.processDefinitionKey && handler.serviceTaskId == request.serviceTaskId }
-        serviceTaskHandlers.plusAssign(
+        if (serviceTaskHandlers == null) {
+            serviceTaskHandlers = ServiceTaskHandlers()
+        }
+        serviceTaskHandlers?.removeIf { handler -> handler.processDefinitionKey == request.processDefinitionKey && handler.serviceTaskId == request.serviceTaskId }
+        serviceTaskHandlers?.plusAssign(
             ServiceTaskHandler(
                 request.processDefinitionKey,
                 request.serviceTaskId,
@@ -89,7 +98,7 @@ data class ZaakTypeLink(
     }
 
     fun removeZaakServiceHandler(processDefinitionKey: String, serviceTaskId: String) {
-        serviceTaskHandlers.removeIf { handler -> handler.processDefinitionKey == processDefinitionKey && handler.serviceTaskId == serviceTaskId }
+        serviceTaskHandlers?.removeIf { handler -> handler.processDefinitionKey == processDefinitionKey && handler.serviceTaskId == serviceTaskId }
     }
 
     @JsonIgnore
@@ -125,7 +134,7 @@ data class ZaakTypeLink(
 
     @JsonIgnore
     fun getServiceTaskHandlerBy(processDefinitionKey: String, serviceTaskId: String): ServiceTaskHandler? {
-        return serviceTaskHandlers.find { handler -> handler.processDefinitionKey == processDefinitionKey && handler.serviceTaskId == serviceTaskId }
+        return serviceTaskHandlers?.find { handler -> handler.processDefinitionKey == processDefinitionKey && handler.serviceTaskId == serviceTaskId }
     }
 
     @JsonIgnore

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,12 @@
 package com.ritense.haalcentraal.brp.autoconfigure
 
 import com.ritense.haalcentraal.brp.security.config.HaalCentraalBrpSecurityConfigurer
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.core.annotation.Order
 
+@Deprecated("Since 12.0.0")
 @AutoConfiguration
 class HaalCentraalSecurityAutoConfiguration {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package com.ritense.externalevent.service
 
-import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
@@ -30,13 +30,14 @@ import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.camunda.processaudit.DeletePortalTaskEvent
-import java.util.UUID
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateTask
 import org.springframework.context.event.EventListener
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Sinks
+import java.util.UUID
 
+@Deprecated("Since 12.0.0")
 @Transactional
 class ExternalTaskService(
     private val documentService: JsonSchemaDocumentService,
@@ -49,11 +50,12 @@ class ExternalTaskService(
     /**
      * Supplier method: Publishes the Valtimo Task back to the Portal.
      */
+    @Deprecated("Since 12.0.0")
     fun publishPortalTask(formDefinitionName: String, task: DelegateTask) {
         val formDefinition = formIoFormDefinitionService.getFormDefinitionByName(formDefinitionName).orElseThrow()
         val documentId = JsonSchemaDocumentId.existingId(UUID.fromString(task.execution.processBusinessKey))
-        val document = AuthorizationContext.runWithoutAuthorization { documentService.findBy(documentId) }.orElseThrow()
-        val prefilledFormDefinition = prefillFormService.getPrefilledFormDefinition(formDefinition.id, task.processInstanceId, task.id)
+        val document = runWithoutAuthorization { documentService.findBy(documentId) }.orElseThrow()
+        val prefilledFormDefinition = prefillFormService.getPrefilledFormDefinition(formDefinition.id!!, task.processInstanceId, task.id)
 
         sink.tryEmitNext(
             CreatePortalTaskMessage(
@@ -65,6 +67,7 @@ class ExternalTaskService(
         )
     }
 
+    @Deprecated("Since 12.0.0")
     fun publishPortalTask(
         formDefinitionName: String,
         document: Document,
@@ -72,7 +75,7 @@ class ExternalTaskService(
         isPublic: Boolean
     ) {
         val formDefinition = formIoFormDefinitionService.getFormDefinitionByName(formDefinitionName).orElseThrow()
-        val prefilledFormDefinition = prefillFormService.getPrefilledFormDefinition(formDefinition.id, task.processInstanceId, task.id)
+        val prefilledFormDefinition = prefillFormService.getPrefilledFormDefinition(formDefinition.id!!, task.processInstanceId, task.id)
         sink.tryEmitNext(
             CreatePortalTaskMessage(
                 taskId = task.id,
@@ -84,9 +87,10 @@ class ExternalTaskService(
         )
     }
 
+    @Deprecated("Since 12.0.0")
     fun completeTask(completeTaskMessage: CompleteTaskMessage) {
         val documentId = JsonSchemaDocumentId.existingId(UUID.fromString(completeTaskMessage.externalCaseId))
-        val document = AuthorizationContext.runWithoutAuthorization { documentService.findBy(documentId) }.orElseThrow()
+        runWithoutAuthorization { documentService.findBy(documentId) }.orElseThrow()
 
         val modifyDocumentRequest = ModifyDocumentRequest(
             completeTaskMessage.externalCaseId,
@@ -106,6 +110,7 @@ class ExternalTaskService(
     /**
      * Supplier method: Tells the portal to delete a task
      */
+    @Deprecated("Since 12.0.0")
     @EventListener(DeletePortalTaskEvent::class)
     fun deletePortalTask(event: DeletePortalTaskEvent) {
         logger.info { "Sending DeletePortalTaskMessage for taskId ${event.taskId}" }

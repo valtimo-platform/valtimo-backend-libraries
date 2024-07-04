@@ -2,9 +2,9 @@ package com.ritense.valtimo.formflow.handler
 
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.formflow.BaseIntegrationTest
+import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import kotlin.test.assertEquals
 
 class FormFlowStepTypeCustomComponentHandlerIT: BaseIntegrationTest() {
 

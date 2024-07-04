@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,17 @@
 package com.ritense.valtimo.security.matcher;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.web.util.matcher.IpAddressMatcher;
-import org.springframework.security.web.util.matcher.OrRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
-
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.web.util.matcher.IpAddressMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 public class WhitelistIpRequestMatcher implements RequestMatcher {
 
@@ -42,13 +41,13 @@ public class WhitelistIpRequestMatcher implements RequestMatcher {
             List<RequestMatcher> ipAddressMatchers = hosts.stream()
                 .filter(host -> host != null && !host.isBlank())
                 .flatMap(host -> {
-                    if(host.contains("/")) {
+                    if (host.contains("/")) {
                         return Stream.of(host);
                     } else {
                         try {
                             return Arrays.stream(InetAddress.getAllByName(host)).map(InetAddress::getHostAddress);
                         } catch (Exception e) {
-                            LOGGER.warn("Could not resolve whitelisted host " + host);
+                            LOGGER.warn("Could not resolve whitelisted host {}", host);
                         }
                         return Stream.of();
                     }
@@ -56,7 +55,7 @@ public class WhitelistIpRequestMatcher implements RequestMatcher {
                 .map(IpAddressMatcher::new)
                 .collect(Collectors.toList());
 
-            if(ipAddressMatchers.isEmpty()) {
+            if (ipAddressMatchers.isEmpty()) {
                 requestMatcher = denyMatcher();
             } else {
                 requestMatcher = new OrRequestMatcher(ipAddressMatchers);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,6 @@ import com.ritense.valtimo.contract.mail.model.MailMessageStatus;
 import com.ritense.valtimo.contract.mail.model.RawMailMessage;
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage;
 import com.ritense.valtimo.contract.mail.model.value.Recipient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -37,6 +35,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MandrillMailDispatcher implements MailDispatcher {
 
@@ -57,15 +58,16 @@ public class MandrillMailDispatcher implements MailDispatcher {
         this.dateFormat = new SimpleDateFormat(mandrillProperties.getDateFormat());
     }
 
+    @NotNull
     @Override
-    public List<MailMessageStatus> send(RawMailMessage rawMailMessage) {
+    public List<MailMessageStatus> send(@NotNull RawMailMessage rawMailMessage) {
         var mandrillMessage = mailMessageConverter.convert(rawMailMessage);
         var mandrillApi = getMandrillApi(rawMailMessage.isTest);
-        List<MailMessageStatus> mailStatus = new ArrayList();
+        List<MailMessageStatus> mailStatus = new ArrayList<>();
 
         try {
             var mandrillMessageStatuses = mandrillApi.messages().send(mandrillMessage, true);
-            logger.info("mail sent to {}", rawMailMessage.recipients.toString());
+            logger.info("mail sent to {}", rawMailMessage.recipients);
             return appendMailStatusus(mailStatus, mandrillMessageStatuses);
         } catch (MandrillApiError mandrillApiError) {
             logger.error("MandrilMailservice API error {}", mandrillApiError.getMandrillErrorMessage());
@@ -76,8 +78,9 @@ public class MandrillMailDispatcher implements MailDispatcher {
         }
     }
 
+    @NotNull
     @Override
-    public List<MailMessageStatus> send(TemplatedMailMessage templatedMailMessage) {
+    public List<MailMessageStatus> send(@NotNull TemplatedMailMessage templatedMailMessage) {
         var mandrillMessage = mailMessageConverter.convert(templatedMailMessage);
         var mandrillApi = getMandrillApi(templatedMailMessage.isTest);
         var mergeVars = getMergeVars(templatedMailMessage);
@@ -85,12 +88,12 @@ public class MandrillMailDispatcher implements MailDispatcher {
         mandrillMessage.setMerge(true);
         mandrillMessage.setMergeVars(mergeVarsPerRecipient);
 
-        List<MailMessageStatus> mailStatus = new ArrayList();
+        List<MailMessageStatus> mailStatus = new ArrayList<>();
 
         try {
             MandrillMessageStatus[] mandrillMessageStatuses = mandrillApi.messages()
                 .sendTemplate(templatedMailMessage.templateIdentifier.get(), null, mandrillMessage, true);
-            logger.info("mail sent to {}", templatedMailMessage.recipients.toString());
+            logger.info("mail sent to {}", templatedMailMessage.recipients);
             return appendMailStatusus(mailStatus, mandrillMessageStatuses);
         } catch (MandrillApiError mandrillApiError) {
             logger.error("MandrillMailService API error {}", mandrillApiError.getMandrillErrorMessage());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package com.ritense.besluitenapi.client
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.net.URI
 import java.time.LocalDate
 
@@ -34,6 +35,7 @@ class Besluit(
     val ingangsdatum: LocalDate,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val vervaldatum: LocalDate?,
+    @JsonDeserialize(using = EmptyStringToVervalredenDeserializer::class)
     val vervalreden: Vervalreden?,
     val vervalredenWeergave: String?,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")

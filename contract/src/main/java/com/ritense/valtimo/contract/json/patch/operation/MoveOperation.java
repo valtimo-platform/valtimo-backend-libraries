@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,25 @@
 
 package com.ritense.valtimo.contract.json.patch.operation;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonPointer;
 import java.util.Objects;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class MoveOperation extends JsonPatchOperation {
 
-    private final JsonPointer toPath; //only to be used in move/copy operation
+    private final JsonPointer fromPath;
 
     public MoveOperation(JsonPointer from, JsonPointer to) {
-        super(Operation.MOVE, from);
-        assertArgumentNotNull(to, "to is required");
-        this.toPath = to;
+        super(Operation.MOVE, to);
+        assertArgumentNotNull(from, "from is required");
+        this.fromPath = from;
     }
 
-    @JsonProperty("to")
-    public String getToPath() {
-        return toPath.toString();
+    @JsonProperty("from")
+    public String getFromPath() {
+        return fromPath.toString();
     }
 
     @Override
@@ -48,12 +49,12 @@ public class MoveOperation extends JsonPatchOperation {
             return false;
         }
         MoveOperation that = (MoveOperation) o;
-        return toPath.equals(that.toPath);
+        return fromPath.equals(that.fromPath);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), toPath);
+        return Objects.hash(super.hashCode(), fromPath);
     }
 
 }

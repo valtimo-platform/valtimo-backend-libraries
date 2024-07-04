@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,13 +32,13 @@ import com.ritense.form.autoconfigure.FormAutoConfiguration;
 import com.ritense.form.domain.event.FormRegisteredEvent;
 import com.ritense.form.domain.exception.FormDefinitionParsingException;
 import com.ritense.valtimo.contract.json.MapperSingleton;
-import org.hibernate.annotations.Type;
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.AbstractAggregateRoot;
-import org.springframework.data.domain.Persistable;
-import org.springframework.web.util.HtmlUtils;
+import io.hypersistence.utils.hibernate.type.json.JsonType;
+import jakarta.annotation.Nullable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,20 +49,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
-import jakarta.annotation.Nullable;
-import io.hypersistence.utils.hibernate.type.json.JsonType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.domain.Persistable;
-import org.springframework.web.util.HtmlUtils;
 
 @Entity
 @Table(name = "form_io_form_definition")
@@ -192,7 +184,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
                 Object value = valueMap.get(fieldKey);
                 if (value != null) {
                     JsonNode valueNode = MapperSingleton.INSTANCE.get().valueToTree(value);
-                    fieldNode.set(DEFAULT_VALUE_FIELD, htmlEscape(valueNode));
+                    fieldNode.set(DEFAULT_VALUE_FIELD, valueNode);
                 }
             });
     }
@@ -370,7 +362,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
                 .flatMap(
                     contentItem -> getValueBy(content, contentItem.getJsonPointer())
                 ).ifPresent(
-                    valueNode -> field.set(DEFAULT_VALUE_FIELD, htmlEscape(valueNode))
+                    valueNode -> field.set(DEFAULT_VALUE_FIELD, valueNode)
                 );
         }
     }
@@ -384,14 +376,6 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
             return getExternalFormField(node);
         }
         return Optional.empty();
-    }
-
-    private JsonNode htmlEscape(JsonNode input) {
-        if (input.isTextual()) {
-            String escapedContent = HtmlUtils.htmlEscape(input.textValue(), StandardCharsets.UTF_8.name());
-            return new TextNode(escapedContent);
-        }
-        return input;
     }
 
     private Optional<JsonPointer> buildJsonPointer(String jsonPointerExpression) {

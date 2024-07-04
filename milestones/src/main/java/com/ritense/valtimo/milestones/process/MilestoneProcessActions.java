@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ package com.ritense.valtimo.milestones.process;
 import com.ritense.valtimo.milestones.domain.MilestoneSet;
 import com.ritense.valtimo.milestones.repository.MilestoneSetRepository;
 import com.ritense.valtimo.milestones.service.MilestoneInstanceService;
-import org.camunda.bpm.engine.delegate.DelegateExecution;
 import java.time.LocalDate;
+import org.camunda.bpm.engine.delegate.DelegateExecution;
 
 public class MilestoneProcessActions {
     private final MilestoneSetRepository milestoneSetRepository;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,27 +17,48 @@
 package com.ritense.zakenapi.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.catalogiapi.service.CatalogiService
+import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
+import com.ritense.documentenapi.service.DocumentDeleteHandler
 import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
+import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPluginFactory
 import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
+import com.ritense.zakenapi.provider.BsnProvider
+import com.ritense.zakenapi.provider.DefaultZaakUrlProvider
+import com.ritense.zakenapi.provider.DefaultZaaktypeUrlProvider
+import com.ritense.zakenapi.provider.KvkProvider
+import com.ritense.zakenapi.provider.ZaakBsnProvider
+import com.ritense.zakenapi.provider.ZaakKvkProvider
+import com.ritense.zakenapi.repository.ZaakHersteltermijnRepository
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
+import com.ritense.zakenapi.repository.ZaakTypeLinkRepository
 import com.ritense.zakenapi.resolver.ZaakStatusValueResolverFactory
 import com.ritense.zakenapi.resolver.ZaakValueResolverFactory
 import com.ritense.zakenapi.security.ZakenApiHttpSecurityConfigurer
+import com.ritense.zakenapi.service.DefaultZaakTypeLinkService
 import com.ritense.zakenapi.service.ZaakDocumentService
+import com.ritense.zakenapi.service.ZaakTypeLinkService
+import com.ritense.zakenapi.service.ZakenApiEventListener
+import com.ritense.zakenapi.service.ZakenDocumentDeleteHandler
+import com.ritense.zakenapi.web.rest.DefaultZaakTypeLinkResource
 import com.ritense.zakenapi.web.rest.ZaakDocumentResource
+import com.ritense.zakenapi.web.rest.ZaakTypeLinkResource
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.context.annotation.Primary
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
+import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.web.reactive.function.client.WebClient
+import kotlin.contracts.ExperimentalContracts
 
 @AutoConfiguration
 @EnableJpaRepositories(basePackages = ["com.ritense.zakenapi.repository"])
@@ -60,6 +81,8 @@ class ZakenApiAutoConfiguration {
         urlProvider: ZaakUrlProvider,
         storageService: TemporaryResourceStorageService,
         zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
+        zaakHersteltermijnRepository: ZaakHersteltermijnRepository,
+        platformTransactionManager: PlatformTransactionManager,
     ): ZakenApiPluginFactory {
         return ZakenApiPluginFactory(
             pluginService,
@@ -67,6 +90,8 @@ class ZakenApiAutoConfiguration {
             urlProvider,
             storageService,
             zaakInstanceLinkRepository,
+            zaakHersteltermijnRepository,
+            platformTransactionManager,
         )
     }
 
@@ -78,8 +103,12 @@ class ZakenApiAutoConfiguration {
     }
 
     @Bean
-    fun zaakDocumentService(zaakUrlProvider: ZaakUrlProvider, pluginService: PluginService): ZaakDocumentService {
-        return ZaakDocumentService(zaakUrlProvider, pluginService)
+    fun zaakDocumentService(
+        zaakUrlProvider: ZaakUrlProvider,
+        pluginService: PluginService,
+        catalogiService: CatalogiService
+    ): ZaakDocumentService {
+        return ZaakDocumentService(zaakUrlProvider, pluginService, catalogiService)
     }
 
     @Bean
@@ -116,9 +145,83 @@ class ZakenApiAutoConfiguration {
         )
     }
 
+    @OptIn(ExperimentalContracts::class)
+    @Bean
+    @ConditionalOnMissingBean(BsnProvider::class)
+    fun bsnProvider(
+        processDocumentService: ProcessDocumentService,
+        zaakInstanceLinkService: ZaakInstanceLinkService,
+        pluginService: PluginService
+    ): BsnProvider {
+        return ZaakBsnProvider(
+            processDocumentService,
+            zaakInstanceLinkService,
+            pluginService
+        )
+    }
+
+    @OptIn(ExperimentalContracts::class)
+    @Bean
+    @ConditionalOnMissingBean(KvkProvider::class)
+    fun kvkProvider(
+        processDocumentService: ProcessDocumentService,
+        zaakInstanceLinkService: ZaakInstanceLinkService,
+        pluginService: PluginService
+    ) : KvkProvider {
+        return ZaakKvkProvider(
+            processDocumentService,
+            zaakInstanceLinkService,
+            pluginService
+        )
+    }
+
     @Order(300)
     @Bean
     fun zakenApiHttpSecurityConfigurer(): ZakenApiHttpSecurityConfigurer {
         return ZakenApiHttpSecurityConfigurer()
+    }
+
+    @Bean
+    fun zakenApiZaakTypeLinkService(
+        zaakTypeLinkRepository: ZaakTypeLinkRepository,
+        processDocumentAssociationService: ProcessDocumentAssociationService
+    ): ZaakTypeLinkService {
+        return DefaultZaakTypeLinkService(zaakTypeLinkRepository, processDocumentAssociationService)
+    }
+
+    @Bean
+    fun zakenApiEventListener(
+        pluginService: PluginService,
+        zaakTypeLinkService: ZaakTypeLinkService
+    ): ZakenApiEventListener {
+        return ZakenApiEventListener(pluginService, zaakTypeLinkService)
+    }
+
+    @Bean
+    fun zakenApiZaakTypeLinkResource(
+        zaakTypeLinkService: ZaakTypeLinkService
+    ): ZaakTypeLinkResource {
+        return DefaultZaakTypeLinkResource(zaakTypeLinkService)
+    }
+
+    @Bean
+    fun zakenDocumentDeleteHandler(
+        pluginService: PluginService
+    ): DocumentDeleteHandler {
+        return ZakenDocumentDeleteHandler(pluginService)
+    }
+
+    @Bean
+    @Primary
+    @ConditionalOnMissingBean(ZaakUrlProvider::class)
+    fun zaakUrlProvider(zaakInstanceLinkService: ZaakInstanceLinkService): ZaakUrlProvider {
+        return DefaultZaakUrlProvider(zaakInstanceLinkService)
+    }
+
+    @Bean
+    @Primary
+    @ConditionalOnMissingBean(ZaaktypeUrlProvider::class)
+    fun zaaktypeUrlProvider(zaakTypeLinkService: ZaakTypeLinkService): ZaaktypeUrlProvider {
+        return DefaultZaaktypeUrlProvider(zaakTypeLinkService)
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,12 @@ import com.ritense.valtimo.helper.CamundaOrderByHelper;
 import com.ritense.valtimo.repository.camunda.dto.ProcessInstance;
 import com.ritense.valtimo.repository.queryparameter.ProcessInstanceQueryParametersV2;
 import com.ritense.valtimo.web.rest.dto.ProcessInstanceSearchDTO;
+import java.util.List;
 import org.apache.ibatis.session.SqlSession;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import java.util.List;
 
 public class CamundaSearchProcessInstanceRepository {
 

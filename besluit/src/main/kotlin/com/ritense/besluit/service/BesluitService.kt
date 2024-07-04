@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,13 @@ import com.ritense.openzaak.catalogi.CatalogiClient
 import com.ritense.openzaak.domain.connector.OpenZaakConnector
 import java.net.URI
 
+@Deprecated("Since 12.0.0. Please use the Besluiten API module instead.")
 open class BesluitService(
     private val catalogiClient: CatalogiClient,
     private val connectorService: ConnectorService,
 ) {
 
+    @Deprecated("Since 12.0.0", ReplaceWith("com.ritense.catalogiapi.CatalogiApiPlugin.getBesluittypen()"))
     fun getBesluittypen(): List<BesluitType> {
         val openZaakConnector = connectorService.loadByClassName(OpenZaakConnector::class.java)
         val catalogusUrl = URI(openZaakConnector.getProperties().openZaakConfig.catalogusUrl)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,13 @@
 
 package com.ritense.outbox.rabbitmq
 
+import com.ritense.outbox.config.condition.OnOutboxEnabledCondition
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
-@SpringBootTest
+@SpringBootTest(properties = ["${OnOutboxEnabledCondition.PROPERTY_NAME}=true"])
 @ExtendWith(SpringExtension::class)
 @Tag("integration")
 class BaseIntegrationTest {

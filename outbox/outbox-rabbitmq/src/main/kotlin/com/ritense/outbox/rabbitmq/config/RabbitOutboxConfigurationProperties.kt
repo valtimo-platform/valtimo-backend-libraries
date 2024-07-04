@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,13 @@
 
 package com.ritense.outbox.rabbitmq.config
 
-import java.time.Duration
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.bind.ConstructorBinding
+import java.time.Duration
 
 @ConfigurationProperties(prefix = "valtimo.outbox.publisher.rabbitmq")
 data class RabbitOutboxConfigurationProperties (
-    val routingKey: String,
+    val exchange: String? = null,
+    val routingKey: String? = null,
     val deliveryTimeout: Duration = Duration.ofSeconds(1)
 )
+

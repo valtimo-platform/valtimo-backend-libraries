@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,16 +41,17 @@ dependencies {
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
 
-    testImplementation "org.jetbrains.kotlin:kotlin-test"
+    implementation "org.jetbrains.kotlin:kotlin-test"
     implementation "org.junit.jupiter:junit-jupiter"
     implementation "org.springframework.boot:spring-boot-starter-test"
 
     implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
 
-    implementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion
+    implementation "org.postgresql:postgresql:${postgresqlDriverVersion}"
+    implementation "com.mysql:mysql-connector-j:${mysqlDriverVersion}"
 
-    implementation group: 'org.springframework', name: 'spring-test'
-    implementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
+    implementation "org.springframework:spring-test"
+    implementation "org.junit.jupiter:junit-jupiter-engine"
 }
 
 apply from: "gradle/publishing.gradle"

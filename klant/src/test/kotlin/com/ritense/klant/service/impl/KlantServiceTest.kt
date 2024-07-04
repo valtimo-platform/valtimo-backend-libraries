@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,13 +25,13 @@ import com.ritense.openzaak.service.impl.model.zaak.BetrokkeneType
 import com.ritense.openzaak.service.impl.model.zaak.Rol
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
-import java.net.URI
-import java.util.UUID
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.net.URI
+import java.util.UUID
 
 internal class KlantServiceTest {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 package com.ritense.valtimo.contract.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import java.util.Collections
 import org.springframework.data.domain.AfterDomainEventPublication
 import org.springframework.data.domain.DomainEvents
-import java.util.Collections
 
 /**
  * Aggregate Root base class based on the Spring Data one {@link org.springframework.data.domain.AbstractAggregateRoot}.

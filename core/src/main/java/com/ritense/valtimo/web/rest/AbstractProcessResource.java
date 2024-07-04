@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,14 @@
 
 package com.ritense.valtimo.web.rest;
 
+import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byProcessInstanceId;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byVersion;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byCreateTimeAfter;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byCreateTimeBefore;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byName;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byProcessDefinitionId;
+
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
@@ -24,12 +32,6 @@ import com.ritense.valtimo.camunda.service.CamundaHistoryService;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.web.rest.dto.HeatmapTaskCountDTO;
-import org.apache.commons.lang3.StringUtils;
-import org.camunda.bpm.engine.RepositoryService;
-import org.camunda.bpm.engine.impl.util.IoUtil;
-import org.camunda.bpm.engine.rest.dto.repository.ProcessDefinitionDiagramDto;
-import org.camunda.bpm.model.bpmn.instance.FlowNode;
-import org.camunda.bpm.model.bpmn.instance.Task;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
@@ -41,14 +43,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byProcessInstanceId;
-import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
-import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byVersion;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byCreateTimeAfter;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byCreateTimeBefore;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byName;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byProcessDefinitionId;
+import org.apache.commons.lang3.StringUtils;
+import org.camunda.bpm.engine.RepositoryService;
+import org.camunda.bpm.engine.impl.util.IoUtil;
+import org.camunda.bpm.engine.rest.dto.repository.ProcessDefinitionDiagramDto;
+import org.camunda.bpm.model.bpmn.instance.FlowNode;
+import org.camunda.bpm.model.bpmn.instance.Task;
 
 public abstract class AbstractProcessResource {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package com.ritense.authorization.request
 
 import com.ritense.authorization.Action
-import com.ritense.valtimo.contract.utils.SecurityUtils
 
 open class EntityAuthorizationRequest<T>(
     override val resourceType: Class<T>,
@@ -32,5 +31,5 @@ open class EntityAuthorizationRequest<T>(
     )
 
     override val user: String?
-        get() = SecurityUtils.getCurrentUserLogin()
+        get() = null
 }

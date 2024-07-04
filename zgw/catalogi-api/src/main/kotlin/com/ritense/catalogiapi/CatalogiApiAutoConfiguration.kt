@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,18 +23,24 @@ import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.catalogiapi.web.rest.CatalogiResource
 import com.ritense.document.service.DocumentService
 import com.ritense.plugin.service.PluginService
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.context.annotation.Bean
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.cache.CacheManager
+import org.springframework.cache.annotation.EnableCaching
+import org.springframework.context.annotation.Bean
 import org.springframework.core.annotation.Order
 import org.springframework.web.reactive.function.client.WebClient
 
 @AutoConfiguration
+@EnableCaching
 class CatalogiApiAutoConfiguration {
 
     @Bean
-    fun catalogiApiClient(webclientBuilder: WebClient.Builder): CatalogiApiClient {
-        return CatalogiApiClient(webclientBuilder)
+    fun catalogiApiClient(
+        webclientBuilder: WebClient.Builder,
+        cacheManager: CacheManager,
+    ): CatalogiApiClient {
+        return CatalogiApiClient(webclientBuilder, cacheManager)
     }
 
     @Bean

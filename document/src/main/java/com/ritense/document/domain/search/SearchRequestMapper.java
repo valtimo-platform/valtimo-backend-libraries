@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,23 @@
 
 package com.ritense.document.domain.search;
 
+import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.MULTIPLE;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.MULTI_SELECT_DROPDOWN;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.RANGE;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldMatchType.EXACT;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldMatchType.LIKE;
+import static java.time.format.DateTimeFormatter.ISO_INSTANT;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_TIME;
+import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE;
+import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+import static java.time.format.DateTimeFormatter.ISO_ZONED_DATE_TIME;
+
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
 import com.ritense.document.domain.impl.searchfield.SearchFieldFieldType;
 import com.ritense.document.exception.SearchConfigRequestException;
-import org.springframework.data.util.Pair;
-
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,19 +49,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.MULTIPLE;
-import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.MULTI_SELECT_DROPDOWN;
-import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.RANGE;
-import static com.ritense.document.domain.impl.searchfield.SearchFieldMatchType.EXACT;
-import static com.ritense.document.domain.impl.searchfield.SearchFieldMatchType.LIKE;
-import static java.time.format.DateTimeFormatter.ISO_INSTANT;
-import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
-import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-import static java.time.format.DateTimeFormatter.ISO_LOCAL_TIME;
-import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE;
-import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
-import static java.time.format.DateTimeFormatter.ISO_ZONED_DATE_TIME;
+import org.springframework.data.util.Pair;
 
 public class SearchRequestMapper {
 
@@ -72,6 +71,7 @@ public class SearchRequestMapper {
         advancedSearchRequest.setSearchOperator(searchRequest.getSearchOperator());
         advancedSearchRequest.setAssigneeFilter(searchRequest.getAssigneeFilter());
         advancedSearchRequest.setOtherFilters(otherFilters);
+        advancedSearchRequest.setStatusFilter(searchRequest.getStatusFilter());
         return advancedSearchRequest;
     }
 
@@ -170,10 +170,10 @@ public class SearchRequestMapper {
     private static LocalDate findSingleDateSearchFieldLocalDate(SearchField searchField, List<SearchRequestValue> searchRequestValues) {
         Optional<SearchRequestValue> firstEntry = searchRequestValues.stream().findFirst();
 
-        if (firstEntry.isPresent() &&
-            firstEntry.get().getComparableValue() instanceof LocalDate &&
-            searchField.getDataType() == SearchFieldDataType.DATE &&
-            searchField.getFieldType() == SearchFieldFieldType.SINGLE) {
+        if (firstEntry.isPresent()
+            && firstEntry.get().getComparableValue() instanceof LocalDate
+            && searchField.getDataType() == SearchFieldDataType.DATE
+            && searchField.getFieldType() == SearchFieldFieldType.SINGLE) {
 
             return firstEntry.get().getComparableValue();
         }
@@ -182,10 +182,10 @@ public class SearchRequestMapper {
     }
 
     private static Boolean isRangeDateSearchField(SearchField searchField, SearchRequestValue rangeFrom, SearchRequestValue rangeTo) {
-        return rangeFrom.getComparableValue() instanceof LocalDate &&
-            rangeTo.getComparableValue() instanceof LocalDate &&
-            searchField.getDataType() == SearchFieldDataType.DATE &&
-            searchField.getFieldType() == SearchFieldFieldType.RANGE;
+        return rangeFrom.getComparableValue() instanceof LocalDate
+            && rangeTo.getComparableValue() instanceof LocalDate
+            && searchField.getDataType() == SearchFieldDataType.DATE
+            && searchField.getFieldType() == SearchFieldFieldType.RANGE;
     }
 
     private static AdvancedSearchRequest.OtherFilter singleDateToDateTimeRangeFilter(SearchField searchField, LocalDate localDateValue, ZoneOffset zoneOffset) {

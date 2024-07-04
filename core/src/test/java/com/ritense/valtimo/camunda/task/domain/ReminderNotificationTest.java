@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,19 @@
 
 package com.ritense.valtimo.camunda.task.domain;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 import com.ritense.valtimo.camunda.task.domain.reminder.AssignedTask;
 import com.ritense.valtimo.camunda.task.domain.reminder.ReminderNotification;
 import com.ritense.valtimo.camunda.task.domain.reminder.RoleBasedTask;
 import com.ritense.valtimo.camunda.task.domain.reminder.Task;
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class ReminderNotificationTest {
 

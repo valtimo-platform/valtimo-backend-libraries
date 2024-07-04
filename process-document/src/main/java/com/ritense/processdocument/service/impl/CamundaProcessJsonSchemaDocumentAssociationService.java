@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,10 @@
  */
 
 package com.ritense.processdocument.service.impl;
+
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
@@ -65,11 +69,8 @@ import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
-import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 
 public class CamundaProcessJsonSchemaDocumentAssociationService implements ProcessDocumentAssociationService {
 
@@ -160,9 +161,16 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
 
     @Override
     public List<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinitions(String documentDefinitionName) {
+        return findProcessDocumentDefinitions(documentDefinitionName, (Boolean) null);
+    }
 
+    @Override
+    public List<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinitions(
+        String documentDefinitionName,
+        @Nullable Boolean startableByUser
+    ) {
         List<CamundaProcessJsonSchemaDocumentDefinition> results = processDocumentDefinitionRepository
-            .findAllByDocumentDefinitionNameAndLatestDocumentDefinitionVersion(documentDefinitionName);
+            .findAll(documentDefinitionName, startableByUser);
 
         return results.stream().filter(result -> {
             CamundaProcessDefinition processDefinition = AuthorizationContext.runWithoutAuthorization(() ->
@@ -368,7 +376,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     public void deleteProcessDocumentDefinition(ProcessDocumentDefinitionRequest request) {
         denyAuthorization(CamundaProcessJsonSchemaDocumentDefinition.class);
 
-        if(logger.isDebugEnabled()) {
+        if (logger.isDebugEnabled()) {
             logger.debug(
                 "Remove process document definition for document definition: {}",
                 request.documentDefinitionName()

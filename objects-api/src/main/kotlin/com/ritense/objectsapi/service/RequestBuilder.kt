@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -170,13 +170,6 @@ class RequestBuilder {
                 logger.error { ex.message }
                 throw ex
             }
-        }
-
-        private fun <T> getType(responseClass: Class<out T>): ParameterizedTypeReference<T> {
-            val type: ParameterizedTypeReference<T> = ParameterizedTypeReference.forType(
-                ResolvableType.forClass(responseClass).type
-            )
-            return type
         }
 
         private fun <T> getTypeWrapped(responseClass: Class<out T>): ParameterizedTypeReference<ResultWrapper<T>> {

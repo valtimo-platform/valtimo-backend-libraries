@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,42 +15,6 @@
  */
 
 package com.ritense.valtimo.service;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ritense.authorization.AuthorizationService;
-import com.ritense.authorization.specification.AuthorizationSpecification;
-import com.ritense.outbox.OutboxService;
-import com.ritense.outbox.domain.BaseEvent;
-import com.ritense.valtimo.camunda.domain.CamundaTask;
-import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
-import com.ritense.valtimo.contract.authentication.UserManagementService;
-import com.ritense.valtimo.contract.json.MapperSingleton;
-import com.ritense.valtimo.contract.utils.SecurityUtils;
-import com.ritense.valtimo.helper.DelegateTaskHelper;
-import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
-import org.camunda.bpm.engine.AuthorizationException;
-import org.camunda.bpm.engine.FormService;
-import org.camunda.bpm.engine.ProcessEngineException;
-import org.camunda.bpm.engine.RuntimeService;
-import org.camunda.bpm.engine.TaskService;
-import org.camunda.bpm.engine.impl.form.validator.FormFieldValidationException;
-import org.camunda.bpm.engine.runtime.ProcessInstance;
-import org.camunda.bpm.engine.runtime.ProcessInstanceQuery;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
-import org.mockito.MockedStatic;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.jpa.domain.Specification;
-
-import jakarta.persistence.EntityManager;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -69,6 +33,41 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ritense.authorization.AuthorizationService;
+import com.ritense.authorization.specification.AuthorizationSpecification;
+import com.ritense.outbox.OutboxService;
+import com.ritense.outbox.domain.BaseEvent;
+import com.ritense.valtimo.camunda.domain.CamundaTask;
+import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
+import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.json.MapperSingleton;
+import com.ritense.valtimo.contract.utils.SecurityUtils;
+import com.ritense.valtimo.helper.DelegateTaskHelper;
+import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
+import jakarta.persistence.EntityManager;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Supplier;
+import org.camunda.bpm.engine.AuthorizationException;
+import org.camunda.bpm.engine.FormService;
+import org.camunda.bpm.engine.ProcessEngineException;
+import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.TaskService;
+import org.camunda.bpm.engine.impl.form.validator.FormFieldValidationException;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.camunda.bpm.engine.runtime.ProcessInstanceQuery;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
+import org.mockito.MockedStatic;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.jpa.domain.Specification;
 
 class CamundaTaskServiceTest {
     private static final String TASK_ID = "task";

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,14 @@
 
 package com.ritense.processdocument.domain.impl;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.processdocument.domain.ProcessDocumentDefinitionId;
 import com.ritense.valtimo.contract.domain.AbstractId;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import java.util.Objects;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable
 public class CamundaProcessJsonSchemaDocumentDefinitionId extends AbstractId<CamundaProcessJsonSchemaDocumentDefinitionId>
@@ -76,12 +77,11 @@ public class CamundaProcessJsonSchemaDocumentDefinitionId extends AbstractId<Cam
         if (this == o) {
             return true;
         }
-        if (!(o instanceof CamundaProcessJsonSchemaDocumentDefinitionId)) {
+        if (!(o instanceof CamundaProcessJsonSchemaDocumentDefinitionId that)) {
             return false;
         }
-        CamundaProcessJsonSchemaDocumentDefinitionId that = (CamundaProcessJsonSchemaDocumentDefinitionId) o;
-        return processDefinitionKey.equals(that.processDefinitionKey) &&
-            documentDefinitionId.equals(that.documentDefinitionId);
+        return processDefinitionKey.equals(that.processDefinitionKey)
+            && documentDefinitionId.equals(that.documentDefinitionId);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,12 +34,15 @@ import com.ritense.openzaak.domain.mapping.impl.Operation
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
 import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.service.ZaakTypeLinkService
+import com.ritense.openzaak.service.impl.model.ResultWrapper
+import com.ritense.openzaak.service.impl.model.catalogi.ZaakType
 import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.valtimo.contract.json.MapperSingleton
+import jakarta.transaction.Transactional
 import java.net.URI
 import java.util.UUID
-import jakarta.transaction.Transactional
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.fail
@@ -63,6 +66,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
+import java.time.Period
 
 @Transactional
 class ProductAanvraagIntTest : BaseIntegrationTest() {
@@ -319,7 +323,8 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
                         "/api/v1/kanaal" -> handleKanaalListRequest()
                         "/documenten/api/v1/enkelvoudiginformatieobjecten/8b1568b4-cfbe-4151-bab0-787cd238814e" -> handleDocumentRequest(extractId(path))
                         "/documenten/api/v1/enkelvoudiginformatieobjecten/30ccb521-bf2c-452a-a24c-ed389a66b9fc" -> handleDocumentRequest(extractId(path))
-                        "/catalogi/api/v1/zaaktypen" -> sendEmptyBodyResponse()
+                        "/catalogi/api/v1/zaaktypen" -> mockZaakTypeResponse()
+                        "/catalogi/api/v1/zaaktypen/4e9c2359-83ac-4e3b-96b6-3f278f1fc773" -> mockSingleZaakTypeResponse()
                         else -> MockResponse().setResponseCode(404)
                     }
                     "POST" -> when (path) {
@@ -642,6 +647,53 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
             .addHeader("Content-Type", "application/json; charset=utf-8")
             .setResponseCode(200)
             .setBody("{}")
+    }
+
+    private fun mockZaakTypeResponse(): MockResponse {
+        return MockResponse()
+            .addHeader("Content-Type", "application/json; charset=utf-8")
+            .setResponseCode(200)
+            .setBody(
+                MapperSingleton.get().writeValueAsString(
+                    ResultWrapper(
+                        1,
+                        URI(""),
+                        URI(""),
+                        listOf(
+                            ZaakType(
+                                URI(
+                                    "http://localhost:" +
+                                        server.port +
+                                        "/catalogi/api/v1/zaaktypen/4e9c2359-83ac-4e3b-96b6-3f278f1fc773"
+                                ),
+                                "omschrijving",
+                                "omschrijvingGeneriek",
+                                Period.of(0, 1, 0)
+                            )
+                        )
+                    )
+                )
+            )
+    }
+
+    private fun mockSingleZaakTypeResponse(): MockResponse {
+        return MockResponse()
+            .addHeader("Content-Type", "application/json; charset=utf-8")
+            .setResponseCode(200)
+            .setBody(
+                MapperSingleton.get().writeValueAsString(
+                    ZaakType(
+                        URI(
+                            "http://localhost:" +
+                                server.port +
+                                "/catalogi/api/v1/zaaktypen/4e9c2359-83ac-4e3b-96b6-3f278f1fc773"
+                        ),
+                        "omschrijving",
+                        "omschrijvingGeneriek",
+                        Period.of(0, 1, 0)
+                    )
+                )
+            )
     }
 
     fun prepareConnectorInstance(processDefinitionKey: String = "test") {

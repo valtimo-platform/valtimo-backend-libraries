@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package com.ritense.valtimo.security.config;
 
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import com.ritense.valtimo.security.matcher.WhitelistIpRequestMatcher;
@@ -23,8 +25,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.util.matcher.AndRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 public class CamundaCockpitHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
@@ -41,7 +41,7 @@ public class CamundaCockpitHttpSecurityConfigurer implements HttpSecurityConfigu
         try {
             //By default cockpit uses BasicAuth using different tech,
             //we just set it open and let Camunda do the rest.
-            http.authorizeHttpRequests((requests) ->
+            http.authorizeHttpRequests(requests ->
                 requests.requestMatchers(
                     whiteListed(
                         antMatcher("/camunda/api/admin/**"),

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,17 @@
 
 package com.ritense.document.web.rest.searchfields;
 
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.TEXT;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.SINGLE;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldMatchType.EXACT;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.impl.searchfield.SearchField;
@@ -29,17 +40,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
-import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.TEXT;
-import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.SINGLE;
-import static com.ritense.document.domain.impl.searchfield.SearchFieldMatchType.EXACT;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
 class SearchFieldManagementResourceIntegrationTest extends BaseIntegrationTest {

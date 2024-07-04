@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,28 +18,22 @@ package com.ritense.plugin.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.plugin.domain.PluginConfiguration
-import mu.KotlinLogging
 import jakarta.persistence.PostLoad
 import jakarta.persistence.PostPersist
 import jakarta.persistence.PostUpdate
 import jakarta.persistence.PrePersist
 import jakarta.persistence.PreUpdate
+import mu.KotlinLogging
 
 class PluginConfigurationEntityListener(
     val encryptionService: EncryptionService,
     val objectMapper: ObjectMapper
 ) {
-    @PrePersist
-    fun encryptPropertiesOnSave(pluginConfiguration: PluginConfiguration) {
-        logger.debug { "Encrypting secrets for PluginConfiguration ${pluginConfiguration.title} on initial save" }
-        setBeans(pluginConfiguration)
-        pluginConfiguration.encryptProperties()
-    }
-
     @PostLoad
     @PostPersist
     @PostUpdate
     @PreUpdate
+    @PrePersist
     fun setBeans(pluginConfiguration: PluginConfiguration) {
         pluginConfiguration.encryptionService = encryptionService
         pluginConfiguration.objectMapper = objectMapper

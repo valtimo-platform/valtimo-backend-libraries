@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,16 +20,21 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.catalogiapi.client.BesluittypeRequest
 import com.ritense.catalogiapi.client.CatalogiApiClient
+import com.ritense.catalogiapi.client.EigenschapRequest
 import com.ritense.catalogiapi.client.ResultaattypeRequest
 import com.ritense.catalogiapi.client.RoltypeRequest
 import com.ritense.catalogiapi.client.StatustypeRequest
 import com.ritense.catalogiapi.client.ZaaktypeInformatieobjecttypeRequest
+import com.ritense.catalogiapi.client.ZaaktypeRequest
 import com.ritense.catalogiapi.domain.Besluittype
+import com.ritense.catalogiapi.domain.Eigenschap
 import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.catalogiapi.domain.Statustype
+import com.ritense.catalogiapi.domain.Zaaktype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
+import com.ritense.catalogiapi.exception.ResultaattypeNotFoundException
 import com.ritense.catalogiapi.exception.StatustypeNotFoundException
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.document.service.DocumentService
@@ -37,7 +42,7 @@ import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
-import com.ritense.plugin.domain.ActivityType
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zgw.Page
 import mu.KotlinLogging
@@ -65,7 +70,7 @@ class CatalogiApiPlugin(
         key = "get-statustype",
         title = "Get Statustype",
         description = "Retrieve the statustype and save it in a process variable",
-        activityTypes = [ActivityType.SERVICE_TASK_START, ActivityType.CALL_ACTIVITY_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START, ActivityTypeWithEventName.CALL_ACTIVITY_START]
     )
     fun getStatustype(
         execution: DelegateExecution,
@@ -87,7 +92,7 @@ class CatalogiApiPlugin(
         key = "get-resultaattype",
         title = "Get Resultaattype",
         description = "Retrieve the resultaattype and save it in a process variable",
-        activityTypes = [ActivityType.SERVICE_TASK_START, ActivityType.CALL_ACTIVITY_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START, ActivityTypeWithEventName.CALL_ACTIVITY_START]
     )
     fun getResultaattype(
         execution: DelegateExecution,
@@ -109,7 +114,7 @@ class CatalogiApiPlugin(
         key = "get-besluittype",
         title = "Get Besluittype",
         description = "Retrieve the besluittype and save it in a process variable",
-        activityTypes = [ActivityType.SERVICE_TASK_START, ActivityType.CALL_ACTIVITY_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START, ActivityTypeWithEventName.CALL_ACTIVITY_START]
     )
     fun getBesluittype(
         execution: DelegateExecution,
@@ -153,9 +158,19 @@ class CatalogiApiPlugin(
                 )
                 results.add(informatieobjecttype)
             }
-        } while(currentResults?.next != null)
+        } while (currentResults?.next != null)
 
         return results
+    }
+
+    fun getInformatieobjecttype(
+        typeUrl: URI,
+    ): Informatieobjecttype {
+        return client.getInformatieobjecttype(
+            authenticationPluginConfiguration,
+            url,
+            typeUrl
+        )
     }
 
     fun getRoltypes(zaakTypeUrl: URI): List<Roltype> {
@@ -174,7 +189,7 @@ class CatalogiApiPlugin(
                 )
             )
             results.addAll(currentResults.results)
-        } while(currentResults?.next != null)
+        } while (currentResults?.next != null)
 
         return results
     }
@@ -195,7 +210,7 @@ class CatalogiApiPlugin(
                 )
             )
             results.addAll(currentResults.results)
-        } while(currentResults?.next != null)
+        } while (currentResults?.next != null)
 
         return results
     }
@@ -226,7 +241,7 @@ class CatalogiApiPlugin(
                 )
             )
             results.addAll(currentResults.results)
-        } while(currentResults?.next != null)
+        } while (currentResults?.next != null)
 
         return results
     }
@@ -234,7 +249,7 @@ class CatalogiApiPlugin(
     fun getResultaattypeByOmschrijving(zaakTypeUrl: URI, omschrijving: String): Resultaattype {
         return getResultaattypen(zaakTypeUrl)
             .singleOrNull { it.omschrijving.equals(omschrijving, ignoreCase = true) }
-            ?: throw StatustypeNotFoundException("With 'omschrijving': '$omschrijving'")
+            ?: throw ResultaattypeNotFoundException("With 'omschrijving': '$omschrijving'")
     }
 
     fun getBesluittypen(zaakTypeUrl: URI): List<Besluittype> {
@@ -253,15 +268,48 @@ class CatalogiApiPlugin(
                 )
             )
             results.addAll(currentResults.results)
-        } while(currentResults?.next != null)
+        } while (currentResults?.next != null)
 
         return results
+    }
+
+    fun getEigenschappen(zaakTypeUrl: URI): List<Eigenschap> {
+        return Page.getAll { page ->
+            logger.debug { "Getting page of eigenschappen, page $page for zaaktype $zaakTypeUrl" }
+            client.getEigenschappen(
+                authenticationPluginConfiguration,
+                url,
+                EigenschapRequest(
+                    zaaktype = zaakTypeUrl,
+                    page = page
+                )
+            )
+        }
     }
 
     fun getBesluittypeByOmschrijving(zaakTypeUrl: URI, omschrijving: String): Besluittype {
         return getBesluittypen(zaakTypeUrl)
             .singleOrNull { it.omschrijving.equals(omschrijving, ignoreCase = true) }
             ?: throw StatustypeNotFoundException("With 'omschrijving': '$omschrijving'")
+    }
+
+    fun getZaaktypen(): List<Zaaktype> {
+        return Page.getAll { page ->
+            logger.debug { "Getting page of zaaktypen, page $page" }
+            client.getZaaktypen(
+                authenticationPluginConfiguration,
+                url,
+                ZaaktypeRequest(page = page)
+            )
+        }
+    }
+
+    fun getZaaktype(zaaktypeUrl: URI): Zaaktype {
+        return client.getZaaktype(authenticationPluginConfiguration, url, zaaktypeUrl)
+    }
+
+    fun prefillCache() {
+        client.prefillCache(authenticationPluginConfiguration, url)
     }
 
     companion object {

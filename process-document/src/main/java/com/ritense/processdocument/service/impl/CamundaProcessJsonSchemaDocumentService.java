@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,12 @@
  */
 
 package com.ritense.processdocument.service.impl;
+
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CREATE;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.MODIFY;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
+import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.COMPLETE;
 
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
@@ -61,22 +67,15 @@ import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import org.camunda.bpm.engine.delegate.BaseDelegateExecution;
 import org.camunda.bpm.engine.delegate.DelegateTask;
 import org.camunda.bpm.engine.delegate.VariableScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-
-import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CREATE;
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.MODIFY;
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
-import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.COMPLETE;
 
 public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentService {
 
@@ -153,7 +152,7 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
                 processDocumentAssociationService.createProcessDocumentInstance(
                     camundaProcessInstanceId.toString(),
                     UUID.fromString(document.id().toString()),
-                    processDefinitionKey.toString()
+                    processInstanceWithDefinition.getProcessDefinition().getName()
                 )
             );
 

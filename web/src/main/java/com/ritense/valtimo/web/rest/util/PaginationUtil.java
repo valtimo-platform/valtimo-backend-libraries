@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,11 @@ import org.springframework.web.util.UriComponentsBuilder;
  * <p>
  * Pagination uses the same principles as the <a href="https://developer.github.com/v3/#pagination">GitHub API</a>,
  * and follow <a href="http://tools.ietf.org/html/rfc5988">RFC 5988 (Link header)</a>.
+ *
+ * @deprecated since 12.0.0, functionality will be removed in future version use Spring
+ *     {@link org.springframework.data.domain.Page } instead.
  */
+@Deprecated(since = "12.0.0", forRemoval = true)
 public final class PaginationUtil {
 
     private PaginationUtil() {
@@ -56,6 +60,9 @@ public final class PaginationUtil {
     }
 
     private static String generateUri(String baseUrl, int page, int size) {
-        return UriComponentsBuilder.fromUriString(baseUrl).queryParam("page", page).queryParam("size", size).toUriString();
+        return UriComponentsBuilder.fromUriString(baseUrl)
+            .queryParam("page", page)
+            .queryParam("size", size)
+            .toUriString();
     }
 }

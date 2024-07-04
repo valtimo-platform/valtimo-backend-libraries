@@ -19,7 +19,7 @@ package com.ritense.openzaak.web.rest.impl
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
 import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
-import com.ritense.openzaak.service.impl.ZaakTypeLinkService
+import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.service.result.CreateServiceTaskHandlerResult
 import com.ritense.openzaak.service.result.CreateZaakTypeLinkResult
 import com.ritense.openzaak.service.result.ModifyServiceTaskHandlerResult
@@ -31,6 +31,7 @@ import org.springframework.http.ResponseEntity.noContent
 import org.springframework.http.ResponseEntity.ok
 import java.util.UUID
 
+@Deprecated("Since 12.0.0. Use DefaultZaakTypeLinkResource in zaken-api module instead")
 class ZaakTypeLinkResource(
     private val zaakTypeLinkService: ZaakTypeLinkService
 ) : ZaakTypeLinkResource {

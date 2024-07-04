@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <!--
-  ~ Copyright 2015-2023 Ritense BV, the Netherlands.
+  ~ Copyright 2015-2024 Ritense BV, the Netherlands.
   ~
   ~ Licensed under EUPL, Version 1.2 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
     <changeSet id="20230904-choice-field-values-change-deprecated-datatype.xml" author="Ritense">
+        <validCheckSum>8:3d850282c4ee7f28426bbbce9e642c3f</validCheckSum><!-- Liquibase < 4.20.x -->
+        <validCheckSum>8:d41d8cd98f00b204e9800998ecf8427e</validCheckSum><!-- Liquibase > 4.21.x -->
         <preConditions onFail="MARK_RAN">
             <dbms type="postgresql"/>
             <not>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ test {
     testLogging {
         events("passed", "skipped", "failed", "standardError")
     }
-    ignoreFailures = true
     useJUnitPlatform {
         excludeTags "security", "integration"
     }
@@ -33,7 +32,6 @@ tasks.register("integrationTesting") {
 tasks.register("integrationTestingPostgresql", Test) {
     group = 'verification'
     systemProperty("spring.profiles.include", "postgresql")
-    ignoreFailures = false
     useJUnitPlatform {
         includeTags "integration"
         excludeTags "security"
@@ -48,7 +46,6 @@ tasks.register("integrationTestingPostgresql", Test) {
 tasks.register("integrationTestingMysql", Test) {
     group = 'verification'
     systemProperty("spring.profiles.include", "mysql")
-    ignoreFailures = true
     useJUnitPlatform {
         includeTags "integration"
         excludeTags "security"
@@ -63,7 +60,6 @@ tasks.register("integrationTestingMysql", Test) {
 tasks.register("securityTesting", Test) {
     group = 'verification'
     systemProperty("spring.profiles.include", "postgresql")
-    ignoreFailures = false
     useJUnitPlatform {
         includeTags "security"
         excludeTags "integration"

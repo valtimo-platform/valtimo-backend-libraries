@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright 2015-2023 Ritense BV, the Netherlands.
+  ~ Copyright 2015-2024 Ritense BV, the Netherlands.
   ~
   ~ Licensed under EUPL, Version 1.2 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -33,4 +33,5 @@
     <include file="changelog/20230526-add-column-auto-assign-tasks-to-case-definition.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20230926-add-case-tabs.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20231006-add-standard-case-tabs.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20240228-add-task-list-column.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

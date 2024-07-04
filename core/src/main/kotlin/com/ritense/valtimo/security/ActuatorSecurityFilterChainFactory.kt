@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,6 +84,8 @@ class ActuatorSecurityFilterChainFactory {
         antMatcher(GET, "${actuatorPath}/configprops"),
         antMatcher(GET, "${actuatorPath}/env"),
         antMatcher(GET, "${actuatorPath}/health"),
+        antMatcher(GET, "${actuatorPath}/health/liveness"),
+        antMatcher(GET, "${actuatorPath}/health/readiness"),
         antMatcher(GET, "${actuatorPath}/mappings"),
         antMatcher(GET, "${actuatorPath}/logfile"),
         antMatcher(GET, "${actuatorPath}/loggers"),

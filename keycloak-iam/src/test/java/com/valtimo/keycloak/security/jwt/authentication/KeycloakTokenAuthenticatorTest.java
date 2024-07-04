@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,14 @@
 
 package com.valtimo.keycloak.security.jwt.authentication;
 
+import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
+import static com.ritense.valtimo.contract.security.jwt.JwtConstants.EMAIL_KEY;
+import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
+import static com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator.REALM_ACCESS;
+import static com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator.RESOURCE_ACCESS;
+import static org.apache.commons.codec.binary.Base64.encodeBase64String;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationService;
 import com.ritense.valtimo.security.jwt.provider.SecretKeyResolver;
 import com.valtimo.keycloak.security.jwt.provider.KeycloakSecretKeyProvider;
@@ -30,19 +38,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
-import static com.ritense.valtimo.contract.security.jwt.JwtConstants.EMAIL_KEY;
-import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
-import static com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator.REALM_ACCESS;
-import static com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator.RESOURCE_ACCESS;
-import static org.apache.commons.codec.binary.Base64.encodeBase64String;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class KeycloakTokenAuthenticatorTest {
 

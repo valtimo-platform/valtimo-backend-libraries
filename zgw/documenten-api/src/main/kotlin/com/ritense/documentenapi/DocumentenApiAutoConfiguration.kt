@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,38 @@
 package com.ritense.documentenapi
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.authorization.AuthorizationService
+import com.ritense.catalogiapi.service.CatalogiService
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.documentenapi.security.DocumentenApiHttpSecurityConfigurer
+import com.ritense.documentenapi.service.DocumentDeleteHandler
 import com.ritense.documentenapi.service.DocumentenApiService
+import com.ritense.documentenapi.web.rest.DocumentenApiManagementResource
 import com.ritense.documentenapi.web.rest.DocumentenApiResource
 import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
+import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
+import com.ritense.valtimo.processlink.service.PluginProcessLinkService
+import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.annotation.Order
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.web.reactive.function.client.WebClient
+import javax.sql.DataSource
 
 @AutoConfiguration
+@EnableJpaRepositories(basePackages = ["com.ritense.documentenapi.repository"])
+@EntityScan("com.ritense.documentenapi.domain")
 class DocumentenApiAutoConfiguration {
 
     @Bean
@@ -57,22 +73,38 @@ class DocumentenApiAutoConfiguration {
         storageService: TemporaryResourceStorageService,
         applicationEventPublisher: ApplicationEventPublisher,
         objectMapper: ObjectMapper,
+        documentDeleteHandlers: List<DocumentDeleteHandler>
     ): DocumentenApiPluginFactory {
         return DocumentenApiPluginFactory(
             pluginService,
             client,
             storageService,
             applicationEventPublisher,
-            objectMapper
+            objectMapper,
+            documentDeleteHandlers
         )
     }
 
     @Bean
     @ConditionalOnMissingBean(DocumentenApiService::class)
     fun documentenApiService(
-        pluginService: PluginService
+        pluginService: PluginService,
+        catalogiService: CatalogiService,
+        authorizationService: AuthorizationService,
+        documentDefinitionService: JsonSchemaDocumentDefinitionService,
+        documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
+        pluginProcessLinkService: PluginProcessLinkService,
+        camundaRepositoryService: CamundaRepositoryService,
     ): DocumentenApiService {
-        return DocumentenApiService(pluginService)
+        return DocumentenApiService(
+            pluginService,
+            catalogiService,
+            authorizationService,
+            documentDefinitionService,
+            documentDefinitionProcessLinkService,
+            pluginProcessLinkService,
+            camundaRepositoryService,
+        )
     }
 
     @Bean
@@ -83,10 +115,24 @@ class DocumentenApiAutoConfiguration {
         return DocumentenApiResource(documentenApiService)
     }
 
+    @Bean
+    @ConditionalOnMissingBean(DocumentenApiManagementResource::class)
+    fun documentenApiManagementResource(
+        documentenApiService: DocumentenApiService
+    ): DocumentenApiManagementResource {
+        return DocumentenApiManagementResource(documentenApiService)
+    }
+
     @Order(380)
     @Bean
     fun documentenApiHttpSecurityConfigurer(): DocumentenApiHttpSecurityConfigurer {
         return DocumentenApiHttpSecurityConfigurer()
     }
 
+    @ConditionalOnClass(DataSource::class)
+    @Order(HIGHEST_PRECEDENCE + 32)
+    @Bean
+    fun documentenApiLiquibaseChangeLogLocation(): LiquibaseMasterChangeLogLocation {
+        return LiquibaseMasterChangeLogLocation("config/liquibase/documenten-api-master.xml")
+    }
 }

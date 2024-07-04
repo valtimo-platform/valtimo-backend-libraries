@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,17 @@
 
 package com.valtimo.keycloak.security.jwt.authentication;
 
+import static com.ritense.valtimo.contract.security.jwt.JwtConstants.EMAIL_KEY;
+import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
+import static java.util.Objects.requireNonNull;
+
 import com.ritense.valtimo.contract.security.jwt.TokenAuthenticator;
 import io.jsonwebtoken.Claims;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,20 +34,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import static com.ritense.valtimo.contract.security.jwt.JwtConstants.EMAIL_KEY;
-import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
-import static java.util.Objects.requireNonNull;
 
 public class KeycloakTokenAuthenticator implements TokenAuthenticator {
 
     private static final Logger logger = LoggerFactory.getLogger(KeycloakTokenAuthenticator.class);
-    public final static String REALM_ACCESS = "realm_access";
-    public final static String RESOURCE_ACCESS = "resource_access";
+    public static final String REALM_ACCESS = "realm_access";
+    public static final String RESOURCE_ACCESS = "resource_access";
     private final String clientName;
 
     public KeycloakTokenAuthenticator(String keycloakClient) {

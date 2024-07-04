@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package com.ritense.valtimo.camunda.domain
 
-import java.util.Collections
 import org.camunda.bpm.engine.variable.VariableMap
 import org.camunda.bpm.engine.variable.Variables
 import org.camunda.bpm.engine.variable.context.VariableContext
 import org.camunda.bpm.engine.variable.value.TypedValue
+import java.util.Collections
 
 class CamundaVariableMap(
     private val typedMap: Map<String, TypedValue?>

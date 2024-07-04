@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,13 @@
 
 package com.ritense.zakenapi.service
 
+import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.documentenapi.DocumentenApiPlugin
+import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPlugin
-import com.ritense.zakenapi.domain.RelatedFileDto
 import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zakenapi.link.ZaakInstanceLinkNotFoundException
@@ -31,8 +32,9 @@ import java.util.UUID
 
 @Transactional
 class ZaakDocumentService(
-    val zaakUrlProvider: ZaakUrlProvider,
-    val pluginService: PluginService
+    private val zaakUrlProvider: ZaakUrlProvider,
+    private val pluginService: PluginService,
+    private val catalogiService: CatalogiService,
 ) {
 
     fun getInformatieObjectenAsRelatedFiles(documentId: UUID): List<RelatedFileDto> {
@@ -59,8 +61,26 @@ class ZaakDocumentService(
             sizeInBytes = informatieObject.bestandsomvang,
             createdOn = informatieObject.creatiedatum.atStartOfDay(),
             createdBy = informatieObject.auteur,
+            author = informatieObject.auteur,
+            title = informatieObject.titel,
+            status = informatieObject.status?.key,
+            language = informatieObject.taal,
             pluginConfigurationId = pluginConfiguration.id.id,
+            identification = informatieObject.identificatie,
+            description = informatieObject.beschrijving,
+            informatieobjecttype = getInformatieobjecttypeByUri(informatieObject.informatieobjecttype),
+            keywords = informatieObject.trefwoorden,
+            format = informatieObject.formaat,
+            sendDate = informatieObject.verzenddatum,
+            receiptDate = informatieObject.ontvangstdatum,
+            confidentialityLevel = informatieObject.vertrouwelijkheidaanduiding?.key,
+            version = informatieObject.versie,
+            indicationUsageRights = informatieObject.indicatieGebruiksrecht
         )
+    }
+
+    private fun getInformatieobjecttypeByUri(uri: String?): String? {
+        return uri?.let { catalogiService.getInformatieobjecttype(URI(it))?.omschrijving }
     }
 
     private fun getDocumentenApiPluginByInformatieobjectUrl(informatieobjectUrl: URI): PluginConfiguration {

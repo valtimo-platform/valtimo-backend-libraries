@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,18 +48,22 @@ internal class MailServiceTest {
 
         val subjectProperty = mock(CamundaProperty::class.java)
         `when`(subjectProperty.getAttributeValue(anyString())).thenReturn("mailSendTaskSubject")
+        `when`(subjectProperty.camundaName).thenReturn("mailSendTaskSubject")
         `when`(subjectProperty.camundaValue).thenReturn("The Subject")
 
         val recipientProperty = mock(CamundaProperty::class.java)
         `when`(recipientProperty.getAttributeValue(anyString())).thenReturn("mailSendTaskTo")
+        `when`(recipientProperty.camundaName).thenReturn("mailSendTaskTo")
         `when`(recipientProperty.camundaValue).thenReturn("\${emailAddress}")
 
         val mailTemplateProperty = mock(CamundaProperty::class.java)
         `when`(mailTemplateProperty.getAttributeValue(anyString())).thenReturn("mailSendTaskTemplate")
+        `when`(mailTemplateProperty.camundaName).thenReturn("mailSendTaskTemplate")
         `when`(mailTemplateProperty.camundaValue).thenReturn("Mail template identifier")
 
         val senderProperty = mock(CamundaProperty::class.java)
         `when`(senderProperty.getAttributeValue(anyString())).thenReturn("mailSendTaskFrom")
+        `when`(senderProperty.camundaName).thenReturn("mailSendTaskFrom")
         `when`(senderProperty.camundaValue).thenReturn("sender@domain.com")
 
         val camundaProperties = mock(CamundaProperties::class.java)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,11 +31,11 @@ class ObjectSyncConfigHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeHttpRequests { requests ->
-                requests.requestMatchers(antMatcher(GET, "/api/v1/object/sync/config/{id}")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(GET, "/api/v1/object/sync/config")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(POST, "/api/v1/object/sync/config")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(PUT, "/api/v1/object/sync/config")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(DELETE, "/api/v1/object/sync/config/{id}")).hasAuthority(ADMIN)
+                requests.requestMatchers(antMatcher(GET, "$CONFIG_URL/{id}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, CONFIG_URL)).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, CONFIG_URL)).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, CONFIG_URL)).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, "$CONFIG_URL/{id}")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(POST, "/api/v1/notification")).permitAll()
             }
         } catch (e: Exception) {
@@ -43,4 +43,7 @@ class ObjectSyncConfigHttpSecurityConfigurer : HttpSecurityConfigurer {
         }
     }
 
+    companion object {
+        private const val CONFIG_URL = "/api/v1/object/sync/config"
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,10 +67,11 @@ class FormDefinitionImporterIntTest @Autowired constructor(
         val request = ImportRequest(validPath, formDefinition.encodeToByteArray())
 
         formDefinitionImporter.import(request)
-        val storedFormDefinition = formDefinitionService.getFormDefinitionByName("importer-example")
-        assertThat(storedFormDefinition).isPresent
-        assertThat(
-            (storedFormDefinition.get() as FormIoFormDefinition).asJson()
-        ).isEqualTo(objectMapper.readTree(formDefinition))
+        val formIoFormDefinition = formDefinitionService.getFormDefinitionByName("importer-example")
+            .map { it as? FormIoFormDefinition }.orElse(null)
+
+        assertThat(formIoFormDefinition).isNotNull
+        assertThat(formIoFormDefinition!!.asJson()).isEqualTo(objectMapper.readTree(formDefinition))
+        assertThat(formIoFormDefinition.isReadOnly).isFalse()
     }
 }

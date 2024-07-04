@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,9 @@ import com.ritense.valtimo.web.rest.ReportingResource;
 import com.ritense.valtimo.web.rest.TaskResource;
 import com.ritense.valtimo.web.rest.UserResource;
 import com.ritense.valtimo.web.rest.VersionResource;
+import jakarta.persistence.EntityManager;
+import java.util.Collection;
+import java.util.Optional;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.camunda.bpm.engine.FormService;
@@ -70,17 +73,14 @@ import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.extension.reactor.spring.EnableCamundaEventBus;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import jakarta.persistence.EntityManager;
-import java.util.Collection;
-import java.util.Optional;
 
 @AutoConfiguration
 @EnableConfigurationProperties(ValtimoProperties.class)

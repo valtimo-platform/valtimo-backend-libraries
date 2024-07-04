@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,22 @@
 
 package com.ritense.valtimo.security.config;
 
-import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
-import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
+import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
+import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+
 public class ProcessHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeHttpRequests((requests) ->
+            http.authorizeHttpRequests(requests ->
                 requests.requestMatchers(antMatcher(GET, "/api/v1/process/definition")).authenticated()
                 .requestMatchers(antMatcher(POST, "/api/v1/process/definition/{processDefinitionId}/count")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/v1/process/definition/{processDefinitionId}/xml")).authenticated()
@@ -43,8 +44,10 @@ public class ProcessHttpSecurityConfigurer implements HttpSecurityConfigurer {
                 .requestMatchers(antMatcher(GET, "/api/v1/process/definition/{processDefinitionKey}/heatmap/count")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/v1/process/definition/{processDefinitionKey}/heatmap/duration")).authenticated()
                 .requestMatchers(antMatcher(POST, "/api/v1/process/definition/{processDefinitionKey}/{businessKey}/start")).authenticated()
-                .requestMatchers(antMatcher(GET, "/api/v1/process/definition/{sourceProcessDefinitionId}/{targetProcessDefinitionId}/flownodes")).authenticated()
-                .requestMatchers(antMatcher(POST, "/api/v1/process/definition/{sourceProcessDefinitionId}/{targetProcessDefinitionId}/migrate")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(GET, "/api/v1/process/definition/{sourceProcessDefinitionId}/{targetProcessDefinitionId}/flownodes"))
+                    .authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v1/process/definition/{sourceProcessDefinitionId}/{targetProcessDefinitionId}/migrate"))
+                    .hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(GET, "/api/v1/process/{processInstanceId}")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/v1/process/{processInstanceId}/history")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/v1/process/{processInstanceId}/log")).authenticated()
@@ -53,7 +56,8 @@ public class ProcessHttpSecurityConfigurer implements HttpSecurityConfigurer {
                 .requestMatchers(antMatcher(GET, "/api/v1/process/{processInstanceId}/xml")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/v1/process/{processInstanceId}/activities")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/v1/process/{processInstanceId}/comments")).authenticated()
-                .requestMatchers(antMatcher(GET, "/api/v1/process/{processDefinitionName}/search")).authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v1/process/{processDefinitionName}/search")).authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v2/process/{processDefinitionName}/search")).authenticated()
                 .requestMatchers(antMatcher(POST, "/api/v1/process/{processDefinitionName}/count")).authenticated()
                 .requestMatchers(antMatcher(POST, "/api/v1/process/{processInstanceId}/comment")).authenticated()
                 .requestMatchers(antMatcher(POST, "/api/v1/process/{processInstanceId}/delete")).hasAuthority(ADMIN)

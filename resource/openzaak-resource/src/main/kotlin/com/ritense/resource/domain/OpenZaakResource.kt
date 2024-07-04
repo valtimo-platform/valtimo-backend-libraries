@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.ritense.openzaak.repository.converter.UriAttributeConverter
 import com.ritense.valtimo.contract.resource.Resource
 import com.ritense.valtimo.contract.validation.Validatable
-import java.net.URI
-import java.time.LocalDateTime
-import java.util.UUID
 import jakarta.persistence.Column
 import jakarta.persistence.Convert
 import jakarta.persistence.EmbeddedId
@@ -32,7 +29,11 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import org.hibernate.validator.constraints.Length
 import org.springframework.data.domain.Persistable
+import java.net.URI
+import java.time.LocalDateTime
+import java.util.UUID
 
+@Deprecated("Since 12.0.0. Replaced by Documenten API module.")
 @Entity
 @Table(name = "open_zaak_resource")
 data class OpenZaakResource(

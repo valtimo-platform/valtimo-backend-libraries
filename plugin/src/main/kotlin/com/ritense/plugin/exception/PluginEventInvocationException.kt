@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,6 @@ class PluginEventInvocationException(
     pluginConfiguration: PluginConfiguration,
     throwable: Throwable,
 ) : RuntimeException(
-    "Failed to run events on plugin ${pluginConfiguration.title} with id ${pluginConfiguration.id.id}",
+    "Failed to run events on plugin ${pluginConfiguration.title} with id ${pluginConfiguration.id.id}. Error: ${throwable.cause?.message ?: throwable.message}",
     throwable
 )

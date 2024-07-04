@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,23 +28,26 @@ import com.ritense.resource.web.ObjectUrlDTO
 import com.ritense.resource.web.ResourceDTO
 import com.ritense.valtimo.contract.resource.FileStatus
 import com.ritense.valtimo.contract.resource.Resource
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.web.multipart.MultipartFile
 import java.net.URI
 import java.net.URL
 import java.time.LocalDateTime
 import java.util.UUID
-import jakarta.servlet.http.HttpServletRequest
 
+@Deprecated("Since 12.0.0. Replaced by Documenten API module.")
 class OpenZaakService(
     val documentenService: DocumentenService,
     val openZaakResourceRepository: OpenZaakResourceRepository,
     val request: HttpServletRequest
 ): ResourceService {
 
+    @Deprecated("Since 12.0.0")
     override fun store(key: String, multipartFile: MultipartFile): Resource {
         TODO(NOT_YET_IMPLEMENTED_MSG)
     }
 
+    @Deprecated("Since 12.0.0")
     override fun store(key: String, multipartFile: MultipartFile, fileStatus: FileStatus): Resource {
 
         val informatieObjectUrl =
@@ -63,6 +66,7 @@ class OpenZaakService(
         return openZaakResourceRepository.saveAndFlush(openZaakResource)
     }
 
+    @Deprecated("Since 12.0.0")
     override fun store(documentDefinitionName: String, name: String, multipartFile: MultipartFile): OpenZaakResource {
         val informatieObjectUrl =
             documentenService.createEnkelvoudigInformatieObject(documentDefinitionName, multipartFile)
@@ -80,6 +84,7 @@ class OpenZaakService(
         return openZaakResourceRepository.saveAndFlush(openZaakResource)
     }
 
+    @Deprecated("Since 12.0.0")
     fun store(informatieObject: InformatieObject): OpenZaakResource {
         val openZaakResource = OpenZaakResource(
             ResourceId.newId(UUID.randomUUID()),
@@ -92,14 +97,17 @@ class OpenZaakService(
         return openZaakResourceRepository.save(openZaakResource)
     }
 
+    @Deprecated("Since 12.0.0")
     override fun store(key: String, fileUploadRequest: FileUploadRequest): Resource {
         TODO(NOT_YET_IMPLEMENTED_MSG)
     }
 
+    @Deprecated("Since 12.0.0")
     override fun store(key: String, fileUploadRequest: FileUploadRequest, fileStatus: FileStatus): Resource {
         TODO(NOT_YET_IMPLEMENTED_MSG)
     }
 
+    @Deprecated("Since 12.0.0")
     override fun getResourceUrl(id: UUID): ObjectUrlDTO {
         val resource = openZaakResourceRepository.getReferenceById(ResourceId.existingId(id))
 
@@ -116,10 +124,12 @@ class OpenZaakService(
         )
     }
 
+    @Deprecated("Since 12.0.0")
     override fun getResourceUrl(fileName: String): URL {
         TODO(NOT_YET_IMPLEMENTED_MSG)
     }
 
+    @Deprecated("Since 12.0.0")
     override fun getResourceContent(id: UUID): ObjectContentDTO {
         val resource = openZaakResourceRepository.getReferenceById(ResourceId.existingId(id))
         return ObjectContentDTO(
@@ -136,34 +146,42 @@ class OpenZaakService(
         )
     }
 
+    @Deprecated("Since 12.0.0")
     override fun removeResource(id: UUID) {
         TODO(NOT_YET_IMPLEMENTED_MSG)
     }
 
+    @Deprecated("Since 12.0.0")
     override fun removeResource(key: String) {
         TODO(NOT_YET_IMPLEMENTED_MSG)
     }
 
+    @Deprecated("Since 12.0.0")
     override fun registerResource(resourceDTO: ResourceDTO): ResourceDTO {
         TODO(NOT_YET_IMPLEMENTED_MSG)
     }
 
+    @Deprecated("Since 12.0.0")
     override fun getResource(id: UUID): OpenZaakResource {
         return openZaakResourceRepository.findById(ResourceId.existingId(id)).orElseThrow()
     }
 
+    @Deprecated("Since 12.0.0")
     override fun getResourceByKey(fileName: String): Resource {
         TODO(NOT_YET_IMPLEMENTED_MSG)
     }
 
+    @Deprecated("Since 12.0.0")
     override fun activate(id: UUID) {
         TODO(NOT_YET_IMPLEMENTED_MSG)
     }
 
+    @Deprecated("Since 12.0.0")
     override fun pending(id: UUID) {
         TODO(NOT_YET_IMPLEMENTED_MSG)
     }
 
+    @Deprecated("Since 12.0.0")
     fun getResourceByInformatieObjectUrl(url: URI): OpenZaakResource {
         return openZaakResourceRepository.findByInformatieObjectUrl(url)
     }

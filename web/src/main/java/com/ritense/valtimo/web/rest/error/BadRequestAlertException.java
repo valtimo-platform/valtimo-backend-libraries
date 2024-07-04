@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package com.ritense.valtimo.web.rest.error;
 
-import org.zalando.problem.AbstractThrowableProblem;
-import org.zalando.problem.Status;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import org.zalando.problem.AbstractThrowableProblem;
+import org.zalando.problem.Status;
 
 public class BadRequestAlertException extends AbstractThrowableProblem {
 

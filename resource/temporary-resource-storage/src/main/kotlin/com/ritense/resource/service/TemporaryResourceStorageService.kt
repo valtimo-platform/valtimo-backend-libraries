@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.nio.file.Path
 import java.security.SecureRandom
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
+import kotlin.io.path.fileSize
 import kotlin.io.path.inputStream
 import kotlin.io.path.nameWithoutExtension
 import kotlin.io.path.notExists
@@ -63,7 +64,8 @@ class TemporaryResourceStorageService(
         }
 
         val metaDataContent = metadata + mapOf(
-            MetadataType.FILE_PATH.key to dataFile.absolutePathString()
+            MetadataType.FILE_PATH.key to dataFile.absolutePathString(),
+            MetadataType.FILE_SIZE.key to dataFile.fileSize().toString()
         )
         val metaDataFile = Files.createTempFile(tempDir, "${random.nextLong().toULong()}-", ".json")
         metaDataFile.toFile().writeText(objectMapper.writeValueAsString(metaDataContent))

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ class  ZaakInstanceLinkService(
         return zaakInstanceLinkRepository.save(zaakInstanceLink)
     }
 
+    @Throws(ZaakInstanceLinkNotFoundException::class)
     fun findById(zaakInstanceLinkId: ZaakInstanceLinkId): ZaakInstanceLink {
         return when (val zaakInstanceLink = zaakInstanceLinkRepository.getReferenceById(zaakInstanceLinkId)) {
             null -> throw ZaakInstanceLinkNotFoundException("No ZaakInstanceLink found for id ${zaakInstanceLinkId.id}")
@@ -44,11 +45,13 @@ class  ZaakInstanceLinkService(
         }
     }
 
+    @Throws(ZaakInstanceLinkNotFoundException::class)
     fun getByDocumentId(documentId: UUID): ZaakInstanceLink {
         return zaakInstanceLinkRepository.findByDocumentId(documentId)
             ?: throw ZaakInstanceLinkNotFoundException("No ZaakInstanceLink found for document id $documentId")
     }
 
+    @Throws(ZaakInstanceLinkNotFoundException::class)
     fun getByZaakInstanceUrl(zaakInstanceUrl: URI): ZaakInstanceLink {
         return zaakInstanceLinkRepository.findByZaakInstanceUrl(zaakInstanceUrl)
             ?: throw ZaakInstanceLinkNotFoundException("No ZaakInstanceLink found for zaak instance url $zaakInstanceUrl")

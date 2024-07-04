@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package com.ritense.audit.service.impl;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.domain.AuditRecordBuilder;
 import com.ritense.audit.domain.AuditRecordId;
@@ -26,12 +28,11 @@ import com.ritense.audit.exception.AuditRuntimeException;
 import com.ritense.audit.repository.AuditRecordRepository;
 import com.ritense.audit.service.AuditEventProcessor;
 import com.ritense.valtimo.contract.audit.AuditEvent;
+import java.sql.SQLIntegrityConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
-import java.sql.SQLIntegrityConstraintViolationException;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class AuditEventProcessorImpl implements AuditEventProcessor {
 

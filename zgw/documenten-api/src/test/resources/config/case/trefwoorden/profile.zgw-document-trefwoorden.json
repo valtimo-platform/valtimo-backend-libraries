@@ -1,0 +1,13 @@
+{
+    "changesetId": "profile.zgw-document-trefwoorden",
+    "case-definitions": [
+        {
+            "key": "profile",
+            "trefwoorden": [
+                "some-trefwoord",
+                "some-other-trefwoord",
+                "some-third-trefwoord"
+            ]
+        }
+    ]
+}

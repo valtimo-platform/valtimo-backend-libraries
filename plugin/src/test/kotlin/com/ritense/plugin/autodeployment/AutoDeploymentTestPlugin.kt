@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package com.ritense.plugin.autodeployment
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginProperty
-import com.ritense.plugin.domain.ActivityType
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valtimo.contract.validation.Url
 import java.net.URI
 
@@ -30,8 +30,8 @@ import java.net.URI
 )
 class AutoDeploymentTestPlugin {
     @Url
-    @PluginProperty(key = "property1", secret = false)
-    lateinit var property1: URI
+    @PluginProperty(key = "property1", required = false, secret = false)
+    var property1: URI? = null
 
     @PluginProperty(key = "property2", required = false, secret = false)
     var property2: Boolean? = null
@@ -46,7 +46,7 @@ class AutoDeploymentTestPlugin {
         key = "test-action-task",
         title = "Test action task",
         description = "This is an action used to verify plugin framework functionality",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun testActionTask() {
         //do nothing

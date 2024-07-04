@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package com.ritense.valtimo.camunda.task.domain.notification;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
 import com.ritense.valtimo.camunda.task.domain.TaskNotification;
 import com.ritense.valtimo.contract.basictype.EmailAddress;
 import com.ritense.valtimo.contract.basictype.SimpleName;
@@ -23,11 +26,9 @@ import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage;
 import com.ritense.valtimo.contract.mail.model.value.AttachmentCollection;
 import com.ritense.valtimo.contract.mail.model.value.MailTemplateIdentifier;
 import com.ritense.valtimo.contract.mail.model.value.Recipient;
-import org.camunda.bpm.engine.delegate.DelegateTask;
 import java.util.Map;
 import java.util.Optional;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+import org.camunda.bpm.engine.delegate.DelegateTask;
 
 public class PublicAssignmentNotification extends TaskNotification {
 

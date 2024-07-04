@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,11 +31,13 @@ dependencies {
     api(project(":form-flow-valtimo"))
     api(project(":importer"))
     api(project(":keycloak-iam"))
+    api(project(":localization"))
     api(project(":notes"))
     api(project(":plugin"))
     api(project(":plugin-valtimo"))
     api(project(":process-document"))
     api(project(":process-link"))
+    api(project(":resource"))
     api(project(":resource:temporary-resource-storage"))
     api(project(":script"))
     api(project(":search"))

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -146,7 +146,7 @@ internal class ProcessLinkResourceIT @Autowired constructor(
 
         mockMvc.perform(
             get("/api/v1/process-link/export")
-                .param("processDefinitionKey", "auto-deploy-process-link")
+                .param("processDefinitionKey", "auto-deploy-process-link-with-long-key")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
             .andDo(print())

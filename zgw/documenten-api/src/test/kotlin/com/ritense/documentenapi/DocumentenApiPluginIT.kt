@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.request.NewDocumentRequest
-import com.ritense.plugin.domain.ActivityType
+import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProcessLink
@@ -28,8 +28,10 @@ import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
+import jakarta.transaction.Transactional
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -52,7 +54,6 @@ import reactor.core.publisher.Mono
 import java.time.LocalDate
 import java.util.Optional
 import java.util.UUID
-import jakarta.transaction.Transactional
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -63,7 +64,7 @@ internal class DocumentenApiPluginIT @Autowired constructor(
     private val processDocumentService: ProcessDocumentService,
     private val pluginProcessLinkRepository: PluginProcessLinkRepository,
     private val temporaryResourceStorageService: TemporaryResourceStorageService,
-    private val objectMapper: ObjectMapper,
+    private val objectMapper: ObjectMapper
 ) : BaseIntegrationTest() {
 
     lateinit var server: MockWebServer
@@ -73,6 +74,8 @@ internal class DocumentenApiPluginIT @Autowired constructor(
 
     @BeforeEach
     internal fun setUp() {
+        objectMapper.addMixIn(DocumentInformatieObject::class.java, DocumentInformatieObjectMixin::class.java)
+
         server = MockWebServer()
         setupMockDocumentenApiServer()
         server.start()
@@ -125,7 +128,7 @@ internal class DocumentenApiPluginIT @Autowired constructor(
         """.trimIndent()
         )
         val documentId = temporaryResourceStorageService.store(
-            "test".byteInputStream()
+            "test".byteInputStream(), mutableMapOf(MetadataType.FILE_SIZE.key to 4L)
         )
 
         val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
@@ -152,6 +155,7 @@ internal class DocumentenApiPluginIT @Autowired constructor(
         assertEquals("description", parsedOutput["beschrijving"])
         assertEquals("GZAC", parsedOutput["auteur"])
         assertEquals("test.ext", parsedOutput["bestandsnaam"])
+        assertEquals(4, parsedOutput["bestandsomvang"])
         assertEquals("nld", parsedOutput["taal"])
         assertEquals("dGVzdA==", parsedOutput["inhoud"])
         assertEquals("testtype", parsedOutput["informatieobjecttype"])
@@ -256,7 +260,7 @@ internal class DocumentenApiPluginIT @Autowired constructor(
                 objectMapper.readTree(generateDocumentActionProperties) as ObjectNode,
                 pluginConfiguration.id,
                 pluginActionDefinitionKey,
-                ActivityType.SERVICE_TASK_START
+                ActivityTypeWithEventName.SERVICE_TASK_START
             )
         )
     }
@@ -269,10 +273,8 @@ internal class DocumentenApiPluginIT @Autowired constructor(
                 val response = when (path) {
                     "/enkelvoudiginformatieobjecten"
                     -> handleDocumentRequest()
-
                     "/enkelvoudiginformatieobjecten/$DOCUMENT_ID"
-                    -> handleDocumentRequest()
-
+                    -> handleDocumentRequest("+02:00")
                     "/enkelvoudiginformatieobjecten/$DOCUMENT_ID/download"
                     -> handleDocumentDownloadRequest()
 
@@ -284,7 +286,7 @@ internal class DocumentenApiPluginIT @Autowired constructor(
         server.dispatcher = dispatcher
     }
 
-    private fun handleDocumentRequest(): MockResponse {
+    private fun handleDocumentRequest(zone: String = "Z"): MockResponse {
         val body = """
             {
               "url": "http://example.com",
@@ -298,7 +300,7 @@ internal class DocumentenApiPluginIT @Autowired constructor(
               "formaat": "string",
               "taal": "str",
               "versie": 0,
-              "beginRegistratie": "2019-08-24T14:15:22Z",
+              "beginRegistratie": "2019-08-24T14:15:22$zone",
               "bestandsnaam": "passport.jpg",
               "inhoud": "string",
               "bestandsomvang": 0,

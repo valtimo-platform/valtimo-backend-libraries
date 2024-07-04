@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
@@ -73,7 +72,8 @@ class DocumentDelegateService(
     }
 
     fun getDocument(execution: DelegateExecution): Document {
-        val documentId = processDocumentService.getDocumentId(CamundaProcessInstanceId(execution.processInstanceId), execution)
+        val documentId =
+            processDocumentService.getDocumentId(CamundaProcessInstanceId(execution.processInstanceId), execution)
         return jsonSchemaDocumentService.getDocumentBy(documentId)
     }
 
@@ -81,7 +81,7 @@ class DocumentDelegateService(
         return findOptionalValueByJsonPointer(jsonPointer, execution!!).orElseThrow()
     }
 
-    fun findValueByJsonPointerOrDefault(jsonPointer: String?, execution: DelegateExecution, defaultValue: Any): Any {
+    fun findValueByJsonPointerOrDefault(jsonPointer: String?, execution: DelegateExecution, defaultValue: Any?): Any? {
         return findOptionalValueByJsonPointer(jsonPointer, execution).orElse(defaultValue)
     }
 
@@ -90,32 +90,37 @@ class DocumentDelegateService(
             unassign(execution)
         }
         logger.debug("Assigning user {} to document {}", userEmail, execution.processBusinessKey)
-        AuthorizationContext.runWithoutAuthorization {
-            val processInstanceId = CamundaProcessInstanceId(execution.processInstanceId)
-            val documentId = processDocumentService.getDocumentId(processInstanceId, execution)
-            val user = userManagementService.findByEmail(userEmail)
-                .orElseThrow { IllegalArgumentException("No user found with email: $userEmail") }
-            documentService.assignUserToDocument(documentId.id, user.id)
-        }
+
+        val processInstanceId = CamundaProcessInstanceId(execution.processInstanceId)
+        val documentId = processDocumentService.getDocumentId(processInstanceId, execution)
+        val user = userManagementService.findByEmail(userEmail)
+            .orElseThrow { IllegalArgumentException("No user found with email: $userEmail") }
+        documentService.assignUserToDocument(documentId.id, user.id)
+    }
+
+    fun setInternalStatus(execution: DelegateExecution, statusKey: String?) {
+        val processInstanceId = CamundaProcessInstanceId(execution.processInstanceId)
+        val documentId = processDocumentService.getDocumentId(processInstanceId, execution)
+
+        documentService.setInternalStatus(documentId, statusKey)
     }
 
     fun unassign(execution: DelegateExecution) {
         logger.debug("Unassigning user from document {}", execution.processBusinessKey)
-        AuthorizationContext.runWithoutAuthorization {
-            val processInstanceId = CamundaProcessInstanceId(execution.processInstanceId)
-            val documentId = processDocumentService.getDocumentId(processInstanceId, execution)
-            documentService.unassignUserFromDocument(documentId.id)
-        }
+
+        val processInstanceId = CamundaProcessInstanceId(execution.processInstanceId)
+        val documentId = processDocumentService.getDocumentId(processInstanceId, execution)
+        documentService.unassignUserFromDocument(documentId.id)
     }
 
     private fun findOptionalValueByJsonPointer(jsonPointer: String?, execution: DelegateExecution): Optional<Any> {
         val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(UUID.fromString(execution.processBusinessKey))
         logger.debug("Retrieving value for key {} from documentId {}", jsonPointer, execution.processBusinessKey)
-        return AuthorizationContext.runWithoutAuthorization {
-            documentService.findBy(jsonSchemaDocumentId)
-        }.flatMap { jsonSchemaDocument ->
-            jsonSchemaDocument.content().getValueBy(JsonPointer.valueOf(jsonPointer))
-        }
+
+        return documentService.findBy(jsonSchemaDocumentId)
+            .flatMap { jsonSchemaDocument ->
+                jsonSchemaDocument.content().getValueBy(JsonPointer.valueOf(jsonPointer))
+            }
             .map(::transform)
     }
 

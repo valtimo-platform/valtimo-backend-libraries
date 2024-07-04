@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.DocumentStatisticService;
+import com.ritense.document.service.InternalCaseStatusService;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.service.UndeployDocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionSequenceGeneratorService;
@@ -53,16 +54,17 @@ import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import com.ritense.valtimo.contract.hardening.service.HardeningService;
+import jakarta.persistence.EntityManager;
+import java.util.Optional;
+import javax.annotation.Nullable;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-
-import jakarta.persistence.EntityManager;
-import java.util.Optional;
 
 @AutoConfiguration
 @EnableJpaRepositories(basePackages = "com.ritense.document.repository")
@@ -75,12 +77,13 @@ public class DocumentAutoConfiguration {
         final JsonSchemaDocumentRepository documentRepository,
         final JsonSchemaDocumentDefinitionService documentDefinitionService,
         final JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
-        final ResourceService resourceService,
+        @Nullable final ResourceService resourceService,
         final UserManagementService userManagementService,
         final AuthorizationService authorizationService,
         final ApplicationEventPublisher applicationEventPublisher,
         final OutboxService outboxService,
-        final ObjectMapper objectMapper
+        final ObjectMapper objectMapper,
+        final InternalCaseStatusService internalCaseStatusService
     ) {
         return new JsonSchemaDocumentService(
             documentRepository,
@@ -91,7 +94,8 @@ public class DocumentAutoConfiguration {
             authorizationService,
             applicationEventPublisher,
             outboxService,
-            objectMapper
+            objectMapper,
+            internalCaseStatusService
         );
     }
 
@@ -197,9 +201,9 @@ public class DocumentAutoConfiguration {
     @ConditionalOnMissingBean(DocumentRelatedFileSubmittedEventListenerImpl.class)
     public DocumentRelatedFileSubmittedEventListenerImpl documentRelatedFileSubmittedEventListener(
         final DocumentService documentService,
-        final ResourceService resourceService
+        final Optional<ResourceService> resourceServiceOpt
     ) {
-        return new DocumentRelatedFileSubmittedEventListenerImpl(documentService, resourceService);
+        return new DocumentRelatedFileSubmittedEventListenerImpl(documentService, resourceServiceOpt);
     }
 
     //API

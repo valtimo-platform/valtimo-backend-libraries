@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,11 @@ import com.ritense.contactmoment.domain.request.CreateContactMomentRequest
 import com.ritense.valtimo.contract.authentication.CurrentUserService
 import com.ritense.valtimo.contract.authentication.ManageableUser
 import com.ritense.valtimo.contract.authentication.UserManagementService
+import kotlinx.coroutines.runBlocking
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import kotlinx.coroutines.runBlocking
 
+@Deprecated("Since 12.0.0. No replacement available.")
 @ConnectorType(name = "ContactMoment")
 class ContactMomentConnector(
     private var contactMomentProperties: ContactMomentProperties,
@@ -41,6 +42,7 @@ class ContactMomentConnector(
     /**
      * Get a list of ContactMomenten
      */
+    @Deprecated("Since 12.0.0")
     fun getContactMomenten(page: Int): List<ContactMoment> {
         return runBlocking { contactMomentClient.getContactMomenten(1).results }
     }
@@ -51,6 +53,7 @@ class ContactMomentConnector(
      * @param text An explanation that substantively describes the customer interaction of the customer.
      * @param kanaal The communication channel through which the CONTACT MOMENT is conducted.
      */
+    @Deprecated("Since 12.0.0")
     fun createContactMoment(kanaal: Kanaal, text: String): ContactMoment {
         val medewerker = userManagementService.currentUser
         val request = CreateContactMomentRequest(
@@ -76,10 +79,12 @@ class ContactMomentConnector(
         }
     }
 
+    @Deprecated("Since 12.0.0")
     override fun getProperties(): ConnectorProperties {
         return contactMomentProperties
     }
 
+    @Deprecated("Since 12.0.0")
     override fun setProperties(connectorProperties: ConnectorProperties) {
         contactMomentProperties = connectorProperties as ContactMomentProperties
         contactMomentClient.contactMomentProperties = contactMomentProperties

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 package com.ritense.document.service.impl;
 
+import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentSnapshotSpecificationHelper.bySearch;
+import static com.ritense.document.service.JsonSchemaDocumentSnapshotActionProvider.VIEW;
+import static com.ritense.document.service.JsonSchemaDocumentSnapshotActionProvider.VIEW_LIST;
+
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
@@ -26,16 +30,12 @@ import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import com.ritense.document.exception.DocumentNotFoundException;
 import com.ritense.document.repository.DocumentSnapshotRepository;
 import com.ritense.document.service.DocumentSnapshotService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 import jakarta.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.util.Optional;
-
-import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentSnapshotSpecificationHelper.bySearch;
-import static com.ritense.document.service.JsonSchemaDocumentSnapshotActionProvider.VIEW;
-import static com.ritense.document.service.JsonSchemaDocumentSnapshotActionProvider.VIEW_LIST;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotService {
 

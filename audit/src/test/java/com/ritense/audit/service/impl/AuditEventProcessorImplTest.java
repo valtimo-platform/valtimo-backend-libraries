@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,20 @@
 
 package com.ritense.audit.service.impl;
 
-import com.ritense.audit.AbstractTestHelper;
-import com.ritense.audit.exception.AuditRuntimeException;
-import com.ritense.audit.repository.AuditRecordRepository;
-import com.ritense.audit.service.AuditEventProcessor;
-import com.ritense.valtimo.contract.audit.AuditEvent;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import com.ritense.audit.AbstractTestHelper;
+import com.ritense.audit.exception.AuditRuntimeException;
+import com.ritense.audit.repository.AuditRecordRepository;
+import com.ritense.audit.service.AuditEventProcessor;
+import com.ritense.valtimo.contract.audit.AuditEvent;
+import java.time.LocalDateTime;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class AuditEventProcessorImplTest extends AbstractTestHelper {
 

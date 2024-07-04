@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.ritense.authorization.AuthorizationService
 import com.ritense.case.deployment.CaseTabDeploymentService
+import com.ritense.case.deployment.CaseTaskListDeploymentService
 import com.ritense.case.domain.BooleanDisplayTypeParameter
 import com.ritense.case.domain.DateFormatDisplayTypeParameter
 import com.ritense.case.domain.EnumDisplayTypeParameter
@@ -27,6 +28,7 @@ import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.repository.CaseTabSpecificationFactory
+import com.ritense.case.repository.TaskListColumnRepository
 import com.ritense.case.security.config.CaseHttpSecurityConfigurer
 import com.ritense.case.service.CaseDefinitionDeploymentService
 import com.ritense.case.service.CaseDefinitionService
@@ -39,11 +41,15 @@ import com.ritense.case.service.CaseListImporter
 import com.ritense.case.service.CaseTabExporter
 import com.ritense.case.service.CaseTabImporter
 import com.ritense.case.service.CaseTabService
+import com.ritense.case.service.CaseTaskListExporter
+import com.ritense.case.service.CaseTaskListImporter
 import com.ritense.case.service.ObjectMapperConfigurer
+import com.ritense.case.service.TaskColumnService
 import com.ritense.case.web.rest.CaseDefinitionResource
 import com.ritense.case.web.rest.CaseInstanceResource
 import com.ritense.case.web.rest.CaseTabManagementResource
 import com.ritense.case.web.rest.CaseTabResource
+import com.ritense.case.web.rest.TaskListResource
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentSearchService
 import com.ritense.exporter.ExportService
@@ -91,6 +97,14 @@ class CaseAutoConfiguration {
         service: CaseInstanceService
     ): CaseInstanceResource {
         return CaseInstanceResource(service)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(TaskListResource::class) // because integration tests fail to initialise in portaaltaak
+    fun taskListResource(
+        service: TaskColumnService
+    ): TaskListResource {
+        return TaskListResource(service)
     }
 
     @ConditionalOnMissingBean(CaseTabResource::class)
@@ -148,6 +162,21 @@ class CaseAutoConfiguration {
             caseDefinitionListColumnRepository,
             documentSearchService,
             valueResolverService,
+        )
+    }
+
+    @Bean
+    fun taskColumnService(
+        repository: TaskListColumnRepository,
+        documentDefinitionService: DocumentDefinitionService,
+        valueResolverService: ValueResolverService,
+        authorizationService: AuthorizationService,
+    ): TaskColumnService {
+        return TaskColumnService(
+            repository,
+            documentDefinitionService,
+            valueResolverService,
+            authorizationService
         )
     }
 
@@ -239,6 +268,23 @@ class CaseAutoConfiguration {
     }
 
     @Bean
+    fun TaskListDeployer(
+        objectMapper: ObjectMapper,
+        taskListColumnRepository: TaskListColumnRepository,
+        changelogService: ChangelogService,
+        taskColumnService: TaskColumnService,
+        @Value("\${valtimo.changelog.case-task-list.clear-tables:false}") clearTables: Boolean
+    ): CaseTaskListDeploymentService {
+        return CaseTaskListDeploymentService(
+            objectMapper,
+            taskListColumnRepository,
+            changelogService,
+            taskColumnService,
+            clearTables
+        )
+    }
+
+    @Bean
     @ConditionalOnMissingBean(CaseTabSpecificationFactory::class)
     fun caseTabSpecificationFactory(
         @Lazy caseTabService: CaseTabService,
@@ -282,6 +328,23 @@ class CaseAutoConfiguration {
         caseTabDeploymentService: CaseTabDeploymentService,
         changelogDeployer: ChangelogDeployer
     ) = CaseTabImporter(caseTabDeploymentService, changelogDeployer)
+
+    @Bean
+    @ConditionalOnMissingBean(CaseTaskListExporter::class)
+    fun caseTaskListExporter(
+        objectMapper: ObjectMapper,
+        service: TaskColumnService,
+    ) = CaseTaskListExporter(
+        objectMapper,
+        service
+    )
+
+    @Bean
+    @ConditionalOnMissingBean(CaseTaskListImporter::class)
+    fun caseTaskListImporter(
+        caseTaskListDeploymentService: CaseTaskListDeploymentService,
+        changelogDeployer: ChangelogDeployer
+    ) = CaseTaskListImporter(caseTaskListDeploymentService, changelogDeployer)
 
     @Bean
     @ConditionalOnMissingBean(CaseDefinitionSettingsExporter::class)
