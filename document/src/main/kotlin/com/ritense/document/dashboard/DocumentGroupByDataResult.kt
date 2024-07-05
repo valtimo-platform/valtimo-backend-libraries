@@ -16,12 +16,16 @@
 
 package com.ritense.document.dashboard
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.ritense.valtimo.contract.repository.ExpressionOperator
+import com.ritense.valtimo.contract.dashboard.feature.HasLabel
+import com.ritense.valtimo.contract.dashboard.feature.HasNumberValue
+import com.ritense.valtimo.contract.dashboard.feature.HasNumberValues
 
-data class QueryCondition<T : Comparable<T>>(
-    val queryPath: String,
-    val queryOperator: ExpressionOperator,
-    @JsonDeserialize(using = ComparableDeserializer::class)
-    val queryValue: T
-)
+data class DocumentGroupByItem(
+    override val label: String,
+    override val value: Long
+) : HasNumberValue, HasLabel {
+}
+
+class DocumentGroupByDataResult(
+    override val values: List<DocumentGroupByItem>
+) : HasNumberValues<DocumentGroupByItem>

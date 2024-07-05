@@ -16,19 +16,25 @@
 
 package com.ritense.document.dashboard
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository
 import com.ritense.document.repository.impl.specification.JsonSchemaDocumentSpecificationHelper.Companion.byDocumentDefinitionIdName
 import com.ritense.valtimo.contract.dashboard.WidgetDataSource
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import jakarta.persistence.EntityManager
 import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.Expression
 import jakarta.persistence.criteria.Path
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 
+
 class DocumentWidgetDataSource(
     private val documentRepository: JsonSchemaDocumentRepository,
-    private val queryDialectHelper: QueryDialectHelper
+    private val queryDialectHelper: QueryDialectHelper,
+    private val objectMapper: ObjectMapper,
+    private val entityManager: EntityManager
 ) {
 
     @WidgetDataSource("case-count", "Case count")
@@ -61,10 +67,59 @@ class DocumentWidgetDataSource(
 
             val count = documentRepository.count(spec)
 
+
             DocumentCountsItem(it.label, count)
         }
 
         return DocumentCountsDataResult(items)
+    }
+
+    @WidgetDataSource("case-group-by", "Case group by")
+    fun getCaseGroupBy(caseGroupByDataSourceProperties: DocumentGroupByDataSourceProperties): DocumentGroupByDataResult {
+        val criteriaBuilder: CriteriaBuilder = entityManager.getCriteriaBuilder()
+        val query = criteriaBuilder.createQuery(DocumentGroupByItem::class.java)
+        val root: Root<JsonSchemaDocument> = query.from(JsonSchemaDocument::class.java)
+        val expression = getPathExpression(caseGroupByDataSourceProperties.path, root, criteriaBuilder)
+        val conditions = caseGroupByDataSourceProperties.queryConditions?.map {
+            createConditionPredicate(root, it, criteriaBuilder)
+        }?.toTypedArray() ?: arrayOf()
+
+        query
+            .where(*conditions)
+            .multiselect(
+                expression,
+                criteriaBuilder.count(root),
+            )
+            .groupBy(expression)
+
+        val results = entityManager.createQuery(query).resultList
+
+        return DocumentGroupByDataResult(values = results)
+    }
+
+    private fun getPathExpression(path: String, root: Root<JsonSchemaDocument>, criteriaBuilder: CriteriaBuilder): Expression<out Any> {
+        val pathPrefix = "${path.substringBefore(":", "doc")}:"
+        val valueClass = String::class.java
+        val expression = when (pathPrefix) {
+            CASE_PREFIX -> {
+                var expr = root as Path<*>
+                path.substringAfter(CASE_PREFIX).split('.').forEach {
+                    expr = expr.get<Any>(it)
+                }
+                expr
+            }
+
+            else -> {
+                queryDialectHelper.getJsonValueExpression(
+                    criteriaBuilder,
+                    root.get<Any>("content").get<Any>("content"),
+                    "$." + path.substringAfter(DOC_PREFIX),
+                    valueClass
+                )
+            }
+        }
+
+        return expression;
     }
 
     private fun <T : Comparable<T>> createConditionPredicate(
