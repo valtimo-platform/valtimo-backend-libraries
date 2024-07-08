@@ -25,7 +25,7 @@ import org.hibernate.annotations.Type
 
 @Entity
 @DiscriminatorValue("formio")
-class FormIoCaseWidget(
+open class FormIoCaseWidget(
     key: String, title: String, order: Int, width: Int, highContrast: Boolean,
 
     @Type(value = JsonType::class)

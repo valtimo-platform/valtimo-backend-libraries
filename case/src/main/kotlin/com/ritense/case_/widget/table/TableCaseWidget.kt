@@ -25,7 +25,7 @@ import org.hibernate.annotations.Type
 
 @Entity
 @DiscriminatorValue("table")
-class TableCaseWidget(
+open class TableCaseWidget(
     key: String, title: String, order: Int, width: Int, highContrast: Boolean,
 
     @Type(value = JsonType::class)
