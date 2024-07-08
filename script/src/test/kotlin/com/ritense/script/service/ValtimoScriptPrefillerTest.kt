@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.whenever
 
-internal class ScriptServiceIntTest {
+internal class ValtimoScriptPrefillerTest {
 
     lateinit var scriptService: ScriptService
     lateinit var valtimoScriptPrefiller: ValtimoScriptPrefiller
@@ -50,7 +50,28 @@ internal class ScriptServiceIntTest {
             """
             var1 = 1;
             var2 = 2;
-            result = var1 + var2;
+            result =var1 + var2;
+        """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `should replace comment with script`() {
+        whenever(scriptService.getScript("my-script")).thenReturn(Script("my-script", "var1 + var2"))
+
+        val result = valtimoScriptPrefiller.prefillScript(
+            """
+            var1 = 1;
+            var2 = 2;
+            result = // {{my-script}};
+        """.trimIndent()
+        )
+
+        assertThat(result).isEqualTo(
+            """
+            var1 = 1;
+            var2 = 2;
+            result =var1 + var2;
         """.trimIndent()
         )
     }

@@ -26,9 +26,9 @@ open class ValtimoScriptPrefiller(
     @Transactional
     override fun prefillScript(scriptWithPlaceholders: String): String {
         var result = scriptWithPlaceholders
-        "\\{\\{([a-zA-Z0-9-_]+)}}".toRegex().findAll(scriptWithPlaceholders)
-            .filter { it.groupValues.size == 2 }
-            .map { it.groupValues[0] to it.groupValues[1] }
+        "\\s*(\\/\\/)?\\s*\\{\\{([a-zA-Z0-9-_]+)}}".toRegex().findAll(scriptWithPlaceholders)
+            .filter { it.groupValues.size == 3 }
+            .map { it.groupValues[0] to it.groupValues[2] }
             .distinct()
             .forEach { (placeholder, key) ->
                 val script = scriptService.getScript(key)
