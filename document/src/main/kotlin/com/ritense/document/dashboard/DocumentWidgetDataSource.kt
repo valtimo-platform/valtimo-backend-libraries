@@ -79,7 +79,7 @@ class DocumentWidgetDataSource(
         val criteriaBuilder: CriteriaBuilder = entityManager.getCriteriaBuilder()
         val query = criteriaBuilder.createQuery(DocumentGroupByItem::class.java)
         val root: Root<JsonSchemaDocument> = query.from(JsonSchemaDocument::class.java)
-        val expression = getPathExpression(caseGroupByDataSourceProperties.path, root, criteriaBuilder)
+        val expression = getPathExpression(String::class.java, caseGroupByDataSourceProperties.path, root, criteriaBuilder)
         val conditions = caseGroupByDataSourceProperties.queryConditions?.map {
             createConditionPredicate(root, it, criteriaBuilder)
         }?.toTypedArray() ?: arrayOf()
@@ -112,16 +112,16 @@ class DocumentWidgetDataSource(
         return DocumentGroupByDataResult(values = result)
     }
 
-    private fun getPathExpression(path: String, root: Root<JsonSchemaDocument>, criteriaBuilder: CriteriaBuilder): Expression<out Any> {
+    private fun <T> getPathExpression(valueClass: Class<T>, path: String, root: Root<JsonSchemaDocument>, criteriaBuilder: CriteriaBuilder): Expression<T> {
+        // Prefix defaults to doc: when no prefix is given
         val pathPrefix = "${path.substringBefore(":", "doc")}:"
-        val valueClass = String::class.java
         val expression = when (pathPrefix) {
             CASE_PREFIX -> {
                 var expr = root as Path<*>
                 path.substringAfter(CASE_PREFIX).split('.').forEach {
                     expr = expr.get<Any>(it)
                 }
-                expr
+                expr.`as`(valueClass)
             }
 
             else -> {
@@ -143,26 +143,7 @@ class DocumentWidgetDataSource(
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
         val valueClass = it.queryValue::class.java as Class<T>
-        //Prefix defaults to doc: when no prefix is given
-        val pathPrefix = "${it.queryPath.substringBefore(":", "doc")}:"
-        val expression = when (pathPrefix) {
-            CASE_PREFIX -> {
-                var expr = root as Path<*>
-                it.queryPath.substringAfter(CASE_PREFIX).split('.').forEach {
-                    expr = expr.get<Any>(it)
-                }
-                expr.`as`(valueClass)
-            }
-
-            else -> {
-                queryDialectHelper.getJsonValueExpression(
-                    criteriaBuilder,
-                    root.get<Any>("content").get<Any>("content"),
-                    "$." + it.queryPath.substringAfter(DOC_PREFIX),
-                    valueClass
-                )
-            }
-        }
+        val expression = getPathExpression(valueClass, it.queryPath, root, criteriaBuilder)
 
         val queryValue = if (it.queryValue == "\${null}") {
             null
