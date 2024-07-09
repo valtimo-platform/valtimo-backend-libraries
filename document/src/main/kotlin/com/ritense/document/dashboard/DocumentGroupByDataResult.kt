@@ -21,7 +21,7 @@ import com.ritense.valtimo.contract.dashboard.feature.HasNumberValue
 import com.ritense.valtimo.contract.dashboard.feature.HasNumberValues
 
 data class DocumentGroupByItem(
-    override val label: String,
+    override var label: String,
     override val value: Long
 ) : HasNumberValue, HasLabel {
 }

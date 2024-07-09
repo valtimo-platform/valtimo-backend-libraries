@@ -92,9 +92,24 @@ class DocumentWidgetDataSource(
             )
             .groupBy(expression)
 
-        val results = entityManager.createQuery(query).resultList
+        val resultList = entityManager.createQuery(query).resultList
+        val result: List<DocumentGroupByItem>;
 
-        return DocumentGroupByDataResult(values = results)
+        if (caseGroupByDataSourceProperties.enum.isNullOrEmpty()) {
+            result = resultList
+        } else {
+            result = resultList.map {
+                val enumValue: String? = caseGroupByDataSourceProperties.enum[it.label]
+                if (enumValue.isNullOrEmpty()) {
+                    it
+                } else {
+                    it.label = enumValue
+                    it
+                }
+            }
+        }
+
+        return DocumentGroupByDataResult(values = result)
     }
 
     private fun getPathExpression(path: String, root: Root<JsonSchemaDocument>, criteriaBuilder: CriteriaBuilder): Expression<out Any> {

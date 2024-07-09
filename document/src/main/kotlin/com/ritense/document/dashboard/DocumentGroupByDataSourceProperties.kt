@@ -19,5 +19,6 @@ package com.ritense.document.dashboard
 data class DocumentGroupByDataSourceProperties(
     val documentDefinition: String,
     val path: String,
-    val queryConditions: List<QueryCondition<*>>?
+    val queryConditions: List<QueryCondition<*>>?,
+    val enum: Map<String, String>?
 )
