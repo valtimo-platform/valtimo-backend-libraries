@@ -28,7 +28,14 @@ import jakarta.persistence.criteria.Expression
 import jakarta.persistence.criteria.Path
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
+import org.springframework.expression.spel.standard.SpelExpressionParser
+import org.springframework.expression.spel.support.StandardEvaluationContext
+import java.time.LocalDateTime
 
+
+class SpelEvaluationContext() {
+    public val currentTime = LocalDateTime.now()
+}
 
 class DocumentWidgetDataSource(
     private val documentRepository: JsonSchemaDocumentRepository,
@@ -137,16 +144,49 @@ class DocumentWidgetDataSource(
         return expression;
     }
 
-    private fun <T : Comparable<T>> createConditionPredicate(
+    private fun <T> queryValueIsSpelExpression(target: T): Boolean {
+        if (target !is String) {
+            return false
+        }
+
+        val stringTarget = target as String
+
+        return !stringTarget.isNullOrEmpty() && stringTarget.startsWith("\${") && stringTarget.endsWith('}')
+    }
+
+
+    private inline fun <reified T> resolveSpelExpression(spelExpression: T): T {
+        if (spelExpression !is String) {
+            return spelExpression
+        }
+
+
+        val parser = SpelExpressionParser()
+        val expressionWithoutPrefixSuffix = (spelExpression as String).substringAfter("\${").substringBefore("}")
+
+        val spelEvaluationContext = SpelEvaluationContext()
+        val context = StandardEvaluationContext()
+        context.setRootObject(spelEvaluationContext)
+
+        val exp = parser.parseExpression(expressionWithoutPrefixSuffix)
+        val value = exp.getValue(context, T::class.java)
+
+        return value ?: spelExpression
+    }
+
+    private inline fun <reified T : Comparable<T>> createConditionPredicate(
         root: Root<JsonSchemaDocument>,
         it: QueryCondition<T>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
+        val isSpelExpression = queryValueIsSpelExpression(it.queryValue);
         val valueClass = it.queryValue::class.java as Class<T>
         val expression = getPathExpression(valueClass, it.queryPath, root, criteriaBuilder)
 
         val queryValue = if (it.queryValue == "\${null}") {
             null
+        } else if (isSpelExpression) {
+            resolveSpelExpression(it.queryValue)
         } else {
             it.queryValue
         }
