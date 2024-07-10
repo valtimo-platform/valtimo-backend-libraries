@@ -31,10 +31,11 @@ import jakarta.persistence.criteria.Root
 import org.springframework.expression.spel.standard.SpelExpressionParser
 import org.springframework.expression.spel.support.StandardEvaluationContext
 import java.time.LocalDateTime
+import org.springframework.expression.Expression as SpelExpression
 
 
 class SpelEvaluationContext() {
-    public val currentTime = LocalDateTime.now()
+    public val localDateTimeNow = LocalDateTime.now()
 }
 
 class DocumentWidgetDataSource(
@@ -154,42 +155,79 @@ class DocumentWidgetDataSource(
         return !stringTarget.isNullOrEmpty() && stringTarget.startsWith("\${") && stringTarget.endsWith('}')
     }
 
+    private fun spelExpressionContainsTime(spelExpression: String): Boolean {
+        return spelExpression.contains("localDateTimeNow")
+    }
 
-    private inline fun <reified T> resolveSpelExpression(spelExpression: T): T {
-        if (spelExpression !is String) {
-            return spelExpression
-        }
+    private inline fun getPredicateFromDateTimeSpelExpression(
+        root: Root<JsonSchemaDocument>,
+        it: QueryCondition<*>,
+        criteriaBuilder: CriteriaBuilder,
+        context: StandardEvaluationContext,
+        spelExpression: SpelExpression
+    ): Predicate {
+        val valueClass = LocalDateTime::class.java
+        val value = spelExpression.getValue(context, valueClass)
+
+        val expression = getPathExpression(valueClass, it.queryPath, root, criteriaBuilder)
+
+        return it.queryOperator.toPredicate(
+            criteriaBuilder,
+            expression,
+            value
+        )
+    }
 
 
+    private inline fun getPredicateFromSpelExpression(
+        root: Root<JsonSchemaDocument>,
+        it: QueryCondition<*>,
+        criteriaBuilder: CriteriaBuilder
+    ): Predicate {
         val parser = SpelExpressionParser()
-        val expressionWithoutPrefixSuffix = (spelExpression as String).substringAfter("\${").substringBefore("}")
+        val expressionWithoutPrefixSuffix = (it.queryValue as String).substringAfter("\${").substringBefore("}")
 
         val spelEvaluationContext = SpelEvaluationContext()
         val context = StandardEvaluationContext()
         context.setRootObject(spelEvaluationContext)
 
-        val exp = parser.parseExpression(expressionWithoutPrefixSuffix)
-        val value = exp.getValue(context, T::class.java)
+        val spelExpression: SpelExpression = parser.parseExpression(expressionWithoutPrefixSuffix)
 
-        return value ?: spelExpression
+        if (spelExpressionContainsTime(it.queryValue)) {
+            return getPredicateFromDateTimeSpelExpression(root, it, criteriaBuilder, context, spelExpression)
+        }
+
+        val valueClass = String::class.java
+        val value = spelExpression.getValue(context, valueClass)
+
+        val expression = getPathExpression(valueClass, it.queryPath, root, criteriaBuilder)
+
+        return it.queryOperator.toPredicate(
+            criteriaBuilder,
+            expression,
+            value
+        )
     }
 
-    private inline fun <reified T : Comparable<T>> createConditionPredicate(
+    private inline fun <T : Comparable<T>> createConditionPredicate(
         root: Root<JsonSchemaDocument>,
         it: QueryCondition<T>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
         val isSpelExpression = queryValueIsSpelExpression(it.queryValue);
-        val valueClass = it.queryValue::class.java as Class<T>
-        val expression = getPathExpression(valueClass, it.queryPath, root, criteriaBuilder)
+
+        if (isSpelExpression) {
+            return getPredicateFromSpelExpression(root, it, criteriaBuilder)
+        }
 
         val queryValue = if (it.queryValue == "\${null}") {
             null
-        } else if (isSpelExpression) {
-            resolveSpelExpression(it.queryValue)
         } else {
             it.queryValue
         }
+
+        val valueClass = it.queryValue::class.java as Class<T>
+        val expression = getPathExpression(valueClass, it.queryPath, root, criteriaBuilder)
 
         return it.queryOperator.toPredicate(
             criteriaBuilder,
