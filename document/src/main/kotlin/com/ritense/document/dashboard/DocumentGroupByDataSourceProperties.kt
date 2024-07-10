@@ -16,10 +16,9 @@
 
 package com.ritense.document.dashboard
 
-import com.ritense.valtimo.contract.dashboard.feature.HasNumberValue
-import com.ritense.valtimo.contract.dashboard.feature.HasTotal
-
-class DocumentCountDataResult(
-    override val value: Long,
-    override val total: Long,
-) : HasNumberValue, HasTotal
+data class DocumentGroupByDataSourceProperties(
+    val documentDefinition: String,
+    val path: String,
+    val queryConditions: List<QueryCondition<*>>?,
+    val enum: Map<String, String>?
+)
