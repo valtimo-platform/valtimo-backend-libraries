@@ -234,6 +234,57 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
         assertThat(result.values[2].value).isEqualTo(5)
     }
 
+    @Test
+    fun `should support by local date time in criteria`() {
+        val definition = definition()
+
+        val street = "Sesame Street"
+
+        createDocument(definition, street)
+
+        val documentDefinitionName = definition.id().name()
+
+        val properties = DocumentCountDataSourceProperties(
+            documentDefinitionName,
+            listOf(
+                QueryCondition(
+                    "case:createdOn",
+                    ExpressionOperator.GREATER_THAN,
+                    "\${localDateTimeNow}"
+                ),
+                QueryCondition(
+                    "doc:street",
+                    ExpressionOperator.EQUAL_TO,
+                    street
+                ),
+            )
+        )
+
+        val properties2 = DocumentCountDataSourceProperties(
+            documentDefinitionName,
+            listOf(
+                QueryCondition(
+                    "case:createdOn",
+                    ExpressionOperator.GREATER_THAN,
+                    "\${localDateTimeNow.minusDays(1)}"
+                ),
+                QueryCondition(
+                    "doc:street",
+                    ExpressionOperator.EQUAL_TO,
+                    street
+                ),
+            )
+        )
+
+        val result1 = documentWidgetDataSource.getCaseCount(properties)
+        val result2 = documentWidgetDataSource.getCaseCount(properties2)
+
+        assertThat(result1.value).isEqualTo(0)
+        assertThat(result1.total).isEqualTo(1)
+        assertThat(result2.value).isEqualTo(1)
+        assertThat(result2.total).isEqualTo(1)
+    }
+
     private fun createDocument(documentDefinition: JsonSchemaDocumentDefinition, street: String = "Funenpark"): CreateDocumentResult? {
         val content = JsonDocumentContent("""{"street": "$street", "housenumber": 1}""")
         return runWithoutAuthorization {
