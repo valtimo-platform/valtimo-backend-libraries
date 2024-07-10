@@ -236,6 +236,8 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
 
     @Test
     fun `should support by local date time in criteria`() {
+        documentRepository.deleteAll()
+
         val definition = definition()
 
         val street = "Sesame Street"
