@@ -140,59 +140,36 @@ class DocumentWidgetDataSource(
         return expression;
     }
 
-    private fun <T> queryValueIsSpelExpression(target: T): Boolean {
+    private fun <T> queryValueIsDateTimeSpelExpression(target: T): Boolean {
         if (target !is String) {
             return false
         }
 
         val stringTarget = target as String
 
-        return !stringTarget.isNullOrEmpty() && stringTarget.startsWith("\${") && stringTarget.endsWith('}')
+        return !stringTarget.isNullOrEmpty() &&
+            stringTarget.startsWith("\${") &&
+            stringTarget.endsWith('}') &&
+            stringTarget.contains("localDateTimeNow")
     }
 
-    private fun spelExpressionContainsTime(spelExpression: String): Boolean {
-        return spelExpression.contains("localDateTimeNow")
-    }
 
     private inline fun getPredicateFromDateTimeSpelExpression(
         root: Root<JsonSchemaDocument>,
-        it: QueryCondition<*>,
-        criteriaBuilder: CriteriaBuilder,
-        context: StandardEvaluationContext,
-        spelExpression: SpelExpression
-    ): Predicate {
-        val valueClass = LocalDateTime::class.java
-        val value = spelExpression.getValue(context, valueClass)
-
-        val expression = getPathExpression(valueClass, it.queryPath, root, criteriaBuilder)
-
-        return it.queryOperator.toPredicate(
-            criteriaBuilder,
-            expression,
-            value
-        )
-    }
-
-
-    private inline fun getPredicateFromSpelExpression(
-        root: Root<JsonSchemaDocument>,
-        it: QueryCondition<*>,
+        it: QueryCondition<String>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
         val parser = SpelExpressionParser()
-        val expressionWithoutPrefixSuffix = (it.queryValue as String).substringAfter("\${").substringBefore("}")
+        val expressionWithoutPrefixSuffix = it.queryValue.substringAfter("\${").substringBefore("}")
 
         val spelEvaluationContext = DocumentWidgetDataSourceSpelEvaluationContext()
         val context = StandardEvaluationContext()
+
         context.setRootObject(spelEvaluationContext)
 
         val spelExpression: SpelExpression = parser.parseExpression(expressionWithoutPrefixSuffix)
 
-        if (spelExpressionContainsTime(it.queryValue)) {
-            return getPredicateFromDateTimeSpelExpression(root, it, criteriaBuilder, context, spelExpression)
-        }
-
-        val valueClass = String::class.java
+        val valueClass = LocalDateTime::class.java
         val value = spelExpression.getValue(context, valueClass)
 
         val expression = getPathExpression(valueClass, it.queryPath, root, criteriaBuilder)
@@ -209,10 +186,8 @@ class DocumentWidgetDataSource(
         it: QueryCondition<T>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
-        val isSpelExpression = queryValueIsSpelExpression(it.queryValue);
-
-        if (isSpelExpression) {
-            return getPredicateFromSpelExpression(root, it, criteriaBuilder)
+        if (queryValueIsDateTimeSpelExpression(it.queryValue)) {
+            return getPredicateFromDateTimeSpelExpression(root, it as QueryCondition<String>, criteriaBuilder)
         }
 
         val queryValue = if (it.queryValue == "\${null}") {

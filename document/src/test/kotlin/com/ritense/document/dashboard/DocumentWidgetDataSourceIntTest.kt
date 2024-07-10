@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class DocumentWidgetDataSourceIntTest @Autowired constructor(
     private val documentWidgetDataSource: DocumentWidgetDataSource
-): BaseIntegrationTest() {
+) : BaseIntegrationTest() {
 
     @Test
     fun `should count by documentDefinitionName`() {
@@ -109,6 +109,55 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
         )
         val result = documentWidgetDataSource.getCaseCount(properties)
         assertThat(result.value).isEqualTo(4)
+    }
+
+    @Test
+    fun `should group by documentDefinitionName, use criteria and resolve enum`() {
+        documentRepository.deleteAll()
+        val definition = definition()
+
+        val street1 = "Sesame Street"
+
+        repeat(2) {
+            createDocument(definition, street1)
+        }
+
+        val street2 = "Main Street"
+
+        repeat(3) {
+            createDocument(definition, street2)
+        }
+
+        val street3 = "3rd Street"
+
+        repeat(5) {
+            createDocument(definition, street3)
+        }
+
+        val documentDefinitionName = definition.id().name()
+
+        val openSesame = "Open sesame"
+
+        val properties = DocumentGroupByDataSourceProperties(
+            documentDefinitionName,
+            path = "doc:street",
+            listOf(
+                QueryCondition(
+                    "doc:street",
+                    ExpressionOperator.NOT_EQUAL_TO,
+                    street3
+                )
+            ),
+            mapOf(street1 to openSesame)
+        )
+
+        val result = documentWidgetDataSource.getCaseGroupBy(properties)
+
+        assertThat(result.values.size).isEqualTo(2)
+        assertThat(result.values[1].value).isEqualTo(2)
+        assertThat(result.values[1].label).isEqualTo(openSesame)
+        assertThat(result.values[0].value).isEqualTo(3)
+        assertThat(result.values[0].label).isEqualTo(street2)
     }
 
     private fun createDocument(documentDefinition: JsonSchemaDocumentDefinition, street: String = "Funenpark"): CreateDocumentResult? {
