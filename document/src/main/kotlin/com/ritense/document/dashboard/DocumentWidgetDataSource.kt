@@ -33,11 +33,6 @@ import org.springframework.expression.spel.support.StandardEvaluationContext
 import java.time.LocalDateTime
 import org.springframework.expression.Expression as SpelExpression
 
-
-class SpelEvaluationContext() {
-    public val localDateTimeNow = LocalDateTime.now()
-}
-
 class DocumentWidgetDataSource(
     private val documentRepository: JsonSchemaDocumentRepository,
     private val queryDialectHelper: QueryDialectHelper,
@@ -187,7 +182,7 @@ class DocumentWidgetDataSource(
         val parser = SpelExpressionParser()
         val expressionWithoutPrefixSuffix = (it.queryValue as String).substringAfter("\${").substringBefore("}")
 
-        val spelEvaluationContext = SpelEvaluationContext()
+        val spelEvaluationContext = DocumentWidgetDataSourceSpelEvaluationContext()
         val context = StandardEvaluationContext()
         context.setRootObject(spelEvaluationContext)
 
