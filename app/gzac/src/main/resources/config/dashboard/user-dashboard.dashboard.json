@@ -1,0 +1,80 @@
+{
+    "changesetId": "user-dashboard-v7",
+    "dashboards": [
+        {
+            "key": "user-dashboard",
+            "title": "My dashboard",
+            "description": "Dashboard for ROLE_USER",
+            "order": 1,
+            "widgetConfigurations": [
+                {
+                    "key": "gauge_chart",
+                    "title": "Gauge chart",
+                    "dataSourceKey": "case-count",
+                    "dataSourceProperties": {
+                        "documentDefinition": "bezwaar",
+                        "queryConditions": [
+                            {
+                                "queryPath": "case:assigneeId",
+                                "queryOperator": "==",
+                                "queryValue": "${null}"
+                            }
+                        ]
+                    },
+                    "displayType": "gauge",
+                    "displayTypeProperties": {
+                        "title": "Zaken zonder behandelaar",
+                        "subtitle": "Bezwaar",
+                        "label": "zaken"
+                    }
+                },
+                {
+                    "key": "donut_chart",
+                    "title": "Donut chart",
+                    "dataSourceKey": "case-counts",
+                    "dataSourceProperties": {
+                        "documentDefinition": "bezwaar",
+                        "queryItems": [
+                            {
+                                "label": "Aanvraag ontvangen",
+                                "queryConditions": [
+                                    {
+                                        "queryPath": "case:internalStatus.id.key",
+                                        "queryOperator": "==",
+                                        "queryValue": "aanvraag-ontvangen"
+                                    }
+                                ]
+                            },
+                            {
+                                "label": "In behandeling",
+                                "queryConditions": [
+                                    {
+                                        "queryPath": "case:internalStatus.id.key",
+                                        "queryOperator": "==",
+                                        "queryValue": "in-behandeling"
+                                    }
+                                ]
+                            },
+                            {
+                                "label": "Informatieverzoek uitgezet",
+                                "queryConditions": [
+                                    {
+                                        "queryPath": "case:internalStatus.id.key",
+                                        "queryOperator": "==",
+                                        "queryValue": "informatieverzoek-uitgezet"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "displayType": "donut",
+                    "displayTypeProperties": {
+                        "title": "Zaakstatussen",
+                        "subtitle": "Bezwaar",
+                        "label": "Lopende zaken"
+                    }
+                }
+            ]
+        }
+    ]
+}
