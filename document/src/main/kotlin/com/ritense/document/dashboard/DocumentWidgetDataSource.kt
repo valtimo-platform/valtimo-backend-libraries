@@ -83,12 +83,14 @@ class DocumentWidgetDataSource(
         val query = criteriaBuilder.createQuery(DocumentGroupByItem::class.java)
         val root: Root<JsonSchemaDocument> = query.from(JsonSchemaDocument::class.java)
         val expression = getPathExpression(String::class.java, caseGroupByDataSourceProperties.path, root, criteriaBuilder)
+        val docPredicate = criteriaBuilder.equal(root.get<Any>("documentDefinitionId").get<String>("name"), caseGroupByDataSourceProperties.documentDefinition)
         val conditions = caseGroupByDataSourceProperties.queryConditions?.map {
             createConditionPredicate(root, it, criteriaBuilder)
         }?.toTypedArray() ?: arrayOf()
+        val combinedConditions = arrayOf(docPredicate, *conditions)
 
         query
-            .where(*conditions)
+            .where(*combinedConditions)
             .multiselect(
                 expression,
                 criteriaBuilder.count(root),
