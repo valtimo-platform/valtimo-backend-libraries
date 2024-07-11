@@ -61,7 +61,7 @@ class IntermediateSubmissionResourceIntTest : BaseIntegrationTest() {
         whenever(userManagementService.currentUserId).thenReturn("currentUserId")
         val manageableUser: ManageableUser = mock()
         whenever(manageableUser.fullName).thenReturn("FullName")
-        whenever(userManagementService.findById(any())).thenReturn(manageableUser)
+        whenever(userManagementService.findByUserIdentifier(any())).thenReturn(manageableUser)
     }
 
     @Test

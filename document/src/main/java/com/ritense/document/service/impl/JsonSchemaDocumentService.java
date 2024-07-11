@@ -518,7 +518,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         }
         var assignee = userManagementService.getCurrentUser();
 
-        document.setAssignee(assignee.getId(), assignee.getFullName());
+        document.setAssignee(assignee.getUserIdentifier(), assignee.getFullName());
         documentRepository.save(document);
 
         // Publish an event to update the audit log
@@ -540,12 +540,12 @@ public class JsonSchemaDocumentService implements DocumentService {
             )
         );
 
-        var assignee = runWithoutAuthorization(() -> userManagementService.findById(assigneeId));
+        var assignee = runWithoutAuthorization(() -> userManagementService.findByUserIdentifier(assigneeId));
         if (assignee == null) {
             logger.debug("Cannot set assignee for the invalid user id {}", assigneeId);
             throw new IllegalArgumentException("Cannot set assignee for the invalid user id " + assigneeId);
         }
-        if (assigneeId.equals(userManagementService.getCurrentUser().getId())) {
+        if (assigneeId.equals(userManagementService.getCurrentUser().getUserIdentifier())) {
             try {
                 authorizationService.requirePermission(
                     new EntityAuthorizationRequest<>(
@@ -746,7 +746,8 @@ public class JsonSchemaDocumentService implements DocumentService {
             logger.debug("Cannot set assignee for the invalid user id {}", assigneeId);
             throw new IllegalArgumentException("Cannot set assignee for the invalid user id " + assigneeId);
         }
-        if (assigneeId.equals(userManagementService.getCurrentUser().getId())) {
+        var assigneeIdentifier = assignee.getUserIdentifier();
+        if (assigneeIdentifier.equals(userManagementService.getCurrentUser().getUserIdentifier())) {
             documents.forEach(document -> {
                 try {
                     authorizationService.requirePermission(
@@ -773,7 +774,7 @@ public class JsonSchemaDocumentService implements DocumentService {
                     );
                 }
 
-                document.setAssignee(assigneeId, assignee.getFullName());
+                document.setAssignee(assigneeIdentifier, assignee.getFullName());
             });
         } else {
             authorizationService.requirePermission(
@@ -787,12 +788,12 @@ public class JsonSchemaDocumentService implements DocumentService {
                 new DelegateUserEntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
                     ASSIGNABLE,
-                    assigneeId,
+                    assigneeIdentifier,
                     documents
                 )
             );
 
-            documents.forEach(document -> document.setAssignee(assigneeId, assignee.getFullName()));
+            documents.forEach(document -> document.setAssignee(assigneeIdentifier, assignee.getFullName()));
         }
         documentRepository.saveAll(documents);
 

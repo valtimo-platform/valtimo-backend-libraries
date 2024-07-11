@@ -21,6 +21,7 @@ import static java.util.Comparator.comparing;
 import static java.util.Comparator.naturalOrder;
 import static java.util.Comparator.nullsLast;
 
+import com.ritense.valtimo.contract.OauthHolder;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
@@ -132,6 +133,21 @@ public class KeycloakUserManagementService implements UserManagementService {
     @Override
     public Optional<NamedUser> findNamedUserByEmail(String email) {
         return findUserRepresentationByEmail(email).map(this::toNamedUser);
+    }
+
+    @Override
+    public ValtimoUser findByUserIdentifier(String userIdentifier) {
+        UserRepresentation user = null;
+        try (Keycloak keycloak = keycloakService.keycloak()) {
+            switch (OauthHolder.Companion.getCurrentInstance().getIdentifierField()) {
+                case USERID ->
+                    user = keycloakService.usersResource(keycloak).search(userIdentifier).get(0);
+                case USERNAME ->
+                    user = keycloakService.usersResource(keycloak).get(userIdentifier).toRepresentation();
+            }
+
+        }
+        return Boolean.TRUE.equals(user.isEnabled()) ? toValtimoUserByRetrievingRoles(user) : null;
     }
 
     @Override

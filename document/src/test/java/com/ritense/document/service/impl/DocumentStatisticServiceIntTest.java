@@ -49,7 +49,7 @@ class DocumentStatisticServiceIntTest extends BaseIntegrationTest {
         definition = definition();
 
         var user = new ValtimoUserBuilder().username(USERNAME).email(USERNAME).id(USER_ID).build();
-        when(userManagementService.findById(USER_ID)).thenReturn(user);
+        when(userManagementService.findByUserIdentifier(USER_ID)).thenReturn(user);
         when(userManagementService.getCurrentUser()).thenReturn(user);
     }
 
