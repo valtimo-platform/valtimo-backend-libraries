@@ -51,7 +51,7 @@ public interface ManageableUser extends AuthorizedUser {
     default String getUserIdentifier() {
         return switch (OauthHolder.Companion.getCurrentInstance().getIdentifierField()) {
             case USERID -> getId();
-            case USERNAME -> getEmail();
+            case USERNAME -> getUsername();
         };
     }
 

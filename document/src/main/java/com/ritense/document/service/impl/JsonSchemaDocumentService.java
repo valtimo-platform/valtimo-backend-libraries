@@ -540,12 +540,12 @@ public class JsonSchemaDocumentService implements DocumentService {
             )
         );
 
-        var assignee = runWithoutAuthorization(() -> userManagementService.findByUserIdentifier(assigneeId));
+        var assignee = runWithoutAuthorization(() -> userManagementService.findById(assigneeId));
         if (assignee == null) {
             logger.debug("Cannot set assignee for the invalid user id {}", assigneeId);
             throw new IllegalArgumentException("Cannot set assignee for the invalid user id " + assigneeId);
         }
-        if (assigneeId.equals(userManagementService.getCurrentUser().getUserIdentifier())) {
+        if (assignee.getUserIdentifier().equals(userManagementService.getCurrentUser().getUserIdentifier())) {
             try {
                 authorizationService.requirePermission(
                     new EntityAuthorizationRequest<>(
@@ -582,13 +582,13 @@ public class JsonSchemaDocumentService implements DocumentService {
                 new DelegateUserEntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
                     ASSIGNABLE,
-                    assigneeId,
+                    assignee.getUserIdentifier(),
                     document
                 )
             );
         }
 
-        document.setAssignee(assigneeId, assignee.getFullName());
+        document.setAssignee(assignee.getUserIdentifier(), assignee.getFullName());
         documentRepository.save(document);
 
         // Publish an event to update the audit log

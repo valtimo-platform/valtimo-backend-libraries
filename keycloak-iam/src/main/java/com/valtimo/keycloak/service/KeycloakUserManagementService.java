@@ -141,9 +141,9 @@ public class KeycloakUserManagementService implements UserManagementService {
         try (Keycloak keycloak = keycloakService.keycloak()) {
             switch (OauthHolder.Companion.getCurrentInstance().getIdentifierField()) {
                 case USERID ->
-                    user = keycloakService.usersResource(keycloak).search(userIdentifier).get(0);
-                case USERNAME ->
                     user = keycloakService.usersResource(keycloak).get(userIdentifier).toRepresentation();
+                case USERNAME ->
+                    user = keycloakService.usersResource(keycloak).search(userIdentifier).get(0);
             }
 
         }

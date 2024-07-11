@@ -41,7 +41,7 @@ class DocumentDelegate(
             val user = userManagementService.findByEmail(userEmail)
                 .orElseThrow { IllegalArgumentException("No user found with email: $userEmail") }
             AuthorizationContext
-                .runWithoutAuthorization { documentService.assignUserToDocument(documentId.id, user.userIdentifier) }
+                .runWithoutAuthorization { documentService.assignUserToDocument(documentId.id, user.id) }
         }
     }
 

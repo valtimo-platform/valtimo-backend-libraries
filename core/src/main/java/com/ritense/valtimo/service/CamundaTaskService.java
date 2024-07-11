@@ -178,7 +178,7 @@ public class CamundaTaskService {
         } else if (EmailValidator.getInstance().isValid(assignee)) {
             throw new IllegalStateException("Task assignee must be an ID. Not an email: '" + assignee + "'");
         } else {
-            String assigneeIdentifier = userManagementService.findByUserIdentifier(assignee).getUserIdentifier();
+            String assigneeIdentifier = userManagementService.findById(assignee).getUserIdentifier();
             final CamundaTask task = runWithoutAuthorization(() -> findTaskById(taskId));
             final String currentUser = userManagementService.getCurrentUser().getUserIdentifier();
             if (assignee.equals(currentUser)) {

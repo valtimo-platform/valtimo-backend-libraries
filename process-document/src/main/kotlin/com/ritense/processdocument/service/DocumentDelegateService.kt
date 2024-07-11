@@ -95,7 +95,7 @@ class DocumentDelegateService(
         val documentId = processDocumentService.getDocumentId(processInstanceId, execution)
         val user = userManagementService.findByEmail(userEmail)
             .orElseThrow { IllegalArgumentException("No user found with email: $userEmail") }
-        documentService.assignUserToDocument(documentId.id, user.userIdentifier)
+        documentService.assignUserToDocument(documentId.id, user.id)
     }
 
     fun setInternalStatus(execution: DelegateExecution, statusKey: String?) {
