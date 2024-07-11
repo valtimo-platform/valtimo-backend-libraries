@@ -20,20 +20,12 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.ritense.documentenapi.DocumentenApiPlugin.Companion.PLUGIN_KEY
-import com.ritense.documentenapi.client.CreateDocumentRequest
-import com.ritense.documentenapi.client.DocumentInformatieObject
-import com.ritense.documentenapi.client.DocumentStatusType
-import com.ritense.documentenapi.client.DocumentenApiClient
-import com.ritense.documentenapi.client.PatchDocumentRequest
+import com.ritense.documentenapi.client.*
 import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.documentenapi.service.DocumentDeleteHandler
 import com.ritense.documentenapi.service.DocumentenApiVersionService
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
-import com.ritense.plugin.annotation.Plugin
-import com.ritense.plugin.annotation.PluginAction
-import com.ritense.plugin.annotation.PluginActionProperty
-import com.ritense.plugin.annotation.PluginEvent
-import com.ritense.plugin.annotation.PluginProperty
+import com.ritense.plugin.annotation.*
 import com.ritense.plugin.domain.EventType
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.resource.domain.MetadataType
@@ -44,6 +36,7 @@ import jakarta.validation.ValidationException
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.hibernate.validator.constraints.Length
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.web.util.UriComponentsBuilder
@@ -101,7 +94,7 @@ class DocumentenApiPlugin(
         val contentAsInputStream = storageService.getResourceContentAsInputStream(documentLocation)
         val metadata = storageService.getResourceMetadata(documentLocation)
 
-        storeDocument(
+        val documentCreateResult = storeDocument(
             execution = execution,
             metadata = metadata,
             titel = title,
@@ -111,9 +104,11 @@ class DocumentenApiPlugin(
             bestandsnaam = fileName,
             inhoudAsInputStream = contentAsInputStream,
             beschrijving = description,
-            informatieobjecttype = informatieobjecttype,
-            storedDocumentUrl = storedDocumentUrl
+            informatieobjecttype = informatieobjecttype
         )
+
+        publishCreateDocumentEvent(documentCreateResult)
+        execution.setVariable(storedDocumentUrl, documentCreateResult.url)
     }
 
     @PluginAction(
@@ -130,7 +125,7 @@ class DocumentenApiPlugin(
         val contentAsInputStream = storageService.getResourceContentAsInputStream(resourceId)
         val metadata = storageService.getResourceMetadata(resourceId)
 
-        storeDocument(
+        val documentCreateResult = storeDocument(
             execution = execution,
             metadata = metadata,
             titel = null,
@@ -141,8 +136,41 @@ class DocumentenApiPlugin(
             inhoudAsInputStream = contentAsInputStream,
             beschrijving = null,
             informatieobjecttype = null,
-            storedDocumentUrl = DOCUMENT_URL_PROCESS_VAR,
         )
+
+        publishCreateDocumentEvent(documentCreateResult)
+        execution.setVariable(DOCUMENT_URL_PROCESS_VAR, documentCreateResult.url)
+    }
+
+    @PluginAction(
+        key = "store-uploaded-document-in-parts",
+        title = "Store uploaded document in parts",
+        description = "Store an uploaded document in the Documenten API in parts using the bestandsdelen api",
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
+    )
+    fun storeUploadedDocumentInParts(
+        execution: DelegateExecution
+    ) {
+        val resourceId = execution.getVariable(RESOURCE_ID_PROCESS_VAR) as String?
+            ?: throw IllegalStateException("Failed to store document. No process variable '$RESOURCE_ID_PROCESS_VAR' found.")
+        val contentAsInputStream = storageService.getResourceContentAsInputStream(resourceId)
+        val metadata = storageService.getResourceMetadata(resourceId)
+
+        val documentCreateResult = storeDocumentInParts(
+            execution = execution,
+            metadata = metadata,
+            titel = null,
+            vertrouwelijkheidaanduiding = null,
+            status = null,
+            taal = null,
+            bestandsnaam = null,
+            inhoudAsInputStream = contentAsInputStream,
+            beschrijving = null,
+            informatieobjecttype = null,
+        )
+
+        publishCreateDocumentEvent(documentCreateResult)
+        execution.setVariable(DOCUMENT_URL_PROCESS_VAR, documentCreateResult.url)
     }
 
     @PluginAction(
@@ -157,9 +185,7 @@ class DocumentenApiPlugin(
     ): String {
         val documentUrlString = execution.getVariable(DOCUMENT_URL_PROCESS_VAR) as String?
             ?: throw IllegalStateException("Failed to download document. No process variable '$DOCUMENT_URL_PROCESS_VAR' found.")
-        if (!documentUrlString.startsWith(url.toASCIIString())) {
-            throw IllegalStateException("Failed to download document with url '$documentUrlString'. Document isn't part of Documenten API with url '$url'.")
-        }
+        check(documentUrlString.startsWith(url.toASCIIString())) { "Failed to download document with url '$documentUrlString'. Document isn't part of Documenten API with url '$url'." }
         val documentUrl = URI(documentUrlString)
         val metaData = client.getInformatieObject(authenticationPluginConfiguration, documentUrl)
         val content = client.downloadInformatieObjectContent(authenticationPluginConfiguration, documentUrl)
@@ -239,8 +265,7 @@ class DocumentenApiPlugin(
         inhoudAsInputStream: InputStream,
         beschrijving: String?,
         informatieobjecttype: String?,
-        storedDocumentUrl: String,
-    ) {
+    ):CreateDocumentResult {
         val vertrouwelijkheidaanduidingEnum = Vertrouwelijkheid.fromKey(
             vertrouwelijkheidaanduiding ?: getMetadataField(
                 metadata,
@@ -268,8 +293,58 @@ class DocumentenApiPlugin(
             trefwoorden = trefwoorden,
         )
 
-        val documentCreateResult = client.storeDocument(authenticationPluginConfiguration, url, request)
+        return client.storeDocument(authenticationPluginConfiguration, url, request)
+    }
 
+    /**
+     * Using the bestandsdelen api a document can be uploaded in chunks. This upload method entails several api calls
+     * to store a document:
+     *  - First the document metadata is uploaded without the 'inhoud' parameter. The response of this method will
+     *    contain a 'lock' parameter that must be used in the next call
+     *  - Using the provided lock the contents of the file is uploaded to the bestandsdelen api
+     *  - When the complete file is uploaded the unlock api must be called. This will unlock the document enabling it
+     *    for download.
+     */
+    private fun storeDocumentInParts(
+        execution: DelegateExecution,
+        metadata: Map<String, Any?>,
+        titel: String?,
+        vertrouwelijkheidaanduiding: String?,
+        status: DocumentStatusType?,
+        taal: String?,
+        bestandsnaam: String?,
+        inhoudAsInputStream: InputStream,
+        beschrijving: String?,
+        informatieobjecttype: String?
+    ):CreateDocumentResult {
+        val documentCreateResult = storeDocument(
+            execution = execution,
+            metadata = metadata,
+            titel = titel,
+            vertrouwelijkheidaanduiding = vertrouwelijkheidaanduiding,
+            status = status,
+            taal = taal,
+            bestandsnaam = bestandsnaam,
+            inhoudAsInputStream = InputStream.nullInputStream(),
+            beschrijving = beschrijving,
+            informatieobjecttype = informatieobjecttype,
+        )
+
+        // TODO add method to divide the input stream in parts
+        val bestandsdelenRequest = BestandsdelenRequest(
+            inhoud =  ByteArrayResource(inhoudAsInputStream.readBytes()),
+            lock = documentCreateResult.lock
+        )
+
+        client.storeDocumentInParts(authenticationPluginConfiguration, url, bestandsdelenRequest, documentCreateResult.getBestandsdelenIdFromUrl())
+
+        val documentLock = DocumentLock(documentCreateResult.lock)
+        client.unlockInformatieObject(authenticationPluginConfiguration, url, documentLock)
+
+        return documentCreateResult
+    }
+
+    private fun publishCreateDocumentEvent(documentCreateResult: CreateDocumentResult) {
         val event = DocumentCreated(
             documentCreateResult.url,
             documentCreateResult.auteur,
@@ -278,7 +353,6 @@ class DocumentenApiPlugin(
             documentCreateResult.beginRegistratie
         )
         applicationEventPublisher.publishEvent(event)
-        execution.setVariable(storedDocumentUrl, documentCreateResult.url)
     }
 
     private fun <T> getMetadataField(metadata: Map<String, Any?>, field: List<String>): T? =

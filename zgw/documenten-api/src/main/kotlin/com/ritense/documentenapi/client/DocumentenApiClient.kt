@@ -18,23 +18,19 @@ package com.ritense.documentenapi.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.documentenapi.DocumentenApiAuthentication
-import com.ritense.documentenapi.domain.DocumentenApiColumn
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey
-import com.ritense.documentenapi.event.DocumentDeleted
-import com.ritense.documentenapi.event.DocumentInformatieObjectDownloaded
-import com.ritense.documentenapi.event.DocumentInformatieObjectViewed
-import com.ritense.documentenapi.event.DocumentListed
-import com.ritense.documentenapi.event.DocumentStored
-import com.ritense.documentenapi.event.DocumentUpdated
+import com.ritense.documentenapi.event.*
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
 import com.ritense.outbox.OutboxService
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.ClientTools.Companion.optionalQueryParam
+import mu.KotlinLogging
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
+import org.springframework.http.client.MultipartBodyBuilder
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.reactive.function.BodyInserters
@@ -85,6 +81,39 @@ class DocumentenApiClient(
         return result?.body!!
     }
 
+    fun storeDocumentInParts(
+        authentication: DocumentenApiAuthentication,
+        baseUrl: URI,
+        request: BestandsdelenRequest,
+        bestandsdelenId: String
+    ) {
+        val multipartData = MultipartBodyBuilder()
+            .apply {
+                part("inhoud", request.inhoud)
+                part("lock", request.lock, MediaType.TEXT_PLAIN)
+            }
+            .build()
+
+        multipartData.toSingleValueMap().forEach { (key, value) ->
+            logger.debug("Key: {}, Value: {}", key, value)
+        }
+
+        val response = buildFilteredClient(authentication)
+            .put()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, baseUrl)
+                    .path("bestandsdelen/{uuid}")
+                    .build(bestandsdelenId)
+            }
+            .contentType(MediaType.MULTIPART_FORM_DATA)
+            .body(BodyInserters.fromMultipartData(multipartData))
+            .retrieve()
+            .toBodilessEntity()
+            .block()
+
+        logger.info("Response: $response")
+    }
+
     fun getInformatieObject(
         authentication: DocumentenApiAuthentication,
         baseUrl: URI,
@@ -126,12 +155,8 @@ class DocumentenApiClient(
     ): org.springframework.data.domain.Page<DocumentInformatieObject> {
         // because the documenten api only supports a fixed page size, we will try to calculate the page we need to request
         // the only page sizes that are supported are those that can fit n times in the itemsPerPage
-        if (ITEMS_PER_PAGE % pageable.pageSize != 0) {
-            throw IllegalArgumentException("Page size is not supported")
-        }
-        if (documentSearchRequest.zaakUrl == null) {
-            throw IllegalArgumentException("Zaak URL is required")
-        }
+        require(ITEMS_PER_PAGE % pageable.pageSize == 0) { "Page size is not supported" }
+        requireNotNull(documentSearchRequest.zaakUrl) { "Zaak URL is required" }
 
         val pageToRequest = ((pageable.pageSize * pageable.pageNumber) / ITEMS_PER_PAGE) + 1
 
@@ -243,7 +268,7 @@ class DocumentenApiClient(
     ) {
         buildFilteredClient(authentication)
             .post()
-            .uri(objectUrl.toString() + "/unlock")
+            .uri("$objectUrl/unlock")
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(documentLock))
             .retrieve()
@@ -322,7 +347,7 @@ class DocumentenApiClient(
         return isPipe
     }
 
-    fun UriBuilder.addSortParameter(pageable: Pageable): UriBuilder {
+    private fun UriBuilder.addSortParameter(pageable: Pageable): UriBuilder {
         val sortString = pageable.sort.map {
             val property = DocumentenApiColumnKey.fromProperty(it.property)
                 ?: throw IllegalArgumentException("Unknown Documenten API property ${it.property}")
@@ -337,5 +362,6 @@ class DocumentenApiClient(
 
     companion object {
         const val ITEMS_PER_PAGE = 100
+        val logger = KotlinLogging.logger {  }
     }
 }
