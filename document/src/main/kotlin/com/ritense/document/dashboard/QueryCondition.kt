@@ -19,7 +19,7 @@ package com.ritense.document.dashboard
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.ritense.valtimo.contract.repository.ExpressionOperator
 
-data class QueryCondition<T: Comparable<T>>(
+data class QueryCondition<T : Comparable<T>>(
     val queryPath: String,
     val queryOperator: ExpressionOperator,
     @JsonDeserialize(using = ComparableDeserializer::class)
