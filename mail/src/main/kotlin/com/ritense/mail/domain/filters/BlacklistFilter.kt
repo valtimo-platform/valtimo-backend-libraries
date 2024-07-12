@@ -22,6 +22,8 @@ import com.ritense.valtimo.contract.mail.MailFilter
 import com.ritense.valtimo.contract.mail.model.HasRecipients
 import com.ritense.valtimo.contract.mail.model.RawMailMessage
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
+import mu.KLogger
+import mu.KotlinLogging
 import java.util.Optional
 
 /**
@@ -57,6 +59,7 @@ class BlacklistFilter(
         return if (mailMessage.recipients.isPresent) {
             Optional.of(mailMessage)
         } else {
+            logger.debug { "No mail recipients left after filtering!" }
             Optional.empty()
         }
     }
@@ -69,4 +72,7 @@ class BlacklistFilter(
         return mailingProperties.blacklistFilterPriority
     }
 
+    companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
+    }
 }
