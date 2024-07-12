@@ -18,6 +18,7 @@ package com.ritense.mail.domain.filters
 
 import com.ritense.mail.config.MailingProperties
 import com.ritense.valtimo.contract.mail.MailFilter
+import com.ritense.valtimo.contract.mail.model.HasRecipients
 import com.ritense.valtimo.contract.mail.model.RawMailMessage
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import java.util.Optional
@@ -39,17 +40,23 @@ class RedirectToFilter(
 ) : MailFilter {
 
     override fun doFilter(rawMailMessage: RawMailMessage): Optional<RawMailMessage> {
-        rawMailMessage
-            .recipients
-            .filterBy { mailingProperties.sendRedirectedMailsTo.contains(it.email.get()) }
-        return Optional.of(rawMailMessage)
+        return doFilterInternal(rawMailMessage)
     }
 
     override fun doFilter(templatedMailMessage: TemplatedMailMessage): Optional<TemplatedMailMessage> {
-        templatedMailMessage
+        return doFilterInternal(templatedMailMessage)
+    }
+
+    private fun <T: HasRecipients> doFilterInternal(mailMessage: T): Optional<T> {
+        mailMessage
             .recipients
             .filterBy { mailingProperties.sendRedirectedMailsTo.contains(it.email.get()) }
-        return Optional.of(templatedMailMessage)
+
+        return if (mailMessage.recipients.isPresent) {
+            Optional.of(mailMessage)
+        } else {
+            Optional.empty()
+        }
     }
 
     override fun isEnabled(): Boolean {

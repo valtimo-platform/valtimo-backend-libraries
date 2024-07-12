@@ -28,7 +28,7 @@ import java.util.Objects;
 /**
  * Inspired by MandrillMessage.
  */
-public class RawMailMessage {
+public class RawMailMessage implements HasRecipients {
     public final Subject subject;
     public final MailBody mailBody;
     public final Sender sender;
@@ -51,6 +51,11 @@ public class RawMailMessage {
 
     public static Builder with(Recipient recipient, MailBody mailBody) {
         return new Builder(RecipientCollection.fromSingle(recipient), mailBody);
+    }
+
+    @Override
+    public RecipientCollection getRecipients() {
+        return recipients;
     }
 
     public static class Builder {
