@@ -16,8 +16,8 @@
 
 package com.ritense.valueresolver
 
-import java.util.UUID
 import org.camunda.bpm.engine.delegate.VariableScope
+import java.util.UUID
 
 open class ValueResolverServiceImpl(
     valueResolverFactories: List<ValueResolverFactory>
@@ -35,8 +35,20 @@ open class ValueResolverServiceImpl(
             }.toMap()
     }
 
-    override fun supportsValue(value: String) : Boolean {
+    override fun supportsValue(value: String): Boolean {
         return resolverFactoryMap.containsKey(getPrefix(value))
+    }
+
+    override fun getValueResolvers(): List<String> {
+        return resolverFactoryMap.keys.filter { prefix -> prefix != "" }.toList()
+    }
+
+    override fun getResolvableKeys(prefix: String, documentDefinitionName: String): List<String> {
+        return resolverFactoryMap[prefix]?.getResolvableKeys(documentDefinitionName) ?: emptyList()
+    }
+
+    override fun getResolvableKeys(prefix: String, documentDefinitionName: String, version: Long): List<String> {
+        return resolverFactoryMap[prefix]?.getResolvableKeys(documentDefinitionName, version) ?: emptyList()
     }
 
     /**
@@ -180,8 +192,8 @@ open class ValueResolverServiceImpl(
     }
 
 
-    private fun getPrefix(value:String) = value.substringBefore(DELIMITER, missingDelimiterValue = "")
-    private fun trimPrefix(value:String) = value.substringAfter(DELIMITER)
+    private fun getPrefix(value: String) = value.substringBefore(DELIMITER, missingDelimiterValue = "")
+    private fun trimPrefix(value: String) = value.substringAfter(DELIMITER)
 
     companion object {
         const val DELIMITER = ":"

@@ -21,6 +21,8 @@ import com.ritense.valueresolver.ProcessVariableValueResolverFactory
 import com.ritense.valueresolver.ValueResolverFactory
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.valueresolver.ValueResolverServiceImpl
+import com.ritense.valueresolver.security.config.ValueResolverHttpSecurityConfigurer
+import com.ritense.valueresolver.web.rest.ValueResolverResource
 import org.camunda.bpm.engine.RuntimeService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
@@ -64,5 +66,17 @@ class ValueResolverAutoConfiguration {
         runtimeService: RuntimeService,
     ): ValueResolverFactory {
         return ProcessVariableValueResolverFactory(runtimeService)
+    }
+
+    @Bean
+    fun valueResolverHttpSecurityConfigurer(): ValueResolverHttpSecurityConfigurer {
+        return ValueResolverHttpSecurityConfigurer()
+    }
+
+    @Bean
+    fun valueResolverResource(
+        valueResolverService: ValueResolverService
+    ): ValueResolverResource {
+        return ValueResolverResource(valueResolverService)
     }
 }

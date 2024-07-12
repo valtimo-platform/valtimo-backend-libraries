@@ -16,8 +16,8 @@
 
 package com.ritense.valueresolver
 
-import java.util.UUID
 import org.camunda.bpm.engine.delegate.VariableScope
+import java.util.UUID
 
 interface ValueResolverService {
     /**
@@ -94,4 +94,10 @@ interface ValueResolverService {
     ): Map<String, Any?>
 
     fun supportsValue(value: String): Boolean
+
+    fun getValueResolvers(): List<String>
+
+    fun getResolvableKeys(prefix: String, documentDefinitionName: String, version: Long): List<String>
+
+    fun getResolvableKeys(prefix: String, documentDefinitionName: String): List<String>
 }
