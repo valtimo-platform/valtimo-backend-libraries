@@ -16,10 +16,16 @@
 
 package com.ritense.document.dashboard
 
+import com.ritense.valtimo.contract.dashboard.feature.HasLabel
 import com.ritense.valtimo.contract.dashboard.feature.HasNumberValue
-import com.ritense.valtimo.contract.dashboard.feature.HasTotal
+import com.ritense.valtimo.contract.dashboard.feature.HasNumberValues
 
-class DocumentCountDataResult(
-    override val value: Long,
-    override val total: Long,
-) : HasNumberValue, HasTotal
+data class DocumentGroupByItem(
+    override var label: String,
+    override val value: Long
+) : HasNumberValue, HasLabel {
+}
+
+class DocumentGroupByDataResult(
+    override val values: List<DocumentGroupByItem>
+) : HasNumberValues<DocumentGroupByItem>

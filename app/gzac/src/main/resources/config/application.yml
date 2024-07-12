@@ -210,13 +210,9 @@ valtimo:
             - image/jpeg
             - application/xml
     changelog:
-        dashboard:
-            clear-tables: true
         pbac:
             clear-tables: true
         case-tabs:
-            clear-tables: true
-        internal-case-status:
             clear-tables: true
         zgw-document-list-column:
             clear-tables: true

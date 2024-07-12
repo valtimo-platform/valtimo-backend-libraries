@@ -16,9 +16,11 @@
 
 package com.ritense.document.autoconfiguration
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.document.dashboard.DocumentWidgetDataSource
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import jakarta.persistence.EntityManager
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -30,6 +32,8 @@ class DocumentWidgetAutoConfiguration {
     @ConditionalOnMissingBean(DocumentWidgetDataSource::class)
     fun documentWidgetDataSource(
         documentRepository: JsonSchemaDocumentRepository,
-        queryDialectHelper: QueryDialectHelper
-    ) = DocumentWidgetDataSource(documentRepository, queryDialectHelper)
+        queryDialectHelper: QueryDialectHelper,
+        objectMapper: ObjectMapper,
+        entityManager: EntityManager
+    ) = DocumentWidgetDataSource(documentRepository, queryDialectHelper, objectMapper, entityManager)
 }
