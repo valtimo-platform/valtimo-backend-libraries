@@ -27,10 +27,12 @@ class ValueResolverHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(antMatcher(GET, "/api/v1/value-resolver")).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(GET, "/api/v1/value-resolver/prefix/{prefix}/document-definition/{documentDefinitionName}/keys")).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(GET, "/api/v1/value-resolver/prefix/{prefix}/document-definition/{documentDefinitionName}/version/{version}/keys")).hasAuthority(ADMIN)
+            http.authorizeHttpRequests { requests ->
+                requests
+                    .requestMatchers(antMatcher(GET, "/api/v1/value-resolver")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/v1/value-resolver/prefix/{prefix}/document-definition/{documentDefinitionName}/keys")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/v1/value-resolver/prefix/{prefix}/document-definition/{documentDefinitionName}/version/{version}/keys")).hasAuthority(ADMIN)
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

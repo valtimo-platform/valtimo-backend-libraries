@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Lazy
+import org.springframework.core.annotation.Order
 
 @AutoConfiguration
 class ValueResolverAutoConfiguration {
@@ -69,6 +70,7 @@ class ValueResolverAutoConfiguration {
     }
 
     @Bean
+    @Order(271)
     fun valueResolverHttpSecurityConfigurer(): ValueResolverHttpSecurityConfigurer {
         return ValueResolverHttpSecurityConfigurer()
     }
