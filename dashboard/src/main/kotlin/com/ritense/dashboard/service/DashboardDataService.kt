@@ -60,8 +60,7 @@ class DashboardDataService(
     fun getWidgetDataByConfigKey(key: String): DashboardWidgetDataResultDto {
         val config = widgetConfigurationRepository.getReferenceById(key)
 
-        val dashboard = config.dashboard
-        checkAuthorization(dashboard)
+        checkAuthorization(config.dashboard)
 
         return self().getWidgetDataByConfig(config)
     }
