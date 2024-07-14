@@ -227,6 +227,8 @@ valtimo:
             polling.rate: "PT1M"
 
     authorization:
+        dashboard:
+            enabled: true
 
 spring-actuator:
     username: admin
