@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.repository
+package com.ritense.dashboard.service
 
-import com.ritense.authorization.specification.AuthorizationSpecification
+import com.ritense.authorization.Action
+import com.ritense.authorization.ResourceActionProvider
 import com.ritense.dashboard.domain.Dashboard
-import org.springframework.data.jpa.domain.Specification
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor
-import org.springframework.stereotype.Repository
 
-@Repository
-interface DashboardRepository : JpaRepository<Dashboard, String>, JpaSpecificationExecutor<Dashboard> {
+class DashboardActionProvider: ResourceActionProvider<Dashboard> {
+    override fun getAvailableActions(): List<Action<Dashboard>> {
+        return listOf(VIEW)
+    }
 
-    fun findAllByOrderByOrder(): List<Dashboard>
-
-    fun findByKey(key: String): Dashboard?
-
-    fun findByOrder(order: Int): Dashboard?
+    companion object {
+        var VIEW = Action<Dashboard>(Action.VIEW)
+    }
 }

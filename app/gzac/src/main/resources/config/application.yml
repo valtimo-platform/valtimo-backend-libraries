@@ -226,6 +226,8 @@ valtimo:
                 delivery-timeout: "PT0.5S"
             polling.rate: "PT1M"
 
+    authorization:
+
 spring-actuator:
     username: admin
     password: password

@@ -17,7 +17,10 @@
 package com.ritense.dashboard.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.dashboard.datasource.WidgetDataSourceResolver
+import com.ritense.dashboard.domain.Dashboard
 import com.ritense.dashboard.domain.WidgetConfiguration
 import com.ritense.dashboard.repository.WidgetConfigurationRepository
 import com.ritense.dashboard.web.rest.dto.DashboardWidgetDataResultDto
@@ -30,13 +33,19 @@ class DashboardDataService(
     private val applicationContext: ApplicationContext,
     private val widgetDataSourceResolver: WidgetDataSourceResolver,
     private val widgetConfigurationRepository: WidgetConfigurationRepository,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val dashboardService: DashboardService,
+    private val authorizationService: AuthorizationService,
+    private val authorizationEnabled: Boolean
 ) {
 
     /**
      * This will get all widget data for the given dashboard key
      */
     fun getWidgetDataForDashboard(dashboardKey: String): List<DashboardWidgetDataResultDto> {
+        val dashboard = dashboardService.getDashboard(dashboardKey)
+        checkAuthorization(dashboard)
+
         return widgetConfigurationRepository.findAllByDashboardKey(dashboardKey)
             .sortedBy { it.order }
             .map { config ->
@@ -50,6 +59,10 @@ class DashboardDataService(
     @Cacheable(value = [CACHE_NAME], key = "#key")
     fun getWidgetDataByConfigKey(key: String): DashboardWidgetDataResultDto {
         val config = widgetConfigurationRepository.getReferenceById(key)
+
+        val dashboard = config.dashboard
+        checkAuthorization(dashboard)
+
         return self().getWidgetDataByConfig(config)
     }
 
@@ -83,6 +96,18 @@ class DashboardDataService(
      */
     private fun self(): DashboardDataService =
         applicationContext.getBean(this::class.java)
+
+    private fun checkAuthorization(dashboard: Dashboard) {
+        if(authorizationEnabled) {
+            authorizationService.requirePermission(
+                EntityAuthorizationRequest(
+                    Dashboard::class.java,
+                    DashboardActionProvider.VIEW,
+                    dashboard
+                )
+            )
+        }
+    }
 
     companion object {
         private const val CACHE_NAME = "dashboard.widgetData"
