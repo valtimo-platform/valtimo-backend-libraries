@@ -16,10 +16,8 @@
 
 package com.ritense.document.dashboard
 
-import com.ritense.valtimo.contract.dashboard.feature.HasNumberValue
-import com.ritense.valtimo.contract.dashboard.feature.HasTotal
+import java.time.LocalDateTime
 
-class DocumentCountDataResult(
-    override val value: Long,
-    override val total: Long,
-) : HasNumberValue, HasTotal
+class DocumentWidgetDataSourceSpelEvaluationContext {
+    public val localDateTimeNow = LocalDateTime.now()
+}

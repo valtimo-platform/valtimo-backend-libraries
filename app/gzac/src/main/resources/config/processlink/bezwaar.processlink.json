@@ -10,5 +10,11 @@
         "activityType": "bpmn:UserTask:create",
         "formDefinitionName": "user-task-validate-request",
         "processLinkType": "form"
+    },
+    {
+        "activityId": "in-behandeling",
+        "activityType": "bpmn:UserTask:create",
+        "formDefinitionName": "empty-form",
+        "processLinkType": "form"
     }
 ]
