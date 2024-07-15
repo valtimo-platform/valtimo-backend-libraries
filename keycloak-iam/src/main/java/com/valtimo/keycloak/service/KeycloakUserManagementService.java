@@ -303,7 +303,8 @@ public class KeycloakUserManagementService implements UserManagementService {
             userRepresentation.getId(),
             userRepresentation.getEmail(),
             userRepresentation.getFirstName(),
-            userRepresentation.getLastName()
+            userRepresentation.getLastName(),
+            userRepresentation.getUsername()
         );
     }
 
