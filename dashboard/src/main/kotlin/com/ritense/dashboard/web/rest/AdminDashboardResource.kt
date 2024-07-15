@@ -84,6 +84,7 @@ class AdminDashboardResource(
         return ResponseEntity.ok(dashboardResponseDtos)
     }
 
+    @RunWithoutAuthorization
     @DeleteMapping("/v1/dashboard/{dashboardKey}")
     fun deleteDashboard(
         @PathVariable(name = "dashboardKey") dashboardKey: String

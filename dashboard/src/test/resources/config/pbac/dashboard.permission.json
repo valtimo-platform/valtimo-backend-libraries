@@ -1,5 +1,5 @@
 {
-    "changesetId": "dashboard-v1",
+    "changesetId": "dashboard-permissions-v1",
     "permissions": [
         {
             "resourceType": "com.ritense.dashboard.domain.Dashboard",
