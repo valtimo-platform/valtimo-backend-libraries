@@ -58,20 +58,20 @@ class DocumentWidgetDataSource(
 
     @WidgetDataSource("case-counts", "Case counts")
     fun getCaseCounts(caseCountsDataSourceProperties: DocumentCountsDataSourceProperties): DocumentCountsDataResult {
-        val items: List<DocumentCountsItem> = caseCountsDataSourceProperties.queryItems.map {
+        val items: List<DocumentCountsItem> = caseCountsDataSourceProperties.queryItems.map { queryItem ->
             val spec = byDocumentDefinitionIdName(caseCountsDataSourceProperties.documentDefinition)
                 .and { root, _, criteriaBuilder ->
                     criteriaBuilder.and(
-                        *it.queryConditions?.map {
+                        *queryItem.queryConditions.map {
                             createConditionPredicate(root, it, criteriaBuilder)
-                        }?.toTypedArray() ?: arrayOf()
+                        }.toTypedArray()
                     )
                 }
 
             val count = documentRepository.count(spec)
 
 
-            DocumentCountsItem(it.label, count)
+            DocumentCountsItem(queryItem.label, count)
         }
 
         return DocumentCountsDataResult(items)
@@ -79,7 +79,7 @@ class DocumentWidgetDataSource(
 
     @WidgetDataSource("case-group-by", "Case group by")
     fun getCaseGroupBy(caseGroupByDataSourceProperties: DocumentGroupByDataSourceProperties): DocumentGroupByDataResult {
-        val criteriaBuilder: CriteriaBuilder = entityManager.getCriteriaBuilder()
+        val criteriaBuilder: CriteriaBuilder = entityManager.criteriaBuilder
         val query = criteriaBuilder.createQuery(DocumentGroupByItem::class.java)
         val root: Root<JsonSchemaDocument> = query.from(JsonSchemaDocument::class.java)
         val expression = getPathExpression(String::class.java, caseGroupByDataSourceProperties.path, root, criteriaBuilder)
@@ -149,14 +149,14 @@ class DocumentWidgetDataSource(
 
         val stringTarget = target as String
 
-        return !stringTarget.isNullOrEmpty() &&
+        return stringTarget.isNotEmpty() &&
             stringTarget.startsWith("\${") &&
             stringTarget.endsWith('}') &&
             stringTarget.contains("localDateTimeNow")
     }
 
 
-    private inline fun getPredicateFromDateTimeSpelExpression(
+    private fun getPredicateFromDateTimeSpelExpression(
         root: Root<JsonSchemaDocument>,
         it: QueryCondition<String>,
         criteriaBuilder: CriteriaBuilder
@@ -183,7 +183,7 @@ class DocumentWidgetDataSource(
         )
     }
 
-    private inline fun <T : Comparable<T>> createConditionPredicate(
+    private fun <T : Comparable<T>> createConditionPredicate(
         root: Root<JsonSchemaDocument>,
         it: QueryCondition<T>,
         criteriaBuilder: CriteriaBuilder
