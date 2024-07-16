@@ -78,13 +78,7 @@ public interface DocumentDefinitionResource {
     ResponseEntity<DocumentVersionsResult> getDocumentDefinitionVersions(
         @PathVariable String name
     );
-
-    @GetMapping("/management/v1/document-definition/{name}/version/{version}/properties")
-    ResponseEntity<List<String>> getDocumentDefinitionVersionProperties(
-        @PathVariable String name,
-        @PathVariable long version
-    );
-
+    
     @GetMapping("/v1/document-definition/open/count")
     ResponseEntity<List<UnassignedDocumentCountDto>> getUnassignedDocumentCount();
 
