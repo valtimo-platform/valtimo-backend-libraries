@@ -20,7 +20,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.valtimo.contract.OauthHolder
+import com.ritense.valtimo.contract.OauthConfigHolder
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
 import com.ritense.valtimo.contract.config.ValtimoProperties.Oauth
@@ -51,7 +51,7 @@ internal class DocumentDelegateTest {
             userManagementService,
             documentService,
         )
-        OauthHolder(Oauth())
+        OauthConfigHolder(Oauth())
     }
 
     @Test

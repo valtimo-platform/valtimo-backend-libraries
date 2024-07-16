@@ -18,7 +18,7 @@ package com.ritense.valtimo.contract
 
 import com.ritense.valtimo.contract.config.ValtimoProperties.Oauth
 
-class OauthHolder(oauth: Oauth) {
+class OauthConfigHolder(oauth: Oauth) {
 
     init {
         Companion.oauth = oauth
@@ -27,6 +27,7 @@ class OauthHolder(oauth: Oauth) {
     companion object {
         private var oauth: Oauth? = null
 
+        @JvmStatic
         val currentInstance: Oauth
             get() = oauth!!
     }

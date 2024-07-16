@@ -16,7 +16,7 @@
 
 package com.ritense.valtimo.contract.authentication;
 
-import com.ritense.valtimo.contract.OauthHolder;
+import com.ritense.valtimo.contract.OauthConfigHolder;
 
 public interface ManageableUser extends AuthorizedUser {
 
@@ -49,7 +49,7 @@ public interface ManageableUser extends AuthorizedUser {
     boolean isBlocked();
 
     default String getUserIdentifier() {
-        return switch (OauthHolder.Companion.getCurrentInstance().getIdentifierField()) {
+        return switch (OauthConfigHolder.getCurrentInstance().getIdentifierField()) {
             case USERID -> getId();
             case USERNAME -> getUsername();
         };

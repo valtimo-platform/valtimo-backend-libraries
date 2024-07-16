@@ -21,7 +21,7 @@ import static java.util.Comparator.comparing;
 import static java.util.Comparator.naturalOrder;
 import static java.util.Comparator.nullsLast;
 
-import com.ritense.valtimo.contract.OauthHolder;
+import com.ritense.valtimo.contract.OauthConfigHolder;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
@@ -139,7 +139,7 @@ public class KeycloakUserManagementService implements UserManagementService {
     public ValtimoUser findByUserIdentifier(String userIdentifier) {
         UserRepresentation user = null;
         try (Keycloak keycloak = keycloakService.keycloak()) {
-            switch (OauthHolder.Companion.getCurrentInstance().getIdentifierField()) {
+            switch (OauthConfigHolder.getCurrentInstance().getIdentifierField()) {
                 case USERID ->
                     user = keycloakService.usersResource(keycloak).get(userIdentifier).toRepresentation();
                 case USERNAME ->

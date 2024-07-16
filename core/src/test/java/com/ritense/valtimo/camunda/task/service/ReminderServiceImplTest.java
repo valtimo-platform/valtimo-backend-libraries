@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 
 import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.camunda.task.service.impl.ReminderServiceImpl;
-import com.ritense.valtimo.contract.OauthHolder;
+import com.ritense.valtimo.contract.OauthConfigHolder;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.contract.mail.MailSender;
@@ -63,7 +63,7 @@ class ReminderServiceImplTest {
             "reminderTemplate"
         );
 
-        new OauthHolder(new ValtimoProperties.Oauth());
+        new OauthConfigHolder(new ValtimoProperties.Oauth());
     }
 
     @Test
