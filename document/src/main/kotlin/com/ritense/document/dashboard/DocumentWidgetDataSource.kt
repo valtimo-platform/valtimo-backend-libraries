@@ -85,10 +85,12 @@ class DocumentWidgetDataSource(
         val root: Root<JsonSchemaDocument> = query.from(JsonSchemaDocument::class.java)
         val docPredicate = criteriaBuilder.equal(root.get<Any>("documentDefinitionId").get<String>("name"), caseGroupByDataSourceProperties.documentDefinition)
         val pathIsNotNullPredicate = createConditionPredicate(root, QueryCondition(caseGroupByDataSourceProperties.path, ExpressionOperator.NOT_EQUAL_TO, "\${null}"), criteriaBuilder)
+        // todo: fix null values through getJsonValueExpression
+        val pathIsNotNullStringPredicate = createConditionPredicate(root, QueryCondition(caseGroupByDataSourceProperties.path, ExpressionOperator.NOT_EQUAL_TO, "null"), criteriaBuilder)
         val conditionPredicates = caseGroupByDataSourceProperties.queryConditions?.map {
             createConditionPredicate(root, it, criteriaBuilder)
         }?.toTypedArray() ?: arrayOf()
-        val combinedPredicates = arrayOf(docPredicate, pathIsNotNullPredicate, *conditionPredicates)
+        val combinedPredicates = arrayOf(docPredicate, pathIsNotNullPredicate, pathIsNotNullStringPredicate, *conditionPredicates)
         val groupByExpression = getPathExpression(String::class.java, caseGroupByDataSourceProperties.path, root, criteriaBuilder)
 
         query
@@ -193,6 +195,7 @@ class DocumentWidgetDataSource(
         if (queryValueIsDateTimeSpelExpression(it.queryValue)) {
             return getPredicateFromDateTimeSpelExpression(root, it as QueryCondition<String>, criteriaBuilder)
         }
+
 
         val queryValue = if (it.queryValue == "\${null}") {
             null
