@@ -71,11 +71,11 @@ class ContactMomentConnector(
 
     private fun getMedewerkerIdentificatie(user: ManageableUser): String {
         // TODO: Contactmomenten doesn't allow an id greater than 24 chars. Find proper solution
-        return if (user.id.length > 24) {
-            val idHash = user.id.hashCode().toString()
-            user.id.substring(0, 24 - idHash.length) + idHash
+        return if (user.userIdentifier.length > 24) {
+            val idHash = user.userIdentifier.hashCode().toString()
+            user.userIdentifier.substring(0, 24 - idHash.length) + idHash
         } else {
-            user.id
+            user.userIdentifier
         }
     }
 

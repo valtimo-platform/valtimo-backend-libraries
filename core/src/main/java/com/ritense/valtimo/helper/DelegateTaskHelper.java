@@ -51,7 +51,7 @@ public class DelegateTaskHelper {
     public Optional<ManageableUser> determineAssignedUserOf(DelegateTask delegateTask) {
         String assignee = delegateTask.getAssignee();
         if (assignee != null) {
-            return Optional.ofNullable(userManagementService.findById(assignee));
+            return Optional.ofNullable(userManagementService.findByUserIdentifier(assignee));
         } else {
             return Optional.empty();
         }

@@ -18,6 +18,7 @@
 package com.ritense.valtimo.autoconfiguration
 
 import com.ritense.authorization.AuthorizationService
+import com.ritense.valtimo.ValtimoApplicationPropertyService
 import com.ritense.valtimo.camunda.authorization.CamundaExecutionProcessDefinitionMapper
 import com.ritense.valtimo.camunda.authorization.CamundaExecutionSpecificationFactory
 import com.ritense.valtimo.camunda.authorization.CamundaIdentityLinkSpecificationFactory
@@ -37,7 +38,9 @@ import com.ritense.valtimo.camunda.service.CamundaContextService
 import com.ritense.valtimo.camunda.service.CamundaHistoryService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
+import com.ritense.valtimo.contract.config.ValtimoProperties
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import com.ritense.valtimo.repository.ValtimoApplicationPropertyRepository
 import com.ritense.valtimo.service.CamundaTaskService
 import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.RepositoryService
@@ -62,10 +65,15 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
         CamundaIdentityLinkRepository::class,
         CamundaProcessDefinitionRepository::class,
         CamundaTaskRepository::class,
-        CamundaVariableInstanceRepository::class,
+        CamundaVariableInstanceRepository::class
     ]
 )
-@EntityScan("com.ritense.valtimo.camunda.domain")
+@EntityScan(
+    basePackages = [
+        "com.ritense.valtimo.camunda.domain",
+        "com.ritense.valtimo.domain"
+    ]
+)
 class ValtimoCamundaAutoConfiguration {
 
     @Bean
@@ -162,11 +170,16 @@ class ValtimoCamundaAutoConfiguration {
     fun camundaExecutionProcessDefinitionMapper() = CamundaExecutionProcessDefinitionMapper()
 
 
-
     @Bean
     @ConditionalOnMissingBean(CamundaTaskIdentityLinkMapper::class)
     fun camundaTaskIdentityLinkMapper(): CamundaTaskIdentityLinkMapper {
         return CamundaTaskIdentityLinkMapper()
     }
+
+    @Bean
+    fun valtimoApplicationPropertyService(
+        repository: ValtimoApplicationPropertyRepository,
+        valtimoProperties: ValtimoProperties
+    ): ValtimoApplicationPropertyService = ValtimoApplicationPropertyService(repository, valtimoProperties)
 
 }
