@@ -18,8 +18,11 @@ package com.ritense.mail.domain.filters
 
 import com.ritense.mail.config.MailingProperties
 import com.ritense.valtimo.contract.mail.MailFilter
+import com.ritense.valtimo.contract.mail.model.HasRecipients
 import com.ritense.valtimo.contract.mail.model.RawMailMessage
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
+import mu.KLogger
+import mu.KotlinLogging
 import java.util.Optional
 
 /**
@@ -39,19 +42,26 @@ class WhitelistFilter(
 ) : MailFilter {
 
     override fun doFilter(rawMailMessage: RawMailMessage): Optional<RawMailMessage> {
-        rawMailMessage.recipients.filterBy {
-            (mailingProperties.whitelistedEmailAddresses.contains(it.email.get())
-                || mailingProperties.whitelistedDomains.contains(it.email.domain))
-        }
-        return Optional.of(rawMailMessage)
+        return doFilterInternal(rawMailMessage)
     }
 
     override fun doFilter(templatedMailMessage: TemplatedMailMessage): Optional<TemplatedMailMessage> {
-        templatedMailMessage.recipients.filterBy {
-            (mailingProperties.whitelistedEmailAddresses.contains(it.email.get())
-                || mailingProperties.whitelistedDomains.contains(it.email.domain))
+        return doFilterInternal(templatedMailMessage)
+    }
+
+    private fun <T: HasRecipients> doFilterInternal(mailMessage: T): Optional<T> {
+        mailMessage
+            .recipients
+            .filterBy {
+                (mailingProperties.whitelistedEmailAddresses.contains(it.email.get())
+                    || mailingProperties.whitelistedDomains.contains(it.email.domain))
+            }
+        return if (mailMessage.recipients.isPresent) {
+            Optional.of(mailMessage)
+        } else {
+            logger.debug { "No mail recipients left after filtering!" }
+            Optional.empty()
         }
-        return Optional.of(templatedMailMessage)
     }
 
     override fun isEnabled(): Boolean {
@@ -62,4 +72,7 @@ class WhitelistFilter(
         return mailingProperties.whitelistedPriority
     }
 
+    companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
+    }
 }
