@@ -16,6 +16,8 @@
 
 package com.ritense.valtimo.contract.authentication;
 
+import com.ritense.valtimo.contract.OauthConfigHolder;
+
 public interface ManageableUser extends AuthorizedUser {
 
     String getId();
@@ -45,5 +47,12 @@ public interface ManageableUser extends AuthorizedUser {
     void deactivate();
 
     boolean isBlocked();
+
+    default String getUserIdentifier() {
+        return switch (OauthConfigHolder.getCurrentInstance().getIdentifierField()) {
+            case USERID -> getId();
+            case USERNAME -> getUsername();
+        };
+    }
 
 }
