@@ -287,8 +287,56 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
         assertThat(result2.total).isEqualTo(1)
     }
 
+    @Test
+    fun `should filter out null values when using group by`() {
+        documentRepository.deleteAll()
+        val definition = definition()
+
+        val street1 = "Sesame Street"
+
+        repeat(2) {
+            createDocument(definition, street1)
+        }
+
+        val street2 = "Back street"
+
+
+        repeat(4) {
+            createDocument(definition, street2)
+        }
+
+        repeat(3) {
+            createDocumentWithNullValue(definition)
+        }
+
+        val documentDefinitionName = definition.id().name()
+
+        val properties = DocumentGroupByDataSourceProperties(
+            documentDefinitionName,
+            path = "doc:street",
+            null,
+            null
+        )
+
+        val result = documentWidgetDataSource.getCaseGroupBy(properties)
+
+        assertThat(result.values.size).isEqualTo(2)
+    }
+
     private fun createDocument(documentDefinition: JsonSchemaDocumentDefinition, street: String = "Funenpark"): CreateDocumentResult? {
         val content = JsonDocumentContent("""{"street": "$street", "housenumber": 1}""")
+        return runWithoutAuthorization {
+            documentService.createDocument(
+                NewDocumentRequest(
+                    documentDefinition.id().name(),
+                    content.asJson()
+                )
+            )
+        }
+    }
+
+    private fun createDocumentWithNullValue(documentDefinition: JsonSchemaDocumentDefinition): CreateDocumentResult? {
+        val content = JsonDocumentContent("""{"street": null, "housenumber": 1}""")
         return runWithoutAuthorization {
             documentService.createDocument(
                 NewDocumentRequest(
