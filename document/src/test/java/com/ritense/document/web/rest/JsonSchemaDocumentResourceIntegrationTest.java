@@ -90,10 +90,11 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
     void shouldAssignUserToCase() throws Exception {
         var user = mockUser("John", "Doe");
         var loggedInUser = mockUser("Henk", "de Vries");
+        when(userManagementService.findByUserIdentifier(user.getUserIdentifier())).thenReturn(user);
         when(userManagementService.findById(user.getId())).thenReturn(user);
         when(userManagementService.getCurrentUser()).thenReturn(loggedInUser);
 
-        var postContent = "{ \"assigneeId\": \"" + user.getId() + "\"}";
+        var postContent = "{ \"assigneeId\": \"" + user.getUserIdentifier() + "\"}";
 
         mockMvc.perform(
                 post("/api/v1/document/{documentId}/assign", document.id().getId().toString())
@@ -110,7 +111,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
 
         var savedDocument = (JsonSchemaDocument) result.get();
         assertNotNull(savedDocument.assigneeId());
-        assertEquals(user.getId(), savedDocument.assigneeId());
+        assertEquals(user.getUserIdentifier(), savedDocument.assigneeId());
         assertNotNull(savedDocument.assigneeFullName());
         assertEquals(user.getFullName(), savedDocument.assigneeFullName());
     }
@@ -131,6 +132,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
 
         var user = mockUser("John", "Doe");
         var loggedInUser = mockUser("Henk", "de Vries");
+        when(userManagementService.findByUserIdentifier(user.getUserIdentifier())).thenReturn(user);
         when(userManagementService.findById(user.getId())).thenReturn(user);
         when(userManagementService.getCurrentUser()).thenReturn(loggedInUser);
 
@@ -155,13 +157,13 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
 
         var savedDocument = (JsonSchemaDocument) result1.get();
         assertNotNull(savedDocument.assigneeId());
-        assertEquals(user.getId(), savedDocument.assigneeId());
+        assertEquals(user.getUserIdentifier(), savedDocument.assigneeId());
         assertNotNull(savedDocument.assigneeFullName());
         assertEquals(user.getFullName(), savedDocument.assigneeFullName());
 
         var savedDocument2 = (JsonSchemaDocument) result2.get();
         assertNotNull(savedDocument2.assigneeId());
-        assertEquals(user.getId(), savedDocument2.assigneeId());
+        assertEquals(user.getUserIdentifier(), savedDocument2.assigneeId());
         assertNotNull(savedDocument2.assigneeFullName());
         assertEquals(user.getFullName(), savedDocument2.assigneeFullName());
     }
@@ -182,6 +184,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
 
         var user = mockUser("John", "Doe");
         var loggedInUser = mockUser("Henk", "de Vries");
+        when(userManagementService.findByUserIdentifier(user.getUserIdentifier())).thenReturn(user);
         when(userManagementService.findById(user.getId())).thenReturn(user);
         when(userManagementService.getCurrentUser()).thenReturn(loggedInUser);
 
@@ -206,7 +209,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
 
         var savedDocument = (JsonSchemaDocument) result1.get();
         assertNotNull(savedDocument.assigneeId());
-        assertEquals(user.getId(), savedDocument.assigneeId());
+        assertEquals(user.getUserIdentifier(), savedDocument.assigneeId());
         assertNotNull(savedDocument.assigneeFullName());
         assertEquals(user.getFullName(), savedDocument.assigneeFullName());
 
@@ -219,13 +222,13 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
     @WithMockUser(username = USER_EMAIL, authorities = {FULL_ACCESS_ROLE})
     void shouldNotAssignInvalidUserId() throws Exception {
         var user = mockUser("John", "Doe");
-        when(userManagementService.findById(user.getId())).thenReturn(null);
+        when(userManagementService.findByUserIdentifier(user.getUserIdentifier())).thenReturn(null);
 
         var postContent = "{ \"assigneeId\": \"" + user.getId() + "\"}";
 
         mockMvc.perform(
                 post("/api/v1/document/{documentId}/assign", document.id().getId().toString())
-                    .content(user.getId())
+                    .content(user.getUserIdentifier())
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isBadRequest());
@@ -235,6 +238,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
     @WithMockUser(username = USER_EMAIL, authorities = {FULL_ACCESS_ROLE})
     void shouldUnassignUserFromCase() throws Exception {
         var user = mockUser("John", "Doe");
+        when(userManagementService.findByUserIdentifier(user.getUserIdentifier())).thenReturn(user);
         when(userManagementService.findById(user.getId())).thenReturn(user);
 
         mockMvc.perform(
