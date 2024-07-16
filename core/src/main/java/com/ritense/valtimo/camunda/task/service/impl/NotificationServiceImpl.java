@@ -62,7 +62,7 @@ public class NotificationServiceImpl implements NotificationService {
         if (delegateTaskHelper.isTaskBeingAssigned(task)) {
             final String userId = task.getAssignee();
             if (userId != null) {
-                var user = userManagementService.findById(userId);
+                var user = userManagementService.findByUserIdentifier(userId);
                 notifyUserAboutTaskAssignment(user, task, template, "nl");
             }
         } else if (delegateTaskHelper.isTaskBeingCreated(task)) {

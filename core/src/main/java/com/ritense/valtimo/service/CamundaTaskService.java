@@ -178,8 +178,9 @@ public class CamundaTaskService {
         } else if (EmailValidator.getInstance().isValid(assignee)) {
             throw new IllegalStateException("Task assignee must be an ID. Not an email: '" + assignee + "'");
         } else {
+            String assigneeIdentifier = userManagementService.findById(assignee).getUserIdentifier();
             final CamundaTask task = runWithoutAuthorization(() -> findTaskById(taskId));
-            final String currentUser = userManagementService.getCurrentUserId();
+            final String currentUser = userManagementService.getCurrentUser().getUserIdentifier();
             if (assignee.equals(currentUser)) {
                 try {
                     requirePermission(task, CLAIM);
@@ -190,14 +191,14 @@ public class CamundaTaskService {
             } else {
                 requirePermission(task, ASSIGN);
                 authorizationService.requirePermission(
-                    new DelegateUserEntityAuthorizationRequest<>(CamundaTask.class, ASSIGNABLE, assignee, task)
+                    new DelegateUserEntityAuthorizationRequest<>(CamundaTask.class, ASSIGNABLE, assigneeIdentifier, task)
                 );
             }
             final String currentAssignee = task.getAssignee();
             try {
-                taskService.setAssignee(task.getId(), assignee);
+                taskService.setAssignee(task.getId(), assigneeIdentifier);
                 entityManager.refresh(task);
-                publishTaskAssignedEvent(task, currentAssignee, assignee);
+                publishTaskAssignedEvent(task, currentAssignee, assigneeIdentifier);
                 outboxService.send(() -> new TaskAssigned(task.getId(), objectMapper.valueToTree(task)));
             } catch (AuthorizationException ex) {
                 throw new IllegalStateException("Cannot assign task: the user has no permission.", ex);
@@ -537,9 +538,9 @@ public class CamundaTaskService {
     }
 
     private ValtimoUser getValtimoUser(String assigneeId) {
-        return Optional.ofNullable(userManagementService.findById(assigneeId)).map(user ->
+        return Optional.ofNullable(userManagementService.findByUserIdentifier(assigneeId)).map(user ->
                 new ValtimoUserBuilder()
-                    .id(user.getId())
+                    .id(user.getUserIdentifier())
                     .firstName(user.getFirstName())
                     .lastName(user.getLastName())
                     .build())

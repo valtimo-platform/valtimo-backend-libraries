@@ -47,7 +47,7 @@ class CaseAssigneeListener(
         )
 
         if (caseSettings.canHaveAssignee && caseSettings.autoAssignTasks) {
-            val assignee = userManagementService.findById(document.assigneeId())
+            val assignee = userManagementService.findByUserIdentifier(document.assigneeId())
             val tasks = runWithoutAuthorization {
                 camundaTaskService.findTasks(
                     byProcessInstanceBusinessKey(document.id().toString())

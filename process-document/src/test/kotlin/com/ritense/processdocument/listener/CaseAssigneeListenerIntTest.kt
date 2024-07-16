@@ -117,9 +117,10 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
     fun `should set assignee when task is created and autoAssignTasks is on`() {
 
         whenever(userManagementService.findById(any())).thenReturn(testUser)
+        whenever(userManagementService.findByUserIdentifier(any())).thenReturn(testUser)
         whenever(userManagementService.currentUser).thenReturn(testUser)
 
-        runWithoutAuthorization { documentService.assignUserToDocument(testDocument.id().id, testUser.id) }
+        runWithoutAuthorization { documentService.assignUserToDocument(testDocument.id().id, testUser.userIdentifier) }
         val processInstance = runtimeService.startProcessInstanceByKey(
             "parent-process",
             testDocument.id().toString()
@@ -135,7 +136,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
         val task = runWithoutAuthorization {
             taskService.findTask(byName("child process user task"))
         }
-        assertEquals(task.assignee, testUser.id)
+        assertEquals(task.assignee, testUser.userIdentifier)
     }
 
     @Test
@@ -151,10 +152,11 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
         }
 
         whenever(userManagementService.findById(any())).thenReturn(testUser)
+        whenever(userManagementService.findByUserIdentifier(any())).thenReturn(testUser)
         whenever(userManagementService.currentUser).thenReturn(testUser)
 
         val task = runWithoutAuthorization {
-            documentService.assignUserToDocument(testDocument.id().id, testUser.id)
+            documentService.assignUserToDocument(testDocument.id().id, testUser.userIdentifier)
             val processInstance = runtimeService.startProcessInstanceByKey(
                 "parent-process",
                 testDocument.id().toString()
@@ -174,11 +176,12 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
     @Test
     fun `should should update task assignee when document assignee is changed`() {
 
-        whenever(userManagementService.findById(any())).thenReturn(testUser, testUser2)
+        whenever(userManagementService.findById(any())).thenReturn(testUser)
+        whenever(userManagementService.findByUserIdentifier(any())).thenReturn(testUser, testUser2)
         whenever(userManagementService.currentUser).thenReturn(testUser)
 
         val updatedTask = runWithoutAuthorization {
-            documentService.assignUserToDocument(testDocument.id().id, testUser.id)
+            documentService.assignUserToDocument(testDocument.id().id, testUser.userIdentifier)
             val processInstance = runtimeService.startProcessInstanceByKey(
                 "parent-process",
                 testDocument.id().toString()
@@ -190,11 +193,11 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
                 "parent process"
             )
 
-            documentService.assignUserToDocument(testDocument.id().id, testUser2.id)
+            documentService.assignUserToDocument(testDocument.id().id, testUser2.userIdentifier)
 
             taskService.findTask(byName("child process user task"))
         }
-        assertEquals(updatedTask.assignee, testUser2.id)
+        assertEquals(updatedTask.assignee, testUser2.userIdentifier)
     }
 
     @Test
@@ -202,10 +205,11 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
     fun `should should remove task assignee when document assignee is removed`() {
 
         whenever(userManagementService.findById(any())).thenReturn(testUser)
+        whenever(userManagementService.findByUserIdentifier(any())).thenReturn(testUser)
         whenever(userManagementService.currentUser).thenReturn(testUser)
 
         val task = runWithoutAuthorization {
-            documentService.assignUserToDocument(testDocument.id().id, testUser.id)
+            documentService.assignUserToDocument(testDocument.id().id, testUser.userIdentifier)
             val processInstance = runtimeService.startProcessInstanceByKey(
                 "parent-process",
                 testDocument.id().toString()
