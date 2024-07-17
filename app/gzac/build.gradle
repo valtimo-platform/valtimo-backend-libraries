@@ -31,14 +31,10 @@ bootRun {
     doFirst {
         File f = file(".env.properties")
         if (f.isFile()) {
-            f.readLines().each() {
-                if (!it.isEmpty() && !it.startsWith("#")) {
-                    def (key, value) = it.tokenize('=')
-                    // check if notNullOrBlank for key and value
-                    if (key?.trim() && value?.trim()) {
-                        environment key.trim(), value.trim()
-                    }
-                }
+            def props = new Properties()
+            f.withInputStream { props.load(it) }
+            props.each { key, value ->
+                environment key.toString(), value.toString()
             }
         }
     }

@@ -24,8 +24,10 @@ import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.processdocument.BaseTest
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.valtimo.contract.OauthConfigHolder
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
+import com.ritense.valtimo.contract.config.ValtimoProperties.Oauth
 import com.ritense.valtimo.contract.json.MapperSingleton
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
@@ -84,6 +86,8 @@ internal class DocumentDelegateServiceTest : BaseTest() {
         )
         delegateExecutionFake =
             DelegateExecutionFake("id").withProcessBusinessKey("56f29315-c581-4c26-9b70-8bc818e8c86e")
+
+        OauthConfigHolder(Oauth())
     }
 
     @Test

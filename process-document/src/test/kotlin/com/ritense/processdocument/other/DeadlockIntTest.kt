@@ -52,7 +52,7 @@ internal class DeadlockIntTest : BaseIntegrationTest() {
         admin.username = USERNAME
         admin.roles = listOf(USER, ADMIN)
         whenever(userManagementService.currentUser).thenReturn(admin)
-        whenever(userManagementService.findById(USERNAME)).thenReturn(admin)
+        whenever(userManagementService.findByUserIdentifier(USERNAME)).thenReturn(admin)
     }
 
     @Test

@@ -1,0 +1,18 @@
+{
+    "changesetId": "dashboard-v1",
+    "permissions": [
+        {
+            "resourceType": "com.ritense.dashboard.domain.Dashboard",
+            "action": "view",
+            "roleKey": "ROLE_ADMIN",
+            "conditions": [
+                {
+                    "type": "field",
+                    "field": "key",
+                    "operator": "==",
+                    "value": "my_admin_dashboard"
+                }
+            ]
+        }
+    ]
+}

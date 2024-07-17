@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class DocumentWidgetDataSourceIntTest @Autowired constructor(
     private val documentWidgetDataSource: DocumentWidgetDataSource
-): BaseIntegrationTest() {
+) : BaseIntegrationTest() {
 
     @Test
     fun `should count by documentDefinitionName`() {
@@ -111,8 +111,232 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
         assertThat(result.value).isEqualTo(4)
     }
 
+    @Test
+    fun `should group by documentDefinitionName, use criteria and resolve enum`() {
+        documentRepository.deleteAll()
+        val definition = definition()
+
+        val street1 = "Sesame Street"
+
+        repeat(2) {
+            createDocument(definition, street1)
+        }
+
+        val street2 = "Main Street"
+
+        repeat(3) {
+            createDocument(definition, street2)
+        }
+
+        val street3 = "3rd Street"
+
+        repeat(5) {
+            createDocument(definition, street3)
+        }
+
+        val documentDefinitionName = definition.id().name()
+
+        val openSesame = "Open sesame"
+
+        val properties = DocumentGroupByDataSourceProperties(
+            documentDefinitionName,
+            path = "doc:street",
+            listOf(
+                QueryCondition(
+                    "doc:street",
+                    ExpressionOperator.NOT_EQUAL_TO,
+                    street3
+                )
+            ),
+            mapOf(street1 to openSesame)
+        )
+
+        val result = documentWidgetDataSource.getCaseGroupBy(properties)
+
+        assertThat(result.values.size).isEqualTo(2)
+        assertThat(result.values[1].value).isEqualTo(2)
+        assertThat(result.values[1].label).isEqualTo(openSesame)
+        assertThat(result.values[0].value).isEqualTo(3)
+        assertThat(result.values[0].label).isEqualTo(street2)
+    }
+
+    @Test
+    fun `should resolve multiple case counts for a documentDefinitionName`() {
+        documentRepository.deleteAll()
+        val definition = definition()
+
+        val street1 = "Sesame Street"
+
+        repeat(2) {
+            createDocument(definition, street1)
+        }
+
+        val street2 = "Main Street"
+
+        repeat(3) {
+            createDocument(definition, street2)
+        }
+
+        val street3 = "3rd Street"
+
+        repeat(5) {
+            createDocument(definition, street3)
+        }
+
+        val documentDefinitionName = definition.id().name()
+
+        val livingOnSesameStreet = "Living on Sesame Street"
+        val livingOnMainStreet = "Living on Main Street"
+        val livingOn3rdStreet = "Living on 3rd Street"
+
+        val properties = DocumentCountsDataSourceProperties(
+            documentDefinitionName,
+            queryItems = listOf(
+                DocumentCountsQueryItem(
+                    livingOnSesameStreet,
+                    listOf(QueryCondition(
+                        "doc:street",
+                        ExpressionOperator.EQUAL_TO,
+                        street1
+                    ))
+
+                ),
+                DocumentCountsQueryItem(
+                    livingOnMainStreet,
+                    listOf(QueryCondition(
+                        "doc:street",
+                        ExpressionOperator.EQUAL_TO,
+                        street2
+                    ))
+
+                ),
+                DocumentCountsQueryItem(
+                    livingOn3rdStreet,
+                    listOf(QueryCondition(
+                        "doc:street",
+                        ExpressionOperator.EQUAL_TO,
+                        street3
+                    ))
+
+                )
+            )
+
+        )
+
+        val result = documentWidgetDataSource.getCaseCounts(properties)
+
+        assertThat(result.values.size).isEqualTo(3)
+        assertThat(result.values[0].label).isEqualTo(livingOnSesameStreet)
+        assertThat(result.values[0].value).isEqualTo(2)
+        assertThat(result.values[1].label).isEqualTo(livingOnMainStreet)
+        assertThat(result.values[1].value).isEqualTo(3)
+        assertThat(result.values[2].label).isEqualTo(livingOn3rdStreet)
+        assertThat(result.values[2].value).isEqualTo(5)
+    }
+
+    @Test
+    fun `should support by local date time in criteria`() {
+        documentRepository.deleteAll()
+
+        val definition = definition()
+
+        val street = "Sesame Street"
+
+        createDocument(definition, street)
+
+        val documentDefinitionName = definition.id().name()
+
+        val properties = DocumentCountDataSourceProperties(
+            documentDefinitionName,
+            listOf(
+                QueryCondition(
+                    "case:createdOn",
+                    ExpressionOperator.GREATER_THAN,
+                    "\${localDateTimeNow}"
+                ),
+                QueryCondition(
+                    "doc:street",
+                    ExpressionOperator.EQUAL_TO,
+                    street
+                ),
+            )
+        )
+
+        val properties2 = DocumentCountDataSourceProperties(
+            documentDefinitionName,
+            listOf(
+                QueryCondition(
+                    "case:createdOn",
+                    ExpressionOperator.GREATER_THAN,
+                    "\${localDateTimeNow.minusDays(1)}"
+                ),
+                QueryCondition(
+                    "doc:street",
+                    ExpressionOperator.EQUAL_TO,
+                    street
+                ),
+            )
+        )
+
+        val result1 = documentWidgetDataSource.getCaseCount(properties)
+        val result2 = documentWidgetDataSource.getCaseCount(properties2)
+
+        assertThat(result1.value).isEqualTo(0)
+        assertThat(result1.total).isEqualTo(1)
+        assertThat(result2.value).isEqualTo(1)
+        assertThat(result2.total).isEqualTo(1)
+    }
+
+    @Test
+    fun `should filter out null values when using group by`() {
+        documentRepository.deleteAll()
+        val definition = definition()
+
+        val street1 = "Sesame Street"
+
+        repeat(2) {
+            createDocument(definition, street1)
+        }
+
+        val street2 = "Back street"
+
+
+        repeat(4) {
+            createDocument(definition, street2)
+        }
+
+        repeat(3) {
+            createDocumentWithNullValue(definition)
+        }
+
+        val documentDefinitionName = definition.id().name()
+
+        val properties = DocumentGroupByDataSourceProperties(
+            documentDefinitionName,
+            path = "doc:street",
+            null,
+            null
+        )
+
+        val result = documentWidgetDataSource.getCaseGroupBy(properties)
+
+        assertThat(result.values.size).isEqualTo(2)
+    }
+
     private fun createDocument(documentDefinition: JsonSchemaDocumentDefinition, street: String = "Funenpark"): CreateDocumentResult? {
         val content = JsonDocumentContent("""{"street": "$street", "housenumber": 1}""")
+        return runWithoutAuthorization {
+            documentService.createDocument(
+                NewDocumentRequest(
+                    documentDefinition.id().name(),
+                    content.asJson()
+                )
+            )
+        }
+    }
+
+    private fun createDocumentWithNullValue(documentDefinition: JsonSchemaDocumentDefinition): CreateDocumentResult? {
+        val content = JsonDocumentContent("""{"street": null, "housenumber": 1}""")
         return runWithoutAuthorization {
             documentService.createDocument(
                 NewDocumentRequest(
