@@ -18,6 +18,7 @@ package com.ritense.dashboard.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.dashboard.BaseIntegrationTest
 import com.ritense.dashboard.domain.Dashboard
 import com.ritense.dashboard.domain.WidgetConfiguration
@@ -88,7 +89,10 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should get dashboards`() {
-        val dashboard = dashboardService.createDashboard("Test dashboard", "Test description")
+        val dashboard = runWithoutAuthorization {
+            dashboardService.createDashboard("Test dashboard", "Test description")
+        }
+
         createWidgetConfiguration(dashboard)
 
         mockMvc.perform(
@@ -104,7 +108,10 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should get dashboard by key`() {
-        val dashboard = dashboardService.createDashboard("Test dashboard", "Test description")
+        val dashboard = runWithoutAuthorization {
+            dashboardService.createDashboard("Test dashboard", "Test description")
+        }
+
         createWidgetConfiguration(dashboard)
 
         mockMvc.perform(
@@ -120,8 +127,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should create dashboard`() {
-        val dashboard =
-            DashboardCreateRequestDto("Test dashboard", "Test description")
+        val dashboard = DashboardCreateRequestDto("Test dashboard", "Test description")
 
         mockMvc.perform(
             post("/api/management/v1/dashboard")
@@ -137,8 +143,13 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should update dashboard`() {
-        val dashboard1 = dashboardService.createDashboard("First dashboard", "Test description")
-        val dashboard2 = dashboardService.createDashboard("Second dashboard", "Test description")
+        val dashboard1 = runWithoutAuthorization {
+            dashboardService.createDashboard("First dashboard", "Test description")
+        }
+        val dashboard2 = runWithoutAuthorization {
+            dashboardService.createDashboard("Second dashboard", "Test description")
+        }
+
         val updateRequest = listOf(dashboard2, dashboard1.copy(title = "Third dashboard"))
             .map { DashboardUpdateRequestDto.of(it) }
 
@@ -157,8 +168,10 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should delete dashboard`() {
-        val dashboard =
+        val dashboard = runWithoutAuthorization {
             dashboardService.createDashboard("Test dashboard", "Test description")
+        }
+
         createWidgetConfiguration(dashboard)
 
         mockMvc.perform(
@@ -172,8 +185,13 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should update single dashboard`() {
-        val dashboard1 = dashboardService.createDashboard("First dashboard", "Test description")
-        val dashboard2 = dashboardService.createDashboard("Second dashboard", "Test description")
+        val dashboard1 = runWithoutAuthorization {
+            dashboardService.createDashboard("First dashboard", "Test description")
+        }
+        val dashboard2 = runWithoutAuthorization {
+            dashboardService.createDashboard("Second dashboard", "Test description")
+        }
+
         val updateRequest = DashboardUpdateRequestDto.of(dashboard1.copy(title = "Third dashboard"))
 
         mockMvc.perform(
@@ -191,7 +209,10 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should get widget configurations`() {
-        val dashboard = dashboardService.createDashboard("Test dashboard", "Test description")
+        val dashboard = runWithoutAuthorization {
+            dashboardService.createDashboard("Test dashboard", "Test description")
+        }
+
         createWidgetConfiguration(dashboard)
 
         mockMvc.perform(
@@ -209,7 +230,10 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should create widget configuration`() {
-        dashboardService.createDashboard("Test dashboard", "Test description")
+        runWithoutAuthorization {
+            dashboardService.createDashboard("Test dashboard", "Test description")
+        }
+
         val widgetConfiguration = WidgetConfigurationCreateRequestDto(
             title = "Doorlooptijd",
             dataSourceKey = "doorlooptijd",
@@ -234,7 +258,10 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should update widget configurations`() {
-        val dashboard = dashboardService.createDashboard("Test dashboard", "Test description")
+        val dashboard = runWithoutAuthorization {
+            dashboardService.createDashboard("Test dashboard", "Test description")
+        }
+
         createWidgetConfiguration(dashboard)
 
         val widgetConfigurations = listOf(
@@ -265,7 +292,10 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should update widget configuration`() {
-        val dashboard = dashboardService.createDashboard("Test dashboard", "Test description")
+        val dashboard = runWithoutAuthorization {
+            dashboardService.createDashboard("Test dashboard", "Test description")
+        }
+
         createWidgetConfiguration(dashboard)
 
         val updateRequest = SingleWidgetConfigurationUpdateRequestDto(
@@ -293,7 +323,10 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should get widget configuration by id`() {
-        val dashboard = dashboardService.createDashboard("Test dashboard", "Test description")
+        val dashboard = runWithoutAuthorization {
+            dashboardService.createDashboard("Test dashboard", "Test description")
+        }
+
         createWidgetConfiguration(dashboard)
 
         mockMvc.perform(
@@ -310,7 +343,10 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should delete widget configuration`() {
-        val dashboard = dashboardService.createDashboard("Test dashboard", "Test description")
+        val dashboard = runWithoutAuthorization {
+            dashboardService.createDashboard("Test dashboard", "Test description")
+        }
+
         createWidgetConfiguration(dashboard)
 
         mockMvc.perform(
