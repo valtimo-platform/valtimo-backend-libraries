@@ -147,7 +147,8 @@ public class KeycloakUserManagementService implements UserManagementService {
             }
 
         }
-        return Boolean.TRUE.equals(user.isEnabled()) ? toValtimoUserByRetrievingRoles(user) : null;
+        Boolean isUserEnabled = user != null ? user.isEnabled() : null;
+        return Boolean.TRUE.equals(isUserEnabled) ? toValtimoUserByRetrievingRoles(user) : null;
     }
 
     @Override
