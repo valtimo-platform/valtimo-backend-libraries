@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.repository
+package com.ritense.dashboard.service
 
 import com.ritense.dashboard.domain.Dashboard
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor
-import org.springframework.stereotype.Repository
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.CriteriaQuery
+import jakarta.persistence.criteria.Root
+import org.springframework.data.jpa.domain.Specification
+import java.util.*
 
-@Repository
-interface DashboardRepository : JpaRepository<Dashboard, String>, JpaSpecificationExecutor<Dashboard> {
-
-    fun findAllByOrderByOrder(): List<Dashboard>
-
-    fun findByTitleAndDescription(title: String, description: String): Dashboard
-
-    fun findByTitle(title: String): List<Dashboard>
-
-    fun findByKey(key: String): Dashboard?
-
-    fun findByOrder(order: Int): Dashboard?
+class SpecificationHelper {
+    companion object {
+        fun orderByOrder(spec: Specification<Dashboard> ): Specification<Dashboard> {
+            return Specification { root, query, builder ->
+                query.orderBy(builder.asc(root.get<Int>("order")))
+                return@Specification spec.toPredicate(root, query, builder);
+            }
+        }
+    }
 }
