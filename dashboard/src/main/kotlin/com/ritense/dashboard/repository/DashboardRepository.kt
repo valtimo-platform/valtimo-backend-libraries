@@ -16,9 +16,7 @@
 
 package com.ritense.dashboard.repository
 
-import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.dashboard.domain.Dashboard
-import org.springframework.data.jpa.domain.Specification
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.stereotype.Repository
@@ -27,6 +25,10 @@ import org.springframework.stereotype.Repository
 interface DashboardRepository : JpaRepository<Dashboard, String>, JpaSpecificationExecutor<Dashboard> {
 
     fun findAllByOrderByOrder(): List<Dashboard>
+
+    fun findByTitleAndDescription(title: String, description: String): Dashboard
+
+    fun findByTitle(title: String): List<Dashboard>
 
     fun findByKey(key: String): Dashboard?
 

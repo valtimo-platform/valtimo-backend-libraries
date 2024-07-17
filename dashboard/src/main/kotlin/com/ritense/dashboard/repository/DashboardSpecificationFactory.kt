@@ -21,11 +21,10 @@ import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.specification.AuthorizationSpecificationFactory
 import com.ritense.dashboard.domain.Dashboard
-import com.ritense.dashboard.service.DashboardService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 
 class DashboardSpecificationFactory(
-    private var dashboardService: DashboardService,
+    private var repository: DashboardRepository,
     private var queryDialectHelper: QueryDialectHelper
 ) : AuthorizationSpecificationFactory<Dashboard> {
     override fun create(
@@ -35,7 +34,7 @@ class DashboardSpecificationFactory(
         return DashboardSpecification(
             request,
             permissions,
-            dashboardService,
+            repository,
             queryDialectHelper
         )
     }

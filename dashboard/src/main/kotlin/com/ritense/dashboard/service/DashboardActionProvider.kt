@@ -22,10 +22,11 @@ import com.ritense.dashboard.domain.Dashboard
 
 class DashboardActionProvider: ResourceActionProvider<Dashboard> {
     override fun getAvailableActions(): List<Action<Dashboard>> {
-        return listOf(VIEW)
+        return listOf(VIEW, VIEW_LIST)
     }
 
     companion object {
         var VIEW = Action<Dashboard>(Action.VIEW)
+        var VIEW_LIST = Action<Dashboard>(Action.VIEW_LIST)
     }
 }

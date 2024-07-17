@@ -13,6 +13,19 @@
                     "value": "second-dashboard"
                 }
             ]
+        },
+        {
+            "resourceType": "com.ritense.dashboard.domain.Dashboard",
+            "action": "view_list",
+            "roleKey": "ROLE_USER",
+            "conditions": [
+                {
+                    "type": "field",
+                    "field": "key",
+                    "operator": "==",
+                    "value": "second-dashboard"
+                }
+            ]
         }
     ]
 }

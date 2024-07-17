@@ -51,18 +51,18 @@ class DashboardService(
 
     @Transactional(readOnly = true)
     fun getDashboards(): List<Dashboard> {
-        if(authorizationEnabled) {
+        return if(authorizationEnabled) {
             val spec = authorizationService.getAuthorizationSpecification(
                 EntityAuthorizationRequest(
                     Dashboard::class.java,
-                    DashboardActionProvider.VIEW
+                    DashboardActionProvider.VIEW_LIST
                 ),
                 null
             )
 
-            return dashboardRepository.findAll(SpecificationHelper.orderByOrder(spec))
+            dashboardRepository.findAll(SpecificationHelper.orderByOrder(spec))
         } else {
-            return dashboardRepository.findAllByOrderByOrder()
+            dashboardRepository.findAllByOrderByOrder()
         }
     }
 
