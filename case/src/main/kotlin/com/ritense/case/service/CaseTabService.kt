@@ -65,7 +65,7 @@ class CaseTabService(
         return caseTab
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     fun getCaseTabs(caseDefinitionName: String): List<CaseTab> {
         val spec = authorizationService.getAuthorizationSpecification(
             EntityAuthorizationRequest(
@@ -76,7 +76,7 @@ class CaseTabService(
         return caseTabRepository.findAll(spec.and(byCaseDefinitionName(caseDefinitionName)), Sort.by(TAB_ORDER))
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     fun getCaseTabs(documentId: JsonSchemaDocumentId): List<CaseTab> {
         val document = runWithoutAuthorization { documentService.findByOrNull(documentId) }
 
@@ -91,7 +91,7 @@ class CaseTabService(
                 )
             )
         )
-        
+
         return caseTabRepository.findAll(
             spec.and(
                 byCaseDefinitionName(
