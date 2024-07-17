@@ -26,6 +26,7 @@ object PermissionConditionValueResolver {
                 "\${currentUserId}" -> UserManagementServiceHolder.currentInstance.currentUser.id
                 "\${currentUserEmail}" -> UserManagementServiceHolder.currentInstance.currentUser.email
                 "\${currentUserRoles}" -> UserManagementServiceHolder.currentInstance.currentUser.roles
+                "\${currentUserIdentifier}" -> UserManagementServiceHolder.currentInstance.currentUser.userIdentifier
                 else -> value
             }
         }

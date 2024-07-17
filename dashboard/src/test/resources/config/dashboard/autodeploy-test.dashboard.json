@@ -23,6 +23,13 @@
                     }
                 }
             ]
+        },
+        {
+            "key": "second-dashboard",
+            "title": "Second dashboard",
+            "description": "some description",
+            "order": 2,
+            "widgetConfigurations": []
         }
     ]
 }

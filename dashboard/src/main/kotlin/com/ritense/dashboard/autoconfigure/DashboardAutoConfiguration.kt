@@ -17,9 +17,11 @@
 package com.ritense.dashboard.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.authorization.AuthorizationService
 import com.ritense.dashboard.datasource.WidgetDataSourceResolver
 import com.ritense.dashboard.deployment.DashboardDeployer
 import com.ritense.dashboard.repository.DashboardRepository
+import com.ritense.dashboard.repository.DashboardSpecificationFactory
 import com.ritense.dashboard.repository.WidgetConfigurationRepository
 import com.ritense.dashboard.security.config.DashboardHttpSecurityConfigurer
 import com.ritense.dashboard.service.DashboardDataService
@@ -29,18 +31,19 @@ import com.ritense.dashboard.web.rest.DashboardResource
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
+import com.ritense.valtimo.contract.database.QueryDialectHelper
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
+import org.springframework.cache.annotation.EnableCaching
+import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import javax.sql.DataSource
-import org.springframework.cache.annotation.EnableCaching
-import org.springframework.context.ApplicationContext
 
 @AutoConfiguration
 @EnableJpaRepositories(basePackages = ["com.ritense.dashboard.repository"])
@@ -71,13 +74,17 @@ class DashboardAutoConfiguration {
         widgetConfigurationRepository: WidgetConfigurationRepository,
         userManagementService: UserManagementService,
         widgetDataSourceResolver: WidgetDataSourceResolver,
+        authorizationService: AuthorizationService,
+        @Value("\${valtimo.authorization.dashboard.enabled:false}") authorizationEnabled: Boolean
     ): DashboardService {
         return DashboardService(
             applicationContext,
             dashboardRepository,
             widgetConfigurationRepository,
             userManagementService,
-            widgetDataSourceResolver
+            widgetDataSourceResolver,
+            authorizationService,
+            authorizationEnabled
         )
     }
 
@@ -87,13 +94,19 @@ class DashboardAutoConfiguration {
         applicationContext: ApplicationContext,
         widgetDataSourceResolver: WidgetDataSourceResolver,
         widgetConfigurationRepository: WidgetConfigurationRepository,
-        objectMapper: ObjectMapper
+        objectMapper: ObjectMapper,
+        dashboardService: DashboardService,
+        authorizationService: AuthorizationService,
+        @Value("\${valtimo.authorization.dashboard.enabled:false}") authorizationEnabled: Boolean
     ): DashboardDataService {
         return DashboardDataService(
             applicationContext,
             widgetDataSourceResolver,
             widgetConfigurationRepository,
-            objectMapper
+            objectMapper,
+            dashboardService,
+            authorizationService,
+            authorizationEnabled
         )
     }
 
@@ -134,5 +147,13 @@ class DashboardAutoConfiguration {
             changelogService,
             clearTables
         )
+    }
+
+    @Bean
+    fun dashboardSpecificationFactory(
+        repository: DashboardRepository,
+        queryDialectHelper: QueryDialectHelper
+    ): DashboardSpecificationFactory {
+        return DashboardSpecificationFactory(repository, queryDialectHelper)
     }
 }

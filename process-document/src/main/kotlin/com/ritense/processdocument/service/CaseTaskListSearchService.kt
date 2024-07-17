@@ -311,7 +311,7 @@ class CaseTaskListSearchService(
                 "assignee" -> {
                     CaseTaskProperties.getByPropertyName("assignee")
                         ?.getValueFromObject(caseTask)
-                        ?.let { assigneeId -> userManagementService.findById(assigneeId as String).fullName }
+                        ?.let { assigneeId -> userManagementService.findByUserIdentifier(assigneeId as String).fullName }
                 }
 
                 else -> CaseTaskProperties.getByPropertyName(path)?.getValueFromObject(caseTask)
