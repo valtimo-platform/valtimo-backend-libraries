@@ -86,6 +86,9 @@ public class ProcessDocumentHttpSecurityConfigurer implements HttpSecurityConfig
                 .requestMatchers(antMatcher(
                     POST, "/api/v3/task"))
                 .authenticated()
+                .requestMatchers(antMatcher(
+                    POST, "/api/v1/document-definition/{caseDefinitionName}/task/search"))
+                .authenticated()
             );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);

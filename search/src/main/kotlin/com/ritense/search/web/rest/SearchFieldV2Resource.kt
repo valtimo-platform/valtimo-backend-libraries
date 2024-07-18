@@ -16,8 +16,8 @@
 
 package com.ritense.search.web.rest
 
-import com.ritense.search.domain.SearchFieldV2
 import com.ritense.search.service.SearchFieldV2Service
+import com.ritense.search.web.rest.dto.SearchFieldV2Dto
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import jakarta.validation.Valid
@@ -41,35 +41,51 @@ class SearchFieldV2Resource(
     @PostMapping("/{ownerId}")
     fun create(
         @PathVariable ownerId: String,
-        @Valid @RequestBody searchFieldV2: SearchFieldV2
+        @Valid @RequestBody searchFieldV2Dto: SearchFieldV2Dto
     ) =
-        ResponseEntity.ok(searchFieldV2Service.create(searchFieldV2))
+        ResponseEntity.ok(searchFieldV2Service.create(searchFieldV2Dto))
 
     @PutMapping("/{ownerId}/{key}")
     fun update(
         @PathVariable ownerId: String,
         @PathVariable key: String,
-        @Valid @RequestBody searchFieldV2: SearchFieldV2
+        @Valid @RequestBody searchFieldV2Dto: SearchFieldV2Dto
     ) =
-        ResponseEntity.ok(searchFieldV2Service.update(ownerId, key, searchFieldV2))
+        ResponseEntity.ok(searchFieldV2Service.update(ownerId, key, searchFieldV2Dto))
 
     @PutMapping("/{ownerId}/fields")
     fun updateList(
         @PathVariable ownerId: String,
-        @Valid @RequestBody searchFieldV2: List<SearchFieldV2>
+        @Valid @RequestBody searchFieldV2Dtos: List<SearchFieldV2Dto>
     ) =
-        ResponseEntity.ok(searchFieldV2Service.updateList(ownerId, searchFieldV2))
+        ResponseEntity.ok(searchFieldV2Service.updateList(ownerId, searchFieldV2Dtos))
 
+    @Deprecated("Since 12.1.0")
     @GetMapping("/{ownerId}")
     fun getAllByOwnerId(@PathVariable ownerId: String) =
         ResponseEntity.ok(searchFieldV2Service.findAllByOwnerId(ownerId))
 
+    @GetMapping("/{ownerType}/{ownerId}")
+    fun getAllByOwnerTypeAndOwnerId(@PathVariable ownerType: String, @PathVariable ownerId: String) =
+        ResponseEntity.ok(searchFieldV2Service.findAllByOwnerTypeAndOwnerId(ownerType, ownerId))
+
+    @Deprecated("Since 12.1.0")
     @DeleteMapping("/{ownerId}/{key}")
     fun delete(
         @PathVariable ownerId: String,
         @PathVariable key: String
     ): ResponseEntity<Any> {
         searchFieldV2Service.delete(ownerId, key)
+        return ResponseEntity.noContent().build()
+    }
+
+    @DeleteMapping("/{ownerType}/{ownerId}/{key}")
+    fun delete(
+        @PathVariable ownerType: String,
+        @PathVariable ownerId: String,
+        @PathVariable key: String
+    ): ResponseEntity<Any> {
+        searchFieldV2Service.delete(ownerType, ownerId, key)
         return ResponseEntity.noContent().build()
     }
 }
