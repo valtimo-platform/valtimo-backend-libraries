@@ -33,7 +33,14 @@ class TemporaryResourceStorageServiceTempDirIntegrationTest @Autowired construct
         val exception = assertThrows<java.nio.file.NoSuchFileException> {
             temporaryResourceStorageService.store("My file data".byteInputStream())
         }
-        assertThat(exception.message).startsWith("/my/non-existing/directory/for/temporary/files/temporaryResource")
+        var message = exception.message
+
+        if (message != null && message.startsWith("\\")) {
+            // Convert backslash path delimiters to forward slashes (e.g. for Windows)
+            message = message.replace("\\", "/")
+        }
+
+        assertThat(message).startsWith("/my/non-existing/directory/for/temporary/files/temporaryResource")
     }
 
 }
