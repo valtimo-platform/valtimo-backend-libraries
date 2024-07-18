@@ -32,6 +32,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -365,6 +366,58 @@ internal class ObjectManagementFacadeTest {
         val actualObjectRecord = actualObjectRequest.record
         assertThat(actualObjectRecord.typeVersion).isEqualTo(objectTypeVersion)
         assertThat(actualObjectRecord.data).isEqualTo(data)
+        assertThat(actualObjectRecord.startAt).isEqualTo(LocalDate.now())
+    }
+
+    @Test
+    fun shouldUpdateObject() {
+        val objectName = "myObject"
+        val objectUuid = UUID.randomUUID()
+        val data: JsonNode = JsonNodeFactory(false).objectNode()
+        val updateData: JsonNode = JsonNodeFactory(false).objectNode().put("test", "test")
+
+        val objectenApiPlugin = mock<ObjectenApiPlugin>()
+        val objecttypenApiPlugin = mock<ObjecttypenApiPlugin>()
+        prepareAccessObject(objectName, objectenApiPlugin, objecttypenApiPlugin)
+
+        val expectedUrl = URI.create("www.ritense.com")
+        whenever(objecttypenApiPlugin.getObjectTypeUrlById(objectTypeId)).thenReturn(expectedUrl)
+        whenever(objectenApiPlugin.url).thenReturn(expectedUrl)
+//        whenever(objectManagementRepository.findByTitle(objectName)).thenReturn(createObjectManagement())
+//        whenever(objectManagementFacade.updateObject(objectUuid, objectName, updateData)).thenReturn(
+//            createObjectWrapper(url = expectedUrl, uuid = objectUuid)
+//        )
+
+        val objectRecord = ObjectRecord(
+            typeVersion = objectTypeVersion,
+            data = data,
+            startAt = LocalDate.now()
+        )
+
+        val expectedObjectRequest = ObjectRequest(expectedUrl, objectRecord)
+
+        objectManagementFacade.createObject(objectName, data)
+
+        clearInvocations(objectManagementRepository, pluginService, objectenApiPlugin)
+
+        objectManagementFacade.updateObject(
+            objectId = objectUuid,
+            objectName = objectName,
+            data = updateData
+        )
+
+        verify(objectManagementRepository).findByTitle(objectName)
+        verify(pluginService).createInstance<ObjectenApiPlugin>(objectenApiPluginConfigurationId)
+        verify(pluginService).createInstance<ObjecttypenApiPlugin>(objecttypenApiPluginConfigurationId)
+        verifyNoMoreInteractions(objectManagementRepository, pluginService)
+
+        val objectRequestCaptor = argumentCaptor<ObjectRequest>()
+        verify(objectenApiPlugin).objectUpdate(any(), objectRequestCaptor.capture())
+        val actualObjectRequest = objectRequestCaptor.firstValue
+        assertThat(actualObjectRequest.type).isEqualTo(expectedObjectRequest.type)
+        val actualObjectRecord = actualObjectRequest.record
+        assertThat(actualObjectRecord.typeVersion).isEqualTo(objectTypeVersion)
+        assertThat(actualObjectRecord.data).isEqualTo(updateData)
         assertThat(actualObjectRecord.startAt).isEqualTo(LocalDate.now())
     }
 
