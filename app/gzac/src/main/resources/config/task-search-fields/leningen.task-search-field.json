@@ -9,7 +9,7 @@
                     "key": "voornaam",
                     "path": "doc:voornaam",
                     "dataType": "TEXT",
-                    "fieldType": "TEXT_CONTAINS",
+                    "fieldType": "SINGLE",
                     "matchType": "LIKE"
                 },
                 {
@@ -17,7 +17,7 @@
                     "key": "achternaam",
                     "path": "doc:achternaam",
                     "dataType": "TEXT",
-                    "fieldType": "TEXT_CONTAINS",
+                    "fieldType": "SINGLE",
                     "matchType": "LIKE"
                 }
             ]
