@@ -217,6 +217,8 @@ valtimo:
             clear-tables: true
         zgw-document-list-column:
             clear-tables: true
+        task-search-fields:
+            clear-tables: true
 
     outbox:
         enabled: true

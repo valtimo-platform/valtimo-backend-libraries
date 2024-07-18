@@ -35,6 +35,7 @@ import com.ritense.search.domain.SearchFieldV2
 import com.ritense.search.domain.SearchListColumn
 import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.search.service.SearchListColumnService
+import com.ritense.search.web.rest.dto.LegacySearchFieldV2Dto
 import jakarta.transaction.Transactional
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -177,7 +178,7 @@ internal class ObjectManagementServiceIntTest : BaseIntegrationTest() {
         )
 
         searchFieldV2Service.create(
-            SearchFieldV2(
+            LegacySearchFieldV2Dto(
                 ownerId = objectManagement.id.toString(),
                 key = "property1",
                 title = "property1",

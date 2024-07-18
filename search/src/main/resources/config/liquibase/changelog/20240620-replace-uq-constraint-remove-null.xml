@@ -1,0 +1,45 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright 2015-2024 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <property name="booleanFalseValue" value="0" dbms="mysql"/>
+    <property name="booleanFalseValue" value="false" dbms="postgresql"/>
+    <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
+    <property name="uuidType" value="uuid" dbms="h2,postgresql"/>
+
+    <changeSet id="add-owner_type-not-null-constraint" author="Ritense">
+        <addNotNullConstraint columnDataType="varchar(255)"
+                              columnName="owner_type"
+                              constraintName="search_field_v2_owner_type_nn"
+                              defaultNullValue="Legacy"
+                              tableName="search_field_v2"/>
+    </changeSet>
+
+    <changeSet id="remove-unique-contstraint" author="Ritense">
+        <dropUniqueConstraint  constraintName="unique-owner_id-column_key-constraint"
+                               tableName="search_field_v2"/>
+    </changeSet>
+
+    <changeSet id="add-unique-contstraint" author="Ritense">
+        <addUniqueConstraint constraintName="unique-owner_id-owner_type-column_key-constraint"
+                             columnNames="owner_type, owner_id, column_key"
+                             tableName="search_field_v2"/>
+    </changeSet>
+</databaseChangeLog>
