@@ -44,6 +44,7 @@ import com.ritense.search.domain.FieldType.RANGE
 import com.ritense.search.domain.FieldType.SINGLE
 import com.ritense.search.domain.FieldType.SINGLE_SELECT_DROPDOWN
 import com.ritense.search.domain.FieldType.TEXT_CONTAINS
+import com.ritense.search.domain.LEGACY_OWNER_TYPE
 import com.ritense.search.domain.SearchFieldV2
 import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.search.service.SearchListColumnService
@@ -139,7 +140,7 @@ class ObjectManagementService(
         val objectManagement = getById(id)
             ?: throw IllegalStateException("The requested Id is not configured as a object management configuration. The requested id was: $id")
 
-        val searchFieldList = searchFieldV2Service.findAllByOwnerId(id.toString())!!
+        val searchFieldList = searchFieldV2Service.findAllByOwnerTypeAndOwnerId(LEGACY_OWNER_TYPE, id.toString())
 
         val searchDtoList = searchFieldList.flatMap { searchField ->
             searchWithConfigRequest.otherFilters
