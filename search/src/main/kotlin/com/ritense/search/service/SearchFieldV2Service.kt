@@ -61,7 +61,8 @@ class SearchFieldV2Service(
                 title = searchFieldV2.title,
                 order = searchFieldV2.order,
                 dataType = searchFieldV2.dataType,
-                fieldType = searchFieldV2.fieldType
+                fieldType = searchFieldV2.fieldType,
+                matchType = searchFieldV2.matchType
             )
         )
     }
