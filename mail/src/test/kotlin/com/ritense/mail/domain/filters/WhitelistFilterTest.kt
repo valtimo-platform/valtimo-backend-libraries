@@ -43,8 +43,9 @@ internal class WhitelistFilterTest : BaseTest() {
             MailingProperties(whitelistedEmailAddresses = listOf(whitelistRecipient.email.get()))
         )
         val rawMailMessageTest: RawMailMessage = rawMailMessage(testRecipient)
-        whitelistFilter.doFilter(rawMailMessageTest)
+        val filteredMessage = whitelistFilter.doFilter(rawMailMessageTest)
 
+        assertThat(filteredMessage.isPresent).isFalse
         assertThat(rawMailMessageTest.recipients.isPresent).isFalse
         assertThat(rawMailMessageTest.recipients.get()).isEmpty()
     }
@@ -55,8 +56,9 @@ internal class WhitelistFilterTest : BaseTest() {
             MailingProperties(whitelistedEmailAddresses = listOf(whitelistRecipient.email.get()))
         )
         val rawMailMessageTest: RawMailMessage = rawMailMessage(whitelistRecipient)
-        whitelistFilter.doFilter(rawMailMessageTest)
+        val filteredMessage = whitelistFilter.doFilter(rawMailMessageTest)
 
+        assertThat(filteredMessage.isPresent).isTrue
         assertThat(rawMailMessageTest.recipients.isPresent).isTrue
         assertThat(rawMailMessageTest.recipients.get()).containsOnly(whitelistRecipient)
     }
