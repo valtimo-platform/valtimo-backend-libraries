@@ -16,11 +16,21 @@
 
 package com.ritense.search.domain
 
-enum class SearchFieldMatchType(val simpleName: String) {
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonValue
+
+enum class SearchFieldMatchType(@JsonValue val key: String) {
     LIKE("like"),
     EXACT("exact");
 
-    override fun toString(): String {
-        return simpleName
+    companion object {
+        /**
+         * This creator allows for null, empty or non-matching keys to result in a null value.
+         */
+        @JvmStatic
+        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+        fun create(key: String?): SearchFieldMatchType? {
+            return SearchFieldMatchType.entries.find { it.key.equals(key, true) }
+        }
     }
 }

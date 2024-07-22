@@ -100,9 +100,9 @@ class SearchFieldDeployerTest {
                                 "title": "Voornaam",
                                 "key": "voornaam",
                                 "path": "doc:voornaam",
-                                "dataType": "TEXT",
-                                "fieldType": "TEXT_CONTAINS",
-                                "matchType": "LIKE"
+                                "dataType": "text",
+                                "fieldType": "text_contains",
+                                "matchType": "like"
                             }
                         ]
                     }
@@ -132,9 +132,9 @@ class SearchFieldDeployerTest {
                                 "title": "Voornaam",
                                 "key": "voornaam",
                                 "path": "doc:voornaam",
-                                "dataType": "TEXT",
-                                "fieldType": "TEXT_CONTAINS",
-                                "matchType": "LIKE"
+                                "dataType": "text",
+                                "fieldType": "text_contains",
+                                "matchType": "like"
                             }
                         ]
                     }
@@ -175,9 +175,9 @@ class SearchFieldDeployerTest {
                                 "title": "Voornaam",
                                 "key": "voornaam",
                                 "path": "doc:voornaam",
-                                "dataType": "TEXT",
-                                "fieldType": "TEXT_CONTAINS",
-                                "matchType": "LIKE"
+                                "dataType": "text",
+                                "fieldType": "text_contains",
+                                "matchType": "like"
                             }
                         ]
                     }
