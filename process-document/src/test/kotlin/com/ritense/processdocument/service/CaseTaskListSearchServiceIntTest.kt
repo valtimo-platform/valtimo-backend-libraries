@@ -33,6 +33,7 @@ import com.ritense.search.domain.DataType
 import com.ritense.search.domain.FieldType
 import com.ritense.search.domain.SearchFieldMatchType
 import com.ritense.search.service.SearchFieldV2Service
+import com.ritense.valtimo.contract.Constants
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import com.ritense.valtimo.service.CamundaTaskService
 import org.assertj.core.api.Assertions.assertThat
@@ -121,6 +122,36 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
             )
         )
 
+        searchFieldV2Service.create(
+            TaskListSearchFieldV2Dto(
+                id = UUID.randomUUID(),
+                ownerId = definition!!.id!!.name(),
+                key = "caseCreatedBy",
+                title = "Case created by",
+                path = "case:createdBy",
+                order = 1,
+                dataType = DataType.TEXT,
+                fieldType = FieldType.SINGLE,
+                matchType = SearchFieldMatchType.EXACT,
+                dropdownDataProvider = null
+            )
+        )
+
+        searchFieldV2Service.create(
+            TaskListSearchFieldV2Dto(
+                id = UUID.randomUUID(),
+                ownerId = definition!!.id!!.name(),
+                key = "taskName",
+                title = "Task name",
+                path = "task:name",
+                order = 1,
+                dataType = DataType.TEXT,
+                fieldType = FieldType.SINGLE,
+                matchType = SearchFieldMatchType.EXACT,
+                dropdownDataProvider = null
+            )
+        )
+
         runWithoutAuthorization {
             camundaProcessJsonSchemaDocumentService.startProcessForDocument(
                 StartProcessForDocumentRequest(
@@ -152,6 +183,56 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
         val filter = SearchWithConfigRequest.SearchWithConfigFilter()
         filter.key = "street"
         filter.setValues(listOf("Herengracht"))
+
+        val searchResult = searchTasks(filter)
+        assertThat(searchResult).isEmpty()
+    }
+
+    @Test
+    @Throws(JsonProcessingException::class)
+    fun shouldFindTaskByCaseDefinitionName() {
+        val filter = SearchWithConfigRequest.SearchWithConfigFilter()
+        filter.key = "caseCreatedBy"
+        filter.setValues(listOf(Constants.SYSTEM_ACCOUNT))
+
+        val searchResult = searchTasks(filter)
+        assertThat(searchResult).hasSize(1)
+
+        val matchedResult = searchResult!!.content[0]
+        assertThat(matchedResult.name).isEqualTo("Akkoord op lening?")
+    }
+
+    @Test
+    @Throws(JsonProcessingException::class)
+    fun shouldNotFindTaskByCaseDefinitionName() {
+        val filter = SearchWithConfigRequest.SearchWithConfigFilter()
+        filter.key = "caseCreatedBy"
+        filter.setValues(listOf("!${Constants.SYSTEM_ACCOUNT}"))
+
+        val searchResult = searchTasks(filter)
+        assertThat(searchResult).isEmpty()
+    }
+
+    @Test
+    @Throws(JsonProcessingException::class)
+    fun shouldFindTaskByTaskName() {
+        val filter = SearchWithConfigRequest.SearchWithConfigFilter()
+        filter.key = "taskName"
+        filter.setValues(listOf("Akkoord op lening?"))
+
+        val searchResult = searchTasks(filter)
+        assertThat(searchResult).hasSize(1)
+
+        val matchedResult = searchResult!!.content[0]
+        assertThat(matchedResult.name).isEqualTo("Akkoord op lening?")
+    }
+
+    @Test
+    @Throws(JsonProcessingException::class)
+    fun shouldNotFindTaskByTaskName() {
+        val filter = SearchWithConfigRequest.SearchWithConfigFilter()
+        filter.key = "taskName"
+        filter.setValues(listOf("!Akkoord op lening?"))
 
         val searchResult = searchTasks(filter)
         assertThat(searchResult).isEmpty()

@@ -59,6 +59,12 @@ import jakarta.persistence.criteria.Order
 import jakarta.persistence.criteria.Path
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
+import org.apache.commons.lang3.NotImplementedException
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import java.sql.Time
 import java.sql.Timestamp
 import java.time.Instant
@@ -74,15 +80,9 @@ import java.util.Locale
 import java.util.UUID
 import java.util.function.Consumer
 import java.util.stream.Collectors
-import org.apache.commons.lang3.NotImplementedException
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
 
 
-public const val SEARCH_FIELD_OWNER_TYPE = "TaskListSearchColumns"
+const val SEARCH_FIELD_OWNER_TYPE = "TaskListSearchColumns"
 
 class CaseTaskListSearchService(
     private val entityManager: EntityManager,
@@ -118,7 +118,8 @@ class CaseTaskListSearchService(
     fun searchTaskListRows(
         caseDefinitionName: String,
         searchWithConfigRequest: SearchWithConfigRequest,
-        pageable: Pageable): Page<TaskListRowDto> {
+        pageable: Pageable
+    ): Page<TaskListRowDto> {
         val taskListColumns = taskListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAsc(
             caseDefinitionName
         ).ifEmpty { defaultColumns }
@@ -195,9 +196,7 @@ class CaseTaskListSearchService(
         // Can't use singleResult here due to the group by issue mentioned above.
         val count = entityManager.createQuery(countQuery).resultList.sum()
 
-        val pagedQuery = entityManager.createQuery(
-            query,
-        )
+        val pagedQuery = entityManager.createQuery(query)
             .setFirstResult(pageable.offset.toInt())
             .setMaxResults(pageable.pageSize)
 
@@ -217,7 +216,7 @@ class CaseTaskListSearchService(
 
         val assignmentFilterPredicate: Predicate = constructAssignmentFilter(advancedSearchRequest.assigneeFilter, cb, taskRoot)
 
-        val searchRequestPredicate: Array<Predicate> = constructSearchCriteriaFilter(advancedSearchRequest, cb, query, documentRoot)
+        val searchRequestPredicate: Array<Predicate> = constructSearchCriteriaFilter(advancedSearchRequest, cb, query, taskRoot, documentRoot)
 
         val where = cb.and(
             cb.equal(
@@ -261,6 +260,7 @@ class CaseTaskListSearchService(
         searchRequest: AdvancedSearchRequest,
         cb: CriteriaBuilder,
         query: CriteriaQuery<*>,
+        taskRoot: Root<CamundaTask>,
         documentRoot: Root<JsonSchemaDocument>
     ): Array<Predicate> {
         val predicates = mutableListOf<Predicate>()
@@ -277,7 +277,7 @@ class CaseTaskListSearchService(
         )
 
         if (searchRequest.otherFilters != null && searchRequest.otherFilters.isNotEmpty()) {
-            predicates.add(getOtherFilersPredicate(cb, documentRoot, searchRequest))
+            predicates.add(getOtherFiltersPredicate(cb, taskRoot, documentRoot, searchRequest))
         }
 
         if (searchRequest.statusFilter != null && searchRequest.statusFilter.isNotEmpty()) {
@@ -287,18 +287,20 @@ class CaseTaskListSearchService(
         return predicates.toTypedArray()
     }
 
-    private fun getOtherFilersPredicate(
+    private fun getOtherFiltersPredicate(
         cb: CriteriaBuilder,
-        root: Root<JsonSchemaDocument>,
+        taskRoot: Root<CamundaTask>,
+        documentRoot: Root<JsonSchemaDocument>,
         searchRequest: AdvancedSearchRequest
     ): Predicate {
         val jsonPredicates: Array<Predicate> = searchRequest.otherFilters.map { currentCriteria: AdvancedSearchRequest.OtherFilter ->
-                buildQueryForSearchCriteria(
-                    cb,
-                    root,
-                    currentCriteria
-                )
-            }.toTypedArray()
+            buildQueryForSearchCriteria(
+                cb,
+                taskRoot,
+                documentRoot,
+                currentCriteria
+            )
+        }.toTypedArray()
 
         return if (searchRequest.searchOperator == SearchOperator.AND) {
             cb.and(*jsonPredicates)
@@ -326,17 +328,20 @@ class CaseTaskListSearchService(
 
     private fun buildQueryForSearchCriteria(
         cb: CriteriaBuilder,
-        root: Root<JsonSchemaDocument>,
+        taskRoot: Root<CamundaTask>,
+        documentRoot: Root<JsonSchemaDocument>,
         searchCriteria: AdvancedSearchRequest.OtherFilter
     ): Predicate {
-        val value: Expression<Comparable<Any>>
-        if (searchCriteria.path.startsWith(DOC_PREFIX)) {
-            value = getValueExpressionForDocPrefix(cb, root, searchCriteria)
-        } else if (searchCriteria.path.startsWith(CASE_PREFIX)) {
-            value = getValueExpressionForCasePrefix(root, searchCriteria)
-        } else {
-            throw IllegalArgumentException("Search path doesn't start with known prefix: '" + searchCriteria.path + "'")
-        }
+        val value: Expression<Comparable<Any>> =
+            if (searchCriteria.path.startsWith(DOC_PREFIX)) {
+                getValueExpressionForDocPrefix(cb, documentRoot, searchCriteria)
+            } else if (searchCriteria.path.startsWith(CASE_PREFIX)) {
+                getValueExpressionForCasePrefix(documentRoot, searchCriteria)
+            } else if (searchCriteria.path.startsWith(TASK_PREFIX)) {
+                getValueExpressionForTaskPrefix(taskRoot, searchCriteria)
+            } else {
+                throw IllegalArgumentException("Search path doesn't start with known prefix: '" + searchCriteria.path + "'")
+            }
 
         val rangeFrom = searchCriteria.getRangeFrom<Comparable<Any>>()
         val rangeTo = searchCriteria.getRangeTo<Comparable<Any>>()
@@ -367,6 +372,14 @@ class CaseTaskListSearchService(
         )
     }
 
+    private fun getValueExpressionForTaskPrefix(
+        taskRoot: Root<CamundaTask>,
+        searchCriteria: AdvancedSearchRequest.OtherFilter
+    ): Expression<Comparable<Any>> {
+        val taskColumnName = searchCriteria.path.substring(TASK_PREFIX.length)
+        return taskRoot.get<Any>(taskColumnName).`as`(searchCriteria.getDataType())
+    }
+
     private fun getValueExpressionForCasePrefix(
         documentRoot: Root<JsonSchemaDocument>,
         searchCriteria: AdvancedSearchRequest.OtherFilter
@@ -386,9 +399,9 @@ class CaseTaskListSearchService(
         }
         val jsonValueLower = cb.lower(jsonValue as Expression<String>)
         return values.map { value ->
-                value.toString().trim { it <= ' ' }
-                    .lowercase(Locale.getDefault())
-            }
+            value.toString().trim { it <= ' ' }
+                .lowercase(Locale.getDefault())
+        }
             .map { stringValue: String ->
                 cb.like(
                     jsonValueLower,
@@ -414,9 +427,9 @@ class CaseTaskListSearchService(
         } else {
             val jsonValueLower = cb.lower(jsonValue as Expression<String?>)
             return values.map { value ->
-                    value.toString().trim { it <= ' ' }
-                        .lowercase(Locale.getDefault())
-                }
+                value.toString().trim { it <= ' ' }
+                    .lowercase(Locale.getDefault())
+            }
                 .map { stringValue: String? ->
                     cb.equal(
                         jsonValueLower,
@@ -524,6 +537,7 @@ class CaseTaskListSearchService(
                             String::class.java
                         )
                     }
+
                     property.startsWith("$.") -> {
                         expression = cb.lower(
                             queryDialectHelper.getJsonValueExpression(
@@ -535,9 +549,11 @@ class CaseTaskListSearchService(
                             )
                         )
                     }
+
                     property.startsWith(TASK_PREFIX) -> {
                         expression = taskRoot.get<Any>(property.substring(TASK_PREFIX.length))
                     }
+
                     else -> {
                         var docProperty =
                             if (property.startsWith(CASE_PREFIX)) property.substring(
