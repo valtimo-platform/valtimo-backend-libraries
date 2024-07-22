@@ -8,17 +8,17 @@
                     "title": "Voornaam",
                     "key": "voornaam",
                     "path": "doc:voornaam",
-                    "dataType": "TEXT",
-                    "fieldType": "SINGLE",
-                    "matchType": "LIKE"
+                    "dataType": "text",
+                    "fieldType": "single",
+                    "matchType": "like"
                 },
                 {
                     "title": "Achternaam",
                     "key": "achternaam",
                     "path": "doc:achternaam",
-                    "dataType": "TEXT",
-                    "fieldType": "SINGLE",
-                    "matchType": "LIKE"
+                    "dataType": "text",
+                    "fieldType": "single",
+                    "matchType": "like"
                 }
             ]
         }
