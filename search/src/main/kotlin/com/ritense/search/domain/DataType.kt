@@ -16,11 +16,25 @@
 
 package com.ritense.search.domain
 
-enum class DataType {
-    TEXT,
-    NUMBER,
-    DATE,
-    DATETIME,
-    TIME,
-    BOOLEAN
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonValue
+
+enum class DataType(@JsonValue val key: String) {
+    TEXT("text"),
+    NUMBER("number"),
+    DATE("date"),
+    DATETIME("datetime"),
+    TIME("time"),
+    BOOLEAN("boolean");
+
+    companion object {
+        /**
+         * This creator allows for null, empty or non-matching keys to result in a null value.
+         */
+        @JvmStatic
+        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+        fun create(key: String?): DataType? {
+            return entries.find { it.key.equals(key, true) }
+        }
+    }
 }

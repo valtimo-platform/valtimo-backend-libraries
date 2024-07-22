@@ -34,7 +34,7 @@ import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
 
-class ObjectManagementFacade(
+class   ObjectManagementFacade(
     private val objectManagementRepository: ObjectManagementRepository,
     private val pluginService: PluginService
 ) {
