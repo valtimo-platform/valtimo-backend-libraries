@@ -177,7 +177,7 @@ class ObjectManagementFacade(
                     objectRequest
                 )
         } catch (ex: WebClientResponseException) {
-            throw Exception("Exception thrown while making a call to the Objects API. Response from the API: ${ex.responseBodyAsString}")
+            throw Exception("Error while updating object ${objectId}. Response from Objects API: ${ex.responseBodyAsString}")
         }
     }
 

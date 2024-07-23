@@ -383,10 +383,6 @@ internal class ObjectManagementFacadeTest {
         val expectedUrl = URI.create("www.ritense.com")
         whenever(objecttypenApiPlugin.getObjectTypeUrlById(objectTypeId)).thenReturn(expectedUrl)
         whenever(objectenApiPlugin.url).thenReturn(expectedUrl)
-//        whenever(objectManagementRepository.findByTitle(objectName)).thenReturn(createObjectManagement())
-//        whenever(objectManagementFacade.updateObject(objectUuid, objectName, updateData)).thenReturn(
-//            createObjectWrapper(url = expectedUrl, uuid = objectUuid)
-//        )
 
         val objectRecord = ObjectRecord(
             typeVersion = objectTypeVersion,
