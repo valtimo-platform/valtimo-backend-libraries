@@ -149,6 +149,38 @@ class   ObjectManagementFacade(
         }
     }
 
+    fun updateObject(
+        objectId: UUID,
+        objectName: String,
+        data: JsonNode,
+    ): ObjectWrapper {
+        val accessObject = getAccessObject(objectName)
+        val objectTypeUrl =
+            accessObject.objectTypenApiPlugin.getObjectTypeUrlById(accessObject.objectManagement.objecttypeId)
+
+        val objectRequest = ObjectRequest(
+            objectTypeUrl,
+            ObjectRecord(
+                typeVersion = accessObject.objectManagement.objecttypeVersion,
+                data = data,
+                startAt = LocalDate.now()
+            )
+        )
+
+        try {
+            logger.trace { "Updating object $objectRequest" }
+            return accessObject.objectenApiPlugin
+                .objectUpdate(
+                    URI(
+                        accessObject.objectenApiPlugin.url.toString() + "objects/" + objectId
+                    ),
+                    objectRequest
+                )
+        } catch (ex: WebClientResponseException) {
+            throw Exception("Error while updating object ${objectId}. Response from Objects API: ${ex.responseBodyAsString}")
+        }
+    }
+
     private fun getAccessObject(objectName: String): ObjectManagementAccessObject {
         val objectManagement = objectManagementRepository.findByTitle(objectName)
             ?: throw NoSuchElementException("Object type $objectName is not found in Object Management.")
