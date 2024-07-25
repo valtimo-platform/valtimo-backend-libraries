@@ -17,6 +17,8 @@
 package com.ritense.resource.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.resource.listener.MetadataAvailableEventListener
+import com.ritense.resource.repository.ResourceStorageMetadataRepository
 import com.ritense.resource.security.config.TemporaryResourceStorageHttpSecurityConfigurer
 import com.ritense.resource.service.TemporaryResourceStorageDeletionService
 import com.ritense.resource.service.TemporaryResourceStorageService
@@ -24,10 +26,10 @@ import com.ritense.resource.web.rest.TemporaryResourceStorageResource
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.core.annotation.Order
 import org.springframework.scheduling.annotation.EnableScheduling
 
@@ -79,6 +81,14 @@ class TemporaryResourceStorageAutoConfiguration {
     @ConditionalOnMissingBean(TemporaryResourceStorageHttpSecurityConfigurer::class)
     fun temporaryResourceStorageHttpSecurityConfigurer(): TemporaryResourceStorageHttpSecurityConfigurer {
         return TemporaryResourceStorageHttpSecurityConfigurer()
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(MetadataAvailableEventListener::class)
+    fun metadataAvailableEventListener(
+        resourceStorageMetadataRepository: ResourceStorageMetadataRepository,
+    ): MetadataAvailableEventListener {
+        return MetadataAvailableEventListener(resourceStorageMetadataRepository)
     }
 
 }
