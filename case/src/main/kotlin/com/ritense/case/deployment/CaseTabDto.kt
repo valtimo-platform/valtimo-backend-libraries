@@ -16,15 +16,21 @@
 
 package com.ritense.case.deployment
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.ritense.case.domain.CaseTab
+import com.ritense.case.domain.CaseTabType
 
-class CaseTabChangeset(
-    val changesetId: String,
-    @JsonProperty("case-definitions")
-    val caseDefinitions: List<CaseDefinitionsTabCollection>
-)
-
-class CaseDefinitionsTabCollection(
+data class CaseTabDto(
     val key: String,
-    val tabs: List<CaseTabDto>
-)
+    val name: String? = null,
+    val type: CaseTabType,
+    val contentKey: String
+) {
+    companion object {
+        fun of(caseTab: CaseTab) = CaseTabDto(
+            caseTab.id.key,
+            caseTab.name,
+            caseTab.type,
+            caseTab.contentKey
+        )
+    }
+}
