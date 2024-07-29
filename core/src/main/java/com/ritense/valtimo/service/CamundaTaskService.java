@@ -526,7 +526,7 @@ public class CamundaTaskService {
         var filterSpec = all();
 
         if (taskFilter == TaskFilter.MINE) {
-            String currentUserId = userManagementService.getCurrentUserId();
+            String currentUserId = userManagementService.getCurrentUser().getUserIdentifier();
             return filterSpec.and(byAssignee(currentUserId));
         } else if (taskFilter == TaskFilter.ALL) {
             return filterSpec;
