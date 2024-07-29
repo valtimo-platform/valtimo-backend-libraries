@@ -8,22 +8,19 @@
                     "name": "Standard",
                     "key": "standard",
                     "type": "standard",
-                    "contentKey": "standard",
-                    "showTasks": false
+                    "contentKey": "standard"
                 },
                 {
                     "name": "Custom tab",
                     "key": "custom-tab",
                     "type": "custom",
-                    "contentKey": "some-custom-component",
-                    "showTasks": false
+                    "contentKey": "some-custom-component"
                 },
                 {
                     "name": "FormIO tab",
                     "key": "formio-tab",
                     "type": "formio",
-                    "contentKey": "test-form",
-                    "showTasks": false
+                    "contentKey": "test-form"
                 }
             ]
         }
