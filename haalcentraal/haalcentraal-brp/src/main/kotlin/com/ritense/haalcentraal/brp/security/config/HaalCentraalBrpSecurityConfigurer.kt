@@ -20,7 +20,7 @@ import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import javax.ws.rs.HttpMethod.GET
+import org.springframework.http.HttpMethod.GET
 
 class HaalCentraalBrpSecurityConfigurer : HttpSecurityConfigurer {
 
