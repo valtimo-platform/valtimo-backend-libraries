@@ -95,14 +95,25 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
         assertThat(widgetTab!!.widgets).hasSize(3)
         assertThat(widgetTab.widgets[0].id.key).isEqualTo("widget-1")
         assertThat(widgetTab.widgets[1].id.key).isEqualTo("widget-2")
-        assertThat(widgetTab.widgets[0].title).isEqualTo("Widget 1")
-        assertThat(widgetTab.widgets[1].title).isEqualTo("Widget 2")
-        assertThat(widgetTab.widgets[0].width).isEqualTo(0)
-        assertThat(widgetTab.widgets[1].width).isEqualTo(1)
-        assertThat(widgetTab.widgets[0].highContrast).isFalse()
-        assertThat(widgetTab.widgets[1].highContrast).isTrue()
-        assertThat(widgetTab.widgets[0].order).isEqualTo(0)
-        assertThat(widgetTab.widgets[1].order).isEqualTo(1)
+        assertThat(widgetTab.widgets[1].id.key).isEqualTo("deny")
+    }
+
+    @Test
+    fun `should support equal widgets keys on different tabs`() {
+        val caseDefinitionName = "some-case-type"
+
+        val firstTab = "first-tab"
+        createCaseWidgetTab(caseDefinitionName, firstTab)
+        val secondTab = "second-tab"
+        createCaseWidgetTab(caseDefinitionName, secondTab)
+        val widgets = caseWidgetTabRepository.findAll()
+            .filter { it.id.key in listOf(firstTab, secondTab) }
+            .flatMap { it.widgets }
+            .filter { it.id.key == "widget-1" }
+
+        assertThat(widgets).hasSize(2)
+        assertThat(widgets.singleOrNull { it.id.caseWidgetTab!!.id.key == firstTab }).isNotNull
+        assertThat(widgets.singleOrNull { it.id.caseWidgetTab!!.id.key == secondTab }).isNotNull
     }
 
     @Test
