@@ -3,6 +3,7 @@ package com.ritense.case_.widget.collection
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.case_.domain.tab.CaseWidgetTab
+import com.ritense.case_.domain.tab.CaseWidgetTabWidgetId
 import com.ritense.case_.widget.exception.InvalidCollectionException
 import com.ritense.case_.widget.exception.InvalidCollectionNodeTypeException
 import com.ritense.valtimo.contract.json.MapperSingleton
@@ -190,7 +191,7 @@ class CollectionCaseWidgetDataProviderTest(
     }
 
     private fun testWidget() = CollectionCaseWidget(
-        "test", "Test", 0, 1, true, CollectionWidgetProperties(
+        CaseWidgetTabWidgetId("test"), "Test", 0, 1, true, CollectionWidgetProperties(
             collection = "test:someCollection",
             defaultPageSize = 2,
             title = CollectionWidgetProperties.TitleField("$.firstName"),

@@ -93,8 +93,8 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
         assertThat(widgetTab).isNotNull
 
         assertThat(widgetTab!!.widgets).hasSize(3)
-        assertThat(widgetTab.widgets[0].key).isEqualTo("widget-1")
-        assertThat(widgetTab.widgets[1].key).isEqualTo("widget-2")
+        assertThat(widgetTab.widgets[0].id.key).isEqualTo("widget-1")
+        assertThat(widgetTab.widgets[1].id.key).isEqualTo("widget-2")
         assertThat(widgetTab.widgets[0].title).isEqualTo("Widget 1")
         assertThat(widgetTab.widgets[1].title).isEqualTo("Widget 2")
         assertThat(widgetTab.widgets[0].width).isEqualTo(0)
@@ -144,8 +144,8 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
         assertThat(widgetTab).isNotNull
 
         assertThat(widgetTab!!.widgets).hasSize(3)
-        assertThat(widgetTab.widgets[0].key).isEqualTo("widget-1")
-        assertThat(widgetTab.widgets[1].key).isEqualTo("widget-2")
+        assertThat(widgetTab.widgets[0].id.key).isEqualTo("widget-1")
+        assertThat(widgetTab.widgets[1].id.key).isEqualTo("widget-2")
         assertThat(widgetTab.widgets[0].order).isEqualTo(0)
         assertThat(widgetTab.widgets[1].order).isEqualTo(1)
 
@@ -167,8 +167,8 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
         assertThat(updatedWidgetTab).isNotNull
 
         assertThat(updatedWidgetTab!!.widgets).hasSize(2)
-        assertThat(updatedWidgetTab.widgets[0].key).isEqualTo("widget-2")
-        assertThat(updatedWidgetTab.widgets[1].key).isEqualTo("widget-1")
+        assertThat(updatedWidgetTab.widgets[0].id.key).isEqualTo("widget-2")
+        assertThat(updatedWidgetTab.widgets[1].id.key).isEqualTo("widget-1")
         assertThat(updatedWidgetTab.widgets[0].order).isEqualTo(0)
         assertThat(updatedWidgetTab.widgets[1].order).isEqualTo(1)
     }

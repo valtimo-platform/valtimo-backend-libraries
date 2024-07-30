@@ -16,6 +16,7 @@
 
 package com.ritense.case_.widget
 
+import com.ritense.case_.domain.tab.CaseWidgetTabWidgetId
 import com.ritense.case_.domain.tab.TestCaseWidgetTabWidget
 import com.ritense.case_.web.rest.dto.TestCaseWidgetTabWidgetDto
 
@@ -23,7 +24,7 @@ class TestCaseWidgetMapper : CaseWidgetMapper<TestCaseWidgetTabWidget, TestCaseW
 
     override fun toEntity(dto: TestCaseWidgetTabWidgetDto, index: Int): TestCaseWidgetTabWidget {
         return TestCaseWidgetTabWidget(
-            dto.key,
+            CaseWidgetTabWidgetId(dto.key),
             dto.title,
             index,
             dto.width,
@@ -34,7 +35,7 @@ class TestCaseWidgetMapper : CaseWidgetMapper<TestCaseWidgetTabWidget, TestCaseW
 
     override fun toDto(entity: TestCaseWidgetTabWidget): TestCaseWidgetTabWidgetDto {
         return TestCaseWidgetTabWidgetDto(
-            entity.key,
+            entity.id.key,
             entity.title,
             entity.width,
             entity.highContrast,

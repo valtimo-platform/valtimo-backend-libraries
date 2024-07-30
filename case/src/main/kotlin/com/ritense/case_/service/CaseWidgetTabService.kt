@@ -124,7 +124,7 @@ class CaseWidgetTabService(
         checkCaseTabAccess(caseDefinitionName, tabKey, VIEW)
 
         val widgetTab = caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, tabKey)) ?: return null
-        val widget = widgetTab.widgets.firstOrNull { it.key == widgetKey } ?: return null
+        val widget = widgetTab.widgets.firstOrNull { it.id.key == widgetKey } ?: return null
 
         authorizationService.requirePermission(
             EntityAuthorizationRequest(

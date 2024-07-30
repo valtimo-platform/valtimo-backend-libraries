@@ -26,11 +26,11 @@ import org.hibernate.annotations.Type
 @Entity
 @DiscriminatorValue("test")
 open class TestCaseWidgetTabWidget(
-    key: String, title: String, order: Int, width: Int, highContrast: Boolean,
+    id: CaseWidgetTabWidgetId, title: String, order: Int, width: Int, highContrast: Boolean,
 
     @Type(value = JsonType::class)
     @Column(name = "properties", nullable = false)
     val properties: TestCaseWidgetProperties
 ) : CaseWidgetTabWidget(
-    key, title, order, width, highContrast
+    id, title, order, width, highContrast
 )

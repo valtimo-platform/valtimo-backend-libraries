@@ -16,11 +16,12 @@
 
 package com.ritense.case_.domain.tab
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorColumn
 import jakarta.persistence.DiscriminatorType
+import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
-import jakarta.persistence.Id
 import jakarta.persistence.Inheritance
 import jakarta.persistence.InheritanceType
 import jakarta.persistence.Table
@@ -33,9 +34,10 @@ import jakarta.persistence.Table
     discriminatorType = DiscriminatorType.STRING
 )
 abstract class CaseWidgetTabWidget(
-    @Id
-    @Column(name = "`key`", updatable = false, nullable = false, unique = true)
-    val key: String,
+
+    @EmbeddedId
+    @JsonProperty("key")
+    val id: CaseWidgetTabWidgetId,
 
     @Column(name = "title", nullable = false)
     val title: String,
@@ -53,7 +55,7 @@ abstract class CaseWidgetTabWidget(
         if (this === other) return true
         if (other !is CaseWidgetTabWidget) return false
 
-        if (key != other.key) return false
+        if (id != other.id) return false
         if (title != other.title) return false
         if (order != other.order) return false
         if (width != other.width) return false
@@ -63,7 +65,7 @@ abstract class CaseWidgetTabWidget(
     }
 
     override fun hashCode(): Int {
-        var result = key.hashCode()
+        var result = id.hashCode()
         result = 31 * result + title.hashCode()
         result = 31 * result + order
         result = 31 * result + width
@@ -72,6 +74,6 @@ abstract class CaseWidgetTabWidget(
     }
 
     override fun toString(): String {
-        return "CaseWidgetTabWidget(key='$key', title='$title', order=$order, width=$width, highContrast=$highContrast)"
+        return "CaseWidgetTabWidget(id='$id', title='$title', order=$order, width=$width, highContrast=$highContrast)"
     }
 }

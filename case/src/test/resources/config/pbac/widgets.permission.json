@@ -8,7 +8,7 @@
             "conditions": [
                 {
                     "type": "field",
-                    "field": "key",
+                    "field": "id.key",
                     "operator": "!=",
                     "value": "deny"
                 }
@@ -21,7 +21,7 @@
             "conditions": [
                 {
                     "type": "field",
-                    "field": "key",
+                    "field": "id.key",
                     "operator": "==",
                     "value": "test"
                 }
@@ -34,7 +34,7 @@
             "conditions": [
                 {
                     "type": "field",
-                    "field": "key",
+                    "field": "id.key",
                     "operator": "==",
                     "value": "test"
                 }
@@ -58,7 +58,7 @@
             "conditions": [
                 {
                     "type": "field",
-                    "field": "key",
+                    "field": "id.key",
                     "operator": "!=",
                     "value": "deny"
                 }
