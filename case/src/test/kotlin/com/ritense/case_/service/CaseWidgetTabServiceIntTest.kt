@@ -95,7 +95,7 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
         assertThat(widgetTab!!.widgets).hasSize(3)
         assertThat(widgetTab.widgets[0].id.key).isEqualTo("widget-1")
         assertThat(widgetTab.widgets[1].id.key).isEqualTo("widget-2")
-        assertThat(widgetTab.widgets[1].id.key).isEqualTo("deny")
+        assertThat(widgetTab.widgets[2].id.key).isEqualTo("deny")
     }
 
     @Test
