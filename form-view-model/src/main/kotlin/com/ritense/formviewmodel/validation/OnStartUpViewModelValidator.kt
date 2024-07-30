@@ -58,7 +58,7 @@ class OnStartUpViewModelValidator(
                     "Be cautious when changing the form definition because this is only validated on ApplicationReadyEvent"
             }
         }
-        getAllMissingProperties(viewModelLoader, formDefinition).let { missingProperties ->
+        validateViewModel(viewModelLoader, formDefinition).let { missingProperties ->
             if (missingProperties.isNotEmpty()) {
                 logger.error {
                     "The following properties are missing in the view model for form " +
@@ -94,7 +94,7 @@ class OnStartUpViewModelValidator(
         }
     }
 
-    fun getAllMissingProperties(
+    fun validateViewModel(
         viewModelLoader: ViewModelLoader<*>,
         formDefinition: FormIoFormDefinition
     ): List<String> {

@@ -51,7 +51,7 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
     @Test
     fun `should not find missing fields when all ViewModel fields match form`() {
         val testViewModelLoader = TestViewModelLoader()
-        val missingFields = onStartUpViewModelValidator.getAllMissingProperties(
+        val missingFields = onStartUpViewModelValidator.validateViewModel(
             testViewModelLoader,
             formDefinitionOf("user-task-1")
         )
@@ -61,7 +61,7 @@ class OnStartUpViewModelValidatorTest : BaseTest() {
     @Test
     fun `should find missing fields when ViewModel has extra fields`() {
         val testViewModelLoader = TestViewModelLoader()
-        val missingFields = onStartUpViewModelValidator.getAllMissingProperties(
+        val missingFields = onStartUpViewModelValidator.validateViewModel(
             testViewModelLoader,
             formDefinitionOf("user-task-2")
         )
