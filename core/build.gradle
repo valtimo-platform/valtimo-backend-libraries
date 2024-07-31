@@ -128,8 +128,6 @@ dependencies {
 
     implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
 
-    implementation "io.dropwizard.metrics:metrics-core"
-    implementation "io.dropwizard.metrics:metrics-annotation"
     implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
     implementation "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
     implementation "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
