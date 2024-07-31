@@ -17,6 +17,7 @@
 package com.ritense.case_.widget.custom
 
 import com.ritense.case_.domain.tab.CaseWidgetTabWidget
+import com.ritense.case_.domain.tab.CaseWidgetTabWidgetId
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorValue
@@ -26,10 +27,10 @@ import org.hibernate.annotations.Type
 @Entity
 @DiscriminatorValue("custom")
 open class CustomCaseWidget(
-    key: String, title: String, order: Int, width: Int, highContrast: Boolean,
+    id: CaseWidgetTabWidgetId, title: String, order: Int, width: Int, highContrast: Boolean,
     @Type(value = JsonType::class)
     @Column(name = "properties", nullable = false)
     val properties: CustomWidgetProperties
 ) : CaseWidgetTabWidget(
-    key, title, order, width, highContrast
+    id, title, order, width, highContrast
 )

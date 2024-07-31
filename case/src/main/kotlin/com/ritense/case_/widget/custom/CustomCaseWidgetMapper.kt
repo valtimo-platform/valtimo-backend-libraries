@@ -16,12 +16,13 @@
 
 package com.ritense.case_.widget.custom
 
+import com.ritense.case_.domain.tab.CaseWidgetTabWidgetId
 import com.ritense.case_.widget.CaseWidgetMapper
 
 class CustomCaseWidgetMapper : CaseWidgetMapper<CustomCaseWidget, CustomCaseWidgetDto> {
 
     override fun toDto(entity: CustomCaseWidget) = CustomCaseWidgetDto(
-        key = entity.key,
+        key = entity.id.key,
         title = entity.title,
         width = entity.width,
         highContrast = entity.highContrast,
@@ -29,7 +30,7 @@ class CustomCaseWidgetMapper : CaseWidgetMapper<CustomCaseWidget, CustomCaseWidg
     )
 
     override fun toEntity(dto: CustomCaseWidgetDto, index: Int) = CustomCaseWidget(
-        key = dto.key,
+        id = CaseWidgetTabWidgetId(dto.key),
         title = dto.title,
         width = dto.width,
         highContrast = dto.highContrast,

@@ -64,4 +64,15 @@
             </column>
         </addColumn>
     </changeSet>
+
+    <changeSet id="5" author="Ritense">
+        <dropPrimaryKey dropIndex="true"
+                        tableName="case_widget_tab_widget"/>
+    </changeSet>
+
+    <changeSet id="6" author="Ritense">
+        <addPrimaryKey tableName="case_widget_tab_widget"
+                       columnNames="case_definition_name,tab_key,key"
+                       constraintName="case_widget_tab_widget_pkey"/>
+    </changeSet>
 </databaseChangeLog>

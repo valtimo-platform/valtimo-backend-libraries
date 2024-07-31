@@ -16,6 +16,7 @@
 
 package com.ritense.form.casewidget
 
+import com.ritense.case_.domain.tab.CaseWidgetTabWidgetId
 import com.ritense.case_.widget.CaseWidgetMapper
 
 class FormIoCaseWidgetMapper : CaseWidgetMapper<FormIoCaseWidget, FormIoCaseWidgetDto> {
@@ -24,7 +25,7 @@ class FormIoCaseWidgetMapper : CaseWidgetMapper<FormIoCaseWidget, FormIoCaseWidg
     override fun supportedDtoType() = FormIoCaseWidgetDto::class.java
 
     override fun toDto(entity: FormIoCaseWidget) = FormIoCaseWidgetDto(
-        key = entity.key,
+        key = entity.id.key,
         title = entity.title,
         width = entity.width,
         highContrast = entity.highContrast,
@@ -32,7 +33,7 @@ class FormIoCaseWidgetMapper : CaseWidgetMapper<FormIoCaseWidget, FormIoCaseWidg
     )
 
     override fun toEntity(dto: FormIoCaseWidgetDto, index: Int) = FormIoCaseWidget(
-        key = dto.key,
+        id = CaseWidgetTabWidgetId(dto.key),
         title = dto.title,
         width = dto.width,
         highContrast = dto.highContrast,

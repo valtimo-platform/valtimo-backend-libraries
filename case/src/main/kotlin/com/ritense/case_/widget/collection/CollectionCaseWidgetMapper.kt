@@ -16,6 +16,7 @@
 
 package com.ritense.case_.widget.collection
 
+import com.ritense.case_.domain.tab.CaseWidgetTabWidgetId
 import com.ritense.case_.widget.CaseWidgetMapper
 
 class CollectionCaseWidgetMapper:CaseWidgetMapper<CollectionCaseWidget, CollectionCaseWidgetDto> {
@@ -24,7 +25,7 @@ class CollectionCaseWidgetMapper:CaseWidgetMapper<CollectionCaseWidget, Collecti
     override fun supportedDtoType() = CollectionCaseWidgetDto::class.java
 
     override fun toDto(entity: CollectionCaseWidget) = CollectionCaseWidgetDto(
-        key = entity.key,
+        key = entity.id.key,
         title = entity.title,
         width = entity.width,
         highContrast = entity.highContrast,
@@ -32,7 +33,7 @@ class CollectionCaseWidgetMapper:CaseWidgetMapper<CollectionCaseWidget, Collecti
     )
 
     override fun toEntity(dto: CollectionCaseWidgetDto, index: Int) = CollectionCaseWidget(
-        key = dto.key,
+        id = CaseWidgetTabWidgetId(dto.key),
         title = dto.title,
         width = dto.width,
         highContrast = dto.highContrast,

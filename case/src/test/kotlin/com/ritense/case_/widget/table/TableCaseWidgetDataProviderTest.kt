@@ -3,6 +3,7 @@ package com.ritense.case_.widget.table
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.case_.domain.tab.CaseWidgetTab
+import com.ritense.case_.domain.tab.CaseWidgetTabWidgetId
 import com.ritense.case_.widget.exception.InvalidCollectionException
 import com.ritense.case_.widget.exception.InvalidCollectionNodeTypeException
 import com.ritense.valtimo.contract.json.MapperSingleton
@@ -179,7 +180,7 @@ class TableCaseWidgetDataProviderTest(
     }
 
     private fun testWidget() = TableCaseWidget(
-        "test", "Test", 0, 1, true, TableWidgetProperties(
+        CaseWidgetTabWidgetId("test"), "Test", 0, 1, true, TableWidgetProperties(
             collection = "test:someCollection",
             defaultPageSize = 2,
             columns = testColumns()

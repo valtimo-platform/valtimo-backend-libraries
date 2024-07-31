@@ -21,22 +21,23 @@ import jakarta.persistence.CascadeType.ALL
 import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType.EAGER
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.JoinColumns
 import jakarta.persistence.OneToMany
 import jakarta.persistence.OrderBy
 import jakarta.persistence.Table
+
 
 @Entity
 @Table(name = "case_widget_tab")
 data class CaseWidgetTab(
     @EmbeddedId
     val id: CaseTabId,
-    @OneToMany(fetch = EAGER, cascade = [ALL], orphanRemoval = true)
-    @JoinColumns(
-        JoinColumn(name = "case_definition_name", referencedColumnName = "case_definition_name", updatable = false, nullable = false),
-        JoinColumn(name = "tab_key", referencedColumnName = "tab_key", updatable = false, nullable = false)
-    )
+
+    @OneToMany(mappedBy = "id.caseWidgetTab", fetch = EAGER, cascade = [ALL], orphanRemoval = true)
     @OrderBy("order ASC")
+
     val widgets: List<CaseWidgetTabWidget> = listOf(),
-)
+) {
+    init {
+        widgets.forEach { widget -> widget.id.caseWidgetTab = this }
+    }
+}

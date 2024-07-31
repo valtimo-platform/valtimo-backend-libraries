@@ -1,5 +1,6 @@
 package com.ritense.form.casewidget
 
+import com.ritense.case_.domain.tab.CaseWidgetTabWidgetId
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.service.FormDefinitionService
 import com.ritense.form.service.PrefillFormService
@@ -44,7 +45,7 @@ class FormIoCaseWidgetDataProviderTest(
 
         val data = dataProvider.getData(
             documentId, mock(), FormIoCaseWidget(
-                "k", "t", 0, 4, false, FormIoWidgetProperties(
+                CaseWidgetTabWidgetId("k"), "t", 0, 4, false, FormIoWidgetProperties(
                     formDefinitionName
                 )
             ), Pageable.unpaged()
@@ -62,7 +63,7 @@ class FormIoCaseWidgetDataProviderTest(
 
         val data = dataProvider.getData(
             documentId, mock(), FormIoCaseWidget(
-                "k", "t", 0, 4, false, FormIoWidgetProperties(
+                CaseWidgetTabWidgetId("k"), "t", 0, 4, false, FormIoWidgetProperties(
                     formDefinitionName
                 )
             ), Pageable.unpaged()
