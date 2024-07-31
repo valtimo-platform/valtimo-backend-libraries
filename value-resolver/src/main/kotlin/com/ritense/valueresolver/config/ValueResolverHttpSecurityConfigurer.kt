@@ -20,6 +20,7 @@ import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod.GET
+import org.springframework.http.HttpMethod.POST
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
@@ -30,8 +31,8 @@ class ValueResolverHttpSecurityConfigurer : HttpSecurityConfigurer {
             http.authorizeHttpRequests { requests ->
                 requests
                     .requestMatchers(antMatcher(GET, "/api/v1/value-resolver")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(GET, "/api/v1/value-resolver/prefix/{prefix}/document-definition/{documentDefinitionName}/keys")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(GET, "/api/v1/value-resolver/prefix/{prefix}/document-definition/{documentDefinitionName}/version/{version}/keys")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api//v1/value-resolver/document-definition/{documentDefinitionName}/keys")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/v1/value-resolver/document-definition/{documentDefinitionName}/version/{version}/keys")).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

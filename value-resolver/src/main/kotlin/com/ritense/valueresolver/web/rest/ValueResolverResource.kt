@@ -6,6 +6,8 @@ import com.ritense.valueresolver.ValueResolverService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -20,20 +22,20 @@ class ValueResolverResource(
         return ResponseEntity.ok(valueResolverService.getValueResolvers())
     }
 
-    @GetMapping("/v1/value-resolver/prefix/{prefix}/document-definition/{documentDefinitionName}/keys")
+    @PostMapping("/v1/value-resolver/document-definition/{documentDefinitionName}/keys")
     fun getResolvableKeys(
-        @PathVariable prefix: String,
-        @PathVariable documentDefinitionName: String
+        @PathVariable documentDefinitionName: String,
+        @RequestBody prefixes: List<String>,
     ): ResponseEntity<List<String>> {
-        return ResponseEntity.ok(valueResolverService.getResolvableKeys(prefix, documentDefinitionName))
+        return ResponseEntity.ok(valueResolverService.getResolvableKeys(prefixes, documentDefinitionName))
     }
 
-    @GetMapping("/v1/value-resolver/prefix/{prefix}/document-definition/{documentDefinitionName}/version/{version}/keys")
+    @PostMapping("/v1/value-resolver/document-definition/{documentDefinitionName}/version/{version}/keys")
     fun getResolvableKeys(
-        @PathVariable prefix: String,
         @PathVariable documentDefinitionName: String,
-        @PathVariable version: Long
+        @PathVariable version: Long,
+        @RequestBody prefixes: List<String>,
     ): ResponseEntity<List<String>> {
-        return ResponseEntity.ok(valueResolverService.getResolvableKeys(prefix, documentDefinitionName, version))
+        return ResponseEntity.ok(valueResolverService.getResolvableKeys(prefixes, documentDefinitionName, version))
     }
 }

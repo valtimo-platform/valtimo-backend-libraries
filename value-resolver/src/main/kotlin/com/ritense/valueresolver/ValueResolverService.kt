@@ -97,7 +97,7 @@ interface ValueResolverService {
 
     fun getValueResolvers(): List<String>
 
-    fun getResolvableKeys(prefix: String, documentDefinitionName: String, version: Long): List<String>
+    fun getResolvableKeys(prefixes: List<String>, documentDefinitionName: String, version: Long): List<String>
 
-    fun getResolvableKeys(prefix: String, documentDefinitionName: String): List<String>
+    fun getResolvableKeys(prefixes: List<String>, documentDefinitionName: String): List<String>
 }
