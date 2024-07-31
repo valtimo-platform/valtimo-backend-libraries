@@ -179,7 +179,7 @@ class PluginAutoConfiguration {
     ): EncryptionService {
         val secretByteLength = secret.toByteArray().size
         require(secretByteLength == 16 || secretByteLength == 24 || secretByteLength == 32) {
-            "Invalid byte length '$secretByteLength'. Expected property 'valtimo.plugin.encryption-secret' or 'VALTIMO_PLUGIN_ENCRYPTION-SECRET' to have a byte length of 32"
+            "Invalid AES key length of '$secretByteLength' bytes. Expected property 'valtimo.plugin.encryption-secret' or 'VALTIMO_PLUGIN_ENCRYPTION-SECRET' to have a length of 16 or 24 or 32 bytes"
         }
 
         return EncryptionService(secret)
