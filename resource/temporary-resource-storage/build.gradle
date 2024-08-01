@@ -32,6 +32,8 @@ dependencies {
 
     testImplementation project(':test-utils-common')
 
+    api "org.camunda.bpm:camunda-engine:${camundaVersion}"
+
     jar {
         enabled = true
         manifest {

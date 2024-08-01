@@ -19,12 +19,7 @@ package com.ritense.documentenapi.client
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.documentenapi.DocumentenApiAuthentication
-import com.ritense.documentenapi.event.DocumentDeleted
-import com.ritense.documentenapi.event.DocumentInformatieObjectDownloaded
-import com.ritense.documentenapi.event.DocumentInformatieObjectViewed
-import com.ritense.documentenapi.event.DocumentListed
-import com.ritense.documentenapi.event.DocumentStored
-import com.ritense.documentenapi.event.DocumentUpdated
+import com.ritense.documentenapi.event.*
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
 import com.ritense.outbox.OutboxService
 import com.ritense.outbox.domain.BaseEvent
@@ -37,27 +32,14 @@ import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import okio.Buffer
 import org.assertj.core.api.Assertions
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.*
 import org.mockito.Mockito
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.reset
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
+import org.mockito.kotlin.*
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
-import org.springframework.web.reactive.function.client.ClientRequest
-import org.springframework.web.reactive.function.client.ClientResponse
-import org.springframework.web.reactive.function.client.ExchangeFunction
-import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.WebClientResponseException
+import org.springframework.web.reactive.function.client.*
 import reactor.core.publisher.Mono
 import java.net.URI
 import java.time.LocalDate
@@ -68,7 +50,8 @@ import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-internal class DocumentenApiClientTest {
+internal class
+DocumentenApiClientTest {
 
     lateinit var mockDocumentenApi: MockWebServer
 
@@ -931,7 +914,7 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `search should sort on known sort option`() {
-        val pageable = PageRequest.of(0, 10, Sort.by("titel"));
+        val pageable = PageRequest.of(0, 10, Sort.by("titel"))
         val documentSearchRequest = DocumentSearchRequest(
             zaakUrl = URI("http://example.com/zaak/123"),
         )
@@ -944,7 +927,7 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `search should sort on known sort option descending`() {
-        val pageable = PageRequest.of(0, 10, Sort.by("titel").descending());
+        val pageable = PageRequest.of(0, 10, Sort.by("titel").descending())
         val documentSearchRequest = DocumentSearchRequest(
             zaakUrl = URI("http://example.com/zaak/123"),
         )
@@ -957,7 +940,7 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `search should sort on multiple known sort options`() {
-        val pageable = PageRequest.of(0, 10, Sort.by("titel").descending().and(Sort.by("auteur").ascending()));
+        val pageable = PageRequest.of(0, 10, Sort.by("titel").descending().and(Sort.by("auteur").ascending()))
         val documentSearchRequest = DocumentSearchRequest(
             zaakUrl = URI("http://example.com/zaak/123"),
         )
@@ -970,7 +953,7 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `search should throw exception when sorting by unknown sort option`() {
-        val pageable = PageRequest.of(0, 10, Sort.by("something"));
+        val pageable = PageRequest.of(0, 10, Sort.by("something"))
         val documentSearchRequest = DocumentSearchRequest(
             zaakUrl = URI("http://example.com/zaak/123"),
         )

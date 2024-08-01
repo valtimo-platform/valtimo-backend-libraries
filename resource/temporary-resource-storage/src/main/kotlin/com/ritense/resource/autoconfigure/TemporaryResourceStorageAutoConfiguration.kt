@@ -20,9 +20,13 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.resource.listener.MetadataAvailableEventListener
 import com.ritense.resource.repository.ResourceStorageMetadataRepository
 import com.ritense.resource.security.config.TemporaryResourceStorageHttpSecurityConfigurer
+import com.ritense.resource.service.ResourceStorageDelegate
 import com.ritense.resource.service.TemporaryResourceStorageDeletionService
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.resource.service.UploadProcessDelegate
 import com.ritense.resource.web.rest.TemporaryResourceStorageResource
+import com.ritense.valtimo.contract.annotation.ProcessBean
+import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -30,6 +34,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
+import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.scheduling.annotation.EnableScheduling
 
@@ -44,11 +49,13 @@ class TemporaryResourceStorageAutoConfiguration {
         @Value("\${valtimo.resource.temp.directory:}") valtimoResourceTempDirectory: String,
         uploadProperties: ValtimoUploadProperties,
         objectMapper: ObjectMapper,
+        repository: ResourceStorageMetadataRepository
     ): TemporaryResourceStorageService {
         return TemporaryResourceStorageService(
             valtimoResourceTempDirectory = valtimoResourceTempDirectory,
             uploadProperties = uploadProperties,
             objectMapper = objectMapper,
+            repository = repository
         )
     }
 
@@ -83,12 +90,37 @@ class TemporaryResourceStorageAutoConfiguration {
         return TemporaryResourceStorageHttpSecurityConfigurer()
     }
 
+    @Order(Ordered.HIGHEST_PRECEDENCE + 20)
+    @ConditionalOnMissingBean(name = ["temporaryResourceStorageLiquibaseMasterChangeLogLocation"])
+    @Bean
+    fun temporaryResourceStorageLiquibaseMasterChangeLogLocation(): LiquibaseMasterChangeLogLocation {
+        return LiquibaseMasterChangeLogLocation("config/liquibase/temporary-resource-master.xml")
+    }
+
     @Bean
     @ConditionalOnMissingBean(MetadataAvailableEventListener::class)
     fun metadataAvailableEventListener(
         resourceStorageMetadataRepository: ResourceStorageMetadataRepository,
     ): MetadataAvailableEventListener {
         return MetadataAvailableEventListener(resourceStorageMetadataRepository)
+    }
+
+    @Bean
+    @ProcessBean
+    @ConditionalOnMissingBean(UploadProcessDelegate::class)
+    fun uploadProcessDelegate(
+        applicationEventPublisher: ApplicationEventPublisher
+    ) : UploadProcessDelegate {
+        return UploadProcessDelegate(applicationEventPublisher)
+    }
+
+    @Bean
+    @ProcessBean
+    @ConditionalOnMissingBean(ResourceStorageDelegate::class)
+    fun resourceStorageDelegate(
+        repository: ResourceStorageMetadataRepository
+    ) : ResourceStorageDelegate {
+        return ResourceStorageDelegate(repository)
     }
 
 }

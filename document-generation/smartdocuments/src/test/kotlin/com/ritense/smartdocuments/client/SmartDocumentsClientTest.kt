@@ -16,6 +16,7 @@
 
 package com.ritense.smartdocuments.client
 
+import com.ritense.resource.repository.ResourceStorageMetadataRepository
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.BaseTest
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
@@ -25,29 +26,19 @@ import com.ritense.smartdocuments.domain.SmartDocumentsTemplateData
 import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
-import java.time.Instant
-import java.util.concurrent.TimeUnit.MILLISECONDS
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
 import org.mockito.Mockito
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.never
-import org.mockito.kotlin.spy
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
+import org.mockito.Mockito.mock
+import org.mockito.kotlin.*
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.reactive.function.client.WebClient
+import java.time.Instant
+import java.util.concurrent.TimeUnit.MILLISECONDS
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class SmartDocumentsClientTest : BaseTest() {
@@ -55,12 +46,14 @@ internal class SmartDocumentsClientTest : BaseTest() {
     private lateinit var mockDocumentenApi: MockWebServer
     private lateinit var client: SmartDocumentsClient
     private lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
+    private lateinit var repository: ResourceStorageMetadataRepository
 
     @BeforeAll
     fun setUp() {
         mockDocumentenApi = MockWebServer()
         mockDocumentenApi.start()
 
+        repository = mock()
         val properties = SmartDocumentsConnectorProperties(
             url = mockDocumentenApi.url("/").toString()
         )
@@ -68,6 +61,7 @@ internal class SmartDocumentsClientTest : BaseTest() {
         temporaryResourceStorageService = spy( TemporaryResourceStorageService(
             uploadProperties = ValtimoUploadProperties(),
             objectMapper = MapperSingleton.get(),
+            repository = repository
         ))
 
         client = spy( SmartDocumentsClient(

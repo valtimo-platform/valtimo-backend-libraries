@@ -19,6 +19,9 @@ package com.ritense.resource.service
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.resource.domain.MetadataType
+import com.ritense.resource.domain.ResourceStorageMetadataId
+import com.ritense.resource.domain.getEnumFromKey
+import com.ritense.resource.repository.ResourceStorageMetadataRepository
 import com.ritense.valtimo.contract.upload.MimeTypeDeniedException
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
 import org.apache.tika.Tika
@@ -27,20 +30,14 @@ import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Path
 import java.security.SecureRandom
-import kotlin.io.path.Path
-import kotlin.io.path.absolutePathString
-import kotlin.io.path.fileSize
-import kotlin.io.path.inputStream
-import kotlin.io.path.nameWithoutExtension
-import kotlin.io.path.notExists
-import kotlin.io.path.pathString
-import kotlin.io.path.readText
+import kotlin.io.path.*
 
 class TemporaryResourceStorageService(
     private val random: SecureRandom = SecureRandom(),
     valtimoResourceTempDirectory: String = "",
     private val uploadProperties: ValtimoUploadProperties,
     private val objectMapper: ObjectMapper,
+    private val repository: ResourceStorageMetadataRepository
 ) {
     val tempDir: Path = if (valtimoResourceTempDirectory.isNotBlank()) {
         Path.of(valtimoResourceTempDirectory)
@@ -98,9 +95,7 @@ class TemporaryResourceStorageService(
 
     internal fun getResourceMetadata(id: String, filterPath: Boolean): Map<String, Any> {
         val metaDataFile = getMetaDataFileFromResourceId(id)
-        if (metaDataFile.notExists()) {
-            throw IllegalArgumentException("No resource found with id '$id'")
-        }
+        require(!metaDataFile.notExists()) { "No resource found with id '$id'" }
         val typeRef = object : TypeReference<Map<String, Any>>() {}
         return objectMapper.readValue(metaDataFile.readText(), typeRef)
             .filter {
@@ -111,6 +106,13 @@ class TemporaryResourceStorageService(
     internal fun getMetaDataFileFromResourceId(resourceId: String): Path {
         val safeFileName = Path("$resourceId.json").fileName.toString()
         return Path.of(tempDir.pathString, safeFileName)
+    }
+
+    fun getMetadataValue(resourceStorageFieldId: String, metadataKey: String): String {
+        return repository.getReferenceById(ResourceStorageMetadataId(
+            fileId = resourceStorageFieldId,
+            metadataKey = getEnumFromKey(metadataKey)
+        )).metadataValue
     }
 
     companion object {

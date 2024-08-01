@@ -36,6 +36,9 @@ internal class MetadataAvailableEventListenerTest {
     @Test
     fun `should store resource metadata`() {
         val event = ResourceStorageMetadataAvailableEvent(
+            source="source",
+            resourceId="1234",
+            documentUrl = "http://localhost:8001/document/url",
             downloadUrl = "/api/v1/documenten-api/c64ef7ee-c64ef7ee-056b9c4ba392/files/9ec35849-9ec35849-c9a2f77d76fa/download",
             documentId = "9ec35849-9ec35849-c9a2f77d76fa"
         )
