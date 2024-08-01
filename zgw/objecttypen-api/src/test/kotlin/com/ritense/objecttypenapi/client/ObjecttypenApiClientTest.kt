@@ -120,6 +120,79 @@ internal class ObjecttypenApiClientTest {
         assertEquals(listOf(URI("http://example.com")), result.versions)
     }
 
+    @Test
+    fun `should send get multiple objecttypes request and parse response`() {
+        val webclientBuilder = WebClient.builder()
+        val client = ObjecttypenApiClient(webclientBuilder)
+
+        val responseBody = """
+            [
+                {
+                  "url": "http://example.com",
+                  "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+                  "name": "string",
+                  "namePlural": "string",
+                  "description": "string",
+                  "dataClassification": "open",
+                  "maintainerOrganization": "string",
+                  "maintainerDepartment": "string",
+                  "contactPerson": "string",
+                  "contactEmail": "string",
+                  "source": "string",
+                  "updateFrequency": "real_time",
+                  "providerOrganization": "string",
+                  "documentationUrl": "http://example.com",
+                  "labels": {
+                    "property1": "something",
+                    "property2": "other"
+                  },
+                  "createdAt": "2019-08-24",
+                  "modifiedAt": "2019-08-24",
+                  "versions": [
+                    "http://example.com"
+                  ]
+                }
+            ]
+        """.trimIndent()
+
+        mockApi.enqueue(mockResponse(responseBody))
+
+        val objecttypeUrl = mockApi.url("/some-object").toString()
+
+        val result = client.getObjecttypes(
+            TestAuthentication(),
+            URI(objecttypeUrl)
+        ).first()
+
+        val recordedRequest = mockApi.takeRequest()
+        val requestedUrl = recordedRequest.requestUrl
+
+        assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
+
+        assertEquals(objecttypeUrl, requestedUrl.toString())
+
+        assertEquals(URI("http://example.com"), result.url)
+        assertEquals(UUID.fromString("095be615-a8ad-4c33-8e9c-c7612fbf6c9f"), result.uuid)
+        assertEquals("string", result.name)
+        assertEquals("string", result.namePlural)
+        assertEquals("string", result.description)
+        assertEquals(DataClassification.OPEN, result.dataClassification)
+        assertEquals("string", result.maintainerOrganization)
+        assertEquals("string", result.maintainerDepartment)
+        assertEquals("string", result.contactPerson)
+        assertEquals("string", result.contactEmail)
+        assertEquals("string", result.source)
+        assertEquals(UpdateFrequency.REAL_TIME, result.updateFrequency)
+        assertEquals("string", result.providerOrganization)
+        assertEquals(URI("http://example.com"), result.documentationUrl)
+        assertEquals("something", result.labels?.get("property1").toString())
+        assertEquals("other", result.labels?.get("property2").toString())
+        assertEquals("other", result.labels?.get("property2").toString())
+        assertEquals(LocalDate.of(2019, 8, 24), result.createdAt)
+        assertEquals(LocalDate.of(2019, 8, 24), result.modifiedAt)
+        assertEquals(listOf(URI("http://example.com")), result.versions)
+    }
+
     private fun mockResponse(body: String): MockResponse {
         return MockResponse()
             .addHeader("Content-Type", "application/json")

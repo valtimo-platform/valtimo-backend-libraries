@@ -18,12 +18,12 @@ package com.ritense.objecttypenapi.client
 
 import com.ritense.objecttypenapi.ObjecttypenApiAuthentication
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.toEntityList
 import java.net.URI
 
 class ObjecttypenApiClient(
     private val webclientBuilder: WebClient.Builder
 ) {
-
 
     fun getObjecttype(
         authentication: ObjecttypenApiAuthentication,
@@ -42,6 +42,28 @@ class ObjecttypenApiClient(
             .uri(url)
             .retrieve()
             .toEntity(Objecttype::class.java)
+            .block()
+
+        return result?.body!!
+    }
+
+    fun getObjecttypes(
+        authentication: ObjecttypenApiAuthentication,
+        objecttypesUrl: URI
+    ): List<Objecttype> {
+        val url = if (objecttypesUrl.host == "host.docker.internal") {
+            URI.create(objecttypesUrl.toString().replace("host.docker.internal", "localhost"))
+        } else {
+            objecttypesUrl
+        }
+        val result = webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .get()
+            .uri(url)
+            .retrieve()
+            .toEntityList<Objecttype>()
             .block()
 
         return result?.body!!
