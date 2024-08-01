@@ -56,7 +56,8 @@ class ChangeLog20240116MigrateTaskAssigneeEmailToUserId : CustomTaskChange, Envi
                     try {
                         taskAssigneeUserId = getKeycloakUserIdByEmail(taskAssigneeEmail)
                     } catch (_: Exception) {
-                        logger.trace { "Could not find user for task '$taskId'. Unknown email: '$taskAssigneeEmail'" }
+                        logger.error { "Could not find user for task '$taskId'. Unknown email: '$taskAssigneeEmail'." +
+                            "Unassigning user from task." }
                     }
                     updateTaskInDatabase(connection, taskId, taskAssigneeUserId)
                 }
