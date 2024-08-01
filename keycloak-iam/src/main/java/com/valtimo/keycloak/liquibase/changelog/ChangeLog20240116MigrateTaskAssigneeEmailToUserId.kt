@@ -52,7 +52,13 @@ class ChangeLog20240116MigrateTaskAssigneeEmailToUserId : CustomTaskChange, Envi
                 if (!EmailValidationUtil.isValidEmail(taskAssigneeEmail)) {
                     logger.error { "Failed to migrate task assignee. Invalid email: '$taskAssigneeEmail' for task '$taskId'" }
                 } else {
-                    val taskAssigneeUserId = getKeycloakUserIdByEmail(taskAssigneeEmail)
+                    var taskAssigneeUserId: String? = null
+                    try {
+                        taskAssigneeUserId = getKeycloakUserIdByEmail(taskAssigneeEmail)
+                    } catch (_: Exception) {
+                        logger.error { "Could not find user for task '$taskId'. Unknown email: '$taskAssigneeEmail'." +
+                            "Unassigning user from task." }
+                    }
                     updateTaskInDatabase(connection, taskId, taskAssigneeUserId)
                 }
             }
@@ -101,7 +107,7 @@ class ChangeLog20240116MigrateTaskAssigneeEmailToUserId : CustomTaskChange, Envi
             .build()
     }
 
-    private fun updateTaskInDatabase(connection: JdbcConnection, taskId: String, taskAssignee: String) {
+    private fun updateTaskInDatabase(connection: JdbcConnection, taskId: String, taskAssignee: String?) {
         val statement = connection.prepareStatement("UPDATE act_ru_task SET assignee_ = ? WHERE id_ = ?")
         statement.setString(1, taskAssignee)
         statement.setString(2, taskId)
