@@ -125,7 +125,28 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
-    void shouldFindTasksFilteredWithContext() throws IllegalAccessException {
+    void shouldFindAssignedTasksByUserIdentifier() {
+        ManageableUser user = mock();
+        when(user.getUserIdentifier()).thenReturn("user+1@ritense.com");
+        when(userManagementService.getCurrentUser()).thenReturn(user);
+        startProcessAndModifyTask(task1 -> task1.setAssignee(user.getUserIdentifier()));
+
+        var pagedTasks = camundaTaskService.findTasksFiltered(
+            CamundaTaskService.TaskFilter.MINE,
+            PageRequest.of(0, 5)
+        );
+
+        assertThat(pagedTasks.getTotalElements()).isEqualTo(1);
+        var task = pagedTasks.get().findFirst().orElseThrow();
+        assertThat(task.getAssignee()).isEqualTo(user.getUserIdentifier());
+        assertThat(task.getBusinessKey()).isEqualTo(businessKey);
+        assertThat(task.getProcessDefinitionKey()).isEqualTo(processDefinitionKey);
+        assertThat(task.getContext()).isNull();
+    }
+
+    @Test
+    @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
+    void shouldFindTasksFilteredWithContext() {
         runWithoutAuthorization(() -> camundaProcessService.startProcess(
             processDefinitionKey,
             businessKey,
@@ -193,7 +214,7 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
-    void shouldSortTasksByName() throws IllegalAccessException {
+    void shouldSortTasksByName() {
         startProcessAndModifyTask(task1 -> task1.setName("B"));
         startProcessAndModifyTask(task2 -> task2.setName("A"));
 
@@ -209,7 +230,7 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
-    void shouldSortTasksByDueDate() throws IllegalAccessException {
+    void shouldSortTasksByDueDate() {
         startProcessAndModifyTask(task1 -> task1.setDueDate(Date.valueOf("2022-06-17")));
         startProcessAndModifyTask(task2 -> task2.setDueDate(Date.valueOf("2022-06-18")));
 
@@ -225,7 +246,7 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
-    void shouldSortTasksByAssignee() throws IllegalAccessException {
+    void shouldSortTasksByAssignee() {
         startProcessAndModifyTask(task1 -> task1.setAssignee("AAAA-1111"));
         startProcessAndModifyTask(task2 -> task2.setAssignee("BBBB-2222"));
 
