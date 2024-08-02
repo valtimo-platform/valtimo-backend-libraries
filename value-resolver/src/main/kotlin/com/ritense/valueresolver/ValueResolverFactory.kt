@@ -17,9 +17,9 @@
 package com.ritense.valueresolver
 
 import com.ritense.valueresolver.exception.ValueResolverValidationException
+import org.camunda.bpm.engine.delegate.VariableScope
 import java.util.UUID
 import java.util.function.Function
-import org.camunda.bpm.engine.delegate.VariableScope
 
 /**
  * A factory that creates a value resolver for a specific prefix.
@@ -67,7 +67,7 @@ interface ValueResolverFactory {
      */
     @Throws(ValueResolverValidationException::class)
     fun createValidator(documentDefinitionName: String)
-            : Function<String, Unit> = Function { }
+        : Function<String, Unit> = Function { }
 
     /**
      * This creates a requestedValue resolver within a certain context.
@@ -110,5 +110,13 @@ interface ValueResolverFactory {
      */
     fun preProcessValuesForNewCase(values: Map<String, Any?>): Any {
         return values
+    }
+
+    fun getResolvableKeys(documentDefinitionName: String, version: Long): List<String> {
+        return emptyList()
+    }
+
+    fun getResolvableKeys(documentDefinitionName: String): List<String> {
+        return emptyList()
     }
 }

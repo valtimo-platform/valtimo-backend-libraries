@@ -65,7 +65,8 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     }
 
     @Override
-    public ResponseEntity<Object> getDocumentDefinitionTemplate(DocumentDefinitionTemplateRequestDto requestDto) throws JsonProcessingException {
+    public ResponseEntity<Object> getDocumentDefinitionTemplate(DocumentDefinitionTemplateRequestDto requestDto) throws
+        JsonProcessingException {
         return ok(MapperSingleton.get().readTree(
             """
                 {
@@ -92,7 +93,6 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
 
     /**
      * This keeps the API backwards compatible with old jpa entity columns in the sort.
-     *
      */
     private Pageable fixPageable(Pageable pageable) {
         return PageRequest.of(
