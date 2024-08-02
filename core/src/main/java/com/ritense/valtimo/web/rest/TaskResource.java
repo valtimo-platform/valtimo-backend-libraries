@@ -102,14 +102,14 @@ public class TaskResource extends AbstractTaskResource {
 
     @PostMapping("/v1/task/{taskId}/assign")
     public ResponseEntity<Void> assign(@PathVariable String taskId, @RequestBody AssigneeRequest assigneeRequest) {
-        camundaTaskService.assign(taskId, assigneeRequest.getAssignee());
+        camundaTaskService.assignByUserId(taskId, assigneeRequest.getAssignee());
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/v1/task/assign/batch-assign")
     public ResponseEntity<Void> batchClaim(@RequestBody BatchAssignTaskDTO batchAssignTaskDTO) {
         final String assignee = batchAssignTaskDTO.getAssignee();
-        batchAssignTaskDTO.getTasksIds().forEach(taskId -> camundaTaskService.assign(taskId, assignee));
+        batchAssignTaskDTO.getTasksIds().forEach(taskId -> camundaTaskService.assignByUserId(taskId, assignee));
         return ResponseEntity.ok().build();
     }
 

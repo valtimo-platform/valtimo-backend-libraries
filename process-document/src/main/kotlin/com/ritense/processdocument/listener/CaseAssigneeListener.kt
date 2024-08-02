@@ -60,7 +60,7 @@ class CaseAssigneeListener(
 
 
             tasks.forEach { task ->
-                camundaTaskService.assign(
+                camundaTaskService.assignByUserId(
                     task.id,
                     assignee.id
                 )

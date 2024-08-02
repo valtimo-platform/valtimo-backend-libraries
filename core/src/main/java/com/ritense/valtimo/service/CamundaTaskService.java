@@ -172,6 +172,17 @@ public class CamundaTaskService {
     }
 
     @Transactional
+    public void assignByUsername(String taskId, String username) {
+        String userId = userManagementService.findByUserIdentifier(username).getId();
+        assign(taskId, userId);
+    }
+
+    @Transactional
+    public void assignByUserId(String taskId, String userId) {
+        assign(taskId, userId);
+    }
+
+    @Transactional
     public void assign(String taskId, String assignee) throws IllegalStateException {
         if (assignee == null) {
             unassign(taskId);
