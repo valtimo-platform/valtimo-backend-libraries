@@ -33,12 +33,12 @@ import org.springframework.web.bind.annotation.RestController
 class ValueResolverResource(
     private val valueResolverService: ValueResolverService
 ) {
-    @GetMapping("/v1/value-resolver")
+    @GetMapping("/management/v1/value-resolver")
     fun getValueResolvers(): ResponseEntity<List<String>> {
         return ResponseEntity.ok(valueResolverService.getValueResolvers())
     }
 
-    @PostMapping("/v1/value-resolver/document-definition/{documentDefinitionName}/keys")
+    @PostMapping("/management/v1/value-resolver/document-definition/{documentDefinitionName}/keys")
     fun getResolvableKeys(
         @PathVariable documentDefinitionName: String,
         @RequestBody prefixes: List<String>,
@@ -46,7 +46,7 @@ class ValueResolverResource(
         return ResponseEntity.ok(valueResolverService.getResolvableKeys(prefixes, documentDefinitionName))
     }
 
-    @PostMapping("/v1/value-resolver/document-definition/{documentDefinitionName}/version/{version}/keys")
+    @PostMapping("/management/v1/value-resolver/document-definition/{documentDefinitionName}/version/{version}/keys")
     fun getResolvableKeys(
         @PathVariable documentDefinitionName: String,
         @PathVariable version: Long,

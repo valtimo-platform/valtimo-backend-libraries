@@ -51,7 +51,7 @@ class ValueResolverResourceIT @Autowired constructor(
 
         mockMvc.perform(
             MockMvcRequestBuilders
-                .post("/api/v1/value-resolver/document-definition/{documentDefinitionName}/keys", "x")
+                .post("/api/management/v1/value-resolver/document-definition/{documentDefinitionName}/keys", "x")
                 .contentType(APPLICATION_JSON_UTF8)
                 .content(prefixes)
         )
@@ -69,7 +69,7 @@ class ValueResolverResourceIT @Autowired constructor(
 
         mockMvc.perform(
             MockMvcRequestBuilders
-                .post("/api/v1/value-resolver/document-definition/{documentDefinitionName}/keys", "x")
+                .post("/api/management/v1/value-resolver/document-definition/{documentDefinitionName}/keys", "x")
                 .contentType(APPLICATION_JSON_UTF8)
                 .content(prefixes)
         )
@@ -90,7 +90,7 @@ class ValueResolverResourceIT @Autowired constructor(
 
         val result = mockMvc.perform(
             MockMvcRequestBuilders
-                .post("/api/v1/value-resolver/document-definition/{documentDefinitionName}/keys", "x")
+                .post("/api/management/v1/value-resolver/document-definition/{documentDefinitionName}/keys", "x")
                 .contentType(APPLICATION_JSON_UTF8)
                 .content(prefixes)
         )
