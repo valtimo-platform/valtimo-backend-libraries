@@ -18,6 +18,7 @@ package com.ritense.note.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
+import com.ritense.document.repository.impl.JsonSchemaDocumentRepository
 import com.ritense.document.service.DocumentService
 import com.ritense.note.repository.NoteDocumentMapper
 import com.ritense.note.repository.NoteRepository
@@ -83,9 +84,9 @@ class NoteAutoConfiguration {
 
     @Bean
     fun noteDocumentMapper(
-        @Lazy documentService: DocumentService,
+        documentRepository: JsonSchemaDocumentRepository
     ): NoteDocumentMapper {
-        return NoteDocumentMapper(documentService)
+        return NoteDocumentMapper(documentRepository)
     }
 
     @Bean

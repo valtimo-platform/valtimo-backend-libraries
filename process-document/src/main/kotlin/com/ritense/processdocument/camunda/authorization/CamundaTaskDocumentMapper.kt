@@ -20,8 +20,9 @@ import com.ritense.authorization.AuthorizationEntityMapper
 import com.ritense.authorization.AuthorizationEntityMapperResult
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
+import com.ritense.document.repository.impl.JsonSchemaDocumentRepository
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
-import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService
+import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository
 import com.ritense.valtimo.camunda.domain.CamundaExecution
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.Companion.BUSINESS_KEY
@@ -33,13 +34,15 @@ import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Root
 
 class CamundaTaskDocumentMapper(
-    private val processDocumentService: CamundaProcessJsonSchemaDocumentService,
+    private val processDocumentInstanceRepository: ProcessDocumentInstanceRepository,
+    private val documentRepository: JsonSchemaDocumentRepository,
     private val queryDialectHelper: QueryDialectHelper
 ) : AuthorizationEntityMapper<CamundaTask, JsonSchemaDocument> {
 
     override fun mapRelated(entity: CamundaTask): List<JsonSchemaDocument> {
         val processInstanceId = CamundaProcessInstanceId(entity.getProcessInstanceId())
-        val document = processDocumentService.getDocument(processInstanceId, entity)
+        val processDocumentInstance = processDocumentInstanceRepository.findByProcessInstanceId(processInstanceId).get()
+        val document = documentRepository.findById(processDocumentInstance.processDocumentInstanceId().documentId()).get()
         return listOf(document)
     }
 
