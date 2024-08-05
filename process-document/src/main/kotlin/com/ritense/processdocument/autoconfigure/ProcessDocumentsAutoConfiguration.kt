@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.case.repository.TaskListColumnRepository
 import com.ritense.case.service.CaseDefinitionService
+import com.ritense.document.repository.impl.JsonSchemaDocumentRepository
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.processdocument.camunda.authorization.CamundaTaskDocumentMapper
@@ -28,6 +29,7 @@ import com.ritense.processdocument.exporter.ProcessDocumentLinkExporter
 import com.ritense.processdocument.importer.ProcessDocumentLinkImporter
 import com.ritense.processdocument.listener.CaseAssigneeListener
 import com.ritense.processdocument.listener.CaseAssigneeTaskCreatedListener
+import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository
 import com.ritense.processdocument.service.CaseTaskListSearchService
 import com.ritense.processdocument.service.CorrelationService
 import com.ritense.processdocument.service.CorrelationServiceImpl
@@ -37,7 +39,6 @@ import com.ritense.processdocument.service.ProcessDocumentDeploymentService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.ProcessDocumentsService
 import com.ritense.processdocument.service.ValueResolverDelegateService
-import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService
 import com.ritense.processdocument.tasksearch.TaskListSearchFieldV2Mapper
 import com.ritense.processdocument.tasksearch.TaskSearchFieldDeployer
 import com.ritense.processdocument.tasksearch.TaskSearchFieldExporter
@@ -63,7 +64,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Lazy
 
 @AutoConfiguration
 class ProcessDocumentsAutoConfiguration {
@@ -112,6 +112,7 @@ class ProcessDocumentsAutoConfiguration {
             objectMapper,
         )
     }
+
     @ProcessBean
     @Bean
     @ConditionalOnMissingBean(CorrelationService::class)
@@ -176,10 +177,11 @@ class ProcessDocumentsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(CamundaTaskDocumentMapper::class)
     fun camundaTaskDocumentMapper(
-        @Lazy processDocumentService: CamundaProcessJsonSchemaDocumentService,
+        processDocumentInstanceRepository: ProcessDocumentInstanceRepository,
+        documentRepository: JsonSchemaDocumentRepository,
         queryDialectHelper: QueryDialectHelper
     ): CamundaTaskDocumentMapper {
-        return CamundaTaskDocumentMapper(processDocumentService, queryDialectHelper)
+        return CamundaTaskDocumentMapper(processDocumentInstanceRepository, documentRepository, queryDialectHelper)
     }
 
     @Bean
