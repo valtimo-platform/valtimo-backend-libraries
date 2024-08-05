@@ -29,11 +29,7 @@ class ObjecttypenApiClient(
         authentication: ObjecttypenApiAuthentication,
         objecttypeUrl: URI
     ): Objecttype {
-        val url = if (objecttypeUrl.host == "host.docker.internal") {
-            URI.create(objecttypeUrl.toString().replace("host.docker.internal", "localhost"))
-        } else {
-            objecttypeUrl
-        }
+        val url = sanitizeUriHost(objecttypeUrl)
         val result = webclientBuilder
             .clone()
             .filter(authentication)
@@ -44,6 +40,9 @@ class ObjecttypenApiClient(
             .toEntity(Objecttype::class.java)
             .block()
 
+        result?.statusCode?.isError?.let {
+            throw RuntimeException("Error while fetching objecttype: ${result.statusCode}")
+        }
         return result?.body!!
     }
 
@@ -51,11 +50,7 @@ class ObjecttypenApiClient(
         authentication: ObjecttypenApiAuthentication,
         objecttypesUrl: URI
     ): List<Objecttype> {
-        val url = if (objecttypesUrl.host == "host.docker.internal") {
-            URI.create(objecttypesUrl.toString().replace("host.docker.internal", "localhost"))
-        } else {
-            objecttypesUrl
-        }
+        val url = sanitizeUriHost(objecttypesUrl)
         val result = webclientBuilder
             .clone()
             .filter(authentication)
@@ -66,6 +61,22 @@ class ObjecttypenApiClient(
             .toEntityList<Objecttype>()
             .block()
 
+        result?.statusCode?.isError?.let {
+            throw RuntimeException("Error while fetching objecttypes: ${result.statusCode}")
+        }
         return result?.body!!
+    }
+
+    private fun sanitizeUriHost(objecttypesUrl: URI): URI {
+        val url = if (objecttypesUrl.host == HOST_DOCKER_INTERNAL) {
+            URI.create(objecttypesUrl.toString().replace(HOST_DOCKER_INTERNAL, "localhost"))
+        } else {
+            objecttypesUrl
+        }
+        return url
+    }
+
+    companion object {
+        private const val HOST_DOCKER_INTERNAL = "host.docker.internal"
     }
 }
