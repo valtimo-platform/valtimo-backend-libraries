@@ -21,6 +21,8 @@ import com.ritense.document.JsonSchemaDocumentDefinitionSpecificationFactory
 import com.ritense.document.JsonSchemaDocumentSnapshotSpecificationFactory
 import com.ritense.document.JsonSchemaDocumentSpecificationFactory
 import com.ritense.document.SearchFieldSpecificationFactory
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
+import com.ritense.document.repository.DocumentDefinitionRepository
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
@@ -59,6 +61,6 @@ class DocumentAuthorizationAutoConfiguration {
 
     @Bean
     fun documentDocumentDefinitionMapper(
-        @Lazy documentDefinitionService: JsonSchemaDocumentDefinitionService
-    ) = DocumentDocumentDefinitionMapper(documentDefinitionService)
+        documentDefinitionRepository: DocumentDefinitionRepository<JsonSchemaDocumentDefinition>
+    ) = DocumentDocumentDefinitionMapper(documentDefinitionRepository)
 }
