@@ -44,10 +44,21 @@ class ObjecttypenApiPlugin(
         return objecttypenApiClient.getObjecttype(authenticationPluginConfiguration, typeUrl)
     }
 
+    fun getObjecttypes(typeUrl: URI): List<Objecttype> {
+        return objecttypenApiClient.getObjecttypes(authenticationPluginConfiguration, typeUrl)
+    }
+
     fun getObjectTypeUrlById(id:String): URI {
         return UriComponentsBuilder.fromUri(url)
             .pathSegment("objecttypes")
             .pathSegment(id)
+            .build()
+            .toUri()
+    }
+
+    fun getObjectTypesUrl(): URI {
+        return UriComponentsBuilder.fromUri(url)
+            .pathSegment("objecttypes")
             .build()
             .toUri()
     }

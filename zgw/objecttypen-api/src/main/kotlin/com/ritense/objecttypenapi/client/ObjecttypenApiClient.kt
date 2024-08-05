@@ -18,23 +18,19 @@ package com.ritense.objecttypenapi.client
 
 import com.ritense.objecttypenapi.ObjecttypenApiAuthentication
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.toEntityList
 import java.net.URI
 
 class ObjecttypenApiClient(
     private val webclientBuilder: WebClient.Builder
 ) {
 
-
     fun getObjecttype(
         authentication: ObjecttypenApiAuthentication,
         objecttypeUrl: URI
     ): Objecttype {
-        val url = if (objecttypeUrl.host == "host.docker.internal") {
-            URI.create(objecttypeUrl.toString().replace("host.docker.internal", "localhost"))
-        } else {
-            objecttypeUrl
-        }
-        val result = webclientBuilder
+        val url = sanitizeUriHost(objecttypeUrl)
+        val response = webclientBuilder
             .clone()
             .filter(authentication)
             .build()
@@ -44,6 +40,47 @@ class ObjecttypenApiClient(
             .toEntity(Objecttype::class.java)
             .block()
 
-        return result?.body!!
+        response?.statusCode?.isError?.let { isError ->
+            if (isError) {
+                throw RuntimeException("Error while fetching objecttype: ${response.statusCode}")
+            }
+        }
+        return response?.body ?: throw RuntimeException("Error: response body is null")
+    }
+
+    fun getObjecttypes(
+        authentication: ObjecttypenApiAuthentication,
+        objecttypesUrl: URI
+    ): List<Objecttype> {
+        val url = sanitizeUriHost(objecttypesUrl)
+        val response = webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .get()
+            .uri(url)
+            .retrieve()
+            .toEntityList<Objecttype>()
+            .block()
+
+        response?.statusCode?.isError?.let { isError ->
+            if (isError) {
+                throw RuntimeException("Error while fetching objecttypes: ${response.statusCode}")
+            }
+        }
+        return response?.body ?: throw RuntimeException("Error: response body is null")
+    }
+
+    private fun sanitizeUriHost(objecttypesUrl: URI): URI {
+        val url = if (objecttypesUrl.host == HOST_DOCKER_INTERNAL) {
+            URI.create(objecttypesUrl.toString().replace(HOST_DOCKER_INTERNAL, "localhost"))
+        } else {
+            objecttypesUrl
+        }
+        return url
+    }
+
+    companion object {
+        private const val HOST_DOCKER_INTERNAL = "host.docker.internal"
     }
 }
