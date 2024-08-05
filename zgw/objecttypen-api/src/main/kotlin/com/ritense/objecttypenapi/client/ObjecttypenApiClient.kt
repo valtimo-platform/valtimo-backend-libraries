@@ -30,7 +30,7 @@ class ObjecttypenApiClient(
         objecttypeUrl: URI
     ): Objecttype {
         val url = sanitizeUriHost(objecttypeUrl)
-        val result = webclientBuilder
+        val response = webclientBuilder
             .clone()
             .filter(authentication)
             .build()
@@ -40,10 +40,12 @@ class ObjecttypenApiClient(
             .toEntity(Objecttype::class.java)
             .block()
 
-        result?.statusCode?.isError?.let {
-            throw RuntimeException("Error while fetching objecttype: ${result.statusCode}")
+        response?.statusCode?.isError?.let { isError ->
+            if (isError) {
+                throw RuntimeException("Error while fetching objecttype: ${response.statusCode}")
+            }
         }
-        return result?.body!!
+        return response?.body ?: throw RuntimeException("Error: response body is null")
     }
 
     fun getObjecttypes(
@@ -51,7 +53,7 @@ class ObjecttypenApiClient(
         objecttypesUrl: URI
     ): List<Objecttype> {
         val url = sanitizeUriHost(objecttypesUrl)
-        val result = webclientBuilder
+        val response = webclientBuilder
             .clone()
             .filter(authentication)
             .build()
@@ -61,10 +63,12 @@ class ObjecttypenApiClient(
             .toEntityList<Objecttype>()
             .block()
 
-        result?.statusCode?.isError?.let {
-            throw RuntimeException("Error while fetching objecttypes: ${result.statusCode}")
+        response?.statusCode?.isError?.let { isError ->
+            if (isError) {
+                throw RuntimeException("Error while fetching objecttypes: ${response.statusCode}")
+            }
         }
-        return result?.body!!
+        return response?.body ?: throw RuntimeException("Error: response body is null")
     }
 
     private fun sanitizeUriHost(objecttypesUrl: URI): URI {
