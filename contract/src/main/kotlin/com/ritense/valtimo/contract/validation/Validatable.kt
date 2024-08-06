@@ -39,7 +39,7 @@ interface Validatable {
 
         @Deprecated("This method has been moved to ValidatorHolder", ReplaceWith("ValidatorHolder.setValidator(validator)"))
         fun setValidator(validator: Validator) {
-            logger.warn { "setValidator has been moved to ValidatorHolder.setValidator(validator)" }
+            ValidatorHolder.setValidator(validator)
         }
     }
 
