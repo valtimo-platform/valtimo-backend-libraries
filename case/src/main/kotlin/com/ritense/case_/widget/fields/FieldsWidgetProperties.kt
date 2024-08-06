@@ -24,7 +24,7 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotEmpty
 
 data class FieldsWidgetProperties (
-    @field:NotEmpty val columns: List<List<@Valid Field>>,
+    @field:NotEmpty val columns: List<@NotEmpty List<@Valid Field>>,
 ) {
     @JsonInclude(Include.NON_NULL)
     data class Field (
