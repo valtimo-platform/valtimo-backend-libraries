@@ -24,6 +24,8 @@ import com.ritense.resource.domain.getEnumFromKey
 import com.ritense.resource.repository.ResourceStorageMetadataRepository
 import com.ritense.valtimo.contract.upload.MimeTypeDeniedException
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
+import jakarta.persistence.EntityNotFoundException
+import mu.KotlinLogging
 import org.apache.tika.Tika
 import java.io.BufferedInputStream
 import java.io.InputStream
@@ -109,13 +111,29 @@ class TemporaryResourceStorageService(
     }
 
     fun getMetadataValue(resourceStorageFieldId: String, metadataKey: String): String {
-        return repository.getReferenceById(ResourceStorageMetadataId(
-            fileId = resourceStorageFieldId,
-            metadataKey = getEnumFromKey(metadataKey)
-        )).metadataValue
+        return getEnumFromKey(metadataKey).fold(
+            onSuccess = { enumKey ->
+                try {
+                    repository.getReferenceById(
+                        ResourceStorageMetadataId(
+                            fileId = resourceStorageFieldId,
+                            metadataKey = enumKey
+                        )
+                    ).metadataValue
+                } catch (e: EntityNotFoundException) {
+                    logger.warn("Resource $resourceStorageFieldId does not exist: ${e.message}")
+                    throw e
+                }
+            },
+            onFailure = { exception ->
+                logger.error("Failed to resolve metadata key '$metadataKey': ${exception.message}")
+                throw exception
+            }
+        )
     }
 
     companion object {
+        val logger = KotlinLogging.logger {}
         val TEMP_DIR: Path = Files.createTempDirectory("temporaryResourceDirectory")
     }
 }

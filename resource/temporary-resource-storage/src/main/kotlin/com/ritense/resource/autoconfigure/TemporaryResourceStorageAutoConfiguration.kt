@@ -118,9 +118,9 @@ class TemporaryResourceStorageAutoConfiguration {
     @ProcessBean
     @ConditionalOnMissingBean(ResourceStorageDelegate::class)
     fun resourceStorageDelegate(
-        repository: ResourceStorageMetadataRepository
+        service : TemporaryResourceStorageService
     ) : ResourceStorageDelegate {
-        return ResourceStorageDelegate(repository)
+        return ResourceStorageDelegate(service)
     }
 
 }

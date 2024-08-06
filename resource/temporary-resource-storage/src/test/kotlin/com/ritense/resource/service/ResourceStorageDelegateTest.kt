@@ -1,13 +1,12 @@
 package com.ritense.resource.service
 
-import com.ritense.resource.domain.ResourceStorageMetadata
-import com.ritense.resource.domain.ResourceStorageMetadataId
-import com.ritense.resource.domain.StorageMetadataKeys
+import com.ritense.resource.domain.getEnumFromKey
 import com.ritense.resource.repository.ResourceStorageMetadataRepository
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
+import jakarta.persistence.EntityNotFoundException
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import org.springframework.boot.test.context.SpringBootTest
@@ -15,61 +14,65 @@ import org.springframework.boot.test.context.SpringBootTest
 @SpringBootTest
 class ResourceStorageDelegateTest {
 
-    lateinit var repository: ResourceStorageMetadataRepository
-    lateinit var delegate: ResourceStorageDelegate
+    private lateinit var service: TemporaryResourceStorageService
+    private lateinit var repository: ResourceStorageMetadataRepository
+    private lateinit var delegate: ResourceStorageDelegate
 
     @BeforeEach
     fun setUp() {
-        repository = mock()
-        delegate = ResourceStorageDelegate(repository)
+        repository = mock(ResourceStorageMetadataRepository::class.java)
+        service = mock(TemporaryResourceStorageService::class.java)
+        delegate = ResourceStorageDelegate(service)
     }
 
     @Test
-    fun `should return metadata`() {
+    fun `should return metadata value`() {
         val fileId = "123456789-123456789"
         val metadataKey = "downloadUrl"
-        val expectedDownloadUrl = "https://example.com/download/url"
-        val key = ResourceStorageMetadataId(
-            fileId = fileId,
-            metadataKey = StorageMetadataKeys.DOWNLOAD_URL
-        )
-        val metadata = ResourceStorageMetadata(
-            key,
-            expectedDownloadUrl
-        )
+        val expectedMetadataValue = "https://example.com/download"
 
-        `when`(repository.getReferenceById(key)).thenReturn(metadata)
+        // Mocking getEnumFromKey to return a valid enum for the test case
+        `when`(service.getMetadataValue(fileId, metadataKey)).thenReturn(expectedMetadataValue)
 
-        val result = delegate.getMetadata(fileId, metadataKey)
+        // Calling the method under test
+        val actualMetadataValue = delegate.getMetadata(fileId, metadataKey)
 
-        assertNotNull(result)
-        assertEquals(expectedDownloadUrl, result)
+        // Asserting that the actual metadata matches the expected metadata
+        assertNotNull(actualMetadataValue)
+        assertEquals(expectedMetadataValue, actualMetadataValue)
     }
+
 
     @Test
     fun `should fail gracefully for invalid metadata keys`() {
-        val fileId = "123456789-123456789"
-        val metadataKey = "downloadUrl"
-        val expectedDownloadUrl = "https://example.com/download/url"
-        val key = ResourceStorageMetadataId(
-            fileId = fileId,
-            metadataKey = StorageMetadataKeys.DOWNLOAD_URL
-        )
-        val metadata = ResourceStorageMetadata(
-            key,
-            expectedDownloadUrl
-        )
+        val metadataKey = "invalidKey"
+        val expectedFailure = getEnumFromKey(metadataKey)
 
-        `when`(repository.getReferenceById(key)).thenReturn(metadata)
+        assertTrue(expectedFailure.isFailure)
 
-        val result = delegate.getMetadata(fileId, metadataKey)
-
-        assertNotNull(result)
-        assertEquals(expectedDownloadUrl, result)
+        expectedFailure.onFailure { exception ->
+            assertEquals("Unknown storage metadata key: invalidKey", exception.message)
+        }
     }
 
     @Test
     fun `should fail gracefully for invalid file id`() {
+        val fileId = "123456789-123456789"
+        val metadataKey = "downloadUrl"
+        val expectedException = EntityNotFoundException("Entity not found")
 
+        // Mocking service to throw EntityNotFoundException when getMetadataValue is called
+        `when`(service.getMetadataValue(fileId, metadataKey)).thenAnswer {
+            throw expectedException
+        }
+
+        // This asserts that an exception of type EntityNotFoundException is thrown
+        val exception = assertThrows<EntityNotFoundException> {
+            delegate.getMetadata(fileId, metadataKey)
+        }
+
+        // This asserts that the exception message is as expected
+        assertEquals(expectedException.message, exception.message)
     }
+
 }

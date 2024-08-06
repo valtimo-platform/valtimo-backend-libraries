@@ -1,17 +1,10 @@
 package com.ritense.resource.service
 
-import com.ritense.resource.domain.ResourceStorageMetadataId
-import com.ritense.resource.domain.getEnumFromKey
-import com.ritense.resource.repository.ResourceStorageMetadataRepository
-
 class ResourceStorageDelegate(
-    private val repository: ResourceStorageMetadataRepository
+    private val service: TemporaryResourceStorageService
 ) {
 
     fun getMetadata(resourceStorageFileId: String, metadataKey: String): String {
-        return repository.getReferenceById(ResourceStorageMetadataId(
-            fileId = resourceStorageFileId,
-            metadataKey = getEnumFromKey(metadataKey)
-        )).metadataValue
+        return service.getMetadataValue(resourceStorageFileId, metadataKey)
     }
 }

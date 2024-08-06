@@ -24,6 +24,9 @@ import com.ritense.documentenapi.client.DocumentStatusType
 import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.documentenapi.service.DocumentenApiVersionService
+import com.ritense.plugin.domain.PluginConfiguration
+import com.ritense.plugin.domain.PluginConfigurationId
+import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.json.MapperSingleton
@@ -38,6 +41,7 @@ import java.io.ByteArrayInputStream
 import java.net.URI
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -49,9 +53,22 @@ internal class DocumentenApiPluginTest {
     @BeforeEach
     fun setUp() {
         pluginService = mock()
+
+        val pluginDefinition = PluginDefinition(
+            key = "key",
+            description = "description",
+            fullyQualifiedClassName = "className",
+            title= "title"
+        )
+        val pluginConfiguration = PluginConfiguration(
+            id = PluginConfigurationId(UUID.randomUUID()),
+            pluginDefinition = pluginDefinition,
+            title = "title"
+        )
+        whenever(pluginService.findPluginConfiguration(any(), any())).thenReturn(pluginConfiguration)
     }
 
-    //@Test
+    @Test
     fun `should call client to store file`() {
         val client: DocumentenApiClient = mock()
         val storageService: TemporaryResourceStorageService = mock()
@@ -129,7 +146,7 @@ internal class DocumentenApiPluginTest {
         assertEquals(LocalDateTime.of(2020, 1, 1, 1, 1, 1), emittedEvent.beginRegistratie)
     }
 
-    //@Test
+    @Test
     fun `should call client to store file after document upload`() {
         val client: DocumentenApiClient = mock()
         val storageService: TemporaryResourceStorageService = mock()
@@ -201,7 +218,7 @@ internal class DocumentenApiPluginTest {
         assertEquals(Vertrouwelijkheid.ZAAKVERTROUWELIJK, request.vertrouwelijkheidaanduiding)
     }
 
-    //@Test
+    @Test
     fun `should call client to store file after document upload with minimal properties`() {
         val client: DocumentenApiClient = mock()
         val storageService: TemporaryResourceStorageService = mock()

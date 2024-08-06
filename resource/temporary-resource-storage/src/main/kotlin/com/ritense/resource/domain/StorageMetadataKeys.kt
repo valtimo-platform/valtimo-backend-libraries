@@ -5,6 +5,8 @@ enum class StorageMetadataKeys(val key: String) {
     DOWNLOAD_URL("downloadUrl"),
 }
 
-fun getEnumFromKey(key: String): StorageMetadataKeys {
-    return StorageMetadataKeys.entries.find { it.key == key }!!
+fun getEnumFromKey(key: String): Result<StorageMetadataKeys> {
+    return StorageMetadataKeys.entries.find { it.key == key }
+        ?.let { Result.success(it) }
+        ?: Result.failure(IllegalArgumentException("Unknown storage metadata key: $key"))
 }
