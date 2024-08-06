@@ -9,7 +9,7 @@
                     "type": "fields",
                     "key": "test-widget-2",
                     "title": "Widget 2",
-                    "width": 1,
+                    "width": 2,
                     "highContrast": true,
                     "properties": {
                         "columns": [
@@ -27,7 +27,7 @@
                     "type": "fields",
                     "key": "test-widget-1",
                     "title": "Widget 1",
-                    "width": 0,
+                    "width": 1,
                     "highContrast": false,
                     "properties": {
                         "columns": [

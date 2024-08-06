@@ -28,13 +28,16 @@ import com.ritense.case_.widget.CaseWidgetMapper
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
 import com.ritense.valtimo.changelog.service.ChangelogService
+import com.ritense.valtimo.contract.validation.check
+import jakarta.validation.Validator
 
 class CaseWidgetTabDeployer(
     private val objectMapper: ObjectMapper,
     private val caseWidgetTabRepository: CaseWidgetTabRepository,
     private val caseWidgetMappers: List<CaseWidgetMapper<CaseWidgetTabWidget, CaseWidgetTabWidgetDto>>,
     private val changelogService: ChangelogService,
-    private val clearTables: Boolean
+    private val clearTables: Boolean,
+    private val validator: Validator
 ) : ChangesetDeployer {
     override fun getPath() = "classpath*:**/*.case-widget-tab.json"
 
@@ -58,13 +61,15 @@ class CaseWidgetTabDeployer(
     }
 
     fun deploy(tabs: List<CaseWidgetTabDto>) {
-        val toSave = tabs.map {
+        validator.check(tabs)
+
+        val toSave = tabs.map { tab ->
             CaseWidgetTab(
                 CaseTabId(
-                    caseDefinitionName = it.caseDefinitionName,
-                    key = it.key
+                    caseDefinitionName = tab.caseDefinitionName,
+                    key = tab.key
                 ),
-                widgets = it.widgets.mapIndexed { index, widgetDto ->
+                widgets = tab.widgets.mapIndexed { index, widgetDto ->
                     caseWidgetMappers.first { mapper ->
                         mapper.supportedDtoType().isAssignableFrom(widgetDto::class.java)
                     }.toEntity(widgetDto, index)

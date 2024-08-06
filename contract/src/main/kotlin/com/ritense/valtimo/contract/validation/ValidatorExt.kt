@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.contract.validation.autoconfigure
+package com.ritense.valtimo.contract.validation
 
-import com.ritense.valtimo.contract.validation.listener.ValidatorReadyEventListener
+import jakarta.validation.ConstraintViolationException
 import jakarta.validation.Validator
-import org.springframework.boot.autoconfigure.AutoConfiguration
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.context.annotation.Bean
 
-@AutoConfiguration
-class ValidatorAutoConfiguration {
-
-    @Bean
-    @ConditionalOnMissingBean(ValidatorReadyEventListener::class)
-    fun validatorReadyEventHandler(validator: Validator): ValidatorReadyEventListener {
-        return ValidatorReadyEventListener(validator)
+fun Validator.check(obj: Any) {
+    val errors = if (obj is Collection<*>) {
+        obj.flatMap { this.validate(it) }.toSet()
+    } else {
+        this.validate(obj)
     }
-
+    if (errors.isNotEmpty()) {
+        throw ConstraintViolationException(errors)
+    }
 }

@@ -25,7 +25,6 @@ import com.ritense.case_.rest.dto.CaseWidgetTabDto
 import com.ritense.case_.service.CaseWidgetTabService
 import com.ritense.case_.web.rest.dto.TestCaseWidgetTabWidgetDto
 import com.ritense.case_.widget.TestCaseWidgetProperties
-import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.request.NewDocumentRequest
@@ -59,8 +58,8 @@ class CaseWidgetTabWidgetSpecificationIntTest @Autowired constructor(
                     caseDefinitionName,
                     tabKey,
                     widgets = listOf(
-                        TestCaseWidgetTabWidgetDto("test", "Widget 1", 0, false, TestCaseWidgetProperties("test123")),
-                        TestCaseWidgetTabWidgetDto("other-widget", "Widget 2", 1, true, TestCaseWidgetProperties("test123")),
+                        TestCaseWidgetTabWidgetDto("test", "Widget 1", 1, false, TestCaseWidgetProperties("test123")),
+                        TestCaseWidgetTabWidgetDto("other-widget", "Widget 2", 2, true, TestCaseWidgetProperties("test123")),
                     )
                 )
             )

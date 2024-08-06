@@ -17,6 +17,7 @@
 package com.ritense.case_.rest.dto
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
+import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 
@@ -24,6 +25,8 @@ import jakarta.validation.constraints.NotBlank
 interface CaseWidgetTabWidgetDto {
     @get:NotBlank val key: String
     val title: String
-    @get:Min(1) val width: Int
+    @get:Min(1)
+    @get:Max(4)
+    val width: Int
     val highContrast: Boolean
 }

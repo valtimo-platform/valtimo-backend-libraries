@@ -45,6 +45,7 @@ import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valueresolver.ValueResolverService
+import jakarta.validation.Validator
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -89,13 +90,15 @@ class CaseWidgetAutoConfiguration {
         caseWidgetTabRepository: CaseWidgetTabRepository,
         caseWidgetMappers: List<CaseWidgetMapper<*, *>>,
         changelogService: ChangelogService,
-        @Value("\${valtimo.changelog.case-widget-tab.clear-tables:false}") clearTables: Boolean
+        @Value("\${valtimo.changelog.case-widget-tab.clear-tables:false}") clearTables: Boolean,
+        validator: Validator
     ) = CaseWidgetTabDeployer(
         objectMapper,
         caseWidgetTabRepository,
         caseWidgetMappers as List<CaseWidgetMapper<CaseWidgetTabWidget, CaseWidgetTabWidgetDto>>,
         changelogService,
-        clearTables
+        clearTables,
+        validator
     )
 
     @ConditionalOnMissingBean(CaseWidgetTabWidgetSpecificationFactory::class)

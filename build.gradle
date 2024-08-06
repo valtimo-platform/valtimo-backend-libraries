@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -164,8 +166,9 @@ subprojects { subproject ->
         }
 
         tasks.withType(KotlinCompile).configureEach {
-            kotlinOptions {
-                jvmTarget = JavaVersion.VERSION_17
+            compilerOptions {
+                jvmTarget = JvmTarget.JVM_17
+                freeCompilerArgs.add("-Xemit-jvm-type-annotations")
             }
         }
 

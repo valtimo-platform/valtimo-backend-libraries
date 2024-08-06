@@ -166,8 +166,8 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
                     caseDefinitionName,
                     tabKey,
                     widgets = listOf(
-                        TestCaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true, TestCaseWidgetProperties("test123")),
-                        TestCaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false, TestCaseWidgetProperties("test123"))
+                        TestCaseWidgetTabWidgetDto("widget-2", "Widget 2", 2, true, TestCaseWidgetProperties("test123")),
+                        TestCaseWidgetTabWidgetDto("widget-1", "Widget 1", 1, false, TestCaseWidgetProperties("test123"))
                     )
                 )
             )
@@ -225,9 +225,9 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
                     caseDefinitionName,
                     tabKey,
                     widgets = listOf(
-                        TestCaseWidgetTabWidgetDto("widget-1", "Widget 1", 0, false),
-                        TestCaseWidgetTabWidgetDto("widget-2", "Widget 2", 1, true),
-                        TestCaseWidgetTabWidgetDto("deny", "Deny", 1, false)
+                        TestCaseWidgetTabWidgetDto("widget-1", "Widget 1", 1, false),
+                        TestCaseWidgetTabWidgetDto("widget-2", "Widget 2", 2, true),
+                        TestCaseWidgetTabWidgetDto("deny", "Deny", 3, false)
                     )
                 )
             )
