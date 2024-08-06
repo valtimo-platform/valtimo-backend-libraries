@@ -35,6 +35,7 @@ import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zgw.domain.Vertrouwelijkheid
 import jakarta.validation.ValidationException
+import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.hibernate.validator.constraints.Length
 import org.springframework.context.ApplicationEventPublisher
@@ -275,8 +276,12 @@ class DocumentenApiPlugin(
         execution.setVariable(storedDocumentUrl, documentCreateResult.url)
         val documentId = documentCreateResult.url.substringAfterLast('/')
         execution.setVariable(DOCUMENT_ID_PROCESS_VAR, documentId)
-        val pluginConfiguration = getDocumentenApiPluginByInformatieobjectUrl(URI.create(documentCreateResult.url))
-        execution.setVariable(DOWNLOAD_URL_PROCESS_VAR, createDownloadUrl(pluginConfiguration.id.id, documentId))
+        try {
+            val pluginConfiguration = getDocumentenApiPluginByInformatieobjectUrl(URI.create(documentCreateResult.url))
+            execution.setVariable(DOWNLOAD_URL_PROCESS_VAR, createDownloadUrl(pluginConfiguration.id.id, documentId))
+        } catch (_: Exception) {
+            logger.warn { "Failed to set the $DOWNLOAD_URL_PROCESS_VAR variable in the DelegateExecution" }
+        }
     }
 
     private fun getDocumentenApiPluginByInformatieobjectUrl(informatieobjectUrl: URI): PluginConfiguration {
@@ -332,6 +337,8 @@ class DocumentenApiPlugin(
         val CREATIEDATUM_FIELD = listOf("creationDate", "creatiedatum")
         val FORMAAT_FIELD = listOf("contentType", "formaat")
         val TREFWOORDEN_FIELD = listOf("trefwoorden")
+
+        val logger = KotlinLogging.logger {  }
 
         fun findConfigurationByUrl(url: URI) = { properties: JsonNode ->
             url.toString().startsWith(properties[URL_PROPERTY].textValue())
