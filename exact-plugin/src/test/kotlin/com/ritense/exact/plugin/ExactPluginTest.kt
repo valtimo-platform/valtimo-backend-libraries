@@ -88,7 +88,7 @@ internal class ExactPluginTest {
 
         val request = mockWebServer.takeRequest()
         assertEquals("GET", request.method)
-        assertEquals("http://localhost:${mockWebServer.port}/api/test", request.requestUrl.toString())
+        assertEquals("/api/test", request.requestUrl?.encodedPath)
     }
 
     class TestGetRequest : ExactGetRequest {
@@ -133,7 +133,7 @@ internal class ExactPluginTest {
 
         val request = mockWebServer.takeRequest()
         assertEquals("GET", request.method)
-        assertEquals("http://localhost:${mockWebServer.port}/api/test", request.requestUrl.toString())
+        assertEquals("/api/test", request.requestUrl?.encodedPath)
     }
 
     @Test
@@ -172,7 +172,7 @@ internal class ExactPluginTest {
 
         val request = mockWebServer.takeRequest()
         assertEquals("POST", request.method)
-        assertEquals("http://localhost:${mockWebServer.port}/api/test", request.requestUrl.toString())
+        assertEquals("/api/test", request.requestUrl?.encodedPath)
         assertEquals(
             """
             { "request": "1" }
@@ -226,7 +226,7 @@ internal class ExactPluginTest {
 
         val request = mockWebServer.takeRequest()
         assertEquals("POST", request.method)
-        assertEquals("http://localhost:${mockWebServer.port}/api/test", request.requestUrl.toString())
+        assertEquals("/api/test", request.requestUrl?.encodedPath)
         assertEquals(
             """
             { "test": 1 }
@@ -270,7 +270,7 @@ internal class ExactPluginTest {
 
         val request = mockWebServer.takeRequest()
         assertEquals("PUT", request.method)
-        assertEquals("http://localhost:${mockWebServer.port}/api/test", request.requestUrl.toString())
+        assertEquals("/api/test", request.requestUrl?.encodedPath)
         assertEquals(
             """
             { "request": "1" }
@@ -324,7 +324,7 @@ internal class ExactPluginTest {
 
         val request = mockWebServer.takeRequest()
         assertEquals("PUT", request.method)
-        assertEquals("http://localhost:${mockWebServer.port}/api/test", request.requestUrl.toString())
+        assertEquals("/api/test", request.requestUrl?.encodedPath)
         assertEquals(
             """
             { "test": 1 }

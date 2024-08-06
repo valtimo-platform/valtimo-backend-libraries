@@ -35,6 +35,7 @@ dockerCompose {
 
 dependencies {
 
+    implementation(project(":authorization"))
     implementation(project(":contract"))
     implementation(project(":changelog"))
 

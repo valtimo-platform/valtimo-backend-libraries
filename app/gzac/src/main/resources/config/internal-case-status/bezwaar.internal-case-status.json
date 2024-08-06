@@ -1,0 +1,26 @@
+{
+    "changesetId": "bezwaar-internal-case-status-v1",
+    "internalCaseStatuses": [
+        {
+            "key": "aanvraag-ontvangen",
+            "caseDefinitionName": "bezwaar",
+            "title": "Aanvraag ontvangen",
+            "visibleInCaseListByDefault": true,
+            "color": "BLUE"
+        },
+        {
+            "key": "in-behandeling",
+            "caseDefinitionName": "bezwaar",
+            "title": "In behandeling",
+            "visibleInCaseListByDefault": true,
+            "color": "PURPLE"
+        },
+        {
+            "key": "informatieverzoek-uitgezet",
+            "caseDefinitionName": "bezwaar",
+            "title": "Informatieverzoek uitgezet",
+            "visibleInCaseListByDefault": true,
+            "color": "GREEN"
+        }
+    ]
+}

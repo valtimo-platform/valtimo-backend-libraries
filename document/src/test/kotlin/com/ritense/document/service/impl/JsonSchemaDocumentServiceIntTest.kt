@@ -92,6 +92,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         admin.username = USERNAME
         admin.roles = listOf(USER, ADMIN)
         whenever(userManagementService.currentUser).thenReturn(admin)
+        whenever(userManagementService.findByUserIdentifier(USERNAME)).thenReturn(admin)
         whenever(userManagementService.findById(USERNAME)).thenReturn(admin)
     }
 
@@ -135,6 +136,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         assertThat(candidateUsers).contains(jamesVance)
         assertThat(candidateUsers).contains(ashaMiller)
     }
+
     @Test
     @WithMockUser(username = USERNAME, authorities = [ADMIN])
     fun `should set document status and send outbox event`() {

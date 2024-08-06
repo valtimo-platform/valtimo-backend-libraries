@@ -125,7 +125,7 @@ public class UserResource {
     @GetMapping("/v1/users/{userId}")
     public ResponseEntity<ManageableUser> getUser(@PathVariable String userId) {
         logger.debug("Request to get user by id : {}", userId);
-        final ManageableUser manageableUser = userManagementService.findById(userId);
+        final ManageableUser manageableUser = userManagementService.findByUserIdentifier(userId);
         return ResponseEntity.ok(manageableUser);
     }
 

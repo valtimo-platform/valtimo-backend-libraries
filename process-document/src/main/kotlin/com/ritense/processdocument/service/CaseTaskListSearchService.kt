@@ -31,14 +31,23 @@ import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
+import com.ritense.document.domain.search.DatabaseSearchType
+import com.ritense.document.domain.search.SearchOperator
+import com.ritense.document.service.JsonSchemaDocumentActionProvider
 import com.ritense.processdocument.domain.CaseTask
+import com.ritense.processdocument.tasksearch.AdvancedSearchRequest
+import com.ritense.processdocument.tasksearch.SearchRequestMapper
+import com.ritense.processdocument.tasksearch.SearchWithConfigRequest
 import com.ritense.processdocument.web.result.TaskListRowDto
+import com.ritense.search.domain.SearchFieldV2
+import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider
 import com.ritense.valtimo.camunda.domain.CamundaExecution
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import com.ritense.valtimo.contract.utils.RequestHelper
 import com.ritense.valtimo.service.CamundaTaskService.TaskFilter
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.persistence.EntityManager
@@ -50,15 +59,30 @@ import jakarta.persistence.criteria.Order
 import jakarta.persistence.criteria.Path
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
-import java.time.LocalDateTime
-import java.util.UUID
-import java.util.stream.Collectors
+import org.apache.commons.lang3.NotImplementedException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
+import java.sql.Time
+import java.sql.Timestamp
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
+import java.time.temporal.TemporalAccessor
+import java.util.Date
+import java.util.Locale
+import java.util.UUID
+import java.util.function.Consumer
+import java.util.stream.Collectors
 
+
+const val SEARCH_FIELD_OWNER_TYPE = "TaskListSearchColumns"
 
 class CaseTaskListSearchService(
     private val entityManager: EntityManager,
@@ -66,6 +90,7 @@ class CaseTaskListSearchService(
     private val taskListColumnRepository: TaskListColumnRepository,
     private val userManagementService: UserManagementService,
     private val authorizationService: AuthorizationService,
+    private val searchFieldV2Service: SearchFieldV2Service,
     private val queryDialectHelper: QueryDialectHelper
 ) {
     private val CONTENT = "content"
@@ -86,11 +111,50 @@ class CaseTaskListSearchService(
         ).ifEmpty { defaultColumns }
         val newPageable = mutatePageable(taskListColumns, pageable)
 
-        return search(caseDefinitionName, assignmentFilter, newPageable)
+        return search(caseDefinitionName, AdvancedSearchRequest().assigneeFilter(assignmentFilter), newPageable)
             .map { task -> toCaseListRowDto(task, taskListColumns) }
     }
 
-    private fun search(caseDefinitionName: String, assignmentFilter: TaskFilter, pageable: Pageable): Page<CaseTask> {
+    fun searchTaskListRows(
+        caseDefinitionName: String,
+        searchWithConfigRequest: SearchWithConfigRequest,
+        pageable: Pageable
+    ): Page<TaskListRowDto> {
+        val taskListColumns = taskListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAsc(
+            caseDefinitionName
+        ).ifEmpty { defaultColumns }
+        val newPageable = mutatePageable(taskListColumns, pageable)
+
+        return search(caseDefinitionName, searchWithConfigRequest, newPageable)
+            .map { task -> toCaseListRowDto(task, taskListColumns) }
+    }
+
+    fun search(
+        caseDefinitionName: String,
+        searchWithConfigRequest: SearchWithConfigRequest,
+        pageable: Pageable
+    ): Page<CaseTask> {
+        val zoneOffset = RequestHelper.getZoneOffset()
+        val searchFieldMap: Map<String, SearchFieldV2> =
+            searchFieldV2Service.findAllByOwnerTypeAndOwnerId(SEARCH_FIELD_OWNER_TYPE, caseDefinitionName)
+                .associateBy { it.key }
+
+        val searchCriteria = searchWithConfigRequest.otherFilters.stream()
+            .map { otherFilter: SearchWithConfigRequest.SearchWithConfigFilter ->
+                SearchRequestMapper.toOtherFilter(
+                    otherFilter,
+                    searchFieldMap[otherFilter.key],
+                    zoneOffset
+                )
+            }
+            .toList()
+
+        val advancedSearchRequest = SearchRequestMapper.toAdvancedSearchRequest(searchWithConfigRequest, searchCriteria)
+
+        return search(caseDefinitionName, advancedSearchRequest, pageable)
+    }
+
+    fun search(caseDefinitionName: String, advancedSearchRequest: AdvancedSearchRequest, pageable: Pageable): Page<CaseTask> {
         val cb: CriteriaBuilder = entityManager.criteriaBuilder
         val query = cb.createQuery(CaseTask::class.java)
         val taskRoot = query.from(CamundaTask::class.java)
@@ -113,24 +177,26 @@ class CaseTaskListSearchService(
             )
         )
 
+        // Due to the JsonSchemaDocumentSpecification#toPredicate adding a groupBy (which is called when applying PBAC)
+        // ...we are forced to add all the columns we want to select, to the group by.
+        // This can be removed if we have a solution for this group by (TP story #106335)
         val groupList = query.groupList.toMutableList()
         groupList.addAll(selectCols)
         query.groupBy(groupList)
-        query.where(constructWhere(cb, query, taskRoot, documentRoot, caseDefinitionName, assignmentFilter))
+        query.where(constructWhere(cb, query, taskRoot, documentRoot, caseDefinitionName, advancedSearchRequest))
         query.orderBy(constructOrderBy(query, cb, taskRoot, documentRoot, pageable.sort))
 
         val countQuery = cb.createQuery(Long::class.java)
         val countTaskRoot = countQuery.from(CamundaTask::class.java)
         val countDocumentRoot = countQuery.from(JsonSchemaDocument::class.java)
-        countQuery.select(cb.count(countTaskRoot))
+        countQuery.select(cb.count(countDocumentRoot))
         entityManager.createQuery(countQuery)
-        countQuery.where(constructWhere(cb, countQuery, countTaskRoot, countDocumentRoot, caseDefinitionName, assignmentFilter))
+        countQuery.where(constructWhere(cb, countQuery, countTaskRoot, countDocumentRoot, caseDefinitionName, advancedSearchRequest))
 
-        val count = entityManager.createQuery(countQuery).singleResult
+        // Can't use singleResult here due to the group by issue mentioned above.
+        val count = entityManager.createQuery(countQuery).resultList.sum()
 
-        val pagedQuery = entityManager.createQuery(
-            query,
-        )
+        val pagedQuery = entityManager.createQuery(query)
             .setFirstResult(pageable.offset.toInt())
             .setMaxResults(pageable.pageSize)
 
@@ -143,12 +209,14 @@ class CaseTaskListSearchService(
         taskRoot: Root<CamundaTask>,
         documentRoot: Root<JsonSchemaDocument>,
         caseDefinitionName: String,
-        assignmentFilter: TaskFilter
+        advancedSearchRequest: AdvancedSearchRequest
     ): Predicate? {
         val authorizationPredicate: Predicate =
             getAuthorizationSpecification(CamundaTaskActionProvider.VIEW_LIST).toPredicate(taskRoot, query, cb)
 
-        val assignmentFilterPredicate: Predicate = constructAssignmentFilter(assignmentFilter, cb, taskRoot)
+        val assignmentFilterPredicate: Predicate = constructAssignmentFilter(advancedSearchRequest.assigneeFilter, cb, taskRoot)
+
+        val searchRequestPredicate: Array<Predicate> = constructSearchCriteriaFilter(advancedSearchRequest, cb, query, taskRoot, documentRoot)
 
         val where = cb.and(
             cb.equal(
@@ -160,7 +228,8 @@ class CaseTaskListSearchService(
                 queryDialectHelper.uuidToString(cb, documentRoot.get<JsonSchemaDocumentId>("id").get("id"))
             ),
             assignmentFilterPredicate,
-            authorizationPredicate
+            authorizationPredicate,
+            *searchRequestPredicate
         )
         return where
     }
@@ -187,6 +256,264 @@ class CaseTaskListSearchService(
         return assignmentFilterPredicate
     }
 
+    private fun constructSearchCriteriaFilter(
+        searchRequest: AdvancedSearchRequest,
+        cb: CriteriaBuilder,
+        query: CriteriaQuery<*>,
+        taskRoot: Root<CamundaTask>,
+        documentRoot: Root<JsonSchemaDocument>
+    ): Array<Predicate> {
+        val predicates = mutableListOf<Predicate>()
+
+        predicates.add(
+            authorizationService
+                .getAuthorizationSpecification(
+                    EntityAuthorizationRequest(
+                        JsonSchemaDocument::class.java,
+                        JsonSchemaDocumentActionProvider.VIEW_LIST
+                    ),
+                    null
+                ).toPredicate(documentRoot, query, cb)
+        )
+
+        if (searchRequest.otherFilters != null && searchRequest.otherFilters.isNotEmpty()) {
+            predicates.add(getOtherFiltersPredicate(cb, taskRoot, documentRoot, searchRequest))
+        }
+
+        if (searchRequest.statusFilter != null && searchRequest.statusFilter.isNotEmpty()) {
+            predicates.add(getStatusFilterPredicate(cb, documentRoot, searchRequest.statusFilter))
+        }
+
+        return predicates.toTypedArray()
+    }
+
+    private fun getOtherFiltersPredicate(
+        cb: CriteriaBuilder,
+        taskRoot: Root<CamundaTask>,
+        documentRoot: Root<JsonSchemaDocument>,
+        searchRequest: AdvancedSearchRequest
+    ): Predicate {
+        val jsonPredicates: Array<Predicate> = searchRequest.otherFilters.map { currentCriteria: AdvancedSearchRequest.OtherFilter ->
+            buildQueryForSearchCriteria(
+                cb,
+                taskRoot,
+                documentRoot,
+                currentCriteria
+            )
+        }.toTypedArray()
+
+        return if (searchRequest.searchOperator == SearchOperator.AND) {
+            cb.and(*jsonPredicates)
+        } else {
+            cb.or(*jsonPredicates)
+        }
+    }
+
+    private fun getStatusFilterPredicate(
+        cb: CriteriaBuilder,
+        documentRoot: Root<JsonSchemaDocument>,
+        statusFilter: Set<String>
+    ): Predicate {
+        val statusField = stringToPath<String>(documentRoot, "internalStatus.id.key")
+        val predicates: Array<Predicate> = statusFilter.map { status: String? ->
+            return if (status.isNullOrEmpty()) {
+                cb.isNull(statusField)
+            } else {
+                cb.equal(statusField, status)
+            }
+        }.toTypedArray()
+
+        return cb.or(*predicates)
+    }
+
+    private fun buildQueryForSearchCriteria(
+        cb: CriteriaBuilder,
+        taskRoot: Root<CamundaTask>,
+        documentRoot: Root<JsonSchemaDocument>,
+        searchCriteria: AdvancedSearchRequest.OtherFilter
+    ): Predicate {
+        val value: Expression<Comparable<Any>> =
+            if (searchCriteria.path.startsWith(DOC_PREFIX)) {
+                getValueExpressionForDocPrefix(cb, documentRoot, searchCriteria)
+            } else if (searchCriteria.path.startsWith(CASE_PREFIX)) {
+                getValueExpressionForCasePrefix(documentRoot, searchCriteria)
+            } else if (searchCriteria.path.startsWith(TASK_PREFIX)) {
+                getValueExpressionForTaskPrefix(taskRoot, searchCriteria)
+            } else {
+                throw IllegalArgumentException("Search path doesn't start with known prefix: '" + searchCriteria.path + "'")
+            }
+
+        val rangeFrom = searchCriteria.getRangeFrom<Comparable<Any>>()
+        val rangeTo = searchCriteria.getRangeTo<Comparable<Any>>()
+
+        return when (searchCriteria.searchType) {
+            DatabaseSearchType.LIKE -> cb.or(*searchLike(cb, value, searchCriteria.getValues()))
+            DatabaseSearchType.EQUAL -> cb.or(*searchEqual(cb, value, searchCriteria.getValues()))
+            DatabaseSearchType.GREATER_THAN_OR_EQUAL_TO -> searchGreaterThanOrEqualTo(cb, value, rangeFrom)
+            DatabaseSearchType.LESS_THAN_OR_EQUAL_TO -> searchLessThanOrEqualTo(cb, value, rangeTo)
+            DatabaseSearchType.BETWEEN -> searchBetween(cb, value, rangeFrom, rangeTo)
+            DatabaseSearchType.IN -> searchIn(cb, value, searchCriteria.getValues())
+            else -> throw NotImplementedException("Searching for search type '" + searchCriteria.searchType + "' hasn't been implemented.")
+        }
+    }
+
+    private fun getValueExpressionForDocPrefix(
+        cb: CriteriaBuilder,
+        documentRoot: Root<JsonSchemaDocument>,
+        searchCriteria: AdvancedSearchRequest.OtherFilter
+    ): Expression<Comparable<Any>> {
+        val jsonPath = "$." + quoteJsonPath(searchCriteria.path.substring(DOC_PREFIX.length))
+        return queryDialectHelper.getJsonValueExpression(
+            cb,
+            documentRoot.get<Any>("content")
+                .get<Any>("content"),
+            jsonPath,
+            searchCriteria.getDataType()
+        )
+    }
+
+    private fun getValueExpressionForTaskPrefix(
+        taskRoot: Root<CamundaTask>,
+        searchCriteria: AdvancedSearchRequest.OtherFilter
+    ): Expression<Comparable<Any>> {
+        val taskColumnName = searchCriteria.path.substring(TASK_PREFIX.length)
+        return taskRoot.get<Any>(taskColumnName).`as`(searchCriteria.getDataType())
+    }
+
+    private fun getValueExpressionForCasePrefix(
+        documentRoot: Root<JsonSchemaDocument>,
+        searchCriteria: AdvancedSearchRequest.OtherFilter
+    ): Expression<Comparable<Any>> {
+        val documentColumnName = searchCriteria.path.substring(CASE_PREFIX.length)
+        return documentRoot.get<Any>(documentColumnName).`as`(searchCriteria.getDataType())
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun searchLike(cb: CriteriaBuilder, jsonValue: Expression<Comparable<Any>>, values: List<Any>): Array<Predicate?> {
+        if (values.isEmpty()) {
+            return arrayOfNulls(0)
+        } else require(
+            !values.stream().anyMatch { value -> value !is String }) {
+            "Failed to do LIKE search. Reason: values '" + values.toTypedArray()
+                .contentToString() + "' aren't of type 'String'"
+        }
+        val jsonValueLower = cb.lower(jsonValue as Expression<String>)
+        return values.map { value ->
+            value.toString().trim { it <= ' ' }
+                .lowercase(Locale.getDefault())
+        }
+            .map { stringValue: String ->
+                cb.like(
+                    jsonValueLower,
+                    "%$stringValue%"
+                )
+            }
+            .toTypedArray()
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun searchEqual(cb: CriteriaBuilder, jsonValue: Expression<Comparable<Any>>, values: List<Any>): Array<Predicate?> {
+        if (values.isEmpty()) {
+            return arrayOfNulls(0)
+        } else if (values.stream().anyMatch { value -> value !is String }) {
+            return values
+                .map { value ->
+                    cb.equal(
+                        jsonValue,
+                        value
+                    )
+                }
+                .toTypedArray()
+        } else {
+            val jsonValueLower = cb.lower(jsonValue as Expression<String?>)
+            return values.map { value ->
+                value.toString().trim { it <= ' ' }
+                    .lowercase(Locale.getDefault())
+            }
+                .map { stringValue: String? ->
+                    cb.equal(
+                        jsonValueLower,
+                        stringValue
+                    )
+                }
+                .toTypedArray()
+        }
+    }
+
+    private fun searchGreaterThanOrEqualTo(
+        cb: CriteriaBuilder,
+        documentValue: Expression<Comparable<Any>>,
+        rangeFrom: Comparable<Any>
+    ): Predicate {
+        return if (rangeFrom is TemporalAccessor) {
+            val documentValueTimestamp = documentValue.`as`(
+                Date::class.java
+            )
+            cb.greaterThanOrEqualTo(
+                documentValueTimestamp,
+                toJavaUtilDate(rangeFrom)
+            )
+        } else {
+            cb.greaterThanOrEqualTo(documentValue, cb.literal(rangeFrom))
+        }
+    }
+
+    private fun searchLessThanOrEqualTo(
+        cb: CriteriaBuilder,
+        documentValue: Expression<Comparable<Any>>,
+        rangeTo: Comparable<Any>
+    ): Predicate {
+        return if (rangeTo is TemporalAccessor) {
+            val documentValueTimestamp = documentValue.`as`(
+                Date::class.java
+            )
+            cb.lessThanOrEqualTo(documentValueTimestamp, toJavaUtilDate(rangeTo))
+        } else {
+            cb.lessThanOrEqualTo(documentValue, cb.literal(rangeTo))
+        }
+    }
+
+    private fun searchBetween(
+        cb: CriteriaBuilder,
+        documentValue: Expression<Comparable<Any>>,
+        rangeFrom: Comparable<Any>,
+        rangeTo: Comparable<Any>
+    ): Predicate {
+        return if (rangeFrom is TemporalAccessor) {
+            val documentValueTimestamp = documentValue.`as`(
+                Date::class.java
+            )
+            cb.between(
+                documentValueTimestamp,
+                toJavaUtilDate(rangeFrom),
+                toJavaUtilDate(rangeTo)
+            )
+        } else {
+            cb.between(documentValue, cb.literal(rangeFrom), cb.literal(rangeTo))
+        }
+    }
+
+    private fun searchIn(cb: CriteriaBuilder, jsonValue: Expression<Comparable<Any>>, values: List<Comparable<Any>>): Predicate {
+        val inCriteria = cb.`in`(jsonValue)
+        values.forEach(Consumer { t: Comparable<Any> -> inCriteria.value(t) })
+        return inCriteria
+    }
+
+    /**
+     * Note: The CriteriaBuilder only supports with java.sql.Timestamp/Date/Time. These types extend java.util.Date
+     */
+    private fun toJavaUtilDate(value: Any): Date {
+        return when (value) {
+            is LocalDate -> Date.from((value).atStartOfDay().toInstant(ZoneOffset.UTC))
+            is Instant -> Timestamp.from(value)
+            is LocalDateTime -> Timestamp.from((value).toInstant(ZoneOffset.UTC))
+            is OffsetDateTime -> Timestamp.from((value).toInstant())
+            is ZonedDateTime -> Timestamp.from((value).toInstant())
+            is LocalTime -> Time.valueOf(value)
+            else -> throw NotImplementedException("Failed to cast '$value' to java.util.Date")
+        }
+    }
+
     private fun constructOrderBy(
         query: CriteriaQuery<*>,
         cb: CriteriaBuilder,
@@ -200,7 +527,7 @@ class CaseTaskListSearchService(
                 val property = order.property
                 when {
                     property.startsWith(DOC_PREFIX) -> {
-                        val quotedPath = property.substring(DOC_PREFIX.length).split(".").joinToString("."){ "\"${it}\"" }
+                        val quotedPath = quoteJsonPath(property.substring(DOC_PREFIX.length))
                         val jsonPath = "$.${quotedPath}"
                         expression = queryDialectHelper.getJsonValueExpression(
                             cb,
@@ -210,6 +537,7 @@ class CaseTaskListSearchService(
                             String::class.java
                         )
                     }
+
                     property.startsWith("$.") -> {
                         expression = cb.lower(
                             queryDialectHelper.getJsonValueExpression(
@@ -221,9 +549,11 @@ class CaseTaskListSearchService(
                             )
                         )
                     }
+
                     property.startsWith(TASK_PREFIX) -> {
                         expression = taskRoot.get<Any>(property.substring(TASK_PREFIX.length))
                     }
+
                     else -> {
                         var docProperty =
                             if (property.startsWith(CASE_PREFIX)) property.substring(
@@ -311,7 +641,7 @@ class CaseTaskListSearchService(
                 "assignee" -> {
                     CaseTaskProperties.getByPropertyName("assignee")
                         ?.getValueFromObject(caseTask)
-                        ?.let { assigneeId -> userManagementService.findById(assigneeId as String).fullName }
+                        ?.let { assigneeId -> userManagementService.findByUserIdentifier(assigneeId as String).fullName }
                 }
 
                 else -> CaseTaskProperties.getByPropertyName(path)?.getValueFromObject(caseTask)
@@ -320,6 +650,7 @@ class CaseTaskListSearchService(
         return taskPath to value
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun <T> stringToPath(parent: Path<*>, path: String): Path<T> {
         val split = path.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         var result = parent
@@ -328,6 +659,9 @@ class CaseTaskListSearchService(
         }
         return result as Path<T>
     }
+
+    private fun quoteJsonPath(property: String): String =
+        property.split(".").joinToString(".") { "\"${it}\"" }
 
     companion object {
         val defaultColumns: List<TaskListColumn> = listOf(

@@ -156,6 +156,7 @@ valtimo:
     oauth:
         tokenValidityInSeconds: 3600 # Token is valid 1 hour
         public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAooyECQIi6v4TLKOYWwXClDhJcrGcGfKZj7LQIgY/Ajm2nAKv5kiZRoS8GzMzIGKkkilAJyWQCoKlP//azHqzIxO6WZWCqGFxd04vK5JYujsiMMTNvTggfFSM7VxbzU/wv+aAEvBaGUMYp2Oamn5szzYzkzsowujvDZp+CE8ryZWTVmA+8WZE4aoU6VzfXmMDmPxvRXvktPRsJkA7hkv65TTJwUZF38goRg62kRD0hOP1sIy6vwKDSkjafLV1bYNBRiWXNReJNBXauhy74GeiHODGrI62NwUJXSgZ62cViPt6cx/3A7VBPLpEPnpnlZcIDfsFpSUuNEXc7HoLRuldbQIDAQAB
+        identifier-field: username
 
     hardening:
         allowStacktraceOnIps:
@@ -179,10 +180,6 @@ valtimo:
     portal:
         hostname: localhost:4201
         scheme: http
-    connector-encryption:
-        secret: "0123456789101112"
-    plugin:
-        encryption-secret: "abcdefghijklmnop"
     web:
         cors:
             corsConfiguration:
@@ -197,7 +194,6 @@ valtimo:
     openklant:
         url: "http://localhost:8006"
         clientId: "valtimo_client"
-        secret: "e09b8bc5-5831-4618-ab28-41411304309d"
         rsin: "051845623"
 
     genericTemplateName: "template-name"
@@ -210,15 +206,13 @@ valtimo:
             - image/jpeg
             - application/xml
     changelog:
-        dashboard:
-            clear-tables: true
         pbac:
             clear-tables: true
         case-tabs:
             clear-tables: true
-        internal-case-status:
-            clear-tables: true
         zgw-document-list-column:
+            clear-tables: true
+        task-search-fields:
             clear-tables: true
 
     outbox:
@@ -229,6 +223,10 @@ valtimo:
                 routing-key: valtimo-audit
                 delivery-timeout: "PT0.5S"
             polling.rate: "PT1M"
+
+    authorization:
+        dashboard:
+            enabled: true
 
 spring-actuator:
     username: admin
@@ -266,8 +264,6 @@ keycloak:
     realm: valtimo
     auth-server-url: http://localhost:8081/auth
     resource: valtimo-user-m2m-client
-    credentials:
-        secret: 6ef6ca16-6b86-482a-a3d9-0561704c1db9
 
 external:
     case:

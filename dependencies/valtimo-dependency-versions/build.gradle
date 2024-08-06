@@ -81,6 +81,7 @@ dependencies {
         api(project(":openzaak"))
         api(project(":resource:openzaak-resource"))
 
+        api(project(":zgw"))
         api(project(":zgw:portaaltaak"))
         api(project(":zgw:besluiten-api"))
         api(project(":zgw:catalogi-api"))

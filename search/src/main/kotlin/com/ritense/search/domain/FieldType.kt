@@ -16,10 +16,25 @@
 
 package com.ritense.search.domain
 
-enum class FieldType {
-    TEXT_CONTAINS,
-    SINGLE,
-    RANGE,
-    SINGLE_SELECT_DROPDOWN,
-    MULTI_SELECT_DROPDOWN
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonValue
+
+enum class FieldType(@JsonValue val key: String) {
+    @Deprecated("This is not a field type, but a match type. Please do not use.", replaceWith = ReplaceWith("SINGLE"))
+    TEXT_CONTAINS ("text_contains"),
+    SINGLE("single"),
+    RANGE("range"),
+    SINGLE_SELECT_DROPDOWN("single-select-dropdown"),
+    MULTI_SELECT_DROPDOWN("multi-select-dropdown");
+
+    companion object {
+        /**
+         * This creator allows for null, empty or non-matching keys to result in a null value.
+         */
+        @JvmStatic
+        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+        fun create(key: String?): FieldType? {
+            return FieldType.entries.find { it.key.equals(key, true) }
+        }
+    }
 }
