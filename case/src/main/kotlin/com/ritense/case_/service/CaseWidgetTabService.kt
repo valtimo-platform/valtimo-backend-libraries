@@ -39,12 +39,15 @@ import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.findByOrNull
+import jakarta.validation.Valid
 import org.springframework.context.event.EventListener
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.validation.annotation.Validated
 import java.util.UUID
 
+@Validated
 @Transactional(readOnly = false)
 class CaseWidgetTabService(
     private val documentService: DocumentService,
@@ -74,12 +77,13 @@ class CaseWidgetTabService(
         val document = runWithoutAuthorization { documentService.findByOrNull(documentId) }
 
         return document?.let { existingDocument ->
-            caseTabRepository.findByIdOrNull(CaseTabId(document.definitionId().name(), key))?.let {
-                checkCaseTabAccess(existingDocument as JsonSchemaDocument, it, VIEW)
+            caseTabRepository.findByIdOrNull(CaseTabId(document.definitionId().name(), key))?.let { caseTab ->
+                checkCaseTabAccess(existingDocument as JsonSchemaDocument, caseTab, VIEW)
                 caseWidgetTabRepository.findByIdOrNull(CaseTabId(existingDocument.definitionId().name(), key))
-                    ?.let { CaseWidgetTabDto
+                    ?.let { widgetTab ->
+                        CaseWidgetTabDto
                         .ofWithContext(
-                            it,
+                            widgetTab,
                             caseWidgetMappers,
                             this::viewPermissionCheckForContext,
                             document as JsonSchemaDocument
@@ -91,7 +95,7 @@ class CaseWidgetTabService(
     }
 
     @Transactional
-    fun updateWidgetTab(tabDto: CaseWidgetTabDto): CaseWidgetTabDto {
+    fun updateWidgetTab(@Valid tabDto: CaseWidgetTabDto): CaseWidgetTabDto {
         denyAuthorization()
 
         val caseWidgetTab = (caseWidgetTabRepository.findByIdOrNull(CaseTabId(tabDto.caseDefinitionName, tabDto.key))

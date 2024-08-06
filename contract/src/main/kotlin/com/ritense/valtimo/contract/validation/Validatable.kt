@@ -17,33 +17,29 @@
 package com.ritense.valtimo.contract.validation
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import jakarta.validation.ConstraintViolationException
-import jakarta.validation.Validation
 import jakarta.validation.Validator
+import mu.KLogger
 import mu.KotlinLogging
 
 interface Validatable {
 
     @JsonIgnore
     fun validate() {
-        val logger = KotlinLogging.logger {}
         logger.debug { "validating $this" }
-        val errors = getValidator().validate(this)
-        if (errors.isNotEmpty()) {
-            throw ConstraintViolationException(errors)
-        }
+        ValidatorHolder.validate(this)
     }
 
     companion object {
-        private var validator: Validator? = null
+        private val logger: KLogger = KotlinLogging.logger {}
 
+        @Deprecated("This method has been moved to ValidatorHolder", ReplaceWith("ValidatorHolder.getValidator()"))
         fun getValidator(): Validator {
-            validator = validator ?: Validation.buildDefaultValidatorFactory().validator
-            return validator!!
+            return ValidatorHolder.getValidator()
         }
 
+        @Deprecated("This method has been moved to ValidatorHolder", ReplaceWith("ValidatorHolder.setValidator(validator)"))
         fun setValidator(validator: Validator) {
-            Validatable.validator = validator
+            logger.warn { "setValidator has been moved to ValidatorHolder.setValidator(validator)" }
         }
     }
 
