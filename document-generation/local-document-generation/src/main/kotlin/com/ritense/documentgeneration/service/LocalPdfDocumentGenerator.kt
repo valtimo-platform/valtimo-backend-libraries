@@ -24,15 +24,15 @@ import org.springframework.http.MediaType
 class LocalPdfDocumentGenerator : PdfDocumentGenerator {
 
     override fun getTemplatePlaceholders(templateName: String?): TemplatePlaceholders {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     override fun generateDocument(templateName: String?, templateData: TemplateData?): GeneratedDocument {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     override fun getDocumentMediaType(): MediaType {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     companion object {

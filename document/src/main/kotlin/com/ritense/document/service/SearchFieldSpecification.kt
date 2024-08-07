@@ -26,9 +26,9 @@ import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 
 class SearchFieldSpecification(
-        authRequest: AuthorizationRequest<SearchField>,
-        permissions: List<Permission>,
-        private val queryDialectHelper: QueryDialectHelper
+    authRequest: AuthorizationRequest<SearchField>,
+    permissions: List<Permission>,
+    private val queryDialectHelper: QueryDialectHelper
 ) : AuthorizationSpecification<SearchField>(authRequest, permissions) {
 
     override fun toPredicate(
@@ -58,6 +58,6 @@ class SearchFieldSpecification(
     }
 
     override fun identifierToEntity(identifier: String): SearchField {
-        TODO("Not yet implemented")
+        throw NotImplementedError()
     }
 }

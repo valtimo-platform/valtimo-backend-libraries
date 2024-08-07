@@ -18,7 +18,6 @@ package com.ritense.document.autoconfiguration
 
 import com.ritense.document.DocumentDocumentDefinitionMapper
 import com.ritense.document.JsonSchemaDocumentDefinitionSpecificationFactory
-import com.ritense.document.JsonSchemaDocumentSnapshotSpecificationFactory
 import com.ritense.document.JsonSchemaDocumentSpecificationFactory
 import com.ritense.document.SearchFieldSpecificationFactory
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
@@ -46,12 +45,6 @@ class DocumentAuthorizationAutoConfiguration {
         queryDialectHelper: QueryDialectHelper,
         @Lazy documentDefinitionService: JsonSchemaDocumentDefinitionService
     ) = JsonSchemaDocumentDefinitionSpecificationFactory(queryDialectHelper, documentDefinitionService)
-
-    @Bean
-    @ConditionalOnMissingBean(JsonSchemaDocumentSnapshotSpecificationFactory::class)
-    fun jsonSchemaDocumentSnapshotSpecificationFactory(
-        queryDialectHelper: QueryDialectHelper
-    ) = JsonSchemaDocumentSnapshotSpecificationFactory(queryDialectHelper)
 
     @Bean
     @ConditionalOnMissingBean(SearchFieldSpecificationFactory::class)
