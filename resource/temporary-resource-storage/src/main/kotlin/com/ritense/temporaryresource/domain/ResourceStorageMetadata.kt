@@ -1,4 +1,4 @@
-package com.ritense.resource.domain
+package com.ritense.temporaryresource.domain
 
 import jakarta.persistence.Column
 import jakarta.persistence.EmbeddedId

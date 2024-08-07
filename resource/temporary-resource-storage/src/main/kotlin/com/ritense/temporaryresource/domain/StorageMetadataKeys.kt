@@ -1,4 +1,4 @@
-package com.ritense.resource.domain
+package com.ritense.temporaryresource.domain
 
 enum class StorageMetadataKeys(val key: String) {
     DOCUMENT_ID("documentId"),

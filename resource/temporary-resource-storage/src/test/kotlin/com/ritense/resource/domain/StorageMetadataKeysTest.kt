@@ -1,5 +1,7 @@
 package com.ritense.resource.domain
 
+import com.ritense.temporaryresource.domain.StorageMetadataKeys
+import com.ritense.temporaryresource.domain.getEnumFromKey
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test

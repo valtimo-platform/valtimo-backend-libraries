@@ -19,9 +19,9 @@ package com.ritense.resource.service
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.resource.domain.MetadataType
-import com.ritense.resource.domain.ResourceStorageMetadataId
-import com.ritense.resource.domain.getEnumFromKey
-import com.ritense.resource.repository.ResourceStorageMetadataRepository
+import com.ritense.temporaryresource.domain.ResourceStorageMetadataId
+import com.ritense.temporaryresource.domain.getEnumFromKey
+import com.ritense.temporaryresource.repository.ResourceStorageMetadataRepository
 import com.ritense.valtimo.contract.upload.MimeTypeDeniedException
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
 import jakarta.persistence.EntityNotFoundException

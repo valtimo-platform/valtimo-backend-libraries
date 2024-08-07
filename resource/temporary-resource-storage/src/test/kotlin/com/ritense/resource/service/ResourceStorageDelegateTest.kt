@@ -1,7 +1,7 @@
 package com.ritense.resource.service
 
-import com.ritense.resource.domain.getEnumFromKey
-import com.ritense.resource.repository.ResourceStorageMetadataRepository
+import com.ritense.temporaryresource.domain.getEnumFromKey
+import com.ritense.temporaryresource.repository.ResourceStorageMetadataRepository
 import jakarta.persistence.EntityNotFoundException
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach

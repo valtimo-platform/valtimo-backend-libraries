@@ -1,9 +1,9 @@
 package com.ritense.resource.listener
 
-import com.ritense.resource.domain.ResourceStorageMetadata
-import com.ritense.resource.domain.StorageMetadataKeys
+import com.ritense.temporaryresource.domain.ResourceStorageMetadata
+import com.ritense.temporaryresource.domain.StorageMetadataKeys
 import com.ritense.resource.event.ResourceStorageMetadataAvailableEvent
-import com.ritense.resource.repository.ResourceStorageMetadataRepository
+import com.ritense.temporaryresource.repository.ResourceStorageMetadataRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach

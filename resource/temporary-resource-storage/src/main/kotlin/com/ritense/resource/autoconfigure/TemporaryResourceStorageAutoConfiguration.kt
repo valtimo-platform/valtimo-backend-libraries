@@ -18,7 +18,7 @@ package com.ritense.resource.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.resource.listener.MetadataAvailableEventListener
-import com.ritense.resource.repository.ResourceStorageMetadataRepository
+import com.ritense.temporaryresource.repository.ResourceStorageMetadataRepository
 import com.ritense.resource.security.config.TemporaryResourceStorageHttpSecurityConfigurer
 import com.ritense.resource.service.ResourceStorageDelegate
 import com.ritense.resource.service.TemporaryResourceStorageDeletionService
@@ -41,8 +41,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.scheduling.annotation.EnableScheduling
 
 @EnableScheduling
-@EnableJpaRepositories(basePackages = ["com.ritense.resource.repository"])
-@EntityScan(basePackages = ["com.ritense.resource.domain"])
+@EnableJpaRepositories(basePackages = ["com.ritense.temporaryresource.repository"])
+@EntityScan(basePackages = ["com.ritense.temporaryresource.domain"])
 @AutoConfiguration
 class TemporaryResourceStorageAutoConfiguration {
 

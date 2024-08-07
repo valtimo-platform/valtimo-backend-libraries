@@ -17,11 +17,11 @@
 package com.ritense.resource.web.rest
 
 import com.ritense.resource.BaseIntegrationTest
-import com.ritense.resource.domain.ResourceStorageMetadata
-import com.ritense.resource.domain.ResourceStorageMetadataId
+import com.ritense.temporaryresource.domain.ResourceStorageMetadata
+import com.ritense.temporaryresource.domain.ResourceStorageMetadataId
 import com.ritense.resource.domain.TemporaryResourceUploadedEvent
-import com.ritense.resource.domain.getEnumFromKey
-import com.ritense.resource.repository.ResourceStorageMetadataRepository
+import com.ritense.temporaryresource.domain.getEnumFromKey
+import com.ritense.temporaryresource.repository.ResourceStorageMetadataRepository
 import com.ritense.resource.service.TemporaryResourceStorageService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach

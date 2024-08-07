@@ -1,4 +1,4 @@
-package com.ritense.resource.domain
+package com.ritense.temporaryresource.domain
 
 import com.ritense.valtimo.contract.domain.AbstractId
 import jakarta.persistence.Column

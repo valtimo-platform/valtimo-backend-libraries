@@ -1,7 +1,7 @@
-package com.ritense.resource.repository
+package com.ritense.temporaryresource.repository
 
-import com.ritense.resource.domain.ResourceStorageMetadata
-import com.ritense.resource.domain.ResourceStorageMetadataId
+import com.ritense.temporaryresource.domain.ResourceStorageMetadata
+import com.ritense.temporaryresource.domain.ResourceStorageMetadataId
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
