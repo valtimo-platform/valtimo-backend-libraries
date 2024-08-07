@@ -13,22 +13,22 @@ class MetadataAvailableEventListener(
 
     @EventListener(ResourceStorageMetadataAvailableEvent::class)
     fun storeResourceMetadata(event: ResourceStorageMetadataAvailableEvent) {
-        val storageFileId = event.resourceId
-
         if (event.documentId.isNotEmpty()) {
             repository.save(
                 ResourceStorageMetadata(
-                    ResourceStorageMetadataId(storageFileId, StorageMetadataKeys.DOCUMENT_ID),
+                    ResourceStorageMetadataId(event.resourceId, StorageMetadataKeys.DOCUMENT_ID),
                     event.documentId
                 )
             )
         }
 
-        repository.save(
-            ResourceStorageMetadata(
-            ResourceStorageMetadataId(storageFileId, StorageMetadataKeys.DOWNLOAD_URL),
-            event.downloadUrl
-        )
-        )
+        if (event.downloadUrl.isNotEmpty()) {
+            repository.save(
+                ResourceStorageMetadata(
+                    ResourceStorageMetadataId(event.resourceId, StorageMetadataKeys.DOWNLOAD_URL),
+                    event.downloadUrl
+                )
+            )
+        }
     }
 }

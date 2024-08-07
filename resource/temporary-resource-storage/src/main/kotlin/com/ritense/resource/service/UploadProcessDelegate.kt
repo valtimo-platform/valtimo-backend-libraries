@@ -11,10 +11,10 @@ class UploadProcessDelegate(
     fun publishFileUploadedEvent(execution: DelegateExecution) {
         val event = ResourceStorageMetadataAvailableEvent(
             this,
-            resourceId = execution.getVariable("resourceId") as? String ?: "",
+            resourceId = execution.getVariable("resourceId") as String,
             documentId = execution.getVariable("documentId") as? String ?: "",
-            documentUrl = execution.getVariable("documentUrl") as String,
-            downloadUrl = execution.getVariable("downloadUrl") as String
+            documentUrl = execution.getVariable("documentUrl") as? String ?: "",
+            downloadUrl = execution.getVariable("downloadUrl") as? String ?: "",
         )
         eventPublisher.publishEvent(event)
     }
