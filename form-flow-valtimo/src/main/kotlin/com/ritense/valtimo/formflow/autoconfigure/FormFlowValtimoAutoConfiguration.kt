@@ -45,6 +45,7 @@ import com.ritense.valtimo.formflow.web.rest.ProcessLinkFormFlowDefinitionResour
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
 import org.camunda.bpm.engine.RuntimeService
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -209,10 +210,12 @@ class FormFlowValtimoAutoConfiguration {
     fun formFlowValtimoService(
         formDefinitionService: FormIoFormDefinitionService,
         objectMapper: ObjectMapper,
+        @Value("\${valtimo.formFlow.doSubmissionDataFiltering:true}") doSubmissionDataFiltering: Boolean
     ): FormFlowValtimoService {
         return FormFlowValtimoService(
             formDefinitionService,
             objectMapper,
+            doSubmissionDataFiltering
         )
     }
 }
