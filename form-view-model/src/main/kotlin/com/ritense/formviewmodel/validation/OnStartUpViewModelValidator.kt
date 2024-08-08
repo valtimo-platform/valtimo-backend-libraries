@@ -40,45 +40,52 @@ class OnStartUpViewModelValidator(
     @EventListener(ApplicationReadyEvent::class)
     fun validate() {
         for (viewModelLoader in viewModelLoaders) {
-            val formDefinition =
-                formIoFormDefinitionService.getFormDefinitionByName(viewModelLoader.getFormName()).get()
+            validateViewModelLoader(viewModelLoader)
+        }
+    }
 
-            // Note: Forms added via console get a warning notice.
-            if (!formDefinition.isReadOnly) {
-                logger.warn {
-                    "This form (${viewModelLoader.getFormName()}) is not read-only. This means that the form definition is not added via configuration." +
-                        "Be cautious when changing the form definition because this is only validated on ApplicationReadyEvent"
-                }
+    fun validateViewModelLoader(
+        viewModelLoader: ViewModelLoader<*>
+    ) {
+        val formDefinition =
+            formIoFormDefinitionService.getFormDefinitionByName(viewModelLoader.getFormName())
+                .orElseThrow{ NoSuchElementException("Could not find form [${viewModelLoader.getFormName()}] declared in ${viewModelLoader.javaClass}") }
+
+        // Note: Forms added via console get a warning notice.
+        if (!formDefinition.isReadOnly) {
+            logger.warn {
+                "This form (${viewModelLoader.getFormName()}) is not read-only. This means that the form definition is not added via configuration." +
+                    "Be cautious when changing the form definition because this is only validated on ApplicationReadyEvent"
             }
-            validateViewModel(viewModelLoader, formDefinition).let { missingProperties ->
-                if (missingProperties.isNotEmpty()) {
-                    logger.error {
-                        "The following properties are missing in the view model for form " +
-                            "(${viewModelLoader.getFormName()}): $missingProperties"
-                    }
-                    // Validate Start form submission for the view model
-                    formViewModelStartFormSubmissionHandlerFactory.getHandler(
-                        viewModelLoader.getFormName()
-                    )?.let {
-                        validateStartFormSubmission(it, formDefinition).let { missingSubmissionProperties ->
-                            if (missingSubmissionProperties.isNotEmpty()) {
-                                logger.error {
-                                    "The following properties are missing in the start form submission for form " +
-                                        "(${viewModelLoader.getFormName()}): $missingSubmissionProperties"
-                                }
+        }
+        validateViewModel(viewModelLoader, formDefinition).let { missingProperties ->
+            if (missingProperties.isNotEmpty()) {
+                logger.error {
+                    "The following properties are missing in the view model for form " +
+                        "(${viewModelLoader.getFormName()}): $missingProperties"
+                }
+                // Validate Start form submission for the view model
+                formViewModelStartFormSubmissionHandlerFactory.getHandler(
+                    viewModelLoader.getFormName()
+                )?.let {
+                    validateStartFormSubmission(it, formDefinition).let { missingSubmissionProperties ->
+                        if (missingSubmissionProperties.isNotEmpty()) {
+                            logger.error {
+                                "The following properties are missing in the start form submission for form " +
+                                    "(${viewModelLoader.getFormName()}): $missingSubmissionProperties"
                             }
                         }
                     }
+                }
 
-                    formViewModelUserTaskSubmissionHandlerFactory.getHandler(
-                        viewModelLoader.getFormName()
-                    )?.let {
-                        validateUserTaskSubmission(it, formDefinition).let { missingSubmissionProperties ->
-                            if (missingSubmissionProperties.isNotEmpty()) {
-                                logger.error {
-                                    "The following properties are missing in the user task submission for form " +
-                                        "(${viewModelLoader.getFormName()}): $missingSubmissionProperties"
-                                }
+                formViewModelUserTaskSubmissionHandlerFactory.getHandler(
+                    viewModelLoader.getFormName()
+                )?.let {
+                    validateUserTaskSubmission(it, formDefinition).let { missingSubmissionProperties ->
+                        if (missingSubmissionProperties.isNotEmpty()) {
+                            logger.error {
+                                "The following properties are missing in the user task submission for form " +
+                                    "(${viewModelLoader.getFormName()}): $missingSubmissionProperties"
                             }
                         }
                     }
