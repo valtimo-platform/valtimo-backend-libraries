@@ -68,4 +68,9 @@ management:
     endpoints:
         web:
             exposure:
-                include: 'health'
+                include: [ "health", "configprops" ]
+    endpoint:
+        health:
+            show-details: when_authorized
+            roles:
+                - ROLE_ACTUATOR
