@@ -17,6 +17,7 @@
 package com.ritense.valtimo.autoconfigure;
 
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
+import com.ritense.valtimo.contract.security.config.oauth2.NoOAuth2ClientsConfiguredCondition;
 import com.ritense.valtimo.security.ActuatorSecurityFilterChainFactory;
 import com.ritense.valtimo.security.CoreSecurityFactory;
 import com.ritense.valtimo.security.Http401UnauthorizedEntryPoint;
@@ -53,6 +54,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -217,6 +219,7 @@ public class HttpSecurityAutoConfiguration {
 
     @Order(440)
     @Bean
+    @Conditional(NoOAuth2ClientsConfiguredCondition.class)
     @ConditionalOnMissingBean(JwtHttpSecurityConfigurer.class)
     public JwtHttpSecurityConfigurer jwtHttpSecurityConfigurer(
         IdentityService identityService,
