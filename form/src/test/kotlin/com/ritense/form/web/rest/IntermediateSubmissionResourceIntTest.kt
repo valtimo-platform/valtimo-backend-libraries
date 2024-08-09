@@ -58,9 +58,10 @@ class IntermediateSubmissionResourceIntTest : BaseIntegrationTest() {
         whenever(task.id).thenReturn("taskInstanceId")
         whenever(camundaTaskService.findTaskById(any())).thenReturn(task)
 
-        whenever(userManagementService.currentUserId).thenReturn("currentUserId")
         val manageableUser: ManageableUser = mock()
+        whenever(manageableUser.userIdentifier).thenReturn("userIdentifier")
         whenever(manageableUser.fullName).thenReturn("FullName")
+        whenever(userManagementService.currentUser).thenReturn(manageableUser)
         whenever(userManagementService.findByUserIdentifier(any())).thenReturn(manageableUser)
     }
 
