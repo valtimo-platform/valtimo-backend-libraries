@@ -5,6 +5,7 @@ dependencies {
     implementation(project(":mail:local-mail"))
     implementation(project(":document-generation:smartdocuments"))
     implementation(project(":zgw:portaaltaak"))
+    implementation(project(":process-link-url"))
 
     implementation("io.github.microutils:kotlin-logging")
 
