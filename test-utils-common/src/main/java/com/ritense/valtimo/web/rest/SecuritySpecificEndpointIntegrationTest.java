@@ -50,7 +50,7 @@ public abstract class SecuritySpecificEndpointIntegrationTest {
     public MailSender mailSender;
 
     @Autowired
-    private MockMvc mockMvc;
+    protected MockMvc mockMvc;
 
     protected void assertHttpStatus(
         HttpMethod method,
