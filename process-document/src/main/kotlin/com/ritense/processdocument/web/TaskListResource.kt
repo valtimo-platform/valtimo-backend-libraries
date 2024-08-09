@@ -17,7 +17,9 @@
 package com.ritense.processdocument.web
 
 import com.ritense.processdocument.service.CaseTaskListSearchService
+import com.ritense.processdocument.tasksearch.SearchWithConfigRequest
 import com.ritense.processdocument.web.request.TaskListSearchDto
+import com.ritense.processdocument.web.result.TaskListRowDto
 import com.ritense.valtimo.camunda.dto.TaskExtended
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType
@@ -26,6 +28,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -52,4 +55,15 @@ class TaskListResource (
             return ResponseEntity.ok(page)
         }
     }
+
+    @PostMapping("/v1/document-definition/{caseDefinitionName}/task/search")
+    fun searchTaskList(
+        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
+        @RequestBody searchRequest: SearchWithConfigRequest,
+        pageable: Pageable
+    ): ResponseEntity<Page<TaskListRowDto>> {
+        val result = service.searchTaskListRows(caseDefinitionName, searchRequest, pageable)
+        return ResponseEntity.ok(result)
+    }
+
 }

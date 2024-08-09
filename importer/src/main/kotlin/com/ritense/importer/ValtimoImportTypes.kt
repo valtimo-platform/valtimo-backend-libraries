@@ -23,15 +23,16 @@ class ValtimoImportTypes {
         const val CASE_LIST = "caselist"
         const val CASE_TAB = "casetab"
         const val CASE_TASK_LIST = "casetasklist"
-        const val INTERNAL_CASE_STATUS = "internalcasestatus"
         const val DECISION_DEFINITION = "decisiondefinition"
         const val DOCUMENT_DEFINITION = "documentdefinition"
         const val FORM = "form"
         const val FORM_FLOW = "formflow"
+        const val INTERNAL_CASE_STATUS = "internalcasestatus"
         const val PROCESS_DEFINITION = "processdefinition"
         const val PROCESS_DOCUMENT_LINK = "processdocumentlink"
         const val PROCESS_LINK = "processlink"
         const val SEARCH = "search"
+        const val SEARCH_FIELD = "searchField"
 
         // ZGW
         const val ZGW_DOCUMENT_LIST_COLUMN = "zgwdocumentlistcolumn"

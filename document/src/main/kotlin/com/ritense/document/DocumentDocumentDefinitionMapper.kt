@@ -22,17 +22,17 @@ import com.ritense.authorization.AuthorizationEntityMapperResult
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
-import com.ritense.document.service.DocumentDefinitionService
+import com.ritense.document.repository.DocumentDefinitionRepository
 import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Root
 
 class DocumentDocumentDefinitionMapper(
-    private val documentDefinitionService: DocumentDefinitionService
+    private val documentDefinitionRepository: DocumentDefinitionRepository<JsonSchemaDocumentDefinition>
 ) : AuthorizationEntityMapper<JsonSchemaDocument, JsonSchemaDocumentDefinition> {
     override fun mapRelated(entity: JsonSchemaDocument): List<JsonSchemaDocumentDefinition> {
         return runWithoutAuthorization {
-            listOf(documentDefinitionService.findBy(entity.definitionId()).get() as JsonSchemaDocumentDefinition)
+            listOf(documentDefinitionRepository.findById(entity.definitionId()).get())
         }
     }
 

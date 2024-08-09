@@ -34,7 +34,7 @@ import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
 
-class ObjectManagementFacade(
+class   ObjectManagementFacade(
     private val objectManagementRepository: ObjectManagementRepository,
     private val pluginService: PluginService
 ) {
@@ -146,6 +146,38 @@ class ObjectManagementFacade(
             return accessObject.objectenApiPlugin.createObject(objectRequest)
         } catch (ex: WebClientResponseException) {
             throw Exception("Exception thrown while making a call to the Objects API. Response from the API: ${ex.responseBodyAsString}")
+        }
+    }
+
+    fun updateObject(
+        objectId: UUID,
+        objectName: String,
+        data: JsonNode,
+    ): ObjectWrapper {
+        val accessObject = getAccessObject(objectName)
+        val objectTypeUrl =
+            accessObject.objectTypenApiPlugin.getObjectTypeUrlById(accessObject.objectManagement.objecttypeId)
+
+        val objectRequest = ObjectRequest(
+            objectTypeUrl,
+            ObjectRecord(
+                typeVersion = accessObject.objectManagement.objecttypeVersion,
+                data = data,
+                startAt = LocalDate.now()
+            )
+        )
+
+        try {
+            logger.trace { "Updating object $objectRequest" }
+            return accessObject.objectenApiPlugin
+                .objectUpdate(
+                    URI(
+                        accessObject.objectenApiPlugin.url.toString() + "objects/" + objectId
+                    ),
+                    objectRequest
+                )
+        } catch (ex: WebClientResponseException) {
+            throw Exception("Error while updating object ${objectId}. Response from Objects API: ${ex.responseBodyAsString}")
         }
     }
 

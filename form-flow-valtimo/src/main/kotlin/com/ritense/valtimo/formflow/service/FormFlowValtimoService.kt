@@ -31,7 +31,12 @@ import kotlin.jvm.optionals.getOrNull
 class FormFlowValtimoService(
     private val formDefinitionService: FormIoFormDefinitionService,
     private val objectMapper: ObjectMapper,
+    private val doSubmissionDataFiltering: Boolean
 ) {
+    constructor(
+        formDefinitionService: FormIoFormDefinitionService,
+        objectMapper: ObjectMapper
+    ) : this(formDefinitionService, objectMapper, true)
 
     fun getVerifiedSubmissionData(submissionData: JsonNode?, formFlowInstance: FormFlowInstance): JsonNode? {
         if (submissionData == null) {
@@ -39,7 +44,7 @@ class FormFlowValtimoService(
         }
 
         val currentStepTypeProperties = formFlowInstance.getCurrentStep().definition.type.properties
-        if (currentStepTypeProperties !is FormStepTypeProperties) {
+        if (currentStepTypeProperties !is FormStepTypeProperties || !doSubmissionDataFiltering) {
             return submissionData
         }
 

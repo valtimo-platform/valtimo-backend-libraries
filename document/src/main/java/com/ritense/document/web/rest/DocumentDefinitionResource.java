@@ -54,7 +54,8 @@ public interface DocumentDefinitionResource {
     );
 
     @PostMapping(value = "/management/v1/document-definition-template", consumes = APPLICATION_JSON_VALUE)
-    ResponseEntity<Object> getDocumentDefinitionTemplate(@Valid @RequestBody DocumentDefinitionTemplateRequestDto requestDto) throws JsonProcessingException;
+    ResponseEntity<Object> getDocumentDefinitionTemplate(@Valid @RequestBody DocumentDefinitionTemplateRequestDto requestDto) throws
+        JsonProcessingException;
 
     @GetMapping("/management/v1/document-definition")
     ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitionsForManagement(
@@ -77,7 +78,7 @@ public interface DocumentDefinitionResource {
     ResponseEntity<DocumentVersionsResult> getDocumentDefinitionVersions(
         @PathVariable String name
     );
-
+    
     @GetMapping("/v1/document-definition/open/count")
     ResponseEntity<List<UnassignedDocumentCountDto>> getUnassignedDocumentCount();
 
