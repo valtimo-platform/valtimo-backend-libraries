@@ -30,7 +30,6 @@ import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
-import org.springframework.http.client.MultipartBodyBuilder
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.reactive.function.BodyInserters
@@ -87,31 +86,38 @@ class DocumentenApiClient(
         request: BestandsdelenRequest,
         bestandsdelenId: String
     ) {
-        val multipartData = MultipartBodyBuilder()
-            .apply {
-                part("inhoud", request.inhoud)
-                part("lock", request.lock, MediaType.TEXT_PLAIN)
-            }
-            .build()
-
-        multipartData.toSingleValueMap().forEach { (key, value) ->
-            logger.debug("Key: {}, Value: {}", key, value)
-        }
-
+        val body = BodyInserters.fromMultipartData("inhoud", request.inhoud)
+            .with("lock", request.lock)
         val response = buildFilteredClient(authentication)
             .put()
-            .uri {
-                ClientTools.baseUrlToBuilder(it, baseUrl)
-                    .path("bestandsdelen/{uuid}")
-                    .build(bestandsdelenId)
+            .uri { ClientTools.baseUrlToBuilder(it, baseUrl)
+                .path("bestandsdelen/{uuid}")
+                .build(bestandsdelenId)
             }
             .contentType(MediaType.MULTIPART_FORM_DATA)
-            .body(BodyInserters.fromMultipartData(multipartData))
+            .body(body)
             .retrieve()
             .toBodilessEntity()
             .block()
 
         logger.info("Response: $response")
+    }
+
+    fun unlockDocument(authentication: DocumentenApiAuthentication, baseUrl: URI,
+                       documentLock: DocumentLock, bestandsdelenId: String) {
+        val response = buildFilteredClient(authentication)
+            .post()
+            .uri { ClientTools.baseUrlToBuilder(it, baseUrl)
+                .path("enkelvoudiginformatieobjecten/{uuid}/unlock")
+                .build(bestandsdelenId)
+            }
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(
+                BodyInserters.fromValue(documentLock)
+            )
+            .retrieve()
+            .bodyToMono(String::class.java)
+            .block()
     }
 
     fun getInformatieObject(

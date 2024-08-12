@@ -33,6 +33,7 @@ import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zgw.domain.Vertrouwelijkheid
 import jakarta.validation.ValidationException
+import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.hibernate.validator.constraints.Length
 import org.springframework.context.ApplicationEventPublisher
@@ -338,8 +339,9 @@ class DocumentenApiPlugin(
 
         client.storeDocumentInParts(authenticationPluginConfiguration, url, bestandsdelenRequest, documentCreateResult.getBestandsdelenIdFromUrl())
 
+        logger.info { "Finished uploading the document in parts. Now unlocking the document" }
         val documentLock = DocumentLock(documentCreateResult.lock)
-        client.unlockInformatieObject(authenticationPluginConfiguration, url, documentLock)
+        client.unlockDocument(authenticationPluginConfiguration, url, documentLock, documentCreateResult.getBestandsdelenIdFromUrl())
 
         return documentCreateResult
     }
@@ -393,6 +395,8 @@ class DocumentenApiPlugin(
         val CREATIEDATUM_FIELD = listOf("creationDate", "creatiedatum")
         val FORMAAT_FIELD = listOf("contentType", "formaat")
         val TREFWOORDEN_FIELD = listOf("trefwoorden")
+
+        val logger = KotlinLogging.logger {  }
 
         fun findConfigurationByUrl(url: URI) = { properties: JsonNode ->
             url.toString().startsWith(properties.get(URL_PROPERTY).textValue())
