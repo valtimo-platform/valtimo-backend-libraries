@@ -17,6 +17,7 @@
 package com.ritense.valtimo.contract.validation.autoconfigure
 
 import com.ritense.valtimo.contract.validation.listener.ValidatorReadyEventListener
+import jakarta.validation.Validator
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -26,8 +27,8 @@ class ValidatorAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ValidatorReadyEventListener::class)
-    fun validatorReadyEventHandler(): ValidatorReadyEventListener {
-        return ValidatorReadyEventListener()
+    fun validatorReadyEventHandler(validator: Validator): ValidatorReadyEventListener {
+        return ValidatorReadyEventListener(validator)
     }
 
 }

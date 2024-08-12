@@ -23,7 +23,6 @@ import com.ritense.case.domain.CaseTabType
 import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.repository.CaseTabSpecificationHelper.Companion.byCaseDefinitionName
 import com.ritense.case.service.CaseTabService
-import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
@@ -74,7 +73,12 @@ open class CaseTabDeploymentService(
                 it.tabs.map { caseTabDto ->
                     caseTabService.createCaseTab(
                         it.key,
-                        caseTabDto
+                        com.ritense.case.web.rest.dto.CaseTabDto(
+                            key = caseTabDto.key,
+                            name = caseTabDto.name,
+                            type = caseTabDto.type,
+                            contentKey = caseTabDto.contentKey
+                        )
                     )
                 }
             }

@@ -2,6 +2,10 @@
     "changesetId": "roles-v1",
     "roles": [
         "ROLE_USER",
-        "ROLE_ADMIN"
+        "ROLE_ADMIN",
+        "ROLE_ALL_WIDGETS",
+        "ROLE_ONLY_TEST_WIDGETS",
+        "ROLE_ONLY_TEST_DEFINITION_TABS",
+        "ROLE_ONLY_TEST_WIDGETS_FOR_CONTEXT"
     ]
 }

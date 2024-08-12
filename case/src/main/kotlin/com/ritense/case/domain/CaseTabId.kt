@@ -30,5 +30,6 @@ data class CaseTabId(
     init {
         require(caseDefinitionName.isNotBlank()) { "caseDefinitionName was blank!" }
         require(key.isNotBlank()) { "key was blank!"}
+        require(key.matches(Regex("^[a-zA-Z0-9\\-]+$"))) { "key contains characters that are not allowed (only alphanumeric characters and dashes)"}
     }
 }
