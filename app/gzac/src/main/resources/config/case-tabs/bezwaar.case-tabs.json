@@ -45,6 +45,12 @@
                     "key": "notes",
                     "type": "standard",
                     "contentKey": "notes"
+                },
+                {
+                    "key" : "widgets",
+                    "name" : "Widgets",
+                    "type" : "widgets",
+                    "contentKey" : "-"
                 }
             ]
         }

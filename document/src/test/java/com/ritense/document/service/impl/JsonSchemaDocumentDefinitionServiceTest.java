@@ -16,6 +16,7 @@
 
 package com.ritense.document.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -209,9 +210,28 @@ class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
         );
     }
 
-    public void mockDefinition(String definitionName) {
+    @Test
+    void shouldGetPropertyNamesFromReferencedNestedObject() {
+        var definitionName = "combined-schema-additional-property-example";
+        var definition = mockDefinition(definitionName);
+
+        var names = documentDefinitionService.getPropertyNames(definition);
+
+        Collections.sort(names);
+        assertArrayEquals(names.toArray(), new String[]{
+            "/address/city",
+            "/address/country",
+            "/address/number",
+            "/address/province",
+            "/address/streetName"
+        });
+    }
+
+    public JsonSchemaDocumentDefinition mockDefinition(String definitionName) {
+        var definition = definitionOf(definitionName);
         when(jsonSchemaDocumentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(definitionName))
-            .thenReturn(Optional.of(definitionOf(definitionName)));
+            .thenReturn(Optional.of(definition));
+        return definition;
     }
 
     public URI path(String name) {

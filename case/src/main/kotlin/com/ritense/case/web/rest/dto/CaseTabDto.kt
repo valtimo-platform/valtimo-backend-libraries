@@ -21,16 +21,18 @@ import com.ritense.case.domain.CaseTabType
 
 data class CaseTabDto(
     val key: String,
-    val name: String?,
+    val name: String? = null,
     val type: CaseTabType,
     val contentKey: String,
+    val showTasks: Boolean = false
 ) {
     companion object {
         fun of(caseTab: CaseTab) = CaseTabDto(
             caseTab.id.key,
             caseTab.name,
             caseTab.type,
-            caseTab.contentKey
+            caseTab.contentKey,
+            caseTab.showTasks
         )
     }
 }

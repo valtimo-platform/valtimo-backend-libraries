@@ -52,6 +52,8 @@ dependencies {
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "com.github.erosb:everit-json-schema:${everitJsonSchemaVersion}"
+    implementation "com.jayway.jsonpath:json-path:${jaywayJsonpathVersion}"
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
 
     testImplementation project(':changelog')
     testImplementation project(':core')

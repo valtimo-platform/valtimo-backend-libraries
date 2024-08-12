@@ -16,9 +16,9 @@
   -->
 
 <databaseChangeLog
-        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
     <property name="uuidType" value="uuid" dbms="postgresql"/>
@@ -26,12 +26,21 @@
     <property name="intType" value="integer" dbms="postgresql"/>
     <property name="jsonType" value="JSON" dbms="mysql"/>
     <property name="jsonType" value="JSON" dbms="postgresql"/>
+    <property name="now" value="now()" dbms="mysql,h2"/>
+    <property name="now" value="current_timestamp" dbms="postgresql"/>
+    <property name="booleanFalseValue" value="0" dbms="mysql"/>
+    <property name="booleanFalseValue" value="false" dbms="postgresql"/>
 
     <include file="changelog/20221125-add-case-definition.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20221206-add-case-list-column.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20221214-add-column-order-to-list-column.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/20230526-add-column-auto-assign-tasks-to-case-definition.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20230526-add-column-auto-assign-tasks-to-case-definition.xml"
+             relativeToChangelogFile="true"/>
     <include file="changelog/20230926-add-case-tabs.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20231006-add-standard-case-tabs.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20240228-add-task-list-column.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20240513-add-case-widget-tab.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20240514-add-case-widget-tab-widget.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20240527-add-createdon-createdby-to-case-tabs.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20240617-add-showtasks-to-case-tabs.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

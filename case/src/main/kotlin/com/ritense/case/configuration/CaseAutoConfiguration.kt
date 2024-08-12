@@ -26,6 +26,7 @@ import com.ritense.case.domain.DateFormatDisplayTypeParameter
 import com.ritense.case.domain.EnumDisplayTypeParameter
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
+import com.ritense.case.repository.CaseTabDocumentDefinitionMapper
 import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.repository.CaseTabSpecificationFactory
 import com.ritense.case.repository.TaskListColumnRepository
@@ -52,10 +53,12 @@ import com.ritense.case.web.rest.CaseTabResource
 import com.ritense.case.web.rest.TaskListResource
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentSearchService
+import com.ritense.document.service.DocumentService
 import com.ritense.exporter.ExportService
 import com.ritense.importer.ImportService
 import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import com.ritense.valtimo.changelog.service.ChangelogService
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valueresolver.ValueResolverService
@@ -63,6 +66,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Lazy
 import org.springframework.core.Ordered
@@ -118,9 +122,13 @@ class CaseAutoConfiguration {
     @ConditionalOnMissingBean(CaseTabManagementResource::class)
     @Bean
     fun caseTabManagementResource(
-        caseTabService: CaseTabService
+        caseTabService: CaseTabService,
+        userManagementService: UserManagementService,
     ): CaseTabManagementResource {
-        return CaseTabManagementResource(caseTabService)
+        return CaseTabManagementResource(
+            caseTabService,
+            userManagementService,
+        )
     }
 
     @Bean
@@ -145,9 +153,19 @@ class CaseAutoConfiguration {
     fun caseTabService(
         caseTabRepository: CaseTabRepository,
         @Lazy authorizationService: AuthorizationService,
-        documentDefinitionService: DocumentDefinitionService
+        documentDefinitionService: DocumentDefinitionService,
+        applicationEventPublisher: ApplicationEventPublisher,
+        userManagementService: UserManagementService,
+        documentService: DocumentService
     ): CaseTabService {
-        return CaseTabService(caseTabRepository, documentDefinitionService, authorizationService)
+        return CaseTabService(
+            caseTabRepository,
+            documentDefinitionService,
+            authorizationService,
+            applicationEventPublisher,
+            userManagementService,
+            documentService
+        )
     }
 
     @Bean
@@ -363,4 +381,11 @@ class CaseAutoConfiguration {
     ) = CaseDefinitionSettingsImporter(
         deploymentService
     )
+
+    @Bean
+    fun caseTabDocumentDefinitionMapper(
+        @Lazy documentDefinitionService: DocumentDefinitionService,
+    ): CaseTabDocumentDefinitionMapper {
+        return CaseTabDocumentDefinitionMapper(documentDefinitionService)
+    }
 }

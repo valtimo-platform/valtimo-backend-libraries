@@ -19,9 +19,9 @@ package com.ritense.case.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.case.deployment.CaseDefinitionsTabCollection
 import com.ritense.case.deployment.CaseTabChangeset
+import com.ritense.case.deployment.CaseTabDto
 import com.ritense.case.domain.CaseTab
 import com.ritense.case.domain.CaseTabType
-import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.exporter.ExportFile
 import com.ritense.exporter.ExportPrettyPrinter
 import com.ritense.exporter.ExportResult

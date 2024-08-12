@@ -58,14 +58,18 @@ class TestResolverFactory(
 
     private fun createResolver(): Function<String, Any?> {
         return Function { requestedValue->
-            requestedValue.toBooleanStrictOrNull()
-                ?: requestedValue.toLongOrNull()
-                ?: requestedValue.toDoubleOrNull()
-                ?:  if (prefix.isEmpty()) {
-                        requestedValue
-                    } else {
-                        "$prefix:$requestedValue"
-                    }
+            if(requestedValue == "null") {
+                null
+            } else {
+                requestedValue.toBooleanStrictOrNull()
+                    ?: requestedValue.toLongOrNull()
+                    ?: requestedValue.toDoubleOrNull()
+                    ?:  if (prefix.isEmpty()) {
+                            requestedValue
+                        } else {
+                            "$prefix:$requestedValue"
+                        }
+            }
         }
     }
 
