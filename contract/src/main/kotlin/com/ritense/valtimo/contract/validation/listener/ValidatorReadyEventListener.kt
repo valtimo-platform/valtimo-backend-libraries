@@ -16,15 +16,16 @@
 
 package com.ritense.valtimo.contract.validation.listener
 
-import com.ritense.valtimo.contract.validation.Validatable
-import jakarta.validation.Validation
+import com.ritense.valtimo.contract.validation.ValidatorHolder
+import jakarta.validation.Validator
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 
-class ValidatorReadyEventListener {
-
+class ValidatorReadyEventListener(
+    private val validator: Validator
+) {
     @EventListener(ApplicationReadyEvent::class)
     fun onApplicationReady() {
-        Validatable.setValidator(Validation.buildDefaultValidatorFactory().validator)
+        ValidatorHolder.setValidator(validator)
     }
 }

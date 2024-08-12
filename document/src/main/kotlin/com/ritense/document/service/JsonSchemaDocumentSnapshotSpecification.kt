@@ -52,7 +52,7 @@ class JsonSchemaDocumentSnapshotSpecification(
                     root,
                     query,
                     criteriaBuilder,
-                    authRequest.resourceType,
+                    authRequest,
                     queryDialectHelper
                 )
             }

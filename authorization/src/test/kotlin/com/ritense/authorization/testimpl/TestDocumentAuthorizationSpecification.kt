@@ -37,6 +37,6 @@ class TestDocumentAuthorizationSpecification(
     }
 
     override fun identifierToEntity(identifier: String): TestDocument {
-        return TestDocument()
+        return TestDocument("")
     }
 }
