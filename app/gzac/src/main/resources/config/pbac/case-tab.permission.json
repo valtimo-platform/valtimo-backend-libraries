@@ -1,5 +1,5 @@
 {
-    "changesetId": "case-tab-v1",
+    "changesetId": "case-tab-v2",
     "permissions": [
         {
             "resourceType": "com.ritense.case.domain.CaseTab",
@@ -10,6 +10,12 @@
             "resourceType": "com.ritense.case.domain.CaseTab",
             "action": "view",
             "roleKey": "ROLE_USER"
+        },
+        {
+            "resourceType": "com.ritense.case_.domain.tab.CaseWidgetTabWidget",
+            "action": "view",
+            "roleKey": "ROLE_USER",
+            "conditions": []
         }
     ]
 }

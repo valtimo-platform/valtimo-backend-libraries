@@ -55,7 +55,7 @@ class JsonSchemaDocumentDefinitionSpecification(
                     root,
                     query,
                     criteriaBuilder,
-                    authRequest.resourceType,
+                    authRequest,
                     queryDialectHelper
                 )
             }

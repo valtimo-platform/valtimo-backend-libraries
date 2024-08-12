@@ -16,6 +16,7 @@
 
 package com.ritense.authorization.deployment
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonView
 import com.ritense.authorization.Action
 import com.ritense.authorization.permission.ConditionContainer
@@ -29,15 +30,24 @@ data class PermissionDto(
     val resourceType: Class<*>,
     @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val action: String,
+//    @field:JsonInclude(JsonInclude.Include.NON_EMPTY)
     @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val conditions: List<PermissionCondition> = emptyList(),
     @field:JsonView(PermissionView.PermissionManagement::class)
-    val roleKey: String
+    val roleKey: String,
+    @field:JsonInclude(JsonInclude.Include.NON_NULL)
+    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
+    val contextResourceType: Class<*>? = null,
+    @field:JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
+    val contextConditions: List<PermissionCondition> = emptyList(),
 ) {
     fun toPermission(roleRepository: RoleRepository) = Permission(
         resourceType = resourceType,
         action = Action<Any>(action),
         conditionContainer = ConditionContainer(conditions = conditions),
-        role = roleRepository.findByKey(roleKey)!!
+        role = roleRepository.findByKey(roleKey)!!,
+        contextResourceType = contextResourceType,
+        contextConditionContainer = ConditionContainer(conditions = contextConditions)
     )
 }

@@ -19,6 +19,7 @@ package com.ritense.authorization
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.permission.PermissionRepository
 import com.ritense.authorization.request.AuthorizationRequest
+import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.role.Role
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.specification.AuthorizationSpecificationFactory
@@ -122,7 +123,14 @@ class ValtimoAuthorizationService(
         }
         return permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(userRoles)
             .filter { permission ->
-                context.resourceType == permission.resourceType && context.action == permission.action
+                context.resourceType == permission.resourceType
+                    && context.action == permission.action
+                    && if (context is EntityAuthorizationRequest) {
+                        permission.appliesInContext(context.context?.resourceType, context.context?.entity)
+                    } else {
+                        val requestContextResourceType: Class<*>? = null
+                        permission.appliesInContext(requestContextResourceType, null)
+                    }
             }
     }
 
