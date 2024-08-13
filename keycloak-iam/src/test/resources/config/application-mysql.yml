@@ -1,0 +1,16 @@
+spring:
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3354/keycloak-iam-test
+        username: valtimo
+        password: password
+        hikari:
+            auto-commit: false
+            data-source-properties:
+                serverTimezone: UTC
+    jpa:
+        database-platform: org.hibernate.dialect.MySQL8Dialect
+        database: mysql
+
+valtimo:
+    database: mysql
