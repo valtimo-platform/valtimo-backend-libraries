@@ -49,7 +49,7 @@ class WordpressMailConnector(
     }
 
     fun send(rawMailMessage: RawMailMessage): MutableList<MailMessageStatus> {
-        TODO("Send has not been implemented with RawMailMessage")
+        throw NotImplementedError()
     }
 
     fun send(templatedMailMessage: TemplatedMailMessage): MutableList<MailMessageStatus> {

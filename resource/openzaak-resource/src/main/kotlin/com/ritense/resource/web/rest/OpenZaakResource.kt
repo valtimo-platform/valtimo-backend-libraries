@@ -52,10 +52,10 @@ class OpenZaakResource(
     }
 
     override fun register(resourceDTO: ResourceDTO): ResponseEntity<ResourceDTO> {
-        TODO("Not yet implemented") //enkelvoudig informatie object oz + resource db record
+        throw NotImplementedError()
     }
 
     override fun delete(resourceId: String): ResponseEntity<Void> {
-        TODO("Not yet implemented")
+        throw NotImplementedError()
     }
 }
