@@ -49,6 +49,24 @@ spring:
                 serverTimezone: UTC
                 stringtype: unspecified
                 allowPublicKeyRetrieval: true
+    security:
+        oauth2:
+            resourceserver:
+                jwt:
+                    jwk-set-uri: http://localhost:8081/auth/realms/valtimo/protocol/openid-connect/certs
+            client:
+                provider:
+                    keycloakjwt:
+                        issuer-uri: http://localhost:8081/auth/realms/valtimo
+                    keycloakapi:
+                        issuer-uri: http://localhost:8081/auth/realms/valtimo
+                registration:
+                    keycloakjwt:
+                        client-id: valtimo-console
+                    keycloakapi:
+                        client-id: valtimo-user-m2m-client
+                        authorization-grant-type: authorization_code
+                        scope: openid
 
     groovy:
         template:
@@ -144,8 +162,6 @@ mailing:
     sendRedirectedMailsTo:
 
 valtimo:
-    keycloak:
-        client: valtimo-console
     app:
         scheme: http
     database: postgres
@@ -157,7 +173,6 @@ valtimo:
         reminderTemplate: bpc-task-reminder
     oauth:
         tokenValidityInSeconds: 3600 # Token is valid 1 hour
-        public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAooyECQIi6v4TLKOYWwXClDhJcrGcGfKZj7LQIgY/Ajm2nAKv5kiZRoS8GzMzIGKkkilAJyWQCoKlP//azHqzIxO6WZWCqGFxd04vK5JYujsiMMTNvTggfFSM7VxbzU/wv+aAEvBaGUMYp2Oamn5szzYzkzsowujvDZp+CE8ryZWTVmA+8WZE4aoU6VzfXmMDmPxvRXvktPRsJkA7hkv65TTJwUZF38goRg62kRD0hOP1sIy6vwKDSkjafLV1bYNBRiWXNReJNBXauhy74GeiHODGrI62NwUJXSgZ62cViPt6cx/3A7VBPLpEPnpnlZcIDfsFpSUuNEXc7HoLRuldbQIDAQAB
         identifier-field: username
 
     hardening:
@@ -258,14 +273,6 @@ camunda:
             id: Admin
             password: admin
             first-name: Admin account
-
-# ==================
-# keycloak server to server config
-# ==================
-keycloak:
-    realm: valtimo
-    auth-server-url: http://localhost:8081/auth
-    resource: valtimo-user-m2m-client
 
 external:
     case:
