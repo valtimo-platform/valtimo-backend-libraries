@@ -58,7 +58,6 @@ class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
     public void setUp() {
         jsonSchemaDocumentDefinitionRepository = mock(JsonSchemaDocumentDefinitionRepository.class);
         resourceLoader = mock(DefaultResourceLoader.class);
-        documentDefinitionService = mock(JsonSchemaDocumentDefinitionService.class);
         documentDefinitionService = spy(new JsonSchemaDocumentDefinitionService(
             resourceLoader,
             jsonSchemaDocumentDefinitionRepository,
@@ -72,7 +71,8 @@ class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
         //TODO try to mock resource loading or refactor
     void shouldDeployAll() {
         when(jsonSchemaDocumentDefinitionRepository.findAllByIdName(anyString())).thenReturn(Collections.emptyList());
-        when(jsonSchemaDocumentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(anyString())).thenReturn(Optional.empty());
+        when(jsonSchemaDocumentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(anyString())).thenReturn(
+            Optional.empty());
         AuthorizationContext.runWithoutAuthorization(() -> {
             documentDefinitionService.deployAll();
             return null;
@@ -82,8 +82,10 @@ class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
 
     @Test
     void shouldStore() {
-        when(jsonSchemaDocumentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(anyString())).thenReturn(Optional.empty());
-        when(jsonSchemaDocumentDefinitionRepository.findById(any(JsonSchemaDocumentDefinitionId.class))).thenReturn(Optional.empty());
+        when(jsonSchemaDocumentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(anyString())).thenReturn(
+            Optional.empty());
+        when(jsonSchemaDocumentDefinitionRepository.findById(any(JsonSchemaDocumentDefinitionId.class))).thenReturn(
+            Optional.empty());
 
         documentDefinitionService.store(definition);
 
@@ -106,8 +108,10 @@ class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
 
     @Test
     void shouldThrowExceptionWhenDeployingChangedSchema() {
-        when(jsonSchemaDocumentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(anyString())).thenReturn(Optional.empty());
-        when(jsonSchemaDocumentDefinitionRepository.findById(any(JsonSchemaDocumentDefinitionId.class))).thenReturn(Optional.of(definition));
+        when(jsonSchemaDocumentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(anyString())).thenReturn(
+            Optional.empty());
+        when(jsonSchemaDocumentDefinitionRepository.findById(any(JsonSchemaDocumentDefinitionId.class))).thenReturn(
+            Optional.of(definition));
 
         final var definitionChanged = definitionOf("house");
 
@@ -116,13 +120,18 @@ class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
 
     @Test
     void shouldThrowExceptionWhenDeployingNameMismatchedSchema() {
-        when(jsonSchemaDocumentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(anyString())).thenReturn(Optional.empty());
-        when(jsonSchemaDocumentDefinitionRepository.findById(any(JsonSchemaDocumentDefinitionId.class))).thenReturn(Optional.of(definition));
+        when(jsonSchemaDocumentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(anyString())).thenReturn(
+            Optional.empty());
+        when(jsonSchemaDocumentDefinitionRepository.findById(any(JsonSchemaDocumentDefinitionId.class))).thenReturn(
+            Optional.of(definition));
 
         final var jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.newId("person");
         final var otherJsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.newId("person2");
         final var jsonSchema = JsonSchema.fromResourceUri(path(jsonSchemaDocumentDefinitionId.name()));
-        assertThrows(DocumentDefinitionNameMismatchException.class, () -> new JsonSchemaDocumentDefinition(otherJsonSchemaDocumentDefinitionId, jsonSchema));
+        assertThrows(
+            DocumentDefinitionNameMismatchException.class,
+            () -> new JsonSchemaDocumentDefinition(otherJsonSchemaDocumentDefinitionId, jsonSchema)
+        );
     }
 
     @Test
