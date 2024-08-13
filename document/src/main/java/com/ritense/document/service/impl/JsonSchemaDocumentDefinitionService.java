@@ -515,7 +515,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     }
 
     private boolean isSimpleObject(String propertyType) {
-        List<String> simpleTypes = List.of("string", "boolean", "integer");
+        List<String> simpleTypes = List.of("string", "boolean", "integer", "number");
         return simpleTypes.contains(propertyType);
     }
 }
