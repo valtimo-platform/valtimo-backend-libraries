@@ -44,7 +44,7 @@ class OpenZaakService(
 
     @Deprecated("Since 12.0.0")
     override fun store(key: String, multipartFile: MultipartFile): Resource {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     @Deprecated("Since 12.0.0")
@@ -99,12 +99,12 @@ class OpenZaakService(
 
     @Deprecated("Since 12.0.0")
     override fun store(key: String, fileUploadRequest: FileUploadRequest): Resource {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     @Deprecated("Since 12.0.0")
     override fun store(key: String, fileUploadRequest: FileUploadRequest, fileStatus: FileStatus): Resource {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     @Deprecated("Since 12.0.0")
@@ -126,7 +126,7 @@ class OpenZaakService(
 
     @Deprecated("Since 12.0.0")
     override fun getResourceUrl(fileName: String): URL {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     @Deprecated("Since 12.0.0")
@@ -148,17 +148,17 @@ class OpenZaakService(
 
     @Deprecated("Since 12.0.0")
     override fun removeResource(id: UUID) {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     @Deprecated("Since 12.0.0")
     override fun removeResource(key: String) {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     @Deprecated("Since 12.0.0")
     override fun registerResource(resourceDTO: ResourceDTO): ResourceDTO {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     @Deprecated("Since 12.0.0")
@@ -168,17 +168,17 @@ class OpenZaakService(
 
     @Deprecated("Since 12.0.0")
     override fun getResourceByKey(fileName: String): Resource {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     @Deprecated("Since 12.0.0")
     override fun activate(id: UUID) {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     @Deprecated("Since 12.0.0")
     override fun pending(id: UUID) {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     @Deprecated("Since 12.0.0")

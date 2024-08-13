@@ -29,66 +29,62 @@ import java.util.UUID
 class LocalResourceService : ResourceService {
 
     override fun store(key: String, multipartFile: MultipartFile): Resource {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     override fun store(key: String, multipartFile: MultipartFile, fileStatus: FileStatus): Resource {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     override fun store(documentDefinitionName: String, name: String, multipartFile: MultipartFile): Resource {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     override fun store(key: String, fileUploadRequest: FileUploadRequest): Resource {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     override fun store(key: String, fileUploadRequest: FileUploadRequest, fileStatus: FileStatus): Resource {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     override fun getResourceUrl(id: UUID): ObjectUrlDTO {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     override fun getResourceUrl(fileName: String): URL {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     override fun getResourceContent(id: UUID): ObjectContentDTO {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     override fun removeResource(id: UUID) {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     override fun removeResource(key: String) {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     override fun registerResource(resourceDTO: ResourceDTO): ResourceDTO {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     override fun getResource(id: UUID): Resource {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     override fun getResourceByKey(fileName: String): Resource {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     override fun activate(id: UUID) {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
+        throw NotImplementedError()
     }
 
     override fun pending(id: UUID) {
-        TODO(NOT_YET_IMPLEMENTED_MSG)
-    }
-
-    companion object {
-        private const val NOT_YET_IMPLEMENTED_MSG = "Not yet implemented"
+        throw NotImplementedError()
     }
 }

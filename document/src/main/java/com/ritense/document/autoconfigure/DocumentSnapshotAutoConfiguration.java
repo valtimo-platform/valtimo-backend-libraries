@@ -17,6 +17,7 @@
 package com.ritense.document.autoconfigure;
 
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.document.JsonSchemaDocumentSnapshotSpecificationFactory;
 import com.ritense.document.domain.impl.listener.DocumentSnapshotCapturedEventListener;
 import com.ritense.document.domain.impl.listener.DocumentSnapshotCapturedEventPublisher;
 import com.ritense.document.domain.impl.listener.UndeployDocumentDefinitionEventListener;
@@ -32,6 +33,7 @@ import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.document.service.impl.JsonSchemaDocumentSnapshotService;
 import com.ritense.document.web.rest.DocumentSnapshotResource;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentSnapshotResource;
+import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -68,6 +70,15 @@ public class DocumentSnapshotAutoConfiguration {
         DocumentDefinitionService documentDefinitionService
     ) {
         return new JsonSchemaDocumentSnapshotResource(documentSnapshotService, documentDefinitionService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(JsonSchemaDocumentSnapshotSpecificationFactory.class)
+    public JsonSchemaDocumentSnapshotSpecificationFactory jsonSchemaDocumentSnapshotSpecificationFactory(
+        QueryDialectHelper queryDialectHelper,
+        DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> repository
+    ) {
+        return new JsonSchemaDocumentSnapshotSpecificationFactory(queryDialectHelper, repository);
     }
 
     @Bean
