@@ -25,14 +25,24 @@ import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.RolesResource;
 import org.keycloak.admin.client.resource.UsersResource;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import static com.ritense.valtimo.contract.security.jwt.JwtConstants.EMAIL_KEY;
+import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
+import static com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator.REALM_ACCESS;
+import static com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator.RESOURCE_ACCESS;
+import com.valtimo.keycloak.security.config.ValtimoKeycloakPropertyResolver;
 
 public class KeycloakService {
 
+    public static final String KEYCLOAK_API_CLIENT_REGISTRATION = "keycloakapi";
+    public static final String KEYCLOAK_JWT_CLIENT_REGISTRATION = "keycloakjwt";
     private final KeycloakSpringBootProperties properties;
     private final String clientName;
 
     public KeycloakService(KeycloakSpringBootProperties properties, String keycloakClientName) {
-        this.properties = properties;
+        this.properties = ValtimoKeycloakPropertyResolver.resolveProperties();
         this.clientName = keycloakClientName;
     }
 
@@ -63,7 +73,8 @@ public class KeycloakService {
 
     public String getClientId(Keycloak keycloak) {
         if (clientName.isBlank()) {
-            throw new IllegalStateException("Error. Missing property: 'valtimo.keycloak.client'");
+            throw new IllegalStateException(
+                "Error. Missing property: 'spring.security.oauth2.client.registration.keycloakJwt.client-id' or 'valtimo.keycloak.client'");
         }
         var clients = keycloak.realm(properties.getRealm()).clients().findByClientId(clientName);
         if (clients.size() == 1) {
@@ -75,6 +86,23 @@ public class KeycloakService {
 
     public RealmResource realmResource(Keycloak keycloak) {
         return keycloak.realm(properties.getRealm());
+    }
+
+    public String getEmail(Map<String, Object> claims) {
+        return (String) claims.get(EMAIL_KEY);
+    }
+
+    public List<String> getRoles(Map<String, Object> claims) {
+        final var realmSettings = (Map<String, List<String>>) claims.get(REALM_ACCESS);
+        final var resourceSettings = (Map<String, Map<String, List<String>>>) claims.get(RESOURCE_ACCESS) ;
+
+        final var roles = new ArrayList<>(realmSettings.get(ROLES_SCOPE));
+
+        if (clientName != null && !clientName.isBlank() && resourceSettings != null && resourceSettings.containsKey(clientName)) {
+            roles.addAll(resourceSettings.get(clientName).get(ROLES_SCOPE));
+        }
+
+        return roles;
     }
 
     private ClientResource clientResource(Keycloak keycloak) {
