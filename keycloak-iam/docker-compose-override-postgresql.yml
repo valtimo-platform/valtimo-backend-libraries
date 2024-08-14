@@ -1,0 +1,6 @@
+services:
+    db:
+        ports:
+            - "3354:5432"
+        environment:
+            - POSTGRES_DB=keycloak-iam-test

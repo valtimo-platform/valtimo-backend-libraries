@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization.permission.condition
+package com.valtimo.keycloak
 
-import com.fasterxml.jackson.annotation.JsonValue
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
 
-enum class PermissionConditionType {
-    CONTAINER,
-    FIELD,
-    EXPRESSION;
+@SpringBootApplication
+class TestApplication {
 
-    val value: String
-        @JsonValue get() = name.lowercase()
+    fun main(args: Array<String>) {
+        runApplication<TestApplication>(*args)
+    }
 }

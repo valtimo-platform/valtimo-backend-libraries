@@ -494,18 +494,20 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
                     ObjectNode objectNode = (ObjectNode) jsonNode.getValue();
                     propertyNames.addAll(getPropertyNamesFromObjectNode(
                         definition,
-                        objectNode,
+                        (ObjectNode) objectNode.get("properties"),
                         parent.concat(jsonNode.getKey() + "/")
                     ));
                 }
             } else if (jsonNode.getValue().has("$ref")) {
                 String internalDefinition = jsonNode.getValue().get("$ref").asText().substring(1);
-                ObjectNode jsonNode1 = (ObjectNode) definition.schema().at(internalDefinition).get("properties");
-                propertyNames.addAll(getPropertyNamesFromObjectNode(
-                    definition,
-                    jsonNode1,
-                    parent.concat(jsonNode.getKey() + "/")
-                ));
+                if (internalDefinition.startsWith("/")) {
+                    ObjectNode jsonNode1 = (ObjectNode) definition.schema().at(internalDefinition).get("properties");
+                    propertyNames.addAll(getPropertyNamesFromObjectNode(
+                        definition,
+                        jsonNode1,
+                        parent.concat(jsonNode.getKey() + "/")
+                    ));
+                }
             }
         }));
 
@@ -513,7 +515,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     }
 
     private boolean isSimpleObject(String propertyType) {
-        List<String> simpleTypes = List.of("string", "boolean", "integer");
+        List<String> simpleTypes = List.of("string", "boolean", "integer", "number");
         return simpleTypes.contains(propertyType);
     }
 }
