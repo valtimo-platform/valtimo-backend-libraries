@@ -329,6 +329,9 @@ open class DefaultFormSubmissionService(
         preJsonPatch: JsonPatch
     ): Request {
         return if (processLink.activityType == START_EVENT_START) {
+            check(taskInstanceId == null) {
+                "Process link configuration error: START_EVENT_START shouldn't be linked to a user-task. For process-definition: '${processLink.processDefinitionId}' with activity-id: '${processLink.activityId}'"
+            }
             if (document == null) {
                 newDocumentAndStartProcessRequest(
                     documentDefinitionName,
@@ -346,9 +349,12 @@ open class DefaultFormSubmissionService(
                 )
             }
         } else if (processLink.activityType == USER_TASK_CREATE) {
+            check(document != null && taskInstanceId != null) {
+                "Process link configuration error: USER_TASK_CREATE shouldn't be linked to a start-event. For process-definition: '${processLink.processDefinitionId}' with activity-id: '${processLink.activityId}'"
+            }
             modifyDocumentAndCompleteTaskRequest(
-                document!!,
-                taskInstanceId!!,
+                document,
+                taskInstanceId,
                 submittedDocumentContent,
                 formDefinedProcessVariables,
                 preJsonPatch

@@ -74,7 +74,7 @@ public class KeycloakService {
     public String getClientId(Keycloak keycloak) {
         if (clientName.isBlank()) {
             throw new IllegalStateException(
-                "Error. Missing property: 'spring.security.oauth2.client.registration.keycloakJwt.client-id' or 'valtimo.keycloak.client'");
+                "Error. Missing property: 'spring.security.oauth2.client.registration.keycloakjwt.client-id' or 'valtimo.keycloak.client'");
         }
         var clients = keycloak.realm(properties.getRealm()).clients().findByClientId(clientName);
         if (clients.size() == 1) {

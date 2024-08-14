@@ -77,7 +77,7 @@ public class KeycloakAutoConfiguration {
     @ConditionalOnWebApplication
     public KeycloakUserManagementService keycloakUserManagementService(
         final KeycloakService keycloakService,
-        @Value("#{'${spring.security.oauth2.client.registration.keycloakapi.client-id:${valtimo.keycloak.client:}}'}") final String keycloakClientName
+        @Value("#{'${spring.security.oauth2.client.registration.keycloakjwt.client-id:${valtimo.keycloak.client:}}'}") final String keycloakClientName
     ) {
         return new KeycloakUserManagementService(keycloakService, keycloakClientName);
     }
@@ -88,7 +88,7 @@ public class KeycloakAutoConfiguration {
     @ConditionalOnWebApplication
     public KeycloakService keycloakService(
             final KeycloakSpringBootProperties properties,
-            @Value("#{'${spring.security.oauth2.client.registration.keycloakapi.client-id:${valtimo.keycloak.client:}}'}") final String keycloakClientName
+            @Value("#{'${spring.security.oauth2.client.registration.keycloakjwt.client-id:${valtimo.keycloak.client:}}'}") final String keycloakClientName
     ) {
         return new KeycloakService(properties, keycloakClientName);
     }
