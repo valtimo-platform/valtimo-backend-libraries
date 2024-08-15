@@ -23,9 +23,10 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.processlink.url.configuration.URLProcessLinkSecurityConfigurer
+import com.ritense.processlink.url.domain.URLVariables
 import com.ritense.processlink.url.mapper.URLProcessLinkMapper
 import com.ritense.processlink.url.service.URLProcessLinkActivityHandler
-import com.ritense.processlink.url.service.URLProcessLinkSubmissionService
+import com.ritense.processlink.url.service.URLProcessLinkService
 import com.ritense.processlink.url.service.URLSupportedProcessLinksHandler
 import com.ritense.processlink.url.web.rest.URLProcessLinkResource
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
@@ -68,14 +69,14 @@ class ProcessLinkUrlAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(URLProcessLinkResource::class)
     fun urlProcessLinkResource(
-        urlProcessLinkSubmissionService: URLProcessLinkSubmissionService
+        urlProcessLinkService: URLProcessLinkService
     ) = URLProcessLinkResource(
-        urlProcessLinkSubmissionService
+        urlProcessLinkService
     )
 
     @Bean
-    @ConditionalOnMissingBean(URLProcessLinkSubmissionService::class)
-    fun urlProcessLinkSubmissionService(
+    @ConditionalOnMissingBean(URLProcessLinkService::class)
+    fun urlProcessLinkService(
         processLinkService: ProcessLinkService,
         documentService: JsonSchemaDocumentService,
         processDocumentAssociationService: ProcessDocumentAssociationService,
@@ -84,15 +85,15 @@ class ProcessLinkUrlAutoConfiguration {
         repositoryService: CamundaRepositoryService,
         applicationEventPublisher: ApplicationEventPublisher,
         objectMapper: ObjectMapper,
-    ) = URLProcessLinkSubmissionService(
+        URLVariables: URLVariables
+    ) = URLProcessLinkService(
         processLinkService,
         documentService,
         processDocumentAssociationService,
         processDocumentService,
-        camundaTaskService,
         repositoryService,
-        applicationEventPublisher,
-        objectMapper
+        objectMapper,
+        URLVariables
     )
 
     @Bean

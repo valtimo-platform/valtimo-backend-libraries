@@ -1,13 +1,10 @@
 package com.ritense.processlink.url.service
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext
-import com.ritense.authorization.AuthorizationService
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.domain.impl.request.NewDocumentRequest
-import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.processdocument.domain.ProcessDocumentDefinition
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey
@@ -20,24 +17,21 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkService
+import com.ritense.processlink.url.domain.URLVariables
 import com.ritense.processlink.url.domain.URLProcessLink
 import com.ritense.processlink.url.web.rest.dto.URLSubmissionResult
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
-import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
-import com.ritense.valtimo.service.CamundaTaskService
-import org.springframework.context.ApplicationEventPublisher
 import java.util.UUID
 
-class URLProcessLinkSubmissionService(
+class URLProcessLinkService(
     private val processLinkService: ProcessLinkService,
     private val documentService: JsonSchemaDocumentService,
     private val processDocumentAssociationService: ProcessDocumentAssociationService,
     private val processDocumentService: ProcessDocumentService,
-    private val camundaTaskService: CamundaTaskService,
     private val repositoryService: CamundaRepositoryService,
-    private val applicationEventPublisher: ApplicationEventPublisher,
     private val objectMapper: ObjectMapper,
+    private val urlVariables: URLVariables
 ) {
 
     fun submit(
@@ -186,5 +180,7 @@ class URLProcessLinkSubmissionService(
 //        }
         }
     }
+
+    fun getVariables() = urlVariables
 
 }

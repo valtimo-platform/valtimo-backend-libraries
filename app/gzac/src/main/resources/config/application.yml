@@ -228,6 +228,10 @@ valtimo:
         dashboard:
             enabled: true
 
+    processlink:
+        url:
+            test: test
+
 spring-actuator:
     username: admin
     password: password

@@ -1,9 +1,11 @@
 package com.ritense.processlink.url.web.rest
 
-import com.ritense.processlink.url.service.URLProcessLinkSubmissionService
+import com.ritense.processlink.url.service.URLProcessLinkService
+import com.ritense.processlink.url.web.rest.dto.URLVariables
 import com.ritense.processlink.url.web.rest.dto.URLSubmissionResult
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,7 +18,7 @@ import java.util.UUID
 @SkipComponentScan
 @RequestMapping("/api", produces = [ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE])
 class URLProcessLinkResource(
-    val urlProcessLinkSubmissionService: URLProcessLinkSubmissionService
+    val urlProcessLinkService: URLProcessLinkService
 ) {
 
     @PostMapping("/v1/process-link/url/{processLinkId}")
@@ -26,12 +28,18 @@ class URLProcessLinkResource(
         @RequestParam(required = false) documentId: String?,
         @RequestParam(required = false) taskInstanceId: String?,
     ): URLSubmissionResult {
-        return urlProcessLinkSubmissionService.submit(
+        return urlProcessLinkService.submit(
             processLinkId,
             documentDefinitionName,
             documentId,
             taskInstanceId
         )
+    }
+
+    @GetMapping("/v1/process-link/url/variables")
+    fun getDefaultUrl(
+    ): URLVariables {
+        return URLVariables(urlProcessLinkService.getVariables().url)
     }
 
 }
