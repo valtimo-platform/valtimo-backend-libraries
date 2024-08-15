@@ -58,8 +58,7 @@ class URLProcessLinkService(
         )
 
         return dispatchRequest(
-            request,
-            documentDefinitionNameToUse,
+            request
         )
     }
 
@@ -157,27 +156,14 @@ class URLProcessLinkService(
     }
 
     private fun dispatchRequest(
-        request: Request,
-        documentDefinitionName: String
+        request: Request
     ) : URLSubmissionResult {
-//        return try {
         val result = processDocumentService.dispatch(request)
-        if (result.errors().isNotEmpty()) {
-            return URLSubmissionResult(result.errors().map { it.asString() }, "")
+        return if (result.errors().isNotEmpty()) {
+            URLSubmissionResult(result.errors().map { it.asString() }, "")
         } else {
             val submittedDocument = result.resultingDocument().orElseThrow()
-//                formFields.forEach { it.postProcess(submittedDocument) }
-//                publishExternalDataSubmittedEvent(externalFormData, documentDefinitionName, submittedDocument)
-//                valueResolverService.handleValues(submittedDocument.id.id, remainingValueResolverValues)
-            return URLSubmissionResult(emptyList(), submittedDocument.id().toString())
-//            }
-//        } catch (ex: RuntimeException) {
-//            val referenceId = UUID.randomUUID()
-//            logger.error("Unexpected error occurred - $referenceId", ex)
-//            FormSubmissionResultFailed(
-//                OperationError.FromString("Unexpected error occurred, please contact support - referenceId: $referenceId")
-//            )
-//        }
+            URLSubmissionResult(emptyList(), submittedDocument.id().toString())
         }
     }
 
