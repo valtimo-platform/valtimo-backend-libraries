@@ -54,7 +54,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @AutoConfiguration
 @EnableJpaRepositories(basePackages = "com.ritense.form.repository")
-@EntityScan("com.ritense.form.domain")
+@EntityScan({"com.ritense.form"})
 public class FormAutoConfiguration {
     private static boolean ignoreDisabledFields = false;
 

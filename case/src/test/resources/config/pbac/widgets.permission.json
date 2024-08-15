@@ -1,0 +1,78 @@
+{
+    "changesetId": "widgets-v1",
+    "permissions": [
+        {
+            "resourceType": "com.ritense.case_.domain.tab.CaseWidgetTabWidget",
+            "action": "view",
+            "roleKey": "ROLE_ALL_WIDGETS",
+            "conditions": [
+                {
+                    "type": "field",
+                    "field": "id.key",
+                    "operator": "!=",
+                    "value": "deny"
+                }
+            ]
+        },
+        {
+            "resourceType": "com.ritense.case_.domain.tab.CaseWidgetTabWidget",
+            "action": "view",
+            "roleKey": "ROLE_ONLY_TEST_WIDGETS",
+            "conditions": [
+                {
+                    "type": "field",
+                    "field": "id.key",
+                    "operator": "==",
+                    "value": "test"
+                }
+            ]
+        },
+        {
+            "resourceType": "com.ritense.case_.domain.tab.CaseWidgetTabWidget",
+            "action": "view",
+            "roleKey": "ROLE_ONLY_TEST_WIDGETS_FOR_CONTEXT",
+            "conditions": [
+                {
+                    "type": "field",
+                    "field": "id.key",
+                    "operator": "==",
+                    "value": "test"
+                }
+            ],
+            "contextResourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "contextConditions": [
+                {
+                    "type": "expression",
+                    "field": "content.content",
+                    "path": "$.key",
+                    "operator": "==",
+                    "value": "CONTEXT",
+                    "clazz": "java.lang.String"
+                }
+            ]
+        },
+        {
+            "resourceType": "com.ritense.case_.domain.tab.CaseWidgetTabWidget",
+            "action": "view",
+            "roleKey": "ROLE_USER",
+            "conditions": [
+                {
+                    "type": "field",
+                    "field": "id.key",
+                    "operator": "!=",
+                    "value": "deny"
+                }
+            ]
+        },
+        {
+            "resourceType": "com.ritense.case.domain.CaseTab",
+            "action": "view",
+            "roleKey": "ROLE_ALL_WIDGETS"
+        },
+        {
+            "resourceType": "com.ritense.case.domain.CaseTab",
+            "action": "view",
+            "roleKey": "ROLE_ONLY_TEST_WIDGETS"
+        }
+    ]
+}

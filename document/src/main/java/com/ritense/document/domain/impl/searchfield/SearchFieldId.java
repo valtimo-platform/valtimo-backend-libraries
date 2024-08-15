@@ -39,6 +39,10 @@ public class SearchFieldId extends AbstractId<SearchFieldId> {
     public SearchFieldId() {
     }
 
+    public static SearchFieldId existingId(UUID id, String documentDefinitionName) {
+        return new SearchFieldId(id, documentDefinitionName);
+    }
+
     public static SearchFieldId newId(String documentDefinitionName) {
         return new SearchFieldId(UUID.randomUUID(), documentDefinitionName);
     }

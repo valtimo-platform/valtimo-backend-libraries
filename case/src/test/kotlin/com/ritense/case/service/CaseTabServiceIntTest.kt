@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional
 class CaseTabServiceIntTest @Autowired constructor(
     private val caseTabService: CaseTabService,
     private val documentDefinitionService: DocumentDefinitionService
-): BaseIntegrationTest() {
+) : BaseIntegrationTest() {
 
     @Test
     @Transactional
@@ -53,7 +53,8 @@ class CaseTabServiceIntTest @Autowired constructor(
                 key = "some-key",
                 name = "Some name",
                 type = CaseTabType.STANDARD,
-                contentKey = "some-content-key"
+                contentKey = "some-content-key",
+                showTasks = true
             )
 
             caseTabService.createCaseTab(
@@ -85,7 +86,8 @@ class CaseTabServiceIntTest @Autowired constructor(
                 key = "some-key",
                 name = "Some name",
                 type = CaseTabType.STANDARD,
-                contentKey = "some-content-key"
+                contentKey = "some-content-key",
+                showTasks = true
             )
 
             caseTabService.createCaseTab(
@@ -125,7 +127,8 @@ class CaseTabServiceIntTest @Autowired constructor(
                     key = "",
                     name = "",
                     type = CaseTabType.STANDARD,
-                    contentKey = ""
+                    contentKey = "",
+                    showTasks = true
                 )
 
                 caseTabService.createCaseTab(
@@ -148,7 +151,8 @@ class CaseTabServiceIntTest @Autowired constructor(
             key = "some-key",
             name = "Some name",
             type = CaseTabType.STANDARD,
-            contentKey = "some-content-key"
+            contentKey = "some-content-key",
+            showTasks = true
         )
 
         val exception = assertThrows<NoSuchElementException> {

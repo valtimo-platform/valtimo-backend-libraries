@@ -53,7 +53,15 @@ abstract class AuthorizationSpecification<T : Any>(
             entityAuthorizationRequest.resourceType == permission.resourceType && entityAuthorizationRequest.action == permission.action
         }
         return entityAuthorizationRequest.entities.all { entity ->
-            permissions.any { permission -> permission.appliesTo(entityAuthorizationRequest.resourceType, entity) }
+            permissions.any { permission ->
+                permission
+                    .appliesTo(
+                        entityAuthorizationRequest.resourceType,
+                        entity,
+                        entityAuthorizationRequest.context?.resourceType,
+                        entityAuthorizationRequest.context?.entity
+                    )
+            }
         }
     }
 
@@ -147,7 +155,9 @@ abstract class AuthorizationSpecification<T : Any>(
         root: Root<T>,
         query: CriteriaQuery<*>,
         criteriaBuilder: CriteriaBuilder
-    ): Predicate { return toPredicate(root, query as AbstractQuery<*>, criteriaBuilder) }
+    ): Predicate {
+        return toPredicate(root, query as AbstractQuery<*>, criteriaBuilder)
+    }
 
     /**
      * Creates a WHERE clause for a query of the referenced entity in form of a Predicate for the given Root and

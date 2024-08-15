@@ -19,7 +19,6 @@ package com.ritense.gzac.dashboard
 import com.ritense.valtimo.contract.dashboard.feature.HasNumberValue
 import com.ritense.valtimo.contract.dashboard.feature.HasTotal
 
-
 data class TestDataResult(
     override val value: Long,
     override val total: Long

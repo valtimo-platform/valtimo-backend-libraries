@@ -49,7 +49,7 @@ class CamundaTaskSpecification(
                     root,
                     query,
                     criteriaBuilder,
-                    authRequest.resourceType,
+                    authRequest,
                     queryDialectHelper
                 )
             }

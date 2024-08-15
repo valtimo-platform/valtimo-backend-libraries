@@ -3,6 +3,30 @@
     "permissions": [
         {
             "resourceType": "com.ritense.authorization.testimpl.TestEntity",
+            "action": "view",
+            "roleKey": "EXPRESSION_CONTAINS_ROLE_FOR_CONTEXT",
+            "conditions": [
+                {
+                    "type": "expression",
+                    "field": "child",
+                    "path": "$.property",
+                    "operator": "list_contains",
+                    "value": "two",
+                    "clazz": "java.util.Collection"
+                }
+            ],
+            "contextResourceType": "com.ritense.authorization.testimpl.TestDocument",
+            "contextConditions": [
+                {
+                    "type": "field",
+                    "field": "name",
+                    "operator": "in",
+                    "value": ["loan", "gift"]
+                }
+            ]
+        },
+        {
+            "resourceType": "com.ritense.authorization.testimpl.TestEntity",
             "action": "view_list",
             "roleKey": "EXPRESSION_CONTAINS_ROLE",
             "conditions": [

@@ -17,7 +17,9 @@
 package com.ritense.case.service
 
 import com.ritense.authorization.Action.Companion.deny
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.request.AuthorizationResourceContext
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.case.domain.CaseTab
 import com.ritense.case.domain.CaseTabId
@@ -29,16 +31,27 @@ import com.ritense.case.service.exception.TabAlreadyExistsException
 import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateOrderDto
+import com.ritense.case_.service.event.CaseTabCreatedEvent
+import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentDefinitionService
+import com.ritense.document.service.DocumentService
+import com.ritense.document.service.findByOrNull
+import com.ritense.valtimo.contract.authentication.UserManagementService
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Sort
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 import kotlin.jvm.optionals.getOrNull
 
 @Transactional
 class CaseTabService(
     private val caseTabRepository: CaseTabRepository,
     private val documentDefinitionService: DocumentDefinitionService,
-    private val authorizationService: AuthorizationService
+    private val authorizationService: AuthorizationService,
+    private val applicationEventPublisher: ApplicationEventPublisher,
+    private val userManagementService: UserManagementService,
+    private val documentService: DocumentService
 ) {
     fun getCaseTab(caseDefinitionName: String, key: String): CaseTab {
         val caseTab = caseTabRepository.getReferenceById(CaseTabId(caseDefinitionName, key))
@@ -52,7 +65,7 @@ class CaseTabService(
         return caseTab
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     fun getCaseTabs(caseDefinitionName: String): List<CaseTab> {
         val spec = authorizationService.getAuthorizationSpecification(
             EntityAuthorizationRequest(
@@ -63,16 +76,41 @@ class CaseTabService(
         return caseTabRepository.findAll(spec.and(byCaseDefinitionName(caseDefinitionName)), Sort.by(TAB_ORDER))
     }
 
-    fun createCaseTab(caseDefinitionName: String, caseTabDto: CaseTabDto): CaseTabDto {
+    @Transactional
+    fun getCaseTabs(documentId: JsonSchemaDocumentId): List<CaseTab> {
+        val document = runWithoutAuthorization { documentService.findByOrNull(documentId) }
+
+        val spec = authorizationService.getAuthorizationSpecification(
+            EntityAuthorizationRequest(
+                CaseTab::class.java,
+                CaseTabActionProvider.VIEW
+            ).withContext(
+                AuthorizationResourceContext(
+                    JsonSchemaDocument::class.java,
+                    document as JsonSchemaDocument
+                )
+            )
+        )
+
+        return caseTabRepository.findAll(
+            spec.and(
+                byCaseDefinitionName(
+                    document.definitionId().name()
+                )
+            ), Sort.by(TAB_ORDER)
+        )
+    }
+
+    fun createCaseTab(caseDefinitionName: String, caseTabDto: CaseTabDto): CaseTab {
         denyAuthorization()
 
         documentDefinitionService.findLatestByName(caseDefinitionName).getOrNull()
             ?: throw NoSuchElementException("Case definition with name $caseDefinitionName does not exist!")
 
         val currentTabs = getCaseTabs(caseDefinitionName)
-        val tabWithKeyExists = currentTabs.filter { tab ->
-            tab.id.key.equals(caseTabDto.key)
-        }.isNotEmpty()
+        val tabWithKeyExists = currentTabs.any { tab ->
+            tab.id.key == caseTabDto.key
+        }
 
         if (tabWithKeyExists) {
             throw TabAlreadyExistsException(caseTabDto.key)
@@ -83,11 +121,17 @@ class CaseTabService(
             caseTabDto.name,
             currentTabs.size, // Add it to the end
             caseTabDto.type,
-            caseTabDto.contentKey
+            caseTabDto.contentKey,
+            LocalDateTime.now(),
+            userManagementService.currentUserId,
+            caseTabDto.showTasks
         )
 
         val savedTab = caseTabRepository.save(caseTab)
-        return CaseTabDto.of(savedTab)
+
+        applicationEventPublisher.publishEvent(CaseTabCreatedEvent(savedTab))
+
+        return savedTab
     }
 
     fun updateCaseTab(caseDefinitionName: String, tabKey: String, caseTab: CaseTabUpdateDto) {
@@ -99,7 +143,8 @@ class CaseTabService(
             existingTab.copy(
                 name = caseTab.name,
                 type = caseTab.type,
-                contentKey = caseTab.contentKey
+                contentKey = caseTab.contentKey,
+                showTasks = caseTab.showTasks
             )
         )
     }
@@ -119,7 +164,8 @@ class CaseTabService(
                 name = caseTabDto.name,
                 tabOrder = index,
                 type = caseTabDto.type,
-                contentKey = caseTabDto.contentKey
+                contentKey = caseTabDto.contentKey,
+                showTasks = caseTabDto.showTasks
             )
         }
 
@@ -138,7 +184,7 @@ class CaseTabService(
 
     private fun reorderTabs(caseDefinitionName: String) {
         val caseTabs = caseTabRepository.findAll(byCaseDefinitionName(caseDefinitionName), Sort.by(TAB_ORDER))
-            .mapIndexed { index, caseTab -> caseTab.copy(tabOrder = index)  }
+            .mapIndexed { index, caseTab -> caseTab.copy(tabOrder = index) }
         caseTabRepository.saveAll(caseTabs)
     }
 

@@ -64,7 +64,6 @@ open class ServiceTaskListener(
         document: Document,
         zaakTypeLink: ZaakTypeLink
     ) {
-        // TODO [RV] - Can we remove the when in handleServiceTask by using the when above?
         val zaakInstanceUrl = zaakInstanceLinkService.getByDocumentId(document.id().id).zaakInstanceUrl
         zaakTypeLink.handleServiceTask(execution, processDefinitionKey, zaakInstanceUrl)
         zaakTypeLinkService.modify(zaakTypeLink)

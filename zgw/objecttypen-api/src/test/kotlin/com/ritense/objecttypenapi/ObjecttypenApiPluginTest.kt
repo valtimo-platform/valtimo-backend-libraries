@@ -39,7 +39,7 @@ internal class ObjecttypenApiPluginTest{
     }
 
     @Test
-    fun `should call client on get object`() {
+    fun `should call client on get objecttype`() {
         val objecttypeUrl = URI("http://example.com")
         val objecttypeMock = mock<Objecttype>()
         whenever(client.getObjecttype(plugin.authenticationPluginConfiguration, objecttypeUrl)).thenReturn(objecttypeMock)
@@ -48,5 +48,17 @@ internal class ObjecttypenApiPluginTest{
 
         assertEquals(objecttypeMock, result)
         verify(client).getObjecttype(any(), any())
+    }
+
+    @Test
+    fun `should call client on get objecttypes`() {
+        val objecttypeUrl = URI("http://example.com")
+        val objecttypesMock = mock<List<Objecttype>>()
+        whenever(client.getObjecttypes(plugin.authenticationPluginConfiguration, objecttypeUrl)).thenReturn(objecttypesMock)
+
+        val result = plugin.getObjecttypes(objecttypeUrl)
+
+        assertEquals(objecttypesMock, result)
+        verify(client).getObjecttypes(any(), any())
     }
 }
