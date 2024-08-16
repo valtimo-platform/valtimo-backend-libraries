@@ -1,6 +1,7 @@
 package com.ritense.processlink.url.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.authorization.ValtimoAuthorizationService
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
@@ -15,6 +16,7 @@ import com.ritense.processlink.url.domain.URLProcessLink
 import com.ritense.processlink.url.domain.URLVariables
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.service.CamundaTaskService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.InjectMocks
@@ -49,6 +51,12 @@ class URLProcessLinkServiceTest {
 
     @Mock
     lateinit var urlVariables: URLVariables
+
+    @Mock
+    lateinit var camundaTaskService: CamundaTaskService
+
+    @Mock
+    lateinit var authorizationService: ValtimoAuthorizationService
 
     @InjectMocks
     lateinit var urlProcessLinkService: URLProcessLinkService
