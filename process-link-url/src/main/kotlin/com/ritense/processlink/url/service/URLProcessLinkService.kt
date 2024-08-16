@@ -2,6 +2,8 @@ package com.ritense.processlink.url.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.ValtimoAuthorizationService
+import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.domain.impl.request.NewDocumentRequest
@@ -20,8 +22,11 @@ import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.processlink.url.domain.URLVariables
 import com.ritense.processlink.url.domain.URLProcessLink
 import com.ritense.processlink.url.web.rest.dto.URLSubmissionResult
+import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
+import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.service.CamundaTaskService
 import java.util.UUID
 
 class URLProcessLinkService(
@@ -31,7 +36,9 @@ class URLProcessLinkService(
     private val processDocumentService: ProcessDocumentService,
     private val repositoryService: CamundaRepositoryService,
     private val objectMapper: ObjectMapper,
-    private val urlVariables: URLVariables
+    private val urlVariables: URLVariables,
+    private val camundaTaskService: CamundaTaskService,
+    private val authorizationService: ValtimoAuthorizationService
 ) {
 
     fun submit(
@@ -40,6 +47,8 @@ class URLProcessLinkService(
         documentId: String?,
         taskInstanceId: String?,
     ): URLSubmissionResult {
+        requireCompleteTaskPermission(taskInstanceId)
+
         val processLink = processLinkService.getProcessLink(processLinkId, URLProcessLink::class.java)
         val document = documentId
             ?.let { AuthorizationContext.runWithoutAuthorization { documentService.get(documentId) } }
@@ -60,6 +69,19 @@ class URLProcessLinkService(
         return dispatchRequest(
             request
         )
+    }
+
+    private fun requireCompleteTaskPermission(taskInstanceId: String?) {
+        if (taskInstanceId != null) {
+            val task = camundaTaskService.findTaskById(taskInstanceId)
+            authorizationService.requirePermission(
+                EntityAuthorizationRequest(
+                    CamundaTask::class.java,
+                    CamundaTaskActionProvider.COMPLETE,
+                    task
+                )
+            )
+        }
     }
 
     private fun getProcessDefinition(
