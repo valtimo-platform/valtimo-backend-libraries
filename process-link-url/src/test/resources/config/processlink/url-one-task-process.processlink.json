@@ -2,13 +2,13 @@
     {
         "activityId": "start-event",
         "activityType": "bpmn:StartEvent:start",
-        "processLinkType": "form",
-        "formDefinitionName": "form-example-various-prefill-fields"
+        "processLinkType": "url",
+        "url": "https://www.ritense.nl"
     },
     {
         "activityId": "do-something",
         "activityType": "bpmn:UserTask:start",
-        "processLinkType": "form",
-        "formDefinitionName": "form-example"
+        "processLinkType": "url",
+        "url": "https://www.ritense.nl"
     }
 ]
