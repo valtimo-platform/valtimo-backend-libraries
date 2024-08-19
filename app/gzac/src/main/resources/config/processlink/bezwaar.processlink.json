@@ -10,7 +10,7 @@
         "activityType": "bpmn:UserTask:create",
         "formDefinitionName": "user-task-validate-request",
         "processLinkType": "form",
-        "taskDisplayType": "panel",
+        "formDisplayType": "panel",
         "formSize": "medium"
     },
     {
