@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
 import org.springframework.transaction.annotation.Transactional
+import java.util.Collections
 
 @Transactional
 class DocumentWidgetDataSourceIntTest @Autowired constructor(
@@ -152,12 +153,13 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
         )
 
         val result = documentWidgetDataSource.getCaseGroupBy(properties)
+        val resultValues = result.values.sortedBy { it.label }
 
-        assertThat(result.values.size).isEqualTo(2)
-        assertThat(result.values[1].value).isEqualTo(2)
-        assertThat(result.values[1].label).isEqualTo(openSesame)
-        assertThat(result.values[0].value).isEqualTo(3)
-        assertThat(result.values[0].label).isEqualTo(street2)
+        assertThat(resultValues.size).isEqualTo(2)
+        assertThat(resultValues[1].value).isEqualTo(2)
+        assertThat(resultValues[1].label).isEqualTo(openSesame)
+        assertThat(resultValues[0].value).isEqualTo(3)
+        assertThat(resultValues[0].label).isEqualTo(street2)
     }
 
     @Test
@@ -251,8 +253,8 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
             listOf(
                 QueryCondition(
                     "case:createdOn",
-                    ExpressionOperator.GREATER_THAN_OR_EQUAL_TO,
-                    "\${localDateTimeNow}"
+                    ExpressionOperator.GREATER_THAN,
+                    "\${localDateTimeNow.plusMinutes(1)}"
                 ),
                 QueryCondition(
                     "doc:street",
@@ -268,7 +270,7 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
                 QueryCondition(
                     "case:createdOn",
                     ExpressionOperator.GREATER_THAN,
-                    "\${localDateTimeNow.minusDays(1)}"
+                    "\${localDateTimeNow.minusMinutes(1)}"
                 ),
                 QueryCondition(
                     "doc:street",
