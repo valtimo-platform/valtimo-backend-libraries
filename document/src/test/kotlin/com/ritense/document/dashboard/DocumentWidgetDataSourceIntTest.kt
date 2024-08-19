@@ -251,7 +251,7 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
             listOf(
                 QueryCondition(
                     "case:createdOn",
-                    ExpressionOperator.GREATER_THAN,
+                    ExpressionOperator.GREATER_THAN_OR_EQUAL_TO,
                     "\${localDateTimeNow}"
                 ),
                 QueryCondition(
