@@ -16,12 +16,16 @@
 
 package com.ritense.valtimo.formflow.domain
 
+import com.ritense.form.domain.FormSizes
+import com.ritense.form.domain.FormDisplayType
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.valtimo.formflow.mapper.FormFlowProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM_FLOW
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorValue
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import java.util.UUID
 
 @Entity
@@ -33,7 +37,15 @@ class FormFlowProcessLink(
     activityType: ActivityTypeWithEventName,
 
     @Column(name = "form_flow_definition_id", nullable = false)
-    val formFlowDefinitionId: String
+    val formFlowDefinitionId: String,
+
+    @Column(name = "form_display_type")
+    @Enumerated(EnumType.STRING)
+    val formDisplayType: FormDisplayType = FormDisplayType.modal,
+
+    @Column(name = "form_size")
+    @Enumerated(EnumType.STRING)
+    val formSize: FormSizes = FormSizes.medium
 
 ) : ProcessLink(
     id,
@@ -57,13 +69,17 @@ class FormFlowProcessLink(
         processDefinitionId: String = this.processDefinitionId,
         activityId: String = this.activityId,
         activityType: ActivityTypeWithEventName = this.activityType,
-        formFlowDefinitionId: String = this.formFlowDefinitionId
+        formFlowDefinitionId: String = this.formFlowDefinitionId,
+        formDisplayType: FormDisplayType = this.formDisplayType,
+        formSize: FormSizes = this.formSize,
     ) = FormFlowProcessLink(
         id = id,
         processDefinitionId = processDefinitionId,
         activityId = activityId,
         activityType = activityType,
-        formFlowDefinitionId = formFlowDefinitionId
+        formFlowDefinitionId = formFlowDefinitionId,
+        formDisplayType = formDisplayType,
+        formSize = formSize,
     )
 
     override fun equals(other: Any?): Boolean {
@@ -73,12 +89,18 @@ class FormFlowProcessLink(
 
         other as FormFlowProcessLink
 
-        return formFlowDefinitionId == other.formFlowDefinitionId
+        if (formFlowDefinitionId != other.formFlowDefinitionId) return false
+        if (formDisplayType != other.formDisplayType) return false
+        if (formSize != other.formSize) return false
+
+        return true
     }
 
     override fun hashCode(): Int {
         var result = super.hashCode()
         result = 31 * result + formFlowDefinitionId.hashCode()
+        result = 31 * result + formDisplayType.hashCode()
+        result = 31 * result + formSize.hashCode()
         return result
     }
 }

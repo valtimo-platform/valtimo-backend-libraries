@@ -9,7 +9,9 @@
         "activityId": "validate-request",
         "activityType": "bpmn:UserTask:create",
         "formDefinitionName": "user-task-validate-request",
-        "processLinkType": "form"
+        "processLinkType": "form",
+        "taskDisplayType": "panel",
+        "formSize": "medium"
     },
     {
         "activityId": "in-behandeling",
