@@ -341,7 +341,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    void shouldNotPrefillFieldsInsideEditGridOrDataGrid() throws IOException {
+    void shouldNotPrefillTextFieldsInsideEditGridOrDataGrid() throws IOException {
         final var formDefinition = formDefinitionOf("editgrid");
 
         formDefinition.preFill(MapperSingleton.get().readTree("""
