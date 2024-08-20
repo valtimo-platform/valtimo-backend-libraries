@@ -147,17 +147,12 @@ class FormFlowInstance(
 
     private fun getSubmissionData() : List<JSONObject> {
         val currentStepOrder = getCurrentStep().order
-        val submissionData = history.filter {
-            it.order < currentStepOrder && it.submissionData != null
-        }.map {
-            JSONObject(it.submissionData)
-        }.toMutableList()
-
-        getCurrentStep().getCurrentSubmissionData()?.let {
-            submissionData.add(JSONObject(it))
-        }
-
-        return submissionData
+        return history
+            .filter { it.order <= currentStepOrder }
+            .sortedBy { it.submissionOrder }
+            .mapNotNull { it.getCurrentSubmissionData() }
+            .map { JSONObject(it) }
+            .toList()
     }
 
     private fun mergeSubmissionData(source: JSONObject, target: JSONObject) {
