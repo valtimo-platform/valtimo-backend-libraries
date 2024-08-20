@@ -194,7 +194,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         final CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
         Root<JsonSchemaDocument> countRoot = countQuery.from(JsonSchemaDocument.class);
-        countQuery.select(cb.count(countRoot));
+        countQuery.select(cb.countDistinct(countRoot));
         queryWhereBuilder.apply(cb, countQuery, countRoot);
 
         // TODO: Should be turned into a subquery, and then do a count over the results from the subquery.
