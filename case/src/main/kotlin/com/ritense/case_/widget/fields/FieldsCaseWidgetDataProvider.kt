@@ -28,7 +28,12 @@ class FieldsCaseWidgetDataProvider(
 
     override fun supportedWidgetType() = FieldsCaseWidget::class.java
 
-    override fun getData(documentId: UUID, widgetTab: CaseWidgetTab, widget: FieldsCaseWidget, pageable: Pageable): Any {
+    override fun getData(
+        documentId: UUID,
+        widgetTab: CaseWidgetTab,
+        widget: FieldsCaseWidget,
+        pageable: Pageable
+    ): Any {
         val valueKeyMap = widget.properties.columns.flatMap { column ->
             column.map { field ->
                 field.value to field.key
@@ -38,8 +43,8 @@ class FieldsCaseWidgetDataProvider(
         val resolvedValues = valueResolverService.resolveValues(documentId.toString(), valueKeyMap.keys)
 
         return widget.properties.columns.flatMap { column ->
-            column.mapNotNull { field ->
-                resolvedValues[field.value]?.let { field.key to it }
+            column.map { field ->
+                field.key to (resolvedValues[field.value] ?: null)
             }
         }.toMap()
     }
