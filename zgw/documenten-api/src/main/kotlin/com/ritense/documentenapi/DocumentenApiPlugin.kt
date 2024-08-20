@@ -20,12 +20,20 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.ritense.documentenapi.DocumentenApiPlugin.Companion.PLUGIN_KEY
-import com.ritense.documentenapi.client.*
+import com.ritense.documentenapi.client.CreateDocumentRequest
+import com.ritense.documentenapi.client.DocumentInformatieObject
+import com.ritense.documentenapi.client.DocumentStatusType
+import com.ritense.documentenapi.client.DocumentenApiClient
+import com.ritense.documentenapi.client.PatchDocumentRequest
 import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.documentenapi.service.DocumentDeleteHandler
 import com.ritense.documentenapi.service.DocumentenApiVersionService
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
-import com.ritense.plugin.annotation.*
+import com.ritense.plugin.annotation.Plugin
+import com.ritense.plugin.annotation.PluginAction
+import com.ritense.plugin.annotation.PluginActionProperty
+import com.ritense.plugin.annotation.PluginEvent
+import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.EventType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginService
@@ -277,10 +285,11 @@ class DocumentenApiPlugin(
         val documentId = documentCreateResult.url.substringAfterLast('/')
         execution.setVariable(DOCUMENT_ID_PROCESS_VAR, documentId)
         try {
-            val pluginConfiguration = getDocumentenApiPluginByInformatieobjectUrl(URI.create(documentCreateResult.url))
+            val test = URI.create(documentCreateResult.url)
+            val pluginConfiguration = getDocumentenApiPluginByInformatieobjectUrl(test)
             execution.setVariable(DOWNLOAD_URL_PROCESS_VAR, createDownloadUrl(pluginConfiguration.id.id, documentId))
         } catch (_: Exception) {
-            logger.warn { "Failed to set the $DOWNLOAD_URL_PROCESS_VAR variable in the DelegateExecution" }
+            throw IllegalStateException("Failed to set the $DOWNLOAD_URL_PROCESS_VAR variable in the DelegateExecution")
         }
     }
 

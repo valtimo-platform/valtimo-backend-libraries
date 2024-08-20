@@ -24,6 +24,7 @@ import com.ritense.documentenapi.client.DocumentStatusType
 import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.documentenapi.service.DocumentenApiVersionService
+import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
@@ -35,7 +36,12 @@ import org.apache.commons.io.IOUtils
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.*
+import org.mockito.Mockito.mock
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.context.ApplicationEventPublisher
 import java.io.ByteArrayInputStream
 import java.net.URI
@@ -76,6 +82,8 @@ internal class DocumentenApiPluginTest {
         val authenticationMock = mock<DocumentenApiAuthentication>()
         val objectMapper = MapperSingleton.get()
         val documentenApiVersionService: DocumentenApiVersionService = mock()
+        val pluginConfiguration: PluginConfiguration = mock()
+        val pluginConfigurationId: PluginConfigurationId = mock()
         val executionMock = mock<DelegateExecution>()
         val content = "contentForRequest"
         val inputStream = ByteArrayInputStream(content.toByteArray())
@@ -105,6 +113,16 @@ internal class DocumentenApiPluginTest {
         plugin.url = URI("http://some-url")
         plugin.bronorganisatie = "123456789"
         plugin.authenticationPluginConfiguration = authenticationMock
+
+        whenever(pluginConfiguration.id).thenReturn(pluginConfigurationId)
+        whenever(pluginConfigurationId.id).thenReturn(UUID.randomUUID())
+
+        val pluginAnnotation:Plugin = mock()
+        whenever(pluginAnnotation.key).thenReturn("documentenApiPluginKey")
+        whenever(pluginService.findPluginConfiguration(
+            eq(DocumentenApiPlugin::class.java),
+            any()
+        )).thenReturn(pluginConfiguration)
 
         plugin.storeTemporaryDocument(
             executionMock,
@@ -153,6 +171,8 @@ internal class DocumentenApiPluginTest {
         val applicationEventPublisher: ApplicationEventPublisher= mock()
         val authenticationMock = mock<DocumentenApiAuthentication>()
         val documentenApiVersionService: DocumentenApiVersionService = mock()
+        val pluginConfiguration: PluginConfiguration = mock()
+        val pluginConfigurationId: PluginConfigurationId = mock()
         val executionMock = mock<DelegateExecution>()
         val content = "contentForRequest"
         val inputStream = ByteArrayInputStream(content.toByteArray())
@@ -181,6 +201,16 @@ internal class DocumentenApiPluginTest {
                 "description" to "description",
                 "informatieobjecttype" to "type"))
         whenever(client.storeDocument(any(), any(), any())).thenReturn(result)
+
+        whenever(pluginConfiguration.id).thenReturn(pluginConfigurationId)
+        whenever(pluginConfigurationId.id).thenReturn(UUID.randomUUID())
+
+        val pluginAnnotation:Plugin = mock()
+        whenever(pluginAnnotation.key).thenReturn("documentenApiPluginKey")
+        whenever(pluginService.findPluginConfiguration(
+            eq(DocumentenApiPlugin::class.java),
+            any()
+        )).thenReturn(pluginConfiguration)
 
         val plugin = DocumentenApiPlugin(
             client,
@@ -225,6 +255,8 @@ internal class DocumentenApiPluginTest {
         val applicationEventPublisher: ApplicationEventPublisher= mock()
         val authenticationMock = mock<DocumentenApiAuthentication>()
         val documentenApiVersionService: DocumentenApiVersionService = mock()
+        val pluginConfiguration: PluginConfiguration = mock()
+        val pluginConfigurationId: PluginConfigurationId = mock()
         val executionMock = mock<DelegateExecution>()
         val content = "contentForRequest"
         val inputStream = ByteArrayInputStream(content.toByteArray())
@@ -260,6 +292,16 @@ internal class DocumentenApiPluginTest {
         plugin.url = URI("http://some-url")
         plugin.bronorganisatie = "123456789"
         plugin.authenticationPluginConfiguration = authenticationMock
+
+        whenever(pluginConfiguration.id).thenReturn(pluginConfigurationId)
+        whenever(pluginConfigurationId.id).thenReturn(UUID.randomUUID())
+
+        val pluginAnnotation:Plugin = mock()
+        whenever(pluginAnnotation.key).thenReturn("documentenApiPluginKey")
+        whenever(pluginService.findPluginConfiguration(
+            eq(DocumentenApiPlugin::class.java),
+            any()
+        )).thenReturn(pluginConfiguration)
 
         plugin.storeUploadedDocument(executionMock)
 
@@ -315,5 +357,4 @@ internal class DocumentenApiPluginTest {
         assertEquals(informatieObjectUrl, informatieObjectUrlCaptor.firstValue)
         assertEquals(authenticationMock, authorizationCaptor.firstValue)
     }
-
 }

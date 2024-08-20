@@ -32,7 +32,14 @@ import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Path
 import java.security.SecureRandom
-import kotlin.io.path.*
+import kotlin.io.path.Path
+import kotlin.io.path.absolutePathString
+import kotlin.io.path.fileSize
+import kotlin.io.path.inputStream
+import kotlin.io.path.nameWithoutExtension
+import kotlin.io.path.notExists
+import kotlin.io.path.pathString
+import kotlin.io.path.readText
 
 class TemporaryResourceStorageService(
     private val random: SecureRandom = SecureRandom(),
@@ -121,13 +128,11 @@ class TemporaryResourceStorageService(
                         )
                     ).metadataValue
                 } catch (e: EntityNotFoundException) {
-                    logger.warn("Resource $resourceStorageFieldId does not exist: ${e.message}")
-                    throw e
+                    throw IllegalStateException("Resource $resourceStorageFieldId does not exist", e)
                 }
             },
             onFailure = { exception ->
-                logger.error("Failed to resolve metadata key '$metadataKey': ${exception.message}")
-                throw exception
+                throw IllegalStateException("Failed to resolve metadata key '$metadataKey'", exception)
             }
         )
     }
