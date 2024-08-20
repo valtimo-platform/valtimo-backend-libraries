@@ -397,7 +397,7 @@ public class CamundaTaskService {
         var cbCount = entityManager.getCriteriaBuilder();
         var queryCount = cbCount.createQuery(Long.class);
         var taskCountRoot = queryCount.from(CamundaTask.class);
-        queryCount.select(cbCount.countDistinct(taskCountRoot));
+        queryCount.select(cbCount.count(taskCountRoot));
         queryCount.where(specification.toPredicate(taskCountRoot, queryCount, cbCount));
         return entityManager.createQuery(queryCount).getSingleResult();
     }
