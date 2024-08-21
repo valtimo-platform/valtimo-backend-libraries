@@ -176,6 +176,7 @@ class CaseTaskListSearchService(
                 *selectCols
             )
         )
+        query.distinct(true)
 
         // Due to the JsonSchemaDocumentSpecification#toPredicate adding a groupBy (which is called when applying PBAC)
         // ...we are forced to add all the columns we want to select, to the group by.
@@ -186,21 +187,21 @@ class CaseTaskListSearchService(
         query.where(constructWhere(cb, query, taskRoot, documentRoot, caseDefinitionName, advancedSearchRequest))
         query.orderBy(constructOrderBy(query, cb, taskRoot, documentRoot, pageable.sort))
 
-        val countQuery = cb.createQuery(Long::class.java)
-        val countTaskRoot = countQuery.from(CamundaTask::class.java)
-        val countDocumentRoot = countQuery.from(JsonSchemaDocument::class.java)
-        countQuery.select(cb.count(countDocumentRoot))
-        entityManager.createQuery(countQuery)
-        countQuery.where(constructWhere(cb, countQuery, countTaskRoot, countDocumentRoot, caseDefinitionName, advancedSearchRequest))
-
-        // Can't use singleResult here due to the group by issue mentioned above.
-        val count = entityManager.createQuery(countQuery).resultList.sum()
-
         val pagedQuery = entityManager.createQuery(query)
             .setFirstResult(pageable.offset.toInt())
             .setMaxResults(pageable.pageSize)
 
-        return PageImpl(pagedQuery.resultList, pageable, count)
+        return PageImpl(pagedQuery.resultList, pageable, count(caseDefinitionName, advancedSearchRequest))
+    }
+
+    private fun count(caseDefinitionName: String, advancedSearchRequest: AdvancedSearchRequest): Long {
+        val cb: CriteriaBuilder = entityManager.criteriaBuilder
+        val countQuery = cb.createQuery(Long::class.java)
+        val countTaskRoot = countQuery.from(CamundaTask::class.java)
+        val countDocumentRoot = countQuery.from(JsonSchemaDocument::class.java)
+        countQuery.select(cb.countDistinct(countTaskRoot))
+        countQuery.where(constructWhere(cb, countQuery, countTaskRoot, countDocumentRoot, caseDefinitionName, advancedSearchRequest))
+        return entityManager.createQuery(countQuery).singleResult
     }
 
     private fun constructWhere(
