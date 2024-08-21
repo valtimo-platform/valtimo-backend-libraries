@@ -1,0 +1,65 @@
+{
+    "display": "form",
+    "components": [
+        {
+            "key": "voornaam",
+            "type": "textfield",
+            "input": true,
+            "label": "Voornaam",
+            "tableView": true,
+            "applyMaskOn": "change"
+        },
+        {
+            "key": "editGrid",
+            "type": "editgrid",
+            "input": true,
+            "label": "Edit Grid",
+            "rowDrafts": false,
+            "tableView": false,
+            "components": [
+                {
+                    "key": "voornaam",
+                    "type": "textfield",
+                    "input": true,
+                    "label": "Voornaam",
+                    "tableView": true,
+                    "applyMaskOn": "change"
+                }
+            ],
+            "displayAsTable": false
+        },
+        {
+            "key": "dataGrid",
+            "type": "datagrid",
+            "input": true,
+            "label": "Data Grid",
+            "reorder": false,
+            "initEmpty": false,
+            "tableView": false,
+            "components": [
+                {
+                    "key": "voornaam",
+                    "type": "textfield",
+                    "input": true,
+                    "label": "Voornaam",
+                    "tableView": true,
+                    "applyMaskOn": "change"
+                }
+            ],
+            "layoutFixed": false,
+            "defaultValue": [
+                {}
+            ],
+            "enableRowGroups": false,
+            "addAnotherPosition": "bottom"
+        },
+        {
+            "key": "submit",
+            "type": "button",
+            "input": true,
+            "label": "Submit",
+            "tableView": false,
+            "disableOnInvalid": true
+        }
+    ]
+}
