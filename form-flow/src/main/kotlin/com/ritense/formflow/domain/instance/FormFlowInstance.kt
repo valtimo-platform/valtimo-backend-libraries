@@ -73,7 +73,7 @@ class FormFlowInstance(
         currentFormFlowStepInstanceId: FormFlowStepInstanceId,
         submissionData: JSONObject
     ): FormFlowStepInstance? {
-        assert(this.currentFormFlowStepInstanceId == currentFormFlowStepInstanceId)
+        require(this.currentFormFlowStepInstanceId == currentFormFlowStepInstanceId)
 
         val formFlowStepInstance = getCurrentStep()
 

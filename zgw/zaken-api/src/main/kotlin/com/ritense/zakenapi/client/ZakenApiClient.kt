@@ -567,7 +567,7 @@ class ZakenApiClient(
     }
 
     fun deleteZaakInformatieObject(authentication: ZakenApiAuthentication, baseUrl: URI, zaakInformatieobjectUrl: URI) {
-        assert(zaakInformatieobjectUrl.toString().startsWith(baseUrl.toString())) {
+        require(zaakInformatieobjectUrl.toString().startsWith(baseUrl.toString())) {
             "zaakInformatieobjectUrl '$zaakInformatieobjectUrl' does not start with baseUrl '$baseUrl'"
         }
         buildWebClient(authentication)
