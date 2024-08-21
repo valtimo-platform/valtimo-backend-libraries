@@ -394,12 +394,12 @@ public class CamundaTaskService {
     }
 
     private long countTasksFiltered(Specification<CamundaTask> specification) {
-        var cbCount = entityManager.getCriteriaBuilder();
-        var queryCount = cbCount.createQuery(Long.class);
-        var taskCountRoot = queryCount.from(CamundaTask.class);
-        queryCount.select(cbCount.countDistinct(taskCountRoot));
-        queryCount.where(specification.toPredicate(taskCountRoot, queryCount, cbCount));
-        return entityManager.createQuery(queryCount).getSingleResult();
+        var cb = entityManager.getCriteriaBuilder();
+        var countQuery = cb.createQuery(Long.class);
+        var taskCountRoot = countQuery.from(CamundaTask.class);
+        countQuery.select(cb.countDistinct(taskCountRoot));
+        countQuery.where(specification.toPredicate(taskCountRoot, countQuery, cb));
+        return entityManager.createQuery(countQuery).getSingleResult();
     }
 
     @Transactional(readOnly = true)
