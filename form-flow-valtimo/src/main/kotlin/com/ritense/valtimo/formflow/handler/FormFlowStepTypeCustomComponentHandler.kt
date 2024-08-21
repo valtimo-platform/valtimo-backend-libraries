@@ -27,7 +27,7 @@ class FormFlowStepTypeCustomComponentHandler(
 
     override fun getTypeProperties(stepInstance: FormFlowStepInstance): CustomComponentTypeProperties {
         val stepDefinitionType = stepInstance.definition.type
-        assert(stepDefinitionType.name == getType())
+        require(stepDefinitionType.name == getType())
         val angularComponentId = (stepDefinitionType.properties as CustomComponentStepTypeProperties).componentId
         return CustomComponentTypeProperties(angularComponentId)
     }
