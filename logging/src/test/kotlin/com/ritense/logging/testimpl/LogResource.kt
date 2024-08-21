@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.logging
+package com.ritense.logging.testimpl
 
+import com.ritense.logging.ResourceLogger
 import mu.KLogger
 import mu.KotlinLogging
 

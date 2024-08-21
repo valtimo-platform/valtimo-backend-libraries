@@ -16,17 +16,13 @@
 
 package com.ritense.logging
 
-import org.aspectj.lang.ProceedingJoinPoint
-import org.aspectj.lang.annotation.Around
-import org.aspectj.lang.annotation.Aspect
+import com.ritense.logging.testimpl.LogResource
+import org.junit.jupiter.api.Test
 
-@Aspect
-class LoggableResourceAspect {
+class LoggableResourceIT(): BaseIntegrationTest() {
 
-    @Around("@annotation(LoggableResource)")
-    fun handleAnnotation(joinPoint: ProceedingJoinPoint): Any {
-        return ResourceLogger.withResource(String::class.java, "12331231") {
-            joinPoint.proceed()
-        }
+    @Test
+    fun `should log resource`() {
+        logResourceBean.someMethod(LogResource(), "123")
     }
 }

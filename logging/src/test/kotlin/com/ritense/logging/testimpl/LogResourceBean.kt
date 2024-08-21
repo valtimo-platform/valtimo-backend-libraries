@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.logging
+package com.ritense.logging.testimpl
 
-import org.aspectj.lang.ProceedingJoinPoint
-import org.aspectj.lang.annotation.Around
-import org.aspectj.lang.annotation.Aspect
+import com.ritense.logging.LoggableResource
 
-@Aspect
-class LoggableResourceAspect {
+open class LogResourceBean() {
 
-    @Around("@annotation(LoggableResource)")
-    fun handleAnnotation(joinPoint: ProceedingJoinPoint): Any {
-        return ResourceLogger.withResource(String::class.java, "12331231") {
-            joinPoint.proceed()
-        }
+    @LoggableResource("id")
+    fun someMethod(
+        resource: LogResource,
+        taskId: String,
+    ) {
+        resource.logSomething()
     }
+
 }

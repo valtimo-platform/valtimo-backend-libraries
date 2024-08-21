@@ -16,17 +16,24 @@
 
 package com.ritense.logging
 
-import org.aspectj.lang.ProceedingJoinPoint
-import org.aspectj.lang.annotation.Around
-import org.aspectj.lang.annotation.Aspect
+import com.ritense.logging.testimpl.LogResourceBean
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
 
-@Aspect
-class LoggableResourceAspect {
+@SpringBootApplication
+class TestApplication {
 
-    @Around("@annotation(LoggableResource)")
-    fun handleAnnotation(joinPoint: ProceedingJoinPoint): Any {
-        return ResourceLogger.withResource(String::class.java, "12331231") {
-            joinPoint.proceed()
+    fun main(args: Array<String>) {
+        runApplication<TestApplication>(*args)
+    }
+
+    @TestConfiguration
+    class TestConfig {
+        @Bean
+        fun logResourceBean(): LogResourceBean {
+            return LogResourceBean()
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2024 Ritense BV, the Netherlands.
+ * Copyright 2020 Dimpact.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,19 @@
 
 package com.ritense.logging
 
-class LogResourceBean() {
+import com.ritense.logging.testimpl.LogResourceBean
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.junit.jupiter.SpringExtension
 
-    @LoggableResource(resourceType = LogResource.class, idField = "id")
-    fun someMethod(
-        @LoggableResource("id") resource: LogResource,
-        @LoggableResource taskId: String,
-    ) {
-        resource.logSomething()
-    }
+@SpringBootTest
+@ExtendWith(SpringExtension::class)
+@Tag("integration")
+abstract class BaseIntegrationTest {
+
+    @Autowired
+    lateinit var logResourceBean: LogResourceBean
 
 }

@@ -16,17 +16,16 @@
 
 package com.ritense.logging
 
-import org.aspectj.lang.ProceedingJoinPoint
-import org.aspectj.lang.annotation.Around
-import org.aspectj.lang.annotation.Aspect
+import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.context.annotation.Bean
 
-@Aspect
-class LoggableResourceAspect {
+@AutoConfiguration
+class LoggingAutoConfiguration {
 
-    @Around("@annotation(LoggableResource)")
-    fun handleAnnotation(joinPoint: ProceedingJoinPoint): Any {
-        return ResourceLogger.withResource(String::class.java, "12331231") {
-            joinPoint.proceed()
-        }
+    @Bean
+    @ConditionalOnMissingBean(LoggableResourceAspect::class)
+    fun loggableResourceAspect(): LoggableResourceAspect {
+        return LoggableResourceAspect()
     }
 }
