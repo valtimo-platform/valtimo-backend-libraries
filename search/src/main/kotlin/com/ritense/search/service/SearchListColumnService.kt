@@ -30,7 +30,7 @@ class SearchListColumnService(
     fun create(searchListColumn: SearchListColumn): SearchListColumn = searchListColumnRepository.save(searchListColumn)
 
     fun update(ownerId: String, key: String, searchListColumn: SearchListColumn): SearchListColumn {
-        findByOwnerIdAndKey(ownerId, key)?.let {
+        return findByOwnerIdAndKey(ownerId, key)?.let {
             if (searchListColumn.ownerId != ownerId) {
                 throw ResponseStatusException(
                     HttpStatus.CONFLICT,
@@ -42,11 +42,19 @@ class SearchListColumnService(
                     "This key already exists. Please choose another key"
                 )
             }
-        }
 
-        return searchListColumnRepository.save(
-            searchListColumn
-        )
+            searchListColumnRepository.save(
+                it.copy(
+                    ownerId = searchListColumn.ownerId,
+                    key = searchListColumn.key,
+                    title = searchListColumn.title,
+                    path = searchListColumn.path,
+                    order = searchListColumn.order,
+                    displayType = searchListColumn.displayType,
+                    sortable = searchListColumn.sortable
+                )
+            )
+        } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Search list column not found")
     }
 
     fun findByOwnerId(ownerId: String) = searchListColumnRepository.findAllByOwnerIdOrderByOrder(ownerId)
