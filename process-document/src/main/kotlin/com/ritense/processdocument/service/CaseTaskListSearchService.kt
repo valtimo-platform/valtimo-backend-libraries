@@ -184,8 +184,8 @@ class CaseTaskListSearchService(
         groupList.addAll(selectCols)
         query.groupBy(groupList)
 
-        val wherePredicate = constructWhere(cb, query, taskRoot, documentRoot, caseDefinitionName, advancedSearchRequest)
-        query.where(wherePredicate)
+        // TODO: look into ability to re-use where predicate in list and count query. improves performance
+        query.where(constructWhere(cb, query, taskRoot, documentRoot, caseDefinitionName, advancedSearchRequest))
 
         query.orderBy(constructOrderBy(query, cb, taskRoot, documentRoot, pageable.sort))
 
@@ -193,15 +193,16 @@ class CaseTaskListSearchService(
             .setFirstResult(pageable.offset.toInt())
             .setMaxResults(pageable.pageSize)
 
-        return PageImpl(pagedQuery.resultList, pageable, count(wherePredicate))
+        return PageImpl(pagedQuery.resultList, pageable, count(caseDefinitionName, advancedSearchRequest))
     }
 
-    private fun count(wherePredicate: Predicate?): Long {
+    private fun count(caseDefinitionName: String, advancedSearchRequest: AdvancedSearchRequest): Long {
         val cb: CriteriaBuilder = entityManager.criteriaBuilder
         val query = cb.createQuery(Long::class.java)
         val taskRoot = query.from(CamundaTask::class.java)
+        val documentRoot = query.from(JsonSchemaDocument::class.java)
         query.select(cb.countDistinct(taskRoot))
-        query.where(wherePredicate)
+        query.where(constructWhere(cb, query, taskRoot, documentRoot, caseDefinitionName, advancedSearchRequest))
         return entityManager.createQuery(query).singleResult
     }
 
