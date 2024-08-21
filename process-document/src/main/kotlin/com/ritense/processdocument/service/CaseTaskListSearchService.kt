@@ -219,6 +219,7 @@ class CaseTaskListSearchService(
 
         val assignmentFilterPredicate: Predicate = constructAssignmentFilter(advancedSearchRequest.assigneeFilter, cb, taskRoot)
 
+        // TODO: look into options to improve performance as with complex rules this takes quite some time to finish
         val searchRequestPredicate: Array<Predicate> = constructSearchCriteriaFilter(advancedSearchRequest, cb, query, taskRoot, documentRoot)
 
         val where = cb.and(
