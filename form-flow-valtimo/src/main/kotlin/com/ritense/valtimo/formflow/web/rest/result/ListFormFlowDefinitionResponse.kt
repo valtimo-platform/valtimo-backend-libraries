@@ -26,7 +26,7 @@ data class ListFormFlowDefinitionResponse(
     companion object {
         fun of(formFlowDefinitions: List<FormFlowDefinition>, readOnly: Boolean): ListFormFlowDefinitionResponse {
             val key = formFlowDefinitions.first().id.key
-            assert(formFlowDefinitions.all { it.id.key == key })
+            require(formFlowDefinitions.all { it.id.key == key })
             return ListFormFlowDefinitionResponse(
                 key = key,
                 versions = formFlowDefinitions.map { it.id.version }.sortedDescending(),
