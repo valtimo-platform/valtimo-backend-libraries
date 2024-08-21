@@ -345,7 +345,6 @@ public class CamundaTaskService {
         var processDefinitionKeyPath = taskRoot.get(PROCESS_DEFINITION).get(KEY);
 
         query.multiselect(taskRoot, executionIdPath, businessKeyPath, processDefinitionIdPath, processDefinitionKeyPath);
-        query.distinct(true);
         query.where(specification.toPredicate(taskRoot, query, cb));
         query.groupBy(taskRoot, executionIdPath, businessKeyPath, processDefinitionIdPath, processDefinitionKeyPath);
         query.orderBy(getOrderBy(cb, taskRoot, pageable.getSort()));
