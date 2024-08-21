@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.search.repository
+package com.ritense.search.domain
 
-import com.ritense.search.domain.SearchListColumn
-import org.springframework.data.jpa.repository.JpaRepository
-import java.util.UUID
+import com.fasterxml.jackson.annotation.JsonCreator
 
-interface SearchListColumnRepository: JpaRepository<SearchListColumn, UUID> {
+class SearchListColumnConfigurationAutoDeploymentFinishedEvent {
 
-    fun findByOwnerIdAndKeyOrderByOrder(ownerId: String, key: String): SearchListColumn?
-    fun findAllByOwnerIdOrderByOrder(ownerId: String): List<SearchListColumn>?
+    private var searchListColumnConfigurations: List<SearchListColumn>? = null
+
+    @JsonCreator
+    fun searchListColumnAutoDeploymentFinishedEvent(searchListColumnConfigurations: List<SearchListColumn>?) {
+        this.searchListColumnConfigurations = searchListColumnConfigurations
+    }
 }

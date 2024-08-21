@@ -1,0 +1,12 @@
+{
+    "title": "My search list column",
+    "ownerId": "5f35c270-21f4-4e99-a8a1-6c4f9d5a6c5c",
+    "key": "key",
+    "path": "path",
+    "order": 1,
+    "displayType": {
+        "type":"string",
+        "displayTypeParameters":{}
+    },
+    "sortable": false
+}

@@ -20,44 +20,40 @@ import com.ritense.search.domain.SearchListColumn
 import com.ritense.search.repository.SearchListColumnRepository
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
+import java.util.Optional
+import java.util.UUID
 
 class SearchListColumnService(
     private val searchListColumnRepository: SearchListColumnRepository
 ) {
 
-    fun create(searchListColumn: SearchListColumn) = searchListColumnRepository.save(searchListColumn)
+    fun create(searchListColumn: SearchListColumn): SearchListColumn = searchListColumnRepository.save(searchListColumn)
 
-    fun update(ownerId: String, key: String, searchListColumn: SearchListColumn) =
-        with(findByOwnerIdAndKey(ownerId, key)) {
-            if (this != null) {
-                if (searchListColumn.ownerId != ownerId) {
-                    throw ResponseStatusException(
-                        HttpStatus.CONFLICT,
-                        "This ownerId already exists. Please choose another ownerId"
-                    )
-                } else if (searchListColumn.key != key) {
-                    throw ResponseStatusException(
-                        HttpStatus.CONFLICT,
-                        "This key already exists. Please choose another key"
-                    )
-                }
-            }
-            searchListColumnRepository.save(
-                this?.copy(
-                    ownerId = searchListColumn.ownerId,
-                    key = searchListColumn.key,
-                    title = searchListColumn.title,
-                    path = searchListColumn.path,
-                    order = searchListColumn.order,
-                    displayType = searchListColumn.displayType,
-                    sortable = searchListColumn.sortable
+    fun update(ownerId: String, key: String, searchListColumn: SearchListColumn): SearchListColumn {
+        findByOwnerIdAndKey(ownerId, key)?.let {
+            if (searchListColumn.ownerId != ownerId) {
+                throw ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "This ownerId already exists. Please choose another ownerId"
                 )
-            )
+            } else if (searchListColumn.key != key) {
+                throw ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "This key already exists. Please choose another key"
+                )
+            }
         }
+
+        return searchListColumnRepository.save(
+            searchListColumn
+        )
+    }
 
     fun findByOwnerId(ownerId: String) = searchListColumnRepository.findAllByOwnerIdOrderByOrder(ownerId)
 
-    fun findByOwnerIdAndKey(ownerId: String, key: String) =
+    fun findById(id: UUID): Optional<SearchListColumn> = searchListColumnRepository.findById(id)
+
+    private fun findByOwnerIdAndKey(ownerId: String, key: String) =
         searchListColumnRepository.findByOwnerIdAndKeyOrderByOrder(ownerId, key)
 
     fun delete(ownerId: String, key: String) =
@@ -65,7 +61,7 @@ class SearchListColumnService(
             this?.let { searchListColumnRepository.delete(it) }
         }
 
-    fun updateList(ownerId: String, searchListColumn: List<SearchListColumn>) {
+    fun updateList(searchListColumn: List<SearchListColumn>) {
         searchListColumnRepository.saveAll(
             searchListColumn.mapIndexed { index, column ->
                 column.copy(order = index)
