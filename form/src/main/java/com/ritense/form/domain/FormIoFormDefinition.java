@@ -184,7 +184,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
                 Object value = valueMap.get(fieldKey);
                 if (value != null) {
                     JsonNode valueNode = MapperSingleton.INSTANCE.get().valueToTree(value);
-                    fieldNode.set(DEFAULT_VALUE_FIELD, valueNode);
+                    setDefaultValueField(fieldNode, valueNode);
                 }
             });
     }
@@ -361,9 +361,30 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
                 .flatMap(
                     contentItem -> getValueBy(content, contentItem.getJsonPointer())
                 ).ifPresent(
-                    valueNode -> field.set(DEFAULT_VALUE_FIELD, valueNode)
+                    valueNode -> setDefaultValueField(field, valueNode)
                 );
         }
+    }
+
+    private void setDefaultValueField(ObjectNode field, JsonNode defaultValue) {
+        final var existingDefaultValue = field.get(DEFAULT_VALUE_FIELD);
+        if (existingDefaultValue != null && existingDefaultValue.isObject() && defaultValue != null && defaultValue.isObject()) {
+            mergeJson((ObjectNode) existingDefaultValue, (ObjectNode) defaultValue);
+        } else {
+            field.set(DEFAULT_VALUE_FIELD, defaultValue);
+        }
+    }
+
+    private void mergeJson(ObjectNode target, ObjectNode source) {
+        source.properties().forEach(property -> {
+            final var existingValue = target.get(property.getKey());
+            final var newValue = property.getValue();
+            if (existingValue != null && existingValue.isObject() && newValue != null && newValue.isObject()) {
+                mergeJson((ObjectNode) existingValue, (ObjectNode) newValue);
+            } else {
+                target.set(property.getKey(), newValue);
+            }
+        });
     }
 
     private Optional<? extends ContentItem> getContentItem(ObjectNode node) {
