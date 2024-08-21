@@ -48,6 +48,8 @@ data class FormFlowStepInstance(
     val stepKey: String,
     @Column(name = "form_flow_step_instance_order", updatable = false, nullable = false)
     val order: Int,
+    @Column(name = "form_flow_step_instance_submission_order", updatable = false, nullable = false)
+    var submissionOrder: Int,
     @Type(value = JsonType::class)
     @Column(name = "submission_data")
     var submissionData: String? = null,
@@ -57,6 +59,15 @@ data class FormFlowStepInstance(
     // On complete, clear temporary submission from the current step
     // We only use temporarySubmissionData of the current step when determining context
 ) {
+
+    constructor(
+        id: FormFlowStepInstanceId = FormFlowStepInstanceId.newId(),
+        instance: FormFlowInstance,
+        stepKey: String,
+        order: Int,
+        submissionData: String? = null,
+        temporarySubmissionData: String? = null
+    ) : this(id, instance, stepKey, order, nextSubmissionOrder(instance), submissionData, temporarySubmissionData)
 
     val definition: FormFlowStep
         get() = instance.formFlowDefinition.getStepByKey(stepKey)
@@ -74,7 +85,10 @@ data class FormFlowStepInstance(
     }
 
     fun complete(submissionData: String) {
-        this.submissionData = submissionData
+        if (this.submissionData != submissionData) {
+            this.submissionData = submissionData
+            this.submissionOrder = nextSubmissionOrder(instance)
+        }
         this.temporarySubmissionData = null
 
         processExpressions<Any>(definition.onComplete)
@@ -178,5 +192,11 @@ data class FormFlowStepInstance(
 
     fun getCurrentSubmissionData(): String? {
         return temporarySubmissionData ?: submissionData
+    }
+
+    companion object {
+        private fun nextSubmissionOrder(instance: FormFlowInstance): Int {
+            return (instance.getHistory().maxOfOrNull { it.submissionOrder } ?: 0) + 1
+        }
     }
 }

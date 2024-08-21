@@ -45,7 +45,7 @@ class FormFlowStepTypeFormHandler(
 
     private fun getFormDefinition(stepInstance: FormFlowStepInstance): FormIoFormDefinition {
         val stepDefinitionType = stepInstance.definition.type
-        assert(stepDefinitionType.name == getType())
+        require(stepDefinitionType.name == getType())
         val formDefinitionName = (stepDefinitionType.properties as FormStepTypeProperties).definition
         return formIoFormDefinitionService.getFormDefinitionByName(formDefinitionName)
             .orElseThrow { IllegalStateException("No FormDefinition found by name $formDefinitionName") }
