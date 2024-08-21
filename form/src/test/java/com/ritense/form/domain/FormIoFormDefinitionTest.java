@@ -347,6 +347,17 @@ public class FormIoFormDefinitionTest extends BaseTest {
         assertEquals("custom-testid-1234567890", lastNameNode.get("attributes").get("data-testid").asText());
     }
 
+    @Test
+    void shouldMergeJsonDefaultValue() throws IOException {
+        final var formDefinition = formDefinitionOf("form-example");
+        formDefinition.preFill(Map.of("person.firstName", MapperSingleton.get().readTree("{\"array\":[1,2],\"nested\":{\"name\":\"John\",\"year\":\"1990\"}}")));
+
+        formDefinition.preFill(Map.of("person.firstName", MapperSingleton.get().readTree("{\"array\":[3,4],\"nested\":{\"name\":\"Henk\"},\"newKey\":\"value\"}")));
+
+        final var nameNodeDefaultValue = formDefinition.asJson().get("components").get(0).get("defaultValue");
+        assertEquals("{\"array\":[3,4],\"nested\":{\"name\":\"Henk\",\"year\":\"1990\"},\"newKey\":\"value\"}", nameNodeDefaultValue.toString());
+    }
+
     private void assertExampleExternalField(
         Map<String, List<FormIoFormDefinition.ExternalContentItem>> externalContent,
         boolean shouldIncludeDisabledFields
