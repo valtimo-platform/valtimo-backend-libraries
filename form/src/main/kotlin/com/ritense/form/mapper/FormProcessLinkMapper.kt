@@ -67,7 +67,8 @@ class FormProcessLinkMapper(
     override fun toProcessLinkCreateRequestDto(deployDto: ProcessLinkDeployDto): ProcessLinkCreateRequestDto {
         deployDto as FormProcessLinkDeployDto
 
-        val formDefinition = formDefinitionService.getFormDefinitionByName(deployDto.formDefinitionName).get()
+        val formDefinition = formDefinitionService.getFormDefinitionByName(deployDto.formDefinitionName)
+            .orElseThrow { IllegalStateException("Form definition ${deployDto.formDefinitionName} not found") }
         return FormProcessLinkCreateRequestDto(
             processDefinitionId = deployDto.processDefinitionId,
             activityId = deployDto.activityId,
