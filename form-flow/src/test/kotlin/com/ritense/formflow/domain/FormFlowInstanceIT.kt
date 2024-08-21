@@ -346,4 +346,30 @@ internal class FormFlowInstanceIT : BaseIntegrationTest() {
             formFlowInstance.getSubmissionDataContext()
         )
     }
+
+    @Test
+    fun `should set submissionData with SpEL expression`() {
+        val formFlowDefinition =
+            formFlowDefinitionRepository.findFirstByIdKeyOrderByIdVersionDesc("form-flow-with-expressions")
+        var formFlowInstance = FormFlowInstance(formFlowDefinition = formFlowDefinition!!)
+        formFlowInstance = formFlowInstanceRepository.saveAndFlush(formFlowInstance)
+
+        val submissionData = """{"firstName":"Asha","lastName":"Miller","person":{"birthDate":"1990"}}"""
+
+        formFlowInstance.getCurrentStep().open()
+        formFlowInstance.complete(formFlowInstance.currentFormFlowStepInstanceId!!, JSONObject(submissionData))
+        formFlowInstance = formFlowInstanceRepository.saveAndFlush(formFlowInstance)
+
+        formFlowInstance.getCurrentStep().open()
+
+        assertEquals(
+            """{"firstName":"Asha","lastName":"Miller","person":{"birthDate":"1990"}}""",
+            formFlowInstance.getHistory()[0].submissionData
+        )
+        assertEquals(
+            """{"firstName":null,"lastName":null,"person":{"fullName":"Asha Miller"}}""",
+            formFlowInstance.getHistory()[1].temporarySubmissionData
+        )
+        assertNull(formFlowInstance.getHistory()[1].submissionData)
+    }
 }

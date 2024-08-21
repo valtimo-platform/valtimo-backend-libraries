@@ -1,0 +1,33 @@
+{
+    "startStep": "step1",
+    "steps": [
+        {
+            "key": "step1",
+            "nextSteps": [
+                {
+                    "step": "step2"
+                }
+            ],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "my-form-definition"
+                }
+            }
+        },
+        {
+            "key": "step2",
+            "onOpen": [
+                "${step.submissionData.person.fullName = step.submissionData.firstName + ' ' + step.submissionData.lastName}",
+                "${step.submissionData.firstName = null}",
+                "${step.submissionData.lastName = null}"
+            ],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "my-form-definition"
+                }
+            }
+        }
+    ]
+}
