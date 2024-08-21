@@ -176,7 +176,6 @@ class CaseTaskListSearchService(
                 *selectCols
             )
         )
-        query.distinct(true)
 
         // Due to the JsonSchemaDocumentSpecification#toPredicate adding a groupBy (which is called when applying PBAC)
         // ...we are forced to add all the columns we want to select, to the group by.
