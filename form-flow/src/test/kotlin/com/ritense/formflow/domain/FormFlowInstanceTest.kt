@@ -125,7 +125,7 @@ internal class FormFlowInstanceTest : BaseTest() {
             formFlowDefinition = definition
         )
 
-        assertThrows<AssertionError> {
+        assertThrows<IllegalArgumentException> {
             instance.complete(FormFlowStepInstanceId.newId(), JSONObject("{\"data\": \"data\"}"))
         }
     }
