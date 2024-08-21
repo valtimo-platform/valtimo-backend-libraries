@@ -183,23 +183,25 @@ class CaseTaskListSearchService(
         val groupList = query.groupList.toMutableList()
         groupList.addAll(selectCols)
         query.groupBy(groupList)
-        query.where(constructWhere(cb, query, taskRoot, documentRoot, caseDefinitionName, advancedSearchRequest))
+
+        val wherePredicate = constructWhere(cb, query, taskRoot, documentRoot, caseDefinitionName, advancedSearchRequest)
+        query.where(wherePredicate)
+
         query.orderBy(constructOrderBy(query, cb, taskRoot, documentRoot, pageable.sort))
 
         val pagedQuery = entityManager.createQuery(query)
             .setFirstResult(pageable.offset.toInt())
             .setMaxResults(pageable.pageSize)
 
-        return PageImpl(pagedQuery.resultList, pageable, count(caseDefinitionName, advancedSearchRequest))
+        return PageImpl(pagedQuery.resultList, pageable, count(wherePredicate))
     }
 
-    private fun count(caseDefinitionName: String, advancedSearchRequest: AdvancedSearchRequest): Long {
+    private fun count(wherePredicate: Predicate?): Long {
         val cb: CriteriaBuilder = entityManager.criteriaBuilder
         val query = cb.createQuery(Long::class.java)
         val taskRoot = query.from(CamundaTask::class.java)
-        val documentRoot = query.from(JsonSchemaDocument::class.java)
         query.select(cb.countDistinct(taskRoot))
-        query.where(constructWhere(cb, query, taskRoot, documentRoot, caseDefinitionName, advancedSearchRequest))
+        query.where(wherePredicate)
         return entityManager.createQuery(query).singleResult
     }
 
