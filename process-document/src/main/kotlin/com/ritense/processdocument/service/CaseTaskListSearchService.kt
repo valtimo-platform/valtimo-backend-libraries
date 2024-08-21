@@ -196,12 +196,12 @@ class CaseTaskListSearchService(
 
     private fun count(caseDefinitionName: String, advancedSearchRequest: AdvancedSearchRequest): Long {
         val cb: CriteriaBuilder = entityManager.criteriaBuilder
-        val countQuery = cb.createQuery(Long::class.java)
-        val countTaskRoot = countQuery.from(CamundaTask::class.java)
-        val countDocumentRoot = countQuery.from(JsonSchemaDocument::class.java)
-        countQuery.select(cb.countDistinct(countTaskRoot))
-        countQuery.where(constructWhere(cb, countQuery, countTaskRoot, countDocumentRoot, caseDefinitionName, advancedSearchRequest))
-        return entityManager.createQuery(countQuery).singleResult
+        val query = cb.createQuery(Long::class.java)
+        val taskRoot = query.from(CamundaTask::class.java)
+        val documentRoot = query.from(JsonSchemaDocument::class.java)
+        query.select(cb.countDistinct(taskRoot))
+        query.where(constructWhere(cb, query, taskRoot, documentRoot, caseDefinitionName, advancedSearchRequest))
+        return entityManager.createQuery(query).singleResult
     }
 
     private fun constructWhere(
