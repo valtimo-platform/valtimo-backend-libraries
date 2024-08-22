@@ -161,16 +161,17 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
 
     @Override
     public List<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinitions(String documentDefinitionName) {
-        return findProcessDocumentDefinitions(documentDefinitionName, (Boolean) null);
+        return findProcessDocumentDefinitions(documentDefinitionName, null, null);
     }
 
     @Override
     public List<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinitions(
         String documentDefinitionName,
-        @Nullable Boolean startableByUser
+        @Nullable Boolean startableByUser,
+        @Nullable Boolean canInitializeDocument
     ) {
         List<CamundaProcessJsonSchemaDocumentDefinition> results = processDocumentDefinitionRepository
-            .findAll(documentDefinitionName, startableByUser);
+            .findAll(documentDefinitionName, startableByUser, canInitializeDocument);
 
         return results.stream().filter(result -> {
             CamundaProcessDefinition processDefinition = AuthorizationContext.runWithoutAuthorization(() ->
@@ -195,8 +196,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
         String documentDefinitionName,
         Long documentDefinitionVersion
     ) {
-        return processDocumentDefinitionRepository
-            .findAllByDocumentDefinitionNameAndVersion(documentDefinitionName, documentDefinitionVersion);
+        return processDocumentDefinitionRepository.findAllByDocumentDefinitionNameAndVersion(documentDefinitionName, documentDefinitionVersion);
     }
 
     @Override

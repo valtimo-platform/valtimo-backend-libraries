@@ -83,33 +83,33 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
     public void setup() {
         runWithoutAuthorization(() -> {
             String oldDocumentDefinitionVersion = """
-                    {
-                        "$id": "some-test.schema",
-                        "$schema": "http://json-schema.org/draft-07/schema#",
-                        "title": "some-test",
-                        "type": "object",
-                        "properties": {
-                            "name": {
-                                "type": "string"
-                            }
+                {
+                    "$id": "some-test.schema",
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "title": "some-test",
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string"
                         }
                     }
-                """;
+                }
+            """;
             oldDocumentDefinition = documentDefinitionService.deploy(oldDocumentDefinitionVersion).documentDefinition();
 
             String newDocumentDefinitionVersion = """
-                    {
-                        "$id": "some-test.schema",
-                        "$schema": "http://json-schema.org/draft-07/schema#",
-                        "title": "some-test",
-                        "type": "object",
-                        "properties": {
-                            "name": {
-                                "type": "integer"
-                            }
+                {
+                    "$id": "some-test.schema",
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "title": "some-test",
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "integer"
                         }
                     }
-                """;
+                }
+            """;
             newDocumentDefinition = documentDefinitionService.deploy(newDocumentDefinitionVersion).documentDefinition();
 
             return null;
@@ -120,7 +120,7 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
     public void findProcessDocumentDefinition() {
         final var processDocumentDefinitions = AuthorizationContext
             .runWithoutAuthorization(() -> camundaProcessJsonSchemaDocumentAssociationService
-            .findProcessDocumentDefinitions(DOCUMENT_DEFINITION_NAME, true));
+            .findProcessDocumentDefinitions(DOCUMENT_DEFINITION_NAME, null, null));
 
         assertThat(processDocumentDefinitions.size()).isGreaterThanOrEqualTo(1);
         assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().processDefinitionKey().toString()).isEqualTo(PROCESS_DEFINITION_KEY);
