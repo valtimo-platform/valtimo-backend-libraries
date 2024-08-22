@@ -32,6 +32,6 @@ interface DocumentenService {
     @Deprecated("Since 12.0.0", ReplaceWith("com.ritense.zakenapi.client.ZakenApiClient.linkDocument"))
     fun createObjectInformatieObject(enkelvoudigInformatieObject: URI, zaak: URI)
 
-    @Deprecated("Since 12.0.0", ReplaceWith("com.ritense.zakenapi.client.ZakenApiClient.getZaakInformatieObjecten"))
+    @Deprecated("Since 12.0.0", ReplaceWith("com.ritense.documentenapi.DocumentenApiPlugin.downloadInformatieObject"))
     fun getObjectInformatieObject(enkelvoudigInformatieObject: URI): ByteArray
 }
