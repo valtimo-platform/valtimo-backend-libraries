@@ -18,6 +18,4 @@ package com.ritense.logging
 
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class LoggableResource(
-    val idField: String
-)
+annotation class LoggableResource
