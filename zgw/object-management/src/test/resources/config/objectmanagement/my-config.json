@@ -1,4 +1,5 @@
 {
+    "id": "4f35c270-21f4-4e99-a8a1-6c4f9d5a6c5c",
     "title": "My Object Management",
     "objecttypenApiPluginConfigurationId": "5f35c270-21f4-4e99-a8a1-6c4f9d5a6c5c",
     "objecttypeId": "${objectmanagement.objecttype.uuid}",
