@@ -17,6 +17,8 @@
 package com.ritense.formflow.domain.instance
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.MissingNode
+import com.fasterxml.jackson.databind.node.NullNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.formflow.domain.definition.FormFlowNextStep
@@ -137,10 +139,15 @@ data class FormFlowStepInstance(
         val oldCompleteSubmissionData = mapper.readValue<JsonNode>(instance.getSubmissionDataContext())
         if (newSubmissionData != oldCompleteSubmissionData) {
             keepDiff(newSubmissionData, oldCompleteSubmissionData)
-            if (this.submissionData != null) {
-                this.submissionData = newSubmissionData.toString()
+            val newSubmissionValue = if (newSubmissionData is NullNode || newSubmissionData is MissingNode) {
+                null
             } else {
-                this.temporarySubmissionData = newSubmissionData.toString()
+                newSubmissionData.toString()
+            }
+            if (this.submissionData != null) {
+                this.submissionData = newSubmissionValue
+            } else {
+                this.temporarySubmissionData = newSubmissionValue
             }
         }
     }
