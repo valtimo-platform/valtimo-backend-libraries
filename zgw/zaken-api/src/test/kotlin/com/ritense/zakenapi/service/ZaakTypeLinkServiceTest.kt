@@ -111,7 +111,7 @@ class ZaakTypeLinkServiceTest {
 
     @Test
     fun `should get empty zaakTypeLinks`() {
-        whenever(processDocumentAssociationService.findProcessDocumentDefinitions("documentDefinitionName", true))
+        whenever(processDocumentAssociationService.findProcessDocumentDefinitions("documentDefinitionName", null, null))
             .thenReturn(emptyList())
 
         val result = zaakTypeLinkService.getByProcess("processDefinitionKey")
@@ -121,7 +121,6 @@ class ZaakTypeLinkServiceTest {
 
     @Test
     fun `should get zaakTypeLinks`() {
-
         whenever(processDocumentAssociationService.findAllProcessDocumentDefinitions(CamundaProcessDefinitionKey("processDefinitionKey")))
             .thenReturn(listOf(
                 CamundaProcessJsonSchemaDocumentDefinition(
