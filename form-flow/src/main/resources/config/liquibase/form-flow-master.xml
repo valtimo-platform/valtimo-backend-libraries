@@ -26,11 +26,14 @@
     <property name="intType" value="integer" dbms="postgresql"/>
     <property name="jsonType" value="JSON" dbms="mysql"/>
     <property name="jsonType" value="JSON" dbms="postgresql"/>
+    <property name="booleanFalseValue" value="0" dbms="mysql"/>
+    <property name="booleanFalseValue" value="false" dbms="postgresql"/>
 
     <include file="changelog/20220317-add-form-flow-definition.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20220328-add-form-flow-instance.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20220824-add-form-flow-on-back.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20230823-temporary-submission-data.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20240820-add-form-flow-step-instance-submission-order.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20240823-add-form-flow-step-title.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

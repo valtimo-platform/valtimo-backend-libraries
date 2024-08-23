@@ -25,10 +25,12 @@ import com.ritense.formflow.domain.definition.FormFlowStep as FormFlowStepEntity
 @JsonInclude(Include.NON_EMPTY)
 data class FormFlowDefinition(
     val startStep: String,
+    val showBreadcrumbs: Boolean = false,
     val steps: Set<FormFlowStep>
 ) {
     fun contentEquals(other: FormFlowDefinitionEntity): Boolean {
         if (startStep != other.startStep) return false
+        if (showBreadcrumbs != other.showBreadcrumbs) return false
 
         if (steps.size != other.steps.size) return false
         if(steps.any {step ->
@@ -45,7 +47,7 @@ data class FormFlowDefinition(
             .map(FormFlowStep::toDefinition)
             .toSet()
 
-        return FormFlowDefinitionEntity(id, startStep, definitionSteps)
+        return FormFlowDefinitionEntity(id, startStep, showBreadcrumbs, definitionSteps)
     }
 
     companion object {

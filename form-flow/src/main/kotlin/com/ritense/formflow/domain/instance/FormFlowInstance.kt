@@ -101,6 +101,23 @@ class FormFlowInstance(
     }
 
     /**
+     * This method navigates to the previous step (if present).
+     *
+     * @return The previous step (optional)
+     */
+    fun navigateToStep(targetId: FormFlowStepInstanceId): FormFlowStepInstance? {
+        val targetStep = history.single { it.id == targetId }
+        val currentStep = getCurrentStep()
+        if (targetStep.order < currentStep.order) {
+            for (i in history.indexOf(currentStep) downTo history.indexOf(targetStep) + 1) {
+                history[i].back()
+            }
+        }
+        currentFormFlowStepInstanceId = targetStep.id
+        return targetStep
+    }
+
+    /**
      * This method saves submission data for the current step but will *not* complete the step.
      * The submitted data can be changed at any time.
      * @param incompleteSubmissionData This data will be set as the submissionData of the step.
