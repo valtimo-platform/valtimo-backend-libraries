@@ -14,28 +14,26 @@
  * limitations under the License.
  */
 
-package com.ritense.objectmanagement.autodeployment
+package com.ritense.search.autodeployment
 
-import com.ritense.objectmanagement.BaseIntegrationTest
-import com.ritense.objectmanagement.service.ObjectManagementService
+import com.ritense.search.BaseIntegrationTest
+import com.ritense.search.service.SearchListColumnService
 import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import java.util.UUID
 
 
 @Transactional
-internal class ObjectManagementDefinitionDeploymentServiceIntTest: BaseIntegrationTest() {
+internal class SearchListColumnDefinitionDeploymentServiceIntTest: BaseIntegrationTest() {
 
     @Autowired
-    lateinit var objectManagementService: ObjectManagementService
+    lateinit var searchListColumnService: SearchListColumnService
 
     @Test
     fun getById() {
-        val objectManagement = objectManagementService.findByObjectTypeId("4416cbef-dda3-41f4-bf5c-633f7fe14847")
-        assertThat(objectManagement).isNotNull
-        assertThat(objectManagement?.title).isEqualTo("My Object Management")
-        assertThat(objectManagement?.id).isEqualTo(UUID.fromString("4f35c270-21f4-4e99-a8a1-6c4f9d5a6c5c"))
+        val searchListColumn = searchListColumnService.findByOwnerId("5f35c270-21f4-4e99-a8a1-6c4f9d5a6c5c")
+        assertThat(searchListColumn).isNotEmpty
+        assertThat(searchListColumn?.first()?.title).isEqualTo("My search list column")
     }
 }
