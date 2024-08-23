@@ -104,9 +104,14 @@ class FormFlowService(
     }
 
     fun getBreadcrumbs(instance: FormFlowInstance): List<FormFlowBreadcrumb> {
-        val lastNavigatableOrder = instance.getHistory().maxBy { it.submissionOrder }.order + 1
-        val historicBreadcrumbs = instance.getHistory().map { FormFlowBreadcrumb.of(it, it.order <= lastNavigatableOrder, it.order < lastNavigatableOrder - 1) }
-        val futureBreadcrumbs = getFutureSteps(instance).map { FormFlowBreadcrumb.of(it) }
+        val lastCompletedOrder = instance.getHistory()
+            .filter { it.submissionData != null }
+            .maxBy { it.submissionOrder }
+            .order
+        val historicBreadcrumbs = instance.getHistory()
+            .map { FormFlowBreadcrumb.of(it, it.order <= lastCompletedOrder + 1, it.order <= lastCompletedOrder) }
+        val futureBreadcrumbs = getFutureSteps(instance)
+            .map { FormFlowBreadcrumb.of(it) }
         return historicBreadcrumbs + futureBreadcrumbs
     }
 
