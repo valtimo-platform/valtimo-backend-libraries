@@ -69,7 +69,7 @@ data class FormFlowStepInstance(
         order: Int,
         submissionData: String? = null,
         temporarySubmissionData: String? = null
-    ) : this(id, instance, stepKey, order, nextSubmissionOrder(instance), submissionData, temporarySubmissionData)
+    ) : this(id, instance, stepKey, order, -1, submissionData, temporarySubmissionData)
 
     val definition: FormFlowStep
         get() = instance.formFlowDefinition.getStepByKey(stepKey)
@@ -80,6 +80,7 @@ data class FormFlowStepInstance(
 
     fun saveTemporary(incompleteSubmissionData: String) {
         this.temporarySubmissionData = incompleteSubmissionData
+        this.submissionOrder = nextSubmissionOrder(instance)
     }
 
     fun open() {
@@ -87,10 +88,12 @@ data class FormFlowStepInstance(
     }
 
     fun complete(submissionData: String) {
-        if (this.submissionData != submissionData) {
-            this.submissionData = submissionData
+        val previousStep = instance.getHistory().firstOrNull { it.order == order - 1 }
+        val previousStepSubmissionDataChanged = previousStep?.submissionOrder ?: -1 >= submissionOrder
+        if (this.submissionData != submissionData || previousStepSubmissionDataChanged) {
             this.submissionOrder = nextSubmissionOrder(instance)
         }
+        this.submissionData = submissionData
         this.temporarySubmissionData = null
 
         processExpressions<Any>(definition.onComplete)
