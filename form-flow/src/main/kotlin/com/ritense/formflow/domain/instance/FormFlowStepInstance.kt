@@ -88,10 +88,12 @@ data class FormFlowStepInstance(
     }
 
     fun complete(submissionData: String) {
-        if (this.submissionData != submissionData) {
-            this.submissionData = submissionData
+        val previousStep = instance.getHistory().firstOrNull { it.order == order - 1 }
+        val previousStepSubmissionDataChanged = previousStep?.submissionOrder ?: -1 >= submissionOrder
+        if (this.submissionData != submissionData || previousStepSubmissionDataChanged) {
             this.submissionOrder = nextSubmissionOrder(instance)
         }
+        this.submissionData = submissionData
         this.temporarySubmissionData = null
 
         processExpressions<Any>(definition.onComplete)
