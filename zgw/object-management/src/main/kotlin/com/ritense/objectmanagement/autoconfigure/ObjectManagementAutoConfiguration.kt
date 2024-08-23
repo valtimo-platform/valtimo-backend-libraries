@@ -33,6 +33,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.core.annotation.Order
+import org.springframework.core.env.Environment
 import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
@@ -97,6 +98,7 @@ class ObjectManagementAutoConfiguration {
         objectManagementRepository: ObjectManagementRepository,
         applicationEventPublisher: ApplicationEventPublisher,
         objectMapper: ObjectMapper,
+        environment: Environment
     ): ObjectManagementDefinitionDeploymentService {
         return ObjectManagementDefinitionDeploymentService(
             resourceLoader,
@@ -104,6 +106,7 @@ class ObjectManagementAutoConfiguration {
             objectManagementRepository,
             applicationEventPublisher,
             objectMapper,
+            environment
         )
     }
 
