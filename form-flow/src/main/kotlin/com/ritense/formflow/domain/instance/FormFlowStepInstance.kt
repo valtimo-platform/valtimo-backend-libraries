@@ -50,7 +50,7 @@ data class FormFlowStepInstance(
     val stepKey: String,
     @Column(name = "form_flow_step_instance_order", updatable = false, nullable = false)
     val order: Int,
-    @Column(name = "form_flow_step_instance_submission_order", updatable = false, nullable = false)
+    @Column(name = "form_flow_step_instance_submission_order", nullable = false)
     var submissionOrder: Int,
     @Type(value = JsonType::class)
     @Column(name = "submission_data")
