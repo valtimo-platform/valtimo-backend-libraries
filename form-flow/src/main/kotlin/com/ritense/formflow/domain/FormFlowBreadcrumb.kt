@@ -24,21 +24,24 @@ data class FormFlowBreadcrumb(
     val title: String?,
     val key: String,
     val stepInstanceId: UUID? = null,
+    val completed: Boolean,
 ) {
     companion object {
 
-        fun of(step: FormFlowStepInstance, isNavigatable: Boolean = true): FormFlowBreadcrumb {
+        fun of(step: FormFlowStepInstance, isNavigatable: Boolean = true, isCompleted: Boolean = true): FormFlowBreadcrumb {
             return FormFlowBreadcrumb(
                 title = step.definition.title,
                 key = step.definition.id.key,
-                stepInstanceId = if (isNavigatable) step.id.id else null
+                stepInstanceId = if (isNavigatable) step.id.id else null,
+                completed = isCompleted,
             )
         }
 
         fun of(step: FormFlowStep): FormFlowBreadcrumb {
             return FormFlowBreadcrumb(
                 title = step.title,
-                key = step.id.key
+                key = step.id.key,
+                completed = false,
             )
         }
     }

@@ -20,12 +20,12 @@ import com.ritense.formflow.domain.FormFlowBreadcrumb
 import java.util.UUID
 
 data class FormFlowBreadcrumbsResponse(
-    val currentStepInstanceId: UUID,
+    val currentStepIndex: Int,
     val breadcrumbs: List<FormFlowBreadcrumbResponse>
 ) {
     companion object {
         fun of(currentStepInstanceId: UUID, breadcrumbs: List<FormFlowBreadcrumb>) = FormFlowBreadcrumbsResponse(
-            currentStepInstanceId = currentStepInstanceId,
+            currentStepIndex = breadcrumbs.indexOfFirst { it.stepInstanceId == currentStepInstanceId },
             breadcrumbs = breadcrumbs.map { FormFlowBreadcrumbResponse.of(it) }
         )
     }
@@ -35,12 +35,14 @@ data class FormFlowBreadcrumbResponse(
     val title: String?,
     val key: String,
     val stepInstanceId: UUID? = null,
+    val completed: Boolean
 ) {
     companion object {
         fun of(breadcrumb: FormFlowBreadcrumb) = FormFlowBreadcrumbResponse(
             title = breadcrumb.title,
             key = breadcrumb.key,
             stepInstanceId = breadcrumb.stepInstanceId,
+            completed = breadcrumb.completed,
         )
     }
 }
