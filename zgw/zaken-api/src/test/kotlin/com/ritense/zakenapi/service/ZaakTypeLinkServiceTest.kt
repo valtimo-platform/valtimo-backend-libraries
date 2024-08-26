@@ -111,9 +111,6 @@ class ZaakTypeLinkServiceTest {
 
     @Test
     fun `should get empty zaakTypeLinks`() {
-        whenever(processDocumentAssociationService.findProcessDocumentDefinitions("documentDefinitionName", null, null))
-            .thenReturn(emptyList())
-
         val result = zaakTypeLinkService.getByProcess("processDefinitionKey")
 
         assertThat(result).isEmpty()
