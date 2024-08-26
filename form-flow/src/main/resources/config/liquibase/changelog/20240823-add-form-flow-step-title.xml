@@ -25,10 +25,4 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="2" author="Ritense">
-        <addColumn tableName="form_flow_definition">
-            <column name="show_breadcrumbs" type="BOOLEAN" defaultValueBoolean="${booleanFalseValue}"/>
-        </addColumn>
-    </changeSet>
-
 </databaseChangeLog>

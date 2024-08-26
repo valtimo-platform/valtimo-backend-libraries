@@ -101,11 +101,11 @@ class FormFlowInstance(
     }
 
     /**
-     * This method navigates to the previous step (if present).
+     * This method navigates to the target step.
      *
-     * @return The previous step (optional)
+     * @return The target step
      */
-    fun navigateToStep(targetId: FormFlowStepInstanceId): FormFlowStepInstance? {
+    fun navigateToStep(targetId: FormFlowStepInstanceId): FormFlowStepInstance {
         val targetStep = history.single { it.id == targetId }
         val currentStep = getCurrentStep()
         if (targetStep.order < currentStep.order) {

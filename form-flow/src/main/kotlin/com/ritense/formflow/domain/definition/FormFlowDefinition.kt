@@ -35,15 +35,9 @@ data class FormFlowDefinition(
     @Column(name = "start_step")
     val startStep: String,
 
-    @Column(name = "show_breadcrumbs")
-    val showBreadcrumbs: Boolean = false,
-
     @OneToMany(mappedBy = "id.formFlowDefinition", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     val steps: Set<FormFlowStep>,
 ) {
-    constructor(id: FormFlowDefinitionId, startStep: String, steps: Set<FormFlowStep>)
-        : this(id, startStep, false, steps.toSet())
-
     init {
         steps.forEach { step -> step.id.formFlowDefinition = this }
     }
