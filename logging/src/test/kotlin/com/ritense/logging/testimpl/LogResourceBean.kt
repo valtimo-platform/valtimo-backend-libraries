@@ -20,10 +20,9 @@ import com.ritense.logging.LoggableResource
 
 open class LogResourceBean() {
 
-    @LoggableResource
     open fun someMethod(
         resource: LogResource,
-        taskId: String,
+        @LoggableResource(resourceType = String::class) taskId: String,
     ) {
         resource.logSomething()
     }

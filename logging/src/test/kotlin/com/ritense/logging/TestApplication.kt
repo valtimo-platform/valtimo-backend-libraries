@@ -26,7 +26,6 @@ import org.springframework.context.annotation.Import
 
 @SpringBootApplication
 @Import(TestAutoConfiguration::class)
-@EnableAspectJAutoProxy
 class TestApplication {
 
     fun main(args: Array<String>) {

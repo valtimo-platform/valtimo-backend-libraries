@@ -16,6 +16,10 @@
 
 package com.ritense.logging
 
-@Target(AnnotationTarget.FUNCTION)
+import kotlin.reflect.KClass
+
+@Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class LoggableResource
+annotation class LoggableResource(
+    val resourceType: KClass<*>
+)

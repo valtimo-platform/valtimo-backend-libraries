@@ -19,14 +19,37 @@ package com.ritense.logging
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
+import org.aspectj.lang.reflect.MethodSignature
+import java.lang.reflect.Method
+
 
 @Aspect
 class LoggableResourceAspect {
 
-    @Around("@annotation(LoggableResource)")
+    @Around("execution(* *(.., @com.ritense.logging.LoggableResource (*), ..))")
     fun handleAnnotation(joinPoint: ProceedingJoinPoint): Any {
+        val args = joinPoint.args
+
+        val method: Method = MethodSignature::class.java.cast(joinPoint.signature).method
+        val parameterAnnotations = method.parameterAnnotations
+
+        for (i in args.indices) {
+            for (parameterAnnotation in parameterAnnotations[i]) {
+                if (parameterAnnotation !is LoggableResource) {
+                    continue
+                }
+
+                return ResourceLogger.withResource(parameterAnnotation.resourceType, args[i] as String) {
+                    joinPoint.proceed()
+                }
+                // do stuff here
+                // how to handle multiple arguments with this annotation?
+            }
+        }
+
         return ResourceLogger.withResource(String::class.java, "12331231") {
             joinPoint.proceed()
         }
     }
 }
+
