@@ -21,19 +21,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.EnableAspectJAutoProxy
+import org.springframework.context.annotation.Import
 
 @SpringBootApplication
+@Import(TestAutoConfiguration::class)
+@EnableAspectJAutoProxy
 class TestApplication {
 
     fun main(args: Array<String>) {
         runApplication<TestApplication>(*args)
-    }
-
-    @TestConfiguration
-    class TestConfig {
-        @Bean
-        fun logResourceBean(): LogResourceBean {
-            return LogResourceBean()
-        }
     }
 }

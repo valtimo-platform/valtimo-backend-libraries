@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.logging.testimpl
+package com.ritense.logging
 
-import com.ritense.logging.LoggableResource
+import com.ritense.logging.testimpl.LogResourceBean
+import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.context.annotation.Bean
 
-open class LogResourceBean() {
-
-    @LoggableResource
-    open fun someMethod(
-        resource: LogResource,
-        taskId: String,
-    ) {
-        resource.logSomething()
+@AutoConfiguration
+class TestAutoConfiguration {
+    @Bean
+    fun logResourceBean(): LogResourceBean {
+        return LogResourceBean()
     }
 }
