@@ -3,9 +3,8 @@ package com.ritense.exact.client.endpoints
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.ritense.exact.client.endpoints.ExchangeTokenEndpoint.ExchangeTokenResponse
 import com.ritense.exact.client.endpoints.structs.ExactEndpoint
+import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.BodyInserters
-import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.WebClient.RequestHeadersSpec
 
 class ExchangeTokenEndpoint(
     private val redirectUrl: String,
@@ -14,7 +13,7 @@ class ExchangeTokenEndpoint(
     private val code: String
 ) : ExactEndpoint<ExchangeTokenResponse>(ExchangeTokenResponse::class.java) {
 
-    override fun create(client: WebClient): RequestHeadersSpec<*> {
+    override fun create(client: RestClient): RestClient.RequestHeadersSpec<*> {
         return client
             .post()
             .uri("/api/oauth2/token")
