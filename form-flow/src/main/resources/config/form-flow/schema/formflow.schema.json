@@ -45,6 +45,14 @@
                             "description": "An expression that is executed when opening the step"
                         }
                     },
+                    "onBack": {
+                        "type": "array",
+                        "description": "An array of expressions which are executed in order when navigating to the previous step",
+                        "items": {
+                            "type": "string",
+                            "description": "An expression that is executed when going to the previous step"
+                        }
+                    },
                     "onComplete": {
                         "type": "array",
                         "description": "An array of expressions which are executed in order when completing the step",
