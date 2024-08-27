@@ -219,6 +219,6 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         assertNull(jsonSchemaDocument.assigneeFullName());
         var captor = ArgumentCaptor.forClass(DocumentUnassignedEvent.class);
         verify(applicationEventPublisher, times(1)).publishEvent(captor.capture());
-        assertEquals("Anonymous", captor.getValue().getUser());
+        assertEquals("System", captor.getValue().getUser());
     }
 }
