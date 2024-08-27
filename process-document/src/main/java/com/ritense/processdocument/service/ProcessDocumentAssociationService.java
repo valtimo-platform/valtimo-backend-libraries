@@ -48,6 +48,11 @@ public interface ProcessDocumentAssociationService {
 
     List<? extends ProcessDocumentDefinition> findProcessDocumentDefinitions(
         String documentDefinitionName,
+        @Nullable Boolean startableByUser
+    );
+
+    List<? extends ProcessDocumentDefinition> findProcessDocumentDefinitions(
+        String documentDefinitionName,
         @Nullable Boolean startableByUser,
         @Nullable Boolean canInitializeDocument
     );

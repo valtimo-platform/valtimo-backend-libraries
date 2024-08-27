@@ -42,7 +42,7 @@ class CamundaProcessJsonSchemaDocumentDeploymentServiceJavaIntTest extends BaseI
     void shouldDeployProcessDocumentLinkFromResourceFolder() {
         final var processDocumentDefinitions = AuthorizationContext.runWithoutAuthorization(() ->
             camundaProcessJsonSchemaDocumentAssociationService.findProcessDocumentDefinitions(
-                DOCUMENT_DEFINITION_NAME, null, null
+                DOCUMENT_DEFINITION_NAME
             )
         );
 
@@ -58,7 +58,7 @@ class CamundaProcessJsonSchemaDocumentDeploymentServiceJavaIntTest extends BaseI
         Boolean startableByUser = true;
         final var processDocumentDefinitions = AuthorizationContext.runWithoutAuthorization(() ->
             camundaProcessJsonSchemaDocumentAssociationService.findProcessDocumentDefinitions(
-                DOCUMENT_DEFINITION_NAME, startableByUser, null
+                DOCUMENT_DEFINITION_NAME, startableByUser
             )
         );
 
@@ -73,7 +73,7 @@ class CamundaProcessJsonSchemaDocumentDeploymentServiceJavaIntTest extends BaseI
         Boolean startableByUser = false;
         final var processDocumentDefinitions = AuthorizationContext.runWithoutAuthorization(() ->
             camundaProcessJsonSchemaDocumentAssociationService.findProcessDocumentDefinitions(
-                DOCUMENT_DEFINITION_NAME, startableByUser, null
+                DOCUMENT_DEFINITION_NAME, startableByUser
             )
         );
 
