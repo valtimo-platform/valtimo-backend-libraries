@@ -39,10 +39,10 @@ class LoggableResourceAspect {
                     continue
                 }
 
-                return ResourceLogger.withResource(parameterAnnotation.resourceType, args[i] as String) {
+                return ResourceLogger.withResource(parameterAnnotation.resourceType.java, args[i] as String) {
                     joinPoint.proceed()
                 }
-                // do stuff here
+
                 // how to handle multiple arguments with this annotation?
             }
         }

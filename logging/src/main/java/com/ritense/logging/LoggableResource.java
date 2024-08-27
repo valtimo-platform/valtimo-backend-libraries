@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.logging
+package com.ritense.logging;
 
-import kotlin.reflect.KClass
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-@Target(AnnotationTarget.VALUE_PARAMETER)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class LoggableResource(
-    val resourceType: KClass<*>
-)
+@Target(ElementType.PARAMETER)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface LoggableResource {
+    Class<?> resourceType();
+
+}
