@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 
-class ResourceLoggerTest {
+class ResourceLoggerContextTest {
 
     lateinit var listAppender: ListAppender<ILoggingEvent>
 
@@ -42,7 +42,7 @@ class ResourceLoggerTest {
 
     @Test
     fun `should log resource`() {
-        ResourceLogger.withResource(this::class.java, "key") {
+        ResourceLoggerContext.withResource(this::class.java, "key") {
             LogResource().outputMessage()
         }
 

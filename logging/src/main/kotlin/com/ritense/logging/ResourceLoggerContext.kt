@@ -18,15 +18,32 @@ package com.ritense.logging
 
 import org.slf4j.MDC
 
-class ResourceLogger {
+class ResourceLoggerContext {
     companion object {
+        private const val MCD_VARIABLE_NAME = "relatedResources"
+
+        private val relatedResources: ThreadLocal<MutableList<Pair<Class<*>, String>>> =
+            ThreadLocal.withInitial { mutableListOf() }
+
         fun withResource(clazz: Class<*>, key: String, callback: () -> Unit) {
             try {
-                MDC.put(clazz.simpleName, key)
+                relatedResources.set(relatedResources.get().apply {
+                    this.add(Pair(clazz, key))
+                })
                 callback.invoke()
             } finally {
-                MDC.remove(clazz.simpleName)
+                relatedResources.set(relatedResources.get().apply {
+                    this.removeLast()
+                })
             }
+        }
+
+        fun putMDCResources() {
+            MDC.put(MCD_VARIABLE_NAME, relatedResources.get().toString())
+        }
+
+        fun removeMDCResources() {
+            MDC.remove(MCD_VARIABLE_NAME)
         }
     }
 }

@@ -39,17 +39,16 @@ class LoggableResourceAspect {
                     continue
                 }
 
-                return ResourceLogger.withResource(parameterAnnotation.resourceType.java, args[i] as String) {
+                return ResourceLoggerContext.withResource(parameterAnnotation.resourceType.java, args[i] as String) {
+                    // TODO: what if args[i] is a collection? Alternatively: on compile time fail
                     joinPoint.proceed()
                 }
 
-                // how to handle multiple arguments with this annotation?
+                // TODO: how to handle multiple arguments with this annotation? Alternatively: on compile time fail
             }
         }
 
-        return ResourceLogger.withResource(String::class.java, "12331231") {
-            joinPoint.proceed()
-        }
+        return joinPoint.proceed()
     }
 }
 
