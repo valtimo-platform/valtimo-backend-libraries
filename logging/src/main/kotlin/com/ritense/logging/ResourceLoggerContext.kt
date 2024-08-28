@@ -20,7 +20,7 @@ import org.slf4j.MDC
 
 class ResourceLoggerContext {
     companion object {
-        private const val MCD_VARIABLE_NAME = "relatedResources"
+        private const val MDC_VARIABLE_NAME = "relatedResources"
 
         private val relatedResources: ThreadLocal<MutableList<Pair<Class<*>, String>>> =
             ThreadLocal.withInitial { mutableListOf() }
@@ -39,11 +39,11 @@ class ResourceLoggerContext {
         }
 
         fun putMDCResources() {
-            MDC.put(MCD_VARIABLE_NAME, relatedResources.get().toString())
+            MDC.put(MDC_VARIABLE_NAME, relatedResources.get().toString())
         }
 
         fun removeMDCResources() {
-            MDC.remove(MCD_VARIABLE_NAME)
+            MDC.remove(MDC_VARIABLE_NAME)
         }
     }
 }
