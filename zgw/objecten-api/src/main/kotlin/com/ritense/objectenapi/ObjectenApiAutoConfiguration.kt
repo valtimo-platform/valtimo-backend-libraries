@@ -37,7 +37,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.DependsOn
 import org.springframework.core.annotation.Order
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.client.RestClient
 
 @AutoConfiguration
 class ObjectenApiAutoConfiguration {
@@ -47,30 +47,31 @@ class ObjectenApiAutoConfiguration {
     fun formSubmissionListener(
         pluginService: PluginService,
         zaakObjectService: ZaakObjectService
-    ): ZaakObjectListener {
-        return ZaakObjectListener(pluginService, zaakObjectService)
-    }
+    ) = ZaakObjectListener(
+        pluginService,
+        zaakObjectService
+    )
 
     @Bean
     @ConditionalOnMissingBean(ObjectenApiClient::class)
     fun objectenApiClient(
-        webclientBuilder: WebClient.Builder,
+        restClientBuilder: RestClient.Builder,
         outboxService: OutboxService,
         objectMapper: ObjectMapper
-    ): ObjectenApiClient {
-        return ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
-    }
+    ) = ObjectenApiClient(
+        restClientBuilder,
+        outboxService,
+        objectMapper
+    )
 
     @Bean
     fun objectenApiPluginFactory(
         pluginService: PluginService,
         objectenApiClient: ObjectenApiClient
-    ): ObjectenApiPluginFactory {
-        return ObjectenApiPluginFactory(
-            pluginService,
-            objectenApiClient
-        )
-    }
+    ) = ObjectenApiPluginFactory(
+        pluginService,
+        objectenApiClient
+    )
 
     @Bean
     fun zaakObjectService(
@@ -78,13 +79,12 @@ class ObjectenApiAutoConfiguration {
         pluginService: PluginService,
         formDefinitionService: FormDefinitionService,
         objectManagementInfoProvider: ObjectManagementInfoProvider
-    ): ZaakObjectService {
-        return ZaakObjectService(zaakUrlProvider,
-            pluginService,
-            formDefinitionService,
-            objectManagementInfoProvider
-        )
-    }
+    ) = ZaakObjectService(
+        zaakUrlProvider,
+        pluginService,
+        formDefinitionService,
+        objectManagementInfoProvider
+    )
 
     @Order(380)
     @Bean

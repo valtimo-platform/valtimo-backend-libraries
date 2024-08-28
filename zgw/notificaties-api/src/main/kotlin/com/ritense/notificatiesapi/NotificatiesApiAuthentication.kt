@@ -23,5 +23,5 @@ import org.springframework.web.reactive.function.client.ExchangeFilterFunction
 @PluginCategory("notificaties-api-authentication")
 interface NotificatiesApiAuthentication : ExchangeFilterFunction {
 
-    fun bearerAuth(restClient: RestClient.Builder): RestClient.Builder
+    fun bearerAuth(builder: RestClient.Builder): RestClient.Builder
 }

@@ -25,43 +25,39 @@ import com.ritense.objectenapi.event.ObjectUpdated
 import com.ritense.objectenapi.event.ObjectViewed
 import com.ritense.objectenapi.event.ObjectsListed
 import com.ritense.outbox.OutboxService
+import com.ritense.valtimo.web.logging.RestClientLoggingExtension
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.http.HttpStatusCode
+import org.springframework.web.client.RestClient
+import org.springframework.web.client.body
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
 class ObjectenApiClient(
-    private val webclientBuilder: WebClient.Builder,
+    private val restClientBuilder: RestClient.Builder,
     private val outboxService: OutboxService,
     private val objectMapper: ObjectMapper
-
 ) {
 
     fun getObject(
         authentication: ObjectenApiAuthentication,
         objectUrl: URI
     ): ObjectWrapper {
-        val result = webclientBuilder
-            .clone()
-            .filter(authentication)
-            .build()
+        val result = buildRestClient(authentication)
             .get()
             .uri(objectUrl)
             .retrieve()
-            .toEntity(ObjectWrapper::class.java)
-            .block()
+            .body<ObjectWrapper>()
 
-        val responseBody = result?.body!!
+        result?.let {
+            val response = if (result.type.host == HOST_DOCKER_INTERNAL)
+                result.copy(
+                    type = URI.create(
+                        result.type.toString().replace(HOST_DOCKER_INTERNAL, "localhost")
+                    )
+                ) else result
 
-        val response = if (responseBody.type.host == HOST_DOCKER_INTERNAL)
-            responseBody.copy(
-                type = URI.create(
-                    responseBody.type.toString().replace(HOST_DOCKER_INTERNAL, "localhost")
-                )
-            ) else responseBody
-
-        if (result.hasBody()) {
             outboxService.send {
                 ObjectViewed(
                     response.url.toString(),
@@ -69,8 +65,7 @@ class ObjectenApiClient(
                 )
             }
         }
-
-        return response
+        return result ?: throw IllegalStateException("No result found")
     }
 
     fun getObjectsByObjecttypeUrl(
@@ -92,11 +87,7 @@ class ObjectenApiClient(
             .pathSegment(objectypeId)
             .toUriString()
 
-        val result = webclientBuilder
-            .clone()
-            .filter(authentication)
-            .baseUrl(objectsApiUrl.toASCIIString())
-            .build()
+        val result = buildRestClient(authentication, objectsApiUrl.toASCIIString())
             .get()
             .uri { builder ->
                 builder.path("objects")
@@ -107,18 +98,16 @@ class ObjectenApiClient(
             }
             .header(ACCEPT_CRS, EPSG_4326)
             .retrieve()
-            .toEntity(ObjectsList::class.java)
-            .block()
+            .body<ObjectsList>()
 
-        if (result.hasBody()) {
+        result?.let {
             outboxService.send {
                 ObjectsListed(
-                    objectMapper.valueToTree(result.body.results)
+                    objectMapper.valueToTree(it.results)
                 )
             }
         }
-
-        return result?.body!!
+        return result ?: throw IllegalStateException("No result found")
     }
 
     fun getObjectsByObjecttypeUrlWithSearchParams(
@@ -141,11 +130,7 @@ class ObjectenApiClient(
             .pathSegment(objectypeId)
             .toUriString()
 
-        val result = webclientBuilder
-            .clone()
-            .filter(authentication)
-            .baseUrl(objectsApiUrl.toASCIIString())
-            .build()
+        val result = buildRestClient(authentication, objectsApiUrl.toASCIIString())
             .get()
             .uri { builder ->
                 builder.path("objects")
@@ -157,18 +142,16 @@ class ObjectenApiClient(
             }
             .header(ACCEPT_CRS, EPSG_4326)
             .retrieve()
-            .toEntity(ObjectsList::class.java)
-            .block()
+            .body<ObjectsList>()
 
-        if (result.hasBody()) {
+        result?.let {
             outboxService.send {
                 ObjectsListed(
-                    objectMapper.valueToTree(result.body.results)
+                    objectMapper.valueToTree(it.results)
                 )
             }
         }
-
-        return result?.body!!
+        return result ?: throw IllegalStateException("No result found")
     }
 
     fun createObject(
@@ -188,30 +171,24 @@ class ObjectenApiClient(
             objectRequest
         }
 
-        val result = webclientBuilder
-            .clone()
-            .filter(authentication)
-            .baseUrl(objectsApiUrl.toASCIIString())
-            .build()
+        val result = buildRestClient(authentication, objectsApiUrl.toASCIIString())
             .post()
             .uri("objects")
             .header(ACCEPT_CRS, EPSG_4326)
             .header(CONTENT_CRS, EPSG_4326)
-            .bodyValue(objectRequestCorrectedHost)
+            .body(objectRequestCorrectedHost)
             .retrieve()
-            .toEntity(ObjectWrapper::class.java)
-            .block()
+            .body<ObjectWrapper>()
 
-        if (result.hasBody()) {
+        result?.let {
             outboxService.send {
                 ObjectCreated(
-                    result.body.url.toString(),
-                    objectMapper.valueToTree(result.body)
+                    result.url.toString(),
+                    objectMapper.valueToTree(result)
                 )
             }
         }
-
-        return result?.body!!
+        return result ?: throw IllegalStateException("No result found")
     }
 
     fun objectPatch(
@@ -230,29 +207,23 @@ class ObjectenApiClient(
         } else {
             objectRequest
         }
-        val result = webclientBuilder
-            .clone()
-            .filter(authentication)
-            .build()
+        val result = buildRestClient(authentication)
             .patch()
             .uri(objectUrl)
             .header(CONTENT_CRS, EPSG_4326)
-            .bodyValue(objectRequestCorrectedHost)
+            .body(objectRequestCorrectedHost)
             .retrieve()
-            .toEntity(ObjectWrapper::class.java)
-            .block()
+            .body<ObjectWrapper>()
 
-
-        if (result.hasBody()) {
+        result?.let {
             outboxService.send {
                 ObjectPatched(
-                    result.body.url.toString(),
-                    objectMapper.valueToTree(result.body)
+                    result.url.toString(),
+                    objectMapper.valueToTree(result)
                 )
             }
         }
-
-        return result?.body!!
+        return result ?: throw IllegalStateException("No result found")
     }
 
     fun objectUpdate(
@@ -271,51 +242,51 @@ class ObjectenApiClient(
         } else {
             objectRequest
         }
-        val result = webclientBuilder
-            .clone()
-            .filter(authentication)
-            .build()
+        val result = buildRestClient(authentication)
             .put()
             .uri(objectUrl)
             .header(CONTENT_CRS, EPSG_4326)
-            .bodyValue(objectRequestCorrectedHost)
+            .body(objectRequestCorrectedHost)
             .retrieve()
-            .toEntity(ObjectWrapper::class.java)
-            .block()
+            .body<ObjectWrapper>()
 
-        if (result.hasBody()) {
+        result?.let {
             outboxService.send {
                 ObjectUpdated(
-                    result.body.url.toString(),
-                    objectMapper.valueToTree(result.body)
+                    result.url.toString(),
+                    objectMapper.valueToTree(result)
                 )
             }
         }
-
-        return result?.body!!
+        return result ?: throw IllegalStateException("No result found")
     }
 
     fun deleteObject(authentication: ObjectenApiAuthentication, objectUrl: URI): HttpStatus {
-        val result = webclientBuilder
-            .clone()
-            .filter(authentication)
-            .build()
+        val result = buildRestClient(authentication)
             .delete()
             .uri(objectUrl)
             .header(CONTENT_CRS, EPSG_4326)
             .retrieve()
-            .toBodilessEntity()
-            .block()
-
-        if (result?.statusCode?.is2xxSuccessful == true) {
-            outboxService.send {
-                ObjectDeleted(
-                    objectUrl.toString()
-                )
+            .onStatus(HttpStatusCode::isError) { _, _ ->
+                throw IllegalStateException("No result found")
             }
-        }
+            .toBodilessEntity()
 
-        return HttpStatus.valueOf(result?.statusCode!!.value())
+        outboxService.send {
+            ObjectDeleted(objectUrl.toString())
+        }
+        return HttpStatus.OK
+    }
+
+    private fun buildRestClient(authentication: ObjectenApiAuthentication, baseURL: String? = null): RestClient {
+        return restClientBuilder
+            .clone()
+            .apply {
+                authentication.bearerAuth(it)
+                RestClientLoggingExtension.defaultRequestLogging(it)
+                baseURL?.let { url -> it.baseUrl(url) }
+            }
+            .build()
     }
 
     companion object {

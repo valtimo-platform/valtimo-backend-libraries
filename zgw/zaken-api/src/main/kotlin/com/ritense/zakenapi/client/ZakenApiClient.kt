@@ -73,7 +73,7 @@ class ZakenApiClient(
         baseUrl: URI,
         request: LinkDocumentRequest
     ): LinkDocumentResult {
-        val result = buildWebClient(authentication)
+        val result = buildRestClient(authentication)
             .post()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
@@ -97,7 +97,7 @@ class ZakenApiClient(
         zaakUrl: URI,
         page: Int
     ): Page<ZaakObject> {
-        val result = buildWebClient(authentication)
+        val result = buildRestClient(authentication)
             .get()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
@@ -121,7 +121,7 @@ class ZakenApiClient(
         zaakUrl: URI? = null,
         informatieobjectUrl: URI? = null,
     ): List<ZaakInformatieObject> {
-        val result = buildWebClient(authentication)
+        val result = buildRestClient(authentication)
             .get()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
@@ -152,7 +152,7 @@ class ZakenApiClient(
         page: Int,
         roleType: RolType? = null
     ): Page<Rol> {
-        val result = buildWebClient(authentication)
+        val result = buildRestClient(authentication)
             .get()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
@@ -180,7 +180,7 @@ class ZakenApiClient(
         baseUrl: URI,
         rol: Rol
     ): Rol {
-        val result = buildWebClient(authentication)
+        val result = buildRestClient(authentication)
             .post()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
@@ -204,7 +204,7 @@ class ZakenApiClient(
         baseUrl: URI,
         request: CreateZaakRequest,
     ): ZaakResponse {
-        val result = buildWebClient(authentication)
+        val result = buildRestClient(authentication)
             .post()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
@@ -230,7 +230,7 @@ class ZakenApiClient(
         request: PatchZaakRequest,
     ): ZaakResponse {
         validateUrlHost(baseUrl, zaakUrl)
-        val result = buildWebClient(authentication)
+        val result = buildRestClient(authentication)
             .patch()
             .uri(zaakUrl)
             .headers(this::defaultHeaders)
@@ -250,7 +250,7 @@ class ZakenApiClient(
         baseUrl: URI,
         request: CreateZaakStatusRequest,
     ): CreateZaakStatusResponse {
-        val result = buildWebClient(authentication)
+        val result = buildRestClient(authentication)
             .post()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
@@ -273,7 +273,7 @@ class ZakenApiClient(
         authentication: ZakenApiAuthentication,
         zaakStatusUrl: URI,
     ): ZaakStatus {
-        val result = buildWebClient(authentication)
+        val result = buildRestClient(authentication)
             .get()
             .uri(zaakStatusUrl)
             .retrieve()
@@ -289,7 +289,7 @@ class ZakenApiClient(
         authentication: ZakenApiAuthentication,
         zaakResultaatUrl: URI,
     ): ZaakResultaat {
-        val result = buildWebClient(authentication)
+        val result = buildRestClient(authentication)
             .get()
             .uri(zaakResultaatUrl)
             .retrieve()
@@ -306,7 +306,7 @@ class ZakenApiClient(
         baseUrl: URI,
         request: CreateZaakResultaatRequest,
     ): CreateZaakResultaatResponse {
-        val result = buildWebClient(authentication)
+        val result = buildRestClient(authentication)
             .post()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
@@ -330,7 +330,7 @@ class ZakenApiClient(
         url: URI,
         request: ZaakopschortingRequest,
     ): ZaakopschortingResponse {
-        val result = buildWebClient(authentication)
+        val result = buildRestClient(authentication)
             .patch()
             .uri { url }
             .headers(this::defaultHeaders)
@@ -344,7 +344,7 @@ class ZakenApiClient(
     }
 
     fun getZaak(authentication: ZakenApiAuthentication, zaakUrl: URI): ZaakResponse {
-        val result = buildWebClient(authentication)
+        val result = buildRestClient(authentication)
             .get()
             .uri(zaakUrl)
             .headers(this::defaultHeaders)
@@ -368,7 +368,7 @@ class ZakenApiClient(
         request: CreateZaakeigenschapRequest,
     ): ZaakeigenschapResponse {
         validateUrlHost(baseUrl, request.zaak)
-        val result = buildWebClient(authentication)
+        val result = buildRestClient(authentication)
             .post()
             .uri {
                 ClientTools.baseUrlToBuilder(it, request.zaak)
@@ -400,7 +400,7 @@ class ZakenApiClient(
     ): ZaakeigenschapResponse {
         validateUrlHost(baseUrl, zaakeigenschapUrl)
         validateUrlHost(baseUrl, request.zaak)
-        val result = buildWebClient(authentication)
+        val result = buildRestClient(authentication)
             .put()
             .uri(zaakeigenschapUrl)
             .headers(this::defaultHeaders)
@@ -426,7 +426,7 @@ class ZakenApiClient(
         zaakeigenschapUrl: URI,
     ) {
         validateUrlHost(baseUrl, zaakeigenschapUrl)
-        buildWebClient(authentication)
+        buildRestClient(authentication)
             .delete()
             .uri(zaakeigenschapUrl)
             .headers(this::defaultHeaders)
@@ -444,7 +444,7 @@ class ZakenApiClient(
         zaakUrl: URI,
     ): List<ZaakeigenschapResponse> {
         validateUrlHost(baseUrl, zaakUrl)
-        val result = buildWebClient(authentication)
+        val result = buildRestClient(authentication)
             .get()
             .uri {
                 ClientTools.baseUrlToBuilder(it, zaakUrl)
@@ -479,14 +479,14 @@ class ZakenApiClient(
         require(zaakInformatieobjectUrl.toString().startsWith(baseUrl.toString())) {
             "zaakInformatieobjectUrl '$zaakInformatieobjectUrl' does not start with baseUrl '$baseUrl'"
         }
-        buildWebClient(authentication)
+        buildRestClient(authentication)
             .delete()
             .uri(zaakInformatieobjectUrl)
             .retrieve()
             .toBodilessEntity()
     }
 
-    private fun buildWebClient(authentication: ZakenApiAuthentication): RestClient {
+    private fun buildRestClient(authentication: ZakenApiAuthentication): RestClient {
         return restClientBuilder
             .clone()
             .apply {

@@ -23,5 +23,5 @@ import org.springframework.web.reactive.function.client.ExchangeFilterFunction
 @PluginCategory("objecttypen-api-authentication")
 interface ObjecttypenApiAuthentication : ExchangeFilterFunction {
 
-    fun auth(restClient: RestClient.Builder): RestClient.Builder
+    fun auth(builder: RestClient.Builder): RestClient.Builder
 }

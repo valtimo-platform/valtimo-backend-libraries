@@ -17,7 +17,11 @@
 package com.ritense.objectenapi
 
 import com.ritense.plugin.annotation.PluginCategory
+import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction
 
 @PluginCategory("objecten-api-authentication")
-interface ObjectenApiAuthentication : ExchangeFilterFunction
+interface ObjectenApiAuthentication : ExchangeFilterFunction {
+
+    fun bearerAuth(builder: RestClient.Builder): RestClient.Builder
+}

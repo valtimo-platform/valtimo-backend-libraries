@@ -23,6 +23,6 @@ import org.springframework.web.reactive.function.client.ExchangeFilterFunction
 @PluginCategory("besluiten-api-authentication")
 interface BesluitenApiAuthentication : ExchangeFilterFunction {
 
-    fun bearerAuth(restClient: RestClient.Builder): RestClient.Builder
+    fun bearerAuth(builder: RestClient.Builder): RestClient.Builder
 
 }

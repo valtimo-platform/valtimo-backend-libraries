@@ -52,12 +52,12 @@ class NotificatiesApiAuthenticationPlugin(
         return next.exchange(filteredRequest)
     }
 
-    override fun bearerAuth(restClient: RestClient.Builder): RestClient.Builder {
+    override fun bearerAuth(builder: RestClient.Builder): RestClient.Builder {
         val generatedToken = tokenGeneratorService.generateToken(
             clientSecret,
             clientId
         )
-        return restClient.defaultHeaders { headers ->
+        return builder.defaultHeaders { headers ->
             headers.setBearerAuth(generatedToken)
         }
     }
