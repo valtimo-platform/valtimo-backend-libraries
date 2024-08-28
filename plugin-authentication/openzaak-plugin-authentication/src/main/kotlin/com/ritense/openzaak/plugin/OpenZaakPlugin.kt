@@ -23,6 +23,7 @@ import com.ritense.openzaak.plugin.token.OpenZaakPluginTokenGeneratorService
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.zakenapi.ZakenApiAuthentication
+import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
@@ -53,4 +54,15 @@ class OpenZaakPlugin(
         }.build()
         return next.exchange(filteredRequest)
     }
+
+    override fun bearerAuth(restClient: RestClient.Builder) : RestClient.Builder {
+        val generatedToken = tokenGeneratorService.generateToken(
+            clientSecret,
+            clientId
+        )
+        return restClient.defaultHeaders { headers ->
+            headers.setBearerAuth(generatedToken)
+        }
+    }
+
 }

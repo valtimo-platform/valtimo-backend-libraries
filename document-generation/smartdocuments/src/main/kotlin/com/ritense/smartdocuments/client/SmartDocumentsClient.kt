@@ -29,79 +29,74 @@ import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
 import com.ritense.smartdocuments.io.SubInputStream
 import com.ritense.smartdocuments.io.UnicodeUnescapeInputStream
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8
+import com.ritense.valtimo.web.logging.RestClientLoggingExtension
+import org.apache.commons.io.FilenameUtils
+import org.springframework.http.HttpStatus
+import org.springframework.http.codec.ClientCodecConfigurer
+import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.client.RestClient
+import org.springframework.web.reactive.function.client.ExchangeStrategies
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import java.io.InputStream
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
 import java.util.Base64
 import java.util.UUID
-import kotlin.jvm.optionals.getOrNull
-import org.apache.commons.io.FilenameUtils
-import org.springframework.core.io.buffer.DataBufferUtils
-import org.springframework.http.HttpStatus
-import org.springframework.http.codec.ClientCodecConfigurer
-import org.springframework.web.client.HttpClientErrorException
-import org.springframework.web.reactive.function.BodyExtractors
-import org.springframework.web.reactive.function.client.ClientResponse
-import org.springframework.web.reactive.function.client.ExchangeFilterFunctions
-import org.springframework.web.reactive.function.client.ExchangeStrategies
-import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.WebClientResponseException
-
 
 class SmartDocumentsClient(
-    private var smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties,
-    private val smartDocumentsWebClientBuilder: WebClient.Builder,
+    private var smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties, // WHY CONNECTOR? is this class old?/depracted
+    private val smartDocumentsRestClientBuilder: RestClient.Builder,
     private val maxFileSizeMb: Int,
     private val temporaryResourceStorageService: TemporaryResourceStorageService,
 ) {
 
     fun getSmartDocumentsTemplateData(smartDocumentsPropertiesDto: SmartDocumentsPropertiesDto): SmartDocumentsTemplateData? {
-        return pluginWebClient(smartDocumentsPropertiesDto).get()
+        val response = pluginRestClient(smartDocumentsPropertiesDto)
+            .get()
             .uri(STRUCTURE_PATH)
             .retrieve()
-            .bodyToMono(String::class.java)
-            .map { xmlData -> xmlMapper.readValue(xmlData, SmartDocumentsTemplateData::class.java) }
-            .doOnError { throw toHttpClientErrorException(it) }
-            .block()
+            .body(String::class.java)!!
+        return xmlMapper.readValue(response, SmartDocumentsTemplateData::class.java)
     }
 
     fun generateDocument(
         smartDocumentsRequest: SmartDocumentsRequest,
     ): FilesResponse {
-        return webClient().post()
+        return restClient().post()
             .uri("/wsxmldeposit/deposit/unattended")
             .contentType(APPLICATION_JSON_UTF8)
-            .bodyValue(fixRequest(smartDocumentsRequest))
+            .body(fixRequest(smartDocumentsRequest))
             .retrieve()
-            .bodyToMono(FilesResponse::class.java)
-            .doOnError { throw toHttpClientErrorException(it) }
-            .block()!!
+            .body(FilesResponse::class.java)!!
     }
 
     fun generateDocumentStream(
         smartDocumentsRequest: SmartDocumentsRequest,
         outputFormat: DocumentFormatOption,
     ): FileStreamResponse {
-        val response = webClient().post()
+        val outputStream = PipedOutputStream()
+        restClient()
+            .post()
             .uri("/wsxmldeposit/deposit/unattended")
             .contentType(APPLICATION_JSON_UTF8)
-            .bodyValue(fixRequest(smartDocumentsRequest))
-            .exchange()
-            .block()
-
-        val responseOut = PipedOutputStream()
-        val responseIn = PipedInputStream(responseOut)
-        val body = response.body(BodyExtractors.toDataBuffers())
-            .doOnError {
-                responseIn.use {  }
-                throw toHttpClientErrorException(it)
+            .body(fixRequest(smartDocumentsRequest))
+            .exchange { _, response ->
+                if (response.statusCode.equals(HttpStatus.OK)) {
+                    response.body.copyTo(outputStream)
+                } else {
+                    throw toHttpClientErrorException(
+                        WebClientResponseException(
+                            response.statusCode.value(),
+                            response.statusText,
+                            response.headers,
+                            response.body.readAllBytes(),
+                            response.headers.contentType.charset
+                        )
+                    )
+                }
             }
-            .doFinally { responseOut.use {  } }
 
-        DataBufferUtils.write(body, responseOut).subscribe(DataBufferUtils.releaseConsumer())
-
-        assertHttp200Status(HttpStatus.valueOf(response.statusCode().value()), response, responseIn)
-
+        val responseIn = PipedInputStream(outputStream)
         val responseResourceId = temporaryResourceStorageService.store(responseIn)
         val parsedResponse = temporaryResourceStorageService.getResourceContentAsInputStream(responseResourceId)
             .use { parseSmartDocumentsResponse(it, outputFormat) }
@@ -114,26 +109,6 @@ class SmartDocumentsClient(
             FilenameUtils.getExtension(parsedResponse.fileName),
             documentDataIn
         )
-    }
-
-    private fun assertHttp200Status(
-        statusCode: HttpStatus,
-        response: ClientResponse,
-        responseIn: PipedInputStream
-    ) {
-        if (!statusCode.is2xxSuccessful) {
-            throw toHttpClientErrorException(
-                WebClientResponseException(
-                    statusCode.value(),
-                    statusCode.reasonPhrase,
-                    response.headers().asHttpHeaders(),
-                    responseIn.use {
-                        it.readAllBytes()
-                    },
-                    response.headers().contentType().map { it.charset }.getOrNull()
-                )
-            )
-        }
     }
 
     private fun fixRequest(smartDocumentsRequest: SmartDocumentsRequest): SmartDocumentsRequest {
@@ -152,12 +127,12 @@ class SmartDocumentsClient(
         if (e is WebClientResponseException) {
             val message = when (e.statusCode) {
                 HttpStatus.UNAUTHORIZED -> "The request has not been applied because it lacks valid authentication " +
-                        "credentials for the target resource. Response received from server:\n" + e.responseBodyAsString
+                    "credentials for the target resource. Response received from server:\n" + e.responseBodyAsString
 
                 HttpStatus.BAD_REQUEST -> "The server cannot or will not process the request due to something that is " +
-                        "perceived to be a client error (e.g., no valid template specified, user has no privileges for the template," +
-                        " malformed request syntax, invalid request message framing, or deceptive request routing)." +
-                        " Response received from server:\n" + e.responseBodyAsString
+                    "perceived to be a client error (e.g., no valid template specified, user has no privileges for the template," +
+                    " malformed request syntax, invalid request message framing, or deceptive request routing)." +
+                    " Response received from server:\n" + e.responseBodyAsString
 
                 else -> e.responseBodyAsString
             }
@@ -171,25 +146,18 @@ class SmartDocumentsClient(
         this.smartDocumentsConnectorProperties = smartDocumentsConnectorProperties
     }
 
-    private fun pluginWebClient(pluginProperties: SmartDocumentsPropertiesDto): WebClient {
-        val basicAuthentication = ExchangeFilterFunctions.basicAuthentication(
-            pluginProperties.username,
-            pluginProperties.password
-        )
-
-        return smartDocumentsWebClientBuilder
+    private fun pluginRestClient(pluginProperties: SmartDocumentsPropertiesDto): RestClient {
+        return smartDocumentsRestClientBuilder
             .clone()
             .baseUrl(pluginProperties.url)
-            .filter(basicAuthentication)
+            .defaultHeaders { headers ->
+                headers.setBasicAuth(pluginProperties.username, pluginProperties.password)
+            }
+            .apply { RestClientLoggingExtension.defaultRequestLogging(it) }
             .build()
     }
 
-    private fun webClient(): WebClient {
-        val basicAuthentication = ExchangeFilterFunctions.basicAuthentication(
-            smartDocumentsConnectorProperties.username!!,
-            smartDocumentsConnectorProperties.password!!
-        )
-
+    private fun restClient(): RestClient {
         // Setting the max file size for the smart documents response
         val exchangeStrategies = ExchangeStrategies
             .builder()
@@ -198,11 +166,16 @@ class SmartDocumentsClient(
             }
             .build()
 
-        return smartDocumentsWebClientBuilder
+        return smartDocumentsRestClientBuilder
             .clone()
             .baseUrl(smartDocumentsConnectorProperties.url!!)
-            .filter(basicAuthentication)
-            .exchangeStrategies(exchangeStrategies)
+            .defaultHeaders { headers ->
+                headers.setBasicAuth(
+                    smartDocumentsConnectorProperties.username!!,
+                    smartDocumentsConnectorProperties.password!!
+                )
+            }
+            // .exchangeStrategies(exchangeStrategies) TODO fix for RestClient
             .build()
     }
 
@@ -236,7 +209,7 @@ class SmartDocumentsClient(
         jsonParser.close()
         if (!correctOutputFormat && fileName == null && documentDataStart == -1L) {
             throw IllegalStateException("SmartDocuments didn't generate any document. Please check the logs above for a HttpClientErrorException.")
-        }  else if (!correctOutputFormat) {
+        } else if (!correctOutputFormat) {
             throw IllegalStateException("SmartDocuments failed to generate document with format '$outputFormat'. The requested document format is not present in the output of smart documents.")
         } else if (fileName == null) {
             throw IllegalStateException("SmartDocuments response didn't contain field 'filename'")

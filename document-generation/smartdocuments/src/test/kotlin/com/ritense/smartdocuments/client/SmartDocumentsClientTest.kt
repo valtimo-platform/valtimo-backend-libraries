@@ -25,8 +25,6 @@ import com.ritense.smartdocuments.domain.SmartDocumentsTemplateData
 import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
-import java.time.Instant
-import java.util.concurrent.TimeUnit.MILLISECONDS
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
@@ -47,7 +45,9 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.web.client.HttpClientErrorException
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.client.RestClient
+import java.time.Instant
+import java.util.concurrent.TimeUnit.MILLISECONDS
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class SmartDocumentsClientTest : BaseTest() {
@@ -65,17 +65,21 @@ internal class SmartDocumentsClientTest : BaseTest() {
             url = mockDocumentenApi.url("/").toString()
         )
 
-        temporaryResourceStorageService = spy( TemporaryResourceStorageService(
-            uploadProperties = ValtimoUploadProperties(),
-            objectMapper = MapperSingleton.get(),
-        ))
+        temporaryResourceStorageService = spy(
+            TemporaryResourceStorageService(
+                uploadProperties = ValtimoUploadProperties(),
+                objectMapper = MapperSingleton.get(),
+            )
+        )
 
-        client = spy( SmartDocumentsClient(
-            properties,
-            WebClient.builder(),
-            5,
-            temporaryResourceStorageService,
-        ))
+        client = spy(
+            SmartDocumentsClient(
+                properties,
+                RestClient.builder(),
+                5,
+                temporaryResourceStorageService,
+            )
+        )
     }
 
     @BeforeEach
@@ -88,8 +92,6 @@ internal class SmartDocumentsClientTest : BaseTest() {
         mockDocumentenApi.shutdown()
     }
 
-
-    // connector
     @Test
     fun `200 ok response should return FilesResponse when connector is used`() {
         val responseBody = """
@@ -126,7 +128,6 @@ internal class SmartDocumentsClientTest : BaseTest() {
         assertEquals("Y29udGVudA==", response.file[0].document.data)
     }
 
-    // connector
     @Test
     fun `401 Unauthorized response should throw exception when connector is used`() {
         val responseBody = """
@@ -169,12 +170,11 @@ internal class SmartDocumentsClientTest : BaseTest() {
 
         assertEquals(
             "401 The request has not been applied because it lacks valid authentication credentials for the target " +
-                    "resource. Response received from server:\n" + responseBody,
+                "resource. Response received from server:\n" + responseBody,
             exception.message
         )
     }
 
-    // connector
     @Test
     fun `400 Bad Request response should throw exception when connector is used`() {
         val responseBody = """
@@ -218,8 +218,8 @@ internal class SmartDocumentsClientTest : BaseTest() {
 
         assertEquals(
             "400 The server cannot or will not process the request due to something that is perceived to be a client " +
-                    "error (e.g., no valid template specified, user has no privileges for the template, malformed request syntax, " +
-                    "invalid request message framing, or deceptive request routing). Response received from server:\n$responseBody",
+                "error (e.g., no valid template specified, user has no privileges for the template, malformed request syntax, " +
+                "invalid request message framing, or deceptive request routing). Response received from server:\n$responseBody",
             exception.message?.trimIndent()
         )
     }
@@ -249,13 +249,13 @@ internal class SmartDocumentsClientTest : BaseTest() {
 
         mockDocumentenApi.enqueue(mockResponse)
 
-        lateinit var storeFileInstant : Instant
+        lateinit var storeFileInstant: Instant
         doAnswer {
             storeFileInstant = Instant.now()
             it.callRealMethod()
         }.whenever(temporaryResourceStorageService).store(any(), any())
 
-        lateinit var responseStartInstant : Instant
+        lateinit var responseStartInstant: Instant
         // getThrottlePeriod is used because it's called right before sending the response
         doAnswer {
             responseStartInstant = Instant.now()
@@ -320,11 +320,13 @@ internal class SmartDocumentsClientTest : BaseTest() {
         )
 
         // when
-        val response = client.getSmartDocumentsTemplateData(SmartDocumentsPropertiesDto(
-            username = "username",
-            password = "password",
-            url = mockDocumentenApi.url("").toString()
-        ))
+        val response = client.getSmartDocumentsTemplateData(
+            SmartDocumentsPropertiesDto(
+                username = "username",
+                password = "password",
+                url = mockDocumentenApi.url("").toString()
+            )
+        )
 
         // then
         assertThat(response).isNotNull

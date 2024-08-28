@@ -24,10 +24,10 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
-import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 import java.net.URI
 import java.time.LocalDate
@@ -51,8 +51,8 @@ internal class ObjecttypenApiClientTest {
 
     @Test
     fun `should send get single objecttype request and parse response`() {
-        val webclientBuilder = WebClient.builder()
-        val client = ObjecttypenApiClient(webclientBuilder)
+        val restClientBuilder = RestClient.builder()
+        val client = ObjecttypenApiClient(restClientBuilder)
 
         val responseBody = """
             {
@@ -122,8 +122,8 @@ internal class ObjecttypenApiClientTest {
 
     @Test
     fun `should send get multiple objecttypes request and parse response`() {
-        val webclientBuilder = WebClient.builder()
-        val client = ObjecttypenApiClient(webclientBuilder)
+        val restClientBuilder = RestClient.builder()
+        val client = ObjecttypenApiClient(restClientBuilder)
 
         val responseBody = """
             [
@@ -199,7 +199,13 @@ internal class ObjecttypenApiClientTest {
             .setBody(body)
     }
 
-    class TestAuthentication: ObjecttypenApiAuthentication {
+    class TestAuthentication : ObjecttypenApiAuthentication {
+        override fun auth(restClient: RestClient.Builder): RestClient.Builder {
+            return restClient.defaultHeaders { headers ->
+                headers.setBearerAuth("test")
+            }
+        }
+
         override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
             val filteredRequest = ClientRequest.from(request).headers { headers ->
                 headers.setBearerAuth("test")

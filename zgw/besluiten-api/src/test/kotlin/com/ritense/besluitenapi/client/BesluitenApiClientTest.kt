@@ -30,10 +30,10 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
-import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 import java.net.URI
 import java.time.LocalDate
@@ -55,8 +55,8 @@ class BesluitenApiClientTest {
 
     @Test
     fun `should send create besluit request and parse response`() {
-        val webclientBuilder = WebClient.builder()
-        val client = BesluitenApiClient(webclientBuilder)
+        val restClientBuilder = RestClient.builder()
+        val client = BesluitenApiClient(restClientBuilder)
 
         val responseBody = """
             {
@@ -138,8 +138,8 @@ class BesluitenApiClientTest {
 
     @Test
     fun `should send create besluit request and parse response when vervalreden is null`() {
-        val webclientBuilder = WebClient.builder()
-        val client = BesluitenApiClient(webclientBuilder)
+        val restClientBuilder = RestClient.builder()
+        val client = BesluitenApiClient(restClientBuilder)
 
         val responseBody = """
             {
@@ -232,6 +232,13 @@ class BesluitenApiClientTest {
     }
 
     class TestAuthentication : BesluitenApiAuthentication {
+
+        override fun bearerAuth(restClient: RestClient.Builder): RestClient.Builder {
+            return restClient.defaultHeaders { headers ->
+                headers.setBearerAuth("test")
+            }
+        }
+
         override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
             val filteredRequest = ClientRequest.from(request).headers { headers ->
                 headers.setBearerAuth("test")

@@ -17,7 +17,12 @@
 package com.ritense.besluitenapi
 
 import com.ritense.plugin.annotation.PluginCategory
+import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction
 
 @PluginCategory("besluiten-api-authentication")
-interface BesluitenApiAuthentication : ExchangeFilterFunction
+interface BesluitenApiAuthentication : ExchangeFilterFunction {
+
+    fun bearerAuth(restClient: RestClient.Builder): RestClient.Builder
+
+}

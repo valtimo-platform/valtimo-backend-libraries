@@ -30,7 +30,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.web.client.RestClient
-import org.springframework.web.reactive.function.client.WebClient
 
 @TestInstance(Lifecycle.PER_CLASS)
 internal class ExactServiceTest {

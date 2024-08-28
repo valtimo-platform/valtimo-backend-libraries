@@ -105,8 +105,7 @@ class ExactPlugin(
 
         if (properties.bean != null) {
             val bean = context.getBean(properties.bean, ExactGetRequest::class.java)
-            val response = bean.createRequest(execution, token)
-                .call(exactClient)
+            val response = bean.createRequest(execution, token).call(exactClient)
             bean.handleResponse(execution, response)
         } else {
             execution.setVariable(
@@ -132,8 +131,7 @@ class ExactPlugin(
 
         if (properties.bean != null) {
             val bean = context.getBean(properties.bean, ExactPostRequest::class.java)
-            val response = bean.createRequest(execution, token)
-                .call(exactClient)
+            val response = bean.createRequest(execution, token).call(exactClient)
             bean.handleResponse(execution, response)
         } else {
             execution.setVariable(
@@ -157,8 +155,7 @@ class ExactPlugin(
 
         if (properties.bean != null) {
             val bean = context.getBean(properties.bean, ExactPutRequest::class.java)
-            val response = bean.createRequest(execution, token)
-                .call(exactClient)
+            val response = bean.createRequest(execution, token).call(exactClient)
             bean.handleResponse(execution, response)
         } else {
             execution.setVariable(
