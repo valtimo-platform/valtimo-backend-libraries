@@ -55,6 +55,17 @@ class CustomProcessLinkMapper(
         )
     }
 
+    override fun toProcessLinkUpdateRequestDto(
+        deployDto: ProcessLinkDeployDto,
+        existingProcessLinkId: UUID
+    ): ProcessLinkUpdateRequestDto {
+        deployDto as CustomProcessLinkDeployDto
+        return CustomProcessLinkUpdateRequestDto(
+            id = existingProcessLinkId,
+            someValue = deployDto.someValue
+        )
+    }
+
     override fun toProcessLinkCreateRequestDto(deployDto: ProcessLinkDeployDto): ProcessLinkCreateRequestDto {
         deployDto as CustomProcessLinkDeployDto
         return CustomProcessLinkCreateRequestDto(
