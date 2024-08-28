@@ -17,15 +17,17 @@
 package com.ritense.case_.domain.tab
 
 import com.ritense.case_.widget.TestCaseWidgetProperties
+import com.ritense.valtimo.contract.annotation.AllOpen
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorValue
 import jakarta.persistence.Entity
 import org.hibernate.annotations.Type
 
+@AllOpen
 @Entity
 @DiscriminatorValue("test")
-open class TestCaseWidgetTabWidget(
+class TestCaseWidgetTabWidget(
     id: CaseWidgetTabWidgetId, title: String, order: Int, width: Int, highContrast: Boolean,
 
     @Type(value = JsonType::class)
