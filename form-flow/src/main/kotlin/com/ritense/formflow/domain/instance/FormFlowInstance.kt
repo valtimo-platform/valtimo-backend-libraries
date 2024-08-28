@@ -112,6 +112,9 @@ class FormFlowInstance(
     }
 
     fun getCurrentStep(): FormFlowStepInstance {
+        requireNotNull(currentFormFlowStepInstanceId) {
+            "Failed to get current step. Form flow '${formFlowDefinition.id.key}' has ended."
+        }
         return history.first {
             it.id == currentFormFlowStepInstanceId
         }
@@ -146,7 +149,11 @@ class FormFlowInstance(
     }
 
     private fun getSubmissionData() : List<JSONObject> {
-        val currentStepOrder = getCurrentStep().order
+        val currentStepOrder = if (currentFormFlowStepInstanceId == null) {
+            Int.MAX_VALUE
+        } else {
+            getCurrentStep().order
+        }
         return history
             .filter { it.order <= currentStepOrder }
             .sortedBy { it.submissionOrder }
