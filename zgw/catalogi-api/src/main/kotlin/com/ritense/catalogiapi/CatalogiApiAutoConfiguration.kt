@@ -29,7 +29,7 @@ import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.annotation.Bean
 import org.springframework.core.annotation.Order
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.client.RestClient
 
 @AutoConfiguration
 @EnableCaching
@@ -37,10 +37,10 @@ class CatalogiApiAutoConfiguration {
 
     @Bean
     fun catalogiApiClient(
-        webclientBuilder: WebClient.Builder,
+        restClientBuilder: RestClient.Builder,
         cacheManager: CacheManager,
     ): CatalogiApiClient {
-        return CatalogiApiClient(webclientBuilder, cacheManager)
+        return CatalogiApiClient(restClientBuilder, cacheManager)
     }
 
     @Bean
@@ -57,18 +57,19 @@ class CatalogiApiAutoConfiguration {
     @ConditionalOnMissingBean(CatalogiService::class)
     fun catalogiService(
         zaaktypeUrlProvider: ZaaktypeUrlProvider,
-        pluginService : PluginService
-    ): CatalogiService {
-        return CatalogiService(zaaktypeUrlProvider, pluginService)
-    }
+        pluginService: PluginService
+    ) = CatalogiService(
+        zaaktypeUrlProvider,
+        pluginService
+    )
 
     @Bean
     @ConditionalOnMissingBean(CatalogiResource::class)
     fun catalogiResource(
         catalogiService: CatalogiService
-    ): CatalogiResource {
-        return CatalogiResource(catalogiService)
-    }
+    ) = CatalogiResource(
+        catalogiService
+    )
 
     @Order(400)
     @Bean

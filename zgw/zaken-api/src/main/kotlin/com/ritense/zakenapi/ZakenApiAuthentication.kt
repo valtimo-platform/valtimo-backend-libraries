@@ -17,7 +17,11 @@
 package com.ritense.zakenapi
 
 import com.ritense.plugin.annotation.PluginCategory
+import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction
 
 @PluginCategory("zaken-api-authentication")
-interface ZakenApiAuthentication : ExchangeFilterFunction
+interface ZakenApiAuthentication : ExchangeFilterFunction {
+
+    fun bearerAuth(builder: RestClient.Builder): RestClient.Builder
+}

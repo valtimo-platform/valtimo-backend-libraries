@@ -53,6 +53,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpMethod.POST
+import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
@@ -401,6 +402,12 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
     }
 
     class TestAuthentication : ZakenApiAuthentication, CatalogiApiAuthentication {
+        override fun bearerAuth(builder: RestClient.Builder): RestClient.Builder {
+            return builder.defaultHeaders { headers ->
+                headers.setBearerAuth("test")
+            }
+        }
+
         override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
             return next.exchange(request)
         }

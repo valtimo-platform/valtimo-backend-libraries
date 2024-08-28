@@ -17,7 +17,12 @@
 package com.ritense.catalogiapi
 
 import com.ritense.plugin.annotation.PluginCategory
+import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction
 
 @PluginCategory("catalogi-api-authentication")
-interface CatalogiApiAuthentication : ExchangeFilterFunction
+interface CatalogiApiAuthentication : ExchangeFilterFunction {
+
+    fun bearerAuth(restClient: RestClient.Builder): RestClient.Builder
+
+}

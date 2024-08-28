@@ -25,17 +25,19 @@ import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.domain.Zaaktype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
+import com.ritense.valtimo.web.logging.RestClientLoggingExtension
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
 import mu.KotlinLogging
 import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.Cacheable
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.client.RestClient
+import org.springframework.web.client.body
 import org.springframework.web.util.UriBuilder
 import java.net.URI
 
 open class CatalogiApiClient(
-    private val webclientBuilder: WebClient.Builder,
+    private val restClientBuilder: RestClient.Builder,
     private val cacheManager: CacheManager
 ) {
     open fun getZaaktypeInformatieobjecttypes(
@@ -57,10 +59,8 @@ open class CatalogiApiClient(
                     .build()
             }
             .retrieve()
-            .toEntity(ClientTools.getTypedPage(ZaaktypeInformatieobjecttype::class.java))
-            .block()
-
-        return result?.body!!
+            .body<Page<ZaaktypeInformatieobjecttype>>()
+        return result ?: throw IllegalStateException("No result found")
     }
 
     open fun getInformatieobjecttypes(
@@ -77,10 +77,8 @@ open class CatalogiApiClient(
                     .addOptionalQueryParamFromRequest("page", request.page)
                     .build()
             }.retrieve()
-            .toEntity(ClientTools.getTypedPage(Informatieobjecttype::class.java))
-            .block()
-
-        return result?.body!!
+            .body<Page<Informatieobjecttype>>()
+        return result ?: throw IllegalStateException("No result found")
     }
 
     @Cacheable(INFORMATIEOBJECTTYPECACHE_KEY, key = "#informatieobjecttypeUrl")
@@ -94,10 +92,8 @@ open class CatalogiApiClient(
             .get()
             .uri(informatieobjecttypeUrl)
             .retrieve()
-            .toEntity(Informatieobjecttype::class.java)
-            .block()
-
-        return result?.body!!
+            .body(Informatieobjecttype::class.java)
+        return result!!
     }
 
     open fun getRoltypen(
@@ -117,10 +113,8 @@ open class CatalogiApiClient(
                     .addOptionalQueryParamFromRequest("page", request.page)
                     .build()
             }.retrieve()
-            .toEntity(ClientTools.getTypedPage(Roltype::class.java))
-            .block()
-
-        return result?.body!!
+            .body<Page<Roltype>>()
+        return result ?: throw IllegalStateException("No result found")
     }
 
     open fun getStatustype(
@@ -133,10 +127,8 @@ open class CatalogiApiClient(
             .get()
             .uri(statustypeUrl)
             .retrieve()
-            .toEntity(Statustype::class.java)
-            .block()
-
-        return result?.body!!
+            .body<Statustype>()
+        return result ?: throw IllegalStateException("No result found")
     }
 
     open fun getStatustypen(
@@ -155,10 +147,8 @@ open class CatalogiApiClient(
                     .addOptionalQueryParamFromRequest("page", request.page)
                     .build()
             }.retrieve()
-            .toEntity(ClientTools.getTypedPage(Statustype::class.java))
-            .block()
-
-        return result?.body!!
+            .body<Page<Statustype>>()
+        return result ?: throw IllegalStateException("No result found")
     }
 
     open fun getResultaattype(
@@ -171,10 +161,9 @@ open class CatalogiApiClient(
             .get()
             .uri(resultaattypeUrl)
             .retrieve()
-            .toEntity(Resultaattype::class.java)
-            .block()
+            .body<Resultaattype>()
 
-        return result?.body!!
+        return result ?: throw IllegalStateException("No result found")
     }
 
     open fun getResultaattypen(
@@ -193,10 +182,9 @@ open class CatalogiApiClient(
                     .addOptionalQueryParamFromRequest("page", request.page)
                     .build()
             }.retrieve()
-            .toEntity(ClientTools.getTypedPage(Resultaattype::class.java))
-            .block()
+            .body<Page<Resultaattype>>()
 
-        return result?.body!!
+        return result ?: throw IllegalStateException("No result found")
     }
 
     open fun getBesluittypen(
@@ -217,10 +205,9 @@ open class CatalogiApiClient(
                     .addOptionalQueryParamFromRequest("page", request.page)
                     .build()
             }.retrieve()
-            .toEntity(ClientTools.getTypedPage(Besluittype::class.java))
-            .block()
+            .body<Page<Besluittype>>()
 
-        return result?.body!!
+        return result ?: throw IllegalStateException("No result found")
     }
 
     open fun getEigenschappen(
@@ -239,17 +226,16 @@ open class CatalogiApiClient(
                     .addOptionalQueryParamFromRequest("page", request.page)
                     .build()
             }.retrieve()
-            .toEntity(ClientTools.getTypedPage(Eigenschap::class.java))
-            .block()
+            .body<Page<Eigenschap>>()
 
-        return result?.body!!
+        return result ?: throw IllegalStateException("No result found")
     }
 
     open fun getZaaktypen(
         authentication: CatalogiApiAuthentication,
         baseUrl: URI,
         request: ZaaktypeRequest
-    ) : Page<Zaaktype> {
+    ): Page<Zaaktype> {
         val result = buildWebclient(authentication)
             .get()
             .uri {
@@ -260,10 +246,8 @@ open class CatalogiApiClient(
                     .addOptionalQueryParamFromRequest("page", request.page)
                     .build()
             }.retrieve()
-            .toEntity(ClientTools.getTypedPage(Zaaktype::class.java))
-            .block()
-
-        return result?.body!!
+            .body<Page<Zaaktype>>()
+        return result ?: throw IllegalStateException("No result found")
     }
 
     open fun getZaaktype(
@@ -276,17 +260,18 @@ open class CatalogiApiClient(
             .get()
             .uri(zaaktypeUrl)
             .retrieve()
-            .toEntity(Zaaktype::class.java)
-            .block()
-
-        return result?.body!!
+            .body<Zaaktype>()
+        return result ?: throw IllegalStateException("No result found")
     }
 
     open fun prefillCache(authenticationPluginConfiguration: CatalogiApiAuthentication, url: URI) {
         prefillInformatieobjecttypeCache(authenticationPluginConfiguration, url)
     }
 
-    private fun prefillInformatieobjecttypeCache(authenticationPluginConfiguration: CatalogiApiAuthentication, url: URI) {
+    private fun prefillInformatieobjecttypeCache(
+        authenticationPluginConfiguration: CatalogiApiAuthentication,
+        url: URI
+    ) {
         Page.getAll { page ->
             getInformatieobjecttypes(
                 authenticationPluginConfiguration,
@@ -309,10 +294,13 @@ open class CatalogiApiClient(
         }
     }
 
-    private fun buildWebclient(authentication: CatalogiApiAuthentication): WebClient {
-        return webclientBuilder
+    private fun buildWebclient(authentication: CatalogiApiAuthentication): RestClient {
+        return restClientBuilder
             .clone()
-            .filter(authentication)
+            .apply {
+                authentication.bearerAuth(it)
+                RestClientLoggingExtension.defaultRequestLogging(it)
+            }
             .build()
     }
 

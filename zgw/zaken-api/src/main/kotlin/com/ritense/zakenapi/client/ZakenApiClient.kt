@@ -18,6 +18,7 @@ package com.ritense.zakenapi.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.outbox.OutboxService
+import com.ritense.valtimo.web.logging.RestClientLoggingExtension
 import com.ritense.zakenapi.ZakenApiAuthentication
 import com.ritense.zakenapi.domain.CreateZaakRequest
 import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
@@ -58,13 +59,12 @@ import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
-import org.springframework.web.reactive.function.BodyInserters
-import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.toEntityList
+import org.springframework.web.client.RestClient
+import org.springframework.web.client.body
 import java.net.URI
 
 class ZakenApiClient(
-    private val webclientBuilder: WebClient.Builder,
+    private val restClientBuilder: RestClient.Builder,
     private val outboxService: OutboxService,
     private val objectMapper: ObjectMapper
 ) {
@@ -81,21 +81,14 @@ class ZakenApiClient(
                     .build()
             }
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(request))
+            .body(request)
             .retrieve()
-            .toEntity(LinkDocumentResult::class.java)
-            .block()
+            .body<LinkDocumentResult>()
 
-        if (result.hasBody()) {
-            outboxService.send {
-                DocumentLinkedToZaak(
-                    result.body.uuid,
-                    objectMapper.valueToTree(result.body)
-                )
-            }
+        result?.let {
+            outboxService.send { DocumentLinkedToZaak(result.uuid, objectMapper.valueToTree(result)) }
         }
-
-        return result?.body!!
+        return result ?: throw IllegalStateException("No result found")
     }
 
     fun getZaakObjecten(
@@ -114,19 +107,12 @@ class ZakenApiClient(
                     .build()
             }
             .retrieve()
-            .toEntity(ClientTools.getTypedPage(ZaakObject::class.java))
-            .block()
+            .body<Page<ZaakObject>>()
 
-
-        if (result.hasBody()) {
-            outboxService.send {
-                ZaakObjectenListed(
-                    objectMapper.valueToTree(result.body.results)
-                )
-            }
+        result?.let {
+            outboxService.send { ZaakObjectenListed(objectMapper.valueToTree(result.results)) }
         }
-
-        return result?.body!!
+        return result ?: throw IllegalStateException("No result found")
     }
 
     fun getZaakInformatieObjecten(
@@ -151,18 +137,12 @@ class ZakenApiClient(
                     .build()
             }
             .retrieve()
-            .toEntityList(ZaakInformatieObject::class.java)
-            .block()
+            .body<List<ZaakInformatieObject>>()
 
-        if (result.hasBody()) {
-            outboxService.send {
-                ZaakInformatieObjectenListed(
-                    objectMapper.valueToTree(result.body)
-                )
-            }
+        result?.let {
+            outboxService.send { ZaakInformatieObjectenListed(objectMapper.valueToTree(result)) }
         }
-
-        return result?.body!!
+        return result ?: throw IllegalStateException("No result found")
     }
 
     fun getZaakRollen(
@@ -187,18 +167,12 @@ class ZakenApiClient(
                     .build()
             }
             .retrieve()
-            .toEntity(ClientTools.getTypedPage(Rol::class.java))
-            .block()
+            .body<Page<Rol>>()
 
-        if (result.hasBody()) {
-            outboxService.send {
-                ZaakRollenListed(
-                    objectMapper.valueToTree(result.body.results)
-                )
-            }
+        result?.let {
+            outboxService.send { ZaakRollenListed(objectMapper.valueToTree(result.results)) }
         }
-
-        return result?.body!!
+        return result ?: throw IllegalStateException("No result found")
     }
 
     fun createZaakRol(
@@ -213,21 +187,16 @@ class ZakenApiClient(
                     .path("rollen")
                     .build()
             }
-            .body(BodyInserters.fromValue(rol))
+            .body(rol)
             .retrieve()
-            .toEntity(Rol::class.java)
-            .block()
+            .body<Rol>()
 
-        if (result.hasBody()) {
+        result?.let {
             outboxService.send {
-                ZaakRolCreated(
-                    result.body.url.toString(),
-                    objectMapper.valueToTree(result.body)
-                )
+                ZaakRolCreated(result.url.toString(), objectMapper.valueToTree(result))
             }
         }
-
-        return result?.body!!
+        return result ?: throw IllegalStateException("No result found")
     }
 
     fun createZaak(
@@ -244,21 +213,14 @@ class ZakenApiClient(
             }
             .headers(this::defaultHeaders)
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(request))
+            .body(request)
             .retrieve()
-            .toEntity(ZaakResponse::class.java)
-            .block()
+            .body<ZaakResponse>()
 
-        if (result.hasBody()) {
-            outboxService.send {
-                ZaakCreated(
-                    result.body.url.toString(),
-                    objectMapper.valueToTree(result.body)
-                )
-            }
+        result?.let {
+            outboxService.send { ZaakCreated(result.url.toString(), objectMapper.valueToTree(result)) }
         }
-
-        return result?.body!!
+        return result ?: throw IllegalStateException("No result found")
     }
 
     fun patchZaak(
@@ -273,21 +235,14 @@ class ZakenApiClient(
             .uri(zaakUrl)
             .headers(this::defaultHeaders)
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(request))
+            .body(request)
             .retrieve()
-            .toEntity(ZaakResponse::class.java)
-            .block()
+            .body<ZaakResponse>()
 
-        if (result.hasBody()) {
-            outboxService.send {
-                ZaakPatched(
-                    result.body.url.toString(),
-                    objectMapper.valueToTree(result.body)
-                )
-            }
+        result?.let {
+            outboxService.send { ZaakPatched(result.url.toString(), objectMapper.valueToTree(result)) }
         }
-
-        return result?.body!!
+        return result ?: throw IllegalStateException("No result found")
     }
 
     fun createZaakStatus(
@@ -304,21 +259,14 @@ class ZakenApiClient(
             }
             .headers(this::defaultHeaders)
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(request))
+            .body(request)
             .retrieve()
-            .toEntity(CreateZaakStatusResponse::class.java)
-            .block()
+            .body<CreateZaakStatusResponse>()
 
-        if (result.hasBody()) {
-            outboxService.send {
-                ZaakStatusCreated(
-                    result.body.url.toString(),
-                    objectMapper.valueToTree(result.body)
-                )
-            }
+        result?.let {
+            outboxService.send { ZaakStatusCreated(result.url.toString(), objectMapper.valueToTree(result)) }
         }
-
-        return result?.body!!
+        return result ?: throw IllegalStateException("No result found")
     }
 
     fun getZaakStatus(
@@ -329,18 +277,12 @@ class ZakenApiClient(
             .get()
             .uri(zaakStatusUrl)
             .retrieve()
-            .toEntity(ZaakStatus::class.java)
-            .block()
+            .body<ZaakStatus>()
 
-        if (result.hasBody()) {
-            outboxService.send {
-                ZaakStatusViewed(
-                    objectMapper.valueToTree(result.body)
-                )
-            }
+        result?.let {
+            outboxService.send { ZaakStatusViewed(objectMapper.valueToTree(result)) }
         }
-
-        return result?.body!!
+        return result ?: throw IllegalStateException("No result found")
     }
 
     fun getZaakResultaat(
@@ -351,18 +293,12 @@ class ZakenApiClient(
             .get()
             .uri(zaakResultaatUrl)
             .retrieve()
-            .toEntity(ZaakResultaat::class.java)
-            .block()
+            .body<ZaakResultaat>()
 
-        if (result.hasBody()) {
-            outboxService.send {
-                ZaakResultaatViewed(
-                    objectMapper.valueToTree(result.body)
-                )
-            }
+        result?.let {
+            outboxService.send { ZaakResultaatViewed(objectMapper.valueToTree(result)) }
         }
-
-        return result?.body!!
+        return result ?: throw IllegalStateException("No result found")
     }
 
     fun createZaakResultaat(
@@ -379,21 +315,14 @@ class ZakenApiClient(
             }
             .headers(this::defaultHeaders)
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(request))
+            .body(request)
             .retrieve()
-            .toEntity(CreateZaakResultaatResponse::class.java)
-            .block()
+            .body<CreateZaakResultaatResponse>()
 
-        if (result.hasBody()) {
-            outboxService.send {
-                ZaakResultaatCreated(
-                    result.body.url.toString(),
-                    objectMapper.valueToTree(result.body)
-                )
-            }
+        result?.let {
+            outboxService.send { ZaakResultaatCreated(result.url.toString(), objectMapper.valueToTree(result)) }
         }
-
-        return result?.body!!
+        return result ?: throw IllegalStateException("No result found")
     }
 
     fun setZaakOpschorting(
@@ -406,21 +335,12 @@ class ZakenApiClient(
             .uri { url }
             .headers(this::defaultHeaders)
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(request))
+            .body(request)
             .retrieve()
-            .toEntity(ZaakopschortingResponse::class.java)
-            .block()
+            .body<ZaakopschortingResponse>()
 
-        if (result.hasBody()) {
-            outboxService.send {
-                ZaakOpschortingUpdated(
-                    result.body.url,
-                    objectMapper.valueToTree(result.body)
-                )
-            }
-        }
-
-        return result?.body!!
+        result?.let { outboxService.send { ZaakOpschortingUpdated(result.url, objectMapper.valueToTree(result)) } }
+        return result ?: throw IllegalStateException("No result found")
     }
 
     fun getZaak(authentication: ZakenApiAuthentication, zaakUrl: URI): ZaakResponse {
@@ -429,19 +349,17 @@ class ZakenApiClient(
             .uri(zaakUrl)
             .headers(this::defaultHeaders)
             .retrieve()
-            .toEntity(ZaakResponse::class.java)
-            .block()
+            .body<ZaakResponse>()
 
-        if (result.hasBody()) {
+        result?.let {
             outboxService.send {
                 ZaakViewed(
-                    result.body.url.toString(),
-                    objectMapper.valueToTree(result.body)
+                    result.url.toString(),
+                    objectMapper.valueToTree(result)
                 )
             }
         }
-
-        return result?.body!!
+        return result ?: throw IllegalStateException("No result found")
     }
 
     fun createZaakeigenschap(
@@ -459,21 +377,19 @@ class ZakenApiClient(
             }
             .headers(this::defaultHeaders)
             .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(request)
+            .body(request)
             .retrieve()
-            .toEntity(ZaakeigenschapResponse::class.java)
-            .block()
+            .body<ZaakeigenschapResponse>()
 
-        if (result?.statusCode?.is2xxSuccessful == true) {
+        result?.let {
             outboxService.send {
                 ZaakeigenschapCreated(
-                    result.body.url.toString(),
-                    objectMapper.valueToTree(result.body)
+                    result.url.toString(),
+                    objectMapper.valueToTree(result)
                 )
             }
         }
-
-        return result?.body!!
+        return result ?: throw IllegalStateException("No result found")
     }
 
     fun updateZaakeigenschap(
@@ -489,21 +405,19 @@ class ZakenApiClient(
             .uri(zaakeigenschapUrl)
             .headers(this::defaultHeaders)
             .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(request)
+            .body(request)
             .retrieve()
-            .toEntity(ZaakeigenschapResponse::class.java)
-            .block()
+            .body<ZaakeigenschapResponse>()
 
-        if (result?.statusCode?.is2xxSuccessful == true) {
+        result?.let {
             outboxService.send {
                 ZaakeigenschapUpdated(
-                    result.body.url.toString(),
-                    objectMapper.valueToTree(result.body)
+                    result.url.toString(),
+                    objectMapper.valueToTree(result)
                 )
             }
         }
-
-        return result?.body!!
+        return result ?: throw IllegalStateException("No result found")
     }
 
     fun deleteZaakeigenschap(
@@ -512,18 +426,15 @@ class ZakenApiClient(
         zaakeigenschapUrl: URI,
     ) {
         validateUrlHost(baseUrl, zaakeigenschapUrl)
-        val result = buildWebClient(authentication)
+        buildWebClient(authentication)
             .delete()
             .uri(zaakeigenschapUrl)
             .headers(this::defaultHeaders)
             .retrieve()
             .toBodilessEntity()
-            .block()
 
-        if (result?.statusCode?.is2xxSuccessful == true) {
-            outboxService.send {
-                ZaakeigenschapDeleted(zaakeigenschapUrl.toString())
-            }
+        outboxService.send {
+            ZaakeigenschapDeleted(zaakeigenschapUrl.toString())
         }
     }
 
@@ -541,16 +452,14 @@ class ZakenApiClient(
                     .build()
             }
             .retrieve()
-            .toEntityList<ZaakeigenschapResponse>()
-            .block()
+            .body<List<ZaakeigenschapResponse>>()
 
-        if (result?.statusCode?.is2xxSuccessful == true) {
+        result?.let {
             outboxService.send {
-                ZaakeigenschapListed(objectMapper.valueToTree(result.body))
+                ZaakeigenschapListed(objectMapper.valueToTree(result))
             }
         }
-
-        return result.body!!
+        return result ?: throw IllegalStateException("No result found")
     }
 
     private fun validateUrlHost(baseUrl: URI, url: URI?) {
@@ -574,14 +483,16 @@ class ZakenApiClient(
             .delete()
             .uri(zaakInformatieobjectUrl)
             .retrieve()
-            .toEntity(Void::class.java)
-            .block()
+            .toBodilessEntity()
     }
 
-    private fun buildWebClient(authentication: ZakenApiAuthentication): WebClient {
-        return webclientBuilder
+    private fun buildWebClient(authentication: ZakenApiAuthentication): RestClient {
+        return restClientBuilder
             .clone()
-            .filter(authentication)
+            .apply {
+                authentication.bearerAuth(it)
+                RestClientLoggingExtension.defaultRequestLogging(it)
+            }
             .build()
     }
 }

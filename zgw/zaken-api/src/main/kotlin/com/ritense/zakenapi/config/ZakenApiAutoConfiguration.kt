@@ -19,7 +19,6 @@ package com.ritense.zakenapi.config
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
-import com.ritense.documentenapi.service.DocumentDeleteHandler
 import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.documentenapi.service.DocumentenApiVersionService
 import com.ritense.outbox.OutboxService
@@ -51,7 +50,6 @@ import com.ritense.zakenapi.service.ZakenApiEventListener
 import com.ritense.zakenapi.service.ZakenDocumentDeleteHandler
 import com.ritense.zakenapi.web.rest.DefaultZaakTypeLinkResource
 import com.ritense.zakenapi.web.rest.ZaakDocumentResource
-import com.ritense.zakenapi.web.rest.ZaakTypeLinkResource
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -60,7 +58,7 @@ import org.springframework.context.annotation.Primary
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.transaction.PlatformTransactionManager
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.client.RestClient
 import kotlin.contracts.ExperimentalContracts
 
 @AutoConfiguration
@@ -70,12 +68,14 @@ class ZakenApiAutoConfiguration {
 
     @Bean
     fun zakenApiClient(
-        webclientBuilder: WebClient.Builder,
+        restClientBuilder: RestClient.Builder,
         outboxService: OutboxService,
         objectMapper: ObjectMapper
-    ): ZakenApiClient {
-        return ZakenApiClient(webclientBuilder, outboxService, objectMapper)
-    }
+    ) = ZakenApiClient(
+        restClientBuilder,
+        outboxService,
+        objectMapper
+    )
 
     @Bean
     fun zakenApiPluginFactory(
@@ -86,24 +86,22 @@ class ZakenApiAutoConfiguration {
         zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
         zaakHersteltermijnRepository: ZaakHersteltermijnRepository,
         platformTransactionManager: PlatformTransactionManager,
-    ): ZakenApiPluginFactory {
-        return ZakenApiPluginFactory(
-            pluginService,
-            zakenApiClient,
-            urlProvider,
-            storageService,
-            zaakInstanceLinkRepository,
-            zaakHersteltermijnRepository,
-            platformTransactionManager,
-        )
-    }
+    ) = ZakenApiPluginFactory(
+        pluginService,
+        zakenApiClient,
+        urlProvider,
+        storageService,
+        zaakInstanceLinkRepository,
+        zaakHersteltermijnRepository,
+        platformTransactionManager,
+    )
 
     @Bean
     fun zakenApiZaakInstanceLinkService(
         zaakInstanceLinkRepository: ZaakInstanceLinkRepository
-    ): ZaakInstanceLinkService {
-        return ZaakInstanceLinkService(zaakInstanceLinkRepository)
-    }
+    ) = ZaakInstanceLinkService(
+        zaakInstanceLinkRepository
+    )
 
     @Bean
     fun zaakDocumentService(
@@ -112,35 +110,31 @@ class ZakenApiAutoConfiguration {
         catalogiService: CatalogiService,
         documentenApiService: DocumentenApiService,
         documentenApiVersionService: DocumentenApiVersionService,
-    ): ZaakDocumentService {
-        return ZaakDocumentService(
-            zaakUrlProvider,
-            pluginService,
-            catalogiService,
-            documentenApiService,
-            documentenApiVersionService,
-        )
-    }
+    ) = ZaakDocumentService(
+        zaakUrlProvider,
+        pluginService,
+        catalogiService,
+        documentenApiService,
+        documentenApiVersionService,
+    )
 
     @Bean
     @ConditionalOnMissingBean(ZaakDocumentResource::class)
     fun zaakDocumentResource(
         zaakDocumentService: ZaakDocumentService
-    ): ZaakDocumentResource {
-        return ZaakDocumentResource(zaakDocumentService)
-    }
+    ) = ZaakDocumentResource(
+        zaakDocumentService
+    )
 
     @Bean
     @ConditionalOnMissingBean(ZaakValueResolverFactory::class)
     fun zaakValueResolverFactory(
         zaakDocumentService: ZaakDocumentService,
         processDocumentService: ProcessDocumentService
-    ): ZaakValueResolverFactory {
-        return ZaakValueResolverFactory(
-            zaakDocumentService,
-            processDocumentService
-        )
-    }
+    ) = ZaakValueResolverFactory(
+        zaakDocumentService,
+        processDocumentService
+    )
 
     @Bean
     @ConditionalOnMissingBean(ZaakStatusValueResolverFactory::class)
@@ -148,13 +142,11 @@ class ZakenApiAutoConfiguration {
         processDocumentService: ProcessDocumentService,
         zaakUrlProvider: ZaakUrlProvider,
         pluginService: PluginService,
-    ): ZaakStatusValueResolverFactory {
-        return ZaakStatusValueResolverFactory(
-            processDocumentService,
-            zaakUrlProvider,
-            pluginService
-        )
-    }
+    ) = ZaakStatusValueResolverFactory(
+        processDocumentService,
+        zaakUrlProvider,
+        pluginService
+    )
 
     @Bean
     @ConditionalOnMissingBean(ZaakResultaatValueResolverFactory::class)
@@ -162,13 +154,11 @@ class ZakenApiAutoConfiguration {
         processDocumentService: ProcessDocumentService,
         zaakUrlProvider: ZaakUrlProvider,
         pluginService: PluginService,
-    ): ZaakResultaatValueResolverFactory {
-        return ZaakResultaatValueResolverFactory(
-            processDocumentService,
-            zaakUrlProvider,
-            pluginService
-        )
-    }
+    ) = ZaakResultaatValueResolverFactory(
+        processDocumentService,
+        zaakUrlProvider,
+        pluginService
+    )
 
     @OptIn(ExperimentalContracts::class)
     @Bean
@@ -177,13 +167,11 @@ class ZakenApiAutoConfiguration {
         processDocumentService: ProcessDocumentService,
         zaakInstanceLinkService: ZaakInstanceLinkService,
         pluginService: PluginService
-    ): BsnProvider {
-        return ZaakBsnProvider(
-            processDocumentService,
-            zaakInstanceLinkService,
-            pluginService
-        )
-    }
+    ) = ZaakBsnProvider(
+        processDocumentService,
+        zaakInstanceLinkService,
+        pluginService
+    )
 
     @OptIn(ExperimentalContracts::class)
     @Bean
@@ -192,61 +180,63 @@ class ZakenApiAutoConfiguration {
         processDocumentService: ProcessDocumentService,
         zaakInstanceLinkService: ZaakInstanceLinkService,
         pluginService: PluginService
-    ) : KvkProvider {
-        return ZaakKvkProvider(
-            processDocumentService,
-            zaakInstanceLinkService,
-            pluginService
-        )
-    }
+    ) = ZaakKvkProvider(
+        processDocumentService,
+        zaakInstanceLinkService,
+        pluginService
+    )
 
     @Order(300)
     @Bean
-    fun zakenApiHttpSecurityConfigurer(): ZakenApiHttpSecurityConfigurer {
-        return ZakenApiHttpSecurityConfigurer()
-    }
+    fun zakenApiHttpSecurityConfigurer() = ZakenApiHttpSecurityConfigurer()
 
     @Bean
     fun zakenApiZaakTypeLinkService(
         zaakTypeLinkRepository: ZaakTypeLinkRepository,
         processDocumentAssociationService: ProcessDocumentAssociationService
-    ): ZaakTypeLinkService {
-        return DefaultZaakTypeLinkService(zaakTypeLinkRepository, processDocumentAssociationService)
-    }
+    ) = DefaultZaakTypeLinkService(
+        zaakTypeLinkRepository,
+        processDocumentAssociationService
+    )
 
     @Bean
     fun zakenApiEventListener(
         pluginService: PluginService,
         zaakTypeLinkService: ZaakTypeLinkService
-    ): ZakenApiEventListener {
-        return ZakenApiEventListener(pluginService, zaakTypeLinkService)
-    }
+    ) = ZakenApiEventListener(
+        pluginService,
+        zaakTypeLinkService
+    )
 
     @Bean
     fun zakenApiZaakTypeLinkResource(
         zaakTypeLinkService: ZaakTypeLinkService
-    ): ZaakTypeLinkResource {
-        return DefaultZaakTypeLinkResource(zaakTypeLinkService)
-    }
+    ) = DefaultZaakTypeLinkResource(
+        zaakTypeLinkService
+    )
 
     @Bean
     fun zakenDocumentDeleteHandler(
         pluginService: PluginService
-    ): DocumentDeleteHandler {
-        return ZakenDocumentDeleteHandler(pluginService)
-    }
+    ) = ZakenDocumentDeleteHandler(
+        pluginService
+    )
 
     @Bean
     @Primary
     @ConditionalOnMissingBean(ZaakUrlProvider::class)
-    fun zaakUrlProvider(zaakInstanceLinkService: ZaakInstanceLinkService): ZaakUrlProvider {
-        return DefaultZaakUrlProvider(zaakInstanceLinkService)
-    }
+    fun zaakUrlProvider(
+        zaakInstanceLinkService: ZaakInstanceLinkService
+    ) = DefaultZaakUrlProvider(
+        zaakInstanceLinkService
+    )
 
     @Bean
     @Primary
     @ConditionalOnMissingBean(ZaaktypeUrlProvider::class)
-    fun zaaktypeUrlProvider(zaakTypeLinkService: ZaakTypeLinkService): ZaaktypeUrlProvider {
-        return DefaultZaaktypeUrlProvider(zaakTypeLinkService)
-    }
+    fun zaaktypeUrlProvider(
+        zaakTypeLinkService: ZaakTypeLinkService
+    ) = DefaultZaaktypeUrlProvider(
+        zaakTypeLinkService
+    )
 }

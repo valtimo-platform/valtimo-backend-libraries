@@ -40,7 +40,7 @@ class NotificatiesApiClient(
             .contentType(MediaType.APPLICATION_JSON)
             .body(abonnement)
             .retrieve()
-            .body(Abonnement::class.java)!!
+            .body<Abonnement>()!!
     }
 
     fun deleteAbonnement(
@@ -66,7 +66,7 @@ class NotificatiesApiClient(
             .body(kanaal)
             .contentType(MediaType.APPLICATION_JSON)
             .retrieve()
-            .body(Kanaal::class.java)!!
+            .body<Kanaal>()!!
     }
 
     fun getKanalen(
