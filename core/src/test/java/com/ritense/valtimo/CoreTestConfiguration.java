@@ -22,6 +22,7 @@ import com.ritense.authorization.AuthorizationService;
 import com.ritense.valtimo.camunda.authorization.UnauthorizedProcessBean;
 import com.ritense.valtimo.contract.annotation.ProcessBean;
 import com.ritense.valtimo.contract.mail.MailSender;
+import com.ritense.valtimo.logging.LoggingTestBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -53,6 +54,12 @@ public class CoreTestConfiguration {
             AuthorizationService authorizationService
         ) {
             return new UnauthorizedProcessBean(authorizationService);
+        }
+
+        @Bean
+        @ProcessBean
+        public LoggingTestBean loggingTestBean() {
+            return new LoggingTestBean();
         }
     }
 
