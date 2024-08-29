@@ -136,7 +136,6 @@ subprojects { subproject ->
         apply plugin: "kotlin"
         apply plugin: "kotlin-spring"
         apply plugin: "kotlin-jpa"
-        apply plugin: "kotlin-allopen"
         apply from: "$rootProject.projectDir/gradle/test.gradle"
         apply plugin: "com.avast.gradle.docker-compose"
         apply plugin: "org.jetbrains.dokka"
@@ -146,6 +145,10 @@ subprojects { subproject ->
         tasks.register("allDeps", DependencyReportTask) {}
         tasks.register("allDepInsight", DependencyInsightReportTask) {
             showingAllVariants.set(false)
+        }
+
+        allOpen {
+            annotation("com.ritense.valtimo.contract.annotation.AllOpen")
         }
 
         java {
