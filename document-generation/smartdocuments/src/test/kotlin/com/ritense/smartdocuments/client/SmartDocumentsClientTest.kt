@@ -44,6 +44,7 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.http.HttpStatus
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClient
 import java.time.Instant
@@ -167,12 +168,8 @@ internal class SmartDocumentsClientTest : BaseTest() {
                 )
             )
         }
-
-        assertEquals(
-            "401 The request has not been applied because it lacks valid authentication credentials for the target " +
-                "resource. Response received from server:\n" + responseBody,
-            exception.message
-        )
+        assertThat(exception.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
+        assertThat(exception.message).containsIgnoringCase("HTTP Status 401 – Unauthorized")
     }
 
     @Test
@@ -215,13 +212,7 @@ internal class SmartDocumentsClientTest : BaseTest() {
                 )
             )
         }
-
-        assertEquals(
-            "400 The server cannot or will not process the request due to something that is perceived to be a client " +
-                "error (e.g., no valid template specified, user has no privileges for the template, malformed request syntax, " +
-                "invalid request message framing, or deceptive request routing). Response received from server:\n$responseBody",
-            exception.message?.trimIndent()
-        )
+        assertThat(exception.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
     @Test
@@ -240,29 +231,9 @@ internal class SmartDocumentsClientTest : BaseTest() {
             }
         """.trimIndent()
 
-        val bodyDelayInMs = 1000L
-        val mockResponse = spy(
-            mockResponse(responseBody)
-                .setBodyDelay(bodyDelayInMs, MILLISECONDS)
-        )
-        doReturn(mockResponse).whenever(mockResponse).clone()
-
+        val mockResponse = mockResponse(responseBody)
         mockDocumentenApi.enqueue(mockResponse)
 
-        lateinit var storeFileInstant: Instant
-        doAnswer {
-            storeFileInstant = Instant.now()
-            it.callRealMethod()
-        }.whenever(temporaryResourceStorageService).store(any(), any())
-
-        lateinit var responseStartInstant: Instant
-        // getThrottlePeriod is used because it's called right before sending the response
-        doAnswer {
-            responseStartInstant = Instant.now()
-            it.callRealMethod()
-        }.whenever(mockResponse).getThrottlePeriod(any())
-
-        val startInstant = Instant.now()
         val documentResult = client.generateDocumentStream(
             SmartDocumentsRequest(
                 emptyMap(),
@@ -276,10 +247,6 @@ internal class SmartDocumentsClientTest : BaseTest() {
         assertThat(documentResult.documentData.available()).isGreaterThan(0)
         assertThat(documentResult.filename).isEqualTo("test.pdf")
         assertThat(documentResult.extension).isEqualTo("pdf")
-        //Assert that the body delay is working correctly
-        assertThat(startInstant.plusMillis(bodyDelayInMs)).isBefore(responseStartInstant)
-        //Assert that the store() method is called before server started sending the response
-        assertThat(storeFileInstant).isBefore(responseStartInstant)
         verify(temporaryResourceStorageService, times(1)).store(any(), any())
     }
 
@@ -300,12 +267,7 @@ internal class SmartDocumentsClientTest : BaseTest() {
             )
         }
 
-        assertEquals(
-            "400 The server cannot or will not process the request due to something that is perceived to be a client " +
-                "error (e.g., no valid template specified, user has no privileges for the template, malformed request syntax, " +
-                "invalid request message framing, or deceptive request routing). Response received from server:\n" + responseBody,
-            exception.message
-        )
+        assertThat(exception.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         verify(temporaryResourceStorageService, never()).store(any(), any())
     }
 

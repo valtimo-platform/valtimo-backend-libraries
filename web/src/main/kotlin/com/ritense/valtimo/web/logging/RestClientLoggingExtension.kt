@@ -19,7 +19,8 @@ object RestClientLoggingExtension {
                     val report = createRequestReport(request, response)
                     logger.error { report } // Really needed? are errors already logged?
                     throw HttpClientErrorException(response.statusCode, report)
-                })
+                }
+            )
             .defaultStatusHandler(
                 { obj: HttpStatusCode -> obj.is2xxSuccessful },
                 { request, response -> logger.debug { createRequestReport(request, response) } }

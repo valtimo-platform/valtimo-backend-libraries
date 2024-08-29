@@ -55,7 +55,8 @@ class SmartDocumentsClient(
     }
 
     fun generateDocument(smartDocumentsRequest: SmartDocumentsRequest): FilesResponse {
-        return restClient().post()
+        return restClient()
+            .post()
             .uri("/wsxmldeposit/deposit/unattended")
             .contentType(APPLICATION_JSON_UTF8)
             .body(fixRequest(smartDocumentsRequest))
