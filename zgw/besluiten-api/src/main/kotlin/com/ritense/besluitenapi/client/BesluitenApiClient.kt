@@ -20,9 +20,8 @@ import com.ritense.besluitenapi.BesluitenApiAuthentication
 import com.ritense.valtimo.web.logging.RestClientLoggingExtension
 import com.ritense.zgw.ClientTools
 import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestClient
-import org.springframework.web.reactive.function.BodyInserters
+import org.springframework.web.client.body
 import java.net.URI
 
 class BesluitenApiClient(
@@ -33,7 +32,7 @@ class BesluitenApiClient(
         baseUrl: URI,
         request: CreateBesluitRequest
     ): Besluit {
-        val result = restClientBuilder
+        return restClientBuilder
             .clone()
             .apply {
                 authentication.bearerAuth(it)
@@ -47,17 +46,16 @@ class BesluitenApiClient(
                     .build()
             }
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(request))
+            .body(request)
             .retrieve()
-            .toEntity(Besluit::class.java)
-        return result.body!!
+            .body<Besluit>()!!
     }
 
     fun createBesluitInformatieObject(
         authentication: BesluitenApiAuthentication,
         url: URI,
         besluitInformatieObject: CreateBesluitInformatieObject
-    ): ResponseEntity<BesluitInformatieObject>? {
+    ): BesluitInformatieObject {
         return restClientBuilder
             .clone()
             .apply {
@@ -74,6 +72,6 @@ class BesluitenApiClient(
             .contentType(MediaType.APPLICATION_JSON)
             .body(besluitInformatieObject)
             .retrieve()
-            .toEntity(BesluitInformatieObject::class.java)
+            .body<BesluitInformatieObject>()!!
     }
 }

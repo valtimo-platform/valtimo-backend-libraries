@@ -431,7 +431,8 @@ internal class DocumentenApiClientTest {
         val documentInformatieObjectId = "123"
         val buffer = Buffer()
 
-        buffer.writeUtf8("test")
+        //buffer.writeUtf8("test")
+        buffer.write(byteArrayOf(72,73,32,84,79,77))
 
         mockDocumentenApi.enqueue(mockInputStreamResponse(buffer))
 

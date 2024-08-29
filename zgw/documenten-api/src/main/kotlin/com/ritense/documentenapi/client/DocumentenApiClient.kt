@@ -196,7 +196,7 @@ class DocumentenApiClient(
             }
             .accept(MediaType.APPLICATION_OCTET_STREAM)
             .retrieve()
-            .body<ByteArray>()
+            .body<String>()
 
         result?.let {
             TransactionTemplate(platformTransactionManager).executeWithoutResult {
@@ -206,7 +206,7 @@ class DocumentenApiClient(
                     )
                 }
             }
-            return ByteArrayInputStream(it)
+            return ByteArrayInputStream(it.encodeToByteArray())
         } ?: run {
             throw IllegalStateException("No result found")
         }
