@@ -24,6 +24,7 @@ import com.ritense.formflow.domain.definition.FormFlowStep as FormFlowStepEntity
 @JsonInclude(Include.NON_EMPTY)
 data class FormFlowStep(
     val key: String,
+    val title: String? = null,
     val nextStep: String? = null,
     val nextSteps: List<FormFlowNextStep> = listOf(),
     val onBack: List<String> = listOf(),
@@ -31,9 +32,19 @@ data class FormFlowStep(
     val onComplete: List<String> = listOf(),
     val type: FormFlowStepType
 ) {
+    constructor(
+        key: String,
+        nextStep: String? = null,
+        nextSteps: List<FormFlowNextStep> = listOf(),
+        onBack: List<String> = listOf(),
+        onOpen: List<String> = listOf(),
+        onComplete: List<String> = listOf(),
+        type: FormFlowStepType
+    ) : this(key, null, nextStep, nextSteps, onBack, onOpen, onComplete, type)
 
     fun contentEquals(other: FormFlowStepEntity): Boolean {
         if (key != other.id.key) return false
+        if (title != other.title) return false
 
         if (nextSteps.size != other.nextSteps.size) return false
         if (nextSteps.any { nextStep ->
@@ -60,6 +71,7 @@ data class FormFlowStep(
 
         return FormFlowStepEntity(
             FormFlowStepId.create(key),
+            title,
             nextSteps,
             onBack,
             onOpen,
@@ -72,6 +84,7 @@ data class FormFlowStep(
         fun fromEntity(entity: FormFlowStepEntity): FormFlowStep {
             return FormFlowStep(
                 key = entity.id.key,
+                title = entity.title,
                 nextStep = null,
                 nextSteps = entity.nextSteps.map { FormFlowNextStep.fromEntity(it) },
                 onBack = entity.onBack,
