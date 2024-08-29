@@ -19,6 +19,7 @@ import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthor
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
+import com.ritense.authorization.utils.QueryUtils
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
@@ -26,6 +27,7 @@ import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
+import org.hibernate.query.sqm.function.SelfRenderingSqmAggregateFunction
 
 class JsonSchemaDocumentSpecification(
         authRequest: AuthorizationRequest<JsonSchemaDocument>,
@@ -41,7 +43,7 @@ class JsonSchemaDocumentSpecification(
     ): Predicate {
         // Filter the permissions for the relevant ones and use those to  find the filters that are required
         // Turn those filters into predicates
-        if (query.groupList.isEmpty()) {
+        if (!QueryUtils.isCountQuery(query) && query.groupList.isEmpty()) {
             val groupList = ArrayList(query.groupList)
             groupList.add(root.get<Any>("id").get<Any>("id"))
             query.groupBy(groupList)

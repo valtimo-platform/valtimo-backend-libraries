@@ -187,24 +187,27 @@ class CaseTaskListSearchService(
         val groupList = query.groupList.toMutableList()
         groupList.addAll(selectCols)
         query.groupBy(groupList)
+
+        // TODO: look into ability to re-use where predicate in list and count query. improves performance
         query.where(constructWhere(cb, query, taskRoot, documentRoot, caseDefinitionName, advancedSearchRequest))
+
         query.orderBy(constructOrderBy(query, cb, taskRoot, documentRoot, pageable.sort))
-
-        val countQuery = cb.createQuery(Long::class.java)
-        val countTaskRoot = countQuery.from(CamundaTask::class.java)
-        val countDocumentRoot = countQuery.from(JsonSchemaDocument::class.java)
-        countQuery.select(cb.count(countDocumentRoot))
-        entityManager.createQuery(countQuery)
-        countQuery.where(constructWhere(cb, countQuery, countTaskRoot, countDocumentRoot, caseDefinitionName, advancedSearchRequest))
-
-        // Can't use singleResult here due to the group by issue mentioned above.
-        val count = entityManager.createQuery(countQuery).resultList.sum()
 
         val pagedQuery = entityManager.createQuery(query)
             .setFirstResult(pageable.offset.toInt())
             .setMaxResults(pageable.pageSize)
 
-        return PageImpl(pagedQuery.resultList, pageable, count)
+        return PageImpl(pagedQuery.resultList, pageable, count(caseDefinitionName, advancedSearchRequest))
+    }
+
+    private fun count(caseDefinitionName: String, advancedSearchRequest: AdvancedSearchRequest): Long {
+        val cb: CriteriaBuilder = entityManager.criteriaBuilder
+        val query = cb.createQuery(Long::class.java)
+        val taskRoot = query.from(CamundaTask::class.java)
+        val documentRoot = query.from(JsonSchemaDocument::class.java)
+        query.select(cb.countDistinct(taskRoot))
+        query.where(constructWhere(cb, query, taskRoot, documentRoot, caseDefinitionName, advancedSearchRequest))
+        return entityManager.createQuery(query).singleResult
     }
 
     private fun constructWhere(
@@ -220,6 +223,7 @@ class CaseTaskListSearchService(
 
         val assignmentFilterPredicate: Predicate = constructAssignmentFilter(advancedSearchRequest.assigneeFilter, cb, taskRoot)
 
+        // TODO: look into options to improve performance as with complex rules this takes quite some time to finish
         val searchRequestPredicate: Array<Predicate> = constructSearchCriteriaFilter(advancedSearchRequest, cb, query, taskRoot, documentRoot)
 
         val where = cb.and(
