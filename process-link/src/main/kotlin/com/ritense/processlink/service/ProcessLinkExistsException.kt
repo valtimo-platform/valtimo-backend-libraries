@@ -16,5 +16,7 @@
 package com.ritense.processlink.service
 
 import jakarta.validation.ValidationException
+import java.util.UUID
 
-class ProcessLinkExistsException(message: String?, val contentsDiffer:Boolean) : ValidationException(message)
+class ProcessLinkExistsException(message: String?, val contentsDiffer: Boolean, val existingProcessLinkId: UUID) :
+    ValidationException(message)
