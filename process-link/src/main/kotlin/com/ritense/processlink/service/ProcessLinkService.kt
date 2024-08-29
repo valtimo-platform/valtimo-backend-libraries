@@ -87,7 +87,8 @@ open class ProcessLinkService(
 
             throw ProcessLinkExistsException(
                 "A process-link for process-definition '${createRequest.processDefinitionId}' and activity '${createRequest.activityId}' already exists!",
-                contentsDiffer
+                contentsDiffer,
+                currentProcessLinks.first().id
             )
         }
 
