@@ -29,10 +29,25 @@ object RestClientLoggingExtension {
     private fun createRequestReport(request: HttpRequest, response: ClientHttpResponse): String {
         return """
             Request report:
-            Method/Uri: '${request.method}' - '${request.uri}'
-            Header(s): '${request.headers}'
-            Status code: '${response.statusCode}'
-            Body content: '${String(response.body.readAllBytes())}'
+            HTTP Method = ${request.method}
+            Request URI = ${request.uri}
+            Headers = ${request.headers}
+            ---------------------------------------
+            Response:
+            Status = ${response.statusCode}
+            Headers = ${response.headers}
+            Content type = ${response.headers.contentType}
+            Body = ${String(response.body.readAllBytes())}
         """
     }
 }
+/*
+*
+* MockHttpServletRequest:
+      HTTP Method = POST
+      Request URI = /api/v1/openzaak/informatie-object-type-link
+       Parameters = {}
+          Headers = [Content-Type:"application/json;charset=UTF-8", Accept:"application/json", Content-Length:"123"]
+             Body = {"documentDefinitionName":"name","zaakType":"http://zaaktype.com","informatieObjectType":"http://informatieobjecttype.com"}
+    Session Attrs = {}
+* */

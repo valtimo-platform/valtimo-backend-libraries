@@ -34,7 +34,7 @@ class ObjecttypenApiClient(
         return restClientBuilder
             .clone()
             .apply {
-                authentication.auth(it)
+                authentication.bearerAuth(it)
                 RestClientLoggingExtension.defaultRequestLogging(it)
             }
             .build()
@@ -52,7 +52,7 @@ class ObjecttypenApiClient(
         return restClientBuilder
             .clone()
             .apply {
-                authentication.auth(it)
+                authentication.bearerAuth(it)
                 RestClientLoggingExtension.defaultRequestLogging(it)
             }
             .build()

@@ -52,6 +52,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.data.domain.PageRequest
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
@@ -224,7 +225,7 @@ internal class ObjectenApiClientTest {
 
         val objectUrl = mockApi.url("/some-object").toString()
 
-        assertThrows<IllegalStateException> {
+        assertThrows<HttpClientErrorException> {
             client.getObject(
                 TestAuthentication(),
                 URI(objectUrl)
@@ -389,7 +390,7 @@ internal class ObjectenApiClientTest {
 
         val objectUrl = mockApi.url("/some-object").toString()
         val objectTypesApiUrl = mockApi.url("/some-objectTypesApi").toString()
-        assertThrows<IllegalStateException> {
+        assertThrows<HttpClientErrorException> {
             client.getObjectsByObjecttypeUrl(
                 TestAuthentication(),
                 URI(objectUrl),
@@ -481,7 +482,7 @@ internal class ObjectenApiClientTest {
         val objectUrl = mockApi.url("/some-object").toString()
         val objectTypesApiUrl = mockApi.url("/some-objectTypesApi").toString()
 
-        assertThrows<IllegalStateException> {
+        assertThrows<HttpClientErrorException> {
             client.getObjectsByObjecttypeUrlWithSearchParams(
                 TestAuthentication(),
                 URI(objectUrl),
@@ -575,7 +576,7 @@ internal class ObjectenApiClientTest {
         val objectUrl = mockApi.url("/some-object").toString()
         val objectTypesApiUrl = mockApi.url("/some-objectTypesApi").toString().replace("localhost", "host")
 
-        assertThrows<IllegalStateException> {
+        assertThrows<HttpClientErrorException> {
             client.createObject(
                 TestAuthentication(),
                 URI(objectUrl),
@@ -886,7 +887,7 @@ internal class ObjectenApiClientTest {
         val objectUrl = mockApi.url("/some-object").toString()
         val objectTypesApiUrl = mockApi.url("/some-objectTypesApi").toString().replace("localhost", "host")
 
-        assertThrows<IllegalStateException> {
+        assertThrows<HttpClientErrorException> {
             client.objectPatch(
                 TestAuthentication(),
                 URI(objectUrl),
@@ -985,7 +986,7 @@ internal class ObjectenApiClientTest {
         val objectUrl = mockApi.url("/some-object").toString()
         val objectTypesApiUrl = mockApi.url("/some-objectTypesApi").toString().replace("localhost", "host")
 
-        assertThrows<IllegalStateException> {
+        assertThrows<HttpClientErrorException> {
             client.objectUpdate(
                 TestAuthentication(),
                 URI(objectUrl),

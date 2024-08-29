@@ -46,7 +46,7 @@ class ObjectTokenAuthenticationPlugin : ObjectenApiAuthentication, ObjecttypenAp
         return next.exchange(filteredRequest)
     }
 
-    override fun auth(builder: RestClient.Builder): RestClient.Builder {
+    override fun bearerAuth(builder: RestClient.Builder): RestClient.Builder {
         return builder.defaultHeaders { headers ->
             headers.set(HttpHeaders.AUTHORIZATION, "Token $token")
         }
