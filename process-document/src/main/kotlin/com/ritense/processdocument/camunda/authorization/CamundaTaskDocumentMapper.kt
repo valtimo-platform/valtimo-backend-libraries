@@ -18,6 +18,7 @@ package com.ritense.processdocument.camunda.authorization
 
 import com.ritense.authorization.AuthorizationEntityMapper
 import com.ritense.authorization.AuthorizationEntityMapperResult
+import com.ritense.authorization.utils.QueryUtils
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository
@@ -32,6 +33,7 @@ import com.ritense.valtimo.contract.database.QueryDialectHelper
 import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Root
+import org.hibernate.query.sqm.function.SelfRenderingSqmAggregateFunction
 
 class CamundaTaskDocumentMapper(
     private val processDocumentInstanceRepository: ProcessDocumentInstanceRepository,
@@ -53,7 +55,9 @@ class CamundaTaskDocumentMapper(
     ): AuthorizationEntityMapperResult<JsonSchemaDocument> {
         val documentRoot = query.from(JsonSchemaDocument::class.java)
         val processBusinessKey = root.get<CamundaExecution>(PROCESS_INSTANCE).get<String>(BUSINESS_KEY)
-        query.groupBy(query.groupList + root.get<String>(ID))
+        if (!QueryUtils.isCountQuery(query)) {
+            query.groupBy(query.groupList + root.get<String>(ID))
+        }
         val documentId = queryDialectHelper.uuidToString(
             criteriaBuilder,
             documentRoot.get<JsonSchemaDocumentId>(ID).get(ID)
