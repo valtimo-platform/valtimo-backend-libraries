@@ -27,13 +27,17 @@ import com.ritense.document.repository.InternalCaseStatusRepository
 import com.ritense.document.web.rest.dto.InternalCaseStatusCreateRequestDto
 import com.ritense.document.web.rest.dto.InternalCaseStatusUpdateOrderRequestDto
 import com.ritense.document.web.rest.dto.InternalCaseStatusUpdateRequestDto
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import jakarta.validation.Valid
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.annotation.Validated
 import kotlin.jvm.optionals.getOrNull
 
 @Validated
 @Transactional
+@Service
+@SkipComponentScan
 class InternalCaseStatusService(
     private val internalCaseStatusRepository: InternalCaseStatusRepository,
     private val documentDefinitionService: DocumentDefinitionService,

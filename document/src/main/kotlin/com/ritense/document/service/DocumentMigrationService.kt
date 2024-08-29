@@ -36,6 +36,7 @@ import com.ritense.document.repository.impl.JsonSchemaDocumentRepository
 import com.ritense.document.repository.impl.specification.JsonSchemaDocumentSpecificationHelper.Companion.byDocumentDefinitionId
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.valtimo.contract.annotation.PublicBean
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import org.everit.json.schema.Schema
 import org.springframework.context.ApplicationContext
@@ -44,9 +45,12 @@ import org.springframework.expression.common.TemplateParserContext
 import org.springframework.expression.spel.standard.SpelExpressionParser
 import org.springframework.expression.spel.support.StandardEvaluationContext
 import org.springframework.integration.json.JsonPropertyAccessor
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
+@Service
+@SkipComponentScan
 class DocumentMigrationService(
     private val documentDefinitionService: JsonSchemaDocumentDefinitionService,
     private val documentRepository: JsonSchemaDocumentRepository,

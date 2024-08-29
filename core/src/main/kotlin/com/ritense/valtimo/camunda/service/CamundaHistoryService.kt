@@ -22,18 +22,22 @@ import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceRepository
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.camunda.bpm.engine.HistoryService
 import org.springframework.data.jpa.domain.Specification
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-open class CamundaHistoryService(
+@Service
+@SkipComponentScan
+class CamundaHistoryService(
     private val historyService: HistoryService,
     private val camundaHistoricProcessInstanceRepository: CamundaHistoricProcessInstanceRepository,
     private val authorizationService: AuthorizationService
 ) {
 
     @Transactional(readOnly = true)
-    open fun findHistoricProcessInstances(
+    fun findHistoricProcessInstances(
         specification: Specification<CamundaHistoricProcessInstance>
     ): List<CamundaHistoricProcessInstance> {
         denyAuthorization()
@@ -41,7 +45,7 @@ open class CamundaHistoryService(
     }
 
     @Transactional(readOnly = true)
-    open fun findHistoricProcessInstance(
+    fun findHistoricProcessInstance(
         specification: Specification<CamundaHistoricProcessInstance>
     ): CamundaHistoricProcessInstance? {
         denyAuthorization()
@@ -49,7 +53,7 @@ open class CamundaHistoryService(
     }
 
     @Transactional(readOnly = true)
-    open fun countHistoricProcessInstances(specification: Specification<CamundaHistoricProcessInstance>): Long {
+    fun countHistoricProcessInstances(specification: Specification<CamundaHistoricProcessInstance>): Long {
         denyAuthorization()
         return camundaHistoricProcessInstanceRepository.count(specification)
     }

@@ -21,9 +21,13 @@ import com.ritense.search.domain.SearchFieldV2
 import com.ritense.search.mapper.SearchFieldV2Mapper
 import com.ritense.search.repository.SearchFieldV2Repository
 import com.ritense.search.web.rest.dto.SearchFieldV2Dto
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.springframework.http.HttpStatus
+import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 
+@Service
+@SkipComponentScan
 class SearchFieldV2Service(
     private val searchFieldV2Repository: SearchFieldV2Repository,
     private val searchFieldMappers: List<SearchFieldV2Mapper>

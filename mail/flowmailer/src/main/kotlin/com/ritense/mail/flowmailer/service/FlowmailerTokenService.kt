@@ -18,17 +18,21 @@ package com.ritense.mail.flowmailer.service
 
 import com.ritense.mail.flowmailer.config.FlowmailerProperties
 import com.ritense.mail.flowmailer.domain.OauthTokenResponse
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.core.ResolvableType
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
+import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestTemplate
 
+@Service
+@SkipComponentScan
 class FlowmailerTokenService(
     private val flowmailerProperties: FlowmailerProperties,
     private val restTemplate: RestTemplate

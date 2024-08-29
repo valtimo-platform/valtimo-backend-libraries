@@ -45,6 +45,7 @@ import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider
 import com.ritense.valtimo.camunda.domain.CamundaExecution
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.contract.utils.RequestHelper
@@ -65,6 +66,7 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
+import org.springframework.stereotype.Service
 import java.sql.Time
 import java.sql.Timestamp
 import java.time.Instant
@@ -84,6 +86,8 @@ import java.util.stream.Collectors
 
 const val SEARCH_FIELD_OWNER_TYPE = "TaskListSearchColumns"
 
+@Service
+@SkipComponentScan
 class CaseTaskListSearchService(
     private val entityManager: EntityManager,
     private val valueResolverService: ValueResolverService,

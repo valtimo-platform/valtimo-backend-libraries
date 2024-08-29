@@ -26,9 +26,13 @@ import com.ritense.documentenapi.service.ZgwDocumentTrefwoordService
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
 import com.ritense.valtimo.changelog.service.ChangelogService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.springframework.data.domain.Pageable
+import org.springframework.stereotype.Service
 
-open class ZgwDocumentTrefwoordDeploymentService(
+@Service
+@SkipComponentScan
+class ZgwDocumentTrefwoordDeploymentService(
     private val objectMapper: ObjectMapper,
     private val zgwDocumentTrefwoordRepository: ZgwDocumentTrefwoordRepository,
     private val zgwDocumentTrefwoordService: ZgwDocumentTrefwoordService,
