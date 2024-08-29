@@ -17,7 +17,7 @@ object RestClientLoggingExtension {
                 { obj: HttpStatusCode -> obj.is4xxClientError || obj.is5xxServerError },
                 { request, response ->
                     val report = createRequestReport(request, response)
-                    logger.error { report } // Really needed? are errors already logged?
+                    logger.error { report }
                     throw HttpClientErrorException(response.statusCode, report)
                 }
             )
