@@ -24,6 +24,7 @@ import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.valtimo.formflow.service.FormFlowValtimoService
+import com.ritense.valtimo.formflow.web.rest.dto.FormFlowBreadcrumbsResponse
 import com.ritense.valtimo.formflow.web.rest.result.CompleteStepResult
 import com.ritense.valtimo.formflow.web.rest.result.FormFlowStepResult
 import com.ritense.valtimo.formflow.web.rest.result.GetFormFlowStateResult
@@ -129,6 +130,40 @@ class FormFlowResource(
         formFlowService.save(instance)
 
         return ResponseEntity.noContent().build()
+    }
+
+    @PostMapping("/v1/form-flow/instance/{formFlowId}/step/instance/{stepInstanceId}/to/step/instance/{targetStepInstanceId}")
+    @Transactional
+    fun navigateToStep(
+        @PathVariable(name = "formFlowId") formFlowId: String,
+        @PathVariable(name = "stepInstanceId") stepInstanceId: String,
+        @PathVariable(name = "targetStepInstanceId") targetStepInstanceId: String,
+        @RequestBody incompleteSubmissionData: JsonNode?
+    ): ResponseEntity<GetFormFlowStateResult> {
+        val instance = formFlowService.getByInstanceIdIfExists(FormFlowInstanceId.existingId(formFlowId))!!
+        if (instance.currentFormFlowStepInstanceId?.id.toString() != stepInstanceId) {
+            return ResponseEntity.badRequest().build()
+        }
+        val verifiedSubmissionData = formFlowValtimoService.getVerifiedSubmissionData(incompleteSubmissionData, instance)
+        if (verifiedSubmissionData != null) {
+            instance.saveTemporary(toJsonObject(verifiedSubmissionData))
+        }
+        formFlowService.save(instance)
+
+        val stepInstance = instance.navigateToStep(FormFlowStepInstanceId.existingId(targetStepInstanceId))
+
+        return ResponseEntity.ok(GetFormFlowStateResult(instance.id.id, openStep(stepInstance)))
+    }
+
+    @GetMapping("/v1/form-flow/instance/{formFlowId}/breadcrumbs")
+    @Transactional
+    fun getBreadcrumbs(
+        @PathVariable(name = "formFlowId") formFlowId: String,
+    ): ResponseEntity<FormFlowBreadcrumbsResponse> {
+        val instance = formFlowService.getByInstanceIdIfExists(FormFlowInstanceId.existingId(formFlowId))!!
+        val breadcrumbs = formFlowService.getBreadcrumbs(instance)
+        val response = FormFlowBreadcrumbsResponse.of(instance.currentFormFlowStepInstanceId!!.id, breadcrumbs)
+        return ResponseEntity.ok(response)
     }
 
     private fun openStep(stepInstance: FormFlowStepInstance?): FormFlowStepResult? {
