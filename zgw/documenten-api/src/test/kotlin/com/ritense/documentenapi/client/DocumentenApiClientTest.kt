@@ -53,6 +53,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
@@ -257,7 +258,7 @@ internal class DocumentenApiClientTest {
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
-        assertThrows<IllegalStateException> {
+        assertThrows<HttpClientErrorException> {
             client.storeDocument(
                 TestAuthentication(),
                 mockDocumentenApi.url("/").toUri(),
@@ -412,7 +413,7 @@ internal class DocumentenApiClientTest {
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
-        assertThrows<IllegalStateException> {
+        assertThrows<HttpClientErrorException> {
             client.getInformatieObject(
                 TestAuthentication(),
                 mockDocumentenApi.url("/zaakobjects").toUri(),
@@ -466,7 +467,7 @@ internal class DocumentenApiClientTest {
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
-        assertThrows<IllegalStateException> {
+        assertThrows<HttpClientErrorException> {
             client.downloadInformatieObjectContent(
                 TestAuthentication(),
                 mockDocumentenApi.url("/").toUri(),
@@ -516,7 +517,7 @@ internal class DocumentenApiClientTest {
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
-        assertThrows<IllegalStateException> {
+        assertThrows<HttpClientErrorException> {
             client.deleteInformatieObject(
                 TestAuthentication(),
                 mockDocumentenApi.url("/zaakobjects").toUri(),
@@ -720,7 +721,7 @@ internal class DocumentenApiClientTest {
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
-        assertThrows<IllegalStateException> {
+        assertThrows<HttpClientErrorException> {
             client.modifyInformatieObject(
                 TestAuthentication(),
                 mockDocumentenApi.url("/zaakobjects").toUri(),

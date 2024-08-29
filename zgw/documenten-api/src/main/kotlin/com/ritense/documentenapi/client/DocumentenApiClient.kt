@@ -33,7 +33,6 @@ import com.ritense.zgw.ClientTools.Companion.optionalQueryParam
 import com.ritense.zgw.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import org.springframework.http.HttpStatusCode
 import org.springframework.http.MediaType
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
@@ -93,15 +92,13 @@ class DocumentenApiClient(
             .retrieve()
             .body<DocumentInformatieObject>()
 
-        result?.let {
-            outboxService.send {
-                DocumentInformatieObjectViewed(
-                    result.url.toString(),
-                    objectMapper.valueToTree(result)
-                )
-            }
+        outboxService.send {
+            DocumentInformatieObjectViewed(
+                result!!.url.toString(),
+                objectMapper.valueToTree(result)
+            )
         }
-        return result ?: throw IllegalStateException("No result found")
+        return result!!
     }
 
     fun getInformatieObjecten(
@@ -196,20 +193,16 @@ class DocumentenApiClient(
             }
             .accept(MediaType.APPLICATION_OCTET_STREAM)
             .retrieve()
-            .body<String>()
+            .body<String>()!!
 
-        result?.let {
-            TransactionTemplate(platformTransactionManager).executeWithoutResult {
-                outboxService.send {
-                    DocumentInformatieObjectDownloaded(
-                        objectUrl.toString()
-                    )
-                }
+        TransactionTemplate(platformTransactionManager).executeWithoutResult {
+            outboxService.send {
+                DocumentInformatieObjectDownloaded(
+                    objectUrl.toString()
+                )
             }
-            return ByteArrayInputStream(it.encodeToByteArray())
-        } ?: run {
-            throw IllegalStateException("No result found")
         }
+        return ByteArrayInputStream(result.encodeToByteArray())
     }
 
     fun lockInformatieObject(
@@ -220,9 +213,8 @@ class DocumentenApiClient(
             .post()
             .uri("$objectUrl/lock")
             .retrieve()
-            .body<DocumentLock>()
-
-        return result ?: throw IllegalStateException("No result found")
+            .body<DocumentLock>()!!
+        return result
     }
 
     fun unlockInformatieObject(
@@ -244,9 +236,6 @@ class DocumentenApiClient(
             .delete()
             .uri(url)
             .retrieve()
-            .onStatus(HttpStatusCode::isError) { _, _ ->
-                throw IllegalStateException("No result found")
-            }
             .toBodilessEntity()
 
         outboxService.send { DocumentDeleted(url.toASCIIString()) }
@@ -257,6 +246,7 @@ class DocumentenApiClient(
         documentUrl: URI,
         patchDocumentRequest: PatchDocumentRequest
     ): DocumentInformatieObject {
+
         check(getInformatieObject(authentication, documentUrl).status != DocumentStatusType.DEFINITIEF) {
             "InformatieObject ${documentUrl.path.substringAfterLast("/")} with status 'definitief' cannot be updated!"
         }
@@ -266,14 +256,12 @@ class DocumentenApiClient(
             .uri(documentUrl)
             .body(patchDocumentRequest)
             .retrieve()
-            .body<DocumentInformatieObject>()
+            .body<DocumentInformatieObject>()!!
 
-        result?.let {
-            outboxService.send {
-                DocumentUpdated(result.url.toASCIIString(), objectMapper.valueToTree(result))
-            }
+        outboxService.send {
+            DocumentUpdated(result.url.toASCIIString(), objectMapper.valueToTree(result))
         }
-        return result ?: throw IllegalStateException("No result found")
+        return result
     }
 
     private fun toObjectUrl(baseUrl: URI, objectId: String): URI {

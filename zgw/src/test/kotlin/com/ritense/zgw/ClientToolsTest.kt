@@ -36,7 +36,6 @@ import org.springframework.web.util.UriBuilder
 import reactor.core.publisher.Mono
 import kotlin.test.assertEquals
 
-
 class ClientToolsTest {
 
     @Test
@@ -66,7 +65,13 @@ class ClientToolsTest {
             title = "title",
             type = "type"
         )
-        whenever(mockResponse.bodyToMono(String::class.java)).thenReturn(Mono.just(ObjectMapper().writeValueAsString(errorResponse)))
+        whenever(mockResponse.bodyToMono(String::class.java)).thenReturn(
+            Mono.just(
+                ObjectMapper().writeValueAsString(
+                    errorResponse
+                )
+            )
+        )
         val exception = assertThrows<ClientErrorException> {
             ClientTools.zgwErrorHandler().filter(mockRequest, mockNext).block()
         }
