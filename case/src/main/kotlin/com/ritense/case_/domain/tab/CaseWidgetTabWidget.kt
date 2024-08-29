@@ -17,6 +17,7 @@
 package com.ritense.case_.domain.tab
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.ritense.valtimo.contract.annotation.AllOpen
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorColumn
 import jakarta.persistence.DiscriminatorType
@@ -26,6 +27,7 @@ import jakarta.persistence.Inheritance
 import jakarta.persistence.InheritanceType
 import jakarta.persistence.Table
 
+@AllOpen
 @Entity
 @Table(name = "case_widget_tab_widget")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
