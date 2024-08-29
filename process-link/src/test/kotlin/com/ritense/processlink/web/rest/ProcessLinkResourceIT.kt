@@ -25,8 +25,6 @@ import com.ritense.processlink.domain.CustomProcessLink
 import com.ritense.processlink.domain.CustomProcessLinkCreateRequestDto
 import com.ritense.processlink.domain.CustomProcessLinkUpdateRequestDto
 import com.ritense.processlink.repository.ProcessLinkRepository
-import java.nio.charset.StandardCharsets
-import java.util.UUID
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -42,6 +40,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
+import java.nio.charset.StandardCharsets
+import java.util.UUID
 
 
 @Transactional
@@ -153,10 +153,10 @@ internal class ProcessLinkResourceIT @Autowired constructor(
             .andExpect(status().isOk)
             .andExpect(jsonPath("$").isNotEmpty)
             .andExpect(jsonPath("$").isArray)
-            .andExpect(jsonPath("$[0].activityId").value( "my-service-task"))
-            .andExpect(jsonPath("$[0].activityType").value( "bpmn:ServiceTask:start"))
-            .andExpect(jsonPath("$[0].processLinkType").value( "test"))
-            .andExpect(jsonPath("$[0].someValue").value( "test"))
+            .andExpect(jsonPath("$[0].activityId").value("my-service-task"))
+            .andExpect(jsonPath("$[0].activityType").value("bpmn:ServiceTask:start"))
+            .andExpect(jsonPath("$[0].processLinkType").value("test"))
+            .andExpect(jsonPath("$[0].someValue").value("changed"))
     }
 
     private fun createProcessLink(): UUID {
