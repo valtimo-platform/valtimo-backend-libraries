@@ -190,25 +190,15 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         return new PageImpl<>(documents, pageable, count(queryWhereBuilder));
     }
 
-    private Long count(
-        QueryWhereBuilder queryWhereBuilder
-    ) {
+    private Long count(QueryWhereBuilder queryWhereBuilder) {
         final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         final CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
         Root<JsonSchemaDocument> countRoot = countQuery.from(JsonSchemaDocument.class);
-        countQuery.select(cb.count(countRoot));
+        countQuery.select(cb.countDistinct(countRoot));
         queryWhereBuilder.apply(cb, countQuery, countRoot);
 
         // TODO: Should be turned into a subquery, and then do a count over the results from the subquery.
-        List<Long> countResultList = entityManager.createQuery(countQuery).getResultList();
-
-        long count = 0L;
-
-        if (!countResultList.isEmpty()) {
-            count = countResultList.size();
-        }
-
-        return count;
+        return entityManager.createQuery(countQuery).getSingleResult();
     }
 
     private void buildQueryWhere(SearchRequest searchRequest, CriteriaBuilder cb, CriteriaQuery<?> query, Root<JsonSchemaDocument> documentRoot) {
