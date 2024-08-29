@@ -39,7 +39,7 @@ import java.util.Base64
 import java.util.UUID
 
 class SmartDocumentsClient(
-    private var smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties, // WHY CONNECTOR? is this class old?/depracted
+    private var smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties,
     private val smartDocumentsRestClientBuilder: RestClient.Builder,
     private val maxFileSizeMb: Int,
     private val temporaryResourceStorageService: TemporaryResourceStorageService,
