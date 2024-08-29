@@ -19,6 +19,10 @@
                         "type": "string",
                         "description": "The identifying human readable key of the step"
                     },
+                    "title": {
+                        "type": "string",
+                        "description": "The title of the step"
+                    },
                     "type": {
                         "type": "object",
                         "description": "The type of form that should be displayed",
