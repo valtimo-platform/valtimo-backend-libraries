@@ -16,8 +16,10 @@
 
 package com.ritense.formflow.service
 
+import com.ritense.formflow.domain.FormFlowBreadcrumb
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
+import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
@@ -27,8 +29,8 @@ import com.ritense.formflow.handler.TypeProperties
 import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
-import kotlin.jvm.optionals.getOrNull
 import org.springframework.transaction.annotation.Transactional
+import kotlin.jvm.optionals.getOrNull
 
 @Transactional
 class FormFlowService(
@@ -99,5 +101,32 @@ class FormFlowService(
 
     fun deleteByKey(definitionKey: String) {
         formFlowDefinitionRepository.deleteAllByIdKey(definitionKey)
+    }
+
+    fun getBreadcrumbs(instance: FormFlowInstance): List<FormFlowBreadcrumb> {
+        val lastCompletedOrder = instance.getHistory()
+            .filter { it.submissionData != null }
+            .maxByOrNull { it.submissionOrder }
+            ?.order ?: -1
+        val historicBreadcrumbs = instance.getHistory()
+            .map { FormFlowBreadcrumb.of(it, it.order <= lastCompletedOrder + 1, it.order <= lastCompletedOrder) }
+        val futureBreadcrumbs = getFutureSteps(instance)
+            .map { FormFlowBreadcrumb.of(it) }
+        return historicBreadcrumbs + futureBreadcrumbs
+    }
+
+    private fun getFutureSteps(instance: FormFlowInstance): List<FormFlowStep> {
+        return getFutureSteps(instance.getHistory().last().definition)
+    }
+
+    private fun getFutureSteps(step: FormFlowStep, result: MutableList<FormFlowStep> = mutableListOf()): List<FormFlowStep> {
+        step.nextSteps.forEach { nextStep ->
+            val futureStep = step.id.formFlowDefinition!!.steps.first { it.id.key == nextStep.step }
+            if (!result.contains(futureStep)) {
+                result.add(futureStep)
+                return getFutureSteps(futureStep, result)
+            }
+        }
+        return result
     }
 }
