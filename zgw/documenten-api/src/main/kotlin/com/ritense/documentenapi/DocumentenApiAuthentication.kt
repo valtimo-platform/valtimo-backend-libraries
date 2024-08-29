@@ -17,7 +17,11 @@
 package com.ritense.documentenapi
 
 import com.ritense.plugin.annotation.PluginCategory
+import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction
 
 @PluginCategory("documenten-api-authentication")
-interface DocumentenApiAuthentication : ExchangeFilterFunction
+interface DocumentenApiAuthentication : ExchangeFilterFunction {
+
+    fun bearerAuth(builder: RestClient.Builder): RestClient.Builder
+}

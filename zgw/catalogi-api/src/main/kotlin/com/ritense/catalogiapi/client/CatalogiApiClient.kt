@@ -46,7 +46,7 @@ open class CatalogiApiClient(
         request: ZaaktypeInformatieobjecttypeRequest
     ): Page<ZaaktypeInformatieobjecttype> {
         validateUrlHost(baseUrl, request.zaaktype)
-        val result = buildWebclient(authentication)
+        val result = buildRestClient(authentication)
             .get()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
@@ -68,7 +68,7 @@ open class CatalogiApiClient(
         baseUrl: URI,
         request: InformatieobjecttypeRequest
     ): Page<Informatieobjecttype> {
-        val result = buildWebclient(authentication)
+        val result = buildRestClient(authentication)
             .get()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
@@ -88,7 +88,7 @@ open class CatalogiApiClient(
         informatieobjecttypeUrl: URI
     ): Informatieobjecttype {
         validateUrlHost(baseUrl, informatieobjecttypeUrl)
-        val result = buildWebclient(authentication)
+        val result = buildRestClient(authentication)
             .get()
             .uri(informatieobjecttypeUrl)
             .retrieve()
@@ -102,7 +102,7 @@ open class CatalogiApiClient(
         request: RoltypeRequest,
     ): Page<Roltype> {
         validateUrlHost(baseUrl, request.zaaktype)
-        val result = buildWebclient(authentication)
+        val result = buildRestClient(authentication)
             .get()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
@@ -123,7 +123,7 @@ open class CatalogiApiClient(
         statustypeUrl: URI
     ): Statustype {
         validateUrlHost(baseUrl, statustypeUrl)
-        val result = buildWebclient(authentication)
+        val result = buildRestClient(authentication)
             .get()
             .uri(statustypeUrl)
             .retrieve()
@@ -137,7 +137,7 @@ open class CatalogiApiClient(
         request: StatustypeRequest,
     ): Page<Statustype> {
         validateUrlHost(baseUrl, request.zaaktype)
-        val result = buildWebclient(authentication)
+        val result = buildRestClient(authentication)
             .get()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
@@ -157,7 +157,7 @@ open class CatalogiApiClient(
         resultaattypeUrl: URI
     ): Resultaattype {
         validateUrlHost(baseUrl, resultaattypeUrl)
-        val result = buildWebclient(authentication)
+        val result = buildRestClient(authentication)
             .get()
             .uri(resultaattypeUrl)
             .retrieve()
@@ -172,7 +172,7 @@ open class CatalogiApiClient(
         request: ResultaattypeRequest,
     ): Page<Resultaattype> {
         validateUrlHost(baseUrl, request.zaaktype)
-        val result = buildWebclient(authentication)
+        val result = buildRestClient(authentication)
             .get()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
@@ -193,7 +193,7 @@ open class CatalogiApiClient(
         request: BesluittypeRequest,
     ): Page<Besluittype> {
         validateUrlHost(baseUrl, request.zaaktypen)
-        val result = buildWebclient(authentication)
+        val result = buildRestClient(authentication)
             .get()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
@@ -216,7 +216,7 @@ open class CatalogiApiClient(
         request: EigenschapRequest,
     ): Page<Eigenschap> {
         validateUrlHost(baseUrl, request.zaaktype)
-        val result = buildWebclient(authentication)
+        val result = buildRestClient(authentication)
             .get()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
@@ -236,7 +236,7 @@ open class CatalogiApiClient(
         baseUrl: URI,
         request: ZaaktypeRequest
     ): Page<Zaaktype> {
-        val result = buildWebclient(authentication)
+        val result = buildRestClient(authentication)
             .get()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
@@ -256,7 +256,7 @@ open class CatalogiApiClient(
         zaaktypeUrl: URI
     ): Zaaktype {
         validateUrlHost(baseUrl, zaaktypeUrl)
-        val result = buildWebclient(authentication)
+        val result = buildRestClient(authentication)
             .get()
             .uri(zaaktypeUrl)
             .retrieve()
@@ -294,7 +294,7 @@ open class CatalogiApiClient(
         }
     }
 
-    private fun buildWebclient(authentication: CatalogiApiAuthentication): RestClient {
+    private fun buildRestClient(authentication: CatalogiApiAuthentication): RestClient {
         return restClientBuilder
             .clone()
             .apply {

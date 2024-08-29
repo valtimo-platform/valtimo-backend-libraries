@@ -19,6 +19,7 @@ package com.ritense.documentenapi.mock
 import com.ritense.catalogiapi.CatalogiApiAuthentication
 import com.ritense.documentenapi.DocumentenApiAuthentication
 import com.ritense.plugin.annotation.Plugin
+import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
@@ -30,6 +31,11 @@ import reactor.core.publisher.Mono
     description = "OpenZaak mock plugin"
 )
 class OpenZaakMockPlugin : CatalogiApiAuthentication, DocumentenApiAuthentication {
+
+    override fun bearerAuth(builder: RestClient.Builder): RestClient.Builder {
+        return builder
+    }
+
     override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
         return next.exchange(ClientRequest.from(request).build())
     }

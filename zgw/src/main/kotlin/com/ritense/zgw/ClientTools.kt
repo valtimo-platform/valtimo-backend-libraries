@@ -37,7 +37,7 @@ class ClientTools {
                 ResolvableType.forClassWithGenerics(Page::class.java, responseClass).type
             )
         }
-
+        // TODO discuss if this keeps
         fun zgwErrorHandler(): ExchangeFilterFunction {
             return ExchangeFilterFunction.ofResponseProcessor { clientResponse: ClientResponse ->
                 if (clientResponse.statusCode().is2xxSuccessful) {
