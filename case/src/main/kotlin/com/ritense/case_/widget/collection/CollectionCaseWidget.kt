@@ -18,15 +18,17 @@ package com.ritense.case_.widget.collection
 
 import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 import com.ritense.case_.domain.tab.CaseWidgetTabWidgetId
+import com.ritense.valtimo.contract.annotation.AllOpen
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorValue
 import jakarta.persistence.Entity
 import org.hibernate.annotations.Type
 
+@AllOpen
 @Entity
 @DiscriminatorValue("collection")
-open class CollectionCaseWidget(
+class CollectionCaseWidget(
     id: CaseWidgetTabWidgetId, title: String, order: Int, width: Int, highContrast: Boolean,
 
     @Type(value = JsonType::class)
