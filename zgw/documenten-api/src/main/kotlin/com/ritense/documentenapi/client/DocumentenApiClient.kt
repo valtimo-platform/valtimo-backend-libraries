@@ -279,7 +279,6 @@ class DocumentenApiClient(
                 authentication.bearerAuth(it)
                 RestClientLoggingExtension.defaultRequestLogging(it)
             }
-            //.filter(ClientTools.zgwErrorHandler()) // TODO ask ivo if this is needed
             .build()
     }
 

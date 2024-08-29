@@ -69,6 +69,7 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
@@ -168,7 +169,7 @@ internal class ZakenApiClientTest {
 
         mockApi.enqueue(mockResponse("").setResponseCode(400))
 
-        assertThrows<IllegalStateException> {
+        assertThrows<HttpClientErrorException> {
             client.createZaakStatus(
                 TestAuthentication(),
                 URI(mockApi.url("/").toString()),
@@ -246,7 +247,7 @@ internal class ZakenApiClientTest {
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
-        assertThrows<IllegalStateException> {
+        assertThrows<HttpClientErrorException> {
             client.linkDocument(
                 TestAuthentication(),
                 URI(mockApi.url("/").toString()),
@@ -372,7 +373,7 @@ internal class ZakenApiClientTest {
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
-        assertThrows<IllegalStateException> {
+        assertThrows<HttpClientErrorException> {
             client.getZaakObjecten(
                 TestAuthentication(),
                 URI(mockApi.url("/").toString()),
@@ -495,7 +496,7 @@ internal class ZakenApiClientTest {
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
-        assertThrows<IllegalStateException> {
+        assertThrows<HttpClientErrorException> {
             client.getZaakInformatieObjecten(
                 TestAuthentication(),
                 URI(mockApi.url("/").toString()),
@@ -621,7 +622,7 @@ internal class ZakenApiClientTest {
 
         mockApi.enqueue(mockResponse("").setResponseCode(400))
 
-        assertThrows<IllegalStateException> {
+        assertThrows<HttpClientErrorException> {
             client.getZaakRollen(
                 TestAuthentication(),
                 URI(mockApi.url("/").toString()),
@@ -865,7 +866,7 @@ internal class ZakenApiClientTest {
 
         mockApi.enqueue(mockResponse("").setResponseCode(400))
 
-        assertThrows<IllegalStateException> {
+        assertThrows<HttpClientErrorException> {
             client.createZaakRol(
                 TestAuthentication(),
                 URI(mockApi.url("/").toString()),
@@ -980,7 +981,7 @@ internal class ZakenApiClientTest {
 
         mockApi.enqueue(mockResponse("").setResponseCode(400))
 
-        assertThrows<IllegalStateException> {
+        assertThrows<HttpClientErrorException> {
             client.createZaakStatus(
                 TestAuthentication(),
                 URI(mockApi.url("/").toString()),
@@ -1047,7 +1048,7 @@ internal class ZakenApiClientTest {
 
         mockApi.enqueue(mockResponse("").setResponseCode(400))
 
-        assertThrows<IllegalStateException> {
+        assertThrows<HttpClientErrorException> {
             client.createZaakResultaat(
                 TestAuthentication(),
                 URI(mockApi.url("/").toString()),
@@ -1139,7 +1140,7 @@ internal class ZakenApiClientTest {
 
         mockApi.enqueue(mockResponse("").setResponseCode(400))
 
-        assertThrows<IllegalStateException> {
+        assertThrows<HttpClientErrorException> {
             client.setZaakOpschorting(
                 TestAuthentication(),
                 URI(mockApi.url("/").toString()),
@@ -1227,7 +1228,7 @@ internal class ZakenApiClientTest {
 
         mockApi.enqueue(mockResponse("").setResponseCode(400))
 
-        assertThrows<IllegalStateException> {
+        assertThrows<HttpClientErrorException> {
             client.getZaak(
                 TestAuthentication(),
                 URI(mockApi.url("/").toString()),

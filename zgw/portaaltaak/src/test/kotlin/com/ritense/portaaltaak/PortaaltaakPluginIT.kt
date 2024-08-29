@@ -75,6 +75,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpMethod
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
@@ -312,18 +313,20 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
 
     @Test
     fun `should complete Camunda Task`() {
-        val task = startPortaalTaakProcess("""
+        val task = startPortaalTaakProcess(
+            """
             {
                 "lastname": "test"
             }
-        """.trimIndent())
-        assertNotNull( runWithoutAuthorization { taskService.findTaskById(task.id) })
+        """.trimIndent()
+        )
+        assertNotNull(runWithoutAuthorization { taskService.findTaskById(task.id) })
 
         val portaaltaakPlugin = spy(pluginService.createInstance(portaalTaakPluginDefinition.id) as PortaaltaakPlugin)
         val delegateExecution = DelegateExecutionFake()
-        delegateExecution.setVariable("verwerkerTaakId",task.id)
-        delegateExecution.setVariable("objectenApiPluginConfigurationId",objectenPlugin.id.id.toString())
-        delegateExecution.setVariable("portaalTaakObjectUrl","http://some.resource/url")
+        delegateExecution.setVariable("verwerkerTaakId", task.id)
+        delegateExecution.setVariable("objectenApiPluginConfigurationId", objectenPlugin.id.id.toString())
+        delegateExecution.setVariable("portaalTaakObjectUrl", "http://some.resource/url")
         val objectenApiPlugin: ObjectenApiPlugin = mock()
         val objectWrapperCaptor = argumentCaptor<ObjectWrapper>()
         val jsonNodeCaptor = argumentCaptor<JsonNode>()
@@ -335,9 +338,9 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
 
         portaaltaakPlugin.completePortaalTaak(delegateExecution)
 
-        verify(portaaltaakPlugin).changeDataInPortalTaakObject(objectWrapperCaptor.capture(),jsonNodeCaptor.capture())
+        verify(portaaltaakPlugin).changeDataInPortalTaakObject(objectWrapperCaptor.capture(), jsonNodeCaptor.capture())
 
-        val sentTaakObject: TaakObject = objectMapper.treeToValue(jsonNodeCaptor.firstValue,TaakObject::class.java)
+        val sentTaakObject: TaakObject = objectMapper.treeToValue(jsonNodeCaptor.firstValue, TaakObject::class.java)
         assertEquals(TaakStatus.VERWERKT, sentTaakObject.status)
         assertEquals(0, taskService.countTasks(byId(task.id)))
     }
@@ -361,40 +364,56 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
         val portaaltaakPlugin = pluginService.createInstance(portaalTaakPluginDefinition.id) as PortaaltaakPlugin
         val delegateExecution = DelegateExecutionFake()
         val result =
-            assertThrows<CompleteTaakProcessVariableNotFoundException>{ portaaltaakPlugin.completePortaalTaak(delegateExecution) }
-        assertEquals("verwerkerTaakId is required but was not provided",result.message)
+            assertThrows<CompleteTaakProcessVariableNotFoundException> {
+                portaaltaakPlugin.completePortaalTaak(
+                    delegateExecution
+                )
+            }
+        assertEquals("verwerkerTaakId is required but was not provided", result.message)
     }
 
     @Test
     fun `should throw exception due to missing objectenApiPluginConfigurationId`() {
-        val task = startPortaalTaakProcess("""
+        val task = startPortaalTaakProcess(
+            """
             {
                 "lastname": "test"
             }
-        """.trimIndent())
+        """.trimIndent()
+        )
         val portaaltaakPlugin = pluginService.createInstance(portaalTaakPluginDefinition.id) as PortaaltaakPlugin
         val delegateExecution = DelegateExecutionFake()
-        delegateExecution.setVariable("verwerkerTaakId",task.id)
+        delegateExecution.setVariable("verwerkerTaakId", task.id)
         val result =
-            assertThrows<CompleteTaakProcessVariableNotFoundException>{ portaaltaakPlugin.completePortaalTaak(delegateExecution) }
-        assertEquals("objectenApiPluginConfigurationId is required but was not provided",result.message)
+            assertThrows<CompleteTaakProcessVariableNotFoundException> {
+                portaaltaakPlugin.completePortaalTaak(
+                    delegateExecution
+                )
+            }
+        assertEquals("objectenApiPluginConfigurationId is required but was not provided", result.message)
     }
 
     @Test
     fun `should throw exception due to missing portaalTaakObjectUrl`() {
-        val task = startPortaalTaakProcess("""
+        val task = startPortaalTaakProcess(
+            """
             {
                 "lastname": "test"
             }
-        """.trimIndent())
+        """.trimIndent()
+        )
         val portaaltaakPlugin = pluginService.createInstance(portaalTaakPluginDefinition.id) as PortaaltaakPlugin
         val delegateExecution = DelegateExecutionFake()
-        delegateExecution.setVariable("verwerkerTaakId",task.id)
-        delegateExecution.setVariable("objectenApiPluginConfigurationId",objectenPlugin.id.id.toString())
+        delegateExecution.setVariable("verwerkerTaakId", task.id)
+        delegateExecution.setVariable("objectenApiPluginConfigurationId", objectenPlugin.id.id.toString())
 
         val result =
-            assertThrows<CompleteTaakProcessVariableNotFoundException>{ portaaltaakPlugin.completePortaalTaak(delegateExecution) }
-        assertEquals("portaalTaakObjectUrl is required but was not provided",result.message)
+            assertThrows<CompleteTaakProcessVariableNotFoundException> {
+                portaaltaakPlugin.completePortaalTaak(
+                    delegateExecution
+                )
+            }
+        assertEquals("portaalTaakObjectUrl is required but was not provided", result.message)
     }
 
 
@@ -405,7 +424,10 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
         )
     }
 
-    private fun startPortaalTaakProcess(content: String, processDefinitionKey: String = PROCESS_DEFINITION_KEY): CamundaTask {
+    private fun startPortaalTaakProcess(
+        content: String,
+        processDefinitionKey: String = PROCESS_DEFINITION_KEY
+    ): CamundaTask {
         return runWithoutAuthorization {
             val newDocumentRequest =
                 NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.readTree(content))
@@ -633,13 +655,15 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
                     "name" to "Luis",
                     "phone" to "999999999"
                 )
-
             )
         )
-
     }
 
     class TestAuthentication : ObjectenApiAuthentication, ObjecttypenApiAuthentication, NotificatiesApiAuthentication {
+        override fun bearerAuth(builder: RestClient.Builder): RestClient.Builder {
+            return builder
+        }
+
         override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
             return next.exchange(request)
         }
