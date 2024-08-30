@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.logging
 
+import com.ritense.valtimo.contract.LoggingConstants
 import org.camunda.bpm.engine.impl.ProcessEngineImpl
 import org.camunda.bpm.engine.impl.interceptor.CommandExecutor
 import org.camunda.bpm.engine.impl.jobexecutor.ExecuteJobsRunnable
@@ -36,14 +37,10 @@ class LoggingExecuteJobsRunnable(
         jobFailureCollector: JobFailureCollector?
     ) {
         try {
-            MDC.put(CORRELATION_MDC_KEY, UUID.randomUUID().toString())
+            MDC.put(LoggingConstants.MDC_CORRELATION_ID_KEY, UUID.randomUUID().toString())
             super.executeJob(nextJobId, commandExecutor, jobFailureCollector)
         } finally {
-            MDC.remove(CORRELATION_MDC_KEY)
+            MDC.remove(LoggingConstants.MDC_CORRELATION_ID_KEY)
         }
-    }
-
-    companion object {
-        private const val CORRELATION_MDC_KEY = "correlationId"
     }
 }

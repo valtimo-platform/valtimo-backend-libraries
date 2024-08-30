@@ -21,6 +21,7 @@ import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.reflect.MethodSignature
 import java.lang.reflect.Method
+import mu.withLoggingContext
 
 
 @Aspect
@@ -39,7 +40,7 @@ class LoggableResourceAspect {
                     continue
                 }
 
-                return ResourceLoggerContext.withResource(parameterAnnotation.resourceType.java, args[i] as String) {
+                return withLoggingContext(parameterAnnotation.resourceType.java.canonicalName to args[i] as String) {
                     // TODO: what if args[i] is a collection? Alternatively: on compile time fail
                     joinPoint.proceed()
                 }

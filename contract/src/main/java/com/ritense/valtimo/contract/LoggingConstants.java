@@ -14,23 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.logging
+package com.ritense.valtimo.contract;
 
-import ch.qos.logback.classic.Logger
-import ch.qos.logback.classic.spi.ILoggingEvent
-import ch.qos.logback.core.read.ListAppender
-import org.slf4j.LoggerFactory
+public final class LoggingConstants {
 
-class LoggingTestBean {
-    fun logSomething() {
-        logger.info("Logging something")
+    public static final String MDC_USER_ID_KEY = "valtimoUserId";
+    public static final String MDC_CORRELATION_ID_KEY = "valtimoCorrelationId";
+
+    private LoggingConstants() {
     }
 
-    companion object {
-        val logger = LoggerFactory.getLogger(LoggingTestBean::class.java) as Logger
-        val listAppender: ListAppender<ILoggingEvent> = ListAppender<ILoggingEvent>().also {
-            it.start()
-            logger.addAppender(it)
-        }
-    }
 }

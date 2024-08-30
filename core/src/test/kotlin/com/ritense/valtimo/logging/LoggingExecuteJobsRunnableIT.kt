@@ -19,6 +19,8 @@ package com.ritense.valtimo.logging
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.valtimo.BaseIntegrationTest
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition
+import com.ritense.valtimo.contract.LoggingConstants
+import com.ritense.valtimo.logging.impl.LoggingTestBean
 import com.ritense.valtimo.service.CamundaProcessService
 import org.camunda.bpm.engine.ManagementService
 import org.camunda.bpm.engine.impl.jobexecutor.JobExecutor
@@ -70,8 +72,11 @@ class LoggingExecuteJobsRunnableIT @Autowired constructor(
         Assertions.assertEquals(0, MDC.getCopyOfContextMap().size)
         // in the process 2 messages are logged
         Assertions.assertEquals(2, messageList.size)
-        Assertions.assertEquals(messageList[0].mdcPropertyMap["correlationId"], messageList[1].mdcPropertyMap["correlationId"])
+        Assertions.assertEquals(
+            messageList[0].mdcPropertyMap[LoggingConstants.MDC_CORRELATION_ID_KEY],
+            messageList[1].mdcPropertyMap[LoggingConstants.MDC_CORRELATION_ID_KEY]
+        )
         // parse as UUID to check if the value is a valid UUID
-        UUID.fromString(messageList[0].mdcPropertyMap["correlationId"])
+        UUID.fromString(messageList[0].mdcPropertyMap[LoggingConstants.MDC_CORRELATION_ID_KEY])
     }
 }
