@@ -616,7 +616,7 @@ class PluginService(
             val propertyConfigurationId =
                 PluginConfigurationId.existingId(UUID.fromString(propertyNode?.textValue()))
             val propertyConfiguration = pluginConfigurationRepository.findById(propertyConfigurationId)
-            assert(propertyConfiguration.isPresent) { "Plugin configuration with id ${propertyConfigurationId.id} does not exist!" }
+            require(propertyConfiguration.isPresent) { "Plugin configuration with id ${propertyConfigurationId.id} does not exist!" }
         } else {
             val propertyValue = objectMapper.treeToValue(propertyNode, propertyClass)
             val validationErrors =

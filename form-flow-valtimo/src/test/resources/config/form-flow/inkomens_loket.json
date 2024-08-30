@@ -5,7 +5,7 @@
             "key": "woonplaats",
             "nextSteps": [
                 {
-                    "condition": "${submissionData.woonplaats.inUtrecht == true}",
+                    "condition": "${step.submissionData.woonplaats.inUtrecht == true}",
                     "step": "leeftijd"
                 },
                 {
@@ -25,7 +25,7 @@
             "key": "leeftijd",
             "nextSteps": [
                 {
-                    "condition": "${submissionData.leeftijd.isOuderDan21 == true && submissionData.leeftijd.isJongerDanAOW == true}",
+                    "condition": "${step.submissionData.leeftijd.isOuderDan21 == true && step.submissionData.leeftijd.isJongerDanAOW == true}",
                     "step": "gezinssituatie"
                 },
                 {
@@ -73,7 +73,7 @@
             "key": "inkomen",
             "nextSteps": [
                 {
-                    "condition": "${submissionData.inkomen.value <= submissionData.gezinssituatie.vermogenGrens}",
+                    "condition": "${step.submissionData.inkomen.value <= step.submissionData.gezinssituatie.vermogenGrens}",
                     "step": "vermogen"
                 },
                 {

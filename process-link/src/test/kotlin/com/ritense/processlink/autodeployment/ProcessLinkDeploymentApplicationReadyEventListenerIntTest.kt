@@ -35,7 +35,7 @@ class ProcessLinkDeploymentApplicationReadyEventListenerIntTest @Autowired const
     private val repositoryService: CamundaRepositoryService,
     private val processLinkRepository: ProcessLinkRepository,
     private val listener: ProcessLinkDeploymentApplicationReadyEventListener
-): BaseIntegrationTest() {
+) : BaseIntegrationTest() {
 
     @Test
     fun `should find 1 deployed process link on service task`() {
@@ -49,7 +49,7 @@ class ProcessLinkDeploymentApplicationReadyEventListenerIntTest @Autowired const
         val processLink = processLinks.first()
         assertThat(processLink, Matchers.isA(CustomProcessLink::class.java))
         processLink as CustomProcessLink
-        assertThat(processLink.someValue, Matchers.equalTo("test"))
+        assertThat(processLink.someValue, Matchers.equalTo("changed"))
     }
 
     private fun getLatestProcessDefinition(): CamundaProcessDefinition {
