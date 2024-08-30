@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.web.sse.service
+package com.ritense.valtimo.logging
 
+import com.ritense.valtimo.contract.LoggingConstants
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -33,24 +34,19 @@ class UserLoggingFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val userIdentifier = userManagementService.getCurrentUser().getUserIdentifier()
+        val userIdentifier = userManagementService.getCurrentUser()?.getUserIdentifier()
         if (userIdentifier != null) {
-            MDC.put(USER_MDC_KEY, userIdentifier)
+            MDC.put(LoggingConstants.MDC_USER_ID_KEY, userIdentifier)
         }
 
         // We also add a correlation id manually for now.
-        MDC.put(CORRELATION_MDC_KEY, UUID.randomUUID().toString())
+        MDC.put(LoggingConstants.MDC_CORRELATION_ID_KEY, UUID.randomUUID().toString())
 
         try {
             filterChain.doFilter(request, response)
         } finally {
-            MDC.remove(USER_MDC_KEY)
-            MDC.remove(CORRELATION_MDC_KEY)
+            MDC.remove(LoggingConstants.MDC_USER_ID_KEY)
+            MDC.remove(LoggingConstants.MDC_CORRELATION_ID_KEY)
         }
-    }
-
-    companion object {
-        private const val USER_MDC_KEY = "userId"
-        private const val CORRELATION_MDC_KEY = "correlationId"
     }
 }

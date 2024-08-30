@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.logging
 
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import org.camunda.bpm.engine.impl.jobexecutor.JobExecutor
 import org.camunda.bpm.engine.impl.jobexecutor.NotifyAcquisitionRejectedJobsHandler
 import org.camunda.bpm.spring.boot.starter.CamundaBpmAutoConfiguration
@@ -62,5 +63,9 @@ class CamundaLoggingAutoConfiguration {
 
         return springJobExecutor
     }
+
+    @Bean
+    @ConditionalOnMissingBean(UserLoggingFilter::class)
+    fun userLoggingFilter(userManagementService: UserManagementService) = UserLoggingFilter(userManagementService)
 
 }
