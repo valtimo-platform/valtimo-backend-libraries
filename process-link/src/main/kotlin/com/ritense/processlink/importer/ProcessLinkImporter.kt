@@ -51,7 +51,7 @@ class ProcessLinkImporter(
 
     override fun import(request: ImportRequest) {
         val processDefinitionKey = FILENAME_REGEX.matchEntire(request.fileName)!!.groupValues[1]
-        val processDefinitionId =  AuthorizationContext.runWithoutAuthorization {
+        val processDefinitionId = AuthorizationContext.runWithoutAuthorization {
             repositoryService.findLatestProcessDefinition(processDefinitionKey)?.id
                 ?: throw IllegalStateException("Error while deploying '${request.fileName}'. Could not find Process definition with key '$processDefinitionKey'.")
         }
@@ -68,13 +68,17 @@ class ProcessLinkImporter(
 
             val deployDto = objectMapper.treeToValue<ProcessLinkDeployDto>(node)
 
-            val processLinkDto = processLinkService.getProcessLinkMapper(deployDto.processLinkType)
+            val processLinkCreateDto = processLinkService.getProcessLinkMapper(deployDto.processLinkType)
                 .toProcessLinkCreateRequestDto(deployDto)
 
             try {
-                processLinkService.createProcessLink(processLinkDto)
+                processLinkService.createProcessLink(processLinkCreateDto)
             } catch (e: ProcessLinkExistsException) {
-                if (e.contentsDiffer) {
+                try {
+                    val processLinkUpdateDto = processLinkService.getProcessLinkMapper(deployDto.processLinkType)
+                        .toProcessLinkUpdateRequestDto(deployDto, e.existingProcessLinkId)
+                    processLinkService.updateProcessLink(processLinkUpdateDto)
+                } catch (e: IllegalStateException) {
                     logger.error { "${e.message} Skipping autodeployment." }
                 }
             }

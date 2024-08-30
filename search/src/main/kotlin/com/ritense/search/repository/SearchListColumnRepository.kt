@@ -24,5 +24,4 @@ interface SearchListColumnRepository: JpaRepository<SearchListColumn, UUID> {
 
     fun findByOwnerIdAndKeyOrderByOrder(ownerId: String, key: String): SearchListColumn?
     fun findAllByOwnerIdOrderByOrder(ownerId: String): List<SearchListColumn>?
-
 }
