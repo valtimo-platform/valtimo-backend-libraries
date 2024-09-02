@@ -21,10 +21,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.localization.domain.Localization
 import com.ritense.localization.repository.LocalizationRepository
 import com.ritense.localization.web.rest.dto.LocalizationUpdateRequestDto
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import kotlin.jvm.optionals.getOrElse
 
 @Transactional
+@Service
+@SkipComponentScan
 class LocalizationService(
     private val localizationRepository: LocalizationRepository,
     private val objectMapper: ObjectMapper

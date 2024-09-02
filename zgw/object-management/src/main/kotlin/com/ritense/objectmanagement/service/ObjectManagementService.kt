@@ -48,10 +48,12 @@ import com.ritense.search.domain.LEGACY_OWNER_TYPE
 import com.ritense.search.domain.SearchFieldV2
 import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.search.service.SearchListColumnService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
@@ -60,6 +62,8 @@ import java.time.ZonedDateTime
 import java.util.UUID
 
 @Transactional(readOnly = true)
+@Service
+@SkipComponentScan
 class ObjectManagementService(
     private val objectManagementRepository: ObjectManagementRepository,
     private val pluginService: PluginService,

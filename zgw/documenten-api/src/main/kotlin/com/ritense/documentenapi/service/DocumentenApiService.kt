@@ -36,14 +36,18 @@ import com.ritense.documentenapi.web.rest.dto.ModifyDocumentRequest
 import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.InputStream
 import java.net.URI
 import java.util.UUID
 
 @Transactional
+@Service
+@SkipComponentScan
 class DocumentenApiService(
     private val pluginService: PluginService,
     private val catalogiService: CatalogiService,

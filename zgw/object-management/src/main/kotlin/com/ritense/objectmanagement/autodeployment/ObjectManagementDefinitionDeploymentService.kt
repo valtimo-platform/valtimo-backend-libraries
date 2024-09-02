@@ -22,6 +22,7 @@ import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.domain.ObjectManagementConfigurationAutoDeploymentFinishedEvent
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objectmanagement.service.ObjectManagementService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.ApplicationEventPublisher
@@ -32,8 +33,11 @@ import org.springframework.core.env.Environment
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
+import org.springframework.stereotype.Service
 import java.io.IOException
 
+@Service
+@SkipComponentScan
 class ObjectManagementDefinitionDeploymentService(
     private val resourceLoader: ResourceLoader,
     private val objectManagementService: ObjectManagementService,

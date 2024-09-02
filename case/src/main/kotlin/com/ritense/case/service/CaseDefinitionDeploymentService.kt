@@ -23,16 +23,20 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import mu.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.StreamUtils
 import java.nio.charset.StandardCharsets
 
 @Transactional
+@Service
+@SkipComponentScan
 class CaseDefinitionDeploymentService(
     private val resourceLoader: ResourceLoader,
     private val objectMapper: ObjectMapper,
