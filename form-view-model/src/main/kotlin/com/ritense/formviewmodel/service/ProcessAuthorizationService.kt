@@ -7,9 +7,13 @@ import com.ritense.valtimo.camunda.authorization.CamundaExecutionActionProvider
 import com.ritense.valtimo.camunda.domain.CamundaExecution
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState
+import org.springframework.stereotype.Service
 import java.util.UUID
 
+@Service
+@SkipComponentScan
 class ProcessAuthorizationService(
     private val camundaRepositoryService: CamundaRepositoryService,
     private val authorizationService: AuthorizationService

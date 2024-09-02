@@ -27,32 +27,36 @@ import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificat
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersion
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byVersion
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byVersionTag
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.model.bpmn.instance.CallActivity
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-open class CamundaRepositoryService(
+@Service
+@SkipComponentScan
+class CamundaRepositoryService(
     private val camundaProcessDefinitionRepository: CamundaProcessDefinitionRepository,
     private val authorizationService: AuthorizationService,
     private val repositoryService: RepositoryService,
 ) {
 
     @Transactional(readOnly = true)
-    open fun findProcessDefinitionById(processDefinitionId: String): CamundaProcessDefinition? {
+    fun findProcessDefinitionById(processDefinitionId: String): CamundaProcessDefinition? {
         denyAuthorization()
         return runWithoutAuthorization{ findProcessDefinition(byId(processDefinitionId)) }
     }
 
     @Transactional(readOnly = true)
-    open fun findLatestProcessDefinition(processDefinitionKey: String): CamundaProcessDefinition? {
+    fun findLatestProcessDefinition(processDefinitionKey: String): CamundaProcessDefinition? {
         denyAuthorization()
         return runWithoutAuthorization { findProcessDefinition(byKey(processDefinitionKey).and(byLatestVersion())) }
     }
 
     @Transactional(readOnly = true)
-    open fun findProcessDefinitions(
+    fun findProcessDefinitions(
         specification: Specification<CamundaProcessDefinition>,
         sort: Sort
     ): List<CamundaProcessDefinition> {
@@ -61,7 +65,7 @@ open class CamundaRepositoryService(
     }
 
     @Transactional(readOnly = true)
-    open fun findProcessDefinitions(
+    fun findProcessDefinitions(
         specification: Specification<CamundaProcessDefinition>
     ): List<CamundaProcessDefinition> {
         denyAuthorization()
@@ -69,25 +73,25 @@ open class CamundaRepositoryService(
     }
 
     @Transactional(readOnly = true)
-    open fun findProcessDefinition(specification: Specification<CamundaProcessDefinition>): CamundaProcessDefinition? {
+    fun findProcessDefinition(specification: Specification<CamundaProcessDefinition>): CamundaProcessDefinition? {
         denyAuthorization()
         return camundaProcessDefinitionRepository.findOne(specification).orElse(null)
     }
 
     @Transactional(readOnly = true)
-    open fun countProcessDefinitions(specification: Specification<CamundaProcessDefinition>): Long {
+    fun countProcessDefinitions(specification: Specification<CamundaProcessDefinition>): Long {
         denyAuthorization()
         return camundaProcessDefinitionRepository.count(specification)
     }
 
     @Transactional(readOnly = true)
-    open fun processDefinitionExists(specification: Specification<CamundaProcessDefinition>): Boolean {
+    fun processDefinitionExists(specification: Specification<CamundaProcessDefinition>): Boolean {
         denyAuthorization()
         return camundaProcessDefinitionRepository.exists(specification)
     }
 
     @Transactional(readOnly = true)
-    open fun findLinkedProcessDefinitions(specification: Specification<CamundaProcessDefinition>): List<CamundaProcessDefinition> {
+    fun findLinkedProcessDefinitions(specification: Specification<CamundaProcessDefinition>): List<CamundaProcessDefinition> {
         denyAuthorization()
         val linkedProcessDefinitions = mutableListOf<CamundaProcessDefinition>()
         camundaProcessDefinitionRepository.findAll(specification)

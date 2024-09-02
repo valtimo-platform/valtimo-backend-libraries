@@ -24,8 +24,12 @@ import com.ritense.case.service.TaskColumnService
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
 import com.ritense.valtimo.changelog.service.ChangelogService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import org.springframework.stereotype.Service
 
-open class CaseTaskListDeploymentService(
+@Service
+@SkipComponentScan
+class CaseTaskListDeploymentService(
     private val objectMapper: ObjectMapper,
     private val taskListColumnRepository: TaskListColumnRepository,
     private val changelogService: ChangelogService,

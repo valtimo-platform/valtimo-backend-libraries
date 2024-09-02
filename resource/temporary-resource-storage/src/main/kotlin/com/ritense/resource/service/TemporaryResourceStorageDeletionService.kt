@@ -16,8 +16,10 @@
 
 package com.ritense.resource.service
 
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import mu.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.stereotype.Service
 import java.nio.file.Files
 import java.nio.file.attribute.BasicFileAttributes
 import java.time.Duration
@@ -26,7 +28,9 @@ import java.util.concurrent.TimeUnit
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.listDirectoryEntries
 
-open class TemporaryResourceStorageDeletionService(
+@Service
+@SkipComponentScan
+class TemporaryResourceStorageDeletionService(
     private val retentionInMinutes: Long,
     private val temporaryResourceStorageService: TemporaryResourceStorageService,
 ) {
@@ -35,7 +39,7 @@ open class TemporaryResourceStorageDeletionService(
         fixedRateString = "\${valtimo.temporaryResourceStorage.retentionInMinutes:60}",
         timeUnit = TimeUnit.MINUTES
     )
-    open fun deleteOldTemporaryResources() {
+    fun deleteOldTemporaryResources() {
 
         temporaryResourceStorageService.tempDir.listDirectoryEntries().forEach { file ->
             try {
