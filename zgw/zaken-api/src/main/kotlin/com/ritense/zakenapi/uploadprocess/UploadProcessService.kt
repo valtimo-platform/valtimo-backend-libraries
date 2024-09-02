@@ -16,6 +16,8 @@
 
 package com.ritense.zakenapi.uploadprocess
 
+import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
@@ -32,7 +34,8 @@ class UploadProcessService(
 
     fun startUploadResourceProcess(caseId: String, resourceId: String) {
         val caseDefinitionName = runWithoutAuthorization { documentService.get(caseId) }.definitionId().name()
-        val link = documentDefinitionProcessLinkService.getDocumentDefinitionProcessLink(caseDefinitionName, DOCUMENT_UPLOAD)
+        val link =
+            documentDefinitionProcessLinkService.getDocumentDefinitionProcessLink(caseDefinitionName, DOCUMENT_UPLOAD)
         if (!link.isPresent) {
             throw IllegalStateException("No upload-process linked to case: $caseDefinitionName")
         }
@@ -51,7 +54,44 @@ class UploadProcessService(
             var message = "Failed to upload resource. Found ${result.errors().size} errors:\n"
             result.errors().forEach { message += it.asString() + "\n" }
             throw RuntimeException(message)
+        } else {
+            setResourceToUploaded(caseId, resourceId)
         }
+    }
+
+    private fun setResourceToUploaded(caseId: String, resourceId: String) {
+        val case = documentService.get(caseId);
+        val content = case.content().asJson() as ObjectNode
+        val modifiedContent = addUploadedFlagToDocument(content, resourceId)
+
+        runWithoutAuthorization {
+            documentService.modifyDocument(
+                case,
+                modifiedContent
+            )
+        }
+    }
+
+    private fun addUploadedFlagToDocument(objectNode: ObjectNode, idToSearch: String): ObjectNode {
+        objectNode.fields().forEach { (_, value) ->
+            when {
+                value is ObjectNode -> {
+                    addUploadedFlagToDocument(value, idToSearch)
+                }
+
+                value is ArrayNode -> {
+                    value.forEach { item ->
+                        if (item is ObjectNode) {
+                            if (item.get("id")?.asText() == idToSearch) {
+                                item.put("uploaded", true)
+                            }
+                            addUploadedFlagToDocument(item, idToSearch)
+                        }
+                    }
+                }
+            }
+        }
+        return objectNode
     }
 
     companion object {

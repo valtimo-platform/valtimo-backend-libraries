@@ -85,7 +85,9 @@ data class UploadField(
                 }
 
                 val tempResourceId = getTempResourceId(resourceNode)
-                if (tempResourceId != null) {
+                val tempResourceUploaded = getTempResourceUploaded(resourceNode)
+
+                if (tempResourceId != null && tempResourceUploaded != true) {
                     logger.debug { "tempfile $tempResourceId" }
                     applicationEventPublisher.publishEvent(
                         TemporaryResourceSubmittedEvent(
@@ -113,6 +115,11 @@ data class UploadField(
         return getFieldAsTextOrNull(resourceNode, "/id")
     }
 
+    private fun getTempResourceUploaded(resourceNode: JsonNode): Boolean? {
+        return getFieldAsBoolean(resourceNode, "/uploaded")
+    }
+
+
     private fun getFieldAsTextOrNull(rootNode: JsonNode, path: String): String? {
         val node = rootNode.at(path)
         return if (node.isMissingNode || node.isNull) {
@@ -122,16 +129,25 @@ data class UploadField(
         }
     }
 
+    private fun getFieldAsBoolean(rootNode: JsonNode, path: String): Boolean? {
+        val node = rootNode.at(path)
+        return if (node.isMissingNode || node.isNull) {
+            false
+        } else {
+            node.asBoolean()
+        }
+    }
+
     companion object {
         private val logger = KotlinLogging.logger {}
 
         fun isUploadComponent(jsonNode: ObjectNode): Boolean {
             return jsonNode.has("type")
-                    && (jsonNode["type"].textValue().equals("file", ignoreCase = true) ||
-                    jsonNode["type"].textValue().equals("valtimo-file", ignoreCase = true) ||
-                    jsonNode["type"].textValue().equals("documenten-api-file", ignoreCase = true))
-                    && jsonNode["input"].booleanValue()
-                    && jsonNode.has(PROPERTY_KEY)
+                && (jsonNode["type"].textValue().equals("file", ignoreCase = true) ||
+                jsonNode["type"].textValue().equals("valtimo-file", ignoreCase = true) ||
+                jsonNode["type"].textValue().equals("documenten-api-file", ignoreCase = true))
+                && jsonNode["input"].booleanValue()
+                && jsonNode.has(PROPERTY_KEY)
         }
     }
 
