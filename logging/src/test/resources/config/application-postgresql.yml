@@ -1,0 +1,14 @@
+spring:
+    datasource:
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:3355/logging-test
+        username: valtimo
+        password: password
+        hikari:
+            auto-commit: false
+    jpa:
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+        database: postgresql
+
+valtimo:
+    database: postgres

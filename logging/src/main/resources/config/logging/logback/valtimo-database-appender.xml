@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2015-2024 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<included>
+    <springProperty name="spring.datasource.type" source="spring.datasource.type"/>
+    <springProperty name="spring.datasource.driver-class-name" source="spring.datasource.driver-class-name"/>
+    <springProperty name="spring.datasource.url" source="spring.datasource.url"/>
+    <springProperty name="spring.datasource.username" source="spring.datasource.username"/>
+    <springProperty name="spring.datasource.password" source="spring.datasource.password"/>
+    <springProperty name="spring.jpa.database-platform" source="spring.jpa.database-platform"/>
+
+    <appender name="VALTIMODB" class="ch.qos.logback.classic.db.DBAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>info</level>
+        </filter>
+        <connectionSource class="ch.qos.logback.core.db.DataSourceConnectionSource">
+            <dataSource class="${spring.datasource.type}">
+                <driverClassName>${spring.datasource.driver-class-name}</driverClassName>
+                <driverClass>${spring.datasource.driver-class-name}</driverClass>
+                <jdbcUrl>${spring.datasource.url}</jdbcUrl>
+                <url>${spring.datasource.url}</url>
+                <username>${spring.datasource.username}</username>
+                <user>${spring.datasource.username}</user>
+                <password>${spring.datasource.password}</password>
+            </dataSource>
+        </connectionSource>
+        <insertHeaders>true</insertHeaders>
+    </appender>
+
+    <appender name="VALTIMODBASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="VALTIMODB" />
+        <includeCallerData>false</includeCallerData>
+        <maxFlushTime>5000</maxFlushTime>
+        <neverBlock>true</neverBlock>
+    </appender>
+</included>

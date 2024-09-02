@@ -16,16 +16,51 @@
 
 package com.ritense.logging
 
+import com.ritense.logging.domain.LoggingEvent
+import com.ritense.logging.domain.LoggingEventException
+import com.ritense.logging.domain.LoggingEventProperty
+import com.ritense.logging.repository.LoggingEventExceptionRepository
+import com.ritense.logging.repository.LoggingEventPropertyRepository
+import com.ritense.logging.repository.LoggingEventRepository
+import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
+import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
+import org.springframework.core.annotation.Order
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories
+import javax.sql.DataSource
 
 @AutoConfiguration
+@EnableJpaRepositories(
+    basePackageClasses = [
+        LoggingEventRepository::class,
+        LoggingEventPropertyRepository::class,
+        LoggingEventExceptionRepository::class,
+    ]
+)
+@EntityScan(
+    basePackageClasses = [
+        LoggingEvent::class,
+        LoggingEventProperty::class,
+        LoggingEventException::class,
+    ]
+)
 class LoggingAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(LoggableResourceAspect::class)
     fun loggableResourceAspect(): LoggableResourceAspect {
         return LoggableResourceAspect()
+    }
+
+    @Order(HIGHEST_PRECEDENCE + 34)
+    @Bean
+    @ConditionalOnClass(DataSource::class)
+    @ConditionalOnMissingBean(name = ["loggingLiquibaseMasterChangeLogLocation"])
+    fun loggingLiquibaseMasterChangeLogLocation(): LiquibaseMasterChangeLogLocation {
+        return LiquibaseMasterChangeLogLocation("config/liquibase/logging-master.xml")
     }
 }
