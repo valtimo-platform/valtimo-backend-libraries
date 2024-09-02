@@ -193,7 +193,7 @@ class DocumentenApiClient(
             }
             .accept(MediaType.APPLICATION_OCTET_STREAM)
             .retrieve()
-            .body<String>()!!
+            .body<ByteArray>()!!
 
         TransactionTemplate(platformTransactionManager).executeWithoutResult {
             outboxService.send {
@@ -202,7 +202,7 @@ class DocumentenApiClient(
                 )
             }
         }
-        return ByteArrayInputStream(result.encodeToByteArray())
+        return ByteArrayInputStream(result)
     }
 
     fun lockInformatieObject(

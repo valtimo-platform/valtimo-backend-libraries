@@ -28,7 +28,6 @@ import com.ritense.outbox.OutboxService
 import com.ritense.valtimo.web.logging.RestClientLoggingExtension
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatusCode
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 import org.springframework.web.util.UriComponentsBuilder
@@ -267,15 +266,12 @@ class ObjectenApiClient(
             .uri(objectUrl)
             .header(CONTENT_CRS, EPSG_4326)
             .retrieve()
-            .onStatus(HttpStatusCode::isError) { _, _ ->
-                throw IllegalStateException("No result found")
-            }
             .toBodilessEntity()
 
         outboxService.send {
             ObjectDeleted(objectUrl.toString())
         }
-        return HttpStatus.OK
+        return HttpStatus.valueOf(result.statusCode.value())
     }
 
     private fun buildRestClient(authentication: ObjectenApiAuthentication, baseURL: String? = null): RestClient {
