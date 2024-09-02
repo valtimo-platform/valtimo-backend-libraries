@@ -24,9 +24,13 @@ import com.ritense.formviewmodel.viewmodel.ViewModel
 import com.ritense.formviewmodel.viewmodel.ViewModelLoaderFactory
 import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Companion.VIEW
 import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.service.CamundaTaskService
+import org.springframework.stereotype.Service
 import kotlin.reflect.KClass
 
+@Service
+@SkipComponentScan
 class FormViewModelService(
     private val objectMapper: ObjectMapper,
     private val viewModelLoaderFactory: ViewModelLoaderFactory,

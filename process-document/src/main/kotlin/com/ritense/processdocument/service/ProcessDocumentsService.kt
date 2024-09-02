@@ -21,10 +21,13 @@ import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.service.CamundaProcessService
+import org.springframework.stereotype.Service
 import java.util.UUID
 
-
+@Service
+@SkipComponentScan
 class ProcessDocumentsService(
     private val documentService: DocumentService,
     private val camundaProcessService: CamundaProcessService,

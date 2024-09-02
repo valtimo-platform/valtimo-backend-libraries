@@ -20,9 +20,13 @@ import com.ritense.notificatiesapi.domain.NotificatiesApiAbonnementLink
 import com.ritense.notificatiesapi.event.NotificatiesApiNotificationReceivedEvent
 import com.ritense.notificatiesapi.exception.AuthorizationException
 import com.ritense.notificatiesapi.repository.NotificatiesApiAbonnementLinkRepository
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.stereotype.Service
 
+@Service
+@SkipComponentScan
 class NotificatiesApiService(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val notificatiesApiAbonnementLinkRepository: NotificatiesApiAbonnementLinkRepository

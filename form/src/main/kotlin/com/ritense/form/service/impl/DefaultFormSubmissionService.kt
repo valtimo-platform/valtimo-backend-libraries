@@ -54,6 +54,7 @@ import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Compa
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
 import com.ritense.valtimo.contract.json.JsonMerger
 import com.ritense.valtimo.contract.json.patch.JsonPatch
@@ -64,13 +65,16 @@ import com.ritense.valueresolver.ValueResolverService
 import com.ritense.valueresolver.ValueResolverServiceImpl
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 import com.ritense.processdocument.resolver.DocumentJsonValueResolverFactory.Companion.PREFIX as DOC_PREFIX
 import com.ritense.valueresolver.ProcessVariableValueResolverFactory.Companion.PREFIX as PV_PREFIX
 
-open class DefaultFormSubmissionService(
+@Service
+@SkipComponentScan
+class DefaultFormSubmissionService(
     private val processLinkService: ProcessLinkService,
     private val formDefinitionService: FormIoFormDefinitionService,
     private val documentService: JsonSchemaDocumentService,

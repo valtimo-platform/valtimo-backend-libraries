@@ -17,14 +17,18 @@
 
 package com.ritense.valtimo
 
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import mu.KotlinLogging
 import org.camunda.bpm.engine.ManagementService
 import org.camunda.bpm.engine.ProcessEngineException
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.runtime.Job
+import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
 import java.util.Date
 
+@Service
+@SkipComponentScan
 class JobService(private val managementService: ManagementService) {
 
     fun addOffsetInMillisToTimerDueDateByActivityId(
