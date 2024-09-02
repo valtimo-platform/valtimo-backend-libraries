@@ -14,7 +14,7 @@ object RestClientLoggingExtension {
     fun defaultRequestLogging(builder: RestClient.Builder): RestClient.Builder {
         return builder
             .defaultStatusHandler(
-                { obj: HttpStatusCode -> obj.is4xxClientError || obj.is5xxServerError },
+                { code: HttpStatusCode -> code.is4xxClientError || code.is5xxServerError },
                 { request, response ->
                     val report = createRequestReport(request, response)
                     logger.error { report }
@@ -22,7 +22,7 @@ object RestClientLoggingExtension {
                 }
             )
             .defaultStatusHandler(
-                { obj: HttpStatusCode -> obj.is2xxSuccessful },
+                { code: HttpStatusCode -> code.is2xxSuccessful || code.is3xxRedirection || code.is1xxInformational },
                 { request, response -> logger.debug { createRequestReport(request, response) } }
             )
     }
