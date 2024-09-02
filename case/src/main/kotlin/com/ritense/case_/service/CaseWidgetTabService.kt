@@ -39,16 +39,20 @@ import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.findByOrNull
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import jakarta.validation.Valid
 import org.springframework.context.event.EventListener
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.annotation.Validated
 import java.util.UUID
 
 @Validated
 @Transactional(readOnly = false)
+@Service
+@SkipComponentScan
 class CaseWidgetTabService(
     private val documentService: DocumentService,
     private val caseWidgetTabRepository: CaseWidgetTabRepository,

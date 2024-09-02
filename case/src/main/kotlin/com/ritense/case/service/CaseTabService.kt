@@ -37,14 +37,18 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.findByOrNull
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Sort
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import kotlin.jvm.optionals.getOrNull
 
 @Transactional
+@Service
+@SkipComponentScan
 class CaseTabService(
     private val caseTabRepository: CaseTabRepository,
     private val documentDefinitionService: DocumentDefinitionService,

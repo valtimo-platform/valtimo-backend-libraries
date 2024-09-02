@@ -26,11 +26,15 @@ import com.ritense.formviewmodel.submission.FormViewModelUserTaskSubmissionHandl
 import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Companion.COMPLETE
 import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.service.CamundaTaskService
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import kotlin.reflect.KClass
 
 @Transactional
+@Service
+@SkipComponentScan
 class FormViewModelSubmissionService(
     private val formViewModelStartFormSubmissionHandlerFactory: FormViewModelStartFormSubmissionHandlerFactory,
     private val formViewModelUserTaskSubmissionHandlerFactory: FormViewModelUserTaskSubmissionHandlerFactory,

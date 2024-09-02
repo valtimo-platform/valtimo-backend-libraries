@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
-import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.dashboard.datasource.WidgetDataSourceDto
 import com.ritense.dashboard.datasource.WidgetDataSourceResolver
 import com.ritense.dashboard.domain.Dashboard
@@ -30,15 +29,19 @@ import com.ritense.dashboard.repository.WidgetConfigurationRepository
 import com.ritense.dashboard.web.rest.dto.DashboardUpdateRequestDto
 import com.ritense.dashboard.web.rest.dto.SingleWidgetConfigurationUpdateRequestDto
 import com.ritense.dashboard.web.rest.dto.WidgetConfigurationUpdateRequestDto
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import java.util.SortedSet
-import kotlin.jvm.optionals.getOrElse
 import mu.KLogger
 import mu.KotlinLogging
 import org.springframework.context.ApplicationContext
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.SortedSet
+import kotlin.jvm.optionals.getOrElse
 
 @Transactional
+@Service
+@SkipComponentScan
 class DashboardService(
     private val applicationContext: ApplicationContext,
     private val dashboardRepository: DashboardRepository,

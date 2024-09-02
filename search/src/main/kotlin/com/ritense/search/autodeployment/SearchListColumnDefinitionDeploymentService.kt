@@ -20,6 +20,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.search.domain.SearchListColumn
 import com.ritense.search.domain.SearchListColumnConfigurationAutoDeploymentFinishedEvent
 import com.ritense.search.service.SearchListColumnService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.ApplicationEventPublisher
@@ -29,8 +30,11 @@ import org.springframework.core.annotation.Order
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
+import org.springframework.stereotype.Service
 import java.io.IOException
 
+@Service
+@SkipComponentScan
 class SearchListColumnDefinitionDeploymentService(
     private val resourceLoader: ResourceLoader,
     private val applicationEventPublisher: ApplicationEventPublisher,

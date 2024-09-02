@@ -26,11 +26,15 @@ import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.exception.ZaakTypeLinkNotFoundException
 import com.ritense.plugin.service.PluginConfigurationSearchParameters
 import com.ritense.plugin.service.PluginService
-import java.net.URI
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
+import org.springframework.stereotype.Service
+import java.net.URI
 
+@Service
+@SkipComponentScan
 class CatalogiService(
     val zaaktypeUrlProvider: ZaaktypeUrlProvider,
     val pluginService: PluginService

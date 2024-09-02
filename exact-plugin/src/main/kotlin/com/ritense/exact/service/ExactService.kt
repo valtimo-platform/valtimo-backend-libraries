@@ -9,15 +9,19 @@ import com.ritense.exact.service.response.ExactExchangeResponse
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginConfigurationSearchParameters
 import com.ritense.plugin.service.PluginService
-import java.time.LocalDateTime
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import mu.KotlinLogging
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation.REQUIRES_NEW
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.reactive.function.client.WebClient
+import java.time.LocalDateTime
 
 @Transactional
+@Service
+@SkipComponentScan
 class ExactService(
     val redirectUrl: String,
     val exactClient: WebClient,
