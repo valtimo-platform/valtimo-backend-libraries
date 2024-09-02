@@ -31,9 +31,10 @@ import com.ritense.smartdocuments.io.UnicodeUnescapeInputStream
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8
 import com.ritense.valtimo.web.logging.RestClientLoggingExtension
 import org.apache.commons.io.FilenameUtils
+import org.springframework.core.io.Resource
+import org.springframework.http.converter.ResourceHttpMessageConverter
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
-import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.util.Base64
 import java.util.UUID
@@ -74,9 +75,9 @@ class SmartDocumentsClient(
             .contentType(APPLICATION_JSON_UTF8)
             .body(fixRequest(smartDocumentsRequest))
             .retrieve()
-            .body<ByteArray>()!!
+            .body<Resource>()!!
 
-        val responseResourceId = temporaryResourceStorageService.store(ByteArrayInputStream(result))
+        val responseResourceId = temporaryResourceStorageService.store(result.inputStream)
         val parsedResponse = temporaryResourceStorageService.getResourceContentAsInputStream(responseResourceId)
             .use { parseSmartDocumentsResponse(it, outputFormat) }
 
@@ -131,6 +132,9 @@ class SmartDocumentsClient(
                 )
             }
             .apply { RestClientLoggingExtension.defaultRequestLogging(it) }
+            .messageConverters {
+               it + ResourceHttpMessageConverter(true)
+            }
             .build()
     }
 

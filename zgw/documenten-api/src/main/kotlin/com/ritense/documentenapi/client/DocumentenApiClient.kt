@@ -31,16 +31,17 @@ import com.ritense.valtimo.web.logging.RestClientLoggingExtension
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.ClientTools.Companion.optionalQueryParam
 import com.ritense.zgw.Page
+import org.springframework.core.io.Resource
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
+import org.springframework.http.converter.ResourceHttpMessageConverter
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 import org.springframework.web.util.UriBuilder
 import org.springframework.web.util.UriComponentsBuilder
-import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.net.URI
 import kotlin.math.min
@@ -56,7 +57,7 @@ class DocumentenApiClient(
         baseUrl: URI,
         request: CreateDocumentRequest
     ): CreateDocumentResult {
-        val result = buildFilteredClient(authentication)
+        val result = restClient(authentication)
             .post()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
@@ -86,7 +87,7 @@ class DocumentenApiClient(
         authentication: DocumentenApiAuthentication,
         objectUrl: URI
     ): DocumentInformatieObject {
-        val result = buildFilteredClient(authentication)
+        val result = restClient(authentication)
             .get()
             .uri(objectUrl)
             .retrieve()
@@ -118,7 +119,7 @@ class DocumentenApiClient(
 
         val pageToRequest = ((pageable.pageSize * pageable.pageNumber) / ITEMS_PER_PAGE) + 1
         val result =
-            buildFilteredClient(authentication)
+            restClient(authentication)
                 .get()
                 .uri {
                     ClientTools.baseUrlToBuilder(it, baseUrl)
@@ -184,7 +185,7 @@ class DocumentenApiClient(
         authentication: DocumentenApiAuthentication,
         objectUrl: URI
     ): InputStream {
-        val result = buildFilteredClient(authentication)
+        val result = restClient(authentication)
             .get()
             .uri {
                 ClientTools.baseUrlToBuilder(it, objectUrl)
@@ -193,7 +194,7 @@ class DocumentenApiClient(
             }
             .accept(MediaType.APPLICATION_OCTET_STREAM)
             .retrieve()
-            .body<ByteArray>()!!
+            .body<Resource>()!!
 
         TransactionTemplate(platformTransactionManager).executeWithoutResult {
             outboxService.send {
@@ -202,14 +203,14 @@ class DocumentenApiClient(
                 )
             }
         }
-        return ByteArrayInputStream(result)
+        return result.inputStream
     }
 
     fun lockInformatieObject(
         authentication: DocumentenApiAuthentication,
         objectUrl: URI
     ): DocumentLock {
-        val result = buildFilteredClient(authentication)
+        val result = restClient(authentication)
             .post()
             .uri("$objectUrl/lock")
             .retrieve()
@@ -222,7 +223,7 @@ class DocumentenApiClient(
         objectUrl: URI,
         documentLock: DocumentLock,
     ) {
-        buildFilteredClient(authentication)
+        restClient(authentication)
             .post()
             .uri("$objectUrl/unlock")
             .contentType(MediaType.APPLICATION_JSON)
@@ -232,7 +233,7 @@ class DocumentenApiClient(
     }
 
     fun deleteInformatieObject(authentication: DocumentenApiAuthentication, url: URI) {
-        buildFilteredClient(authentication)
+        restClient(authentication)
             .delete()
             .uri(url)
             .retrieve()
@@ -251,7 +252,7 @@ class DocumentenApiClient(
             "InformatieObject ${documentUrl.path.substringAfterLast("/")} with status 'definitief' cannot be updated!"
         }
 
-        val result = buildFilteredClient(authentication)
+        val result = restClient(authentication)
             .patch()
             .uri(documentUrl)
             .body(patchDocumentRequest)
@@ -272,12 +273,15 @@ class DocumentenApiClient(
             .toUri()
     }
 
-    private fun buildFilteredClient(authentication: DocumentenApiAuthentication): RestClient {
+    private fun restClient(authentication: DocumentenApiAuthentication): RestClient {
         return restClientBuilder
             .clone()
             .apply {
                 authentication.bearerAuth(it)
                 RestClientLoggingExtension.defaultRequestLogging(it)
+            }
+            .messageConverters {
+                it + ResourceHttpMessageConverter(true)
             }
             .build()
     }
