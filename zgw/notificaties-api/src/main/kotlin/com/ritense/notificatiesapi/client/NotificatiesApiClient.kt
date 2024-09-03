@@ -19,7 +19,6 @@ package com.ritense.notificatiesapi.client
 import com.ritense.notificatiesapi.NotificatiesApiAuthentication
 import com.ritense.notificatiesapi.domain.Abonnement
 import com.ritense.notificatiesapi.domain.Kanaal
-import com.ritense.valtimo.web.logging.RestClientLoggingExtension
 import org.springframework.http.MediaType
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
@@ -87,7 +86,6 @@ class NotificatiesApiClient(
         .clone()
         .apply {
             authentication.applyAuth(it)
-            RestClientLoggingExtension.defaultRequestLogging(it)
         }
         .baseUrl(baseUrl.toASCIIString())
         .build()
