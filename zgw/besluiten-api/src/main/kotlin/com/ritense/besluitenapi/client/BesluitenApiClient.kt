@@ -17,7 +17,6 @@
 package com.ritense.besluitenapi.client
 
 import com.ritense.besluitenapi.BesluitenApiAuthentication
-import com.ritense.valtimo.web.logging.RestClientLoggingExtension
 import com.ritense.zgw.ClientTools
 import org.springframework.http.MediaType
 import org.springframework.web.client.RestClient
@@ -36,7 +35,6 @@ class BesluitenApiClient(
             .clone()
             .apply {
                 authentication.applyAuth(it)
-                RestClientLoggingExtension.defaultRequestLogging(it)
             }
             .build()
             .post()
@@ -60,7 +58,6 @@ class BesluitenApiClient(
             .clone()
             .apply {
                 authentication.applyAuth(it)
-                RestClientLoggingExtension.defaultRequestLogging(it)
             }
             .build()
             .post()
