@@ -17,7 +17,6 @@
 package com.ritense.objecttypenapi.client
 
 import com.ritense.objecttypenapi.ObjecttypenApiAuthentication
-import com.ritense.valtimo.web.logging.RestClientLoggingExtension
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 import java.net.URI
@@ -35,7 +34,6 @@ class ObjecttypenApiClient(
             .clone()
             .apply {
                 authentication.applyAuth(it)
-                RestClientLoggingExtension.defaultRequestLogging(it)
             }
             .build()
             .get()
@@ -53,7 +51,6 @@ class ObjecttypenApiClient(
             .clone()
             .apply {
                 authentication.applyAuth(it)
-                RestClientLoggingExtension.defaultRequestLogging(it)
             }
             .build()
             .get()

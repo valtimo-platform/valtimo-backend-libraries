@@ -29,7 +29,6 @@ import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
 import com.ritense.smartdocuments.io.SubInputStream
 import com.ritense.smartdocuments.io.UnicodeUnescapeInputStream
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8
-import com.ritense.valtimo.web.logging.RestClientLoggingExtension
 import org.apache.commons.io.FilenameUtils
 import org.springframework.core.io.Resource
 import org.springframework.http.converter.ResourceHttpMessageConverter
@@ -118,7 +117,6 @@ class SmartDocumentsClient(
                     pluginProperties.password
                 )
             }
-            .apply { RestClientLoggingExtension.defaultRequestLogging(it) }
             .build()
     }
 
@@ -132,7 +130,6 @@ class SmartDocumentsClient(
                     smartDocumentsConnectorProperties.password!!
                 )
             }
-            .apply { RestClientLoggingExtension.defaultRequestLogging(it) }
             .messageConverters {
                 it + ResourceHttpMessageConverter(true) // Enables streaming
             }
