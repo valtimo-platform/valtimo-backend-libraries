@@ -17,46 +17,23 @@
 package com.ritense.valtimo.web.client
 
 import com.ritense.valtimo.web.config.ValtimoHttpRestClientConfigurationProperties
-import org.apache.hc.client5.http.config.ConnectionConfig
-import org.apache.hc.client5.http.config.RequestConfig
-import org.apache.hc.client5.http.impl.classic.HttpClientBuilder
-import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager
-import org.apache.hc.core5.http.io.SocketConfig
-import org.apache.hc.core5.util.Timeout
 import org.springframework.boot.web.client.RestClientCustomizer
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.web.client.RestClient
+import java.time.Duration
 
 class ApacheRequestFactoryCustomizer(
     private val valtimoHttpRestClientConfigurationProperties: ValtimoHttpRestClientConfigurationProperties
 ) : RestClientCustomizer {
 
     override fun customize(restClientBuilder: RestClient.Builder) {
-        // Connect timeout
-        val connectionConfig = ConnectionConfig.custom()
-            .setConnectTimeout(Timeout.ofSeconds(valtimoHttpRestClientConfigurationProperties.connectionTimeout))
-            .build()
-
-        // Socket timeout
-        val socketConfig = SocketConfig.custom()
-            .setSoTimeout(Timeout.ofSeconds(valtimoHttpRestClientConfigurationProperties.socketTimeout))
-            .build()
-
-        // Connection request timeout
-        val requestConfig = RequestConfig.custom()
-            .setConnectionRequestTimeout(Timeout.ofSeconds(valtimoHttpRestClientConfigurationProperties.readTimeout))
-            .build()
-
-        val connectionManager = PoolingHttpClientConnectionManager()
-        connectionManager.defaultSocketConfig = socketConfig
-        connectionManager.setDefaultConnectionConfig(connectionConfig)
-
-        val httpClient = HttpClientBuilder.create()
-            .setConnectionManager(connectionManager)
-            .setDefaultRequestConfig(requestConfig)
-            .build()
-
-        val apacheRequestFactory = HttpComponentsClientHttpRequestFactory(httpClient)
+        val apacheRequestFactory = HttpComponentsClientHttpRequestFactory()
+        apacheRequestFactory.setConnectTimeout(
+            Duration.ofSeconds(valtimoHttpRestClientConfigurationProperties.connectionTimeout)
+        )
+        apacheRequestFactory.setConnectionRequestTimeout(
+            Duration.ofSeconds(valtimoHttpRestClientConfigurationProperties.readTimeout)
+        )
         restClientBuilder.requestFactory(apacheRequestFactory)
     }
 
