@@ -1044,7 +1044,7 @@ internal class ObjectenApiClientTest {
 
         val objectUrl = mockApi.url("/some-object").toString()
 
-        assertThrows<IllegalStateException> {
+        assertThrows<HttpClientErrorException> {
             client.deleteObject(
                 TestAuthentication(),
                 URI(objectUrl),
