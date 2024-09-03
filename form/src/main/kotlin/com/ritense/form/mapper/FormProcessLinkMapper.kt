@@ -78,6 +78,21 @@ class FormProcessLinkMapper(
         )
     }
 
+    override fun toProcessLinkUpdateRequestDto(
+        deployDto: ProcessLinkDeployDto,
+        existingProcessLinkId: UUID
+    ): ProcessLinkUpdateRequestDto {
+        deployDto as FormProcessLinkDeployDto
+
+        val formDefinition = formDefinitionService.getFormDefinitionByName(deployDto.formDefinitionName)
+            .orElseThrow { IllegalStateException("Form definition ${deployDto.formDefinitionName} not found") }
+        return FormProcessLinkUpdateRequestDto(
+            id = existingProcessLinkId,
+            formDefinitionId = formDefinition.id,
+            viewModelEnabled = deployDto.viewModelEnabled
+        )
+    }
+
     override fun toProcessLinkExportResponseDto(processLink: ProcessLink): ProcessLinkExportResponseDto {
         processLink as FormProcessLink
         val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId).orElseThrow()
@@ -108,7 +123,7 @@ class FormProcessLinkMapper(
         updateRequestDto: ProcessLinkUpdateRequestDto
     ): ProcessLink {
         updateRequestDto as FormProcessLinkUpdateRequestDto
-        assert(processLinkToUpdate.id == updateRequestDto.id)
+        require(processLinkToUpdate.id == updateRequestDto.id)
         if (!formDefinitionService.formDefinitionExistsById(updateRequestDto.formDefinitionId)) {
             throw RuntimeException("Form definition not found with id ${updateRequestDto.formDefinitionId}")
         }
