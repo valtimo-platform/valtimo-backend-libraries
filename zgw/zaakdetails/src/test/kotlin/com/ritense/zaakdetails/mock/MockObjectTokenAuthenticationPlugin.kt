@@ -36,7 +36,7 @@ class MockObjectTokenAuthenticationPlugin : ObjectenApiAuthentication, Objecttyp
     @PluginProperty(key = "token", secret = true, required = true)
     lateinit var token: String
 
-    override fun bearerAuth(builder: RestClient.Builder): RestClient.Builder {
+    override fun applyAuth(builder: RestClient.Builder): RestClient.Builder {
         return builder.defaultHeaders { headers ->
             headers.setBearerAuth(token)
         }

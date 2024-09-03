@@ -55,7 +55,7 @@ class OpenZaakPlugin(
         return next.exchange(filteredRequest)
     }
 
-    override fun bearerAuth(builder: RestClient.Builder) : RestClient.Builder {
+    override fun applyAuth(builder: RestClient.Builder) : RestClient.Builder {
         val generatedToken = tokenGeneratorService.generateToken(
             clientSecret,
             clientId

@@ -200,7 +200,7 @@ internal class ObjecttypenApiClientTest {
     }
 
     class TestAuthentication : ObjecttypenApiAuthentication {
-        override fun bearerAuth(restClient: RestClient.Builder): RestClient.Builder {
+        override fun applyAuth(restClient: RestClient.Builder): RestClient.Builder {
             return restClient.defaultHeaders { headers ->
                 headers.setBearerAuth("test")
             }

@@ -86,7 +86,7 @@ class NotificatiesApiClient(
     ): RestClient = restClientBuilder
         .clone()
         .apply {
-            authentication.bearerAuth(it)
+            authentication.applyAuth(it)
             RestClientLoggingExtension.defaultRequestLogging(it)
         }
         .baseUrl(baseUrl.toASCIIString())

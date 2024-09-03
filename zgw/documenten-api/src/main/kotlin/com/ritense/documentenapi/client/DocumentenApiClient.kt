@@ -277,7 +277,7 @@ class DocumentenApiClient(
         return restClientBuilder
             .clone()
             .apply {
-                authentication.bearerAuth(it)
+                authentication.applyAuth(it)
                 RestClientLoggingExtension.defaultRequestLogging(it)
             }
             .messageConverters {

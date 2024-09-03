@@ -459,7 +459,7 @@ class ZakenApiClient(
         return restClientBuilder
             .clone()
             .apply {
-                authentication.bearerAuth(it)
+                authentication.applyAuth(it)
                 RestClientLoggingExtension.defaultRequestLogging(it)
             }
             .build()

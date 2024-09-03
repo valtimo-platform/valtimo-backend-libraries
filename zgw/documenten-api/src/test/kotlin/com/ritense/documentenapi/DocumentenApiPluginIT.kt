@@ -335,7 +335,7 @@ internal class DocumentenApiPluginIT @Autowired constructor(
     }
 
     class TestAuthentication : DocumentenApiAuthentication {
-        override fun bearerAuth(builder: RestClient.Builder): RestClient.Builder {
+        override fun applyAuth(builder: RestClient.Builder): RestClient.Builder {
             return builder
         }
 

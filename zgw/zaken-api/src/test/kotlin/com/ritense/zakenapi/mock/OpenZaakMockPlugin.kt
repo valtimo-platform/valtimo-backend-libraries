@@ -31,7 +31,7 @@ import reactor.core.publisher.Mono
     description = "OpenZaak mock plugin"
 )
 class OpenZaakMockPlugin : ZakenApiAuthentication, CatalogiApiAuthentication {
-    override fun bearerAuth(builder: RestClient.Builder): RestClient.Builder {
+    override fun applyAuth(builder: RestClient.Builder): RestClient.Builder {
         return builder
     }
 

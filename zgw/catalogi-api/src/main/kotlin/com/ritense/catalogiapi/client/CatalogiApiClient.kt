@@ -298,7 +298,7 @@ open class CatalogiApiClient(
         return restClientBuilder
             .clone()
             .apply {
-                authentication.bearerAuth(it)
+                authentication.applyAuth(it)
                 RestClientLoggingExtension.defaultRequestLogging(it)
             }
             .build()

@@ -69,6 +69,7 @@ class SmartDocumentsClient(
         smartDocumentsRequest: SmartDocumentsRequest,
         outputFormat: DocumentFormatOption,
     ): FileStreamResponse {
+        // Stream complete response (json) to a Resource
         val result = restClient()
             .post()
             .uri("/wsxmldeposit/deposit/unattended")
@@ -133,7 +134,7 @@ class SmartDocumentsClient(
             }
             .apply { RestClientLoggingExtension.defaultRequestLogging(it) }
             .messageConverters {
-               it + ResourceHttpMessageConverter(true)
+                it + ResourceHttpMessageConverter(true) // Enables streaming
             }
             .build()
     }

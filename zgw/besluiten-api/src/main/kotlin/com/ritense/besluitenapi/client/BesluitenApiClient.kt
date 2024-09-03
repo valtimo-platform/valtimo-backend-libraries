@@ -35,7 +35,7 @@ class BesluitenApiClient(
         return restClientBuilder
             .clone()
             .apply {
-                authentication.bearerAuth(it)
+                authentication.applyAuth(it)
                 RestClientLoggingExtension.defaultRequestLogging(it)
             }
             .build()
@@ -59,7 +59,7 @@ class BesluitenApiClient(
         return restClientBuilder
             .clone()
             .apply {
-                authentication.bearerAuth(it)
+                authentication.applyAuth(it)
                 RestClientLoggingExtension.defaultRequestLogging(it)
             }
             .build()

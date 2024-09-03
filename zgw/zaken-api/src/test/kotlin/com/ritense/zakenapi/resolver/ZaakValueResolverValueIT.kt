@@ -159,7 +159,7 @@ class ZaakValueResolverValueIT @Autowired constructor(
     }
 
     class TestAuthentication : ZakenApiAuthentication {
-        override fun bearerAuth(builder: RestClient.Builder): RestClient.Builder {
+        override fun applyAuth(builder: RestClient.Builder): RestClient.Builder {
             return builder
         }
 

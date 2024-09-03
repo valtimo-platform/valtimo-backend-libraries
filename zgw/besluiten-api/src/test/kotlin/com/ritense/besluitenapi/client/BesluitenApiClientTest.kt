@@ -233,7 +233,7 @@ class BesluitenApiClientTest {
 
     class TestAuthentication : BesluitenApiAuthentication {
 
-        override fun bearerAuth(builder: RestClient.Builder): RestClient.Builder {
+        override fun applyAuth(builder: RestClient.Builder): RestClient.Builder {
             return builder.defaultHeaders { headers ->
                 headers.setBearerAuth("test")
             }

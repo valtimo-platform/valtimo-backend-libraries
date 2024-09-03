@@ -278,7 +278,7 @@ class ObjectenApiClient(
         return restClientBuilder
             .clone()
             .apply {
-                authentication.bearerAuth(it)
+                authentication.applyAuth(it)
                 RestClientLoggingExtension.defaultRequestLogging(it)
                 baseURL?.let { url -> it.baseUrl(url) }
             }
