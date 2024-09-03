@@ -6,7 +6,6 @@ import com.ritense.exact.security.ExactPluginSecurityConfigurer
 import com.ritense.exact.service.ExactService
 import com.ritense.exact.web.rest.ExactResource
 import com.ritense.plugin.service.PluginService
-import com.ritense.valtimo.web.logging.RestClientLoggingExtension
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -37,7 +36,6 @@ class ExactPluginAutoConfiguration {
             .builder()
             .baseUrl(baseUrl)
             .defaultHeader("Accept", "application/json")
-            .apply { RestClientLoggingExtension.defaultRequestLogging(it) }
             .build()
 
     @Bean
