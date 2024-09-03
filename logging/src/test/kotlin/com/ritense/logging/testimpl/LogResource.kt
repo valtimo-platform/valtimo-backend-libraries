@@ -16,28 +16,28 @@
 
 package com.ritense.logging.testimpl
 
-import com.ritense.logging.ResourceLoggerContext
 import mu.KLogger
 import mu.KotlinLogging
+import mu.withLoggingContext
 
 class LogResource() {
 
     val id = 123
 
     fun logSomething() {
-        ResourceLoggerContext.withResource(this::class.java, "some-key") {
+        withLoggingContext(this::class.java.canonicalName to "some-key") {
             outputMessage()
         }
     }
 
     fun logNothing() {
-        ResourceLoggerContext.withResource(OtherInnerClass::class.java, "should-not-be-logged") {
+        withLoggingContext(OtherInnerClass::class.java.canonicalName to "should-not-be-logged") {
             //we don't want to log anything here to validate the key is removed from the MDC
         }
     }
 
     fun logSomethingWithTwoLevelsOfMetaData() {
-        ResourceLoggerContext.withResource(InnerClass::class.java, "second-key") {
+        withLoggingContext(InnerClass::class.java.canonicalName to "second-key") {
             logSomething()
         }
     }
