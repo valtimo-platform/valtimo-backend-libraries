@@ -28,7 +28,7 @@ import mu.withLoggingContext
 class LoggableResourceAspect {
 
     @Around("execution(* *(.., @com.ritense.logging.LoggableResource (*), ..))")
-    fun handleAnnotation(joinPoint: ProceedingJoinPoint): Any {
+    fun handleAnnotation(joinPoint: ProceedingJoinPoint): Any? {
         val args = joinPoint.args
 
         val method: Method = MethodSignature::class.java.cast(joinPoint.signature).method
