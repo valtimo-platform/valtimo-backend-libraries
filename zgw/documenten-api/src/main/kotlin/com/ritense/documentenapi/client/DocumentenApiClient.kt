@@ -27,7 +27,6 @@ import com.ritense.documentenapi.event.DocumentStored
 import com.ritense.documentenapi.event.DocumentUpdated
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
 import com.ritense.outbox.OutboxService
-import com.ritense.valtimo.web.logging.RestClientLoggingExtension
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.ClientTools.Companion.optionalQueryParam
 import com.ritense.zgw.Page
@@ -67,12 +66,10 @@ class DocumentenApiClient(
             .contentType(MediaType.APPLICATION_JSON)
             .body(request)
             .retrieve()
-            .body<CreateDocumentResult>()
+            .body<CreateDocumentResult>()!!
 
-        result?.let {
-            outboxService.send { DocumentStored(result.url, objectMapper.valueToTree(result)) }
-        }
-        return result ?: throw IllegalStateException("No result found")
+        outboxService.send { DocumentStored(result.url, objectMapper.valueToTree(result)) }
+        return result
     }
 
     fun getInformatieObject(
@@ -91,15 +88,15 @@ class DocumentenApiClient(
             .get()
             .uri(objectUrl)
             .retrieve()
-            .body<DocumentInformatieObject>()
+            .body<DocumentInformatieObject>()!!
 
         outboxService.send {
             DocumentInformatieObjectViewed(
-                result!!.url.toString(),
+                result.url.toString(),
                 objectMapper.valueToTree(result)
             )
         }
-        return result!!
+        return result
     }
 
     fun getInformatieObjecten(
@@ -278,7 +275,6 @@ class DocumentenApiClient(
             .clone()
             .apply {
                 authentication.applyAuth(it)
-                RestClientLoggingExtension.defaultRequestLogging(it)
             }
             .messageConverters {
                 it + ResourceHttpMessageConverter(true)

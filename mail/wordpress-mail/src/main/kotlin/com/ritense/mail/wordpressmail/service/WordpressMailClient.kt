@@ -54,8 +54,8 @@ class WordpressMailClient(
             .contentType(MULTIPART_FORM_DATA)
             .body(builder.build())
             .retrieve()
-            .body<EmailSendResponse>()
-        return result ?: throw IllegalStateException("No result found")
+            .body<EmailSendResponse>()!!
+        return result
     }
 
     fun getEmailTemplates(): EmailTemplateResponse {
@@ -63,8 +63,8 @@ class WordpressMailClient(
             .get()
             .uri("/wp-json/email/v1/get")
             .retrieve()
-            .body<EmailTemplateResponse>()
-        return result ?: throw IllegalStateException("No result found")
+            .body<EmailTemplateResponse>()!!
+        return result
     }
 
     fun setProperties(wordpressMailConnectorProperties: WordpressMailConnectorProperties) {

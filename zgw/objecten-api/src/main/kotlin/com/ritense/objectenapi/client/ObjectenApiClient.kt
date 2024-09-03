@@ -25,7 +25,6 @@ import com.ritense.objectenapi.event.ObjectUpdated
 import com.ritense.objectenapi.event.ObjectViewed
 import com.ritense.objectenapi.event.ObjectsListed
 import com.ritense.outbox.OutboxService
-import com.ritense.valtimo.web.logging.RestClientLoggingExtension
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.web.client.RestClient
@@ -47,24 +46,22 @@ class ObjectenApiClient(
             .get()
             .uri(objectUrl)
             .retrieve()
-            .body<ObjectWrapper>()
+            .body<ObjectWrapper>()!!
 
-        result?.let {
-            val response = if (result.type.host == HOST_DOCKER_INTERNAL)
-                result.copy(
-                    type = URI.create(
-                        result.type.toString().replace(HOST_DOCKER_INTERNAL, "localhost")
-                    )
-                ) else result
-
-            outboxService.send {
-                ObjectViewed(
-                    response.url.toString(),
-                    objectMapper.valueToTree(response)
+        val response = if (result.type.host == HOST_DOCKER_INTERNAL)
+            result.copy(
+                type = URI.create(
+                    result.type.toString().replace(HOST_DOCKER_INTERNAL, "localhost")
                 )
-            }
+            ) else result
+
+        outboxService.send {
+            ObjectViewed(
+                response.url.toString(),
+                objectMapper.valueToTree(response)
+            )
         }
-        return result ?: throw IllegalStateException("No result found")
+        return result
     }
 
     fun getObjectsByObjecttypeUrl(
@@ -97,16 +94,14 @@ class ObjectenApiClient(
             }
             .header(ACCEPT_CRS, EPSG_4326)
             .retrieve()
-            .body<ObjectsList>()
+            .body<ObjectsList>()!!
 
-        result?.let {
-            outboxService.send {
-                ObjectsListed(
-                    objectMapper.valueToTree(it.results)
-                )
-            }
+        outboxService.send {
+            ObjectsListed(
+                objectMapper.valueToTree(result.results)
+            )
         }
-        return result ?: throw IllegalStateException("No result found")
+        return result
     }
 
     fun getObjectsByObjecttypeUrlWithSearchParams(
@@ -141,16 +136,14 @@ class ObjectenApiClient(
             }
             .header(ACCEPT_CRS, EPSG_4326)
             .retrieve()
-            .body<ObjectsList>()
+            .body<ObjectsList>()!!
 
-        result?.let {
-            outboxService.send {
-                ObjectsListed(
-                    objectMapper.valueToTree(it.results)
-                )
-            }
+        outboxService.send {
+            ObjectsListed(
+                objectMapper.valueToTree(result.results)
+            )
         }
-        return result ?: throw IllegalStateException("No result found")
+        return result
     }
 
     fun createObject(
@@ -177,17 +170,15 @@ class ObjectenApiClient(
             .header(CONTENT_CRS, EPSG_4326)
             .body(objectRequestCorrectedHost)
             .retrieve()
-            .body<ObjectWrapper>()
+            .body<ObjectWrapper>()!!
 
-        result?.let {
-            outboxService.send {
-                ObjectCreated(
-                    result.url.toString(),
-                    objectMapper.valueToTree(result)
-                )
-            }
+        outboxService.send {
+            ObjectCreated(
+                result.url.toString(),
+                objectMapper.valueToTree(result)
+            )
         }
-        return result ?: throw IllegalStateException("No result found")
+        return result
     }
 
     fun objectPatch(
@@ -212,17 +203,15 @@ class ObjectenApiClient(
             .header(CONTENT_CRS, EPSG_4326)
             .body(objectRequestCorrectedHost)
             .retrieve()
-            .body<ObjectWrapper>()
+            .body<ObjectWrapper>()!!
 
-        result?.let {
-            outboxService.send {
-                ObjectPatched(
-                    result.url.toString(),
-                    objectMapper.valueToTree(result)
-                )
-            }
+        outboxService.send {
+            ObjectPatched(
+                result.url.toString(),
+                objectMapper.valueToTree(result)
+            )
         }
-        return result ?: throw IllegalStateException("No result found")
+        return result
     }
 
     fun objectUpdate(
@@ -247,17 +236,15 @@ class ObjectenApiClient(
             .header(CONTENT_CRS, EPSG_4326)
             .body(objectRequestCorrectedHost)
             .retrieve()
-            .body<ObjectWrapper>()
+            .body<ObjectWrapper>()!!
 
-        result?.let {
-            outboxService.send {
-                ObjectUpdated(
-                    result.url.toString(),
-                    objectMapper.valueToTree(result)
-                )
-            }
+        outboxService.send {
+            ObjectUpdated(
+                result.url.toString(),
+                objectMapper.valueToTree(result)
+            )
         }
-        return result ?: throw IllegalStateException("No result found")
+        return result
     }
 
     fun deleteObject(authentication: ObjectenApiAuthentication, objectUrl: URI): HttpStatus {
@@ -279,7 +266,6 @@ class ObjectenApiClient(
             .clone()
             .apply {
                 authentication.applyAuth(it)
-                RestClientLoggingExtension.defaultRequestLogging(it)
                 baseURL?.let { url -> it.baseUrl(url) }
             }
             .build()

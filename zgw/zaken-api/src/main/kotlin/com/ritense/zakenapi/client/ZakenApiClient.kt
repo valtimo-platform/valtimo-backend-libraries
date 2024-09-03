@@ -18,7 +18,6 @@ package com.ritense.zakenapi.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.outbox.OutboxService
-import com.ritense.valtimo.web.logging.RestClientLoggingExtension
 import com.ritense.zakenapi.ZakenApiAuthentication
 import com.ritense.zakenapi.domain.CreateZaakRequest
 import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
@@ -460,7 +459,6 @@ class ZakenApiClient(
             .clone()
             .apply {
                 authentication.applyAuth(it)
-                RestClientLoggingExtension.defaultRequestLogging(it)
             }
             .build()
     }

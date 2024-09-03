@@ -25,7 +25,6 @@ import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.domain.Zaaktype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
-import com.ritense.valtimo.web.logging.RestClientLoggingExtension
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
 import mu.KotlinLogging
@@ -59,8 +58,8 @@ open class CatalogiApiClient(
                     .build()
             }
             .retrieve()
-            .body<Page<ZaaktypeInformatieobjecttype>>()
-        return result ?: throw IllegalStateException("No result found")
+            .body<Page<ZaaktypeInformatieobjecttype>>()!!
+        return result
     }
 
     open fun getInformatieobjecttypes(
@@ -77,8 +76,8 @@ open class CatalogiApiClient(
                     .addOptionalQueryParamFromRequest("page", request.page)
                     .build()
             }.retrieve()
-            .body<Page<Informatieobjecttype>>()
-        return result ?: throw IllegalStateException("No result found")
+            .body<Page<Informatieobjecttype>>()!!
+        return result
     }
 
     @Cacheable(INFORMATIEOBJECTTYPECACHE_KEY, key = "#informatieobjecttypeUrl")
@@ -92,8 +91,8 @@ open class CatalogiApiClient(
             .get()
             .uri(informatieobjecttypeUrl)
             .retrieve()
-            .body(Informatieobjecttype::class.java)
-        return result!!
+            .body(Informatieobjecttype::class.java)!!
+        return result
     }
 
     open fun getRoltypen(
@@ -113,8 +112,8 @@ open class CatalogiApiClient(
                     .addOptionalQueryParamFromRequest("page", request.page)
                     .build()
             }.retrieve()
-            .body<Page<Roltype>>()
-        return result ?: throw IllegalStateException("No result found")
+            .body<Page<Roltype>>()!!
+        return result
     }
 
     open fun getStatustype(
@@ -127,8 +126,8 @@ open class CatalogiApiClient(
             .get()
             .uri(statustypeUrl)
             .retrieve()
-            .body<Statustype>()
-        return result ?: throw IllegalStateException("No result found")
+            .body<Statustype>()!!
+        return result
     }
 
     open fun getStatustypen(
@@ -147,8 +146,8 @@ open class CatalogiApiClient(
                     .addOptionalQueryParamFromRequest("page", request.page)
                     .build()
             }.retrieve()
-            .body<Page<Statustype>>()
-        return result ?: throw IllegalStateException("No result found")
+            .body<Page<Statustype>>()!!
+        return result
     }
 
     open fun getResultaattype(
@@ -161,9 +160,8 @@ open class CatalogiApiClient(
             .get()
             .uri(resultaattypeUrl)
             .retrieve()
-            .body<Resultaattype>()
-
-        return result ?: throw IllegalStateException("No result found")
+            .body<Resultaattype>()!!
+        return result
     }
 
     open fun getResultaattypen(
@@ -182,9 +180,8 @@ open class CatalogiApiClient(
                     .addOptionalQueryParamFromRequest("page", request.page)
                     .build()
             }.retrieve()
-            .body<Page<Resultaattype>>()
-
-        return result ?: throw IllegalStateException("No result found")
+            .body<Page<Resultaattype>>()!!
+        return result
     }
 
     open fun getBesluittypen(
@@ -205,9 +202,8 @@ open class CatalogiApiClient(
                     .addOptionalQueryParamFromRequest("page", request.page)
                     .build()
             }.retrieve()
-            .body<Page<Besluittype>>()
-
-        return result ?: throw IllegalStateException("No result found")
+            .body<Page<Besluittype>>()!!
+        return result
     }
 
     open fun getEigenschappen(
@@ -225,10 +221,10 @@ open class CatalogiApiClient(
                     .addOptionalQueryParamFromRequest("status", request.status?.getSearchValue())
                     .addOptionalQueryParamFromRequest("page", request.page)
                     .build()
-            }.retrieve()
-            .body<Page<Eigenschap>>()
-
-        return result ?: throw IllegalStateException("No result found")
+            }
+            .retrieve()
+            .body<Page<Eigenschap>>()!!
+        return result
     }
 
     open fun getZaaktypen(
@@ -245,9 +241,10 @@ open class CatalogiApiClient(
                     .addOptionalQueryParamFromRequest("status", request.status?.getSearchValue())
                     .addOptionalQueryParamFromRequest("page", request.page)
                     .build()
-            }.retrieve()
-            .body<Page<Zaaktype>>()
-        return result ?: throw IllegalStateException("No result found")
+            }
+            .retrieve()
+            .body<Page<Zaaktype>>()!!
+        return result
     }
 
     open fun getZaaktype(
@@ -260,8 +257,8 @@ open class CatalogiApiClient(
             .get()
             .uri(zaaktypeUrl)
             .retrieve()
-            .body<Zaaktype>()
-        return result ?: throw IllegalStateException("No result found")
+            .body<Zaaktype>()!!
+        return result
     }
 
     open fun prefillCache(authenticationPluginConfiguration: CatalogiApiAuthentication, url: URI) {
@@ -299,7 +296,6 @@ open class CatalogiApiClient(
             .clone()
             .apply {
                 authentication.applyAuth(it)
-                RestClientLoggingExtension.defaultRequestLogging(it)
             }
             .build()
     }
