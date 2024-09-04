@@ -19,10 +19,10 @@ package com.ritense.resource.service
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.resource.domain.MetadataType
-import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.temporaryresource.domain.ResourceStorageMetadataId
 import com.ritense.temporaryresource.domain.getEnumFromKey
 import com.ritense.temporaryresource.repository.ResourceStorageMetadataRepository
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.upload.MimeTypeDeniedException
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
 import jakarta.persistence.EntityNotFoundException
@@ -60,7 +60,7 @@ class TemporaryResourceStorageService(
 
     fun store(inputStream: InputStream, metadata: Map<String, Any> = emptyMap()): String {
         val dataFile = BufferedInputStream(inputStream).use { bis ->
-            if(uploadProperties.acceptedMimeTypes.isNotEmpty()) {
+            if (uploadProperties.acceptedMimeTypes.isNotEmpty()) {
                 //Tika marks the stream, reads the first few bytes and resets it when done.
                 val mediaType = Tika().detect(bis)
                 if (!uploadProperties.acceptedMimeTypes.contains(mediaType)) {
@@ -103,7 +103,7 @@ class TemporaryResourceStorageService(
     }
 
     fun getResourceMetadata(id: String): Map<String, Any> {
-            return getResourceMetadata(id, true)
+        return getResourceMetadata(id, true)
     }
 
     internal fun getResourceMetadata(id: String, filterPath: Boolean): Map<String, Any> {

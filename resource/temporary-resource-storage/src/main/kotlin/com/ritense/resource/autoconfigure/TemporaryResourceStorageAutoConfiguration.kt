@@ -18,13 +18,13 @@ package com.ritense.resource.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.resource.listener.MetadataAvailableEventListener
-import com.ritense.temporaryresource.repository.ResourceStorageMetadataRepository
 import com.ritense.resource.security.config.TemporaryResourceStorageHttpSecurityConfigurer
 import com.ritense.resource.service.ResourceStorageDelegate
 import com.ritense.resource.service.TemporaryResourceStorageDeletionService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.resource.service.UploadProcessDelegate
 import com.ritense.resource.web.rest.TemporaryResourceStorageResource
+import com.ritense.temporaryresource.repository.ResourceStorageMetadataRepository
 import com.ritense.valtimo.contract.annotation.ProcessBean
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
@@ -114,7 +114,7 @@ class TemporaryResourceStorageAutoConfiguration {
     @ConditionalOnMissingBean(UploadProcessDelegate::class)
     fun uploadProcessDelegate(
         applicationEventPublisher: ApplicationEventPublisher
-    ) : UploadProcessDelegate {
+    ): UploadProcessDelegate {
         return UploadProcessDelegate(applicationEventPublisher)
     }
 
@@ -122,8 +122,8 @@ class TemporaryResourceStorageAutoConfiguration {
     @ProcessBean
     @ConditionalOnMissingBean(ResourceStorageDelegate::class)
     fun resourceStorageDelegate(
-        service : TemporaryResourceStorageService
-    ) : ResourceStorageDelegate {
+        service: TemporaryResourceStorageService
+    ): ResourceStorageDelegate {
         return ResourceStorageDelegate(service)
     }
 
