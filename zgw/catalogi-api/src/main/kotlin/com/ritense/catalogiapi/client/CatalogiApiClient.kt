@@ -91,7 +91,7 @@ open class CatalogiApiClient(
             .get()
             .uri(informatieobjecttypeUrl)
             .retrieve()
-            .body(Informatieobjecttype::class.java)!!
+            .body<Informatieobjecttype>()!!
         return result
     }
 
