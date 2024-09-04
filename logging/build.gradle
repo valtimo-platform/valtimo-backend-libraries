@@ -16,19 +16,42 @@
 
 dockerCompose {
     projectName = "logging"
+
+    securityTesting {
+        isRequiredBy(project.tasks.securityTesting)
+        useComposeFiles.addAll("../docker-resources/docker-compose-base-test-postgresql.yml", "docker-compose-override-postgresql.yml")
+    }
+
+    integrationTestingPostgresql {
+        isRequiredBy(project.tasks.integrationTestingPostgresql)
+        useComposeFiles.addAll("../docker-resources/docker-compose-base-test-postgresql.yml", "docker-compose-override-postgresql.yml")
+    }
+
+    integrationTestingMysql {
+        isRequiredBy(project.tasks.integrationTestingMysql)
+        useComposeFiles.addAll("../docker-resources/docker-compose-base-test-mysql.yml", "docker-compose-override-mysql.yml")
+    }
 }
 
 dependencies {
 
+    implementation project(":contract")
+
+    implementation "org.springframework.boot:spring-boot"
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-aop"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "com.fasterxml.jackson.core:jackson-databind"
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+
+    implementation("ch.qos.logback.db:logback-classic-db:1.2.11.1")
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "ch.qos.logback:logback-classic"
     testImplementation "ch.qos.logback:logback-core"
+    testImplementation "org.postgresql:postgresql:${postgresqlDriverVersion}"
+    testImplementation "com.mysql:mysql-connector-j:${mysqlDriverVersion}"
 
     jar {
         enabled = true
