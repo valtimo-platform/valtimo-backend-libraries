@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.contract.audit.utils;
+package com.ritense.authorization.utils
 
-import com.ritense.valtimo.contract.utils.SecurityUtils;
+import jakarta.persistence.criteria.AbstractQuery
+import org.hibernate.query.sqm.function.SelfRenderingSqmAggregateFunction
 
-public class AuditHelper {
+object QueryUtils {
 
-    private AuditHelper() {
-    }
-
-    public static String getActor() {
-        final String userLogin = SecurityUtils.getCurrentUserLogin();
-        if (userLogin != null) {
-            return userLogin;
-        }
-        return "System";
-    }
-
+    fun isCountQuery(query: AbstractQuery<*>) =
+        query.selection is SelfRenderingSqmAggregateFunction
+        &&
+        (query.selection as SelfRenderingSqmAggregateFunction<out Any>).functionName == "count"
 }

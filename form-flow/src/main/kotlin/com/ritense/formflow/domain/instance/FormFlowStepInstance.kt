@@ -17,9 +17,8 @@
 package com.ritense.formflow.domain.instance
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.MissingNode
-import com.fasterxml.jackson.databind.node.NullNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.databind.node.ValueNode
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.formflow.domain.definition.FormFlowNextStep
 import com.ritense.formflow.domain.definition.FormFlowStep
@@ -50,7 +49,7 @@ data class FormFlowStepInstance(
     val stepKey: String,
     @Column(name = "form_flow_step_instance_order", updatable = false, nullable = false)
     val order: Int,
-    @Column(name = "form_flow_step_instance_submission_order", updatable = false, nullable = false)
+    @Column(name = "form_flow_step_instance_submission_order", nullable = false)
     var submissionOrder: Int,
     @Type(value = JsonType::class)
     @Column(name = "submission_data")
@@ -69,7 +68,7 @@ data class FormFlowStepInstance(
         order: Int,
         submissionData: String? = null,
         temporarySubmissionData: String? = null
-    ) : this(id, instance, stepKey, order, nextSubmissionOrder(instance), submissionData, temporarySubmissionData)
+    ) : this(id, instance, stepKey, order, -1, submissionData, temporarySubmissionData)
 
     val definition: FormFlowStep
         get() = instance.formFlowDefinition.getStepByKey(stepKey)
@@ -80,6 +79,7 @@ data class FormFlowStepInstance(
 
     fun saveTemporary(incompleteSubmissionData: String) {
         this.temporarySubmissionData = incompleteSubmissionData
+        this.submissionOrder = nextSubmissionOrder(instance)
     }
 
     fun open() {
@@ -87,10 +87,12 @@ data class FormFlowStepInstance(
     }
 
     fun complete(submissionData: String) {
-        if (this.submissionData != submissionData) {
-            this.submissionData = submissionData
+        val previousStep = instance.getHistory().firstOrNull { it.order == order - 1 }
+        val previousStepSubmissionDataChanged = previousStep?.submissionOrder ?: -1 >= submissionOrder
+        if (this.submissionData != submissionData || previousStepSubmissionDataChanged) {
             this.submissionOrder = nextSubmissionOrder(instance)
         }
+        this.submissionData = submissionData
         this.temporarySubmissionData = null
 
         processExpressions<Any>(definition.onComplete)
@@ -124,35 +126,49 @@ data class FormFlowStepInstance(
             val variables = createVarMap()
             val expressionProcessor = factory.create(variables)
 
+            val oldCompleteSubmissionData = MapperSingleton.get().valueToTree<JsonNode>(variables)
+                .at("/step/submissionData")
             val results = expressions.map { expression ->
                 expression?.let { expressionProcessor.process<T>(expression) }
             }
             val newCompleteSubmissionData = MapperSingleton.get().valueToTree<JsonNode>(variables)
                 .at("/step/submissionData")
-            updateSubmissionData(newCompleteSubmissionData)
+            val spelChangedSubmissionData = keepDiff(newCompleteSubmissionData, oldCompleteSubmissionData)
+
+            updateSubmissionData(spelChangedSubmissionData)
             results
         }
     }
 
-    private fun updateSubmissionData(newSubmissionData: JsonNode) {
+    private fun updateSubmissionData(spelChangedSubmissionData: JsonNode) {
         val mapper = MapperSingleton.get()
-        val oldCompleteSubmissionData = mapper.readValue<JsonNode>(instance.getSubmissionDataContext())
-        if (newSubmissionData != oldCompleteSubmissionData) {
-            keepDiff(newSubmissionData, oldCompleteSubmissionData)
-            val newSubmissionValue = if (newSubmissionData is NullNode || newSubmissionData is MissingNode) {
-                null
+        if (spelChangedSubmissionData !is ObjectNode || !spelChangedSubmissionData.isEmpty) {
+            val submissionJsonObject = merge(
+                mapper.readValue<JsonNode>(getCurrentSubmissionData().toString()),
+                spelChangedSubmissionData
+            )
+            val newSubmissionData = if (submissionJsonObject is ValueNode) null else submissionJsonObject.toString()
+            if (temporarySubmissionData != null) {
+                temporarySubmissionData = newSubmissionData
             } else {
-                newSubmissionData.toString()
+                submissionData = newSubmissionData
             }
-            if (this.submissionData != null) {
-                this.submissionData = newSubmissionValue
-            } else {
-                this.temporarySubmissionData = newSubmissionValue
-            }
+            submissionOrder = nextSubmissionOrder(instance)
         }
     }
 
-    private fun keepDiff(target: JsonNode, toRemove: JsonNode) {
+    private fun merge(target: JsonNode?, source: JsonNode?): JsonNode? {
+        return if (target is ObjectNode && source is ObjectNode) {
+            source.properties().forEach { (key, sourceValue) ->
+                target.set<JsonNode>(key, merge(target[key], sourceValue))
+            }
+            target
+        } else {
+            source
+        }
+    }
+
+    private fun keepDiff(target: JsonNode, toRemove: JsonNode): JsonNode {
         if (target is ObjectNode && toRemove is ObjectNode) {
             target.properties().toList().forEach { (key, value) ->
                 val removeValue = toRemove.get(key)
@@ -163,6 +179,7 @@ data class FormFlowStepInstance(
                 }
             }
         }
+        return target
     }
 
     private fun createVarMap(): Map<String, Any> {

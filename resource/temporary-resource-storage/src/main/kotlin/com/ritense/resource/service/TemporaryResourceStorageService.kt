@@ -19,9 +19,11 @@ package com.ritense.resource.service
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.resource.domain.MetadataType
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.upload.MimeTypeDeniedException
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
 import org.apache.tika.Tika
+import org.springframework.stereotype.Service
 import java.io.BufferedInputStream
 import java.io.InputStream
 import java.nio.file.Files
@@ -36,6 +38,8 @@ import kotlin.io.path.notExists
 import kotlin.io.path.pathString
 import kotlin.io.path.readText
 
+@Service
+@SkipComponentScan
 class TemporaryResourceStorageService(
     private val random: SecureRandom = SecureRandom(),
     valtimoResourceTempDirectory: String = "",

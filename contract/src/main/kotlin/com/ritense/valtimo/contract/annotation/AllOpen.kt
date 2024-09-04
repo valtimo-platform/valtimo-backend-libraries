@@ -14,21 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.contract.audit.utils;
+package com.ritense.valtimo.contract.annotation
 
-import com.ritense.valtimo.contract.utils.SecurityUtils;
-
-public class AuditHelper {
-
-    private AuditHelper() {
-    }
-
-    public static String getActor() {
-        final String userLogin = SecurityUtils.getCurrentUserLogin();
-        if (userLogin != null) {
-            return userLogin;
-        }
-        return "System";
-    }
-
-}
+/**
+* Prevents kotlin classes and their members to be final.
+*/
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class AllOpen

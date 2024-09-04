@@ -34,6 +34,7 @@ import com.ritense.documentenapi.web.rest.dto.DocumentenApiDocumentDto
 import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPlugin
 import com.ritense.zakenapi.domain.ZaakInformatieObject
@@ -42,12 +43,15 @@ import com.ritense.zakenapi.link.ZaakInstanceLinkNotFoundException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.net.URI
 import java.util.UUID
 import kotlin.math.min
 
 @Transactional
+@Service
+@SkipComponentScan
 class ZaakDocumentService(
     private val zaakUrlProvider: ZaakUrlProvider,
     private val pluginService: PluginService,

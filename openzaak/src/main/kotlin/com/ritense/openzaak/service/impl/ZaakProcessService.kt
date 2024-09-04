@@ -19,9 +19,13 @@ package com.ritense.openzaak.service.impl
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.openzaak.service.ZaakProcessService
 import com.ritense.openzaak.service.ZaakStatusService
-import java.util.UUID
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.springframework.stereotype.Service
+import java.util.UUID
 
+@Service
+@SkipComponentScan
 class ZaakProcessService(
     private val zaakStatusService: ZaakStatusService,
 ) : ZaakProcessService {

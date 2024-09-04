@@ -32,5 +32,6 @@
     <include file="changelog/20220824-add-form-flow-on-back.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20230823-temporary-submission-data.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20240820-add-form-flow-step-instance-submission-order.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20240823-add-form-flow-step-title.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
