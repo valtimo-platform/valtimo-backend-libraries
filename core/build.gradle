@@ -39,7 +39,7 @@ dependencies {
     implementation project(":contract")
     implementation project(":outbox")
     implementation project(":resource")
-    api project(":web")
+    implementation project(":web")
     implementation project(":exporter")
     implementation project(":importer")
 
