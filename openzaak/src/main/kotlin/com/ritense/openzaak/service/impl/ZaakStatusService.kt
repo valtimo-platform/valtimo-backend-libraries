@@ -23,10 +23,14 @@ import com.ritense.openzaak.service.ZaakStatusService
 import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.StatusType
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
-import java.net.URI
+import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
+import java.net.URI
 
+@Service
+@SkipComponentScan
 class ZaakStatusService(
     private val restTemplate: RestTemplate,
     private val openZaakConfigService: OpenZaakConfigService,

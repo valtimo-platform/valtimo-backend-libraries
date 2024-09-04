@@ -50,6 +50,7 @@ import com.ritense.plugin.web.rest.request.PluginProcessLinkUpdateDto
 import com.ritense.plugin.web.rest.result.PluginActionDefinitionDto
 import com.ritense.plugin.web.rest.result.PluginProcessLinkResultDto
 import com.ritense.processlink.domain.ActivityTypeWithEventName
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.validation.ConstraintViolationException
 import jakarta.validation.ValidationException
@@ -60,6 +61,7 @@ import org.camunda.bpm.engine.delegate.DelegateTask
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.core.env.Environment
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
@@ -68,6 +70,8 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.functions
 
 @Transactional
+@Service
+@SkipComponentScan
 class PluginService(
     private val pluginDefinitionRepository: PluginDefinitionRepository,
     private val pluginConfigurationRepository: PluginConfigurationRepository,

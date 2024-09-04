@@ -22,7 +22,11 @@ import com.ritense.openzaak.domain.connector.OpenZaakConfig
 import com.ritense.openzaak.domain.connector.OpenZaakConnector
 import com.ritense.openzaak.domain.connector.OpenZaakProperties
 import com.ritense.openzaak.service.OpenZaakConfigService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import org.springframework.stereotype.Service
 
+@Service
+@SkipComponentScan
 class OpenZaakConfigService(
     private val connectorTypeInstanceRepository: ConnectorTypeInstanceRepository,
     private val connectorTypeRepository: ConnectorTypeRepository,

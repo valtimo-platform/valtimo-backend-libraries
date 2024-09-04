@@ -25,14 +25,18 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 
+@Service
+@SkipComponentScan
 class DocumentDelegateService(
     private val processDocumentService: ProcessDocumentService,
     private val documentService: DocumentService,

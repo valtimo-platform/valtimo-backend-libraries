@@ -16,9 +16,13 @@
 
 package com.ritense.processdocument.service
 
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valueresolver.ValueResolverService
 import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.springframework.stereotype.Service
 
+@Service
+@SkipComponentScan
 class ValueResolverDelegateService(
     private val valueResolverService: ValueResolverService,
 ) {
