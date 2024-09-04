@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.web.config
+package com.ritense.valtimo.contract.client
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.web.autoconfigure
+package com.ritense.valtimo.contract.client
 
-import com.ritense.valtimo.web.client.ApacheRequestFactoryCustomizer
-import com.ritense.valtimo.web.client.DefaultErrorHandlingCustomizer
-import com.ritense.valtimo.web.config.ValtimoHttpRestClientConfigurationProperties
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
@@ -32,11 +29,6 @@ class RestClientAutoConfiguration {
         valtimoHttpRestClientConfigurationProperties: ValtimoHttpRestClientConfigurationProperties
     ): ApacheRequestFactoryCustomizer {
         return ApacheRequestFactoryCustomizer(valtimoHttpRestClientConfigurationProperties)
-    }
-
-    @Bean
-    fun defaultErrorHandlingCustomizer(): DefaultErrorHandlingCustomizer {
-        return DefaultErrorHandlingCustomizer()
     }
 
 }

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.web.client
+package com.ritense.valtimo.contract.client
 
-import com.ritense.valtimo.web.config.ValtimoHttpRestClientConfigurationProperties
 import org.springframework.boot.web.client.RestClientCustomizer
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.web.client.RestClient
