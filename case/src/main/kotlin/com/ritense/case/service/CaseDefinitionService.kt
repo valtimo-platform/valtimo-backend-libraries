@@ -25,8 +25,8 @@ import com.ritense.case.exception.InvalidListColumnException
 import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
-import com.ritense.case.service.validations.ListColumnValidator
 import com.ritense.case.service.validations.CreateCaseListColumnValidator
+import com.ritense.case.service.validations.ListColumnValidator
 import com.ritense.case.service.validations.Operation
 import com.ritense.case.service.validations.UpdateCaseListColumnValidator
 import com.ritense.case.web.rest.dto.CaseListColumnDto
@@ -35,11 +35,15 @@ import com.ritense.case.web.rest.mapper.CaseListColumnMapper
 import com.ritense.document.domain.DocumentDefinition
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valueresolver.ValueResolverService
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import kotlin.jvm.optionals.getOrNull
 
 @Transactional
+@Service
+@SkipComponentScan
 class CaseDefinitionService(
     private val caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository,
     private val caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,

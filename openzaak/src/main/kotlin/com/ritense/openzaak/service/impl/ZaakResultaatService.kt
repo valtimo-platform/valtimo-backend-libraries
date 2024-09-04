@@ -19,9 +19,13 @@ package com.ritense.openzaak.service.impl
 import com.ritense.openzaak.service.ZaakResultaatService
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.ResultaatType
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import java.net.URI
 
+@Service
+@SkipComponentScan
 class ZaakResultaatService(
     private val restTemplate: RestTemplate,
     private val openZaakConfigService: OpenZaakConfigService,

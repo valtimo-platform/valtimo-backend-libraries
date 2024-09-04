@@ -22,11 +22,13 @@ import com.ritense.resource.domain.MetadataType
 import com.ritense.temporaryresource.domain.ResourceStorageMetadataId
 import com.ritense.temporaryresource.domain.getEnumFromKey
 import com.ritense.temporaryresource.repository.ResourceStorageMetadataRepository
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.upload.MimeTypeDeniedException
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
 import jakarta.persistence.EntityNotFoundException
 import mu.KotlinLogging
 import org.apache.tika.Tika
+import org.springframework.stereotype.Service
 import java.io.BufferedInputStream
 import java.io.InputStream
 import java.nio.file.Files
@@ -41,6 +43,8 @@ import kotlin.io.path.notExists
 import kotlin.io.path.pathString
 import kotlin.io.path.readText
 
+@Service
+@SkipComponentScan
 class TemporaryResourceStorageService(
     private val random: SecureRandom = SecureRandom(),
     valtimoResourceTempDirectory: String = "",

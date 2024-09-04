@@ -19,15 +19,19 @@ package com.ritense.zakenapi.service
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.zakenapi.domain.ZaakTypeLink
 import com.ritense.zakenapi.domain.ZaakTypeLinkId
 import com.ritense.zakenapi.repository.ZaakTypeLinkRepository
 import com.ritense.zakenapi.web.rest.request.CreateZaakTypeLinkRequest
 import com.ritense.zgw.Rsin
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Transactional
+@Service
+@SkipComponentScan
 class DefaultZaakTypeLinkService(
     private val zaakTypeLinkRepository: ZaakTypeLinkRepository,
     private val processDocumentAssociationService: ProcessDocumentAssociationService
