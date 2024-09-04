@@ -28,12 +28,12 @@ class ApacheRequestFactoryCustomizer(
 
     override fun customize(restClientBuilder: RestClient.Builder) {
         val apacheRequestFactory = HttpComponentsClientHttpRequestFactory()
-        apacheRequestFactory.setConnectTimeout(
-            Duration.ofSeconds(valtimoHttpRestClientConfigurationProperties.connectionTimeout)
-        )
-        apacheRequestFactory.setConnectionRequestTimeout(
-            Duration.ofSeconds(valtimoHttpRestClientConfigurationProperties.readTimeout)
-        )
+        valtimoHttpRestClientConfigurationProperties.connectTimeout.let {
+            apacheRequestFactory.setConnectTimeout(Duration.ofSeconds(it))
+        }
+        valtimoHttpRestClientConfigurationProperties.connectionRequestTimeout.let {
+            apacheRequestFactory.setConnectionRequestTimeout(Duration.ofSeconds(it))
+        }
         restClientBuilder.requestFactory(apacheRequestFactory)
     }
 

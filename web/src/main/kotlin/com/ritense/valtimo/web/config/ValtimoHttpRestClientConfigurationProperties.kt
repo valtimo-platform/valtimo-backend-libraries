@@ -20,6 +20,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "valtimo.http.rest-client")
 data class ValtimoHttpRestClientConfigurationProperties(
-    val connectionTimeout: Long = 10, // Default 10-sec
-    val readTimeout: Long = 10, // Default 10-sec
+    val connectTimeout: Long = 5, // as seconds, setConnectTimeout in HttpComponentsClientHttpRequestFactory
+    val connectionRequestTimeout: Long = 5 // as seconds, setConnectionRequestTimeout in HttpComponentsClientHttpRequestFactory
 )
