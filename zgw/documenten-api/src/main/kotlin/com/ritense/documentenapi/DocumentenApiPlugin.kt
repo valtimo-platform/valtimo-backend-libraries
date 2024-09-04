@@ -288,8 +288,10 @@ class DocumentenApiPlugin(
             val test = URI.create(documentCreateResult.url)
             val pluginConfiguration = getDocumentenApiPluginByInformatieobjectUrl(test)
             execution.setVariable(DOWNLOAD_URL_PROCESS_VAR, createDownloadUrl(pluginConfiguration.id.id, documentId))
-        } catch (_: Exception) {
-            throw IllegalStateException("Failed to set the $DOWNLOAD_URL_PROCESS_VAR variable in the DelegateExecution")
+        } catch (e: Exception) {
+            throw IllegalStateException(
+                "Failed to set the $DOWNLOAD_URL_PROCESS_VAR variable in the DelegateExecution", e
+            )
         }
     }
 

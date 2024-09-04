@@ -21,6 +21,8 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-security"
 
+    implementation "org.camunda.bpm:camunda-engine:${camundaVersion}"
+
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.apache.tika:tika-core:${apacheTikaVersion}"
     implementation "org.apache.tika:tika-parser-microsoft-module:${apacheTikaVersion}"
@@ -31,8 +33,6 @@ dependencies {
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
 
     testImplementation project(':test-utils-common')
-
-    api "org.camunda.bpm:camunda-engine:${camundaVersion}"
 
     jar {
         enabled = true
