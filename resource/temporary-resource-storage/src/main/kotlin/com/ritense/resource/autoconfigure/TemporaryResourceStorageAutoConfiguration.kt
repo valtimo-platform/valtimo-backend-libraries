@@ -17,12 +17,10 @@
 package com.ritense.resource.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.resource.listener.MetadataAvailableEventListener
 import com.ritense.resource.security.config.TemporaryResourceStorageHttpSecurityConfigurer
 import com.ritense.resource.service.ResourceStorageDelegate
 import com.ritense.resource.service.TemporaryResourceStorageDeletionService
 import com.ritense.resource.service.TemporaryResourceStorageService
-import com.ritense.resource.service.UploadProcessDelegate
 import com.ritense.resource.web.rest.TemporaryResourceStorageResource
 import com.ritense.temporaryresource.repository.ResourceStorageMetadataRepository
 import com.ritense.valtimo.contract.annotation.ProcessBean
@@ -99,23 +97,6 @@ class TemporaryResourceStorageAutoConfiguration {
     @Bean
     fun temporaryResourceStorageLiquibaseMasterChangeLogLocation(): LiquibaseMasterChangeLogLocation {
         return LiquibaseMasterChangeLogLocation("config/liquibase/temporary-resource-master.xml")
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(MetadataAvailableEventListener::class)
-    fun metadataAvailableEventListener(
-        resourceStorageMetadataRepository: ResourceStorageMetadataRepository,
-    ): MetadataAvailableEventListener {
-        return MetadataAvailableEventListener(resourceStorageMetadataRepository)
-    }
-
-    @Bean
-    @ProcessBean
-    @ConditionalOnMissingBean(UploadProcessDelegate::class)
-    fun uploadProcessDelegate(
-        applicationEventPublisher: ApplicationEventPublisher
-    ): UploadProcessDelegate {
-        return UploadProcessDelegate(applicationEventPublisher)
     }
 
     @Bean

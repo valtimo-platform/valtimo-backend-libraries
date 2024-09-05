@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package com.ritense.resource.listener
+package com.ritense.zakenapi.service
 
-import com.ritense.resource.event.ResourceStorageMetadataAvailableEvent
 import com.ritense.temporaryresource.domain.ResourceStorageMetadata
 import com.ritense.temporaryresource.domain.ResourceStorageMetadataId
 import com.ritense.temporaryresource.domain.StorageMetadataKeys
 import com.ritense.temporaryresource.repository.ResourceStorageMetadataRepository
+import com.ritense.zakenapi.event.ResourceStorageDocumentMetadataAvailableEvent
 import org.springframework.context.event.EventListener
 
-class MetadataAvailableEventListener(
+class DocumentMetadataAvailableEventListener(
     private val repository: ResourceStorageMetadataRepository
 ) {
 
-    @EventListener(ResourceStorageMetadataAvailableEvent::class)
-    fun storeResourceMetadata(event: ResourceStorageMetadataAvailableEvent) {
+    @EventListener(ResourceStorageDocumentMetadataAvailableEvent::class)
+    fun storeResourceMetadata(event: ResourceStorageDocumentMetadataAvailableEvent) {
         if (event.documentId.isNotEmpty()) {
             repository.save(
                 ResourceStorageMetadata(

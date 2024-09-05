@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.resource.event
+package com.ritense.zakenapi.event
 
 import org.springframework.context.ApplicationEvent
 
-class ResourceStorageMetadataAvailableEvent(
+class ResourceStorageDocumentMetadataAvailableEvent(
     source: Any,
     val resourceId: String,
     val documentId: String,

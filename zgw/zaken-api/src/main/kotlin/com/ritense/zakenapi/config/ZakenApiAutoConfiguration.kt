@@ -27,6 +27,8 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.temporaryresource.repository.ResourceStorageMetadataRepository
+import com.ritense.valtimo.contract.annotation.ProcessBean
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPluginFactory
 import com.ritense.zakenapi.client.ZakenApiClient
@@ -45,6 +47,8 @@ import com.ritense.zakenapi.resolver.ZaakStatusValueResolverFactory
 import com.ritense.zakenapi.resolver.ZaakValueResolverFactory
 import com.ritense.zakenapi.security.ZakenApiHttpSecurityConfigurer
 import com.ritense.zakenapi.service.DefaultZaakTypeLinkService
+import com.ritense.zakenapi.service.DocumentMetadataAvailableEventListener
+import com.ritense.zakenapi.service.UploadProcessDelegate
 import com.ritense.zakenapi.service.ZaakDocumentService
 import com.ritense.zakenapi.service.ZaakTypeLinkService
 import com.ritense.zakenapi.service.ZakenApiEventListener
@@ -55,6 +59,7 @@ import com.ritense.zakenapi.web.rest.ZaakTypeLinkResource
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.core.annotation.Order
@@ -234,6 +239,23 @@ class ZakenApiAutoConfiguration {
         pluginService: PluginService
     ): DocumentDeleteHandler {
         return ZakenDocumentDeleteHandler(pluginService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DocumentMetadataAvailableEventListener::class)
+    fun documentMetadataAvailableEventListener(
+        resourceStorageMetadataRepository: ResourceStorageMetadataRepository,
+    ): DocumentMetadataAvailableEventListener {
+        return DocumentMetadataAvailableEventListener(resourceStorageMetadataRepository)
+    }
+
+    @Bean
+    @ProcessBean
+    @ConditionalOnMissingBean(UploadProcessDelegate::class)
+    fun uploadProcessDelegate(
+        applicationEventPublisher: ApplicationEventPublisher
+    ): UploadProcessDelegate {
+        return UploadProcessDelegate(applicationEventPublisher)
     }
 
     @Bean

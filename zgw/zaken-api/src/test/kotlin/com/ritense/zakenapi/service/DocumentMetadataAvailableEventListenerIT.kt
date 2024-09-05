@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.resource.listener
+package com.ritense.zakenapi.service
 
-import com.ritense.resource.event.ResourceStorageMetadataAvailableEvent
 import com.ritense.temporaryresource.domain.ResourceStorageMetadata
 import com.ritense.temporaryresource.domain.StorageMetadataKeys
 import com.ritense.temporaryresource.repository.ResourceStorageMetadataRepository
+import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.zakenapi.BaseIntegrationTest
+import com.ritense.zakenapi.event.ResourceStorageDocumentMetadataAvailableEvent
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -31,12 +33,10 @@ import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.firstValue
 import org.mockito.kotlin.lastValue
 import org.mockito.kotlin.verify
-import org.springframework.boot.test.context.SpringBootTest
 
-@SpringBootTest
-internal class MetadataAvailableEventListenerTest {
+internal class DocumentMetadataAvailableEventListenerIT : BaseIntegrationTest() {
 
-    lateinit var listener: MetadataAvailableEventListener
+    lateinit var listener: DocumentMetadataAvailableEventListener
     lateinit var repository: ResourceStorageMetadataRepository
 
     @Captor
@@ -45,15 +45,16 @@ internal class MetadataAvailableEventListenerTest {
     @BeforeEach
     fun before() {
         repository = mock(ResourceStorageMetadataRepository::class.java)
-        listener = MetadataAvailableEventListener(repository)
+        listener = DocumentMetadataAvailableEventListener(repository)
+        userManagementService = mock(UserManagementService::class.java)
         resourceStorageMetadataCaptor = ArgumentCaptor.forClass(ResourceStorageMetadata::class.java)
     }
 
     @Test
     fun `should store resource metadata`() {
-        val event = ResourceStorageMetadataAvailableEvent(
-            source="source",
-            resourceId="1234",
+        val event = ResourceStorageDocumentMetadataAvailableEvent(
+            source = "source",
+            resourceId = "1234",
             documentUrl = "http://localhost:8001/document/url",
             downloadUrl = "/api/v1/documenten-api/c64ef7ee-c64ef7ee-056b9c4ba392/files/9ec35849-9ec35849-c9a2f77d76fa/download",
             documentId = "9ec35849-9ec35849-c9a2f77d76fa"
@@ -70,6 +71,9 @@ internal class MetadataAvailableEventListenerTest {
         val lastValue = resourceStorageMetadataCaptor.lastValue
         assertNotNull(lastValue)
         assertEquals(StorageMetadataKeys.DOWNLOAD_URL, lastValue.id.metadataKey)
-        assertEquals("/api/v1/documenten-api/c64ef7ee-c64ef7ee-056b9c4ba392/files/9ec35849-9ec35849-c9a2f77d76fa/download", lastValue.metadataValue)
+        assertEquals(
+            "/api/v1/documenten-api/c64ef7ee-c64ef7ee-056b9c4ba392/files/9ec35849-9ec35849-c9a2f77d76fa/download",
+            lastValue.metadataValue
+        )
     }
 }

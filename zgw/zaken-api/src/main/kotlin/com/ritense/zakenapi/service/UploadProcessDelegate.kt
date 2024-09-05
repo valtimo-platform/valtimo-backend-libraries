@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.resource.service
+package com.ritense.zakenapi.service
 
-import com.ritense.resource.event.ResourceStorageMetadataAvailableEvent
+import com.ritense.zakenapi.event.ResourceStorageDocumentMetadataAvailableEvent
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.context.ApplicationEventPublisher
 
@@ -25,7 +25,7 @@ class UploadProcessDelegate(
 ) {
 
     fun publishFileUploadedEvent(execution: DelegateExecution) {
-        val event = ResourceStorageMetadataAvailableEvent(
+        val event = ResourceStorageDocumentMetadataAvailableEvent(
             this,
             resourceId = execution.getVariable("resourceId") as String,
             documentId = execution.getVariable("documentId") as? String ?: "",
