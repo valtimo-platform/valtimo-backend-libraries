@@ -16,11 +16,9 @@
 
 package com.ritense.processlink.url
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.context.annotation.Bean
 
 @SpringBootApplication
 class TestApplication {

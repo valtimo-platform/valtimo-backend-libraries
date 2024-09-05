@@ -43,7 +43,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
 
-
 @Transactional
 internal class URLProcessLinkResourceIntegrationTest @Autowired constructor(
     private val webApplicationContext: WebApplicationContext,
