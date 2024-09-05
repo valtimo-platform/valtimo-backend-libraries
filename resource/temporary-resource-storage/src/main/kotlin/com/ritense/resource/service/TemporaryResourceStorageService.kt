@@ -19,9 +19,14 @@ package com.ritense.resource.service
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.resource.domain.MetadataType
+import com.ritense.temporaryresource.domain.ResourceStorageMetadataId
+import com.ritense.temporaryresource.domain.getEnumFromKey
+import com.ritense.temporaryresource.repository.ResourceStorageMetadataRepository
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.upload.MimeTypeDeniedException
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
+import jakarta.persistence.EntityNotFoundException
+import mu.KotlinLogging
 import org.apache.tika.Tika
 import org.springframework.stereotype.Service
 import java.io.BufferedInputStream
@@ -45,6 +50,7 @@ class TemporaryResourceStorageService(
     valtimoResourceTempDirectory: String = "",
     private val uploadProperties: ValtimoUploadProperties,
     private val objectMapper: ObjectMapper,
+    private val repository: ResourceStorageMetadataRepository
 ) {
     val tempDir: Path = if (valtimoResourceTempDirectory.isNotBlank()) {
         Path.of(valtimoResourceTempDirectory)
@@ -54,7 +60,7 @@ class TemporaryResourceStorageService(
 
     fun store(inputStream: InputStream, metadata: Map<String, Any> = emptyMap()): String {
         val dataFile = BufferedInputStream(inputStream).use { bis ->
-            if(uploadProperties.acceptedMimeTypes.isNotEmpty()) {
+            if (uploadProperties.acceptedMimeTypes.isNotEmpty()) {
                 //Tika marks the stream, reads the first few bytes and resets it when done.
                 val mediaType = Tika().detect(bis)
                 if (!uploadProperties.acceptedMimeTypes.contains(mediaType)) {
@@ -97,14 +103,12 @@ class TemporaryResourceStorageService(
     }
 
     fun getResourceMetadata(id: String): Map<String, Any> {
-            return getResourceMetadata(id, true)
+        return getResourceMetadata(id, true)
     }
 
     internal fun getResourceMetadata(id: String, filterPath: Boolean): Map<String, Any> {
         val metaDataFile = getMetaDataFileFromResourceId(id)
-        if (metaDataFile.notExists()) {
-            throw IllegalArgumentException("No resource found with id '$id'")
-        }
+        require(!metaDataFile.notExists()) { "No resource found with id '$id'" }
         val typeRef = object : TypeReference<Map<String, Any>>() {}
         return objectMapper.readValue(metaDataFile.readText(), typeRef)
             .filter {
@@ -117,7 +121,28 @@ class TemporaryResourceStorageService(
         return Path.of(tempDir.pathString, safeFileName)
     }
 
+    fun getMetadataValue(resourceStorageFieldId: String, metadataKey: String): String {
+        return getEnumFromKey(metadataKey).fold(
+            onSuccess = { enumKey ->
+                try {
+                    repository.getReferenceById(
+                        ResourceStorageMetadataId(
+                            fileId = resourceStorageFieldId,
+                            metadataKey = enumKey
+                        )
+                    ).metadataValue
+                } catch (e: EntityNotFoundException) {
+                    throw IllegalStateException("Resource $resourceStorageFieldId does not exist", e)
+                }
+            },
+            onFailure = { exception ->
+                throw IllegalStateException("Failed to resolve metadata key '$metadataKey'", exception)
+            }
+        )
+    }
+
     companion object {
+        val logger = KotlinLogging.logger {}
         val TEMP_DIR: Path = Files.createTempDirectory("temporaryResourceDirectory")
     }
 }
