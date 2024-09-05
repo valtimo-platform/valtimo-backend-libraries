@@ -68,7 +68,8 @@ import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-internal class DocumentenApiClientTest {
+internal class
+DocumentenApiClientTest {
 
     lateinit var mockDocumentenApi: MockWebServer
 
@@ -931,7 +932,7 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `search should sort on known sort option`() {
-        val pageable = PageRequest.of(0, 10, Sort.by("titel"));
+        val pageable = PageRequest.of(0, 10, Sort.by("titel"))
         val documentSearchRequest = DocumentSearchRequest(
             zaakUrl = URI("http://example.com/zaak/123"),
         )
@@ -944,7 +945,7 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `search should sort on known sort option descending`() {
-        val pageable = PageRequest.of(0, 10, Sort.by("titel").descending());
+        val pageable = PageRequest.of(0, 10, Sort.by("titel").descending())
         val documentSearchRequest = DocumentSearchRequest(
             zaakUrl = URI("http://example.com/zaak/123"),
         )
@@ -957,7 +958,7 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `search should sort on multiple known sort options`() {
-        val pageable = PageRequest.of(0, 10, Sort.by("titel").descending().and(Sort.by("auteur").ascending()));
+        val pageable = PageRequest.of(0, 10, Sort.by("titel").descending().and(Sort.by("auteur").ascending()))
         val documentSearchRequest = DocumentSearchRequest(
             zaakUrl = URI("http://example.com/zaak/123"),
         )
@@ -970,7 +971,7 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `search should throw exception when sorting by unknown sort option`() {
-        val pageable = PageRequest.of(0, 10, Sort.by("something"));
+        val pageable = PageRequest.of(0, 10, Sort.by("something"))
         val documentSearchRequest = DocumentSearchRequest(
             zaakUrl = URI("http://example.com/zaak/123"),
         )
