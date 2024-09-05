@@ -95,7 +95,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         server = MockWebServer()
         setupMockZakenApiServer()
         server.start(port = 56273)
-        sleep(1000)
+        sleep(2000) // Needed to fix connection refused error
 
         // Since we do not have an actual authentication plugin in this context we will mock one
         val mockedId = PluginConfigurationId.existingId(UUID.fromString("27a399c7-9d70-4833-a651-57664e2e9e09"))
