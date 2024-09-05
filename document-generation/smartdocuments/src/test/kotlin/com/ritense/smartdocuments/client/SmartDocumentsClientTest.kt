@@ -17,6 +17,7 @@
 package com.ritense.smartdocuments.client
 
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.temporaryresource.repository.ResourceStorageMetadataRepository
 import com.ritense.smartdocuments.BaseTest
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.domain.DocumentFormatOption
@@ -36,12 +37,12 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.mockito.Mockito
+import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import org.springframework.http.HttpStatus
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClient
 
@@ -51,12 +52,14 @@ internal class SmartDocumentsClientTest : BaseTest() {
     private lateinit var mockDocumentenApi: MockWebServer
     private lateinit var client: SmartDocumentsClient
     private lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
+    private lateinit var repository: ResourceStorageMetadataRepository
 
     @BeforeAll
     fun setUp() {
         mockDocumentenApi = MockWebServer()
         mockDocumentenApi.start()
 
+        repository = mock()
         val properties = SmartDocumentsConnectorProperties(
             url = mockDocumentenApi.url("/").toString()
         )
@@ -65,6 +68,7 @@ internal class SmartDocumentsClientTest : BaseTest() {
             TemporaryResourceStorageService(
                 uploadProperties = ValtimoUploadProperties(),
                 objectMapper = MapperSingleton.get(),
+                repository = repository
             )
         )
 

@@ -136,7 +136,8 @@ internal class DocumentenApiPluginIT @Autowired constructor(
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("localDocumentVariableName" to documentId))
 
-        runWithoutAuthorization { processDocumentService.newDocumentAndStartProcess(request) }
+        val newDocumentAndStartProcessResult =
+            runWithoutAuthorization { processDocumentService.newDocumentAndStartProcess(request) }
 
         val resourceId = runtimeService.createVariableInstanceQuery()
             .variableName("storedDocumentVariableName")
@@ -163,7 +164,7 @@ internal class DocumentenApiPluginIT @Autowired constructor(
         assertEquals("in_bewerking", parsedOutput["status"])
         assertEquals(false, parsedOutput["indicatieGebruiksrecht"])
 
-        assertEquals("http://example.com", resourceId)
+        assertEquals(server.url("/").toString(), resourceId)
     }
 
     @Test
@@ -292,7 +293,7 @@ internal class DocumentenApiPluginIT @Autowired constructor(
     private fun handleDocumentRequest(zone: String = "Z"): MockResponse {
         val body = """
             {
-              "url": "http://example.com",
+              "url": "${server.url("/")}",
               "identificatie": "string",
               "bronorganisatie": "404797441",
               "creatiedatum": "2019-08-24",

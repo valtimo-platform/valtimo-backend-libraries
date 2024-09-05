@@ -35,12 +35,15 @@ import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.EventType
+import com.ritense.plugin.domain.PluginConfiguration
+import com.ritense.plugin.service.PluginService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zgw.domain.Vertrouwelijkheid
 import jakarta.validation.ValidationException
+import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.hibernate.validator.constraints.Length
 import org.springframework.context.ApplicationEventPublisher
@@ -50,6 +53,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.io.InputStream
 import java.net.URI
 import java.time.LocalDate
+import java.util.*
 
 @Plugin(
     key = PLUGIN_KEY,
@@ -63,6 +67,7 @@ class DocumentenApiPlugin(
     private val objectMapper: ObjectMapper,
     private val documentDeleteHandlers: List<DocumentDeleteHandler>,
     private val documentenApiVersionService: DocumentenApiVersionService,
+    private val pluginService: PluginService
 ) {
     @Url
     @PluginProperty(key = URL_PROPERTY, secret = false)
@@ -157,9 +162,7 @@ class DocumentenApiPlugin(
     ): String {
         val documentUrlString = execution.getVariable(DOCUMENT_URL_PROCESS_VAR) as String?
             ?: throw IllegalStateException("Failed to download document. No process variable '$DOCUMENT_URL_PROCESS_VAR' found.")
-        if (!documentUrlString.startsWith(url.toASCIIString())) {
-            throw IllegalStateException("Failed to download document with url '$documentUrlString'. Document isn't part of Documenten API with url '$url'.")
-        }
+        check(documentUrlString.startsWith(url.toASCIIString())) { "Failed to download document with url '$documentUrlString'. Document isn't part of Documenten API with url '$url'." }
         val documentUrl = URI(documentUrlString)
         val metaData = client.getInformatieObject(authenticationPluginConfiguration, documentUrl)
         val content = client.downloadInformatieObjectContent(authenticationPluginConfiguration, documentUrl)
@@ -279,6 +282,30 @@ class DocumentenApiPlugin(
         )
         applicationEventPublisher.publishEvent(event)
         execution.setVariable(storedDocumentUrl, documentCreateResult.url)
+        val documentId = documentCreateResult.url.substringAfterLast('/')
+        execution.setVariable(DOCUMENT_ID_PROCESS_VAR, documentId)
+        try {
+            val test = URI.create(documentCreateResult.url)
+            val pluginConfiguration = getDocumentenApiPluginByInformatieobjectUrl(test)
+            execution.setVariable(DOWNLOAD_URL_PROCESS_VAR, createDownloadUrl(pluginConfiguration.id.id, documentId))
+        } catch (e: Exception) {
+            throw IllegalStateException(
+                "Failed to set the $DOWNLOAD_URL_PROCESS_VAR variable in the DelegateExecution", e
+            )
+        }
+    }
+
+    private fun getDocumentenApiPluginByInformatieobjectUrl(informatieobjectUrl: URI): PluginConfiguration {
+        return checkNotNull(
+            pluginService.findPluginConfiguration(
+                DocumentenApiPlugin::class.java,
+                findConfigurationByUrl(informatieobjectUrl)
+            )
+        ) { "Could not find ${DocumentenApiPlugin::class.simpleName} configuration for informatieobjectUrl: $informatieobjectUrl" }
+    }
+
+    private fun createDownloadUrl(pluginId: UUID, documentId: String): String {
+        return "/api/v1/documenten-api/${pluginId}/files/${documentId}/download"
     }
 
     private fun <T> getMetadataField(metadata: Map<String, Any?>, field: List<String>): T? =
@@ -305,6 +332,8 @@ class DocumentenApiPlugin(
         const val DEFAULT_LANGUAGE = "nld"
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"
         const val DOCUMENT_URL_PROCESS_VAR = "documentUrl"
+        const val DOCUMENT_ID_PROCESS_VAR = "documentId"
+        const val DOWNLOAD_URL_PROCESS_VAR = "downloadUrl"
 
         val BESTANDSNAAM_FIELD = listOf("filename", "bestandsnaam", MetadataType.FILE_NAME.key)
         val TITEL_FIELD = listOf("title", "titel") + BESTANDSNAAM_FIELD
@@ -320,8 +349,10 @@ class DocumentenApiPlugin(
         val FORMAAT_FIELD = listOf("contentType", "formaat")
         val TREFWOORDEN_FIELD = listOf("trefwoorden")
 
+        val logger = KotlinLogging.logger {  }
+
         fun findConfigurationByUrl(url: URI) = { properties: JsonNode ->
-            url.toString().startsWith(properties.get(URL_PROPERTY).textValue())
+            url.toString().startsWith(properties[URL_PROPERTY].textValue())
         }
     }
 }
