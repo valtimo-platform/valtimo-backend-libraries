@@ -582,6 +582,7 @@ class ZakenApiClient(
         return webclientBuilder
             .clone()
             .filter(authentication)
+            .filter(ClientTools.zgwErrorHandler())
             .build()
     }
 }

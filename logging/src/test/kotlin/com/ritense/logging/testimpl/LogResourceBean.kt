@@ -17,12 +17,13 @@
 package com.ritense.logging.testimpl
 
 import com.ritense.logging.LoggableResource
+import org.springframework.scheduling.config.Task
 
 open class LogResourceBean() {
 
     open fun someMethod(
         resource: LogResource,
-        @LoggableResource(resourceType = String::class) taskId: String,
+        @LoggableResource(resourceType = Task::class) taskId: String,
     ) {
         resource.logSomething()
     }

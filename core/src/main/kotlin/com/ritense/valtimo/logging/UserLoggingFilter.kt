@@ -34,9 +34,14 @@ class UserLoggingFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val userIdentifier = userManagementService.getCurrentUser()?.getUserIdentifier()
-        if (userIdentifier != null) {
-            MDC.put(LoggingConstants.MDC_USER_ID_KEY, userIdentifier)
+        try {
+            val userIdentifier = userManagementService.getCurrentUser()?.getUserIdentifier()
+            if (userIdentifier != null) {
+                MDC.put(LoggingConstants.MDC_USER_ID_KEY, userIdentifier)
+            }
+        } catch (_: Exception) {
+            //TODO: this is prevent issues with settings the user if the authentication is anything but a normal
+            // keycloak user. We need to find a way of only setting the user if it is a keycloak user.
         }
 
         // We also add a correlation id manually for now.

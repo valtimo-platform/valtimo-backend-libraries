@@ -57,6 +57,7 @@ import com.ritense.zgw.Page
 import com.ritense.zgw.Rsin
 import mu.KLogger
 import mu.KotlinLogging
+import mu.withLoggingContext
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
@@ -271,16 +272,22 @@ class ZakenApiPlugin(
         val documentId = UUID.fromString(execution.businessKey)
         val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
-        client.createZaakStatus(
-            authenticationPluginConfiguration,
-            url,
-            CreateZaakStatusRequest(
-                zaak = zaakUrl,
-                statustype = statustypeUrl,
-                datumStatusGezet = LocalDateTime.now().minusSeconds(5),
-                statustoelichting = statustoelichting,
+        withLoggingContext(
+            "zaak" to zaakUrl.toString(),
+            "com.ritense.document.domain.impl.JsonSchemaDocument" to documentId.toString()
+        ) {
+            client.createZaakStatus(
+                authenticationPluginConfiguration,
+                url,
+                CreateZaakStatusRequest(
+                    zaak = zaakUrl,
+                    statustype = statustypeUrl,
+                    datumStatusGezet = LocalDateTime.now().minusSeconds(5),
+                    statustoelichting = statustoelichting,
+                )
             )
-        )
+            logger.info { "Created zaak status of type $statustypeUrl for document $documentId" }
+        }
     }
 
     @PluginAction(

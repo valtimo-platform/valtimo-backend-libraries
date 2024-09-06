@@ -205,7 +205,7 @@ public class KeycloakUserManagementService implements UserManagementService {
 
     @Override
     public ManageableUser getCurrentUser() {
-        if (SecurityUtils.getCurrentUserAuthentication() != null) {
+        if (SecurityUtils.getCurrentUserAuthentication() != null && !SecurityUtils.getCurrentUserLogin().equals("anonymousUser")) {
             return findByEmail(SecurityUtils.getCurrentUserLogin()).orElseThrow(() ->
                 new IllegalStateException("No user found for email: ${currentUserService.currentUser.email}")
             );

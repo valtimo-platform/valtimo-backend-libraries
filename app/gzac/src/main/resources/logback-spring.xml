@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<configuration scan="true">
+<configuration scan="true" debug="true">
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
     <include resource="config/logging/logback/valtimo-database-appender.xml" />
 
