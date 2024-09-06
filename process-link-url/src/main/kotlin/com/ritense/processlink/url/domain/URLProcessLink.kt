@@ -31,7 +31,7 @@ class URLProcessLink(
     processDefinitionId: String,
     activityId: String,
     activityType: ActivityTypeWithEventName,
-    @Column(name = "url")
+    @Column(name = "process_link_url")
     val url: String
 ) : ProcessLink(
     id,

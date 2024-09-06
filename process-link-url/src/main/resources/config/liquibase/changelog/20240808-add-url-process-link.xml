@@ -24,7 +24,7 @@
             <tableExists tableName="process_link"/>
         </preConditions>
         <addColumn tableName="process_link">
-            <column name="url" type="VARCHAR(2083)"/>
+            <column name="process_link_url" type="VARCHAR(2083)"/>
         </addColumn>
     </changeSet>
 

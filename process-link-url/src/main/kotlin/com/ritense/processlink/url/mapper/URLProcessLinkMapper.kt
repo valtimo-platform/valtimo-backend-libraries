@@ -104,6 +104,17 @@ class URLProcessLinkMapper(
         )
     }
 
+    override fun toProcessLinkUpdateRequestDto(
+        deployDto: ProcessLinkDeployDto,
+        existingProcessLinkId: UUID
+    ): ProcessLinkUpdateRequestDto {
+        deployDto as URLProcessLinkDeployDto
+        return URLProcessLinkUpdateRequestDto(
+            id = existingProcessLinkId,
+            url = deployDto.url
+        )
+    }
+
     companion object {
         const val PROCESS_LINK_TYPE_URL = "url"
     }
