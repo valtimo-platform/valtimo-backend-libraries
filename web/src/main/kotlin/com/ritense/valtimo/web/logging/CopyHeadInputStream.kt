@@ -23,7 +23,7 @@ import java.io.InputStream
 class CopyHeadInputStream(
     val inputStream: InputStream,
     val buffer: IntArray = IntArray(DEFAULT_BUFFER_SIZE),
-    val onHeadReady: (IntArray, Int) -> Unit = { _: IntArray, _: Int -> }
+    val onHeadReady: (ByteArray) -> Unit = { _: ByteArray -> }
 ) : InputStream() {
     private var index: Int = 0
 
@@ -32,8 +32,9 @@ class CopyHeadInputStream(
     override fun read(): Int {
         checkClosed()
         val b = inputStream.read()
-        if (b == -1 || index == buffer.size) {
-            onHeadReady(buffer, index)
+        if (b == -1 && index < buffer.size || index == buffer.size) {
+            onHeadReady(buffer.take(index).map { it.toByte() }.toByteArray())
+            index++
         } else if (index < buffer.size) {
             buffer[index] = b
             index++

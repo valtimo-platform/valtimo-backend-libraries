@@ -23,12 +23,12 @@ import java.io.InputStream
 
 class CopyHeadClientHttpResponse(
     val response: ClientHttpResponse,
-    onHeadReady: (IntArray, Int) -> Unit = { _: IntArray, _: Int -> }
+    onResponseBodyHeadReady: (ByteArray) -> Unit = { _: ByteArray -> }
 ) : ClientHttpResponse {
 
     private val copyHeadInputStream: CopyHeadInputStream = CopyHeadInputStream(
         inputStream = response.body,
-        onHeadReady = onHeadReady
+        onHeadReady = onResponseBodyHeadReady
     )
 
     override fun getHeaders(): HttpHeaders = response.headers
