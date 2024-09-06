@@ -1,3 +1,4 @@
 com.ritense.valtimo.web.autoconfigure.WebAutoConfiguration
 com.ritense.valtimo.web.autoconfigure.OpenApiAutoConfiguration
 com.ritense.valtimo.web.sse.autoconfiguration.SseAutoConfiguration
+com.ritense.valtimo.web.logging.LoggingRestClientAutoConfiguration
