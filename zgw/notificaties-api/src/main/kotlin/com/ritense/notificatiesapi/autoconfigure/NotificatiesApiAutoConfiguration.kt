@@ -31,7 +31,7 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.client.RestClient
 
 @AutoConfiguration
 @EnableJpaRepositories(basePackages = ["com.ritense.notificatiesapi.repository"])
@@ -39,8 +39,8 @@ import org.springframework.web.reactive.function.client.WebClient
 class NotificatiesApiAutoConfiguration {
 
     @Bean
-    fun notificatiesApiClient(webclientBuilder: WebClient.Builder): NotificatiesApiClient {
-        return NotificatiesApiClient(webclientBuilder)
+    fun notificatiesApiClient(restClientBuilder: RestClient.Builder): NotificatiesApiClient {
+        return NotificatiesApiClient(restClientBuilder)
     }
 
     @Bean

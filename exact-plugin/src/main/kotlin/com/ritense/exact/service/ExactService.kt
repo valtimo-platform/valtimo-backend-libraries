@@ -9,18 +9,22 @@ import com.ritense.exact.service.response.ExactExchangeResponse
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginConfigurationSearchParameters
 import com.ritense.plugin.service.PluginService
-import java.time.LocalDateTime
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import mu.KotlinLogging
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation.REQUIRES_NEW
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.client.RestClient
+import java.time.LocalDateTime
 
 @Transactional
+@Service
+@SkipComponentScan
 class ExactService(
     val redirectUrl: String,
-    val exactClient: WebClient,
+    val exactClient: RestClient,
     val pluginService: PluginService,
     val objectMapper: ObjectMapper
 ) {
@@ -28,7 +32,7 @@ class ExactService(
     @Scheduled(cron = "\${exact.checkRefreshTokensCron:-}")
     @SchedulerLock(name = "ExactService_refreshTokenCron", lockAtLeastFor = "PT4S", lockAtMostFor = "PT60M")
     fun refreshRefreshTokens() {
-        logger.info { "Starting Exact refresh token check"}
+        logger.info { "Starting Exact refresh token check" }
         pluginService
             .getPluginConfigurations(PluginConfigurationSearchParameters(category = "exact-supplier"))
             .forEach { pluginConfiguration ->
@@ -38,11 +42,11 @@ class ExactService(
                 )
 
                 if (expiresOn.minusDays(5).isBefore(LocalDateTime.now())) {
-                    logger.info { "Refreshing Exact refresh token for plugin ${pluginConfiguration.id}"}
+                    logger.info { "Refreshing Exact refresh token for plugin ${pluginConfiguration.id}" }
                     refreshTokens(pluginConfiguration)
                 }
             }
-        logger.info { "Finished Exact refresh token check"}
+        logger.info { "Finished Exact refresh token check" }
     }
 
     fun getPluginConfiguration(plugin: ExactPlugin): PluginConfiguration {
@@ -95,11 +99,11 @@ class ExactService(
 
     fun exchange(req: ExactExchangeRequest): ExactExchangeResponse {
         val resp = ExchangeTokenEndpoint(
-                redirectUrl,
-                req.clientId,
-                req.clientSecret,
-                req.code
-            ).call(exactClient)
+            redirectUrl,
+            req.clientId,
+            req.clientSecret,
+            req.code
+        ).call(exactClient)
 
         return ExactExchangeResponse(
             resp.accessToken,

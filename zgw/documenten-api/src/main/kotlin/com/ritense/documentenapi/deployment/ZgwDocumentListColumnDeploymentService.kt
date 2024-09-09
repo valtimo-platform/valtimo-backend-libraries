@@ -26,8 +26,12 @@ import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
 import com.ritense.valtimo.changelog.service.ChangelogService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import org.springframework.stereotype.Service
 
-open class ZgwDocumentListColumnDeploymentService(
+@Service
+@SkipComponentScan
+class ZgwDocumentListColumnDeploymentService(
     private val objectMapper: ObjectMapper,
     private val documentenApiColumnRepository: DocumentenApiColumnRepository,
     private val documentenApiService: DocumentenApiService,

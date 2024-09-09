@@ -18,11 +18,15 @@ package com.ritense.search.service
 
 import com.ritense.search.domain.SearchListColumn
 import com.ritense.search.repository.SearchListColumnRepository
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.springframework.http.HttpStatus
+import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 import java.util.Optional
 import java.util.UUID
 
+@Service
+@SkipComponentScan
 class SearchListColumnService(
     private val searchListColumnRepository: SearchListColumnRepository
 ) {

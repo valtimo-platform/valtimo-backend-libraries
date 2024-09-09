@@ -30,10 +30,12 @@ import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.objecttypenapi.client.Objecttype
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPlugin
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
@@ -41,6 +43,8 @@ import java.time.LocalDate
 import java.util.UUID
 
 @Transactional
+@Service
+@SkipComponentScan
 class ZaakObjectService(
     private val zaakUrlProvider: ZaakUrlProvider,
     private val pluginService: PluginService,

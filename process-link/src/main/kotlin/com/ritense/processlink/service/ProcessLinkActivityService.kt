@@ -21,11 +21,15 @@ import com.ritense.processlink.exception.ProcessLinkNotFoundException
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byActive
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byId
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.service.CamundaTaskService
-import java.util.UUID
 import mu.KotlinLogging
+import org.springframework.stereotype.Service
+import java.util.UUID
 
-open class ProcessLinkActivityService(
+@Service
+@SkipComponentScan
+class ProcessLinkActivityService(
     private val processLinkService: ProcessLinkService,
     private val taskService: CamundaTaskService,
     private val processLinkActivityHandlers: List<ProcessLinkActivityHandler<*>>

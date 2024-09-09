@@ -83,8 +83,12 @@ class SmartDocumentsPlugin(
             documentDelegateService.getDocument(execution)
         }
         val resolvedTemplateData = resolveTemplateData(templateData, execution)
-        val generatedDocument =
-            generateDocument(templateGroup, templateName, resolvedTemplateData, DocumentFormatOption.valueOf(format))
+        val generatedDocument = generateDocument(
+            templateGroup,
+            templateName,
+            resolvedTemplateData,
+            DocumentFormatOption.valueOf(format)
+        )
         publishDossierDocumentGeneratedEvent(document.id(), templateName)
         val resourceId = generatedDocument.use {
             saveGeneratedDocumentToTempFile(generatedDocument)

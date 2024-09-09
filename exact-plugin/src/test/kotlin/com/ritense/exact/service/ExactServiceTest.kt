@@ -29,14 +29,14 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.client.RestClient
 
 @TestInstance(Lifecycle.PER_CLASS)
 internal class ExactServiceTest {
 
     lateinit var mockWebServer: MockWebServer
     lateinit var exactService: ExactService
-    lateinit var exactClient: WebClient
+    lateinit var exactClient: RestClient
     lateinit var pluginService: PluginService
     lateinit var objectMapper: ObjectMapper
 
