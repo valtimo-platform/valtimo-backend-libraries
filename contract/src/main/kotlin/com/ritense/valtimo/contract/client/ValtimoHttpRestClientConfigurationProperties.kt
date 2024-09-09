@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.documentenapi
+package com.ritense.valtimo.contract.client
 
-import com.ritense.plugin.annotation.PluginCategory
-import org.springframework.web.client.RestClient
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction
+import org.springframework.boot.context.properties.ConfigurationProperties
 
-@PluginCategory("documenten-api-authentication")
-// TODO remove ExchangeFilterFunction next major version
-interface DocumentenApiAuthentication : ExchangeFilterFunction {
-
-    fun applyAuth(builder: RestClient.Builder): RestClient.Builder
-}
+@ConfigurationProperties(prefix = "valtimo.http.rest-client")
+data class ValtimoHttpRestClientConfigurationProperties(
+    val connectTimeout: Long = 5, // as seconds, setConnectTimeout in HttpComponentsClientHttpRequestFactory
+    val connectionRequestTimeout: Long = 5 // as seconds, setConnectionRequestTimeout in HttpComponentsClientHttpRequestFactory
+)

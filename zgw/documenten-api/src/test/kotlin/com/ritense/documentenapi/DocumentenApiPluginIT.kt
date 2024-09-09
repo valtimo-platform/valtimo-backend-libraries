@@ -47,6 +47,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
@@ -273,11 +274,13 @@ internal class DocumentenApiPluginIT @Autowired constructor(
                 val path = request.path?.substringBefore('?')
                 val response = when (path) {
                     "/enkelvoudiginformatieobjecten"
-                    -> handleDocumentRequest()
+                        -> handleDocumentRequest()
+
                     "/enkelvoudiginformatieobjecten/$DOCUMENT_ID"
-                    -> handleDocumentRequest("+02:00")
+                        -> handleDocumentRequest("+02:00")
+
                     "/enkelvoudiginformatieobjecten/$DOCUMENT_ID/download"
-                    -> handleDocumentDownloadRequest()
+                        -> handleDocumentDownloadRequest()
 
                     else -> MockResponse().setResponseCode(404)
                 }
@@ -333,6 +336,10 @@ internal class DocumentenApiPluginIT @Autowired constructor(
     }
 
     class TestAuthentication : DocumentenApiAuthentication {
+        override fun applyAuth(builder: RestClient.Builder): RestClient.Builder {
+            return builder
+        }
+
         override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
             return next.exchange(request)
         }

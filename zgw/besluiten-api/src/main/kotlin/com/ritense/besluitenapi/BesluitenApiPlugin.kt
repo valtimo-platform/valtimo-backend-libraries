@@ -136,7 +136,6 @@ class BesluitenApiPlugin(
         verzenddatum: LocalDate? = null,
         uiterlijkeReactieDatum: LocalDate? = null,
     ): Besluit {
-
         val besluit = besluitenApiClient.createBesluit(
             authentication = authenticationPluginConfiguration,
             baseUrl = url,

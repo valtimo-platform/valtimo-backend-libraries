@@ -30,7 +30,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Scope
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.client.RestClient
 
 @AutoConfiguration
 @EnableConfigurationProperties
@@ -41,16 +41,21 @@ class WordpressMailAutoConfiguration {
     fun wordpressMailDispatcher(
         connectorService: ConnectorService
     ): WordpressMailDispatcher {
-        return WordpressMailDispatcher(connectorService)
+        return WordpressMailDispatcher(
+            connectorService
+        )
     }
 
     @Bean
     @ConditionalOnMissingBean(WordpressMailClient::class)
     fun wordpressMailClient(
         wordpressMailConnectorProperties: WordpressMailConnectorProperties,
-        wordpressMailWebClientBuilder: WebClient.Builder
+        wordpressMailRestClientBuilder: RestClient.Builder
     ): WordpressMailClient {
-        return WordpressMailClient(wordpressMailConnectorProperties, wordpressMailWebClientBuilder)
+        return WordpressMailClient(
+            wordpressMailConnectorProperties,
+            wordpressMailRestClientBuilder
+        )
     }
 
     //Connector

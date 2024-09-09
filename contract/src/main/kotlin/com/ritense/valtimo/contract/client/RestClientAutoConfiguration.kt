@@ -14,31 +14,21 @@
  * limitations under the License.
  */
 
-package com.ritense.besluitenapi
+package com.ritense.valtimo.contract.client
 
-import com.ritense.besluitenapi.client.BesluitenApiClient
-import com.ritense.plugin.service.PluginService
-import com.ritense.zakenapi.ZaakUrlProvider
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
-import org.springframework.web.client.RestClient
 
 @AutoConfiguration
-class BesluitenApiAutoConfiguration {
+@EnableConfigurationProperties(ValtimoHttpRestClientConfigurationProperties::class)
+class RestClientAutoConfiguration {
 
     @Bean
-    fun besluitenApiClient(restClientBuilder: RestClient.Builder) = BesluitenApiClient(restClientBuilder)
-
-    @Bean
-    fun besluitenApiPluginFactory(
-        pluginService: PluginService,
-        besluitenApiClient: BesluitenApiClient,
-        urlProvider: ZaakUrlProvider,
-    ): BesluitenApiPluginFactory {
-        return BesluitenApiPluginFactory(
-            pluginService,
-            besluitenApiClient,
-            urlProvider
-        )
+    fun requestFactoryCustomizer(
+        valtimoHttpRestClientConfigurationProperties: ValtimoHttpRestClientConfigurationProperties
+    ): ApacheRequestFactoryCustomizer {
+        return ApacheRequestFactoryCustomizer(valtimoHttpRestClientConfigurationProperties)
     }
+
 }

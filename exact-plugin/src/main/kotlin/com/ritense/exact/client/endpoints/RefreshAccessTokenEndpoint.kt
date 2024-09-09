@@ -3,9 +3,9 @@ package com.ritense.exact.client.endpoints
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.ritense.exact.client.endpoints.RefreshAccessTokenEndpoint.RefreshAccessTokenResponse
 import com.ritense.exact.client.endpoints.structs.ExactEndpoint
-import org.springframework.web.reactive.function.BodyInserters
-import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.WebClient.RequestHeadersSpec
+import org.springframework.http.client.MultipartBodyBuilder
+import org.springframework.web.client.RestClient
+
 
 class RefreshAccessTokenEndpoint(
     private val clientId: String,
@@ -13,16 +13,16 @@ class RefreshAccessTokenEndpoint(
     private val refreshToken: String
 ) : ExactEndpoint<RefreshAccessTokenResponse>(RefreshAccessTokenResponse::class.java) {
 
-    override fun create(client: WebClient): RequestHeadersSpec<*> {
+    override fun create(client: RestClient): RestClient.RequestHeadersSpec<*> {
+        val builder = MultipartBodyBuilder().apply {
+            part("grant_type", "refresh_token")
+            part("client_id", clientId)
+            part("client_secret", clientSecret)
+            part("refresh_token", refreshToken)
+        }
         return client.post()
             .uri("/api/oauth2/token")
-            .body(
-                BodyInserters
-                    .fromFormData("grant_type", "refresh_token")
-                    .with("client_id", clientId)
-                    .with("client_secret", clientSecret)
-                    .with("refresh_token", refreshToken)
-            )
+            .body(builder.build())
     }
 
     data class RefreshAccessTokenResponse(

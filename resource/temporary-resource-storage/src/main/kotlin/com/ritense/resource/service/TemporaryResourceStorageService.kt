@@ -69,7 +69,6 @@ class TemporaryResourceStorageService(
             }
             val tempFile = Files.createTempFile(tempDir, "temporaryResource", ".tmp")
             tempFile.toFile().outputStream().use { bis.copyTo(it) }
-
             tempFile
         }
 
