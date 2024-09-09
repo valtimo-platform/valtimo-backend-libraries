@@ -16,34 +16,22 @@
 
 package com.ritense.logging.repository
 
-import com.ritense.logging.domain.LoggingEvent
+import com.ritense.logging.domain.LoggingEventException
+import com.ritense.logging.repository.LoggingEventSpecificationHelper.Companion.TIMESTAMP
 import org.springframework.data.jpa.domain.Specification
 import java.time.LocalDateTime
 import java.time.ZoneId
 
-class LoggingEventSpecificationHelper {
+class LoggingEventExceptionSpecificationHelper {
 
     companion object {
 
-        const val CALLER_CLASS: String = "callerClass"
-        const val LEVEL: String = "level"
-        const val TIMESTAMP: String = "timestamp"
+        const val EVENT: String = "event"
 
         @JvmStatic
-        fun byLevel(level: String) = Specification<LoggingEvent> { root, _, cb ->
-            cb.equal(root.get<String>(LEVEL), level)
-        }
-
-        @JvmStatic
-        fun byCallerClass(callerClass: Class<*>) = Specification<LoggingEvent> { root, _, cb ->
-            cb.equal(root.get<String>(CALLER_CLASS), callerClass.name)
-        }
-
-        @JvmStatic
-        fun byOlderThan(localDateTime: LocalDateTime) = Specification<LoggingEvent> { root, _, cb ->
+        fun byOlderThan(localDateTime: LocalDateTime) = Specification<LoggingEventException> { root, _, cb ->
             val timestamp = localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-            cb.lessThan(root[TIMESTAMP], timestamp)
+            cb.lessThan(root.join<Any, Any>(EVENT)[TIMESTAMP], timestamp)
         }
-
     }
 }

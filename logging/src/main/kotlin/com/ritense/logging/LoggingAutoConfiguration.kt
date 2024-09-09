@@ -22,7 +22,9 @@ import com.ritense.logging.domain.LoggingEventProperty
 import com.ritense.logging.repository.LoggingEventExceptionRepository
 import com.ritense.logging.repository.LoggingEventPropertyRepository
 import com.ritense.logging.repository.LoggingEventRepository
+import com.ritense.logging.service.LoggingEventDeletionService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -55,6 +57,23 @@ class LoggingAutoConfiguration {
     fun loggableResourceAspect(): LoggableResourceAspect {
         return LoggableResourceAspect()
     }
+
+    @Bean
+    @ConditionalOnMissingBean(LoggingEventDeletionService::class)
+    fun loggingEventDeletionService(
+        @Value("\${valtimo.logging.retentionInMinutes:60*24*7}") retentionInMinutes: Long,
+        loggingEventRepository: LoggingEventRepository,
+        loggingEventPropertyRepository: LoggingEventPropertyRepository,
+        loggingEventExceptionRepository: LoggingEventExceptionRepository
+    ): LoggingEventDeletionService {
+        return LoggingEventDeletionService(
+            retentionInMinutes,
+            loggingEventRepository,
+            loggingEventPropertyRepository,
+            loggingEventExceptionRepository,
+        )
+    }
+
 
     @Order(HIGHEST_PRECEDENCE + 34)
     @Bean

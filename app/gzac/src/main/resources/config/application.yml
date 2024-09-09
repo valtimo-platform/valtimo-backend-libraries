@@ -243,6 +243,8 @@ valtimo:
     authorization:
         dashboard:
             enabled: true
+    logging:
+        retentionInMinutes: 1440
 
 spring-actuator:
     username: admin
