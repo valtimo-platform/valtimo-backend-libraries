@@ -56,7 +56,7 @@ import org.springframework.core.annotation.Order
 import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.transaction.PlatformTransactionManager
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.client.RestClient
 import javax.sql.DataSource
 
 @AutoConfiguration
@@ -66,18 +66,16 @@ class DocumentenApiAutoConfiguration {
 
     @Bean
     fun documentenApiClient(
-        webclientBuilder: WebClient.Builder,
+        restClientBuilder: RestClient.Builder,
         outboxService: OutboxService,
         objectMapper: ObjectMapper,
         platformTransactionManager: PlatformTransactionManager
-    ): DocumentenApiClient {
-        return DocumentenApiClient(
-            webclientBuilder,
-            outboxService,
-            objectMapper,
-            platformTransactionManager
-        )
-    }
+    ) = DocumentenApiClient(
+        restClientBuilder,
+        outboxService,
+        objectMapper,
+        platformTransactionManager
+    )
 
     @Bean
     fun documentenApiPluginFactory(

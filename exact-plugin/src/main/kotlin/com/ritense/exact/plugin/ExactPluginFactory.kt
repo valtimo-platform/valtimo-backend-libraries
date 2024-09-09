@@ -4,18 +4,15 @@ import com.ritense.exact.service.ExactService
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
 import org.springframework.context.ApplicationContext
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.client.RestClient
 
 class ExactPluginFactory(
     pluginService: PluginService,
     private val exactService: ExactService,
-    private val exactClient: WebClient,
+    private val exactClient: RestClient,
     private val context: ApplicationContext
-) :
-    PluginFactory<ExactPlugin>(pluginService) {
+) : PluginFactory<ExactPlugin>(pluginService) {
 
-    override fun create(): ExactPlugin {
-        return ExactPlugin(exactService, exactClient, context)
-    }
+    override fun create(): ExactPlugin = ExactPlugin(exactService, exactClient, context)
 
 }

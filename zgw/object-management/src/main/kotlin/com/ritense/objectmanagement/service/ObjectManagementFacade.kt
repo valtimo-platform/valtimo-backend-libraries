@@ -28,13 +28,13 @@ import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.service.PluginService
 import mu.KotlinLogging
 import org.springframework.data.domain.PageRequest
-import org.springframework.web.reactive.function.client.WebClientResponseException
+import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
 
-class   ObjectManagementFacade(
+class ObjectManagementFacade(
     private val objectManagementRepository: ObjectManagementRepository,
     private val pluginService: PluginService
 ) {
@@ -142,9 +142,8 @@ class   ObjectManagementFacade(
 
         try {
             logger.trace { "Creating object $objectRequest" }
-
             return accessObject.objectenApiPlugin.createObject(objectRequest)
-        } catch (ex: WebClientResponseException) {
+        } catch (ex: RestClientResponseException) {
             throw Exception("Exception thrown while making a call to the Objects API. Response from the API: ${ex.responseBodyAsString}")
         }
     }
@@ -176,7 +175,7 @@ class   ObjectManagementFacade(
                     ),
                     objectRequest
                 )
-        } catch (ex: WebClientResponseException) {
+        } catch (ex: RestClientResponseException) {
             throw Exception("Error while updating object ${objectId}. Response from Objects API: ${ex.responseBodyAsString}")
         }
     }
@@ -248,6 +247,7 @@ class   ObjectManagementFacade(
         val objectenApiPlugin: ObjectenApiPlugin,
         val objectTypenApiPlugin: ObjecttypenApiPlugin
     )
+
     companion object {
         private val logger = KotlinLogging.logger {}
     }

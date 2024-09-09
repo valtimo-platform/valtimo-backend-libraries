@@ -17,7 +17,12 @@
 package com.ritense.objecttypenapi
 
 import com.ritense.plugin.annotation.PluginCategory
+import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction
 
 @PluginCategory("objecttypen-api-authentication")
-interface ObjecttypenApiAuthentication : ExchangeFilterFunction
+// TODO remove ExchangeFilterFunction next major version
+interface ObjecttypenApiAuthentication : ExchangeFilterFunction {
+
+    fun applyAuth(builder: RestClient.Builder): RestClient.Builder
+}

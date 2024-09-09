@@ -16,9 +16,6 @@
 
 package com.ritense.catalogiapi.client
 
-import com.ritense.catalogiapi.domain.InformatieobjecttypeRichting
-import java.net.URI
-
 data class InformatieobjecttypeRequest(
     val status: InformatieobjecttypePublishedStatus? = null,
     val page: Int? = null

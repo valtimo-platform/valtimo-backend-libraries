@@ -4,3 +4,4 @@ com.ritense.valtimo.contract.upload.ValtimoUploadAutoConfiguration
 com.ritense.valtimo.contract.database.DatabaseAutoConfiguration
 com.ritense.valtimo.contract.client.WebclientAutoConfiguration
 com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
+com.ritense.valtimo.contract.client.RestClientAutoConfiguration
