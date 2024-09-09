@@ -24,6 +24,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface LoggableResource {
-    Class<?> resourceType();
+    Class<?> resourceType() default Object.class;
 
+    String resourceTypeName() default "";
 }

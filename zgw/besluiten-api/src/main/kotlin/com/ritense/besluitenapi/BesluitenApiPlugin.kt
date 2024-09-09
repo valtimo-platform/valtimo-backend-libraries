@@ -29,9 +29,12 @@ import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zakenapi.ZaakUrlProvider
+import com.ritense.zgw.LoggingConstants.BESLUITEN_API
+import com.ritense.zgw.LoggingConstants.DOCUMENTEN_API
 import com.ritense.zgw.Rsin
 import mu.KLogger
 import mu.KotlinLogging
+import mu.withLoggingContext
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.net.URI
 import java.time.LocalDate
@@ -65,14 +68,16 @@ class BesluitenApiPlugin(
     fun linkDocumentToBesluit(
         @PluginActionProperty documentUrl: String,
         @PluginActionProperty besluitUrl: String
-    ) {
-        linkDocumentToBesluit(URI(documentUrl), URI(besluitUrl))
-    }
+    ) = linkDocumentToBesluit(URI(documentUrl), URI(besluitUrl))
 
     fun linkDocumentToBesluit(
         documentUrl: URI,
         besluitUrl: URI
+    ) = withLoggingContext(
+        DOCUMENTEN_API.ENKELVOUDIG_INFORMATIE_OBJECT to documentUrl.toString(),
+        BESLUITEN_API.BESLUIT to besluitUrl.toString()
     ) {
+        logger.info { "Linking document $documentUrl to besluit $besluitUrl" }
         besluitenApiClient.createBesluitInformatieObject(
             authenticationPluginConfiguration,
             url,
