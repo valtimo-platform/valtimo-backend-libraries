@@ -21,19 +21,19 @@ import org.springframework.http.HttpStatusCode
 import org.springframework.http.client.ClientHttpResponse
 import java.io.InputStream
 
-class CopyHeadClientHttpResponse(
+class CopiedHeadClientHttpResponse(
     val response: ClientHttpResponse,
     onResponseBodyHeadReady: (ByteArray) -> Unit = { _: ByteArray -> }
 ) : ClientHttpResponse {
 
-    private val copyHeadInputStream: CopyHeadInputStream = CopyHeadInputStream(
+    private val copiedHeadInputStream: CopiedHeadInputStream = CopiedHeadInputStream(
         inputStream = response.body,
         onHeadReady = onResponseBodyHeadReady
     )
 
     override fun getHeaders(): HttpHeaders = response.headers
 
-    override fun getBody(): InputStream = copyHeadInputStream
+    override fun getBody(): InputStream = copiedHeadInputStream
 
     override fun close() = response.close()
 

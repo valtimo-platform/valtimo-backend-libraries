@@ -20,14 +20,14 @@ import mu.KotlinLogging
 import java.io.IOException
 import java.io.InputStream
 
-class CopyHeadInputStream(
+class CopiedHeadInputStream(
     val inputStream: InputStream,
     val buffer: IntArray = IntArray(DEFAULT_BUFFER_SIZE),
     val onHeadReady: (ByteArray) -> Unit = { _: ByteArray -> }
 ) : InputStream() {
     private var index: Int = 0
 
-    protected var closed: Boolean = false
+    private var closed: Boolean = false
 
     override fun read(): Int {
         checkClosed()

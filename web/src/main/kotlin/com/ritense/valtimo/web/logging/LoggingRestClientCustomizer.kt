@@ -43,7 +43,7 @@ class LoggingRestClientCustomizer : RestClientCustomizer, ClientHttpRequestInter
     ): ClientHttpResponse {
         val response = execution.execute(request, requestBody)
         val requestBodyHead = requestBody.take(DEFAULT_BUFFER_SIZE).toByteArray()
-        return CopyHeadClientHttpResponse(response) { responseBodyHead ->
+        return CopiedHeadClientHttpResponse(response) { responseBodyHead ->
             logger.debug { createRequestReport(request, requestBodyHead, response, responseBodyHead) }
             if (response.statusCode.isError) {
                 val report = createRequestReport(request, requestBodyHead, response, responseBodyHead)
