@@ -26,8 +26,14 @@ class LoggingEventSpecificationHelper {
     companion object {
 
         const val CALLER_CLASS: String = "callerClass"
+        const val FORMATTED_MESSAGE: String = "formattedMessage"
         const val LEVEL: String = "level"
         const val TIMESTAMP: String = "timestamp"
+
+        @JvmStatic
+        fun byFormattedMessage(formattedMessage: String) = Specification<LoggingEvent> { root, _, cb ->
+            cb.equal(root.get<String>(FORMATTED_MESSAGE), formattedMessage)
+        }
 
         @JvmStatic
         fun byLevel(level: String) = Specification<LoggingEvent> { root, _, cb ->
