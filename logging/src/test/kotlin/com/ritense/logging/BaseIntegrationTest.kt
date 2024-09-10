@@ -16,6 +16,8 @@
 
 package com.ritense.logging
 
+import com.ritense.logging.repository.LoggingEventExceptionRepository
+import com.ritense.logging.repository.LoggingEventPropertyRepository
 import com.ritense.logging.repository.LoggingEventRepository
 import com.ritense.logging.service.LoggingEventDeletionService
 import com.ritense.logging.testimpl.LogResourceBean
@@ -37,6 +39,11 @@ abstract class BaseIntegrationTest {
     lateinit var loggingEventRepository: LoggingEventRepository
 
     @Autowired
-    lateinit var loggingEventDeletionService: LoggingEventDeletionService
+    lateinit var loggingEventPropertyRepository: LoggingEventPropertyRepository
 
+    @Autowired
+    lateinit var loggingEventExceptionRepository: LoggingEventExceptionRepository
+  
+    @Autowired
+    lateinit var loggingEventDeletionService: LoggingEventDeletionService
 }
