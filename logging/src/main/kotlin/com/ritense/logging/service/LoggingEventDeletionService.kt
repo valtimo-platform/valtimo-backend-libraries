@@ -41,7 +41,7 @@ class LoggingEventDeletionService(
 ) {
 
     @Scheduled(
-        fixedRateString = "\${valtimo.logging.retentionInMinutes:60*24*7}",
+        fixedRateString = "\${valtimo.logging.retentionInMinutes:10080}",
         timeUnit = MINUTES
     )
     fun deleteOldLoggingEvents() {
