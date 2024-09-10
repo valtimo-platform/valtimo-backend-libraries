@@ -16,6 +16,8 @@
 
 package com.ritense.logging
 
+import com.ritense.logging.repository.LoggingEventExceptionRepository
+import com.ritense.logging.repository.LoggingEventPropertyRepository
 import com.ritense.logging.repository.LoggingEventRepository
 import com.ritense.logging.testimpl.LogResourceBean
 import org.junit.jupiter.api.Tag
@@ -34,5 +36,11 @@ abstract class BaseIntegrationTest {
 
     @Autowired
     lateinit var loggingEventRepository: LoggingEventRepository
+
+    @Autowired
+    lateinit var loggingEventPropertyRepository: LoggingEventPropertyRepository
+
+    @Autowired
+    lateinit var loggingEventExceptionRepository: LoggingEventExceptionRepository
 
 }
