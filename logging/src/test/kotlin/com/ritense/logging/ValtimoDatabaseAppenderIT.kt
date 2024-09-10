@@ -23,10 +23,18 @@ import mu.KLogger
 import mu.KotlinLogging
 import mu.withLoggingContext
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 @Transactional
 class ValtimoDatabaseAppenderIT : BaseIntegrationTest() {
+
+    @BeforeEach
+    fun beforeEach() {
+        loggingEventPropertyRepository.deleteAll()
+        loggingEventExceptionRepository.deleteAll()
+        loggingEventRepository.deleteAll()
+    }
 
     @Test
     fun `should log to database using valtimo-database-appender-xml`() {
@@ -49,6 +57,18 @@ class ValtimoDatabaseAppenderIT : BaseIntegrationTest() {
         assertEquals(0, infoEvent.properties.size)
         assertEquals(0, infoEvent.exceptions.size)
         assertEquals(0, debugEventCount)
+    }
+
+    @Test
+    fun `should log very long trace_line`() {
+        val veryLongExceptionMessage = "Very long exception message: ${(1..1000).joinToString(" ")}"
+        logger.error(IllegalStateException("Test exception")) { veryLongExceptionMessage }
+
+        val spec = byCallerClass(ValtimoDatabaseAppenderIT::class.java)
+        val errorEvent = loggingEventRepository.findOne(spec.and(byLevel("ERROR"))).orElseThrow()
+
+        assertEquals(veryLongExceptionMessage, errorEvent.formattedMessage)
+        assertEquals(3921, veryLongExceptionMessage.length)
     }
 
     private companion object {
