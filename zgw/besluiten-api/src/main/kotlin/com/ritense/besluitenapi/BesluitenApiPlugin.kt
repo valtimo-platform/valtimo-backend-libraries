@@ -104,28 +104,32 @@ class BesluitenApiPlugin(
         @PluginActionProperty uiterlijkeReactieDatum: LocalDate?,
         @PluginActionProperty createdBesluitUrl: String?,
     ) {
-
         val documentId = UUID.fromString(execution.businessKey)
         val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
-        logger.debug { "Creating besluit for zaak $zaakUrl of type $besluittypeUrl" }
+        withLoggingContext(
+            "documentId" to documentId.toString(),
+            "zaakUrl" to zaakUrl.toString(),
+        ) {
+            logger.debug { "Creating besluit for zaak $zaakUrl of type $besluittypeUrl" }
 
-        val besluit = createBesluit(
-            zaakUrl = zaakUrl,
-            besluittypeUrl = URI(besluittypeUrl),
-            ingangsdatum = ingangsdatum ?: LocalDate.now(),
-            toelichting = toelichting,
-            bestuursorgaan = bestuursorgaan,
-            vervaldatum = vervaldatum,
-            vervalreden = vervalreden,
-            publicatiedatum = publicatiedatum,
-            verzenddatum = verzenddatum,
-            uiterlijkeReactieDatum = uiterlijkeReactieDatum
-        )
+            val besluit = createBesluit(
+                zaakUrl = zaakUrl,
+                besluittypeUrl = URI(besluittypeUrl),
+                ingangsdatum = ingangsdatum ?: LocalDate.now(),
+                toelichting = toelichting,
+                bestuursorgaan = bestuursorgaan,
+                vervaldatum = vervaldatum,
+                vervalreden = vervalreden,
+                publicatiedatum = publicatiedatum,
+                verzenddatum = verzenddatum,
+                uiterlijkeReactieDatum = uiterlijkeReactieDatum
+            )
 
-        createdBesluitUrl?.let {
-            logger.debug { "Settings resulting variable $it to ${besluit.url}" }
-            execution.setVariable(it, besluit.url)
+            createdBesluitUrl?.let {
+                logger.debug { "Settings resulting variable $it to ${besluit.url}" }
+                execution.setVariable(it, besluit.url)
+            }
         }
     }
 
