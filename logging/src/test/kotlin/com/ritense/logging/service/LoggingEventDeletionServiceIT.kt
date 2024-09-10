@@ -67,8 +67,4 @@ class LoggingEventDeletionServiceIT : BaseIntegrationTest() {
             )
         )
     }
-
-    private companion object {
-        private val logger: KLogger = KotlinLogging.logger {}
-    }
 }
