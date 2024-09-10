@@ -21,6 +21,7 @@ import com.ritense.valtimo.contract.authentication.UserManagementService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import mu.KotlinLogging
 import org.slf4j.MDC
 import org.springframework.web.filter.OncePerRequestFilter
 import java.util.UUID
@@ -34,9 +35,13 @@ class UserLoggingFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val userIdentifier = userManagementService.getCurrentUser()?.getUserIdentifier()
-        if (userIdentifier != null) {
-            MDC.put(LoggingConstants.MDC_USER_ID_KEY, userIdentifier)
+        try {
+            val userIdentifier = userManagementService.getCurrentUser()?.getUserIdentifier()
+            if (userIdentifier != null) {
+                MDC.put(LoggingConstants.MDC_USER_ID_KEY, userIdentifier)
+            }
+        } catch (e: Exception) {
+            logger.warn("Failed to add logging context '${LoggingConstants.MDC_USER_ID_KEY}'", e)
         }
 
         // We also add a correlation id manually for now.
@@ -48,5 +53,9 @@ class UserLoggingFilter(
             MDC.remove(LoggingConstants.MDC_USER_ID_KEY)
             MDC.remove(LoggingConstants.MDC_CORRELATION_ID_KEY)
         }
+    }
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
     }
 }
