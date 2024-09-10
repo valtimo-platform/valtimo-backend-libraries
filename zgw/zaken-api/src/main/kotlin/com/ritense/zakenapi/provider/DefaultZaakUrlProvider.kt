@@ -19,6 +19,9 @@ package com.ritense.zakenapi.provider
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.link.ZaakInstanceLinkNotFoundException
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
+import mu.KLogger
+import mu.KotlinLogging
+import mu.withLoggingContext
 import java.net.URI
 import java.util.UUID
 
@@ -28,6 +31,13 @@ class DefaultZaakUrlProvider(
 
     @Throws(ZaakInstanceLinkNotFoundException::class)
     override fun getZaakUrl(documentId: UUID): URI {
-        return zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl
+        return withLoggingContext("documentId" to documentId.toString()) {
+            logger.debug { "Getting zaak url for $documentId" }
+            zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl
+        }
+    }
+
+    companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
     }
 }

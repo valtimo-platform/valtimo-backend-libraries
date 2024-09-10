@@ -111,7 +111,7 @@ class BesluitenApiPlugin(
             "documentId" to documentId.toString(),
             "zaakUrl" to zaakUrl.toString(),
         ) {
-            logger.debug { "Creating besluit for zaak $zaakUrl of type $besluittypeUrl" }
+            logger.info { "Creating besluit for zaak $zaakUrl of type $besluittypeUrl" }
 
             val besluit = createBesluit(
                 zaakUrl = zaakUrl,
