@@ -41,7 +41,7 @@ class UserLoggingFilter(
                 MDC.put(LoggingConstants.MDC_USER_ID_KEY, userIdentifier)
             }
         } catch (e: Exception) {
-            logger.error("Failed to add logging context '${LoggingConstants.MDC_USER_ID_KEY}'", e)
+            logger.warn("Failed to add logging context '${LoggingConstants.MDC_USER_ID_KEY}'", e)
         }
 
         // We also add a correlation id manually for now.
