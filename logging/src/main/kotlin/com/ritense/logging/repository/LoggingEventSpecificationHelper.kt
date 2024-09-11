@@ -31,6 +31,11 @@ class LoggingEventSpecificationHelper {
         const val TIMESTAMP: String = "timestamp"
 
         @JvmStatic
+        fun query() = Specification<LoggingEvent> { _, _, cb ->
+            cb.equal(cb.literal(1), 1)
+        }
+
+        @JvmStatic
         fun byFormattedMessage(formattedMessage: String) = Specification<LoggingEvent> { root, _, cb ->
             cb.equal(root.get<String>(FORMATTED_MESSAGE), formattedMessage)
         }
