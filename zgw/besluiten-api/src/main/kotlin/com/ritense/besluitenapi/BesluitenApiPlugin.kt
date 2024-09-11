@@ -77,7 +77,7 @@ class BesluitenApiPlugin(
         DOCUMENTEN_API.ENKELVOUDIG_INFORMATIE_OBJECT to documentUrl.toString(),
         BESLUITEN_API.BESLUIT to besluitUrl.toString()
     ) {
-        logger.info { "Linking document $documentUrl to besluit $besluitUrl" }
+        logger.info { "Linking ZGW document $documentUrl to besluit $besluitUrl" }
         besluitenApiClient.createBesluitInformatieObject(
             authenticationPluginConfiguration,
             url,
