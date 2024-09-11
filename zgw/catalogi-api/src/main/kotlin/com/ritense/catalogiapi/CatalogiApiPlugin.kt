@@ -80,10 +80,9 @@ class CatalogiApiPlugin(
         @PluginActionProperty processVariable: String,
     ) {
         withLoggingContext(
-            CATALOGI_API.STATUSTYPE to statustype,
-            DelegateExecution::class.java.canonicalName to execution.businessKey
+            CATALOGI_API.STATUSTYPE to statustype
         ) {
-            logger.info { "Retrieving statustype: $statustype and storing it in process variable: $processVariable" }
+            logger.debug { "Retrieving statustype: $statustype and storing it in process variable: $processVariable" }
 
             val statustypeUrl = if (statustype.matches(HTTPS_REGEX)) {
                 statustype
@@ -94,7 +93,7 @@ class CatalogiApiPlugin(
                 getStatustypeByOmschrijving(zaaktypeUrl, statustype).url!!.toASCIIString()
             }
 
-            logger.debug { "Setting process variable $processVariable with statustype URL: $statustypeUrl" }
+            logger.info { "Setting process variable $processVariable with statustype URL: $statustypeUrl" }
 
             execution.setVariable(processVariable, statustypeUrl)
         }
@@ -113,9 +112,8 @@ class CatalogiApiPlugin(
     ) {
         withLoggingContext(
             CATALOGI_API.RESULTAATTYPE to resultaattype,
-            DelegateExecution::class.java.canonicalName to execution.businessKey
         ) {
-            logger.info { "Retrieving resultaattype: $resultaattype and storing it in process variable: $processVariable" }
+            logger.debug { "Retrieving resultaattype: $resultaattype and storing it in process variable: $processVariable" }
             val resultaattypeUrl = if (resultaattype.matches(HTTPS_REGEX)) {
                 resultaattype
             } else {
@@ -125,7 +123,7 @@ class CatalogiApiPlugin(
                 getResultaattypeByOmschrijving(zaaktypeUrl, resultaattype).url!!.toASCIIString()
             }
 
-            logger.debug { "Setting process variable $processVariable with resultaattype URL: $resultaattypeUrl" }
+            logger.info { "Setting process variable $processVariable with resultaattype URL: $resultaattypeUrl" }
             execution.setVariable(processVariable, resultaattypeUrl)
         }
     }
@@ -143,9 +141,8 @@ class CatalogiApiPlugin(
     ) {
         withLoggingContext(
             CATALOGI_API.BESLUITTYPE to besluittype,
-            DelegateExecution::class.java.canonicalName to execution.businessKey
         ) {
-            logger.info { "Retrieving besluittype: $besluittype and storing it in process variable: $processVariable" }
+            logger.debug { "Retrieving besluittype: $besluittype and storing it in process variable: $processVariable" }
             val besluittypeUrl = if (besluittype.matches(HTTPS_REGEX)) {
                 besluittype
             } else {
@@ -155,7 +152,7 @@ class CatalogiApiPlugin(
                 getBesluittypeByOmschrijving(zaaktypeUrl, besluittype).url!!.toASCIIString()
             }
 
-            logger.debug { "Setting process variable $processVariable with besluittype URL: $besluittypeUrl" }
+            logger.info { "Setting process variable $processVariable with besluittype URL: $besluittypeUrl" }
             execution.setVariable(processVariable, besluittypeUrl)
         }
     }
