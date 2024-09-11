@@ -18,6 +18,7 @@ package com.ritense.valtimo.logging
 
 import com.ritense.valtimo.contract.LoggingConstants
 import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.contract.utils.SecurityUtils
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -35,13 +36,9 @@ class UserLoggingFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        try {
-            val userIdentifier = userManagementService.getCurrentUser()?.getUserIdentifier()
-            if (userIdentifier != null) {
-                MDC.put(LoggingConstants.MDC_USER_ID_KEY, userIdentifier)
-            }
-        } catch (e: Exception) {
-            logger.warn("Failed to add logging context '${LoggingConstants.MDC_USER_ID_KEY}'", e)
+        val userEmail = SecurityUtils.getCurrentUserLogin()
+        if (userEmail != null) {
+            MDC.put(LoggingConstants.MDC_USER_EMAIL_KEY, userEmail)
         }
 
         // We also add a correlation id manually for now.
@@ -50,7 +47,7 @@ class UserLoggingFilter(
         try {
             filterChain.doFilter(request, response)
         } finally {
-            MDC.remove(LoggingConstants.MDC_USER_ID_KEY)
+            MDC.remove(LoggingConstants.MDC_USER_EMAIL_KEY)
             MDC.remove(LoggingConstants.MDC_CORRELATION_ID_KEY)
         }
     }
