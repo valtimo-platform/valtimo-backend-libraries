@@ -93,7 +93,7 @@ class CatalogiApiPlugin(
                 getStatustypeByOmschrijving(zaaktypeUrl, statustype).url!!.toASCIIString()
             }
 
-            logger.info { "Setting process variable $processVariable with statustype URL: $statustypeUrl" }
+            logger.info { "Setting process variable $processVariable with (retrieved) statustype URL: $statustypeUrl" }
 
             execution.setVariable(processVariable, statustypeUrl)
         }
@@ -123,7 +123,8 @@ class CatalogiApiPlugin(
                 getResultaattypeByOmschrijving(zaaktypeUrl, resultaattype).url!!.toASCIIString()
             }
 
-            logger.info { "Setting process variable $processVariable with resultaattype URL: $resultaattypeUrl" }
+            logger.info { "Setting process variable $processVariable with (retrieved) resultaattype URL: $resultaattypeUrl" }
+
             execution.setVariable(processVariable, resultaattypeUrl)
         }
     }
@@ -152,7 +153,7 @@ class CatalogiApiPlugin(
                 getBesluittypeByOmschrijving(zaaktypeUrl, besluittype).url!!.toASCIIString()
             }
 
-            logger.info { "Setting process variable $processVariable with besluittype URL: $besluittypeUrl" }
+            logger.info { "Setting process variable $processVariable with (retrieved) besluittype URL: $besluittypeUrl" }
             execution.setVariable(processVariable, besluittypeUrl)
         }
     }
