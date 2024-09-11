@@ -57,6 +57,7 @@ import com.ritense.valtimo.camunda.authorization.CamundaExecutionActionProvider;
 import com.ritense.valtimo.camunda.domain.CamundaExecution;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
+import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.contract.result.OperationError;
@@ -253,7 +254,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     }
 
     @Override
-    public List<ProcessDocumentInstanceDto> findProcessDocumentInstanceDtos(Document.Id documentId) {
+        public List<ProcessDocumentInstanceDto> findProcessDocumentInstanceDtos(Document.Id documentId) {
         var document = documentService.findBy(documentId).orElseThrow();
 
         authorizationService.requirePermission(
@@ -279,7 +280,8 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
                         ZoneId.systemDefault()
                     );
                     var startedBy = camundaProcess.getStartUserId() == null ? null :
-                        userManagementService.findByEmail(camundaProcess.getStartUserId()).orElseThrow().getFullName();
+                        userManagementService.findByEmail(camundaProcess.getStartUserId()).map(ManageableUser::getFullName).orElse(null);
+
                     return new ProcessDocumentInstanceDto(
                         process.getId(),
                         process.processName(),
