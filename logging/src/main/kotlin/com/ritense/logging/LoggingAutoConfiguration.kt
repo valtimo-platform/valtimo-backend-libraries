@@ -22,6 +22,7 @@ import com.ritense.logging.domain.LoggingEventProperty
 import com.ritense.logging.repository.LoggingEventExceptionRepository
 import com.ritense.logging.repository.LoggingEventPropertyRepository
 import com.ritense.logging.repository.LoggingEventRepository
+import com.ritense.logging.security.config.LoggingHttpSecurityConfigurer
 import com.ritense.logging.service.LoggingEventDeletionService
 import com.ritense.logging.service.LoggingEventService
 import com.ritense.logging.web.rest.LoggingEventManagementResource
@@ -96,6 +97,12 @@ class LoggingAutoConfiguration {
         )
     }
 
+    @Order(270)
+    @Bean
+    @ConditionalOnMissingBean(LoggingHttpSecurityConfigurer::class)
+    fun loggingHttpSecurityConfigurer(): LoggingHttpSecurityConfigurer {
+        return LoggingHttpSecurityConfigurer()
+    }
 
     @Order(HIGHEST_PRECEDENCE + 34)
     @Bean

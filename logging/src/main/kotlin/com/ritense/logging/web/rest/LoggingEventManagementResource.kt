@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @SkipComponentScan
-@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
+@RequestMapping("/api/management", produces = [APPLICATION_JSON_UTF8_VALUE])
 class LoggingEventManagementResource(
     private val loggingEventService: LoggingEventService,
 ) {
