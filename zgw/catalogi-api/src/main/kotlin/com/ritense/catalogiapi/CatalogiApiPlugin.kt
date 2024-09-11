@@ -93,7 +93,7 @@ class CatalogiApiPlugin(
                 getStatustypeByOmschrijving(zaaktypeUrl, statustype).url!!.toASCIIString()
             }
 
-            logger.info { "Setting process variable $processVariable with statustype URL: $statustypeUrl" }
+            logger.info { "Setting process variable $processVariable with (retrieved) statustype URL: $statustypeUrl" }
 
             execution.setVariable(processVariable, statustypeUrl)
         }
@@ -123,7 +123,8 @@ class CatalogiApiPlugin(
                 getResultaattypeByOmschrijving(zaaktypeUrl, resultaattype).url!!.toASCIIString()
             }
 
-            logger.info { "Setting process variable $processVariable with resultaattype URL: $resultaattypeUrl" }
+            logger.info { "Setting process variable $processVariable with (retrieved) resultaattype URL: $resultaattypeUrl" }
+
             execution.setVariable(processVariable, resultaattypeUrl)
         }
     }
@@ -152,7 +153,7 @@ class CatalogiApiPlugin(
                 getBesluittypeByOmschrijving(zaaktypeUrl, besluittype).url!!.toASCIIString()
             }
 
-            logger.info { "Setting process variable $processVariable with besluittype URL: $besluittypeUrl" }
+            logger.info { "Setting process variable $processVariable with (retrieved) besluittype URL: $besluittypeUrl" }
             execution.setVariable(processVariable, besluittypeUrl)
         }
     }
@@ -259,7 +260,6 @@ class CatalogiApiPlugin(
     fun getStatustypeByOmschrijving(zaakTypeUrl: URI, omschrijving: String): Statustype {
         withLoggingContext(
             CATALOGI_API.STATUSTYPE to zaakTypeUrl.toString(),
-            CATALOGI_API.STATUSTYPE to omschrijving
         ) {
             logger.debug { "Getting Statustype by omschrijving: $omschrijving for zaaktype $zaakTypeUrl" }
             return getStatustypen(zaakTypeUrl)
@@ -300,8 +300,7 @@ class CatalogiApiPlugin(
 
     fun getResultaattypeByOmschrijving(zaakTypeUrl: URI, omschrijving: String): Resultaattype {
         withLoggingContext(
-            CATALOGI_API.RESULTAATTYPE to zaakTypeUrl.toString(),
-            CATALOGI_API.RESULTAATTYPE to omschrijving
+            CATALOGI_API.RESULTAATTYPE to zaakTypeUrl.toString()
         ) {
             logger.debug { "Getting Resultaattype by omschrijving: $omschrijving for zaaktype $zaakTypeUrl" }
             return getResultaattypen(zaakTypeUrl)
@@ -351,8 +350,7 @@ class CatalogiApiPlugin(
 
     fun getBesluittypeByOmschrijving(zaakTypeUrl: URI, omschrijving: String): Besluittype {
         withLoggingContext(
-            CATALOGI_API.BESLUITTYPE to zaakTypeUrl.toString(),
-            CATALOGI_API.BESLUITTYPE to omschrijving
+            CATALOGI_API.BESLUITTYPE to zaakTypeUrl.toString()
         ) {
             logger.debug { "Getting Besluittype by omschrijving: $omschrijving for zaaktype $zaakTypeUrl" }
             return getBesluittypen(zaakTypeUrl)
