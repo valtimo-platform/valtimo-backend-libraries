@@ -260,7 +260,6 @@ class CatalogiApiPlugin(
     fun getStatustypeByOmschrijving(zaakTypeUrl: URI, omschrijving: String): Statustype {
         withLoggingContext(
             CATALOGI_API.STATUSTYPE to zaakTypeUrl.toString(),
-            CATALOGI_API.STATUSTYPE to omschrijving
         ) {
             logger.debug { "Getting Statustype by omschrijving: $omschrijving for zaaktype $zaakTypeUrl" }
             return getStatustypen(zaakTypeUrl)
@@ -301,8 +300,7 @@ class CatalogiApiPlugin(
 
     fun getResultaattypeByOmschrijving(zaakTypeUrl: URI, omschrijving: String): Resultaattype {
         withLoggingContext(
-            CATALOGI_API.RESULTAATTYPE to zaakTypeUrl.toString(),
-            CATALOGI_API.RESULTAATTYPE to omschrijving
+            CATALOGI_API.RESULTAATTYPE to zaakTypeUrl.toString()
         ) {
             logger.debug { "Getting Resultaattype by omschrijving: $omschrijving for zaaktype $zaakTypeUrl" }
             return getResultaattypen(zaakTypeUrl)
@@ -352,8 +350,7 @@ class CatalogiApiPlugin(
 
     fun getBesluittypeByOmschrijving(zaakTypeUrl: URI, omschrijving: String): Besluittype {
         withLoggingContext(
-            CATALOGI_API.BESLUITTYPE to zaakTypeUrl.toString(),
-            CATALOGI_API.BESLUITTYPE to omschrijving
+            CATALOGI_API.BESLUITTYPE to zaakTypeUrl.toString()
         ) {
             logger.debug { "Getting Besluittype by omschrijving: $omschrijving for zaaktype $zaakTypeUrl" }
             return getBesluittypen(zaakTypeUrl)
