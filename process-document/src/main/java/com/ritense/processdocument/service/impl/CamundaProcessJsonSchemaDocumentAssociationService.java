@@ -254,7 +254,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     }
 
     @Override
-        public List<ProcessDocumentInstanceDto> findProcessDocumentInstanceDtos(Document.Id documentId) {
+    public List<ProcessDocumentInstanceDto> findProcessDocumentInstanceDtos(Document.Id documentId) {
         var document = documentService.findBy(documentId).orElseThrow();
 
         authorizationService.requirePermission(
