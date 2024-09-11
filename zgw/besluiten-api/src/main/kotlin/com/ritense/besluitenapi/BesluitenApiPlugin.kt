@@ -106,13 +106,7 @@ class BesluitenApiPlugin(
     ) {
         val documentId = UUID.fromString(execution.businessKey)
         val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
-
-        withLoggingContext(
-            "documentId" to documentId.toString(),
-            "zaakUrl" to zaakUrl.toString(),
-        ) {
-            logger.info { "Creating besluit for zaak $zaakUrl of type $besluittypeUrl" }
-
+        withLoggingContext("documentId" to documentId.toString()) {
             val besluit = createBesluit(
                 zaakUrl = zaakUrl,
                 besluittypeUrl = URI(besluittypeUrl),
@@ -125,9 +119,8 @@ class BesluitenApiPlugin(
                 verzenddatum = verzenddatum,
                 uiterlijkeReactieDatum = uiterlijkeReactieDatum
             )
-
             createdBesluitUrl?.let {
-                logger.debug { "Settings resulting variable $it to ${besluit.url}" }
+                logger.info { "Storing reference to newly created besluit ${besluit.url} in process variable $it" }
                 execution.setVariable(it, besluit.url)
             }
         }
@@ -145,25 +138,27 @@ class BesluitenApiPlugin(
         verzenddatum: LocalDate? = null,
         uiterlijkeReactieDatum: LocalDate? = null,
     ): Besluit {
-        val besluit = besluitenApiClient.createBesluit(
-            authentication = authenticationPluginConfiguration,
-            baseUrl = url,
-            request = CreateBesluitRequest(
-                zaak = zaakUrl,
-                besluittype = besluittypeUrl,
-                verantwoordelijkeOrganisatie = rsin.toString(),
-                datum = LocalDate.now(),
-                ingangsdatum = ingangsdatum ?: LocalDate.now(),
-                toelichting = toelichting,
-                bestuursorgaan = bestuursorgaan,
-                vervaldatum = vervaldatum,
-                vervalreden = vervalreden,
-                publicatiedatum = publicatiedatum,
-                verzenddatum = verzenddatum,
-                uiterlijkeReactiedatum = uiterlijkeReactieDatum
+        withLoggingContext("zaakUrl" to zaakUrl.toString()) {
+            logger.info { "Creating besluit for zaak $zaakUrl of type $besluittypeUrl" }
+            return besluitenApiClient.createBesluit(
+                authentication = authenticationPluginConfiguration,
+                baseUrl = url,
+                request = CreateBesluitRequest(
+                    zaak = zaakUrl,
+                    besluittype = besluittypeUrl,
+                    verantwoordelijkeOrganisatie = rsin.toString(),
+                    datum = LocalDate.now(),
+                    ingangsdatum = ingangsdatum ?: LocalDate.now(),
+                    toelichting = toelichting,
+                    bestuursorgaan = bestuursorgaan,
+                    vervaldatum = vervaldatum,
+                    vervalreden = vervalreden,
+                    publicatiedatum = publicatiedatum,
+                    verzenddatum = verzenddatum,
+                    uiterlijkeReactiedatum = uiterlijkeReactieDatum
+                )
             )
-        )
-        return besluit
+        }
     }
 
     companion object {
