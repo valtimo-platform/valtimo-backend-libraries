@@ -18,12 +18,16 @@ package com.ritense.logging.service
 
 import com.ritense.logging.BaseIntegrationTest
 import com.ritense.logging.domain.LoggingEvent
+import com.ritense.logging.domain.LoggingEventProperty
+import com.ritense.logging.domain.LoggingEventPropertyId
+import com.ritense.logging.web.rest.dto.LoggingEventPropertyDto
 import com.ritense.logging.web.rest.dto.LoggingEventSearchRequest
-import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
+import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -33,10 +37,10 @@ import kotlin.random.Random
 class LoggingEventServiceIT : BaseIntegrationTest() {
 
     @Test
-    fun `should log to database using valtimo-database-appender-xml`() {
+    fun `should search logs paginated`() {
         val now = LocalDateTime.now()
         saveLoggingEvent("event 1", now - Duration.ofDays(1))
-        val searchRequest = LoggingEventSearchRequest(olderThanTimestamp = now - Duration.ofDays(2))
+        val searchRequest = LoggingEventSearchRequest(beforeTimestamp = now - Duration.ofDays(2))
         saveLoggingEvent("event 2", now - Duration.ofDays(3))
         saveLoggingEvent("event 3", now - Duration.ofDays(4))
         saveLoggingEvent("event 4", now - Duration.ofDays(5))
@@ -52,15 +56,55 @@ class LoggingEventServiceIT : BaseIntegrationTest() {
         assertEquals("event 4", page2.content[0].formattedMessage)
     }
 
-    private fun saveLoggingEvent(message: String, localDateTime: LocalDateTime) {
+    @Test
+    fun `should search logs by search queries`() {
+        val yesterday = LocalDateTime.now() - Duration.ofDays(1)
+        saveLoggingEvent("test event", yesterday - Duration.ofDays(1))
+        saveLoggingEvent("another event", yesterday - Duration.ofDays(1))
+        val searchRequest = LoggingEventSearchRequest(
+            afterTimestamp = yesterday.minusDays(2),
+            beforeTimestamp = yesterday,
+            level = "INFO",
+            likeFormattedMessage = "test",
+        )
+
+        val results = loggingEventService.searchLoggingEvents(searchRequest, Pageable.unpaged()).content
+
+        assertEquals(1, results.size)
+        assertEquals("test event", results[0].formattedMessage)
+    }
+
+    @Test
+    fun `should search logs by search properties`() {
+        val yesterday = LocalDateTime.now() - Duration.ofDays(1)
+        val event1 = saveLoggingEvent("test event", yesterday - Duration.ofDays(1))
+        saveLoggingEvent("another event", yesterday - Duration.ofDays(1))
+        loggingEventPropertyRepository.save(
+            LoggingEventProperty(
+                id = LoggingEventPropertyId(event1.id, "key"),
+                event = event1,
+                value = "value"
+            )
+        )
+        val searchRequest = LoggingEventSearchRequest(
+            properties = listOf(LoggingEventPropertyDto("key", "value"))
+        )
+
+        val results = loggingEventService.searchLoggingEvents(searchRequest, Pageable.unpaged()).content
+
+        assertEquals(1, results.size)
+        assertEquals("test event", results[0].formattedMessage)
+    }
+
+    private fun saveLoggingEvent(message: String, localDateTime: LocalDateTime = LocalDateTime.now()): LoggingEvent {
         val timestamp = localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-        loggingEventRepository.save(
+        return loggingEventRepository.save(
             LoggingEvent(
                 id = Random.nextLong(),
                 timestamp = timestamp,
                 formattedMessage = message,
                 loggerName = "loggerName",
-                level = "level",
+                level = "INFO",
                 threadName = "threadName",
                 referenceFlag = 0,
                 arg0 = "arg0",

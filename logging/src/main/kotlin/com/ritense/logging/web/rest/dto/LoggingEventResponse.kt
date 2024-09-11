@@ -20,11 +20,10 @@ import com.ritense.logging.domain.LoggingEvent
 import java.time.LocalDateTime
 
 data class LoggingEventResponse(
-    val id: Long,
     val timestamp: LocalDateTime,
     val formattedMessage: String,
     val level: String,
-    val properties: List<LoggingEventPropertyResponse>,
+    val properties: List<LoggingEventPropertyDto>,
     val stacktrace: String,
 ) {
     companion object {
@@ -32,11 +31,10 @@ data class LoggingEventResponse(
 
         fun of(loggingEvent: LoggingEvent): LoggingEventResponse {
             return LoggingEventResponse(
-                id = loggingEvent.id,
                 timestamp = loggingEvent.getTimestampLocalDateTime(),
                 formattedMessage = loggingEvent.formattedMessage,
                 level = loggingEvent.level,
-                properties = LoggingEventPropertyResponse.of(loggingEvent.properties),
+                properties = LoggingEventPropertyDto.of(loggingEvent.properties),
                 stacktrace = loggingEvent.getStacktrace(),
             )
         }

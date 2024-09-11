@@ -19,5 +19,9 @@ package com.ritense.logging.web.rest.dto
 import java.time.LocalDateTime
 
 data class LoggingEventSearchRequest(
-    val olderThanTimestamp: LocalDateTime? = null,
+    val afterTimestamp: LocalDateTime? = null,
+    val beforeTimestamp: LocalDateTime? = null,
+    val level: String? = null,
+    val likeFormattedMessage: String? = null,
+    val properties: List<LoggingEventPropertyDto> = emptyList(),
 )

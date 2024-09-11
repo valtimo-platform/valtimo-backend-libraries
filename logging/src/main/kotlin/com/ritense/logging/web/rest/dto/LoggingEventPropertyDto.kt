@@ -18,15 +18,15 @@ package com.ritense.logging.web.rest.dto
 
 import com.ritense.logging.domain.LoggingEventProperty
 
-data class LoggingEventPropertyResponse(
+data class LoggingEventPropertyDto(
     val key: String,
     val value: String
 ) {
     companion object {
         fun of(properties: List<LoggingEventProperty>) = properties.map { of(it) }
 
-        fun of(property: LoggingEventProperty): LoggingEventPropertyResponse {
-            return LoggingEventPropertyResponse(
+        fun of(property: LoggingEventProperty): LoggingEventPropertyDto {
+            return LoggingEventPropertyDto(
                 key = property.getKey(),
                 value = property.value,
             )

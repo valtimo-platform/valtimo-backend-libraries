@@ -27,6 +27,9 @@ class LoggingEventPropertySpecificationHelper {
     companion object {
 
         const val EVENT: String = "event"
+        const val ID: String = "id"
+        const val KEY: String = "key"
+        const val VALUE: String = "value"
 
         @JvmStatic
         fun byOlderThan(localDateTime: LocalDateTime) = Specification<LoggingEventProperty> { root, _, cb ->

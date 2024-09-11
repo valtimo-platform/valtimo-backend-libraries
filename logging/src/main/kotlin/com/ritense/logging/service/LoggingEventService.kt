@@ -18,13 +18,18 @@ package com.ritense.logging.service
 
 import com.ritense.logging.domain.LoggingEvent
 import com.ritense.logging.repository.LoggingEventRepository
+import com.ritense.logging.repository.LoggingEventSpecificationHelper.Companion.byLikeFormattedMessage
+import com.ritense.logging.repository.LoggingEventSpecificationHelper.Companion.byMinimumLevel
+import com.ritense.logging.repository.LoggingEventSpecificationHelper.Companion.byNewerThan
 import com.ritense.logging.repository.LoggingEventSpecificationHelper.Companion.byOlderThan
+import com.ritense.logging.repository.LoggingEventSpecificationHelper.Companion.byProperty
 import com.ritense.logging.repository.LoggingEventSpecificationHelper.Companion.query
 import com.ritense.logging.web.rest.dto.LoggingEventSearchRequest
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 @SkipComponentScan
@@ -32,11 +37,24 @@ class LoggingEventService(
     private val loggingEventRepository: LoggingEventRepository
 ) {
 
+    @Transactional(readOnly = true)
     fun searchLoggingEvents(searchRequest: LoggingEventSearchRequest, pageable: Pageable): Page<LoggingEvent> {
         var spec = query()
 
-        if (searchRequest.olderThanTimestamp != null) {
-            spec = spec.and(byOlderThan(searchRequest.olderThanTimestamp))
+        if (searchRequest.afterTimestamp != null) {
+            spec = spec.and(byNewerThan(searchRequest.afterTimestamp))
+        }
+        if (searchRequest.beforeTimestamp != null) {
+            spec = spec.and(byOlderThan(searchRequest.beforeTimestamp))
+        }
+        if (searchRequest.level != null) {
+            spec = spec.and(byMinimumLevel(searchRequest.level))
+        }
+        if (searchRequest.likeFormattedMessage != null) {
+            spec = spec.and(byLikeFormattedMessage(searchRequest.likeFormattedMessage))
+        }
+        searchRequest.properties.forEach { (key, value) ->
+            spec = spec.and(byProperty(key, value))
         }
 
         return loggingEventRepository.findAll(spec, pageable)
