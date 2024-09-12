@@ -28,6 +28,7 @@ import org.mockito.kotlin.whenever
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
@@ -59,10 +60,9 @@ class UserLoggingFilterIT : BaseIntegrationTest() {
     }
 
     @Test
+    @WithMockUser("henk@ritense.com")
     fun `should add user to MDC when set`() {
         val user = mock<ManageableUser>()
-        whenever(userManagementService.getCurrentUser()).thenReturn(user)
-        whenever(user.getUserIdentifier()).thenReturn("testUserId")
 
         mockMvc.perform(
             MockMvcRequestBuilders.get("/test")
@@ -82,14 +82,11 @@ class UserLoggingFilterIT : BaseIntegrationTest() {
         UUID.fromString(messageList[0].mdcPropertyMap[LoggingConstants.MDC_CORRELATION_ID_KEY])
 
         // check if the user is set in the MDC
-        assertEquals("testUserId", messageList[0].mdcPropertyMap[LoggingConstants.MDC_USER_ID_KEY])
+        assertEquals("henk@ritense.com", messageList[0].mdcPropertyMap[LoggingConstants.MDC_USER_EMAIL_KEY])
     }
 
     @Test
     fun `should not user to MDC when no user set`() {
-        val user = mock<ManageableUser>()
-        whenever(userManagementService.getCurrentUser()).thenReturn(null)
-
         mockMvc.perform(
             MockMvcRequestBuilders.get("/test")
                 .characterEncoding(StandardCharsets.UTF_8.name())
@@ -108,6 +105,6 @@ class UserLoggingFilterIT : BaseIntegrationTest() {
         UUID.fromString(messageList[0].mdcPropertyMap[LoggingConstants.MDC_CORRELATION_ID_KEY])
 
         // check if the user is set in the MDC
-        assertEquals(null, messageList[0].mdcPropertyMap[LoggingConstants.MDC_USER_ID_KEY])
+        assertEquals(null, messageList[0].mdcPropertyMap[LoggingConstants.MDC_USER_EMAIL_KEY])
     }
 }

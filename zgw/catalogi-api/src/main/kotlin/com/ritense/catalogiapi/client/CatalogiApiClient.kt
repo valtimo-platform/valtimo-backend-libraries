@@ -77,6 +77,7 @@ open class CatalogiApiClient(
                     .build()
             }.retrieve()
             .body<Page<Informatieobjecttype>>()!!
+            .sortedBy { it.omschrijving }
         return result
     }
 
@@ -113,6 +114,7 @@ open class CatalogiApiClient(
                     .build()
             }.retrieve()
             .body<Page<Roltype>>()!!
+            .sortedBy { it.omschrijving }
         return result
     }
 
@@ -147,6 +149,7 @@ open class CatalogiApiClient(
                     .build()
             }.retrieve()
             .body<Page<Statustype>>()!!
+            .sortedBy { it.omschrijving }
         return result
     }
 
@@ -181,6 +184,7 @@ open class CatalogiApiClient(
                     .build()
             }.retrieve()
             .body<Page<Resultaattype>>()!!
+            .sortedBy { it.omschrijving }
         return result
     }
 
@@ -203,6 +207,7 @@ open class CatalogiApiClient(
                     .build()
             }.retrieve()
             .body<Page<Besluittype>>()!!
+            .sortedBy { it.omschrijving ?: it.omschrijvingGeneriek ?: "" }
         return result
     }
 
@@ -244,6 +249,7 @@ open class CatalogiApiClient(
             }
             .retrieve()
             .body<Page<Zaaktype>>()!!
+            .sortedBy { it.omschrijving }
         return result
     }
 
