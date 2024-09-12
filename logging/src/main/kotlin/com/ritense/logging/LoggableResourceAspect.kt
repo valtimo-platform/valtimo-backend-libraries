@@ -16,13 +16,12 @@
 
 package com.ritense.logging
 
+import mu.withLoggingContext
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.reflect.MethodSignature
 import java.lang.reflect.Method
-import mu.withLoggingContext
-
 
 @Aspect
 class LoggableResourceAspect {
@@ -40,7 +39,21 @@ class LoggableResourceAspect {
                     continue
                 }
 
-                return withLoggingContext(parameterAnnotation.resourceType.java.canonicalName to args[i] as String) {
+                val keyName = when {
+                    parameterAnnotation.resourceType != Void::class.java -> {
+                        parameterAnnotation.resourceType.java.canonicalName
+                    }
+
+                    parameterAnnotation.resourceTypeName.isNotEmpty() -> {
+                        parameterAnnotation.resourceTypeName
+                    }
+
+                    else -> {
+                        throw IllegalStateException("Either resourceType or resourceTypeName should be set")
+                    }
+                }
+
+                return withLoggingContext(keyName to args[i] as String) {
                     // TODO: what if args[i] is a collection? Alternatively: on compile time fail
                     joinPoint.proceed()
                 }

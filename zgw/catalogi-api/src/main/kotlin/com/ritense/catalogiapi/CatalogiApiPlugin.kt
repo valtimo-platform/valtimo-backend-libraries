@@ -349,9 +349,7 @@ class CatalogiApiPlugin(
     }
 
     fun getBesluittypeByOmschrijving(zaakTypeUrl: URI, omschrijving: String): Besluittype {
-        withLoggingContext(
-            CATALOGI_API.BESLUITTYPE to zaakTypeUrl.toString()
-        ) {
+        withLoggingContext(CATALOGI_API.ZAAKTYPE to zaakTypeUrl.toString()) {
             logger.debug { "Getting Besluittype by omschrijving: $omschrijving for zaaktype $zaakTypeUrl" }
             return getBesluittypen(zaakTypeUrl)
                 .singleOrNull { it.omschrijving.equals(omschrijving, ignoreCase = true) }

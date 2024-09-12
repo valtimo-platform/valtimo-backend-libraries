@@ -18,12 +18,26 @@ package com.ritense.logging.testimpl
 
 import com.ritense.logging.LoggableResource
 
-open class LogResourceBean() {
+open class LogResourceBean {
 
     open fun someMethod(
         resource: LogResource,
         @LoggableResource(resourceType = String::class) taskId: String,
     ) {
         resource.logSomething()
+    }
+
+    open fun someMethodWithResourceTypeName(
+        resource: LogResource,
+        @LoggableResource(resourceTypeName = "kotlin.String") taskId: String,
+    ) {
+        resource.logSomething()
+    }
+
+    open fun someMethodWithNoLoggableResourceType(
+        resource: LogResource,
+        @LoggableResource taskId: String,
+    ) {
+        // Do nothing
     }
 }

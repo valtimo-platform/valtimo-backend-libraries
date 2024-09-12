@@ -106,7 +106,9 @@ class BesluitenApiPlugin(
     ) {
         val documentId = UUID.fromString(execution.businessKey)
         val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
-        withLoggingContext("documentId" to documentId.toString()) {
+        withLoggingContext(
+            "com.ritense.document.domain.impl.JsonSchemaDocument" to documentId.toString()
+        ) {
             val besluit = createBesluit(
                 zaakUrl = zaakUrl,
                 besluittypeUrl = URI(besluittypeUrl),

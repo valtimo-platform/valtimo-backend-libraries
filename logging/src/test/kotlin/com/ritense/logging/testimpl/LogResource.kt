@@ -20,7 +20,7 @@ import mu.KLogger
 import mu.KotlinLogging
 import mu.withLoggingContext
 
-class LogResource() {
+class LogResource {
 
     val id = 123
 

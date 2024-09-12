@@ -18,11 +18,24 @@ package com.ritense.logging
 
 import com.ritense.logging.testimpl.LogResource
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
-class LoggableResourceIT(): BaseIntegrationTest() {
+class LoggableResourceIT() : BaseIntegrationTest() {
 
     @Test
     fun `should log resource`() {
         logResourceBean.someMethod(LogResource(), "123")
+    }
+
+    @Test
+    fun `should log resource with resourceTypeName`() {
+        logResourceBean.someMethodWithResourceTypeName(LogResource(), "123")
+    }
+
+    @Test
+    fun `should throw exception with no loggable resource type`() {
+        assertThrows<IllegalStateException> {
+            logResourceBean.someMethodWithNoLoggableResourceType(LogResource(), "123")
+        }
     }
 }
