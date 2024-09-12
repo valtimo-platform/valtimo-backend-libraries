@@ -43,6 +43,7 @@ dependencies {
     implementation project(":exporter")
     implementation project(":importer")
 
+    testImplementation project(':logging')
     testImplementation project(':test-utils-common')
 
     api "org.springframework.security:spring-security-core"
