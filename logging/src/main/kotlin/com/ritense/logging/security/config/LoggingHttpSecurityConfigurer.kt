@@ -16,6 +16,7 @@
 
 package com.ritense.logging.security.config
 
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod.POST
@@ -28,7 +29,7 @@ class LoggingHttpSecurityConfigurer : HttpSecurityConfigurer {
         try {
             http.authorizeHttpRequests { requests ->
                 requests
-                    .requestMatchers(antMatcher(POST, "/api/management/v1/logging")).authenticated()
+                    .requestMatchers(antMatcher(POST, "/api/management/v1/logging")).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
