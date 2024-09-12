@@ -144,12 +144,8 @@ class NotificatiesApiPlugin(
             .forEach { kanaalNaam ->
                 logger.debug { "Attempting to create kanaal: $kanaalNaam for authentication configuration: $authenticationPluginConfiguration" }
                 launch {
-                    try {
-                        client.createKanaal(authenticationPluginConfiguration, url, Kanaal(naam = kanaalNaam))
-                        logger.info { "Successfully created kanaal: $kanaalNaam for authentication configuration: $authenticationPluginConfiguration" }
-                    } catch (e: Exception) {
-                        logger.warn(e) { "Failed to create kanaal: $kanaalNaam for authentication configuration: $authenticationPluginConfiguration" }
-                    }
+                    client.createKanaal(authenticationPluginConfiguration, url, Kanaal(naam = kanaalNaam))
+                    logger.info { "Successfully created kanaal: $kanaalNaam for authentication configuration: $authenticationPluginConfiguration" }
                 }
             }
     }
