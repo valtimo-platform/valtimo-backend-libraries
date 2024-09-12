@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.outbox.publisher
+package com.ritense.valtimo.web.logging
 
-import com.ritense.outbox.OutboxMessage
-import mu.KotlinLogging
+import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.context.annotation.Bean
 
-// TODO: Remove this MessagePublisher when Valtimo has another MessagePublisher out of the box.
-open class LoggingMessagePublisher : MessagePublisher {
+@AutoConfiguration
+class LoggingRestClientAutoConfiguration {
 
-    override fun publish(message: OutboxMessage) {
-        logger.debug { "OutboxMessage id: '${message.id}'" }
-    }
-
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
+    @Bean
+    @ConditionalOnMissingBean
+    fun loggingRestClientCustomizer() = LoggingRestClientCustomizer()
 }
