@@ -77,23 +77,31 @@ class LoggingEventServiceIT : BaseIntegrationTest() {
     @Test
     fun `should search logs by search properties`() {
         val yesterday = LocalDateTime.now() - Duration.ofDays(1)
-        val event1 = saveLoggingEvent("test event", yesterday - Duration.ofDays(1))
-        saveLoggingEvent("another event", yesterday - Duration.ofDays(1))
-        loggingEventPropertyRepository.save(
-            LoggingEventProperty(
-                id = LoggingEventPropertyId(event1.id, "key"),
-                event = event1,
-                value = "value"
-            )
+        val event1 = saveLoggingEvent("Event 1", yesterday - Duration.ofDays(1))
+        val event2 = saveLoggingEvent("Event 2", yesterday - Duration.ofDays(1))
+        saveLoggingEventProp(event1, "key A", "value A")
+        saveLoggingEventProp(event1, "key B", "value B")
+        saveLoggingEventProp(event2, "key A", "value A")
+        val searchRequestA = LoggingEventSearchRequest(
+            properties = listOf(LoggingEventPropertyDto("key A", "value A"))
         )
-        val searchRequest = LoggingEventSearchRequest(
-            properties = listOf(LoggingEventPropertyDto("key", "value"))
+        val searchRequestB = LoggingEventSearchRequest(
+            properties = listOf(LoggingEventPropertyDto("key B", "value B"))
+        )
+        val searchRequestC = LoggingEventSearchRequest(
+            properties = listOf(LoggingEventPropertyDto("key A", "value B"))
         )
 
-        val results = loggingEventService.searchLoggingEvents(searchRequest, Pageable.unpaged()).content
+        val resultsA = loggingEventService.searchLoggingEvents(searchRequestA, Pageable.unpaged()).content
+        val resultsB = loggingEventService.searchLoggingEvents(searchRequestB, Pageable.unpaged()).content
+        val resultsC = loggingEventService.searchLoggingEvents(searchRequestC, Pageable.unpaged()).content
 
-        assertEquals(1, results.size)
-        assertEquals("test event", results[0].formattedMessage)
+        assertEquals(2, resultsA.size)
+        assertEquals("Event 1", resultsA[0].formattedMessage)
+        assertEquals("Event 2", resultsA[1].formattedMessage)
+        assertEquals(1, resultsB.size)
+        assertEquals("Event 1", resultsB[0].formattedMessage)
+        assertEquals(0, resultsC.size)
     }
 
     private fun saveLoggingEvent(message: String, localDateTime: LocalDateTime = LocalDateTime.now()): LoggingEvent {
@@ -117,6 +125,16 @@ class LoggingEventServiceIT : BaseIntegrationTest() {
                 callerLine = 0,
                 properties = emptyList(),
                 exceptions = emptyList()
+            )
+        )
+    }
+
+    private fun saveLoggingEventProp(event: LoggingEvent, key: String, value: String) {
+        loggingEventPropertyRepository.save(
+            LoggingEventProperty(
+                id = LoggingEventPropertyId(event.id, key),
+                event = event,
+                value = value
             )
         )
     }

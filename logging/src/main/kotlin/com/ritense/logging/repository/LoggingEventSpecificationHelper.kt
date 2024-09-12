@@ -81,8 +81,10 @@ class LoggingEventSpecificationHelper {
         @JvmStatic
         fun byProperty(key: String, value: String) = Specification<LoggingEvent> { root, _, cb ->
             val properties = root.join<Any, Any>(PROPERTIES)
-            cb.equal(properties.get<Any>(ID).get<String>(KEY), key)
-            cb.equal(properties.get<String>(VALUE), value)
+            cb.and(
+                cb.equal(properties.get<Any>(ID).get<String>(KEY), key),
+                cb.equal(properties.get<String>(VALUE), value)
+            )
         }
 
     }
