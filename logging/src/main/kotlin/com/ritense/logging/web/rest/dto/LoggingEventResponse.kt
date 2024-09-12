@@ -24,7 +24,7 @@ data class LoggingEventResponse(
     val formattedMessage: String,
     val level: String,
     val properties: List<LoggingEventPropertyDto>,
-    val stacktrace: String,
+    val stacktrace: String?,
 ) {
     companion object {
         fun of(loggingEvents: List<LoggingEvent>) = loggingEvents.map { of(it) }
