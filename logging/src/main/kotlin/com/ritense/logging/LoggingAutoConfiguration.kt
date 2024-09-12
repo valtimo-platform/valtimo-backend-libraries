@@ -22,7 +22,10 @@ import com.ritense.logging.domain.LoggingEventProperty
 import com.ritense.logging.repository.LoggingEventExceptionRepository
 import com.ritense.logging.repository.LoggingEventPropertyRepository
 import com.ritense.logging.repository.LoggingEventRepository
+import com.ritense.logging.security.config.LoggingHttpSecurityConfigurer
 import com.ritense.logging.service.LoggingEventDeletionService
+import com.ritense.logging.service.LoggingEventService
+import com.ritense.logging.web.rest.LoggingEventManagementResource
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration
@@ -74,6 +77,32 @@ class LoggingAutoConfiguration {
         )
     }
 
+    @Bean
+    @ConditionalOnMissingBean(LoggingEventService::class)
+    fun loggingEventService(
+        loggingEventRepository: LoggingEventRepository,
+    ): LoggingEventService {
+        return LoggingEventService(
+            loggingEventRepository,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(LoggingEventManagementResource::class)
+    fun loggingEventManagementResource(
+        loggingEventService: LoggingEventService,
+    ): LoggingEventManagementResource {
+        return LoggingEventManagementResource(
+            loggingEventService,
+        )
+    }
+
+    @Order(270)
+    @Bean
+    @ConditionalOnMissingBean(LoggingHttpSecurityConfigurer::class)
+    fun loggingHttpSecurityConfigurer(): LoggingHttpSecurityConfigurer {
+        return LoggingHttpSecurityConfigurer()
+    }
 
     @Order(HIGHEST_PRECEDENCE + 34)
     @Bean
