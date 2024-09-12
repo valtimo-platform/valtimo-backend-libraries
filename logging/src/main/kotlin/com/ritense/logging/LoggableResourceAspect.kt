@@ -29,7 +29,6 @@ class LoggableResourceAspect {
     @Around("execution(* *(.., @com.ritense.logging.LoggableResource (*), ..))")
     fun handleAnnotation(joinPoint: ProceedingJoinPoint): Any? {
         val args = joinPoint.args
-
         val method: Method = MethodSignature::class.java.cast(joinPoint.signature).method
         val parameterAnnotations = method.parameterAnnotations
 
@@ -38,13 +37,14 @@ class LoggableResourceAspect {
                 if (parameterAnnotation !is LoggableResource) {
                     continue
                 }
-
                 val keyName = when {
-                    parameterAnnotation.resourceType != Void::class.java -> {
+                    parameterAnnotation.resourceType.java != Void::class.java &&
+                        parameterAnnotation.resourceTypeName.isEmpty() -> {
                         parameterAnnotation.resourceType.java.canonicalName
                     }
 
-                    parameterAnnotation.resourceTypeName.isNotEmpty() -> {
+                    parameterAnnotation.resourceTypeName.isNotEmpty() &&
+                        parameterAnnotation.resourceType.java == Void::class.java -> {
                         parameterAnnotation.resourceTypeName
                     }
 
@@ -61,7 +61,6 @@ class LoggableResourceAspect {
                 // TODO: how to handle multiple arguments with this annotation? Alternatively: on compile time fail
             }
         }
-
         return joinPoint.proceed()
     }
 }

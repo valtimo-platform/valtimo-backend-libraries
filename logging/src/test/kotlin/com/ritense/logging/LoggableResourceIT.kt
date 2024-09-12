@@ -17,19 +17,34 @@
 package com.ritense.logging
 
 import com.ritense.logging.testimpl.LogResource
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-class LoggableResourceIT() : BaseIntegrationTest() {
+class LoggableResourceIT : BaseIntegrationTest() {
+
+    @AfterEach
+    fun afterEach() {
+        LogResource.listAppender.list.clear()
+    }
 
     @Test
     fun `should log resource`() {
         logResourceBean.someMethod(LogResource(), "123")
+        val messages = LogResource.listAppender.list
+        assertThat(messages).hasSize(1)
+        assertThat(messages[0].mdcPropertyMap[String::class.java.canonicalName]).isEqualTo("123")
     }
 
     @Test
     fun `should log resource with resourceTypeName`() {
-        logResourceBean.someMethodWithResourceTypeName(LogResource(), "123")
+        val loggableResource = LogResource()
+        logResourceBean.someMethodWithResourceTypeName(loggableResource, "123")
+
+        val messages = LogResource.listAppender.list
+        assertThat(messages).hasSize(1)
+        assertThat(messages[0].mdcPropertyMap["kotlin.String"]).isEqualTo("123")
     }
 
     @Test

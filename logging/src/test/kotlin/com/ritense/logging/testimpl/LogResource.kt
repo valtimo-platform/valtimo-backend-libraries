@@ -16,9 +16,11 @@
 
 package com.ritense.logging.testimpl
 
-import mu.KLogger
-import mu.KotlinLogging
+import ch.qos.logback.classic.Logger
+import ch.qos.logback.classic.spi.ILoggingEvent
+import ch.qos.logback.core.read.ListAppender
 import mu.withLoggingContext
+import org.slf4j.LoggerFactory
 
 class LogResource {
 
@@ -48,13 +50,17 @@ class LogResource {
     }
 
     fun outputMessage() {
-        logger.info { "This is a message" }
+        logger.info("This is a message")
     }
 
     class InnerClass
     class OtherInnerClass
 
-    private companion object {
-        val logger: KLogger = KotlinLogging.logger {}
+    companion object {
+        val logger = LoggerFactory.getLogger(LogResource::class.java) as Logger
+        val listAppender: ListAppender<ILoggingEvent> = ListAppender<ILoggingEvent>().also {
+            it.start()
+            logger.addAppender(it)
+        }
     }
 }

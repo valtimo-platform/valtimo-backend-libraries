@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.web.logging
+package com.ritense.valtimo.logging
 
 import com.ritense.valtimo.BaseIntegrationTest
 import com.ritense.valtimo.contract.LoggingConstants
 import com.ritense.valtimo.contract.authentication.ManageableUser
-import com.ritense.valtimo.logging.UserLoggingFilter
 import com.ritense.valtimo.logging.impl.TestController
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
