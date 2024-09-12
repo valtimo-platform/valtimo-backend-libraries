@@ -18,7 +18,7 @@ package com.ritense.valtimo.contract;
 
 public final class LoggingConstants {
 
-    public static final String MDC_USER_ID_KEY = "valtimoUserId";
+    public static final String MDC_USER_EMAIL_KEY = "valtimoUserId";
     public static final String MDC_CORRELATION_ID_KEY = "valtimoCorrelationId";
 
     private LoggingConstants() {
