@@ -88,5 +88,5 @@ class LoggingEvent(
 ) {
     fun getStacktrace() = exceptions.joinToString("\n") { it.traceLine }
 
-    fun getLocalDateTime() = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault())
+    fun getTimestampLocalDateTime() = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault())
 }
