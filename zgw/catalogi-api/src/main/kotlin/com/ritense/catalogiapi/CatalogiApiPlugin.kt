@@ -360,7 +360,7 @@ class CatalogiApiPlugin(
     fun getZaaktypen(): List<Zaaktype> {
         withLoggingContext(CATALOGI_API.ZAAKTYPE to "getZaaktypen") {
             return Page.getAll { page ->
-                logger.debug { "Getting page of zaaktypen, page $page" }
+                logger.debug { "Getting page $page of zaaktypen" }
                 client.getZaaktypen(
                     authenticationPluginConfiguration,
                     url,
