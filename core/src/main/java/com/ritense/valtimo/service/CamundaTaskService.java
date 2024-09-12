@@ -269,8 +269,6 @@ public class CamundaTaskService {
         taskService.complete(taskId);
         Hibernate.initialize(task.getVariableInstances());
         Hibernate.initialize(task.getIdentityLinks());
-        entityManager.detach(task);
-        task.getIdentityLinks().forEach(entityManager::detach); // Prevent Valtimo from saving IdentityLinks
         outboxService.send(() -> new TaskCompleted(taskId, objectMapper.valueToTree(task)));
     }
 

@@ -27,78 +27,81 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import jakarta.persistence.Transient
+import org.hibernate.annotations.Immutable
 
+@Immutable
 @Entity
 @Table(name = "ACT_RU_EXECUTION")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
 class CamundaExecution(
 
     @Id
-    @Column(name = "ID_")
+    @Column(name = "ID_", insertable = false, updatable = false)
     val id: String,
 
-    @Column(name = "REV_")
+    @Column(name = "REV_", insertable = false, updatable = false)
     val revision: Int,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ROOT_PROC_INST_ID_")
+    @JoinColumn(name = "ROOT_PROC_INST_ID_", insertable = false, updatable = false)
     val rootProcessInstance: CamundaExecution?,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PROC_INST_ID_")
+    @JoinColumn(name = "PROC_INST_ID_", insertable = false, updatable = false)
     var processInstance: CamundaExecution?,
 
-    @Column(name = "BUSINESS_KEY_")
+    @Column(name = "BUSINESS_KEY_", insertable = false, updatable = false)
     val businessKey: String?,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PARENT_ID_")
+    @JoinColumn(name = "PARENT_ID_", insertable = false, updatable = false)
     val parent: CamundaExecution?,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PROC_DEF_ID_")
+    @JoinColumn(name = "PROC_DEF_ID_", insertable = false, updatable = false)
     val processDefinition: CamundaProcessDefinition?,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SUPER_EXEC_")
+    @JoinColumn(name = "SUPER_EXEC_", insertable = false, updatable = false)
     val superExecution: CamundaExecution?,
 
-    @Column(name = "SUPER_CASE_EXEC_")
+    @Column(name = "SUPER_CASE_EXEC_", insertable = false, updatable = false)
     val superCaseExecutionId: String?,
 
-    @Column(name = "CASE_INST_ID_")
+    @Column(name = "CASE_INST_ID_", insertable = false, updatable = false)
     val caseInstanceId: String?,
 
-    @Column(name = "ACT_ID_")
+    @Column(name = "ACT_ID_", insertable = false, updatable = false)
     val activityId: String?,
 
-    @Column(name = "ACT_INST_ID_")
+    @Column(name = "ACT_INST_ID_", insertable = false, updatable = false)
     val activityInstanceId: String?,
 
-    @Column(name = "IS_ACTIVE_")
+    @Column(name = "IS_ACTIVE_", insertable = false, updatable = false)
     val active: Boolean,
 
-    @Column(name = "IS_CONCURRENT_")
+    @Column(name = "IS_CONCURRENT_", insertable = false, updatable = false)
     val concurrent: Boolean,
 
-    @Column(name = "IS_SCOPE_")
+    @Column(name = "IS_SCOPE_", insertable = false, updatable = false)
     val scope: Boolean,
 
-    @Column(name = "IS_EVENT_SCOPE_")
+    @Column(name = "IS_EVENT_SCOPE_", insertable = false, updatable = false)
     val eventScope: Boolean,
 
-    @Column(name = "SUSPENSION_STATE_")
+    @Column(name = "SUSPENSION_STATE_", insertable = false, updatable = false)
     val suspensionState: Int,
 
-    @Column(name = "CACHED_ENT_STATE_")
+    @Column(name = "CACHED_ENT_STATE_", insertable = false, updatable = false)
     val cachedEntityState: Int,
 
-    @Column(name = "SEQUENCE_COUNTER_")
+    @Column(name = "SEQUENCE_COUNTER_", insertable = false, updatable = false)
     val sequenceCounter: Long,
 
-    @Column(name = "TENANT_ID_")
+    @Column(name = "TENANT_ID_", insertable = false, updatable = false)
     val tenantId: String?,
 
+    @Immutable
     @OneToMany(mappedBy = "execution", fetch = FetchType.LAZY)
     val variableInstances: Set<CamundaVariableInstance>
 ) : CamundaVariableScope() {
@@ -109,9 +112,28 @@ class CamundaExecution(
     @Transient
     fun getProcessInstanceId() = processInstance!!.id
 
+    @Transient
     override fun getVariableInstancesLocal(): Collection<CamundaVariableInstance> = variableInstances
 
+    @Transient
     override fun getParentVariableScope(): CamundaVariableScope? = parent
 
+    @Transient
     override fun getVariableScopeKey() = "execution"
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is CamundaExecution) return false
+
+        if (id != other.id) return false
+        if (revision != other.revision) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + revision
+        return result
+    }
 }
