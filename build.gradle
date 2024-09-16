@@ -204,9 +204,6 @@ subprojects { subproject ->
             }
         }
     }
-    if(project.name != "app" && project.name != "gradle") {
-        apply from: "$rootProject.projectDir/../valtimo-backend-libraries-pipeline/publishing.gradle"
-    }
 }
 
 tasks.withType(PublishToMavenRepository) {
