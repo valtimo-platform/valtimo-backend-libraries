@@ -17,6 +17,7 @@
 package com.ritense.valtimo.contract.client
 
 import org.springframework.boot.web.client.RestClientCustomizer
+import org.springframework.http.client.BufferingClientHttpRequestFactory
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.web.client.RestClient
 import java.time.Duration
@@ -33,7 +34,7 @@ class ApacheRequestFactoryCustomizer(
         valtimoHttpRestClientConfigurationProperties.connectionRequestTimeout.let {
             apacheRequestFactory.setConnectionRequestTimeout(Duration.ofSeconds(it))
         }
-        restClientBuilder.requestFactory(apacheRequestFactory)
+        restClientBuilder.requestFactory(BufferingClientHttpRequestFactory(apacheRequestFactory))
     }
 
 }
