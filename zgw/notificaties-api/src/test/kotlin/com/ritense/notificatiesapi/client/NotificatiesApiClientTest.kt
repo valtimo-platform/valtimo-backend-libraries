@@ -20,6 +20,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.notificatiesapi.NotificatiesApiAuthentication
 import com.ritense.notificatiesapi.domain.Abonnement
 import com.ritense.notificatiesapi.domain.Kanaal
+import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.valtimo.contract.json.MapperSingleton
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -75,7 +76,7 @@ class NotificatiesApiClientTest {
         )
 
         val result = client.createKanaal(
-            authentication = TestAuthentication(),
+            authentication = TestAuthentication(PluginConfigurationId.newId()),
             baseUrl = mockNotificatiesApi.url("/").toUri(),
             kanaal = Kanaal(naam = "Test Kanaal")
         )
@@ -128,7 +129,7 @@ class NotificatiesApiClientTest {
         )
 
         val result = client.getKanalen(
-            authentication = TestAuthentication(),
+            authentication = TestAuthentication(PluginConfigurationId.newId()),
             baseUrl = mockNotificatiesApi.url("/").toUri(),
         )
         val recordedRequest = mockNotificatiesApi.takeRequest()
@@ -173,7 +174,7 @@ class NotificatiesApiClientTest {
         )
 
         val result = client.createAbonnement(
-            authentication = TestAuthentication(),
+            authentication = TestAuthentication(PluginConfigurationId.newId()),
             baseUrl = mockNotificatiesApi.url("/").toUri(),
             abonnement = Abonnement(
                 url = "http://example.com",
@@ -235,7 +236,7 @@ class NotificatiesApiClientTest {
         )
 
         client.deleteAbonnement(
-            authentication = TestAuthentication(),
+            authentication = TestAuthentication(PluginConfigurationId.newId()),
             baseUrl = mockNotificatiesApi.url("/").toUri(),
             abonnementId = abonnementId
         )
@@ -251,7 +252,7 @@ class NotificatiesApiClientTest {
             .setBody(body)
     }
 
-    class TestAuthentication : NotificatiesApiAuthentication {
+    class TestAuthentication(override val configurationId: PluginConfigurationId) : NotificatiesApiAuthentication {
         override fun applyAuth(builder: RestClient.Builder): RestClient.Builder {
             return builder.defaultHeaders { headers ->
                 headers.setBearerAuth("test")
