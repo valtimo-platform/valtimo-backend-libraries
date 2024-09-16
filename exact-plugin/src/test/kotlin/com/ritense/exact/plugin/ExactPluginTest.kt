@@ -27,7 +27,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.context.ApplicationContext
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.client.RestClient
 
 @TestInstance(Lifecycle.PER_CLASS)
 internal class ExactPluginTest {
@@ -36,7 +36,7 @@ internal class ExactPluginTest {
     private lateinit var exactService: ExactService
     lateinit var context: ApplicationContext
     private lateinit var exactPlugin: ExactPlugin
-    lateinit var exactClient: WebClient
+    lateinit var exactClient: RestClient
 
     @BeforeAll
     fun setUpAll() {

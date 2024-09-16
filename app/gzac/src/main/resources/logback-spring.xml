@@ -4,6 +4,7 @@
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
 
     <logger name="com.ritense.valtimo" level="#logback.loglevel#"/>
+    <logger name="com.ritense.valtimo.web.logging" level="DEBUG"/>
 
     <logger name="jakarta.activation" level="WARN"/>
     <logger name="jakarta.mail" level="WARN"/>

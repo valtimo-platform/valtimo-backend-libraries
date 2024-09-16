@@ -53,10 +53,12 @@ import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpMethod.POST
+import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
+import java.lang.Thread.sleep
 import java.net.URI
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -93,6 +95,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         server = MockWebServer()
         setupMockZakenApiServer()
         server.start(port = 56273)
+        sleep(2000) // Needed to fix connection refused error
 
         // Since we do not have an actual authentication plugin in this context we will mock one
         val mockedId = PluginConfigurationId.existingId(UUID.fromString("27a399c7-9d70-4833-a651-57664e2e9e09"))
@@ -253,6 +256,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
                     "/zaakinformatieobjecten" -> handleZaakInformatieObjectRequest()
                     "/catalogi/my-zaaktype-id" -> getZaaktypeResponse()
                     "/zaken/zaken" -> createZaakResponse()
+                    "/catalogi/informatieobjecttypen?status=definitief&page=1" -> MockResponse().setResponseCode(200)
                     else -> MockResponse().setResponseCode(404)
                 }
                 return response
@@ -401,6 +405,12 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
     }
 
     class TestAuthentication : ZakenApiAuthentication, CatalogiApiAuthentication {
+        override fun applyAuth(builder: RestClient.Builder): RestClient.Builder {
+            return builder.defaultHeaders { headers ->
+                headers.setBearerAuth("test")
+            }
+        }
+
         override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
             return next.exchange(request)
         }

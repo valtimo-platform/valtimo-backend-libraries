@@ -60,6 +60,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
@@ -195,13 +196,18 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
         assertEquals(documentId!!.toString(), businessKeyCaptor.secondValue)
         val processVariables = processVariableCaptor.secondValue
         assertEquals(event.resourceUrl, processVariables["portaalTaakObjectUrl"])
-        assertEquals(objectenApiPluginConfiguration.id.id.toString(), processVariables["objectenApiPluginConfigurationId"])
+        assertEquals(
+            objectenApiPluginConfiguration.id.id.toString(),
+            processVariables["objectenApiPluginConfigurationId"]
+        )
         assertEquals(task!!.id, processVariables["verwerkerTaakId"])
-        assertThat(processVariables["documentUrls"] as List<*>, containsInAnyOrder(
-            "http://documenten-api.com/api/v1/documenten/393ba68f-0bd6-43d7-9c1c-cb33d4d2aa6e",
-            "http://documenten-api.com/api/v1/documenten/205107b1-261f-4042-925a-e300cdc6d2ab",
-            "http://documenten-api.com/api/v1/documenten/8c9dc2e4-db3b-4314-8e2e-76f38943d8fc"
-        ))
+        assertThat(
+            processVariables["documentUrls"] as List<*>, containsInAnyOrder(
+                "http://documenten-api.com/api/v1/documenten/393ba68f-0bd6-43d7-9c1c-cb33d4d2aa6e",
+                "http://documenten-api.com/api/v1/documenten/205107b1-261f-4042-925a-e300cdc6d2ab",
+                "http://documenten-api.com/api/v1/documenten/8c9dc2e4-db3b-4314-8e2e-76f38943d8fc"
+            )
+        )
         verify(outboxService, atLeast(1)).send(any())
     }
 
@@ -441,6 +447,10 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
     }
 
     class TestAuthentication : ObjectenApiAuthentication, ObjecttypenApiAuthentication, NotificatiesApiAuthentication {
+        override fun applyAuth(builder: RestClient.Builder): RestClient.Builder {
+            return builder
+        }
+
         override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
             return next.exchange(request)
         }

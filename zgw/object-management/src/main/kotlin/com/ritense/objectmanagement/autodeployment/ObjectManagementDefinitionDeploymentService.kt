@@ -16,28 +16,35 @@
 package com.ritense.objectmanagement.autodeployment
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.domain.ObjectManagementConfigurationAutoDeploymentFinishedEvent
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objectmanagement.service.ObjectManagementService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.event.EventListener
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
+import org.springframework.core.env.Environment
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
+import org.springframework.stereotype.Service
 import java.io.IOException
 
+@Service
+@SkipComponentScan
 class ObjectManagementDefinitionDeploymentService(
     private val resourceLoader: ResourceLoader,
     private val objectManagementService: ObjectManagementService,
     private val objectManagementRepository: ObjectManagementRepository,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val objectMapper: ObjectMapper,
+    private val environment: Environment
 ) {
     @EventListener(ApplicationReadyEvent::class)
     @Order(Ordered.LOWEST_PRECEDENCE-2)
@@ -46,9 +53,23 @@ class ObjectManagementDefinitionDeploymentService(
         val resources = loadResources()
 
         val objectManagementList = resources.map { resource ->
+            require(resource != null)
+            val objectManagementNode = objectMapper.readValue<ObjectNode>(resource.inputStream)
             try {
-                require(resource != null)
-                val objectManagement = objectMapper.readValue<ObjectManagement>(resource.inputStream)
+                val propertyValues = objectManagementNode.properties().map { it.key }.associateWith { key ->
+                    getEnvVariableOrYamlPropertyOrDirectValue(
+                        objectManagementNode[key].asText()
+                            ?: objectManagementNode[key].asBoolean().toString()
+                    )
+                }
+                val objectManagement = objectMapper.readValue<ObjectManagement>(
+                    objectManagementNode.apply {
+                        propertyValues.forEach { (key, value) ->
+                            put(key, value)
+                        }
+                    }.toString()
+                )
+
                 if (
                     objectManagementRepository.findByObjecttypeId(objectManagement.objecttypeId) == null
                     && objectManagementRepository.findByTitle(objectManagement.title) == null
@@ -59,7 +80,6 @@ class ObjectManagementDefinitionDeploymentService(
                 }.also {
                     logger.info("Deployed object management configuration {}", objectManagement.title)
                 }
-
             } catch (e: IOException) {
                 throw RuntimeException("Error while deploying object management configurations", e)
             }
@@ -78,6 +98,12 @@ class ObjectManagementDefinitionDeploymentService(
         } catch (ioe: IOException) {
             throw RuntimeException("Failed to load resources from $PATH", ioe)
         }
+    }
+
+    private fun getEnvVariableOrYamlPropertyOrDirectValue(value: String): String {
+        return Regex("\\$\\{([^\\}]+)\\}").find(value)?.let { matchResult ->
+            System.getenv(matchResult.groupValues[1]) ?: System.getProperty(matchResult.groupValues[1]) ?: environment.getProperty(matchResult.groupValues[1])
+        } ?: value
     }
 
     companion object {

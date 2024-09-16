@@ -1,0 +1,42 @@
+{
+    "startStep": "step1",
+    "steps": [
+        {
+            "key": "step1",
+            "nextSteps": [
+                {
+                    "step": "step2"
+                }
+            ],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "aandachtspunten-step1"
+                }
+            }
+        },
+        {
+            "key": "step2",
+            "nextSteps": [
+                {
+                    "step": "step3"
+                }
+            ],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "aandachtspunten-step2"
+                }
+            }
+        },
+        {
+            "key": "step3",
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "aandachtspunten-step3"
+                }
+            }
+        }
+    ]
+}

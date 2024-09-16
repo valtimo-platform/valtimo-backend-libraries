@@ -1,10 +1,14 @@
+logging:
+    level:
+        liquibase: ERROR
+
 spring:
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
     liquibase:
         enabled: false
     jpa:
-        show_sql: true
+        show_sql: false
         open-in-view: false
         properties:
             hibernate:

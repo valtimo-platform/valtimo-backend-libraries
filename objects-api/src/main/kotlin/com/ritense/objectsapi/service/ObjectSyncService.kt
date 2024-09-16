@@ -29,13 +29,17 @@ import com.ritense.objectsapi.web.rest.result.CreateObjectSyncConfigResultSuccee
 import com.ritense.objectsapi.web.rest.result.ModifyObjectSyncConfigResult
 import com.ritense.objectsapi.web.rest.result.ModifyObjectSyncConfigResultFailed
 import com.ritense.objectsapi.web.rest.result.ModifyObjectSyncConfigResultSucceeded
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.result.OperationError
 import jakarta.validation.ConstraintViolationException
-import java.util.UUID
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.stereotype.Service
+import java.util.UUID
 
-open class ObjectSyncService(
+@Service
+@SkipComponentScan
+class ObjectSyncService(
     private val objectSyncConfigRepository: ObjectSyncConfigRepository,
     private val connectorTypeInstanceRepository: ConnectorTypeInstanceRepository
 ) {

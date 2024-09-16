@@ -25,9 +25,13 @@ import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.domain.instance.FormFlowInstance
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
+import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrNull
 
+@Service
+@SkipComponentScan
 class FormFlowValtimoService(
     private val formDefinitionService: FormIoFormDefinitionService,
     private val objectMapper: ObjectMapper,

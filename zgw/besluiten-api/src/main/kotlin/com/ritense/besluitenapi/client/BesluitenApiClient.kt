@@ -19,23 +19,23 @@ package com.ritense.besluitenapi.client
 import com.ritense.besluitenapi.BesluitenApiAuthentication
 import com.ritense.zgw.ClientTools
 import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
-import org.springframework.web.reactive.function.BodyInserters
-import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.toEntity
+import org.springframework.web.client.RestClient
+import org.springframework.web.client.body
 import java.net.URI
 
 class BesluitenApiClient(
-    private val webclientBuilder: WebClient.Builder
+    private val restClientBuilder: RestClient.Builder
 ) {
     fun createBesluit(
         authentication: BesluitenApiAuthentication,
         baseUrl: URI,
         request: CreateBesluitRequest
     ): Besluit {
-        val result = webclientBuilder
+        return restClientBuilder
             .clone()
-            .filter(authentication)
+            .apply {
+                authentication.applyAuth(it)
+            }
             .build()
             .post()
             .uri {
@@ -44,22 +44,21 @@ class BesluitenApiClient(
                     .build()
             }
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(request))
+            .body(request)
             .retrieve()
-            .toEntity(Besluit::class.java)
-            .block()
-
-        return result?.body!!
+            .body<Besluit>()!!
     }
 
     fun createBesluitInformatieObject(
         authentication: BesluitenApiAuthentication,
         url: URI,
         besluitInformatieObject: CreateBesluitInformatieObject
-    ): ResponseEntity<BesluitInformatieObject>? {
-        return webclientBuilder
+    ): BesluitInformatieObject {
+        return restClientBuilder
             .clone()
-            .filter(authentication)
+            .apply {
+                authentication.applyAuth(it)
+            }
             .build()
             .post()
             .uri {
@@ -68,9 +67,8 @@ class BesluitenApiClient(
                     .build()
             }
             .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(besluitInformatieObject)
+            .body(besluitInformatieObject)
             .retrieve()
-            .toEntity<BesluitInformatieObject>()
-            .block()
+            .body<BesluitInformatieObject>()!!
     }
 }

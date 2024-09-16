@@ -114,7 +114,7 @@ abstract class PluginFactory<T : Any>(
         } else if (propertyType.typeParameters.isNotEmpty()) {
             val propertyTypeWithGeneric =
                 getPropertyTypeWithGeneric(instance::class, propertyDefinition.fieldName, mapper)
-            assert(propertyType == propertyTypeWithGeneric.rawClass)
+            require(propertyType == propertyTypeWithGeneric.rawClass)
             mapper.treeToValue(
                 configuredProperty,
                 propertyTypeWithGeneric

@@ -28,13 +28,17 @@ import com.ritense.valtimo.camunda.repository.CamundaVariableInstanceRepository
 import com.ritense.valtimo.camunda.repository.CamundaVariableInstanceSpecificationHelper.Companion.NAME
 import com.ritense.valtimo.camunda.repository.CamundaVariableInstanceSpecificationHelper.Companion.byNameIn
 import com.ritense.valtimo.camunda.repository.CamundaVariableInstanceSpecificationHelper.Companion.byProcessInstanceId
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.runtime.ProcessInstance
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-open class CamundaRuntimeService(
+@Service
+@SkipComponentScan
+class CamundaRuntimeService(
     private val runtimeService: RuntimeService,
     private val camundaVariableInstanceRepository: CamundaVariableInstanceRepository,
     private val camundaIdentityLinkRepository: CamundaIdentityLinkRepository,
@@ -42,7 +46,7 @@ open class CamundaRuntimeService(
 ) {
 
     @Transactional(readOnly = true)
-    open fun findVariableInstances(
+    fun findVariableInstances(
         specification: Specification<CamundaVariableInstance>,
         sort: Sort
     ): List<CamundaVariableInstance> {
@@ -51,7 +55,7 @@ open class CamundaRuntimeService(
     }
 
     @Transactional(readOnly = true)
-    open fun getVariables(processInstanceId: String, variableNames: List<String>): Map<String, Any?> {
+    fun getVariables(processInstanceId: String, variableNames: List<String>): Map<String, Any?> {
         denyAuthorization()
 
         val variableInstances = runWithoutAuthorization {
@@ -66,7 +70,7 @@ open class CamundaRuntimeService(
     }
 
     @Transactional(readOnly = true)
-    open fun findProcessInstanceById(processInstanceId: String): ProcessInstance? {
+    fun findProcessInstanceById(processInstanceId: String): ProcessInstance? {
         denyAuthorization()
         return runtimeService
             .createProcessInstanceQuery()
@@ -75,7 +79,7 @@ open class CamundaRuntimeService(
     }
 
     @Transactional(readOnly = true)
-    open fun getIdentityLink(identityLinkId: String): CamundaIdentityLink? {
+    fun getIdentityLink(identityLinkId: String): CamundaIdentityLink? {
         denyAuthorization()
         return camundaIdentityLinkRepository.findById(identityLinkId).orElse(null)
     }
