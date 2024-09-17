@@ -76,7 +76,7 @@ class NotificatiesApiClientTest {
         )
 
         val result = client.createKanaal(
-            authentication = TestAuthentication(PluginConfigurationId.newId()),
+            authentication = TestAuthentication(),
             baseUrl = mockNotificatiesApi.url("/").toUri(),
             kanaal = Kanaal(naam = "Test Kanaal")
         )
@@ -129,7 +129,7 @@ class NotificatiesApiClientTest {
         )
 
         val result = client.getKanalen(
-            authentication = TestAuthentication(PluginConfigurationId.newId()),
+            authentication = TestAuthentication(),
             baseUrl = mockNotificatiesApi.url("/").toUri(),
         )
         val recordedRequest = mockNotificatiesApi.takeRequest()
@@ -174,7 +174,7 @@ class NotificatiesApiClientTest {
         )
 
         val result = client.createAbonnement(
-            authentication = TestAuthentication(PluginConfigurationId.newId()),
+            authentication = TestAuthentication(),
             baseUrl = mockNotificatiesApi.url("/").toUri(),
             abonnement = Abonnement(
                 url = "http://example.com",
@@ -236,7 +236,7 @@ class NotificatiesApiClientTest {
         )
 
         client.deleteAbonnement(
-            authentication = TestAuthentication(PluginConfigurationId.newId()),
+            authentication = TestAuthentication(),
             baseUrl = mockNotificatiesApi.url("/").toUri(),
             abonnementId = abonnementId
         )
@@ -252,7 +252,10 @@ class NotificatiesApiClientTest {
             .setBody(body)
     }
 
-    class TestAuthentication(override val configurationId: PluginConfigurationId) : NotificatiesApiAuthentication {
+    class TestAuthentication() : NotificatiesApiAuthentication {
+        override val configurationId: PluginConfigurationId
+            get() = PluginConfigurationId.newId()
+
         override fun applyAuth(builder: RestClient.Builder): RestClient.Builder {
             return builder.defaultHeaders { headers ->
                 headers.setBearerAuth("test")

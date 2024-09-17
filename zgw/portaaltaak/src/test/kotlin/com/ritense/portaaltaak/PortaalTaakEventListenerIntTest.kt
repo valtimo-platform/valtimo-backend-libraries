@@ -113,7 +113,7 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
         server.start()
         val mockedId = PluginConfigurationId.existingId(UUID.fromString("27a399c7-9d70-4833-a651-57664e2e9e09"))
         doReturn(Optional.of(mock<PluginConfiguration>())).whenever(pluginConfigurationRepository).findById(mockedId)
-        doReturn(TestAuthentication(PluginConfigurationId.newId())).whenever(pluginService).createInstance(mockedId)
+        doReturn(TestAuthentication()).whenever(pluginService).createInstance(mockedId)
         doCallRealMethod().whenever(pluginService).createPluginConfiguration(any(), any(), any())
 
         notificatiesApiPluginConfiguration = createNotificatiesApiPlugin()
@@ -446,8 +446,11 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
             .setBody(body)
     }
 
-    class TestAuthentication(override val configurationId: PluginConfigurationId) : ObjectenApiAuthentication,
-        ObjecttypenApiAuthentication, NotificatiesApiAuthentication {
+    class TestAuthentication() : ObjectenApiAuthentication, ObjecttypenApiAuthentication,
+        NotificatiesApiAuthentication {
+        override val configurationId: PluginConfigurationId
+            get() = PluginConfigurationId.newId()
+
         override fun applyAuth(builder: RestClient.Builder): RestClient.Builder {
             return builder
         }
