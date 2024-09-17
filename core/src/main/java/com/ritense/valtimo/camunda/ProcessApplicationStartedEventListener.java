@@ -17,6 +17,7 @@
 package com.ritense.valtimo.camunda;
 
 import com.ritense.authorization.AuthorizationContext;
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.contract.event.ProcessDefinitionAvailableEvent;
 import com.ritense.valtimo.service.CamundaProcessService;
 import org.camunda.bpm.spring.boot.starter.event.ProcessApplicationStartedEvent;
@@ -24,6 +25,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
+import java.util.Map;
+
+import static mu.KotlinLoggingMDCKt.withLoggingContext;
 
 public class ProcessApplicationStartedEventListener {
 
@@ -40,7 +44,10 @@ public class ProcessApplicationStartedEventListener {
     public void engineStarted(ProcessApplicationStartedEvent event) {
         logger.debug("{} - handle - processApplicationStartedEvent", Thread.currentThread().getName());
         AuthorizationContext.runWithoutAuthorization(camundaProcessService::getDeployedDefinitions)
-            .forEach(processDefinition -> applicationEventPublisher.publishEvent(new ProcessDefinitionAvailableEvent(processDefinition.getId())));
+            .forEach(processDefinition -> withLoggingContext(Map.of(CamundaProcessDefinition.class.getCanonicalName(), processDefinition.getId()), true, () -> {
+                applicationEventPublisher.publishEvent(new ProcessDefinitionAvailableEvent(processDefinition.getId()));
+                return null;
+            }));
     }
 
 }

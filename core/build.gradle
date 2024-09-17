@@ -37,13 +37,13 @@ dependencies {
     api project(":authorization")
 
     implementation project(":contract")
+    implementation project(":exporter")
+    implementation project(":importer")
+    implementation project(":logging")
     implementation project(":outbox")
     implementation project(":resource")
     implementation project(":web")
-    implementation project(":exporter")
-    implementation project(":importer")
 
-    testImplementation project(':logging')
     testImplementation project(':test-utils-common')
 
     api "org.springframework.security:spring-security-core"

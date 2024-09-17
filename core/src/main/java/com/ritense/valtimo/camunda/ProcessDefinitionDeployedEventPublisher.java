@@ -16,15 +16,19 @@
 
 package com.ritense.valtimo.camunda;
 
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.event.ProcessDefinitionDeployedEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.camunda.bpm.engine.impl.persistence.deploy.Deployer;
 import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
+
+import static mu.KotlinLoggingMDCKt.withLoggingContext;
 
 public class ProcessDefinitionDeployedEventPublisher implements Deployer {
 
@@ -40,7 +44,10 @@ public class ProcessDefinitionDeployedEventPublisher implements Deployer {
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReadyEvent() {
         isApplicationReady = true;
-        events.forEach(applicationEventPublisher::publishEvent);
+        events.forEach(event -> withLoggingContext(Map.of(CamundaProcessDefinition.class.getCanonicalName(), event.getProcessDefinitionId()), true, () -> {
+            applicationEventPublisher.publishEvent(event);
+            return null;
+        }));
         events = null;
     }
 
@@ -57,7 +64,10 @@ public class ProcessDefinitionDeployedEventPublisher implements Deployer {
     public void publishEvent(DeploymentEntity deployment, ProcessDefinitionEntity processDefinition) {
         final var event = new ProcessDefinitionDeployedEvent(deployment, processDefinition);
         if (isApplicationReady) {
-            applicationEventPublisher.publishEvent(event);
+            withLoggingContext(Map.of(CamundaProcessDefinition.class.getCanonicalName(), event.getProcessDefinitionId()), true, () -> {
+                applicationEventPublisher.publishEvent(event);
+                return null;
+            });
         } else {
             events.add(event);
         }
