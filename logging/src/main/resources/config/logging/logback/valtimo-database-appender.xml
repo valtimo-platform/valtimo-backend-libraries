@@ -24,9 +24,6 @@
     <springProperty name="spring.jpa.database-platform" source="spring.jpa.database-platform"/>
 
     <appender name="VALTIMODB" class="ch.qos.logback.classic.db.DBAppender">
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>info</level>
-        </filter>
         <connectionSource class="ch.qos.logback.core.db.DataSourceConnectionSource">
             <dataSource class="${spring.datasource.type}">
                 <driverClassName>${spring.datasource.driver-class-name}</driverClassName>
