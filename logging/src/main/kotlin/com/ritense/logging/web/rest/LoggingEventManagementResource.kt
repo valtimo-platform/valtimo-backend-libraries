@@ -27,7 +27,9 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.ResponseEntity
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -38,9 +40,10 @@ class LoggingEventManagementResource(
     private val loggingEventService: LoggingEventService,
 ) {
 
+    @Transactional(readOnly = true)
     @PostMapping("/v1/logging")
     fun searchLoggingEvents(
-        searchRequest: LoggingEventSearchRequest,
+        @RequestBody searchRequest: LoggingEventSearchRequest,
         @PageableDefault(sort = ["timestamp"], direction = Sort.Direction.DESC) pageable: Pageable,
     ): ResponseEntity<Page<LoggingEventResponse>> {
         val loggingEvents = loggingEventService.searchLoggingEvents(searchRequest, pageable)

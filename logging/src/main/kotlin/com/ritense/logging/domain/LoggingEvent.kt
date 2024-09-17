@@ -86,7 +86,13 @@ class LoggingEvent(
     @OneToMany(fetch = LAZY, mappedBy = "event")
     val exceptions: List<LoggingEventException>,
 ) {
-    fun getStacktrace() = exceptions.joinToString("\n") { it.traceLine }
+    fun getStacktrace(): String? {
+        return if (exceptions.isEmpty()) {
+            null
+        } else {
+            exceptions.joinToString("\n") { it.traceLine }
+        }
+    }
 
     fun getTimestampLocalDateTime() = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault())
 }
