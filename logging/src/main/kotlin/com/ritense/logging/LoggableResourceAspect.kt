@@ -53,7 +53,7 @@ class LoggableResourceAspect {
                     }
                 }
 
-                return withLoggingContext(keyName to args[i] as String) {
+                return withLoggingContext(keyName to args[i]?.toString()) {
                     // TODO: what if args[i] is a collection? Alternatively: on compile time fail
                     joinPoint.proceed()
                 }
