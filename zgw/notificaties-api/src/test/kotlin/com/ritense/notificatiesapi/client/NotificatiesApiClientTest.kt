@@ -20,6 +20,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.notificatiesapi.NotificatiesApiAuthentication
 import com.ritense.notificatiesapi.domain.Abonnement
 import com.ritense.notificatiesapi.domain.Kanaal
+import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.valtimo.contract.json.MapperSingleton
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -251,7 +252,10 @@ class NotificatiesApiClientTest {
             .setBody(body)
     }
 
-    class TestAuthentication : NotificatiesApiAuthentication {
+    class TestAuthentication() : NotificatiesApiAuthentication {
+        override val configurationId: PluginConfigurationId
+            get() = PluginConfigurationId.newId()
+
         override fun applyAuth(builder: RestClient.Builder): RestClient.Builder {
             return builder.defaultHeaders { headers ->
                 headers.setBearerAuth("test")
