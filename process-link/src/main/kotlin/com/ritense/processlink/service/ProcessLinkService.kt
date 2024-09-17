@@ -28,14 +28,18 @@ import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersion
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import mu.KotlinLogging
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 import kotlin.jvm.optionals.getOrElse
 
 @Transactional(readOnly = true)
-open class ProcessLinkService(
+@Service
+@SkipComponentScan
+class ProcessLinkService(
     private val processLinkRepository: ProcessLinkRepository,
     private val processLinkMappers: List<ProcessLinkMapper>,
     private val processLinkTypes: List<SupportedProcessLinkTypeHandler>,
@@ -87,7 +91,8 @@ open class ProcessLinkService(
 
             throw ProcessLinkExistsException(
                 "A process-link for process-definition '${createRequest.processDefinitionId}' and activity '${createRequest.activityId}' already exists!",
-                contentsDiffer
+                contentsDiffer,
+                currentProcessLinks.first().id
             )
         }
 

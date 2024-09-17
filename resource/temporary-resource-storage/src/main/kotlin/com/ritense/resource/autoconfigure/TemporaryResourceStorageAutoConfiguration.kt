@@ -18,20 +18,29 @@ package com.ritense.resource.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.resource.security.config.TemporaryResourceStorageHttpSecurityConfigurer
+import com.ritense.resource.service.ResourceStorageDelegate
 import com.ritense.resource.service.TemporaryResourceStorageDeletionService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.resource.web.rest.TemporaryResourceStorageResource
+import com.ritense.temporaryresource.repository.ResourceStorageMetadataRepository
+import com.ritense.valtimo.contract.annotation.ProcessBean
+import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.scheduling.annotation.EnableScheduling
 
 @EnableScheduling
+@EnableJpaRepositories(basePackages = ["com.ritense.temporaryresource.repository"])
+@EntityScan(basePackages = ["com.ritense.temporaryresource.domain"])
 @AutoConfiguration
 class TemporaryResourceStorageAutoConfiguration {
 
@@ -42,11 +51,13 @@ class TemporaryResourceStorageAutoConfiguration {
         @Value("\${valtimo.resource.temp.directory:}") valtimoResourceTempDirectory: String,
         uploadProperties: ValtimoUploadProperties,
         objectMapper: ObjectMapper,
+        repository: ResourceStorageMetadataRepository
     ): TemporaryResourceStorageService {
         return TemporaryResourceStorageService(
             valtimoResourceTempDirectory = valtimoResourceTempDirectory,
             uploadProperties = uploadProperties,
             objectMapper = objectMapper,
+            repository = repository
         )
     }
 
@@ -79,6 +90,22 @@ class TemporaryResourceStorageAutoConfiguration {
     @ConditionalOnMissingBean(TemporaryResourceStorageHttpSecurityConfigurer::class)
     fun temporaryResourceStorageHttpSecurityConfigurer(): TemporaryResourceStorageHttpSecurityConfigurer {
         return TemporaryResourceStorageHttpSecurityConfigurer()
+    }
+
+    @Order(Ordered.HIGHEST_PRECEDENCE + 20)
+    @ConditionalOnMissingBean(name = ["temporaryResourceStorageLiquibaseMasterChangeLogLocation"])
+    @Bean
+    fun temporaryResourceStorageLiquibaseMasterChangeLogLocation(): LiquibaseMasterChangeLogLocation {
+        return LiquibaseMasterChangeLogLocation("config/liquibase/temporary-resource-master.xml")
+    }
+
+    @Bean
+    @ProcessBean
+    @ConditionalOnMissingBean(ResourceStorageDelegate::class)
+    fun resourceStorageDelegate(
+        service: TemporaryResourceStorageService
+    ): ResourceStorageDelegate {
+        return ResourceStorageDelegate(service)
     }
 
 }

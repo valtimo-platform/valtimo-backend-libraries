@@ -73,7 +73,9 @@ class FormFlowInstance(
         currentFormFlowStepInstanceId: FormFlowStepInstanceId,
         submissionData: JSONObject
     ): FormFlowStepInstance? {
-        assert(this.currentFormFlowStepInstanceId == currentFormFlowStepInstanceId)
+        if (this.currentFormFlowStepInstanceId != currentFormFlowStepInstanceId) {
+            return getCurrentStep()
+        }
 
         val formFlowStepInstance = getCurrentStep()
 
@@ -101,6 +103,23 @@ class FormFlowInstance(
     }
 
     /**
+     * This method navigates to the target step.
+     *
+     * @return The target step
+     */
+    fun navigateToStep(targetId: FormFlowStepInstanceId): FormFlowStepInstance {
+        val targetStep = history.single { it.id == targetId }
+        val currentStep = getCurrentStep()
+        if (targetStep.order < currentStep.order) {
+            for (i in history.indexOf(currentStep) downTo history.indexOf(targetStep) + 1) {
+                history[i].back()
+            }
+        }
+        currentFormFlowStepInstanceId = targetStep.id
+        return targetStep
+    }
+
+    /**
      * This method saves submission data for the current step but will *not* complete the step.
      * The submitted data can be changed at any time.
      * @param incompleteSubmissionData This data will be set as the submissionData of the step.
@@ -112,6 +131,9 @@ class FormFlowInstance(
     }
 
     fun getCurrentStep(): FormFlowStepInstance {
+        requireNotNull(currentFormFlowStepInstanceId) {
+            "Failed to get current step. Form flow '${formFlowDefinition.id.key}' has ended."
+        }
         return history.first {
             it.id == currentFormFlowStepInstanceId
         }
@@ -146,18 +168,17 @@ class FormFlowInstance(
     }
 
     private fun getSubmissionData() : List<JSONObject> {
-        val currentStepOrder = getCurrentStep().order
-        val submissionData = history.filter {
-            it.order < currentStepOrder && it.submissionData != null
-        }.map {
-            JSONObject(it.submissionData)
-        }.toMutableList()
-
-        getCurrentStep().getCurrentSubmissionData()?.let {
-            submissionData.add(JSONObject(it))
+        val currentStepOrder = if (currentFormFlowStepInstanceId == null) {
+            Int.MAX_VALUE
+        } else {
+            getCurrentStep().order
         }
-
-        return submissionData
+        return history
+            .filter { it.order <= currentStepOrder }
+            .sortedBy { it.submissionOrder }
+            .mapNotNull { it.getCurrentSubmissionData() }
+            .map { JSONObject(it) }
+            .toList()
     }
 
     private fun mergeSubmissionData(source: JSONObject, target: JSONObject) {

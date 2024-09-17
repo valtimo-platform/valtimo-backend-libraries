@@ -9,12 +9,16 @@ import com.ritense.form.util.EventDispatcherHelper.Companion.dispatchEvents
 import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Companion.COMPLETE
 import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Companion.VIEW
 import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.service.CamundaTaskService
 import mu.KotlinLogging
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
+@Service
+@SkipComponentScan
 class IntermediateSubmissionService(
     private val intermediateSubmissionRepository: IntermediateSubmissionRepository,
     private val userManagementService: UserManagementService,

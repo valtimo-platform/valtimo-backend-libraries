@@ -18,11 +18,15 @@ package com.ritense.documentenapi.service
 
 import com.ritense.documentenapi.domain.ZgwDocumentTrefwoord
 import com.ritense.documentenapi.repository.ZgwDocumentTrefwoordRepository
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
+@Service
+@SkipComponentScan
 class ZgwDocumentTrefwoordService(
     private val zgwDocumentTrefwoordRepository: ZgwDocumentTrefwoordRepository
 ) {

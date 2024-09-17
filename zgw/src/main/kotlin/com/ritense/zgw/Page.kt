@@ -19,6 +19,7 @@ package com.ritense.zgw
 import mu.KLogger
 import mu.KotlinLogging
 import java.net.URI
+import java.util.Collections
 
 data class Page<T>(
     val count: Int,
@@ -26,6 +27,11 @@ data class Page<T>(
     val previous: URI? = null,
     val results: List<T>
 ) {
+    inline fun <R: Comparable<*>> sortedBy(crossinline selector: (T) -> R): Page<T> {
+        Collections.sort(results, compareBy(selector))
+        return this
+    }
+
     companion object {
         fun <T> getAll(
             pageLimit: Int = 100,

@@ -28,7 +28,7 @@ public class AuditHelper {
         if (userLogin != null) {
             return userLogin;
         }
-        return "Anonymous";
+        return "System";
     }
 
 }

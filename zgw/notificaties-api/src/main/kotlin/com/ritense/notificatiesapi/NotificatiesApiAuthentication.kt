@@ -17,7 +17,12 @@
 package com.ritense.notificatiesapi
 
 import com.ritense.plugin.annotation.PluginCategory
+import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction
 
 @PluginCategory("notificaties-api-authentication")
-interface NotificatiesApiAuthentication : ExchangeFilterFunction
+// TODO remove ExchangeFilterFunction next major version
+interface NotificatiesApiAuthentication : ExchangeFilterFunction {
+
+    fun applyAuth(builder: RestClient.Builder): RestClient.Builder
+}

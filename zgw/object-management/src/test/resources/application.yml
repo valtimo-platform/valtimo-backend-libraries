@@ -39,3 +39,7 @@ camunda:
         generic-properties:
             properties:
                 enforceHistoryTimeToLive: false
+
+objectmanagement:
+    objecttype:
+        uuid: "4416cbef-dda3-41f4-bf5c-633f7fe14847"

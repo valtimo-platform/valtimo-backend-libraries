@@ -68,6 +68,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     public static final String JSON_PATH_DELIMITER = JSON_POINTER_DELIMITER;
     public static final String PROPERTY_KEY = "key";
     public static final String COMPONENTS_KEY = "components";
+    public static final String TYPE_KEY = "type";
     public static final String DEFAULT_VALUE_FIELD = "defaultValue";
     public static final String PROCESS_VAR_PREFIX = "pv";
     public static final String EXTERNAL_FORM_FIELD_TYPE_SEPARATOR = ":";
@@ -184,7 +185,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
                 Object value = valueMap.get(fieldKey);
                 if (value != null) {
                     JsonNode valueNode = MapperSingleton.INSTANCE.get().valueToTree(value);
-                    fieldNode.set(DEFAULT_VALUE_FIELD, valueNode);
+                    setDefaultValueField(fieldNode, valueNode);
                 }
             });
     }
@@ -320,7 +321,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
 
     public List<ObjectNode> getDocumentMappedFieldsFiltered(@Nullable Predicate<JsonNode> predicate) {
         final List<ObjectNode> inputFields = new LinkedList<>();
-        List<ArrayNode> components = getComponents(this.asJson());
+        List<ArrayNode> components = getComponentsWithInputs(this.asJson());
         components.forEach(componentsNode -> componentsNode.forEach(fieldNode -> {
             if (predicate == null || predicate.test(fieldNode) && (isDocumentContentVar(fieldNode))) {
                 inputFields.add((ObjectNode) fieldNode);
@@ -335,7 +336,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
 
     public static List<ObjectNode> getInputFields(JsonNode formDefinition) {
         final List<ObjectNode> inputFields = new LinkedList<>();
-        List<ArrayNode> components = getComponents(formDefinition);
+        List<ArrayNode> components = getComponentsWithInputs(formDefinition);
         components.forEach(componentsNode -> componentsNode.forEach(fieldNode -> {
             if ((isInputComponent(fieldNode) || isTextFieldComponent(fieldNode)) && !isButtonTypeComponent(fieldNode)) {
                 inputFields.add((ObjectNode) fieldNode);
@@ -361,9 +362,30 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
                 .flatMap(
                     contentItem -> getValueBy(content, contentItem.getJsonPointer())
                 ).ifPresent(
-                    valueNode -> field.set(DEFAULT_VALUE_FIELD, valueNode)
+                    valueNode -> setDefaultValueField(field, valueNode)
                 );
         }
+    }
+
+    private void setDefaultValueField(ObjectNode field, JsonNode defaultValue) {
+        final var existingDefaultValue = field.get(DEFAULT_VALUE_FIELD);
+        if (existingDefaultValue != null && existingDefaultValue.isObject() && defaultValue != null && defaultValue.isObject()) {
+            mergeJson((ObjectNode) existingDefaultValue, (ObjectNode) defaultValue);
+        } else {
+            field.set(DEFAULT_VALUE_FIELD, defaultValue);
+        }
+    }
+
+    private void mergeJson(ObjectNode target, ObjectNode source) {
+        source.properties().forEach(property -> {
+            final var existingValue = target.get(property.getKey());
+            final var newValue = property.getValue();
+            if (existingValue != null && existingValue.isObject() && newValue != null && newValue.isObject()) {
+                mergeJson((ObjectNode) existingValue, (ObjectNode) newValue);
+            } else {
+                target.set(property.getKey(), newValue);
+            }
+        });
     }
 
     private Optional<? extends ContentItem> getContentItem(ObjectNode node) {
@@ -490,7 +512,13 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         return Optional.of(jsonNode);
     }
 
-    private static List<ArrayNode> getComponents(JsonNode formDefinition) {
+    private static List<ArrayNode> getComponentsWithInputs(JsonNode formDefinition) {
+        if (formDefinition.has(TYPE_KEY)) {
+            final var type = formDefinition.get(TYPE_KEY).textValue();
+            if (type.equals("editgrid") || type.equals("datagrid")) {
+                return Collections.emptyList();
+            }
+        }
         final var components = new ArrayList<ArrayNode>();
         if (formDefinition.isObject()
             && (formDefinition.has(COMPONENTS_KEY))
@@ -500,7 +528,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         }
         if (formDefinition.isContainerNode()) {
             for (JsonNode arrayNode : formDefinition) {
-                components.addAll(getComponents(arrayNode));
+                components.addAll(getComponentsWithInputs(arrayNode));
             }
         }
         return Collections.unmodifiableList(components);

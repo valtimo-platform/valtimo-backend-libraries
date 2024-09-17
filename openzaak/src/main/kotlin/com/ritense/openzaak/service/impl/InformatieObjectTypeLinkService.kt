@@ -24,12 +24,16 @@ import com.ritense.openzaak.service.impl.result.CreateInformatieObjectTypeLinkRe
 import com.ritense.openzaak.service.impl.result.CreateInformatieObjectTypeLinkResultSucceeded
 import com.ritense.openzaak.service.result.CreateInformatieObjectTypeLinkResult
 import com.ritense.openzaak.web.rest.request.CreateInformatieObjectTypeLinkRequest
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.result.OperationError
+import jakarta.validation.ConstraintViolationException
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
-import jakarta.validation.ConstraintViolationException
 
 @Transactional
+@Service
+@SkipComponentScan
 class InformatieObjectTypeLinkService(
     private val informatieObjectTypeLinkRepository: InformatieObjectTypeLinkRepository
 ) : InformatieObjectTypeLinkService {

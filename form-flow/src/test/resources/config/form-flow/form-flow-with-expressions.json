@@ -1,0 +1,41 @@
+{
+    "startStep": "step1",
+    "steps": [
+        {
+            "key": "step1",
+            "onComplete": [
+                "${step.submissionData.person.fullName = step.submissionData.firstName + ' ' + step.submissionData.lastName}",
+                "${step.submissionData.firstName = 'Henk'}",
+                "${step.submissionData.lastName = null}"
+            ],
+            "nextSteps": [
+                {
+                    "step": "step2"
+                }
+            ],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "my-form-definition"
+                }
+            }
+        },
+        {
+            "key": "step2",
+            "onOpen": [
+                "${step.submissionData.person.email = 'henk@example.com'}",
+                "${step.submissionData.person = {}}",
+                "${step.submissionData.person.username = 'henkthebest'}"
+            ],
+            "onComplete": [
+                "${step.submissionData = null}"
+            ],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "my-form-definition"
+                }
+            }
+        }
+    ]
+}

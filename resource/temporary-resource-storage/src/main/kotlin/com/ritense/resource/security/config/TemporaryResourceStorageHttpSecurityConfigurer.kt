@@ -18,6 +18,7 @@ package com.ritense.resource.security.config
 
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
+import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
@@ -28,6 +29,7 @@ class TemporaryResourceStorageHttpSecurityConfigurer : HttpSecurityConfigurer {
         try {
             http.authorizeHttpRequests { requests ->
                 requests.requestMatchers(antMatcher(POST, "/api/v1/resource/temp")).authenticated()
+                requests.requestMatchers(antMatcher(GET, "/api/v1/resource-storage/{resourceStorageFieldId}/metadata/{metadataKey}")).authenticated()
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

@@ -22,6 +22,7 @@ import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import java.util.UUID
 
 
 @Transactional
@@ -35,5 +36,6 @@ internal class ObjectManagementDefinitionDeploymentServiceIntTest: BaseIntegrati
         val objectManagement = objectManagementService.findByObjectTypeId("4416cbef-dda3-41f4-bf5c-633f7fe14847")
         assertThat(objectManagement).isNotNull
         assertThat(objectManagement?.title).isEqualTo("My Object Management")
+        assertThat(objectManagement?.id).isEqualTo(UUID.fromString("4f35c270-21f4-4e99-a8a1-6c4f9d5a6c5c"))
     }
 }

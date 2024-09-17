@@ -21,17 +21,13 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.ZaakUrlProvider
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Bean
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.client.RestClient
 
 @AutoConfiguration
 class BesluitenApiAutoConfiguration {
 
     @Bean
-    fun besluitenApiClient(
-        webclientBuilder: WebClient.Builder
-    ): BesluitenApiClient {
-        return BesluitenApiClient(webclientBuilder)
-    }
+    fun besluitenApiClient(restClientBuilder: RestClient.Builder) = BesluitenApiClient(restClientBuilder)
 
     @Bean
     fun besluitenApiPluginFactory(
