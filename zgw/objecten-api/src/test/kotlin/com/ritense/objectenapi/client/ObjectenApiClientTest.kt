@@ -445,12 +445,13 @@ internal class ObjectenApiClientTest {
         val objectTypesApiUrl = mockApi.url("/some-objectTypesApi").toString()
 
         val result = client.getObjectsByObjecttypeUrlWithSearchParams(
-            TestAuthentication(),
-            URI(objectUrl),
-            URI(objectTypesApiUrl),
-            "typeId",
-            "test",
-            PageRequest.of(0, 10)
+            authentication = TestAuthentication(),
+            objecttypesApiUrl = URI(objectUrl),
+            objectsApiUrl = URI(objectTypesApiUrl),
+            objectypeId = "typeId",
+            searchString = "test",
+            ordering = "ordering",
+            pageable = PageRequest.of(0, 10)
         )
 
         mockApi.takeRequest()
@@ -477,12 +478,13 @@ internal class ObjectenApiClientTest {
 
         assertThrows<HttpClientErrorException> {
             client.getObjectsByObjecttypeUrlWithSearchParams(
-                TestAuthentication(),
-                URI(objectUrl),
-                URI(objectTypesApiUrl),
-                "typeId",
-                "test",
-                PageRequest.of(0, 10)
+                authentication = TestAuthentication(),
+                objecttypesApiUrl = URI(objectUrl),
+                objectsApiUrl = URI(objectTypesApiUrl),
+                objectypeId = "typeId",
+                searchString = "test",
+                ordering = "ordering",
+                pageable = PageRequest.of(0, 10)
             )
         }
 

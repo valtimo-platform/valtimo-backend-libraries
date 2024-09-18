@@ -83,6 +83,7 @@ class ObjectenApiPlugin(
         objecttypesApiUrl: URI,
         objecttypeId: String,
         searchString: String,
+        ordering: String? = "",
         pageable: Pageable
     ): ObjectsList {
         return objectenApiClient.getObjectsByObjecttypeUrlWithSearchParams(
@@ -91,6 +92,7 @@ class ObjectenApiPlugin(
             url,
             objecttypeId,
             searchString,
+            ordering,
             pageable
         )
     }
