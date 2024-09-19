@@ -20,7 +20,6 @@ import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.event.ProcessDefinitionDeployedEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import org.camunda.bpm.engine.impl.persistence.deploy.Deployer;
 import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
@@ -28,7 +27,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 
-import static mu.KotlinLoggingMDCKt.withLoggingContext;
+import static com.ritense.logging.LoggingContextKt.withLoggingContext;
 
 public class ProcessDefinitionDeployedEventPublisher implements Deployer {
 
@@ -44,10 +43,9 @@ public class ProcessDefinitionDeployedEventPublisher implements Deployer {
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReadyEvent() {
         isApplicationReady = true;
-        events.forEach(event -> withLoggingContext(Map.of(CamundaProcessDefinition.class.getCanonicalName(), event.getProcessDefinitionId()), true, () -> {
-            applicationEventPublisher.publishEvent(event);
-            return null;
-        }));
+        events.forEach(event -> withLoggingContext(CamundaProcessDefinition.class, event.getProcessDefinitionId(), () ->
+            applicationEventPublisher.publishEvent(event)
+        ));
         events = null;
     }
 
@@ -64,10 +62,9 @@ public class ProcessDefinitionDeployedEventPublisher implements Deployer {
     public void publishEvent(DeploymentEntity deployment, ProcessDefinitionEntity processDefinition) {
         final var event = new ProcessDefinitionDeployedEvent(deployment, processDefinition);
         if (isApplicationReady) {
-            withLoggingContext(Map.of(CamundaProcessDefinition.class.getCanonicalName(), event.getProcessDefinitionId()), true, () -> {
-                applicationEventPublisher.publishEvent(event);
-                return null;
-            });
+            withLoggingContext(CamundaProcessDefinition.class, event.getProcessDefinitionId(), () ->
+                applicationEventPublisher.publishEvent(event)
+            );
         } else {
             events.add(event);
         }

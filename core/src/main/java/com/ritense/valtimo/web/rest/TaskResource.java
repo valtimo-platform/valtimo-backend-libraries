@@ -17,7 +17,7 @@
 package com.ritense.valtimo.web.rest;
 
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
-import static mu.KotlinLoggingMDCKt.withLoggingContext;
+import static com.ritense.logging.LoggingContextKt.withLoggingContext;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 import com.ritense.logging.LoggableResource;
@@ -142,11 +142,10 @@ public class TaskResource extends AbstractTaskResource {
     @PostMapping("/v1/task/batch-complete")
     public ResponseEntity<Void> batchComplete(@RequestBody List<String> taskIdList) {
         taskIdList.forEach(taskId -> {
-            withLoggingContext(Map.of(CamundaTask.class.getCanonicalName(), taskId), true, () -> {
+            withLoggingContext(CamundaTask.class, taskId, () -> {
                 if (!camundaTaskService.hasTaskFormData(taskId)) {
                     camundaTaskService.complete(taskId);
                 }
-                return null;
             });
         });
         return ResponseEntity.ok().build();

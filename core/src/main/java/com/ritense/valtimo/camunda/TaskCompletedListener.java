@@ -22,7 +22,6 @@ import com.ritense.valtimo.contract.event.TaskCompletedEvent;
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Map;
 import java.util.UUID;
 import org.camunda.bpm.engine.ActivityTypes;
 import org.camunda.bpm.engine.delegate.DelegateTask;
@@ -31,7 +30,7 @@ import org.camunda.bpm.extension.reactor.bus.CamundaSelector;
 import org.camunda.bpm.extension.reactor.spring.listener.ReactorTaskListener;
 import org.springframework.context.ApplicationEventPublisher;
 
-import static mu.KotlinLoggingMDCKt.withLoggingContext;
+import static com.ritense.logging.LoggingContextKt.withLoggingContext;
 
 @CamundaSelector(type = ActivityTypes.TASK_USER_TASK, event = TaskListener.EVENTNAME_COMPLETE)
 public class TaskCompletedListener extends ReactorTaskListener {
@@ -44,7 +43,7 @@ public class TaskCompletedListener extends ReactorTaskListener {
 
     @Override
     public void notify(DelegateTask delegateTask) {
-        withLoggingContext(Map.of(CamundaTask.class.getCanonicalName(), delegateTask.getId()), true, () -> {
+        withLoggingContext(CamundaTask.class, delegateTask.getId(), () ->
             applicationEventPublisher.publishEvent(
                 new TaskCompletedEvent(
                     UUID.randomUUID(),
@@ -60,9 +59,8 @@ public class TaskCompletedListener extends ReactorTaskListener {
                     delegateTask.getVariablesTyped(),
                     delegateTask.getExecution().getProcessBusinessKey()
                 )
-            );
-            return null;
-        });
+            )
+        );
     }
 
 }

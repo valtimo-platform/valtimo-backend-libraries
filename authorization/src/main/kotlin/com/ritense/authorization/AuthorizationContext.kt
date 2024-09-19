@@ -40,5 +40,19 @@ class AuthorizationContext {
                 }
             }
         }
+
+        @JvmStatic
+        fun runWithoutAuthorization(runnable: Runnable) {
+            if (ignoreAuthorization) {
+                return runnable.run()
+            } else {
+                try {
+                    ignoreAuthorizationThreadLocal.set(true)
+                    runnable.run()
+                } finally {
+                    ignoreAuthorizationThreadLocal.set(false)
+                }
+            }
+        }
     }
 }

@@ -17,7 +17,7 @@
 package com.ritense.valtimo.camunda;
 
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
-import static mu.KotlinLoggingMDCKt.withLoggingContext;
+import static com.ritense.logging.LoggingContextKt.withLoggingContext;
 
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
@@ -30,7 +30,6 @@ import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperty;
 import org.camunda.bpm.model.xml.ModelInstance;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-import java.util.Map;
 
 public class ProcessDefinitionPropertyListener {
 
@@ -52,18 +51,16 @@ public class ProcessDefinitionPropertyListener {
 
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReadyEvent() {
-        AuthorizationContext.runWithoutAuthorization(() -> {
+        AuthorizationContext.runWithoutAuthorization(() ->
             camundaRepositoryService.findProcessDefinitions(byLatestVersion()).forEach(processDefinition ->
-                withLoggingContext(Map.of(CamundaProcessDefinition.class.getCanonicalName(), processDefinition.getId()), true, () -> {
+                withLoggingContext(CamundaProcessDefinition.class, processDefinition.getId(), () ->
                     saveProcessDefinitionProperties(
                         processDefinition.getKey(),
                         isSystemProcess(repositoryService.getBpmnModelInstance(processDefinition.getId()))
-                    );
-                    return null;
-                })
-            );
-            return null;
-        });
+                    )
+                )
+            )
+        );
     }
 
     @EventListener(ProcessDefinitionDeployedEvent.class)

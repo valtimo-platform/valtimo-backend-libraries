@@ -25,9 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
-import java.util.Map;
 
-import static mu.KotlinLoggingMDCKt.withLoggingContext;
+import static com.ritense.logging.LoggingContextKt.withLoggingContext;
 
 public class ProcessApplicationStartedEventListener {
 
@@ -44,10 +43,9 @@ public class ProcessApplicationStartedEventListener {
     public void engineStarted(ProcessApplicationStartedEvent event) {
         logger.debug("{} - handle - processApplicationStartedEvent", Thread.currentThread().getName());
         AuthorizationContext.runWithoutAuthorization(camundaProcessService::getDeployedDefinitions)
-            .forEach(processDefinition -> withLoggingContext(Map.of(CamundaProcessDefinition.class.getCanonicalName(), processDefinition.getId()), true, () -> {
-                applicationEventPublisher.publishEvent(new ProcessDefinitionAvailableEvent(processDefinition.getId()));
-                return null;
-            }));
+            .forEach(processDefinition -> withLoggingContext(CamundaProcessDefinition.class, processDefinition.getId(), () ->
+                applicationEventPublisher.publishEvent(new ProcessDefinitionAvailableEvent(processDefinition.getId()))
+            ));
     }
 
 }
