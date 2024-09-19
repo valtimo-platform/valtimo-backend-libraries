@@ -70,9 +70,8 @@ public class ProcessDefinitionPropertyListener {
         saveProcessDefinitionProperties(event.getProcessDefinitionKey(), isSystemProcess(bpmnModelInstance));
     }
 
-    private int saveProcessDefinitionProperties(String processDefinitionKey, boolean systemProcess) {
+    private void saveProcessDefinitionProperties(String processDefinitionKey, boolean systemProcess) {
         processDefinitionPropertiesRepository.save(new ProcessDefinitionProperties(processDefinitionKey, systemProcess));
-        return 1;
     }
 
     private boolean isSystemProcess(ModelInstance processModelInstance) {
