@@ -25,6 +25,7 @@ import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import mu.withLoggingContext
 import org.springframework.stereotype.Service
 
 @Service
@@ -59,9 +60,11 @@ class CaseTaskListDeploymentService(
 
     private fun deploy(caseDefinitions: List<CaseDefinitionsTaskListCollection>) {
         runWithoutAuthorization {
-            caseDefinitions.forEach {
-                it.columns.map { taskListColumnDto ->
-                    taskColumnService.saveListColumn(it.key, taskListColumnDto)
+            caseDefinitions.forEach { caseDefinition ->
+                withLoggingContext("jsonSchemaDocumentName" to caseDefinition.key) {
+                    caseDefinition.columns.map { taskListColumnDto ->
+                        taskColumnService.saveListColumn(caseDefinition.key, taskListColumnDto)
+                    }
                 }
             }
         }

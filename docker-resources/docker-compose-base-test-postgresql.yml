@@ -59,4 +59,5 @@ services:
 #   url: jdbc:postgresql://localhost:3352/form-view-model-test
 #   url: jdbc:postgresql://localhost:3353/command-handling-test
 #   url: jdbc:postgresql://localhost:3354/keycloak-iam-test
+#   url: jdbc:postgresql://localhost:3355/logging-test
 #   url: localhost:55672 <--rabbitmq
