@@ -28,6 +28,7 @@ import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import mu.withLoggingContext
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -72,18 +73,20 @@ class CaseTabDeploymentService(
 
     private fun deploy(caseDefinitions: List<CaseDefinitionsTabCollection>) {
         runWithoutAuthorization {
-            caseDefinitions.forEach {
-                caseTabRepository.deleteAll(caseTabRepository.findAll(byCaseDefinitionName(it.key)))
-                it.tabs.map { caseTabDto ->
-                    caseTabService.createCaseTab(
-                        it.key,
-                        com.ritense.case.web.rest.dto.CaseTabDto(
-                            key = caseTabDto.key,
-                            name = caseTabDto.name,
-                            type = caseTabDto.type,
-                            contentKey = caseTabDto.contentKey
+            caseDefinitions.forEach { caseDefinition ->
+                withLoggingContext("jsonSchemaDocumentName" to caseDefinition.key) {
+                    caseTabRepository.deleteAll(caseTabRepository.findAll(byCaseDefinitionName(caseDefinition.key)))
+                    caseDefinition.tabs.map { caseTabDto ->
+                        caseTabService.createCaseTab(
+                            caseDefinition.key,
+                            com.ritense.case.web.rest.dto.CaseTabDto(
+                                key = caseTabDto.key,
+                                name = caseTabDto.name,
+                                type = caseTabDto.type,
+                                contentKey = caseTabDto.contentKey
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
