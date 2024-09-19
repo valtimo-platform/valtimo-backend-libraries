@@ -53,10 +53,12 @@ import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.repository.ZaakHersteltermijnRepository
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
+import com.ritense.zgw.LoggingConstants.DOCUMENTEN_API
 import com.ritense.zgw.Page
 import com.ritense.zgw.Rsin
 import mu.KLogger
 import mu.KotlinLogging
+import mu.withLoggingContext
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
@@ -99,17 +101,25 @@ class ZakenApiPlugin(
         @PluginActionProperty titel: String?,
         @PluginActionProperty beschrijving: String?
     ) {
-        val documentId = UUID.fromString(execution.businessKey)
-        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+        withLoggingContext(
+            DOCUMENTEN_API.ENKELVOUDIG_INFORMATIE_OBJECT to documentUrl
+        ) {
+            logger.debug { "Starting to link document with URL '$documentUrl' to zaak" }
 
-        val request = LinkDocumentRequest(
-            documentUrl,
-            zaakUrl.toString(),
-            titel,
-            beschrijving
-        )
+            val documentId = UUID.fromString(execution.businessKey)
+            val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
-        client.linkDocument(authenticationPluginConfiguration, url, request)
+            val request = LinkDocumentRequest(
+                documentUrl,
+                zaakUrl.toString(),
+                titel,
+                beschrijving
+            )
+
+            client.linkDocument(authenticationPluginConfiguration, url, request)
+
+            logger.info { "Document with URL '$documentUrl' linked successfully to zaak with URL '$zaakUrl'" }
+        }
     }
 
     @PluginAction(
@@ -121,6 +131,7 @@ class ZakenApiPlugin(
     fun linkUploadedDocumentToZaak(
         execution: DelegateExecution
     ) {
+        logger.debug { "Starting to link uploaded document to zaak." }
         val documentUrl = execution.getVariable(DOCUMENT_URL_PROCESS_VAR) as String
         val resourceId = execution.getVariable(RESOURCE_ID_PROCESS_VAR) as String
         val metadata = storageService.getResourceMetadata(resourceId)
@@ -135,6 +146,7 @@ class ZakenApiPlugin(
             metadata["description"] as String?,
         )
         client.linkDocument(authenticationPluginConfiguration, url, request)
+        logger.info { "Uploaded document with URL '$documentUrl' linked to zaak with URL '$zaakUrl'" }
     }
 
     @PluginAction(
@@ -148,9 +160,11 @@ class ZakenApiPlugin(
         @PluginActionProperty rsin: Rsin,
         @PluginActionProperty zaaktypeUrl: URI,
     ) {
+        logger.info { "Starting zaak creation for execution with RSIN: $rsin and zaaktype URL: $zaaktypeUrl" }
         val documentId = UUID.fromString(execution.businessKey)
 
         createZaak(documentId, rsin, zaaktypeUrl)
+        logger.info { "Zaak creation completed for document ID: $documentId" }
     }
 
     fun createZaak(
@@ -158,9 +172,10 @@ class ZakenApiPlugin(
         rsin: Rsin,
         zaaktypeUrl: URI,
     ) {
+        logger.info { "Creating zaak for document ID: $documentId" }
         val zaakInstanceLink = zaakInstanceLinkRepository.findByDocumentId(documentId)
         if (zaakInstanceLink != null) {
-            logger.warn { "SKIPPING ZAAK CREATION. Reason: a zaak already exists for this case. Case id '$documentId'. Zaak URL '${zaakInstanceLink.zaakInstanceUrl}'." }
+            logger.warn { "Skipping zaak creation. Zaak already exists for document ID: '$documentId', zaak URL: '${zaakInstanceLink.zaakInstanceUrl}'." }
             return
         }
 
@@ -188,6 +203,7 @@ class ZakenApiPlugin(
                 zaak.zaaktype
             )
         )
+        logger.info { "Zaak created successfully for document ID: $documentId, zaak URL: ${zaak.url}" }
     }
 
     @PluginAction(
@@ -204,6 +220,7 @@ class ZakenApiPlugin(
         @PluginActionProperty anpIdentificatie: String?,
         @PluginActionProperty inpA_nummer: String?
     ) {
+        logger.info { "Creating natuurlijk persoon zaakrol for document ID: ${execution.businessKey}, roltype URL: $roltypeUrl" }
         val documentId = UUID.fromString(execution.businessKey)
         val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
@@ -222,7 +239,7 @@ class ZakenApiPlugin(
                 )
             )
         )
-
+        logger.info { "Natuurlijk persoon zaakrol created for zaak URL: $zaakUrl" }
     }
 
     @PluginAction(
@@ -238,6 +255,7 @@ class ZakenApiPlugin(
         @PluginActionProperty innNnpId: String?,
         @PluginActionProperty annIdentificatie: String?
     ) {
+        logger.info { "Creating niet-natuurlijk persoon zaakrol for document ID: ${execution.businessKey}, roltype URL: $roltypeUrl" }
         val documentId = UUID.fromString(execution.businessKey)
         val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
@@ -255,6 +273,7 @@ class ZakenApiPlugin(
                 )
             )
         )
+        logger.info { "Niet-natuurlijk persoon zaakrol created for zaak URL: $zaakUrl" }
     }
 
     @PluginAction(
@@ -268,6 +287,7 @@ class ZakenApiPlugin(
         @PluginActionProperty statustypeUrl: URI,
         @PluginActionProperty statustoelichting: String?,
     ) {
+        logger.info { "Setting zaak status for document ID: ${execution.businessKey}, status type URL: $statustypeUrl" }
         val documentId = UUID.fromString(execution.businessKey)
         val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
@@ -281,6 +301,7 @@ class ZakenApiPlugin(
                 statustoelichting = statustoelichting,
             )
         )
+        logger.info { "Zaak status set successfully for zaak URL: $zaakUrl" }
     }
 
     @PluginAction(
@@ -294,6 +315,7 @@ class ZakenApiPlugin(
         @PluginActionProperty resultaattypeUrl: URI,
         @PluginActionProperty toelichting: String?,
     ) {
+        logger.info { "Creating zaak resultaat for document ID: ${execution.businessKey}, resultaattype URL: $resultaattypeUrl" }
         val documentId = UUID.fromString(execution.businessKey)
         val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
@@ -306,6 +328,7 @@ class ZakenApiPlugin(
                 toelichting = toelichting,
             )
         )
+        logger.info { "Zaak resultaat created successfully for zaak URL: $zaakUrl" }
     }
 
     @PluginAction(
@@ -320,6 +343,7 @@ class ZakenApiPlugin(
         @PluginActionProperty toelichtingVerlenging: String,
         @PluginActionProperty toelichtingOpschorting: String,
     ) {
+        logger.info { "Setting zaak opschorting for document ID: ${execution.businessKey}, verlengingsduur: $verlengingsduur" }
         val documentId = UUID.fromString(execution.businessKey)
         val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
@@ -337,6 +361,7 @@ class ZakenApiPlugin(
                 )
             )
         )
+        logger.info { "Zaak opschorting set successfully for zaak URL: $zaakUrl" }
     }
 
     @PluginAction(
@@ -349,6 +374,7 @@ class ZakenApiPlugin(
         execution: DelegateExecution,
         @PluginActionProperty maxDurationInDays: Int,
     ) {
+        logger.info { "Starting hersteltermijn for document ID: ${execution.businessKey}, max duration in days: $maxDurationInDays" }
         TransactionTemplate(platformTransactionManager).executeWithoutResult {
             val documentId = UUID.fromString(execution.businessKey)
             val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
@@ -377,6 +403,7 @@ class ZakenApiPlugin(
             )
             zaakHersteltermijnRepository.save(hersteltermijn)
         }
+        logger.info { "Hersteltermijn started for zaak URL: ${zaakUrlProvider.getZaakUrl(UUID.fromString(execution.businessKey))}" }
     }
 
     @PluginAction(
@@ -388,6 +415,7 @@ class ZakenApiPlugin(
     fun endHersteltermijn(
         execution: DelegateExecution,
     ) {
+        logger.info { "Ending hersteltermijn for document ID: ${execution.businessKey}" }
         TransactionTemplate(platformTransactionManager).executeWithoutResult {
             val documentId = UUID.fromString(execution.businessKey)
             val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
@@ -414,6 +442,7 @@ class ZakenApiPlugin(
 
             zaakHersteltermijnRepository.save(updatedHersteltermijn)
         }
+        logger.info { "Hersteltermijn ended for zaak URL: ${zaakUrlProvider.getZaakUrl(UUID.fromString(execution.businessKey))}" }
     }
 
     @PluginAction(
@@ -427,11 +456,13 @@ class ZakenApiPlugin(
         @PluginActionProperty eigenschapUrl: URI,
         @PluginActionProperty eigenschapValue: String,
     ) {
+        logger.info { "Creating zaakeigenschap for document ID: ${execution.businessKey}, eigenschap URL: $eigenschapUrl" }
         val documentId = UUID.fromString(execution.businessKey)
         val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
         val request = CreateZaakeigenschapRequest(zaakUrl, eigenschapUrl, eigenschapValue)
 
         client.createZaakeigenschap(authenticationPluginConfiguration, url, request)
+        logger.info { "Zaakeigenschap created for zaak URL: $zaakUrl" }
     }
 
     @PluginAction(
@@ -445,6 +476,7 @@ class ZakenApiPlugin(
         @PluginActionProperty eigenschapUrl: URI,
         @PluginActionProperty eigenschapValue: String,
     ) {
+        logger.info { "Updating zaakeigenschap for document ID: ${execution.businessKey}, eigenschap URL: $eigenschapUrl" }
         val documentId = UUID.fromString(execution.businessKey)
         val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
         val zaakeigenschappen = client.getZaakeigenschappen(authenticationPluginConfiguration, url, zaakUrl)
@@ -456,6 +488,7 @@ class ZakenApiPlugin(
                 client.updateZaakeigenschap(authenticationPluginConfiguration, url, zaakeigenschap.url, request)
             }
         }
+        logger.info { "Zaakeigenschap updated for zaak URL: $zaakUrl" }
     }
 
     @PluginAction(
@@ -468,14 +501,17 @@ class ZakenApiPlugin(
         execution: DelegateExecution,
         @PluginActionProperty eigenschapUrl: URI,
     ) {
+        logger.info { "Deleting zaakeigenschap for document ID: ${execution.businessKey}, eigenschap URL: $eigenschapUrl" }
         val documentId = UUID.fromString(execution.businessKey)
         val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
         client.getZaakeigenschappen(authenticationPluginConfiguration, url, zaakUrl)
             .filter { it.eigenschap == eigenschapUrl }
             .forEach { client.deleteZaakeigenschap(authenticationPluginConfiguration, url, it.url) }
+        logger.info { "Zaakeigenschap deleted for zaak URL: $zaakUrl" }
     }
 
     fun getZaakInformatieObjecten(zaakUrl: URI): List<ZaakInformatieObject> {
+        logger.info { "Fetching zaak informatie objecten for zaak URL: $zaakUrl" }
         return client.getZaakInformatieObjecten(
             authentication = authenticationPluginConfiguration,
             baseUrl = url,
@@ -484,6 +520,7 @@ class ZakenApiPlugin(
     }
 
     fun getZaakInformatieObjectenByInformatieobjectUrl(informatieobjectUrl: URI): List<ZaakInformatieObject> {
+        logger.info { "Fetching zaak informatie objecten by informatieobject URL: $informatieobjectUrl" }
         return client.getZaakInformatieObjecten(
             authentication = authenticationPluginConfiguration,
             baseUrl = url,
@@ -492,6 +529,7 @@ class ZakenApiPlugin(
     }
 
     fun deleteZaakInformatieobject(zaakInformatieobjectUrl: URI) {
+        logger.info { "Deleting zaak informatie object for URL: $zaakInformatieobjectUrl" }
         return client.deleteZaakInformatieObject(
             authentication = authenticationPluginConfiguration,
             baseUrl = url,
@@ -500,6 +538,7 @@ class ZakenApiPlugin(
     }
 
     fun getZaakObjecten(zaakUrl: URI): List<ZaakObject> {
+        logger.info { "Fetching zaak objecten for zaak URL: $zaakUrl" }
         var currentPage = 1
         var currentResults: Page<ZaakObject>?
         val results = mutableListOf<ZaakObject>()
@@ -514,10 +553,12 @@ class ZakenApiPlugin(
             results.addAll(currentResults.results)
         } while (currentResults?.next != null)
 
+        logger.info { "Fetched ${results.size} zaak objecten for zaak URL: $zaakUrl" }
         return results
     }
 
     fun getZaakRollen(zaakUrl: URI, roleType: RolType? = null): List<Rol> {
+        logger.info { "Fetching zaak rollen for zaak URL: $zaakUrl" }
         return Page.getAll(100) { page ->
             client.getZaakRollen(
                 authenticationPluginConfiguration,
@@ -527,6 +568,7 @@ class ZakenApiPlugin(
     }
 
     fun getZaakStatus(zaakUrl: URI): ZaakStatus? {
+        logger.info { "Fetching zaak status for zaak URL: $zaakUrl" }
         val zaak = getZaak(zaakUrl)
         return if (zaak.status == null) {
             null
@@ -536,6 +578,7 @@ class ZakenApiPlugin(
     }
 
     fun getZaakResultaat(zaakUrl: URI): ZaakResultaat? {
+        logger.info { "Fetching zaak resultaat for zaak URL: $zaakUrl" }
         val zaak = getZaak(zaakUrl)
         return if (zaak.resultaat == null) {
             null
@@ -545,10 +588,12 @@ class ZakenApiPlugin(
     }
 
     fun getZaak(zaakUrl: URI): ZaakResponse {
+        logger.info { "Fetching zaak for zaak URL: $zaakUrl" }
         return client.getZaak(authenticationPluginConfiguration, zaakUrl)
     }
 
     private fun calculateUiterlijkeEinddatumAfdoening(zaaktypeUrl: URI, startdatum: LocalDate): LocalDate? {
+        logger.info { "Calculating uiterlijke einddatum afdoening for zaaktype URL: $zaaktypeUrl" }
         return getCatalogiApiPlugin(zaaktypeUrl)
             ?.getZaaktype(zaaktypeUrl)
             ?.doorlooptijd
@@ -557,6 +602,7 @@ class ZakenApiPlugin(
     }
 
     private fun getCatalogiApiPlugin(zaakTypeUrl: URI): CatalogiApiPlugin? {
+        logger.info { "Fetching Catalogi API Plugin for zaaktype URL: $zaakTypeUrl" }
         return pluginService.createInstance(
             CatalogiApiPlugin::class.java,
             CatalogiApiPlugin.findConfigurationByUrl(zaakTypeUrl)
