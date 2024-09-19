@@ -167,8 +167,8 @@ class ZakenApiPlugin(
             rsin,
             zaaktypeUrl,
             description,
-            resolveDate(execution, plannedEndDate),
-            resolveDate(execution, finalDeliveryDate)
+            plannedEndDate?.let { LocalDate.parse(it) },
+            finalDeliveryDate?.let { LocalDate.parse(it) },
         )
     }
 
@@ -585,47 +585,6 @@ class ZakenApiPlugin(
             CatalogiApiPlugin::class.java,
             CatalogiApiPlugin.findConfigurationByUrl(zaakTypeUrl)
         )
-    }
-
-    fun resolveDate(delegateExecution: DelegateExecution, date: String?) : LocalDate? {
-        return if(date == null) {
-            null
-        } else if(date.startsWith("doc:")) {
-            retrieveDateFromDoc(delegateExecution, date.substring("doc:".length))
-        } else if (date.startsWith("pv:")) {
-            LocalDate.parse(delegateExecution.variables[date.substring("pv:".length)].toString())
-        } else {
-            LocalDate.parse(date)
-        }
-    }
-
-    fun retrieveDateFromDoc(delegateExecution: DelegateExecution, datePath: String) : LocalDate {
-        val doc = getDocument(delegateExecution)
-        val node = doc.content().getValueBy(JsonPointer.valueOf(datePath)).orElse(null)
-        return if (node == null || node.isMissingNode || node.isNull) {
-            throw NoSuchFieldException("Missing datePath $datePath in document")
-        } else if (node.isValueNode || node.isArray || node.isObject) {
-            throw RuntimeException("Date in path $datePath is not a text node")
-        } else {
-            LocalDate.parse(node.asText())
-        }
-    }
-
-    private fun getDocument(delegateExecution: DelegateExecution): Document {
-        val processInstanceId = CamundaProcessInstanceId(delegateExecution.processInstanceId)
-        val processDocumentInstance = processDocumentAssociationService.findProcessDocumentInstance(processInstanceId)
-        return if (processDocumentInstance.isPresent) {
-            val jsonSchemaDocumentId = processDocumentInstance.get().processDocumentInstanceId().documentId()
-            AuthorizationContext.runWithoutAuthorization {
-                documentService.findBy(jsonSchemaDocumentId).orElseThrow()
-            }
-        } else {
-            // In case a process has no token wait state ProcessDocumentInstance is not yet created,
-            // therefore out business-key is our last chance which is populated with the documentId also.
-            AuthorizationContext.runWithoutAuthorization {
-                documentService.get(delegateExecution.businessKey)
-            }
-        }
     }
 
     companion object {
