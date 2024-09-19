@@ -171,6 +171,31 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
     }
 
     @Test
+    fun `should create zaak with description and plannedEndDate`() {
+        val zakenApiPlugin = pluginService.createInstance<ZakenApiPlugin>(UUID.fromString(ZAKEN_API_PLUGIN_ID))
+        val document = runWithoutAuthorization {
+            documentService.createDocument(
+                NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
+            ).resultingDocument().get()
+        }
+        val description = "omschrijving"
+        val plannedEndDate = LocalDate.now().plusDays(10)
+
+        zakenApiPlugin.createZaak(
+            document.id().id,
+            Rsin("155539620"),
+            URI("http://localhost:56273/catalogi/my-zaaktype-id"),
+            description,
+            plannedEndDate,
+            null
+        )
+
+        val requestBody = getRequestBody(POST, "/zaken/zaken", CreateZaakRequest::class.java)
+        assertEquals(requestBody.omschrijving, description)
+        assertEquals(requestBody.einddatumGepland, plannedEndDate)
+    }
+
+    @Test
     fun `should link document to zaak`() {
         val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
