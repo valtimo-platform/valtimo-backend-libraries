@@ -478,7 +478,7 @@ internal class ZakenApiPluginTest {
         val rsin = Rsin("051845623")
         val zaaktypeUrl = URI("https://example.com/zaaktype/1234")
         val description = "Omschrijving"
-        val plannedEndDate = LocalDate.now().plusDays(10).toString()
+        val plannedEndDate = LocalDate.now().plusDays(10)
         val finalDeliveryDate = null
 
         whenever(executionMock.businessKey).thenReturn(documentId.toString())
@@ -518,7 +518,7 @@ internal class ZakenApiPluginTest {
             rsin,
             zaaktypeUrl,
             description,
-            plannedEndDate,
+            plannedEndDate.toString(),
             finalDeliveryDate
         )
 
@@ -530,6 +530,8 @@ internal class ZakenApiPluginTest {
         assertEquals(zaaktypeUrl, request.zaaktype)
         assertEquals(rsin, request.verantwoordelijkeOrganisatie)
         assertNotNull(request.startdatum)
+        assertEquals(description, request.omschrijving)
+        assertEquals(plannedEndDate, request.einddatumGepland)
     }
 
 
