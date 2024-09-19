@@ -19,6 +19,7 @@ package com.ritense.zakenapi.config
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
+import com.ritense.document.service.DocumentService
 import com.ritense.documentenapi.service.DocumentDeleteHandler
 import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.documentenapi.service.DocumentenApiVersionService
@@ -86,6 +87,8 @@ class ZakenApiAutoConfiguration {
         zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
         zaakHersteltermijnRepository: ZaakHersteltermijnRepository,
         platformTransactionManager: PlatformTransactionManager,
+        documentService: DocumentService,
+        processDocumentAssociationService: ProcessDocumentAssociationService,
     ): ZakenApiPluginFactory {
         return ZakenApiPluginFactory(
             pluginService,
@@ -95,6 +98,8 @@ class ZakenApiAutoConfiguration {
             zaakInstanceLinkRepository,
             zaakHersteltermijnRepository,
             platformTransactionManager,
+            documentService,
+            processDocumentAssociationService
         )
     }
 

@@ -16,13 +16,20 @@
 
 package com.ritense.zakenapi
 
+import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.exc.InvalidFormatException
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.catalogiapi.CatalogiApiPlugin
+import com.ritense.document.domain.Document
+import com.ritense.document.service.DocumentService
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.service.PluginService
+import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
 import com.ritense.processlink.domain.ActivityTypeWithEventName.USER_TASK_CREATE
 import com.ritense.resource.service.TemporaryResourceStorageService
@@ -78,7 +85,9 @@ class ZakenApiPlugin(
     private val zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
     private val pluginService: PluginService,
     private val zaakHersteltermijnRepository: ZaakHersteltermijnRepository,
-    private val platformTransactionManager: PlatformTransactionManager
+    private val platformTransactionManager: PlatformTransactionManager,
+    private val documentService: DocumentService,
+    private val processDocumentAssociationService: ProcessDocumentAssociationService,
 ) {
     @Url
     @PluginProperty(key = URL_PROPERTY, secret = false)
@@ -147,16 +156,29 @@ class ZakenApiPlugin(
         execution: DelegateExecution,
         @PluginActionProperty rsin: Rsin,
         @PluginActionProperty zaaktypeUrl: URI,
+        @PluginActionProperty description: String,
+        @PluginActionProperty plannedEndDate: String,
+        @PluginActionProperty finalDeliveryDate: String,
     ) {
         val documentId = UUID.fromString(execution.businessKey)
 
-        createZaak(documentId, rsin, zaaktypeUrl)
+        createZaak(
+            documentId,
+            rsin,
+            zaaktypeUrl,
+            description,
+            resolveDate(execution, plannedEndDate),
+            resolveDate(execution, finalDeliveryDate)
+        )
     }
 
     fun createZaak(
         documentId: UUID,
         rsin: Rsin,
         zaaktypeUrl: URI,
+        description: String? = null,
+        plannedEndDate: LocalDate? = null,
+        finalDeliveryDate: LocalDate? = null,
     ) {
         val zaakInstanceLink = zaakInstanceLinkRepository.findByDocumentId(documentId)
         if (zaakInstanceLink != null) {
@@ -165,7 +187,7 @@ class ZakenApiPlugin(
         }
 
         val startdatum = LocalDate.now()
-        val uiterlijkeEinddatumAfdoening = calculateUiterlijkeEinddatumAfdoening(zaaktypeUrl, startdatum)
+        val uiterlijkeEinddatumAfdoening = finalDeliveryDate ?: calculateUiterlijkeEinddatumAfdoening(zaaktypeUrl, startdatum)
 
         val zaak = client.createZaak(
             authenticationPluginConfiguration,
@@ -176,6 +198,8 @@ class ZakenApiPlugin(
                 verantwoordelijkeOrganisatie = rsin,
                 startdatum = startdatum,
                 uiterlijkeEinddatumAfdoening = uiterlijkeEinddatumAfdoening,
+                omschrijving = description,
+                einddatumGepland = plannedEndDate,
             )
         )
 
@@ -561,6 +585,45 @@ class ZakenApiPlugin(
             CatalogiApiPlugin::class.java,
             CatalogiApiPlugin.findConfigurationByUrl(zaakTypeUrl)
         )
+    }
+
+    fun resolveDate(delegateExecution: DelegateExecution, date: String) : LocalDate {
+        if(date.startsWith("doc:")) {
+            return retrieveDateFromDoc(delegateExecution, date.substring("doc:".length))
+        } else if (date.startsWith("pv:")) {
+            return LocalDate.parse(delegateExecution.variables[date.substring("pv:".length)].toString())
+        } else {
+            return LocalDate.parse(date)
+        }
+    }
+
+    fun retrieveDateFromDoc(delegateExecution: DelegateExecution, datePath: String) : LocalDate {
+        val doc = getDocument(delegateExecution)
+        val node = doc.content().getValueBy(JsonPointer.valueOf(datePath)).orElse(null)
+        return if (node == null || node.isMissingNode || node.isNull) {
+            throw NoSuchFieldException("Missing datePath $datePath in document")
+        } else if (node.isValueNode || node.isArray || node.isObject) {
+            throw RuntimeException("Date in path $datePath is not a text node")
+        } else {
+            LocalDate.parse(node.asText())
+        }
+    }
+
+    private fun getDocument(delegateExecution: DelegateExecution): Document {
+        val processInstanceId = CamundaProcessInstanceId(delegateExecution.processInstanceId)
+        val processDocumentInstance = processDocumentAssociationService.findProcessDocumentInstance(processInstanceId)
+        return if (processDocumentInstance.isPresent) {
+            val jsonSchemaDocumentId = processDocumentInstance.get().processDocumentInstanceId().documentId()
+            AuthorizationContext.runWithoutAuthorization {
+                documentService.findBy(jsonSchemaDocumentId).orElseThrow()
+            }
+        } else {
+            // In case a process has no token wait state ProcessDocumentInstance is not yet created,
+            // therefore out business-key is our last chance which is populated with the documentId also.
+            AuthorizationContext.runWithoutAuthorization {
+                documentService.get(delegateExecution.businessKey)
+            }
+        }
     }
 
     companion object {
