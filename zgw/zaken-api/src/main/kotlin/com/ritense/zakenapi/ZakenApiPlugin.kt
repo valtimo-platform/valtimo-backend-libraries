@@ -156,9 +156,9 @@ class ZakenApiPlugin(
         execution: DelegateExecution,
         @PluginActionProperty rsin: Rsin,
         @PluginActionProperty zaaktypeUrl: URI,
-        @PluginActionProperty description: String,
-        @PluginActionProperty plannedEndDate: String,
-        @PluginActionProperty finalDeliveryDate: String,
+        @PluginActionProperty description: String?,
+        @PluginActionProperty plannedEndDate: String?,
+        @PluginActionProperty finalDeliveryDate: String?,
     ) {
         val documentId = UUID.fromString(execution.businessKey)
 
@@ -587,13 +587,15 @@ class ZakenApiPlugin(
         )
     }
 
-    fun resolveDate(delegateExecution: DelegateExecution, date: String) : LocalDate {
-        if(date.startsWith("doc:")) {
-            return retrieveDateFromDoc(delegateExecution, date.substring("doc:".length))
+    fun resolveDate(delegateExecution: DelegateExecution, date: String?) : LocalDate? {
+        return if(date == null) {
+            null
+        } else if(date.startsWith("doc:")) {
+            retrieveDateFromDoc(delegateExecution, date.substring("doc:".length))
         } else if (date.startsWith("pv:")) {
-            return LocalDate.parse(delegateExecution.variables[date.substring("pv:".length)].toString())
+            LocalDate.parse(delegateExecution.variables[date.substring("pv:".length)].toString())
         } else {
-            return LocalDate.parse(date)
+            LocalDate.parse(date)
         }
     }
 
