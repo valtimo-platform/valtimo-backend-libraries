@@ -156,9 +156,9 @@ class ZakenApiPlugin(
         execution: DelegateExecution,
         @PluginActionProperty rsin: Rsin,
         @PluginActionProperty zaaktypeUrl: URI,
-        @PluginActionProperty description: String?,
-        @PluginActionProperty plannedEndDate: String?,
-        @PluginActionProperty finalDeliveryDate: String?,
+        @PluginActionProperty description: String? = null,
+        @PluginActionProperty plannedEndDate: String? = null,
+        @PluginActionProperty finalDeliveryDate: String? = null,
     ) {
         val documentId = UUID.fromString(execution.businessKey)
 
