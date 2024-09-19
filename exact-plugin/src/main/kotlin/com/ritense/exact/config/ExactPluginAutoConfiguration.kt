@@ -12,7 +12,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.core.annotation.Order
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.client.RestClient
 
 @AutoConfiguration
 class ExactPluginAutoConfiguration {
@@ -20,42 +20,43 @@ class ExactPluginAutoConfiguration {
     @Bean
     fun exactPluginFactory(
         pluginService: PluginService,
-        exactClient: WebClient,
+        exactClient: RestClient,
         exactService: ExactService,
         context: ApplicationContext
-    ): ExactPluginFactory {
-        return ExactPluginFactory(pluginService, exactService, exactClient, context)
-    }
+    ) = ExactPluginFactory(
+        pluginService,
+        exactService,
+        exactClient,
+        context
+    )
 
     @Bean
-    fun exactClient(@Value("\${exact.baseUrl}") baseUrl: String): WebClient {
-        return WebClient
+    fun exactClient(@Value("\${exact.baseUrl}") baseUrl: String): RestClient =
+        RestClient
             .builder()
             .baseUrl(baseUrl)
             .defaultHeader("Accept", "application/json")
             .build()
-    }
 
     @Bean
     fun exactService(
         @Value("\${exact.redirectUrl}") redirectUrl: String,
-        exactClient: WebClient,
+        exactClient: RestClient,
         pluginService: PluginService,
         objectMapper: ObjectMapper
-    ): ExactService {
-        return ExactService(redirectUrl, exactClient, pluginService, objectMapper)
-    }
+    ) = ExactService(
+        redirectUrl,
+        exactClient,
+        pluginService,
+        objectMapper
+    )
 
     @Bean
-    fun exactResource(exactService: ExactService): ExactResource {
-        return ExactResource(exactService)
-    }
+    fun exactResource(exactService: ExactService) = ExactResource(exactService)
 
     @Order(420)
     @Bean
     @ConditionalOnMissingBean(ExactPluginSecurityConfigurer::class)
-    fun exactPluginHttpSecurityConfigurer(): ExactPluginSecurityConfigurer {
-        return ExactPluginSecurityConfigurer()
-    }
+    fun exactPluginHttpSecurityConfigurer() = ExactPluginSecurityConfigurer()
 
 }

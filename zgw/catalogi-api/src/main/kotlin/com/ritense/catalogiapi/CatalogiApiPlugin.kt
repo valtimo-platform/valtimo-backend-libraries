@@ -48,6 +48,7 @@ import com.ritense.zgw.Page
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.net.URI
+import java.time.LocalDate
 
 @Plugin(
     key = "catalogiapi",
@@ -149,15 +150,28 @@ class CatalogiApiPlugin(
                     page = currentPage++
                 )
             )
-            currentResults.results.map {
+
+            val filteredTypes =  currentResults.results.mapNotNull {
                 logger.trace { "Getting Informatieobjecttype ${it.informatieobjecttype}" }
+
                 val informatieobjecttype = client.getInformatieobjecttype(
                     authenticationPluginConfiguration,
                     url,
                     it.informatieobjecttype
                 )
-                results.add(informatieobjecttype)
+
+                // Filter the types based on the geldigheid dates for all non-concept types
+                if (!informatieobjecttype.concept &&
+                    informatieobjecttype.beginGeldigheid.isBefore(LocalDate.now()) &&
+                    (informatieobjecttype.eindeGeldigheid == null ||
+                        informatieobjecttype.eindeGeldigheid.isAfter(LocalDate.now()))) {
+                    informatieobjecttype
+                } else {
+                    null
+                }
             }
+
+            results.addAll(filteredTypes)
         } while (currentResults?.next != null)
 
         return results

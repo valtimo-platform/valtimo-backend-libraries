@@ -35,12 +35,20 @@ class WritableJsonPropertyAccessor : JsonPropertyAccessor() {
     override fun write(context: EvaluationContext, target: Any?, name: String, newValue: Any?) {
         requireNotNull(target)
         val targetNode = getJsonNode(target)
-        val newValueNode = MapperSingleton.get().valueToTree<JsonNode>(newValue)
+        val newValueNode = toJsonNode(newValue)
 
         when (targetNode) {
             is ObjectNode -> targetNode.set<JsonNode>(name, newValueNode)
             is ArrayNode -> targetNode.add(newValueNode)
             else -> throw UnsupportedOperationException("Write to '${targetNode.javaClass}' is not supported")
+        }
+    }
+
+    private fun toJsonNode(value: Any?): JsonNode {
+        return if (value is Collection<*> && value.isEmpty()) {
+            MapperSingleton.get().createObjectNode()
+        } else {
+            MapperSingleton.get().valueToTree(value)
         }
     }
 

@@ -34,16 +34,20 @@ import com.ritense.note.exception.NoteNotFoundException
 import com.ritense.note.repository.NoteRepository
 import com.ritense.note.repository.SpecificationHelper
 import com.ritense.outbox.OutboxService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 
 @Transactional
+@Service
+@SkipComponentScan
 class NoteService(
     private val noteRepository: NoteRepository,
     private val userManagementService: UserManagementService,

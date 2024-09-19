@@ -22,14 +22,18 @@ import com.ritense.case.web.rest.dto.CaseListRowDto
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.search.SearchWithConfigRequest
 import com.ritense.document.service.DocumentSearchService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valueresolver.ValueResolverService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
+@Service
+@SkipComponentScan
 class CaseInstanceService(
     private val caseDefinitionService: CaseDefinitionService,
     private val caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,

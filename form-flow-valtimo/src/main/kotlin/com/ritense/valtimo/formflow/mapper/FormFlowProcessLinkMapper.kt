@@ -75,6 +75,18 @@ class FormFlowProcessLinkMapper(
 
     }
 
+    override fun toProcessLinkUpdateRequestDto(
+        deployDto: ProcessLinkDeployDto,
+        existingProcessLinkId: UUID
+    ): ProcessLinkUpdateRequestDto {
+        deployDto as FormFlowProcessLinkDeployDto
+
+        return FormFlowProcessLinkUpdateRequestDto(
+            id = existingProcessLinkId,
+            formFlowDefinitionId = deployDto.formFlowDefinitionId
+        )
+    }
+
     override fun toProcessLinkExportResponseDto(processLink: ProcessLink): ProcessLinkExportResponseDto {
         processLink as FormFlowProcessLink
         return FormFlowProcessLinkExportResponseDto(

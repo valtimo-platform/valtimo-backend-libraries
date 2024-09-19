@@ -36,7 +36,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Scope
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.client.RestClient
 
 @AutoConfiguration
 class SmartDocumentsAutoConfiguration {
@@ -79,13 +79,13 @@ class SmartDocumentsAutoConfiguration {
     @ConditionalOnMissingBean(SmartDocumentsClient::class)
     fun smartDocumentsClient(
         smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties,
-        smartDocumentsWebClientBuilder: WebClient.Builder,
+        smartDocumentsRestClientBuilder: RestClient.Builder,
         @Value("\${valtimo.smartdocuments.max-file-size-mb:10}") maxFileSize: Int,
         temporaryResourceStorageService: TemporaryResourceStorageService,
     ): SmartDocumentsClient {
         return SmartDocumentsClient(
             smartDocumentsConnectorProperties,
-            smartDocumentsWebClientBuilder,
+            smartDocumentsRestClientBuilder,
             maxFileSize,
             temporaryResourceStorageService,
         )

@@ -27,10 +27,14 @@ import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
 import com.ritense.valtimo.changelog.service.ChangelogService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.springframework.context.event.EventListener
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-open class CaseTabDeploymentService(
+@Service
+@SkipComponentScan
+class CaseTabDeploymentService(
     private val objectMapper: ObjectMapper,
     private val caseTabRepository: CaseTabRepository,
     private val changelogService: ChangelogService,
@@ -60,7 +64,7 @@ open class CaseTabDeploymentService(
 
     @Transactional
     @EventListener(DocumentDefinitionDeployedEvent::class)
-    open fun createCaseTabs(event: DocumentDefinitionDeployedEvent) {
+    fun createCaseTabs(event: DocumentDefinitionDeployedEvent) {
         if (event.documentDefinition().id().version() == 1L) {
             deploy(listOf(CaseDefinitionsTabCollection(event.documentDefinition().id().name(), STANDARD_CASE_TABS)))
         }

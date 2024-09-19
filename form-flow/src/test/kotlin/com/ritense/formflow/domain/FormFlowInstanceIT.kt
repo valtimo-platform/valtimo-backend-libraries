@@ -359,17 +359,24 @@ internal class FormFlowInstanceIT : BaseIntegrationTest() {
         formFlowInstance.getCurrentStep().open()
         formFlowInstance.complete(formFlowInstance.currentFormFlowStepInstanceId!!, JSONObject(submissionData))
         formFlowInstance = formFlowInstanceRepository.saveAndFlush(formFlowInstance)
-
-        formFlowInstance.getCurrentStep().open()
-
         assertEquals(
-            """{"firstName":"Asha","lastName":"Miller","person":{"birthDate":"1990"}}""",
+            """{"firstName":"Henk","lastName":null,"person":{"birthDate":"1990","fullName":"Asha Miller"}}""",
             formFlowInstance.getHistory()[0].submissionData
         )
+
+        formFlowInstance.getCurrentStep().open()
         assertEquals(
-            """{"firstName":null,"lastName":null,"person":{"fullName":"Asha Miller"}}""",
-            formFlowInstance.getHistory()[1].temporarySubmissionData
+            """{"person":{"username":"henkthebest"}}""",
+            formFlowInstance.getHistory()[1].submissionData
         )
+
+        formFlowInstance.complete(formFlowInstance.currentFormFlowStepInstanceId!!, JSONObject(submissionData))
+        formFlowInstance = formFlowInstanceRepository.saveAndFlush(formFlowInstance)
         assertNull(formFlowInstance.getHistory()[1].submissionData)
+
+        assertEquals(
+            """{"firstName":"Henk","lastName":null,"person":{"fullName":"Asha Miller","birthDate":"1990"}}""",
+            formFlowInstance.getSubmissionDataContext()
+        )
     }
 }

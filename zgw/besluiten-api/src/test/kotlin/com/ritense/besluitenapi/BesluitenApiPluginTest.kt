@@ -35,7 +35,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.springframework.http.ResponseEntity
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
@@ -197,7 +196,7 @@ class BesluitenApiPluginTest {
         val besluitInformatieObjectUrl =
             "https://some-host.nl/besluiten/api/v1/besluiteninformatieobjecten/${UUID.randomUUID()}"
         whenever(besluitenApiClient.createBesluitInformatieObject(any(), any(), any())).thenReturn(
-            ResponseEntity.ok().body(BesluitInformatieObject(besluitInformatieObjectUrl, documentUrl, besluitUrl))
+            BesluitInformatieObject(besluitInformatieObjectUrl, documentUrl, besluitUrl)
         )
         besluitenApiPlugin.linkDocumentToBesluit(
             documentUrl,

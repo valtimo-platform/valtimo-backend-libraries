@@ -30,12 +30,16 @@ import com.ritense.objectenapi.management.ObjectManagementInfoProvider
 import com.ritense.objectsapi.service.ObjectSyncService
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.service.PluginService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.springframework.context.event.EventListener
 import org.springframework.data.domain.PageRequest
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 
 @Transactional
+@Service
+@SkipComponentScan
 class DocumentObjectenApiSyncService(
     private val documentObjectenApiSyncRepository: DocumentObjectenApiSyncRepository,
     private val objectObjectManagementInfoProvider: ObjectManagementInfoProvider,

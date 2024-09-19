@@ -269,8 +269,6 @@ public class CamundaTaskService {
         taskService.complete(taskId);
         Hibernate.initialize(task.getVariableInstances());
         Hibernate.initialize(task.getIdentityLinks());
-        entityManager.detach(task);
-        task.getIdentityLinks().forEach(entityManager::detach); // Prevent Valtimo from saving IdentityLinks
         outboxService.send(() -> new TaskCompleted(taskId, objectMapper.valueToTree(task)));
     }
 
@@ -345,7 +343,6 @@ public class CamundaTaskService {
         var processDefinitionKeyPath = taskRoot.get(PROCESS_DEFINITION).get(KEY);
 
         query.multiselect(taskRoot, executionIdPath, businessKeyPath, processDefinitionIdPath, processDefinitionKeyPath);
-        query.distinct(true);
         query.where(specification.toPredicate(taskRoot, query, cb));
         query.groupBy(taskRoot, executionIdPath, businessKeyPath, processDefinitionIdPath, processDefinitionKeyPath);
         query.orderBy(getOrderBy(cb, taskRoot, pageable.getSort()));
@@ -390,14 +387,16 @@ public class CamundaTaskService {
             })
             .toList();
 
-        var cbCount = entityManager.getCriteriaBuilder();
-        var queryCount = cbCount.createQuery();
-        var taskCountRoot = queryCount.from(CamundaTask.class);
-        queryCount.select(cbCount.countDistinct(taskCountRoot));
-        queryCount.where(specification.toPredicate(taskCountRoot, queryCount, cbCount));
-        var results = entityManager.createQuery(queryCount).getResultList();
-        long total = results.isEmpty() ? 0 : (long) results.get(0);
-        return new PageImpl<>(tasks, pageable, total);
+        return new PageImpl<>(tasks, pageable, countTasksFiltered(specification));
+    }
+
+    private long countTasksFiltered(Specification<CamundaTask> specification) {
+        var cb = entityManager.getCriteriaBuilder();
+        var countQuery = cb.createQuery(Long.class);
+        var taskCountRoot = countQuery.from(CamundaTask.class);
+        countQuery.select(cb.countDistinct(taskCountRoot));
+        countQuery.where(specification.toPredicate(taskCountRoot, countQuery, cb));
+        return entityManager.createQuery(countQuery).getSingleResult();
     }
 
     @Transactional(readOnly = true)
