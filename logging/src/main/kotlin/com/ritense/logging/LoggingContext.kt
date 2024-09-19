@@ -17,15 +17,14 @@
 package com.ritense.logging
 
 import mu.withLoggingContext
-import java.util.concurrent.Callable
 
 fun <T> withLoggingContext(
     contextKey: Class<*>,
     contextValue: String?,
-    callable: Callable<T>
+    callable: Function0<T>
 ): T {
     return withLoggingContext(mapOf(contextKey.canonicalName to contextValue), true) {
-        callable.call()
+        callable.invoke()
     }
 }
 

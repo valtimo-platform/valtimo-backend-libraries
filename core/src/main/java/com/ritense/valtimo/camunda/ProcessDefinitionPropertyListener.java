@@ -51,7 +51,7 @@ public class ProcessDefinitionPropertyListener {
 
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReadyEvent() {
-        AuthorizationContext.runWithoutAuthorization(() ->
+        AuthorizationContext.runWithoutAuthorization(() -> {
             camundaRepositoryService.findProcessDefinitions(byLatestVersion()).forEach(processDefinition ->
                 withLoggingContext(CamundaProcessDefinition.class, processDefinition.getId(), () ->
                     saveProcessDefinitionProperties(
@@ -59,8 +59,9 @@ public class ProcessDefinitionPropertyListener {
                         isSystemProcess(repositoryService.getBpmnModelInstance(processDefinition.getId()))
                     )
                 )
-            )
-        );
+            );
+            return null;
+        });
     }
 
     @EventListener(ProcessDefinitionDeployedEvent.class)
@@ -69,8 +70,9 @@ public class ProcessDefinitionPropertyListener {
         saveProcessDefinitionProperties(event.getProcessDefinitionKey(), isSystemProcess(bpmnModelInstance));
     }
 
-    private void saveProcessDefinitionProperties(String processDefinitionKey, boolean systemProcess) {
+    private int saveProcessDefinitionProperties(String processDefinitionKey, boolean systemProcess) {
         processDefinitionPropertiesRepository.save(new ProcessDefinitionProperties(processDefinitionKey, systemProcess));
+        return 1;
     }
 
     private boolean isSystemProcess(ModelInstance processModelInstance) {
