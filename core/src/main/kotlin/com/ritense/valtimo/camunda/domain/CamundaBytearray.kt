@@ -20,44 +20,62 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import org.hibernate.annotations.Immutable
 import java.time.LocalDateTime
 
 @Entity
+@Immutable
 @Table(name = "ACT_GE_BYTEARRAY")
 class CamundaBytearray(
 
     @Id
-    @Column(name = "ID_")
+    @Column(name = "ID_", insertable = false, updatable = false)
     val id: String,
 
-    @Column(name = "REV_")
+    @Column(name = "REV_", insertable = false, updatable = false)
     val revision: Int,
 
-    @Column(name = "NAME_")
+    @Column(name = "NAME_", insertable = false, updatable = false)
     val name: String?,
 
-    @Column(name = "DEPLOYMENT_ID_")
+    @Column(name = "DEPLOYMENT_ID_", insertable = false, updatable = false)
     val deploymentId: String?,
 
-    @Column(name = "BYTES_")
+    @Column(name = "BYTES_", insertable = false, updatable = false)
     val bytes: ByteArray?,
 
-    @Column(name = "GENERATED_")
+    @Column(name = "GENERATED_", insertable = false, updatable = false)
     val generated: Boolean?,
 
-    @Column(name = "TENANT_ID_")
+    @Column(name = "TENANT_ID_", insertable = false, updatable = false)
     val tenantId: String?,
 
-    @Column(name = "TYPE_")
+    @Column(name = "TYPE_", insertable = false, updatable = false)
     val type: Int,
 
-    @Column(name = "CREATE_TIME_")
+    @Column(name = "CREATE_TIME_", insertable = false, updatable = false)
     val createTime: LocalDateTime?,
 
-    @Column(name = "ROOT_PROC_INST_ID_")
+    @Column(name = "ROOT_PROC_INST_ID_", insertable = false, updatable = false)
     val rootProcessInstanceId: String?,
 
-    @Column(name = "REMOVAL_TIME_")
+    @Column(name = "REMOVAL_TIME_", insertable = false, updatable = false)
     val removalTime: LocalDateTime?
 
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is CamundaBytearray) return false
+
+        if (id != other.id) return false
+        if (revision != other.revision) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + revision
+        return result
+    }
+}

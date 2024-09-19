@@ -41,7 +41,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.net.URI
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 import kotlin.test.assertEquals
 
 internal class CatalogiApiPluginTest : BaseTest() {
@@ -82,10 +82,16 @@ internal class CatalogiApiPluginTest : BaseTest() {
         )
 
         val mockInformatieobjecttype1 = mock<Informatieobjecttype>()
+        whenever(mockInformatieobjecttype1.concept).thenReturn(false)
+        whenever(mockInformatieobjecttype1.beginGeldigheid).thenReturn(LocalDate.now().minusDays(1))
+        whenever(mockInformatieobjecttype1.eindeGeldigheid).thenReturn(null)
         val mockInformatieobjecttypeUrl1 = URI("https://example.com/informatieobjecttype/1")
         whenever(mockZaaktypeInformatieobjecttype1.informatieobjecttype)
             .thenReturn(mockInformatieobjecttypeUrl1)
         val mockInformatieobjecttype2 = mock<Informatieobjecttype>()
+        whenever(mockInformatieobjecttype2.concept).thenReturn(false)
+        whenever(mockInformatieobjecttype2.beginGeldigheid).thenReturn(LocalDate.now().minusDays(1))
+        whenever(mockInformatieobjecttype2.eindeGeldigheid).thenReturn(null)
         val mockInformatieobjecttypeUrl2 = URI("https://example.com/informatieobjecttype/2")
         whenever(mockZaaktypeInformatieobjecttype2.informatieobjecttype)
             .thenReturn(mockInformatieobjecttypeUrl2)
@@ -148,10 +154,16 @@ internal class CatalogiApiPluginTest : BaseTest() {
         whenever(resultPage2.results).thenReturn(listOf(mockZaaktypeInformatieobjecttype2))
 
         val mockInformatieobjecttype1 = mock<Informatieobjecttype>()
+        whenever(mockInformatieobjecttype1.concept).thenReturn(false)
+        whenever(mockInformatieobjecttype1.beginGeldigheid).thenReturn(LocalDate.now().minusDays(1))
+        whenever(mockInformatieobjecttype1.eindeGeldigheid).thenReturn(null)
         val mockInformatieobjecttypeUrl1 = URI("https://example.com/informatieobjecttype/1")
         whenever(mockZaaktypeInformatieobjecttype1.informatieobjecttype)
             .thenReturn(mockInformatieobjecttypeUrl1)
         val mockInformatieobjecttype2 = mock<Informatieobjecttype>()
+        whenever(mockInformatieobjecttype2.concept).thenReturn(false)
+        whenever(mockInformatieobjecttype2.beginGeldigheid).thenReturn(LocalDate.now().minusDays(1))
+        whenever(mockInformatieobjecttype2.eindeGeldigheid).thenReturn(null)
         val mockInformatieobjecttypeUrl2 = URI("https://example.com/informatieobjecttype/2")
         whenever(mockZaaktypeInformatieobjecttype2.informatieobjecttype)
             .thenReturn(mockInformatieobjecttypeUrl2)
@@ -177,6 +189,192 @@ internal class CatalogiApiPluginTest : BaseTest() {
         assertEquals(2, informatieobjecttypes.size)
         assertEquals(mockInformatieobjecttype1, informatieobjecttypes[0])
         assertEquals(mockInformatieobjecttype2, informatieobjecttypes[1])
+    }
+
+    @Test
+    fun `should filter informatieobjecttypes that are still in concept`() {
+        val zaakTypeUrl = URI("https://example.com/zaaktype")
+        val resultPage = mock<Page<ZaaktypeInformatieobjecttype>>()
+        whenever(
+            client.getZaaktypeInformatieobjecttypes(
+                plugin.authenticationPluginConfiguration,
+                plugin.url,
+                ZaaktypeInformatieobjecttypeRequest(
+                    zaaktype = zaakTypeUrl,
+                    page = 1
+                )
+            )
+        ).thenReturn(resultPage)
+
+        val mockZaaktypeInformatieobjecttype1 = mock<ZaaktypeInformatieobjecttype>()
+        val mockZaaktypeInformatieobjecttype2 = mock<ZaaktypeInformatieobjecttype>()
+        whenever(resultPage.results).thenReturn(
+            listOf(
+                mockZaaktypeInformatieobjecttype1,
+                mockZaaktypeInformatieobjecttype2
+            )
+        )
+
+        val mockInformatieobjecttype1 = mock<Informatieobjecttype>()
+        whenever(mockInformatieobjecttype1.concept).thenReturn(true)
+        whenever(mockInformatieobjecttype1.beginGeldigheid).thenReturn(LocalDate.now().minusDays(1))
+        whenever(mockInformatieobjecttype1.eindeGeldigheid).thenReturn(null)
+        val mockInformatieobjecttypeUrl1 = URI("https://example.com/informatieobjecttype/1")
+        val mockInformatieobjecttype2 = mock<Informatieobjecttype>()
+        whenever(mockInformatieobjecttype2.concept).thenReturn(false)
+        whenever(mockInformatieobjecttype2.beginGeldigheid).thenReturn(LocalDate.now().minusDays(1))
+        whenever(mockInformatieobjecttype2.eindeGeldigheid).thenReturn(null)
+        val mockInformatieobjecttypeUrl2 = URI("https://example.com/informatieobjecttype/2")
+
+        whenever(mockZaaktypeInformatieobjecttype1.informatieobjecttype)
+            .thenReturn(mockInformatieobjecttypeUrl1)
+        whenever(mockZaaktypeInformatieobjecttype2.informatieobjecttype)
+            .thenReturn(mockInformatieobjecttypeUrl2)
+
+        whenever(
+            client.getInformatieobjecttype(
+                plugin.authenticationPluginConfiguration,
+                plugin.url,
+                mockInformatieobjecttypeUrl1
+            )
+        ).thenReturn(mockInformatieobjecttype1)
+
+        whenever(
+            client.getInformatieobjecttype(
+                plugin.authenticationPluginConfiguration,
+                plugin.url,
+                mockInformatieobjecttypeUrl2
+            )
+        ).thenReturn(mockInformatieobjecttype2)
+
+        val informatieobjecttypes = plugin.getInformatieobjecttypes(zaakTypeUrl)
+
+        assertEquals(1, informatieobjecttypes.size)
+        assertEquals(mockInformatieobjecttype2, informatieobjecttypes[0])
+    }
+
+    @Test
+    fun `should filter informatieobjecttypes that are not valid yet`() {
+        val zaakTypeUrl = URI("https://example.com/zaaktype")
+        val resultPage = mock<Page<ZaaktypeInformatieobjecttype>>()
+        whenever(
+            client.getZaaktypeInformatieobjecttypes(
+                plugin.authenticationPluginConfiguration,
+                plugin.url,
+                ZaaktypeInformatieobjecttypeRequest(
+                    zaaktype = zaakTypeUrl,
+                    page = 1
+                )
+            )
+        ).thenReturn(resultPage)
+
+        val mockZaaktypeInformatieobjecttype1 = mock<ZaaktypeInformatieobjecttype>()
+        val mockZaaktypeInformatieobjecttype2 = mock<ZaaktypeInformatieobjecttype>()
+        whenever(resultPage.results).thenReturn(
+            listOf(
+                mockZaaktypeInformatieobjecttype1,
+                mockZaaktypeInformatieobjecttype2
+            )
+        )
+
+        val mockInformatieobjecttype1 = mock<Informatieobjecttype>()
+        whenever(mockInformatieobjecttype1.concept).thenReturn(false)
+        whenever(mockInformatieobjecttype1.beginGeldigheid).thenReturn(LocalDate.now().plusDays(1))
+        whenever(mockInformatieobjecttype1.eindeGeldigheid).thenReturn(null)
+        val mockInformatieobjecttypeUrl1 = URI("https://example.com/informatieobjecttype/1")
+        val mockInformatieobjecttype2 = mock<Informatieobjecttype>()
+        whenever(mockInformatieobjecttype2.concept).thenReturn(false)
+        whenever(mockInformatieobjecttype2.beginGeldigheid).thenReturn(LocalDate.now().minusDays(1))
+        whenever(mockInformatieobjecttype2.eindeGeldigheid).thenReturn(null)
+        val mockInformatieobjecttypeUrl2 = URI("https://example.com/informatieobjecttype/2")
+
+        whenever(mockZaaktypeInformatieobjecttype1.informatieobjecttype)
+            .thenReturn(mockInformatieobjecttypeUrl1)
+        whenever(mockZaaktypeInformatieobjecttype2.informatieobjecttype)
+            .thenReturn(mockInformatieobjecttypeUrl2)
+
+        whenever(
+            client.getInformatieobjecttype(
+                plugin.authenticationPluginConfiguration,
+                plugin.url,
+                mockInformatieobjecttypeUrl1
+            )
+        ).thenReturn(mockInformatieobjecttype1)
+
+        whenever(
+            client.getInformatieobjecttype(
+                plugin.authenticationPluginConfiguration,
+                plugin.url,
+                mockInformatieobjecttypeUrl2
+            )
+        ).thenReturn(mockInformatieobjecttype2)
+
+        val informatieobjecttypes = plugin.getInformatieobjecttypes(zaakTypeUrl)
+
+        assertEquals(1, informatieobjecttypes.size)
+        assertEquals(mockInformatieobjecttype2, informatieobjecttypes[0])
+    }
+
+    @Test
+    fun `should filter informatieojecttypes that are no longer valid`() {
+        val zaakTypeUrl = URI("https://example.com/zaaktype")
+        val resultPage = mock<Page<ZaaktypeInformatieobjecttype>>()
+        whenever(
+            client.getZaaktypeInformatieobjecttypes(
+                plugin.authenticationPluginConfiguration,
+                plugin.url,
+                ZaaktypeInformatieobjecttypeRequest(
+                    zaaktype = zaakTypeUrl,
+                    page = 1
+                )
+            )
+        ).thenReturn(resultPage)
+
+        val mockZaaktypeInformatieobjecttype1 = mock<ZaaktypeInformatieobjecttype>()
+        val mockZaaktypeInformatieobjecttype2 = mock<ZaaktypeInformatieobjecttype>()
+        whenever(resultPage.results).thenReturn(
+            listOf(
+                mockZaaktypeInformatieobjecttype1,
+                mockZaaktypeInformatieobjecttype2
+            )
+        )
+
+        val mockInformatieobjecttype1 = mock<Informatieobjecttype>()
+        whenever(mockInformatieobjecttype1.concept).thenReturn(false)
+        whenever(mockInformatieobjecttype1.beginGeldigheid).thenReturn(LocalDate.now().minusWeeks(1))
+        whenever(mockInformatieobjecttype1.eindeGeldigheid).thenReturn(LocalDate.now().minusDays(1))
+        val mockInformatieobjecttypeUrl1 = URI("https://example.com/informatieobjecttype/1")
+        val mockInformatieobjecttype2 = mock<Informatieobjecttype>()
+        whenever(mockInformatieobjecttype2.concept).thenReturn(false)
+        whenever(mockInformatieobjecttype2.beginGeldigheid).thenReturn(LocalDate.now().minusDays(1))
+        whenever(mockInformatieobjecttype2.eindeGeldigheid).thenReturn(null)
+        val mockInformatieobjecttypeUrl2 = URI("https://example.com/informatieobjecttype/2")
+
+        whenever(mockZaaktypeInformatieobjecttype1.informatieobjecttype)
+            .thenReturn(mockInformatieobjecttypeUrl1)
+        whenever(mockZaaktypeInformatieobjecttype2.informatieobjecttype)
+            .thenReturn(mockInformatieobjecttypeUrl2)
+
+        whenever(
+            client.getInformatieobjecttype(
+                plugin.authenticationPluginConfiguration,
+                plugin.url,
+                mockInformatieobjecttypeUrl1
+            )
+        ).thenReturn(mockInformatieobjecttype1)
+
+        whenever(
+            client.getInformatieobjecttype(
+                plugin.authenticationPluginConfiguration,
+                plugin.url,
+                mockInformatieobjecttypeUrl2
+            )
+        ).thenReturn(mockInformatieobjecttype2)
+
+        val informatieobjecttypes = plugin.getInformatieobjecttypes(zaakTypeUrl)
+
+        assertEquals(1, informatieobjecttypes.size)
+        assertEquals(mockInformatieobjecttype2, informatieobjecttypes[0])
     }
 
     @Test
@@ -302,7 +500,6 @@ internal class CatalogiApiPluginTest : BaseTest() {
 
     @Test
     fun `should get besluit type`() {
-        val exampleUrl = URI("example.com")
         val documentId = UUID.randomUUID().toString()
         val document = mock<Document>()
         val besluittype = "Allocated"
