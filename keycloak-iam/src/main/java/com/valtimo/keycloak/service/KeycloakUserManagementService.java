@@ -48,6 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 
 public class KeycloakUserManagementService implements UserManagementService {
     private static final Logger logger = LoggerFactory.getLogger(KeycloakUserManagementService.class);
@@ -205,12 +206,14 @@ public class KeycloakUserManagementService implements UserManagementService {
 
     @Override
     public ManageableUser getCurrentUser() {
-        if (SecurityUtils.getCurrentUserAuthentication() != null) {
+        if (SecurityUtils.getCurrentUserAuthentication() == null) {
+            return SYSTEM_VALTIMO_USER;
+        } else if (SecurityUtils.getCurrentUserAuthentication() instanceof AnonymousAuthenticationToken) {
+            return null;
+        } else {
             return findByEmail(SecurityUtils.getCurrentUserLogin()).orElseThrow(() ->
                 new IllegalStateException("No user found for email: ${currentUserService.currentUser.email}")
             );
-        } else {
-            return SYSTEM_VALTIMO_USER;
         }
     }
 
@@ -265,7 +268,10 @@ public class KeycloakUserManagementService implements UserManagementService {
             }
             try {
                 for (GroupRepresentation group : roleGroups) {
-                    usersList.add(keycloakService.realmResource(keycloak).groups().group(group.getId()).members(0, MAX_USERS));
+                    usersList.add(keycloakService.realmResource(keycloak)
+                        .groups()
+                        .group(group.getId())
+                        .members(0, MAX_USERS));
                 }
             } catch (NotFoundException e) {
                 logger.debug("Failed to find users by group. Error: {}", e.getMessage());

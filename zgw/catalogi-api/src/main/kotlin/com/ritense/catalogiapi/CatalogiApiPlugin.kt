@@ -44,8 +44,10 @@ import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valtimo.contract.validation.Url
+import com.ritense.zgw.LoggingConstants.CATALOGI_API
 import com.ritense.zgw.Page
 import mu.KotlinLogging
+import mu.withLoggingContext
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.net.URI
 import java.time.LocalDate
@@ -78,15 +80,24 @@ class CatalogiApiPlugin(
         @PluginActionProperty statustype: String,
         @PluginActionProperty processVariable: String,
     ) {
-        val statustypeUrl = if (statustype.matches(HTTPS_REGEX)) {
-            statustype
-        } else {
-            val document = AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
-            val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
-            getStatustypeByOmschrijving(zaaktypeUrl, statustype).url!!.toASCIIString()
-        }
+        withLoggingContext(
+            CATALOGI_API.STATUSTYPE to statustype
+        ) {
+            logger.debug { "Retrieving statustype: $statustype and storing it in process variable: $processVariable" }
 
-        execution.setVariable(processVariable, statustypeUrl)
+            val statustypeUrl = if (statustype.matches(HTTPS_REGEX)) {
+                statustype
+            } else {
+                val document =
+                    AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
+                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
+                getStatustypeByOmschrijving(zaaktypeUrl, statustype).url!!.toASCIIString()
+            }
+
+            logger.info { "Setting process variable $processVariable with (retrieved) statustype URL: $statustypeUrl" }
+
+            execution.setVariable(processVariable, statustypeUrl)
+        }
     }
 
     @PluginAction(
@@ -100,15 +111,23 @@ class CatalogiApiPlugin(
         @PluginActionProperty resultaattype: String,
         @PluginActionProperty processVariable: String,
     ) {
-        val resultaattypeUrl = if (resultaattype.matches(HTTPS_REGEX)) {
-            resultaattype
-        } else {
-            val document = AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
-            val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
-            getResultaattypeByOmschrijving(zaaktypeUrl, resultaattype).url!!.toASCIIString()
-        }
+        withLoggingContext(
+            CATALOGI_API.RESULTAATTYPE to resultaattype,
+        ) {
+            logger.debug { "Retrieving resultaattype: $resultaattype and storing it in process variable: $processVariable" }
+            val resultaattypeUrl = if (resultaattype.matches(HTTPS_REGEX)) {
+                resultaattype
+            } else {
+                val document =
+                    AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
+                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
+                getResultaattypeByOmschrijving(zaaktypeUrl, resultaattype).url!!.toASCIIString()
+            }
 
-        execution.setVariable(processVariable, resultaattypeUrl)
+            logger.info { "Setting process variable $processVariable with (retrieved) resultaattype URL: $resultaattypeUrl" }
+
+            execution.setVariable(processVariable, resultaattypeUrl)
+        }
     }
 
     @PluginAction(
@@ -122,208 +141,255 @@ class CatalogiApiPlugin(
         @PluginActionProperty besluittype: String,
         @PluginActionProperty processVariable: String,
     ) {
-        val besluittypeUrl = if (besluittype.matches(HTTPS_REGEX)) {
-            besluittype
-        } else {
-            val document = AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
-            val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
-            getBesluittypeByOmschrijving(zaaktypeUrl, besluittype).url!!.toASCIIString()
-        }
+        withLoggingContext(
+            CATALOGI_API.BESLUITTYPE to besluittype,
+        ) {
+            logger.debug { "Retrieving besluittype: $besluittype and storing it in process variable: $processVariable" }
+            val besluittypeUrl = if (besluittype.matches(HTTPS_REGEX)) {
+                besluittype
+            } else {
+                val document =
+                    AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
+                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
+                getBesluittypeByOmschrijving(zaaktypeUrl, besluittype).url!!.toASCIIString()
+            }
 
-        execution.setVariable(processVariable, besluittypeUrl)
+            logger.info { "Setting process variable $processVariable with (retrieved) besluittype URL: $besluittypeUrl" }
+            execution.setVariable(processVariable, besluittypeUrl)
+        }
     }
 
     fun getInformatieobjecttypes(
         zaakTypeUrl: URI,
     ): List<Informatieobjecttype> {
-        var currentPage = 1
-        var currentResults: Page<ZaaktypeInformatieobjecttype>?
-        val results = mutableListOf<Informatieobjecttype>()
+        withLoggingContext(CATALOGI_API.ZAAKTYPEINFORMATIEOBJECTTYPE to zaakTypeUrl.toString()) {
+            var currentPage = 1
+            var currentResults: Page<ZaaktypeInformatieobjecttype>?
+            val results = mutableListOf<Informatieobjecttype>()
 
-        do {
-            logger.debug { "Getting page of ZaaktypeInformatieobjecttypes, page $currentPage for zaaktype $zaakTypeUrl" }
-            currentResults = client.getZaaktypeInformatieobjecttypes(
-                authenticationPluginConfiguration,
-                url,
-                ZaaktypeInformatieobjecttypeRequest(
-                    zaaktype = zaakTypeUrl,
-                    page = currentPage++
-                )
-            )
-
-            val filteredTypes =  currentResults.results.mapNotNull {
-                logger.trace { "Getting Informatieobjecttype ${it.informatieobjecttype}" }
-
-                val informatieobjecttype = client.getInformatieobjecttype(
+            do {
+                logger.debug { "Getting page $currentPage of ZaaktypeInformatieobjecttype for zaaktype $zaakTypeUrl" }
+                currentResults = client.getZaaktypeInformatieobjecttypes(
                     authenticationPluginConfiguration,
                     url,
-                    it.informatieobjecttype
+                    ZaaktypeInformatieobjecttypeRequest(
+                        zaaktype = zaakTypeUrl,
+                        page = currentPage++
+                    )
                 )
 
-                // Filter the types based on the geldigheid dates for all non-concept types
-                if (!informatieobjecttype.concept &&
-                    informatieobjecttype.beginGeldigheid.isBefore(LocalDate.now()) &&
-                    (informatieobjecttype.eindeGeldigheid == null ||
-                        informatieobjecttype.eindeGeldigheid.isAfter(LocalDate.now()))) {
-                    informatieobjecttype
-                } else {
-                    null
+                val filteredTypes = currentResults.results.mapNotNull {
+                    logger.trace { "Getting Informatieobjecttype ${it.informatieobjecttype}" }
+
+                    val informatieobjecttype = client.getInformatieobjecttype(
+                        authenticationPluginConfiguration,
+                        url,
+                        it.informatieobjecttype
+                    )
+
+                    // Filter the types based on the geldigheid dates for all non-concept types
+                    if (!informatieobjecttype.concept &&
+                        informatieobjecttype.beginGeldigheid.isBefore(LocalDate.now()) &&
+                        (informatieobjecttype.eindeGeldigheid == null ||
+                            informatieobjecttype.eindeGeldigheid.isAfter(LocalDate.now()))
+                    ) {
+                        informatieobjecttype
+                    } else {
+                        null
+                    }
                 }
-            }
 
-            results.addAll(filteredTypes)
-        } while (currentResults?.next != null)
+                results.addAll(filteredTypes)
+            } while (currentResults?.next != null)
 
-        return results
+            return results
+        }
     }
 
     fun getInformatieobjecttype(
         typeUrl: URI,
     ): Informatieobjecttype {
-        return client.getInformatieobjecttype(
-            authenticationPluginConfiguration,
-            url,
-            typeUrl
-        )
+        withLoggingContext(CATALOGI_API.INFORMATIEOBJECTTYPE to typeUrl.toString()) {
+            logger.debug { "Getting Informatieobjecttype for URL: $typeUrl" }
+            return client.getInformatieobjecttype(
+                authenticationPluginConfiguration,
+                url,
+                typeUrl
+            )
+        }
     }
 
     fun getRoltypes(zaakTypeUrl: URI): List<Roltype> {
-        var currentPage = 1
-        var currentResults: Page<Roltype>?
-        val results = mutableListOf<Roltype>()
+        withLoggingContext(CATALOGI_API.ROLTYPE to zaakTypeUrl.toString()) {
+            var currentPage = 1
+            var currentResults: Page<Roltype>?
+            val results = mutableListOf<Roltype>()
 
-        do {
-            logger.debug { "Getting page of Roltypes, page $currentPage for zaaktype $zaakTypeUrl" }
-            currentResults = client.getRoltypen(
-                authenticationPluginConfiguration,
-                url,
-                RoltypeRequest(
-                    zaaktype = zaakTypeUrl,
-                    page = currentPage++
+            do {
+                logger.debug { "Getting page $currentPage of Roltypes for zaaktype $zaakTypeUrl" }
+                currentResults = client.getRoltypen(
+                    authenticationPluginConfiguration,
+                    url,
+                    RoltypeRequest(
+                        zaaktype = zaakTypeUrl,
+                        page = currentPage++
+                    )
                 )
-            )
-            results.addAll(currentResults.results)
-        } while (currentResults?.next != null)
+                results.addAll(currentResults.results)
+            } while (currentResults?.next != null)
 
-        return results
+            return results
+        }
     }
 
     fun getStatustypen(zaakTypeUrl: URI): List<Statustype> {
-        var currentPage = 1
-        var currentResults: Page<Statustype>?
-        val results = mutableListOf<Statustype>()
+        withLoggingContext(CATALOGI_API.STATUSTYPE to zaakTypeUrl.toString()) {
+            var currentPage = 1
+            var currentResults: Page<Statustype>?
+            val results = mutableListOf<Statustype>()
 
-        do {
-            logger.debug { "Getting page of statustypen, page $currentPage for zaaktype $zaakTypeUrl" }
-            currentResults = client.getStatustypen(
-                authenticationPluginConfiguration,
-                url,
-                StatustypeRequest(
-                    zaaktype = zaakTypeUrl,
-                    page = currentPage++
+            do {
+                logger.debug { "Getting page $currentPage of statustypen for zaaktype $zaakTypeUrl" }
+                currentResults = client.getStatustypen(
+                    authenticationPluginConfiguration,
+                    url,
+                    StatustypeRequest(
+                        zaaktype = zaakTypeUrl,
+                        page = currentPage++
+                    )
                 )
-            )
-            results.addAll(currentResults.results)
-        } while (currentResults?.next != null)
+                results.addAll(currentResults.results)
+            } while (currentResults?.next != null)
 
-        return results
+            return results
+        }
     }
 
     fun getStatustype(statusTypeUrl: URI): Statustype {
-        return client.getStatustype(authenticationPluginConfiguration, url, statusTypeUrl)
+        withLoggingContext(CATALOGI_API.STATUSTYPE to statusTypeUrl.toString()) {
+            logger.debug { "Getting Statustype for URL: $statusTypeUrl" }
+            return client.getStatustype(authenticationPluginConfiguration, url, statusTypeUrl)
+        }
     }
 
     fun getStatustypeByOmschrijving(zaakTypeUrl: URI, omschrijving: String): Statustype {
-        return getStatustypen(zaakTypeUrl)
-            .singleOrNull { it.omschrijving.equals(omschrijving, ignoreCase = true) }
-            ?: throw StatustypeNotFoundException("With 'omschrijving': '$omschrijving'")
+        withLoggingContext(
+            CATALOGI_API.STATUSTYPE to zaakTypeUrl.toString(),
+        ) {
+            logger.debug { "Getting Statustype by omschrijving: $omschrijving for zaaktype $zaakTypeUrl" }
+            return getStatustypen(zaakTypeUrl)
+                .singleOrNull { it.omschrijving.equals(omschrijving, ignoreCase = true) }
+                ?: throw StatustypeNotFoundException("With 'omschrijving': '$omschrijving'")
+        }
     }
 
     fun getResultaattypen(zaakTypeUrl: URI): List<Resultaattype> {
-        var currentPage = 1
-        var currentResults: Page<Resultaattype>?
-        val results = mutableListOf<Resultaattype>()
+        withLoggingContext(CATALOGI_API.RESULTAATTYPE to zaakTypeUrl.toString()) {
+            var currentPage = 1
+            var currentResults: Page<Resultaattype>?
+            val results = mutableListOf<Resultaattype>()
 
-        do {
-            logger.debug { "Getting page of resultaattypen, page $currentPage for zaaktype $zaakTypeUrl" }
-            currentResults = client.getResultaattypen(
-                authenticationPluginConfiguration,
-                url,
-                ResultaattypeRequest(
-                    zaaktype = zaakTypeUrl,
-                    page = currentPage++
+            do {
+                logger.debug { "Getting page $currentPage of resultaattypen for zaaktype $zaakTypeUrl" }
+                currentResults = client.getResultaattypen(
+                    authenticationPluginConfiguration,
+                    url,
+                    ResultaattypeRequest(
+                        zaaktype = zaakTypeUrl,
+                        page = currentPage++
+                    )
                 )
-            )
-            results.addAll(currentResults.results)
-        } while (currentResults?.next != null)
+                results.addAll(currentResults.results)
+            } while (currentResults?.next != null)
 
-        return results
+            return results
+        }
     }
 
     fun getResultaattype(resultaatTypeUrl: URI): Resultaattype {
-        return client.getResultaattype(authenticationPluginConfiguration, url, resultaatTypeUrl)
+        withLoggingContext(CATALOGI_API.RESULTAATTYPE to resultaatTypeUrl.toString()) {
+            logger.debug { "Getting Resultaattype for URL: $resultaatTypeUrl" }
+            return client.getResultaattype(authenticationPluginConfiguration, url, resultaatTypeUrl)
+        }
     }
 
     fun getResultaattypeByOmschrijving(zaakTypeUrl: URI, omschrijving: String): Resultaattype {
-        return getResultaattypen(zaakTypeUrl)
-            .singleOrNull { it.omschrijving.equals(omschrijving, ignoreCase = true) }
-            ?: throw ResultaattypeNotFoundException("With 'omschrijving': '$omschrijving'")
+        withLoggingContext(
+            CATALOGI_API.RESULTAATTYPE to zaakTypeUrl.toString()
+        ) {
+            logger.debug { "Getting Resultaattype by omschrijving: $omschrijving for zaaktype $zaakTypeUrl" }
+            return getResultaattypen(zaakTypeUrl)
+                .singleOrNull { it.omschrijving.equals(omschrijving, ignoreCase = true) }
+                ?: throw ResultaattypeNotFoundException("With 'omschrijving': '$omschrijving'")
+        }
     }
 
     fun getBesluittypen(zaakTypeUrl: URI): List<Besluittype> {
-        var currentPage = 1
-        var currentResults: Page<Besluittype>?
-        val results = mutableListOf<Besluittype>()
+        withLoggingContext(CATALOGI_API.BESLUITTYPE to zaakTypeUrl.toString()) {
+            var currentPage = 1
+            var currentResults: Page<Besluittype>?
+            val results = mutableListOf<Besluittype>()
 
-        do {
-            logger.debug { "Getting page of besluittypen, page $currentPage for zaaktype $zaakTypeUrl" }
-            currentResults = client.getBesluittypen(
-                authenticationPluginConfiguration,
-                url,
-                BesluittypeRequest(
-                    zaaktypen = zaakTypeUrl,
-                    page = currentPage++
+            do {
+                logger.debug { "Getting page $currentPage of besluittypen for zaaktype $zaakTypeUrl" }
+                currentResults = client.getBesluittypen(
+                    authenticationPluginConfiguration,
+                    url,
+                    BesluittypeRequest(
+                        zaaktypen = zaakTypeUrl,
+                        page = currentPage++
+                    )
                 )
-            )
-            results.addAll(currentResults.results)
-        } while (currentResults?.next != null)
+                results.addAll(currentResults.results)
+            } while (currentResults?.next != null)
 
-        return results
+            return results
+        }
     }
 
     fun getEigenschappen(zaakTypeUrl: URI): List<Eigenschap> {
-        return Page.getAll { page ->
-            logger.debug { "Getting page of eigenschappen, page $page for zaaktype $zaakTypeUrl" }
-            client.getEigenschappen(
-                authenticationPluginConfiguration,
-                url,
-                EigenschapRequest(
-                    zaaktype = zaakTypeUrl,
-                    page = page
+        withLoggingContext(CATALOGI_API.EIGENSCHAP to zaakTypeUrl.toString()) {
+            return Page.getAll { page ->
+                logger.debug { "Getting page $page of eigenschappen for zaaktype $zaakTypeUrl" }
+                client.getEigenschappen(
+                    authenticationPluginConfiguration,
+                    url,
+                    EigenschapRequest(
+                        zaaktype = zaakTypeUrl,
+                        page = page
+                    )
                 )
-            )
+            }
         }
     }
 
     fun getBesluittypeByOmschrijving(zaakTypeUrl: URI, omschrijving: String): Besluittype {
-        return getBesluittypen(zaakTypeUrl)
-            .singleOrNull { it.omschrijving.equals(omschrijving, ignoreCase = true) }
-            ?: throw StatustypeNotFoundException("With 'omschrijving': '$omschrijving'")
+        withLoggingContext(CATALOGI_API.ZAAKTYPE to zaakTypeUrl.toString()) {
+            logger.debug { "Getting Besluittype by omschrijving: $omschrijving for zaaktype $zaakTypeUrl" }
+            return getBesluittypen(zaakTypeUrl)
+                .singleOrNull { it.omschrijving.equals(omschrijving, ignoreCase = true) }
+                ?: throw StatustypeNotFoundException("With 'omschrijving': '$omschrijving'")
+        }
     }
 
     fun getZaaktypen(): List<Zaaktype> {
-        return Page.getAll { page ->
-            logger.debug { "Getting page of zaaktypen, page $page" }
-            client.getZaaktypen(
-                authenticationPluginConfiguration,
-                url,
-                ZaaktypeRequest(page = page)
-            )
+        withLoggingContext(CATALOGI_API.ZAAKTYPE to "getZaaktypen") {
+            return Page.getAll { page ->
+                logger.debug { "Getting page $page of zaaktypen" }
+                client.getZaaktypen(
+                    authenticationPluginConfiguration,
+                    url,
+                    ZaaktypeRequest(page = page)
+                )
+            }
         }
     }
 
     fun getZaaktype(zaaktypeUrl: URI): Zaaktype {
-        return client.getZaaktype(authenticationPluginConfiguration, url, zaaktypeUrl)
+        withLoggingContext(CATALOGI_API.ZAAKTYPE to zaaktypeUrl.toString()) {
+            logger.debug { "Getting Zaaktype for URL: $zaaktypeUrl" }
+            return client.getZaaktype(authenticationPluginConfiguration, url, zaaktypeUrl)
+        }
     }
 
     fun prefillCache() {

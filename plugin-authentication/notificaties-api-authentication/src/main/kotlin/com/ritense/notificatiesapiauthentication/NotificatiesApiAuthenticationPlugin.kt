@@ -20,6 +20,7 @@ import com.ritense.notificatiesapi.NotificatiesApiAuthentication
 import com.ritense.notificatiesapiauthentication.token.NotificatiesApiPluginTokenGeneratorService
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
+import com.ritense.plugin.domain.PluginConfigurationId
 import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
@@ -32,8 +33,10 @@ import reactor.core.publisher.Mono
     description = "Plugin used to provide authentication to Notificaties API based on a JSON Web Token"
 )
 class NotificatiesApiAuthenticationPlugin(
+    pluginConfigurationId: PluginConfigurationId,
     private val tokenGeneratorService: NotificatiesApiPluginTokenGeneratorService
 ) : NotificatiesApiAuthentication {
+    override val configurationId = pluginConfigurationId
 
     @PluginProperty(key = "clientId", secret = false, required = true)
     lateinit var clientId: String
