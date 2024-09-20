@@ -83,17 +83,15 @@ class ObjectenApiPlugin(
         objecttypesApiUrl: URI,
         objecttypeId: String,
         searchString: String,
-        ordering: String? = "",
         pageable: Pageable
     ): ObjectsList {
         return objectenApiClient.getObjectsByObjecttypeUrlWithSearchParams(
-            authenticationPluginConfiguration,
-            objecttypesApiUrl,
-            url,
-            objecttypeId,
-            searchString,
-            ordering,
-            pageable
+            authentication = authenticationPluginConfiguration,
+            objecttypesApiUrl = objecttypesApiUrl,
+            objectsApiUrl = url,
+            objectypeId = objecttypeId,
+            searchString = searchString,
+            pageable = pageable
         )
     }
 
