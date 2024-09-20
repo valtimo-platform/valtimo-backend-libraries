@@ -68,4 +68,5 @@ services:
 #   url: jdbc:mysql://localhost:3353/command-handling-test
 #   url: jdbc:mysql://localhost:3354/keycloak-iam-test
 #   url: jdbc:mysql://localhost:3355/logging-test
+#   url: jdbc:mysql://localhost:3356/process-link-url-test
 #   url: localhost:55672 <--rabbitmq
