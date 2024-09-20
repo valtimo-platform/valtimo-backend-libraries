@@ -446,7 +446,11 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
             .setBody(body)
     }
 
-    class TestAuthentication : ObjectenApiAuthentication, ObjecttypenApiAuthentication, NotificatiesApiAuthentication {
+    class TestAuthentication() : ObjectenApiAuthentication, ObjecttypenApiAuthentication,
+        NotificatiesApiAuthentication {
+        override val configurationId: PluginConfigurationId
+            get() = PluginConfigurationId.newId()
+
         override fun applyAuth(builder: RestClient.Builder): RestClient.Builder {
             return builder
         }

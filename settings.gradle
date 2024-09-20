@@ -49,6 +49,7 @@ include(
     "keycloak-iam",
     "klant",
     "localization",
+    "logging",
     "mail",
     "mail:flowmailer",
     "mail:local-mail",

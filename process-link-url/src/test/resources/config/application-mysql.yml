@@ -1,7 +1,7 @@
 spring:
     datasource:
         driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3355/process-link-url-test
+        url: jdbc:mysql://localhost:3356/process-link-url-test
         username: valtimo
         password: password
         hikari:

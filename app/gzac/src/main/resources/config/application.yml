@@ -25,7 +25,6 @@ spring:
         driver-class-name: org.postgresql.Driver
         url: jdbc:postgresql://localhost:54320/gzac
         username: gzac
-        password: password
         hikari:
             auto-commit: false
             maximum-pool-size: 25
@@ -244,6 +243,8 @@ valtimo:
     authorization:
         dashboard:
             enabled: true
+    logging:
+        retentionInMinutes: 1440
 
 spring-actuator:
     username: admin
