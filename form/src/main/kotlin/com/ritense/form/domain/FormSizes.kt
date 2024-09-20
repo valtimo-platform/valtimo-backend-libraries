@@ -14,16 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.formflow
+package com.ritense.form.domain
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.ritense.form.domain.FormDisplayType
-import com.ritense.form.domain.FormSizes
-import java.util.UUID
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-class FormFlowTaskOpenResultProperties(
-    val formFlowInstanceId: UUID,
-    val formDisplayType: FormDisplayType? = null,
-    val formSize: FormSizes? = null,
-)
+enum class FormSizes {
+    extraSmall, small, medium, large
+}

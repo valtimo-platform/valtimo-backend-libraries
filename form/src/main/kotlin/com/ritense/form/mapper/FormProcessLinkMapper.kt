@@ -60,7 +60,9 @@ class FormProcessLinkMapper(
             activityId = processLink.activityId,
             activityType = processLink.activityType,
             formDefinitionId = processLink.formDefinitionId,
-            viewModelEnabled = processLink.viewModelEnabled
+            viewModelEnabled = processLink.viewModelEnabled,
+            formDisplayType = processLink.formDisplayType,
+            formSize = processLink.formSize,
         )
     }
 
@@ -74,7 +76,9 @@ class FormProcessLinkMapper(
             activityId = deployDto.activityId,
             activityType = deployDto.activityType,
             formDefinitionId = formDefinition.id,
-            viewModelEnabled = deployDto.viewModelEnabled
+            viewModelEnabled = deployDto.viewModelEnabled,
+            formDisplayType = deployDto.formDisplayType,
+            formSize = deployDto.formSize,
         )
     }
 
@@ -99,7 +103,10 @@ class FormProcessLinkMapper(
         return FormProcessLinkExportResponseDto(
             activityId = processLink.activityId,
             activityType = processLink.activityType,
-            formDefinitionName = formDefinition.name
+            formDefinitionName = formDefinition.name,
+            viewModelEnabled = processLink.viewModelEnabled,
+            formDisplayType = processLink.formDisplayType,
+            formSize = processLink.formSize,
         )
     }
 
@@ -114,7 +121,9 @@ class FormProcessLinkMapper(
             activityId = createRequestDto.activityId,
             activityType = createRequestDto.activityType,
             formDefinitionId = createRequestDto.formDefinitionId,
-            viewModelEnabled = createRequestDto.viewModelEnabled
+            viewModelEnabled = createRequestDto.viewModelEnabled,
+            formDisplayType = createRequestDto.formDisplayType,
+            formSize = createRequestDto.formSize,
         )
     }
 
@@ -133,7 +142,9 @@ class FormProcessLinkMapper(
             activityId = processLinkToUpdate.activityId,
             activityType = processLinkToUpdate.activityType,
             formDefinitionId = updateRequestDto.formDefinitionId,
-            viewModelEnabled = updateRequestDto.viewModelEnabled
+            viewModelEnabled = updateRequestDto.viewModelEnabled,
+            formDisplayType = updateRequestDto.formDisplayType,
+            formSize = updateRequestDto.formSize,
         )
     }
 
