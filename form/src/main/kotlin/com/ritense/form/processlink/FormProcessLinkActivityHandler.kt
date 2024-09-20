@@ -46,7 +46,12 @@ class FormProcessLinkActivityHandler(
         return ProcessLinkActivityResult(
             processLink.id,
             FORM_TASK_TYPE_KEY,
-            FormTaskOpenResultProperties(processLink.formDefinitionId, formDefinition.asJson())
+            FormTaskOpenResultProperties(
+                processLink.formDefinitionId,
+                formDefinition.asJson(),
+                processLink.formDisplayType,
+                processLink.formSize,
+            )
         )
     }
 
