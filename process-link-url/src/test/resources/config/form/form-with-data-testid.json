@@ -1,0 +1,33 @@
+{
+    "display": "form",
+    "settings": {
+        "pdf": {
+            "id": "1ec0f8ee-6685-5d98-a847-26f67b67d6f0",
+            "src": "https://files.form.io/pdf/5692b91fd1028f01000407e3/file/1ec0f8ee-6685-5d98-a847-26f67b67d6f0"
+        }
+    },
+    "components": [
+        {
+            "label": "Firstname",
+            "key": "person.firstName",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Lastname",
+            "key": "person.lastname",
+            "type": "textfield",
+            "input": true,
+            "attributes": {
+                "data-testid": "custom-testid-1234567890"
+            }
+        },
+        {
+            "type": "button",
+            "label": "Submit",
+            "key": "submit",
+            "disableOnInvalid": true,
+            "input": true
+        }
+    ]
+}
