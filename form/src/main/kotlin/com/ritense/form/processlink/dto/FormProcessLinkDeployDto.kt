@@ -18,6 +18,8 @@ package com.ritense.form.processlink.dto
 
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.form.mapper.FormProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM
+import com.ritense.form.domain.FormSizes
+import com.ritense.form.domain.FormDisplayType
 import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 
@@ -27,7 +29,9 @@ data class FormProcessLinkDeployDto(
     override val activityId: String,
     override val activityType: ActivityTypeWithEventName,
     val formDefinitionName: String,
-    val viewModelEnabled: Boolean
+    val viewModelEnabled: Boolean = false,
+    val formDisplayType: FormDisplayType = FormDisplayType.modal,
+    val formSize: FormSizes = FormSizes.medium,
 ) : ProcessLinkDeployDto {
     override val processLinkType: String
         get() = PROCESS_LINK_TYPE_FORM

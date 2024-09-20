@@ -27,7 +27,8 @@ import static java.time.ZoneId.systemDefault;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
-import com.ritense.authorization.AuthorizationContext;
+import com.ritense.logging.LoggableResource;
+import com.ritense.valtimo.camunda.domain.CamundaExecution;
 import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
@@ -160,7 +161,9 @@ public class ProcessResource extends AbstractProcessResource {
     }
 
     @GetMapping("/v1/process/definition/{processDefinitionKey}")
-    public ResponseEntity<CamundaProcessDefinitionDto> getProcessDefinition(@PathVariable String processDefinitionKey) {
+    public ResponseEntity<CamundaProcessDefinitionDto> getProcessDefinition(
+        @LoggableResource(resourceTypeName = "processDefinitionKey") @PathVariable String processDefinitionKey
+    ) {
         CamundaProcessDefinition processDefinition = runWithoutAuthorization(() -> repositoryService.findProcessDefinition(
                 byKey(processDefinitionKey)
                     .and(byLatestVersion())
@@ -173,7 +176,7 @@ public class ProcessResource extends AbstractProcessResource {
 
     @GetMapping("/v1/process/definition/{processDefinitionKey}/versions")
     public ResponseEntity<List<CamundaProcessDefinitionDto>> getProcessDefinitionVersions(
-            @PathVariable String processDefinitionKey
+        @LoggableResource(resourceTypeName = "processDefinitionKey") @PathVariable String processDefinitionKey
     ) {
         List<CamundaProcessDefinition> deployedDefinitions = runWithoutAuthorization(() -> repositoryService.findProcessDefinitions(
                 byKey(processDefinitionKey),
@@ -187,7 +190,7 @@ public class ProcessResource extends AbstractProcessResource {
 
     @GetMapping("/v1/process/definition/{processDefinitionId}/xml")
     public ResponseEntity<ProcessDefinitionDiagramWithPropertyDto> getProcessDefinitionXml(
-            @PathVariable String processDefinitionId
+        @LoggableResource(resourceType = CamundaProcessDefinition.class) @PathVariable String processDefinitionId
     ) {
         try {
             final var definitionDiagramDto = createProcessDefinitionDiagramDto(processDefinitionId);
@@ -207,7 +210,8 @@ public class ProcessResource extends AbstractProcessResource {
 
     @GetMapping("/v1/process/definition/{sourceProcessDefinitionId}/{targetProcessDefinitionId}/flownodes")
     public ResponseEntity<FlowNodeMigrationDTO> getFlowNodes(
-            @PathVariable String sourceProcessDefinitionId, @PathVariable String targetProcessDefinitionId
+        @LoggableResource(resourceType = CamundaProcessDefinition.class) @PathVariable String sourceProcessDefinitionId,
+        @PathVariable String targetProcessDefinitionId
     ) {
         final Map<String, String> sourceFlowNodeMap = findAllTasksEventsAndGatewaysForProcessDefinitionId(
                 sourceProcessDefinitionId);
@@ -221,7 +225,7 @@ public class ProcessResource extends AbstractProcessResource {
 
     @GetMapping("/v1/process/definition/{processDefinitionKey}/heatmap/count")
     public ResponseEntity<Map<String, HeatmapTaskCountDTO>> getProcessDefinitionHeatmap(
-            @PathVariable String processDefinitionKey,
+        @LoggableResource(resourceTypeName = "processDefinitionKey") @PathVariable String processDefinitionKey,
             @RequestParam Integer version,
             @RequestParam(required = false) String searchStatus,
             @RequestParam(required = false) LocalDate fromDate,
@@ -281,7 +285,7 @@ public class ProcessResource extends AbstractProcessResource {
 
     @GetMapping("/v1/process/definition/{processDefinitionKey}/heatmap/duration")
     public ResponseEntity<Map<String, HeatmapTaskAverageDurationDTO>> getProcessDefinitionDurationBasedHeatmap(
-            @PathVariable String processDefinitionKey,
+        @LoggableResource(resourceTypeName = "processDefinitionKey") @PathVariable String processDefinitionKey,
             @RequestParam Integer version,
             @RequestParam(required = false) String searchStatus,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
@@ -359,9 +363,9 @@ public class ProcessResource extends AbstractProcessResource {
 
     @PostMapping(value = "/v1/process/definition/{processDefinitionKey}/{businessKey}/start", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProcessInstanceDto> startProcessInstance(
-            @PathVariable String processDefinitionKey,
-            @PathVariable String businessKey,
-            @RequestBody Map<String, Object> variables
+        @LoggableResource(resourceTypeName = "processDefinitionKey") @PathVariable String processDefinitionKey,
+        @LoggableResource(resourceTypeName = "businessKey") @PathVariable String businessKey,
+        @RequestBody Map<String, Object> variables
     ) {
         final var processInstanceWithDefinition = camundaProcessService
             .startProcess(processDefinitionKey, businessKey, variables);
@@ -369,7 +373,9 @@ public class ProcessResource extends AbstractProcessResource {
     }
 
     @GetMapping("/v1/process/{processInstanceId}")
-    public ResponseEntity<CamundaHistoricProcessInstanceDto> getProcessInstance(@PathVariable String processInstanceId) {
+    public ResponseEntity<CamundaHistoricProcessInstanceDto> getProcessInstance(
+        @LoggableResource(resourceType = CamundaExecution.class) @PathVariable String processInstanceId
+    ) {
         CamundaHistoricProcessInstance historicProcessInstance = runWithoutAuthorization(() ->
             getHistoricProcessInstance(processInstanceId)
         );
@@ -381,7 +387,7 @@ public class ProcessResource extends AbstractProcessResource {
 
     @GetMapping("/v1/process/{processInstanceId}/history")
     public ResponseEntity<List<HistoricActivityInstanceDto>> getProcessInstanceHistory(
-            @PathVariable String processInstanceId
+        @LoggableResource(resourceType = CamundaExecution.class) @PathVariable String processInstanceId
     ) {
         List<HistoricActivityInstance> historicActivityInstances = historyService.createHistoricActivityInstanceQuery()
                 .processInstanceId(processInstanceId)
@@ -401,7 +407,7 @@ public class ProcessResource extends AbstractProcessResource {
 
     @GetMapping("/v1/process/{processInstanceId}/log")
     public ResponseEntity<List<UserOperationLogEntryDto>> getProcessInstanceOperationLog(
-            @PathVariable String processInstanceId
+        @LoggableResource(resourceType = CamundaExecution.class) @PathVariable String processInstanceId
     ) {
         List<UserOperationLogEntry> userOperationLogEntries = historyService.createUserOperationLogQuery()
                 .processDefinitionId(processInstanceId)
@@ -414,7 +420,7 @@ public class ProcessResource extends AbstractProcessResource {
 
     @GetMapping("/v1/process/{processInstanceId}/tasks")
     public ResponseEntity<List<TaskInstanceWithIdentityLink>> getProcessInstanceTasks(
-            @PathVariable String processInstanceId
+        @LoggableResource(resourceType = CamundaExecution.class) @PathVariable String processInstanceId
     ) {
         return runWithoutAuthorization(
                 () -> camundaProcessService.findProcessInstanceById(processInstanceId)
@@ -426,7 +432,9 @@ public class ProcessResource extends AbstractProcessResource {
     }
 
     @GetMapping("/v1/process/{processInstanceId}/activetask")
-    public ResponseEntity<CamundaTaskDto> getProcessInstanceActiveTask(@PathVariable String processInstanceId) {
+    public ResponseEntity<CamundaTaskDto> getProcessInstanceActiveTask(
+        @LoggableResource(resourceType = CamundaExecution.class) @PathVariable String processInstanceId
+    ) {
         CamundaTask task = camundaTaskService.findTask(
             byActive()
                 .and(byProcessInstanceId(processInstanceId))
@@ -437,7 +445,9 @@ public class ProcessResource extends AbstractProcessResource {
     }
 
     @GetMapping("/v1/process/{processInstanceId}/xml")
-    public ResponseEntity<ProcessInstanceDiagramDto> getProcessInstanceXml(@PathVariable String processInstanceId) {
+    public ResponseEntity<ProcessInstanceDiagramDto> getProcessInstanceXml(
+        @LoggableResource(resourceType = CamundaExecution.class) @PathVariable String processInstanceId
+    ) {
         CamundaHistoricProcessInstance processInstance = runWithoutAuthorization(() ->
             getHistoricProcessInstance(processInstanceId)
         );
@@ -459,7 +469,9 @@ public class ProcessResource extends AbstractProcessResource {
     }
 
     @GetMapping("/v1/process/{processInstanceId}/activities")
-    public ResponseEntity<ActivityInstanceDto> getProcessInstanceActivity(@PathVariable String processInstanceId) {
+    public ResponseEntity<ActivityInstanceDto> getProcessInstanceActivity(
+        @LoggableResource(resourceType = CamundaExecution.class) @PathVariable String processInstanceId
+    ) {
         final var activityInstance = runtimeService.getActivityInstance(processInstanceId);
         return Optional
                 .ofNullable(activityInstance)
@@ -473,7 +485,9 @@ public class ProcessResource extends AbstractProcessResource {
      */
     @Deprecated(since = "11.1.0", forRemoval = true)
     @GetMapping("/v1/process/{processInstanceId}/comments")
-    public ResponseEntity<List<Comment>> getProcessInstanceComments(@PathVariable String processInstanceId) {
+    public ResponseEntity<List<Comment>> getProcessInstanceComments(
+        @LoggableResource(resourceType = CamundaExecution.class) @PathVariable String processInstanceId
+    ) {
         List<Comment> processInstanceComments = camundaTaskService.getProcessInstanceComments(processInstanceId);
         processInstanceComments.sort((Comment c1, Comment c2) -> c2.getTime().compareTo(c1.getTime()));
         return ResponseEntity.ok(processInstanceComments);
@@ -487,9 +501,9 @@ public class ProcessResource extends AbstractProcessResource {
     @PostMapping("/v1/process/{processDefinitionName}/search")
     @Deprecated(since = "12.0.0", forRemoval = true)
     public ResponseEntity<List<ProcessInstance>> searchProcessInstancesV2(
-            @PathVariable String processDefinitionName,
-            @RequestBody ProcessInstanceSearchDTO processInstanceSearchDTO,
-            Pageable pageable
+        @LoggableResource(resourceTypeName = "processDefinitionName") @PathVariable String processDefinitionName,
+        @RequestBody ProcessInstanceSearchDTO processInstanceSearchDTO,
+        Pageable pageable
     ) {
         final Page<ProcessInstance> page = camundaSearchProcessInstanceRepository.searchInstances(
                 processDefinitionName,
@@ -503,7 +517,7 @@ public class ProcessResource extends AbstractProcessResource {
 
     @PostMapping("/v2/process/{processDefinitionName}/search")
     public ResponseEntity<Page<ProcessInstance>> searchProcessInstancesPaged(
-        @PathVariable String processDefinitionName,
+        @LoggableResource(resourceTypeName = "processDefinitionName") @PathVariable String processDefinitionName,
         @RequestBody ProcessInstanceSearchDTO processInstanceSearchDTO,
         Pageable pageable
     ) {
@@ -517,8 +531,8 @@ public class ProcessResource extends AbstractProcessResource {
 
     @PostMapping("/v1/process/{processDefinitionName}/count")
     public ResponseEntity<ResultCount> searchProcessInstanceCountV2(
-            @PathVariable String processDefinitionName,
-            @RequestBody ProcessInstanceSearchDTO processInstanceSearchDTO
+        @LoggableResource(resourceTypeName = "processDefinitionName") @PathVariable String processDefinitionName,
+        @RequestBody ProcessInstanceSearchDTO processInstanceSearchDTO
     ) {
         final Long count = camundaSearchProcessInstanceRepository.searchInstancesCountByDefinitionName(
                 processDefinitionName,
@@ -529,8 +543,8 @@ public class ProcessResource extends AbstractProcessResource {
 
     @PostMapping("/v1/process/definition/{processDefinitionId}/count")
     public ResponseEntity<ResultCount> getProcessInstanceCountForProcessDefinitionIdV2(
-            @PathVariable String processDefinitionId,
-            @RequestBody ProcessInstanceSearchDTO processInstanceSearchDTO
+        @LoggableResource(resourceType = CamundaProcessDefinition.class) @PathVariable String processDefinitionId,
+        @RequestBody ProcessInstanceSearchDTO processInstanceSearchDTO
     ) {
         final Long count = camundaSearchProcessInstanceRepository.searchInstancesCountByDefinitionId(
                 processDefinitionId, processInstanceSearchDTO);
@@ -541,9 +555,9 @@ public class ProcessResource extends AbstractProcessResource {
     @ResponseBody
     @Transactional
     public ResponseEntity<BatchDto> migrateProcessInstancesByProcessDefinitionIds(
-            @PathVariable String sourceProcessDefinitionId,
-            @PathVariable String targetProcessDefinitionId,
-            @RequestBody(required = false) Map<String, String> instructions
+        @LoggableResource(resourceType = CamundaProcessDefinition.class) @PathVariable String sourceProcessDefinitionId,
+        @PathVariable String targetProcessDefinitionId,
+        @RequestBody(required = false) Map<String, String> instructions
     ) {
         if (processPropertyService.isReadOnlyById(targetProcessDefinitionId)) {
             return ResponseEntity.status(FORBIDDEN).build();
@@ -572,13 +586,19 @@ public class ProcessResource extends AbstractProcessResource {
      */
     @Deprecated(since = "11.1.0", forRemoval = true)
     @PostMapping("/v1/process/{processInstanceId}/comment")
-    public ResponseEntity<Void> createComment(@PathVariable String processInstanceId, @RequestBody CommentDto comment) {
+    public ResponseEntity<Void> createComment(
+        @LoggableResource(resourceType = CamundaExecution.class) @PathVariable String processInstanceId,
+        @RequestBody CommentDto comment
+    ) {
         camundaTaskService.createComment(null, processInstanceId, comment.getText());
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/v1/process/{processInstanceId}/delete")
-    public ResponseEntity<Void> delete(@PathVariable String processInstanceId, @RequestBody String reason) {
+    public ResponseEntity<Void> delete(
+        @LoggableResource(resourceType = CamundaExecution.class) @PathVariable String processInstanceId,
+        @RequestBody String reason
+    ) {
         runWithoutAuthorization(() -> {
             camundaProcessService.deleteProcessInstanceById(processInstanceId, reason);
             return null;
@@ -588,7 +608,7 @@ public class ProcessResource extends AbstractProcessResource {
 
     @PutMapping("/v1/process/definition/{processDefinitionId}/xml/timer")
     public ResponseEntity<Void> modifyProcessDefinitionIntoShortTimerVersionAndDeploy(
-            @PathVariable String processDefinitionId
+        @LoggableResource(resourceType = CamundaProcessDefinition.class) @PathVariable String processDefinitionId
     ) throws ProcessNotFoundException, DocumentParserException {
         if (processPropertyService.isReadOnlyById(processDefinitionId)) {
             return ResponseEntity.status(FORBIDDEN).build();

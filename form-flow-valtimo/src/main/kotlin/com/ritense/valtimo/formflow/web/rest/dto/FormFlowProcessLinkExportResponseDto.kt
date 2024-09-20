@@ -17,6 +17,8 @@
 package com.ritense.valtimo.formflow.web.rest.dto
 
 import com.fasterxml.jackson.annotation.JsonTypeName
+import com.ritense.form.domain.FormSizes
+import com.ritense.form.domain.FormDisplayType
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
 import com.ritense.valtimo.formflow.mapper.FormFlowProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM_FLOW
@@ -26,6 +28,8 @@ data class FormFlowProcessLinkExportResponseDto(
     override val activityId: String,
     override val activityType: ActivityTypeWithEventName,
     val formFlowDefinitionId: String,
+    val formDisplayType: FormDisplayType,
+    val formSize: FormSizes,
 ) : ProcessLinkExportResponseDto {
     override val processLinkType: String
         get() = PROCESS_LINK_TYPE_FORM_FLOW

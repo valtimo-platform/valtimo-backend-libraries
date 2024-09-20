@@ -59,7 +59,9 @@ class FormFlowProcessLinkMapper(
             processDefinitionId = processLink.processDefinitionId,
             activityId = processLink.activityId,
             activityType = processLink.activityType,
-            formFlowDefinitionId = processLink.formFlowDefinitionId
+            formFlowDefinitionId = processLink.formFlowDefinitionId,
+            formDisplayType = processLink.formDisplayType,
+            formSize = processLink.formSize,
         )
     }
 
@@ -70,7 +72,9 @@ class FormFlowProcessLinkMapper(
             processDefinitionId = deployDto.processDefinitionId,
             activityId = deployDto.activityId,
             activityType = deployDto.activityType,
-            formFlowDefinitionId = deployDto.formFlowDefinitionId
+            formFlowDefinitionId = deployDto.formFlowDefinitionId,
+            formDisplayType = deployDto.formDisplayType,
+            formSize = deployDto.formSize,
         )
 
     }
@@ -92,7 +96,9 @@ class FormFlowProcessLinkMapper(
         return FormFlowProcessLinkExportResponseDto(
             activityId = processLink.activityId,
             activityType = processLink.activityType,
-            formFlowDefinitionId = "${processLink.formFlowDefinitionId.substringBeforeLast(":")}:latest"
+            formFlowDefinitionId = "${processLink.formFlowDefinitionId.substringBeforeLast(":")}:latest",
+            formDisplayType = processLink.formDisplayType,
+            formSize = processLink.formSize,
         )
     }
 
@@ -106,7 +112,9 @@ class FormFlowProcessLinkMapper(
             processDefinitionId = createRequestDto.processDefinitionId,
             activityId = createRequestDto.activityId,
             activityType = createRequestDto.activityType,
-            formFlowDefinitionId = createRequestDto.formFlowDefinitionId
+            formFlowDefinitionId = createRequestDto.formFlowDefinitionId,
+            formDisplayType = createRequestDto.formDisplayType,
+            formSize = createRequestDto.formSize,
         )
     }
 
@@ -123,7 +131,9 @@ class FormFlowProcessLinkMapper(
             processDefinitionId = processLinkToUpdate.processDefinitionId,
             activityId = processLinkToUpdate.activityId,
             activityType = processLinkToUpdate.activityType,
-            formFlowDefinitionId = updateRequestDto.formFlowDefinitionId
+            formFlowDefinitionId = updateRequestDto.formFlowDefinitionId,
+            formDisplayType = updateRequestDto.formDisplayType,
+            formSize = updateRequestDto.formSize,
         )
     }
 

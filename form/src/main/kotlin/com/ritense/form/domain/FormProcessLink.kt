@@ -22,6 +22,8 @@ import com.ritense.processlink.domain.ProcessLink
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorValue
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import java.util.UUID
 
 @Entity
@@ -31,10 +33,21 @@ class FormProcessLink(
     processDefinitionId: String,
     activityId: String,
     activityType: ActivityTypeWithEventName,
+
     @Column(name = "form_definition_id")
     val formDefinitionId: UUID,
+
     @Column(name = "view_model_enabled")
-    val viewModelEnabled: Boolean = false
+    val viewModelEnabled: Boolean = false,
+
+    @Column(name = "form_display_type")
+    @Enumerated(EnumType.STRING)
+    val formDisplayType: FormDisplayType = FormDisplayType.modal,
+
+    @Column(name = "form_size")
+    @Enumerated(EnumType.STRING)
+    val formSize: FormSizes = FormSizes.medium
+
 ) : ProcessLink(
     id,
     processDefinitionId,
@@ -58,14 +71,18 @@ class FormProcessLink(
         activityId: String = this.activityId,
         activityType: ActivityTypeWithEventName = this.activityType,
         formDefinitionId: UUID = this.formDefinitionId,
-        viewModelEnabled: Boolean = this.viewModelEnabled
+        viewModelEnabled: Boolean = this.viewModelEnabled,
+        formDisplayType: FormDisplayType = this.formDisplayType,
+        formSize: FormSizes = this.formSize,
     ) = FormProcessLink(
         id = id,
         processDefinitionId = processDefinitionId,
         activityId = activityId,
         activityType = activityType,
         formDefinitionId = formDefinitionId,
-        viewModelEnabled = viewModelEnabled
+        viewModelEnabled = viewModelEnabled,
+        formDisplayType = formDisplayType,
+        formSize = formSize,
     )
 
     override fun equals(other: Any?): Boolean {
@@ -77,6 +94,8 @@ class FormProcessLink(
 
         if (formDefinitionId != other.formDefinitionId) return false
         if (viewModelEnabled != other.viewModelEnabled) return false
+        if (formDisplayType != other.formDisplayType) return false
+        if (formSize != other.formSize) return false
 
         return true
     }
@@ -85,6 +104,8 @@ class FormProcessLink(
         var result = super.hashCode()
         result = 31 * result + formDefinitionId.hashCode()
         result = 31 * result + viewModelEnabled.hashCode()
+        result = 31 * result + formDisplayType.hashCode()
+        result = 31 * result + formSize.hashCode()
         return result
     }
 }

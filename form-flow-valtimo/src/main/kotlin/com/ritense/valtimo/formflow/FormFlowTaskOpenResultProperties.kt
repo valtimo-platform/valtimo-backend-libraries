@@ -16,6 +16,14 @@
 
 package com.ritense.valtimo.formflow
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.ritense.form.domain.FormDisplayType
+import com.ritense.form.domain.FormSizes
 import java.util.UUID
 
-class FormFlowTaskOpenResultProperties(val formFlowInstanceId: UUID)
+@JsonIgnoreProperties(ignoreUnknown = true)
+class FormFlowTaskOpenResultProperties(
+    val formFlowInstanceId: UUID,
+    val formDisplayType: FormDisplayType? = null,
+    val formSize: FormSizes? = null,
+)
