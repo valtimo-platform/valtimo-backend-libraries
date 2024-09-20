@@ -205,7 +205,7 @@ internal class ObjectManagementFacadeTest {
             objecttypeId = objectTypeId,
             searchString = searchString,
             pageable = expectedPageRequest)
-        verify(objectenApiPlugin, never()).getObjectsByObjectTypeId(any(), any(), any(), any())
+        verify(objectenApiPlugin, never()).getObjectsByObjectTypeId(any(), any(), any(), any(), any())
         assertThat(result).isEqualTo(expectedObjectsList)
     }
 
@@ -246,7 +246,7 @@ internal class ObjectManagementFacadeTest {
             objectsApiUrl = expectedUrl2,
             objecttypeId = objectTypeId,
             pageable = expectedPageRequest)
-        verify(objectenApiPlugin, never()).getObjectsByObjectTypeIdWithSearchParams(any(), any(), any(), any())
+        verify(objectenApiPlugin, never()).getObjectsByObjectTypeIdWithSearchParams(any(), any(), any(), any(), any())
         assertThat(result).isEqualTo(expectedObjectsList)
     }
 
@@ -283,7 +283,7 @@ internal class ObjectManagementFacadeTest {
             objecttypeId = objectTypeId,
             searchString = searchString,
             pageable = expectedPageRequest)
-        verify(objectenApiPlugin, never()).getObjectsByObjectTypeId(any(), any(), any(), any())
+        verify(objectenApiPlugin, never()).getObjectsByObjectTypeId(any(), any(), any(), any(), any())
         assertThat(result.count).isEqualTo(expectedObjectsList.count)
         assertThat(result.next).isEqualTo(expectedObjectsList.next)
         assertThat(result.previous).isEqualTo(expectedObjectsList.previous)
@@ -325,7 +325,7 @@ internal class ObjectManagementFacadeTest {
             objectsApiUrl = expectedUrl2,
             objecttypeId = objectTypeId,
             pageable = expectedPageRequest)
-        verify(objectenApiPlugin, never()).getObjectsByObjectTypeIdWithSearchParams(any(), any(), any(), any())
+        verify(objectenApiPlugin, never()).getObjectsByObjectTypeIdWithSearchParams(any(), any(), any(), any(), any())
         assertThat(result.count).isEqualTo(expectedObjectsList.count)
         assertThat(result.next).isEqualTo(expectedObjectsList.next)
         assertThat(result.previous).isEqualTo(expectedObjectsList.previous)
@@ -415,6 +415,41 @@ internal class ObjectManagementFacadeTest {
         assertThat(actualObjectRecord.typeVersion).isEqualTo(objectTypeVersion)
         assertThat(actualObjectRecord.data).isEqualTo(updateData)
         assertThat(actualObjectRecord.startAt).isEqualTo(LocalDate.now())
+    }
+
+    @Test
+    fun shouldDeleteObject() {
+        val objectName = "myObject"
+        val data: JsonNode = JsonNodeFactory(false).objectNode()
+
+        val objectenApiPlugin = mock<ObjectenApiPlugin>()
+        val objecttypenApiPlugin = mock<ObjecttypenApiPlugin>()
+        prepareAccessObject(objectName, objectenApiPlugin, objecttypenApiPlugin)
+
+        val expectedUrl = URI.create("www.ritense.com")
+        whenever(objecttypenApiPlugin.getObjectTypeUrlById(objectTypeId)).thenReturn(expectedUrl)
+        whenever(objectenApiPlugin.url).thenReturn(expectedUrl)
+
+        val objectRecord = ObjectRecord(
+            typeVersion = objectTypeVersion,
+            data = data,
+            startAt = LocalDate.now()
+        )
+
+//        val expectedObjectRequest = ObjectRequest(expectedUrl, objectRecord)
+
+        objectManagementFacade.createObject(objectName, data)
+
+        clearInvocations(objectManagementRepository, pluginService, objectenApiPlugin)
+
+        objectManagementFacade.deleteObject(objectName, UUID.randomUUID())
+
+        verify(objectManagementRepository).findByTitle(objectName)
+        verify(pluginService).createInstance<ObjectenApiPlugin>(objectenApiPluginConfigurationId)
+        verify(pluginService).createInstance<ObjecttypenApiPlugin>(objecttypenApiPluginConfigurationId)
+        verifyNoMoreInteractions(objectManagementRepository, pluginService)
+
+        verify(objectenApiPlugin).deleteObject(any())
     }
 
     private fun prepareAccessObject(

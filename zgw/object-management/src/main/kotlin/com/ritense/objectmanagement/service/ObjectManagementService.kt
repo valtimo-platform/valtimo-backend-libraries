@@ -117,10 +117,10 @@ class ObjectManagementService(
         val objectenPluginInstance = getObjectenApiPlugin(objectManagement.objectenApiPluginConfigurationId)
 
         val objectsList = objectenPluginInstance.getObjectsByObjectTypeId(
-            objectTypePluginInstance.url,
-            objectenPluginInstance.url,
-            objectManagement.objecttypeId,
-            pageable
+            objecttypesApiUrl = objectTypePluginInstance.url,
+            objectsApiUrl = objectenPluginInstance.url,
+            objecttypeId = objectManagement.objecttypeId,
+            pageable = pageable
         )
 
         val objectsListDto = objectsList.results.map {

@@ -28,6 +28,7 @@ import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.service.PluginService
 import mu.KotlinLogging
 import org.springframework.data.domain.PageRequest
+import org.springframework.http.HttpStatus
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
@@ -180,6 +181,22 @@ class ObjectManagementFacade(
         }
     }
 
+    fun deleteObject(
+        objectName: String,
+        objectId: UUID
+    ): HttpStatus {
+        val accessObject = getAccessObject(objectName)
+
+        try {
+            logger.trace { "Deleting object $objectId" }
+            return accessObject.objectenApiPlugin.deleteObject(
+                URI(accessObject.objectenApiPlugin.url.toString() + "objects/" + objectId)
+            )
+        } catch (ex: RestClientResponseException) {
+            throw Exception("Exception thrown while making a call to the Objects API. Response from the API: ${ex.responseBodyAsString}")
+        }
+    }
+
     private fun getAccessObject(objectName: String): ObjectManagementAccessObject {
         val objectManagement = objectManagementRepository.findByTitle(objectName)
             ?: throw NoSuchElementException("Object type $objectName is not found in Object Management.")
@@ -218,6 +235,7 @@ class ObjectManagementFacade(
         accessObject: ObjectManagementAccessObject,
         objectName: String,
         searchString: String?,
+        ordering: String = "",
         pageNumber: Int,
         pageSize: Int
     ): ObjectsList {
@@ -228,6 +246,7 @@ class ObjectManagementFacade(
                 accessObject.objectTypenApiPlugin.url,
                 accessObject.objectManagement.objecttypeId,
                 searchString,
+                ordering,
                 PageRequest.of(pageNumber, pageSize)
             )
         } else {
@@ -237,6 +256,7 @@ class ObjectManagementFacade(
                 accessObject.objectTypenApiPlugin.url,
                 accessObject.objectenApiPlugin.url,
                 accessObject.objectManagement.objecttypeId,
+                ordering,
                 PageRequest.of(pageNumber, pageSize)
             )
         }
