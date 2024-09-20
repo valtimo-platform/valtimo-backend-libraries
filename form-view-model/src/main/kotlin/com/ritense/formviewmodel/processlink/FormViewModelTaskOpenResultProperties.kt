@@ -17,10 +17,14 @@
 package com.ritense.formviewmodel.processlink
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.ritense.form.domain.FormDisplayType
+import com.ritense.form.domain.FormSizes
 import java.util.UUID
 
 data class FormViewModelTaskOpenResultProperties(
     val formDefinitionId: UUID,
     val formDefinition: JsonNode,
-    val formName: String
+    val formName: String,
+    val formDisplayType: FormDisplayType = FormDisplayType.modal,
+    val formSize: FormSizes = FormSizes.medium,
 )

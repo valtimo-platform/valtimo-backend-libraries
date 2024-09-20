@@ -57,7 +57,11 @@ class FormFlowProcessLinkActivityHandler(
         return ProcessLinkActivityResult(
             processLink.id,
             FORM_FLOW_TASK_TYPE_KEY,
-            FormFlowTaskOpenResultProperties(instance.id.id)
+            FormFlowTaskOpenResultProperties(
+                instance.id.id,
+                processLink.formDisplayType,
+                processLink.formSize,
+            )
         )
     }
 
