@@ -283,6 +283,7 @@ internal class ObjectenApiClientTest {
             URI(objectUrl),
             URI(objectTypesApiUrl),
             "typeId",
+            "",
             PageRequest.of(0, 10)
         )
 
@@ -361,6 +362,7 @@ internal class ObjectenApiClientTest {
             URI(objectUrl),
             URI(objectTypesApiUrl),
             "typeId",
+            "",
             PageRequest.of(0, 10)
         )
 
@@ -391,6 +393,7 @@ internal class ObjectenApiClientTest {
                 URI(objectUrl),
                 URI(objectTypesApiUrl),
                 "typeId",
+                "",
                 PageRequest.of(0, 10)
             )
         }
