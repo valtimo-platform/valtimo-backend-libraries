@@ -430,14 +430,6 @@ internal class ObjectManagementFacadeTest {
         whenever(objecttypenApiPlugin.getObjectTypeUrlById(objectTypeId)).thenReturn(expectedUrl)
         whenever(objectenApiPlugin.url).thenReturn(expectedUrl)
 
-        val objectRecord = ObjectRecord(
-            typeVersion = objectTypeVersion,
-            data = data,
-            startAt = LocalDate.now()
-        )
-
-//        val expectedObjectRequest = ObjectRequest(expectedUrl, objectRecord)
-
         objectManagementFacade.createObject(objectName, data)
 
         clearInvocations(objectManagementRepository, pluginService, objectenApiPlugin)
