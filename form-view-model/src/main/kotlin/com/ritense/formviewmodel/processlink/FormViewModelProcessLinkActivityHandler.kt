@@ -48,7 +48,9 @@ class FormViewModelProcessLinkActivityHandler(
             properties = FormViewModelTaskOpenResultProperties(
                 formDefinitionId = processLink.formDefinitionId,
                 formDefinition = formDefinition.asJson(),
-                formName = formDefinition.name
+                formName = formDefinition.name,
+                formDisplayType = processLink.formDisplayType,
+                formSize = processLink.formSize,
             )
         )
     }

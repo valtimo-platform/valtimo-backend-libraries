@@ -25,79 +25,82 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
+import jakarta.persistence.Transient
 import org.camunda.bpm.engine.impl.variable.serializer.DefaultVariableSerializers
 import org.camunda.bpm.engine.impl.variable.serializer.TypedValueSerializer
 import org.camunda.bpm.engine.impl.variable.serializer.ValueFields
 import org.camunda.bpm.engine.variable.value.TypedValue
+import org.hibernate.annotations.Immutable
 
+@Immutable
 @Entity
 @Table(name = "ACT_RU_VARIABLE")
 class CamundaVariableInstance(
 
     @Id
-    @Column(name = "ID_")
+    @Column(name = "ID_", insertable = false, updatable = false)
     val id: String,
 
-    @Column(name = "REV_")
+    @Column(name = "REV_", insertable = false, updatable = false)
     val revision: Int,
 
-    @Column(name = "TYPE_")
+    @Column(name = "TYPE_", insertable = false, updatable = false)
     val serializerName: String,
 
-    @Column(name = "NAME_")
+    @Column(name = "NAME_", insertable = false, updatable = false)
     private val name: String,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "EXECUTION_ID_")
+    @JoinColumn(name = "EXECUTION_ID_", insertable = false, updatable = false)
     val execution: CamundaExecution?,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PROC_INST_ID_")
+    @JoinColumn(name = "PROC_INST_ID_", insertable = false, updatable = false)
     val processInstance: CamundaExecution?,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PROC_DEF_ID_")
+    @JoinColumn(name = "PROC_DEF_ID_", insertable = false, updatable = false)
     val processDefinition: CamundaProcessDefinition?,
 
-    @Column(name = "CASE_EXECUTION_ID_")
+    @Column(name = "CASE_EXECUTION_ID_", insertable = false, updatable = false)
     val caseExecutionId: String?,
 
-    @Column(name = "CASE_INST_ID_")
+    @Column(name = "CASE_INST_ID_", insertable = false, updatable = false)
     val caseInstanceId: String?,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TASK_ID_")
+    @JoinColumn(name = "TASK_ID_", insertable = false, updatable = false)
     val task: CamundaTask?,
 
-    @Column(name = "BATCH_ID_")
+    @Column(name = "BATCH_ID_", insertable = false, updatable = false)
     val batchId: String?,
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "BYTEARRAY_ID_")
+    @JoinColumn(name = "BYTEARRAY_ID_", insertable = false, updatable = false)
     val byteArrayValue: CamundaBytearray?,
 
-    @Column(name = "DOUBLE_")
+    @Column(name = "DOUBLE_", insertable = false, updatable = false)
     private val doubleValue: Double?,
 
-    @Column(name = "LONG_")
+    @Column(name = "LONG_", insertable = false, updatable = false)
     private val longValue: Long?,
 
-    @Column(name = "TEXT_")
+    @Column(name = "TEXT_", insertable = false, updatable = false)
     private val textValue: String?,
 
-    @Column(name = "TEXT2_")
+    @Column(name = "TEXT2_", insertable = false, updatable = false)
     private val textValue2: String?,
 
-    @Column(name = "VAR_SCOPE_")
+    @Column(name = "VAR_SCOPE_", insertable = false, updatable = false)
     val variableScopeId: String?,
 
-    @Column(name = "SEQUENCE_COUNTER_")
+    @Column(name = "SEQUENCE_COUNTER_", insertable = false, updatable = false)
     val sequenceCounter: Long,
 
-    @Column(name = "IS_CONCURRENT_LOCAL_")
+    @Column(name = "IS_CONCURRENT_LOCAL_", insertable = false, updatable = false)
     val isConcurrentLocal: Boolean,
 
-    @Column(name = "TENANT_ID_")
+    @Column(name = "TENANT_ID_", insertable = false, updatable = false)
     val tenantId: String?
 
 ) : ValueFields {
@@ -120,14 +123,18 @@ class CamundaVariableInstance(
 
     override fun setDoubleValue(doubleValue: Double?) = throw RuntimeException(CANT_WRITE_READONLY_INTERFACE)
 
+    @Transient
     override fun getByteArrayValue(): ByteArray? = byteArrayValue?.bytes
 
     override fun setByteArrayValue(bytes: ByteArray?) = throw RuntimeException(CANT_WRITE_READONLY_INTERFACE)
 
+    @Transient
     fun getValue(): Any? = getTypedValue()?.value
 
+    @Transient
     fun getTypedValue(): TypedValue? = getTypedValue(true)
 
+    @Transient
     fun getTypedValue(deserializeValue: Boolean): TypedValue? {
         return CamundaContextService.runWithCommandContext {
             findSerializer(serializerName).readValue(this, deserializeValue, false)
@@ -142,6 +149,23 @@ class CamundaVariableInstance(
         return variableSerializers.getSerializerByName(serializerName)
             ?: throw RuntimeException("Failed to find serializer with name '$serializerName'")
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is CamundaVariableInstance) return false
+
+        if (id != other.id) return false
+        if (revision != other.revision) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + revision
+        return result
+    }
+
 
     companion object {
         val variableSerializers = DefaultVariableSerializers()

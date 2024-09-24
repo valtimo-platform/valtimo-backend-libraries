@@ -68,6 +68,7 @@ include(
     "plugin-authentication:openzaak-plugin-authentication",
     "process-document",
     "process-link",
+    "process-link-url",
     "resource",
     "resource:local-resource",
     "resource:openzaak-resource",

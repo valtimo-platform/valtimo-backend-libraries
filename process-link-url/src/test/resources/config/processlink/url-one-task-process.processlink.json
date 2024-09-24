@@ -1,0 +1,14 @@
+[
+    {
+        "activityId": "start-event",
+        "activityType": "bpmn:StartEvent:start",
+        "processLinkType": "url",
+        "url": "https://www.ritense.nl"
+    },
+    {
+        "activityId": "do-something",
+        "activityType": "bpmn:UserTask:start",
+        "processLinkType": "url",
+        "url": "https://www.ritense.nl"
+    }
+]
