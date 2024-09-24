@@ -27,6 +27,8 @@ import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import mu.KLogger
+import mu.KotlinLogging
 import org.springframework.stereotype.Service
 
 @Service
@@ -42,6 +44,7 @@ class ZgwDocumentListColumnDeploymentService(
 
     override fun before() {
         if (clearTables) {
+            logger.info { "clearTables: Clearing all documenten api columns" }
             documentenApiColumnRepository.deleteAll()
             changelogService.deleteChangesetsByKey(KEY)
         }
@@ -60,6 +63,7 @@ class ZgwDocumentListColumnDeploymentService(
     }
 
     private fun deploy(caseDefinitions: List<ZgwDocumentListColumnCollection>) {
+        logger.info { "deploy caseDefinitions $caseDefinitions" }
         runWithoutAuthorization {
             caseDefinitions.forEach {
                 documentenApiColumnRepository.deleteAll(documentenApiColumnRepository.findAllByIdCaseDefinitionNameOrderByOrder(it.key))
@@ -76,6 +80,7 @@ class ZgwDocumentListColumnDeploymentService(
     }
 
     companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
         private const val KEY = "case-documenten-api-column"
     }
 }

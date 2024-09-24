@@ -21,6 +21,7 @@ import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
 import com.ritense.valtimo.changelog.service.ChangelogDeployer
+import mu.KotlinLogging
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
@@ -35,10 +36,12 @@ class ZgwDocumentTrefwoordImporter(
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
+        logger.info { "Importing ZGW document trefwoorden for file ${request.fileName}" }
         changelogDeployer.deploy(zgwDocumentTrefwoordDeploymentService, request.fileName, request.content.toString(Charsets.UTF_8))
     }
 
     private companion object {
+        private val logger = KotlinLogging.logger {}
         val FILENAME_REGEX = """config/case/trefwoorden/([^/]+)\.zgw-document-trefwoorden\.json""".toRegex()
     }
 }

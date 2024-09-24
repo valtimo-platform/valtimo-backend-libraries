@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.case.deployment
+package com.ritense.documentenapi.deployment
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
