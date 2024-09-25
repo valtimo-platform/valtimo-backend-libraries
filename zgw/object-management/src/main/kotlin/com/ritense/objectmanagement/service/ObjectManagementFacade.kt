@@ -39,26 +39,26 @@ class ObjectManagementFacade(
     private val pluginService: PluginService
 ) {
     fun getObjectByUuid(objectName: String, uuid: UUID): ObjectWrapper {
-        logger.debug { "get object by UUID objectName=$objectName uuid=$uuid" }
+        logger.debug { "Get object by UUID objectName=$objectName uuid=$uuid" }
         val accessObject = getAccessObject(objectName)
         return findObjectByUuid(accessObject = accessObject, uuid = uuid)
     }
 
     fun getObjectsByUuids(objectName: String, uuids: List<UUID>): ObjectsList {
-        logger.debug { "get object by UUIDs objectName=$objectName uuids=$uuids" }
+        logger.debug { "Get object by UUIDs objectName=$objectName uuids=$uuids" }
         val accessObject = getAccessObject(objectName)
         val objects = uuids.map { findObjectByUuid(accessObject = accessObject, uuid = it) }
         return ObjectsList(count = objects.size, results = objects)
     }
 
     fun getObjectByUri(objectName: String, objectUrl: URI): ObjectWrapper {
-        logger.debug { "get object by URI objectName=$objectName objectUrl=$objectUrl" }
+        logger.debug { "Get object by URI objectName=$objectName objectUrl=$objectUrl" }
         val accessObject = getAccessObject(objectName)
         return findObjectByUri(accessObject = accessObject, objectUrl = objectUrl)
     }
 
     fun getObjectsByUris(objectName: String, objectUrls: List<URI>): ObjectsList {
-        logger.debug { "get object by URIs objectName=$objectName objectUrls=$objectUrls" }
+        logger.debug { "Get object by URIs objectName=$objectName objectUrls=$objectUrls" }
         val accessObject = getAccessObject(objectName)
         val objects = mutableListOf<ObjectWrapper>()
         objectUrls.forEach {
@@ -129,7 +129,7 @@ class ObjectManagementFacade(
         data: JsonNode,
         objectId: UUID? = null
     ): ObjectWrapper {
-        logger.info { "Create object objectName=$objectName data=$data objectId=$objectId" }
+        logger.info { "Create object objectName=$objectName objectId=$objectId" }
         val accessObject = getAccessObject(objectName)
         val objectTypeUrl = accessObject.objectTypenApiPlugin.getObjectTypeUrlById(
             accessObject.objectManagement.objecttypeId
@@ -146,7 +146,6 @@ class ObjectManagementFacade(
         )
 
         try {
-            logger.info { "Creating object $objectRequest" }
             return accessObject.objectenApiPlugin.createObject(objectRequest)
         } catch (ex: RestClientResponseException) {
             throw Exception("Exception thrown while making a call to the Objects API. Response from the API: ${ex.responseBodyAsString}")
@@ -158,7 +157,7 @@ class ObjectManagementFacade(
         objectName: String,
         data: JsonNode,
     ): ObjectWrapper {
-        logger.info { "Update object objectId=$objectId objectName=$objectName data=$data" }
+        logger.info { "Update object objectId=$objectId objectName=$objectName" }
         val accessObject = getAccessObject(objectName)
         val objectTypeUrl = accessObject.objectTypenApiPlugin.getObjectTypeUrlById(
             accessObject.objectManagement.objecttypeId
@@ -174,7 +173,6 @@ class ObjectManagementFacade(
         )
 
         try {
-            logger.info { "Updating object $objectRequest" }
             return accessObject.objectenApiPlugin
                 .objectUpdate(
                     URI(
