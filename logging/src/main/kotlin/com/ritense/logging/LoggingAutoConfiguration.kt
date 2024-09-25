@@ -39,6 +39,8 @@ import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.Ordered.LOWEST_PRECEDENCE
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
+import org.springframework.util.ErrorHandler
 import javax.sql.DataSource
 
 @AutoConfiguration
@@ -121,5 +123,21 @@ class LoggingAutoConfiguration {
         hardeningService: HardeningService?
     ): ExceptionTranslator {
         return LoggingContextExceptionTranslator(hardeningService)
+    }
+
+    @ConditionalOnMissingBean(LoggingErrorWithContextErrorHandler::class)
+    @Bean
+    fun loggingErrorWithContextErrorHandler(): ErrorHandler {
+        return LoggingErrorWithContextErrorHandler()
+    }
+
+    @ConditionalOnMissingBean(name = ["loggingErrorWithContextThreadPoolTaskScheduler"])
+    @Bean
+    fun loggingErrorWithContextThreadPoolTaskScheduler(
+        threadPoolTaskScheduler: ThreadPoolTaskScheduler,
+        loggingErrorWithContextErrorHandler: ErrorHandler,
+    ): ThreadPoolTaskScheduler {
+        threadPoolTaskScheduler.setErrorHandler(loggingErrorWithContextErrorHandler)
+        return threadPoolTaskScheduler
     }
 }
