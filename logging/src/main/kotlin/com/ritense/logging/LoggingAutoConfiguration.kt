@@ -113,7 +113,7 @@ class LoggingAutoConfiguration {
         return LiquibaseMasterChangeLogLocation("config/liquibase/logging-master.xml")
     }
 
-    @Order(1000)
+    @Order(500)
     @Bean
     @ConditionalOnMissingBean(LoggingContextExceptionHandler::class)
     fun loggingContextExceptionHandler(

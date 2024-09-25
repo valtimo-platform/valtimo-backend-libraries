@@ -51,12 +51,15 @@ class LoggingContextExceptionHandlerIT : BaseIntegrationTest() {
             .andDo(MockMvcResultHandlers.print())
             .andExpect(status().is5xxServerError)
 
-        val errorEvent = loggingEventRepository.findOne(byLevel("ERROR")).orElseThrow()
+        val errorEvent = loggingEventRepository.findAll(byLevel("ERROR")).last()
 
         assertEquals("Internal Server Error", errorEvent.formattedMessage)
-        assertTrue(errorEvent.getStacktrace()!!.startsWith("java.lang.IllegalStateException: test-error"))
-        assertEquals(1, errorEvent.properties.size)
-        assertEquals("test key", errorEvent.properties[0].getKey())
-        assertEquals("test value", errorEvent.properties[0].value)
+        assertTrue(errorEvent.getStacktrace()!!.startsWith("java.lang.IllegalStateException: outer-test-error"))
+        assertTrue(errorEvent.getStacktrace()!!.contains("Caused by: java.lang.IllegalStateException: inner-test-error"))
+        assertEquals(2, errorEvent.properties.size)
+        assertTrue(errorEvent.properties.map { it.getKey() }.contains("inner key"))
+        assertTrue(errorEvent.properties.map { it.value }.contains("inner value"))
+        assertTrue(errorEvent.properties.map { it.getKey() }.contains("outer key"))
+        assertTrue(errorEvent.properties.map { it.value }.contains("outer value"))
     }
 }

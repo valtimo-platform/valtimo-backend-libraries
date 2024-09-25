@@ -63,7 +63,7 @@ public class WebAutoConfiguration {
         return new HardeningServiceImpl(hardeningProperties);
     }
 
-    @Order(0)
+    @Order(1000)
     @Bean
     @ConditionalOnMissingBean
     public WebModuleExceptionTranslator webModuleExceptionTranslator(Optional<HardeningService> hardeningService) {

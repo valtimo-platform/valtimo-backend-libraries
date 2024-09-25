@@ -32,8 +32,21 @@ class TestLoggingResource {
     @GetMapping("/v1/test-error")
     fun throwTestErrorWithContext(
     ): ResponseEntity<Any> {
-        withLoggingContext("test key" to "test value") {
-            throw IllegalStateException("test-error")
+        try {
+            withLoggingContext("irrelevant key" to "irrelevant value") {
+                throw IllegalStateException("irrelevant-test-error")
+            }
+        } catch (e: Exception) {
+            // ignored
+        }
+        withLoggingContext("outer key" to "outer value") {
+            try {
+                withLoggingContext("inner key" to "inner value") {
+                    throw IllegalStateException("inner-test-error")
+                }
+            } catch (e: Exception) {
+                throw IllegalStateException("outer-test-error", e)
+            }
         }
     }
 

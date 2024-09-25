@@ -18,7 +18,7 @@ package com.ritense.logging
 
 import org.slf4j.MDC
 
-val MDC_ERROR_CONTEXT: ThreadLocal<Map<String, String>> = ThreadLocal()
+val MDC_ERROR_CONTEXT: ThreadLocal<Pair<Throwable, Map<String, String>>> = ThreadLocal()
 
 fun <T> withLoggingContext(
     contextKey: Class<*>,
@@ -86,14 +86,14 @@ inline fun <T> withErrorLoggingContext(
     return if (mdcErrorContext == null) {
         body()
     } else {
-        mu.withLoggingContext(mdcErrorContext, true, body)
+        mu.withLoggingContext(mdcErrorContext.second, true, body)
     }
 }
 
 fun setErrorLoggingContext() {
     val mdcErrorContext = MDC_ERROR_CONTEXT.get()
     if (mdcErrorContext != null) {
-        MDC.setContextMap(mdcErrorContext)
+        MDC.setContextMap(mdcErrorContext.second)
     }
 }
 
@@ -102,7 +102,16 @@ inline fun <T> catchMdcErrorContext(body: () -> T): T {
     return try {
         body()
     } catch (e: Throwable) {
-        MDC_ERROR_CONTEXT.set(mdcContext)
+        var rootCause: Throwable = e
+        while (rootCause.cause != null) {
+            rootCause = rootCause.cause!!
+        }
+        val existing = MDC_ERROR_CONTEXT.get()
+        if (existing?.first == rootCause) {
+            MDC_ERROR_CONTEXT.set(rootCause to (mdcContext + existing.second))
+        } else {
+            MDC_ERROR_CONTEXT.set(rootCause to mdcContext)
+        }
         throw e
     }
 }
