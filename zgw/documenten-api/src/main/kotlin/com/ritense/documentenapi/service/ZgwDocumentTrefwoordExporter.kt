@@ -17,8 +17,8 @@
 package com.ritense.documentenapi.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.case.deployment.CaseDefinitionTrefwoordCollection
-import com.ritense.case.deployment.ZgwDocumentTrefwoordChangeset
+import com.ritense.documentenapi.deployment.CaseDefinitionTrefwoordCollection
+import com.ritense.documentenapi.deployment.ZgwDocumentTrefwoordChangeset
 import com.ritense.documentenapi.domain.ZgwDocumentTrefwoord
 import com.ritense.exporter.ExportFile
 import com.ritense.exporter.ExportPrettyPrinter
