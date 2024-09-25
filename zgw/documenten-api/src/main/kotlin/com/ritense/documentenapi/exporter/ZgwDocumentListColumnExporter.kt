@@ -26,6 +26,7 @@ import com.ritense.exporter.ExportPrettyPrinter
 import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
+import mu.KotlinLogging
 import java.time.Instant
 
 class ZgwDocumentListColumnExporter(
@@ -35,7 +36,7 @@ class ZgwDocumentListColumnExporter(
     override fun supports(): Class<DocumentDefinitionExportRequest> = DocumentDefinitionExportRequest::class.java
 
     override fun export(request: DocumentDefinitionExportRequest): ExportResult {
-
+        logger.info { "Exporting ZGW document list columns for case definition ${request.name}" }
         val columns = documentenApiColumnRepository.findAllByIdCaseDefinitionNameOrderByOrder(request.name)
             .map { ZgwDocumentListColumn(it.id.key, it.defaultSort) }
 
@@ -54,5 +55,9 @@ class ZgwDocumentListColumnExporter(
                 objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(changeset)
             )
         )
+    }
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
     }
 }

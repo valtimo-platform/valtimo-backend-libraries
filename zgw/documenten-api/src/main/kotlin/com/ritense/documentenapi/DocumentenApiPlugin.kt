@@ -53,7 +53,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.io.InputStream
 import java.net.URI
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 
 @Plugin(
     key = PLUGIN_KEY,
@@ -195,7 +195,10 @@ class DocumentenApiPlugin(
         return client.getInformatieObject(authenticationPluginConfiguration, objectUrl)
     }
 
-    fun getInformatieObjecten(documentSearchRequest: DocumentSearchRequest, pageable: Pageable): Page<DocumentInformatieObject> {
+    fun getInformatieObjecten(
+        documentSearchRequest: DocumentSearchRequest,
+        pageable: Pageable
+    ): Page<DocumentInformatieObject> {
         return client.getInformatieObjecten(authenticationPluginConfiguration, url, pageable, documentSearchRequest)
     }
 
@@ -204,13 +207,11 @@ class DocumentenApiPlugin(
         client.deleteInformatieObject(authenticationPluginConfiguration, objectUrl)
     }
 
-    fun createInformatieObjectUrl(objectId: String): URI {
-        return UriComponentsBuilder
-            .fromUri(url)
-            .pathSegment("enkelvoudiginformatieobjecten", objectId)
-            .build()
-            .toUri()
-    }
+    fun createInformatieObjectUrl(objectId: String) = UriComponentsBuilder
+        .fromUri(url)
+        .pathSegment("enkelvoudiginformatieobjecten", objectId)
+        .build()
+        .toUri()
 
     fun modifyInformatieObject(documentUrl: URI, patchDocumentRequest: PatchDocumentRequest): DocumentInformatieObject {
         val documentLock = client.lockInformatieObject(authenticationPluginConfiguration, documentUrl)
@@ -226,6 +227,7 @@ class DocumentenApiPlugin(
 
     @PluginEvent(invokedOn = [EventType.CREATE, EventType.UPDATE])
     fun onSave() {
+        logger.info { "Documenten API plugin saved" }
         if (apiVersion != null && !documentenApiVersionService.isValidVersion(apiVersion!!)) {
             throw ValidationException("Unknown API version '$apiVersion'.")
         }
@@ -270,7 +272,7 @@ class DocumentenApiPlugin(
             formaat = getMetadataField(metadata, FORMAAT_FIELD),
             trefwoorden = trefwoorden,
         )
-
+        logger.info { "Store document $request" }
         val documentCreateResult = client.storeDocument(authenticationPluginConfiguration, url, request)
 
         val event = DocumentCreated(
@@ -349,7 +351,7 @@ class DocumentenApiPlugin(
         val FORMAAT_FIELD = listOf("contentType", "formaat")
         val TREFWOORDEN_FIELD = listOf("trefwoorden")
 
-        val logger = KotlinLogging.logger {  }
+        val logger = KotlinLogging.logger { }
 
         fun findConfigurationByUrl(url: URI) = { properties: JsonNode ->
             url.toString().startsWith(properties[URL_PROPERTY].textValue())
