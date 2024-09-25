@@ -53,6 +53,7 @@ import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.repository.ZaakHersteltermijnRepository
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
+import com.ritense.zgw.LoggingConstants.CATALOGI_API
 import com.ritense.zgw.LoggingConstants.DOCUMENTEN_API
 import com.ritense.zgw.Page
 import com.ritense.zgw.Rsin
@@ -146,7 +147,7 @@ class ZakenApiPlugin(
             metadata["description"] as String?,
         )
         client.linkDocument(authenticationPluginConfiguration, url, request)
-        logger.info { "Uploaded document with URL '$documentUrl' linked to zaak with URL '$zaakUrl'" }
+        logger.info { "Linked uploaded document with URL '$documentUrl' to zaak with URL '$zaakUrl'" }
     }
 
     @PluginAction(
@@ -160,11 +161,16 @@ class ZakenApiPlugin(
         @PluginActionProperty rsin: Rsin,
         @PluginActionProperty zaaktypeUrl: URI,
     ) {
-        logger.info { "Starting zaak creation for execution with RSIN: $rsin and zaaktype URL: $zaaktypeUrl" }
-        val documentId = UUID.fromString(execution.businessKey)
+        withLoggingContext(
+            CATALOGI_API.ZAAKTYPE to zaaktypeUrl.toString()
+        ) {
+            val documentId = UUID.fromString(execution.businessKey)
 
-        createZaak(documentId, rsin, zaaktypeUrl)
-        logger.info { "Zaak creation completed for document ID: $documentId" }
+            createZaak(documentId, rsin, zaaktypeUrl)
+
+            logger.info { "Zaak of zaaktype with URL '$zaaktypeUrl' created for document with id '$documentId'" }
+
+        }
     }
 
     fun createZaak(
@@ -172,38 +178,45 @@ class ZakenApiPlugin(
         rsin: Rsin,
         zaaktypeUrl: URI,
     ) {
-        logger.info { "Creating zaak for document ID: $documentId" }
-        val zaakInstanceLink = zaakInstanceLinkRepository.findByDocumentId(documentId)
-        if (zaakInstanceLink != null) {
-            logger.warn { "Skipping zaak creation. Zaak already exists for document ID: '$documentId', zaak URL: '${zaakInstanceLink.zaakInstanceUrl}'." }
-            return
+        withLoggingContext(
+            CATALOGI_API.ZAAKTYPE to zaaktypeUrl.toString(),
+            "com.ritense.document.domain.impl.JsonSchemaDocument" to documentId.toString(),
+        ) {
+            logger.debug { "Starting creation of zaak of zaaktype with URL '$zaaktypeUrl' for document with id '$documentId'" }
+            val zaakInstanceLink = zaakInstanceLinkRepository.findByDocumentId(documentId)
+
+            if (zaakInstanceLink != null) {
+                logger.warn { "Skipping zaak creation. Zaak already exists for document with id '$documentId'. Zaak URL: '${zaakInstanceLink.zaakInstanceUrl}'." }
+                return
+            }
+
+            val startdatum = LocalDate.now()
+            val uiterlijkeEinddatumAfdoening = calculateUiterlijkeEinddatumAfdoening(zaaktypeUrl, startdatum)
+
+            val zaak = client.createZaak(
+                authenticationPluginConfiguration,
+                url,
+                CreateZaakRequest(
+                    bronorganisatie = rsin,
+                    zaaktype = zaaktypeUrl,
+                    verantwoordelijkeOrganisatie = rsin,
+                    startdatum = startdatum,
+                    uiterlijkeEinddatumAfdoening = uiterlijkeEinddatumAfdoening,
+                )
+            )
+
+            zaakInstanceLinkRepository.save(
+                ZaakInstanceLink(
+                    ZaakInstanceLinkId(UUID.randomUUID()),
+                    zaak.url,
+                    zaak.uuid,
+                    documentId,
+                    zaak.zaaktype
+                )
+            )
+
+            logger.info { "Zaak created successfully for document with id '$documentId'. Zaak URL: '${zaak.url}'" }
         }
-
-        val startdatum = LocalDate.now()
-        val uiterlijkeEinddatumAfdoening = calculateUiterlijkeEinddatumAfdoening(zaaktypeUrl, startdatum)
-
-        val zaak = client.createZaak(
-            authenticationPluginConfiguration,
-            url,
-            CreateZaakRequest(
-                bronorganisatie = rsin,
-                zaaktype = zaaktypeUrl,
-                verantwoordelijkeOrganisatie = rsin,
-                startdatum = startdatum,
-                uiterlijkeEinddatumAfdoening = uiterlijkeEinddatumAfdoening,
-            )
-        )
-
-        zaakInstanceLinkRepository.save(
-            ZaakInstanceLink(
-                ZaakInstanceLinkId(UUID.randomUUID()),
-                zaak.url,
-                zaak.uuid,
-                documentId,
-                zaak.zaaktype
-            )
-        )
-        logger.info { "Zaak created successfully for document ID: $documentId, zaak URL: ${zaak.url}" }
     }
 
     @PluginAction(
@@ -220,26 +233,32 @@ class ZakenApiPlugin(
         @PluginActionProperty anpIdentificatie: String?,
         @PluginActionProperty inpA_nummer: String?
     ) {
-        logger.info { "Creating natuurlijk persoon zaakrol for document ID: ${execution.businessKey}, roltype URL: $roltypeUrl" }
-        val documentId = UUID.fromString(execution.businessKey)
-        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+        withLoggingContext(
+            CATALOGI_API.ROLTYPE to roltypeUrl,
+        ) {
+            logger.debug { "Creating natuurlijk persoon zaakrol with roltype URL '$roltypeUrl' for document with id '${execution.businessKey}'" }
 
-        client.createZaakRol(
-            authenticationPluginConfiguration,
-            url,
-            Rol(
-                zaak = zaakUrl,
-                roltype = URI(roltypeUrl),
-                roltoelichting = rolToelichting,
-                betrokkeneType = BetrokkeneType.NATUURLIJK_PERSOON,
-                betrokkeneIdentificatie = RolNatuurlijkPersoon(
-                    inpBsn = inpBsn,
-                    anpIdentificatie = anpIdentificatie,
-                    inpA_nummer = inpA_nummer
+            val documentId = UUID.fromString(execution.businessKey)
+            val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+
+            val rol = client.createZaakRol(
+                authenticationPluginConfiguration,
+                url,
+                Rol(
+                    zaak = zaakUrl,
+                    roltype = URI(roltypeUrl),
+                    roltoelichting = rolToelichting,
+                    betrokkeneType = BetrokkeneType.NATUURLIJK_PERSOON,
+                    betrokkeneIdentificatie = RolNatuurlijkPersoon(
+                        inpBsn = inpBsn,
+                        anpIdentificatie = anpIdentificatie,
+                        inpA_nummer = inpA_nummer
+                    )
                 )
             )
-        )
-        logger.info { "Natuurlijk persoon zaakrol created for zaak URL: $zaakUrl" }
+
+            logger.info { "Natuurlijk persoon zaakrol with URL '${rol.url}' created for document with id '$documentId' and zaak with URL '$zaakUrl'." }
+        }
     }
 
     @PluginAction(
@@ -255,25 +274,31 @@ class ZakenApiPlugin(
         @PluginActionProperty innNnpId: String?,
         @PluginActionProperty annIdentificatie: String?
     ) {
-        logger.info { "Creating niet-natuurlijk persoon zaakrol for document ID: ${execution.businessKey}, roltype URL: $roltypeUrl" }
-        val documentId = UUID.fromString(execution.businessKey)
-        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+        withLoggingContext(
+            CATALOGI_API.ROLTYPE to roltypeUrl,
+        ) {
+            logger.debug { "Creating niet-natuurlijk persoon zaakrol with roltype URL '$roltypeUrl' for document with id '${execution.businessKey}'" }
 
-        client.createZaakRol(
-            authenticationPluginConfiguration,
-            url,
-            Rol(
-                zaak = zaakUrl,
-                roltype = URI(roltypeUrl),
-                roltoelichting = rolToelichting,
-                betrokkeneType = BetrokkeneType.NIET_NATUURLIJK_PERSOON,
-                betrokkeneIdentificatie = RolNietNatuurlijkPersoon(
-                    annIdentificatie = annIdentificatie,
-                    innNnpId = innNnpId
+            val documentId = UUID.fromString(execution.businessKey)
+            val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+
+            val rol = client.createZaakRol(
+                authenticationPluginConfiguration,
+                url,
+                Rol(
+                    zaak = zaakUrl,
+                    roltype = URI(roltypeUrl),
+                    roltoelichting = rolToelichting,
+                    betrokkeneType = BetrokkeneType.NIET_NATUURLIJK_PERSOON,
+                    betrokkeneIdentificatie = RolNietNatuurlijkPersoon(
+                        annIdentificatie = annIdentificatie,
+                        innNnpId = innNnpId
+                    )
                 )
             )
-        )
-        logger.info { "Niet-natuurlijk persoon zaakrol created for zaak URL: $zaakUrl" }
+
+            logger.info { "Niet-natuurlijk persoon zaakrol with URL '${rol.url}' created for document with id '$documentId' and zaak with URL '$zaakUrl'." }
+        }
     }
 
     @PluginAction(
@@ -287,21 +312,25 @@ class ZakenApiPlugin(
         @PluginActionProperty statustypeUrl: URI,
         @PluginActionProperty statustoelichting: String?,
     ) {
-        logger.info { "Setting zaak status for document ID: ${execution.businessKey}, status type URL: $statustypeUrl" }
-        val documentId = UUID.fromString(execution.businessKey)
-        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+        withLoggingContext(
+            CATALOGI_API.STATUSTYPE to statustypeUrl.toString(),
+        ) {
+            logger.info { "Setting zaak status for document ID: ${execution.businessKey}, status type URL: $statustypeUrl" }
+            val documentId = UUID.fromString(execution.businessKey)
+            val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
-        client.createZaakStatus(
-            authenticationPluginConfiguration,
-            url,
-            CreateZaakStatusRequest(
-                zaak = zaakUrl,
-                statustype = statustypeUrl,
-                datumStatusGezet = LocalDateTime.now().minusSeconds(5),
-                statustoelichting = statustoelichting,
+            client.createZaakStatus(
+                authenticationPluginConfiguration,
+                url,
+                CreateZaakStatusRequest(
+                    zaak = zaakUrl,
+                    statustype = statustypeUrl,
+                    datumStatusGezet = LocalDateTime.now().minusSeconds(5),
+                    statustoelichting = statustoelichting,
+                )
             )
-        )
-        logger.info { "Zaak status set successfully for zaak URL: $zaakUrl" }
+            logger.info { "Zaak status set successfully for zaak URL: $zaakUrl" }
+        }
     }
 
     @PluginAction(
