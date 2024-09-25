@@ -409,7 +409,7 @@ class ZakenApiPlugin(
         execution: DelegateExecution,
         @PluginActionProperty maxDurationInDays: Int,
     ) {
-        logger.debug { "Starting hersteltermijn for document with id '${execution.businessKey}'" }
+        logger.debug { "Setting hersteltermijn for document with id '${execution.businessKey}'" }
 
         TransactionTemplate(platformTransactionManager).executeWithoutResult {
             val documentId = UUID.fromString(execution.businessKey)
