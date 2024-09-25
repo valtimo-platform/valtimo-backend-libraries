@@ -28,7 +28,6 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.LocalDateTime
-import java.util.concurrent.TimeUnit.MINUTES
 
 @Transactional
 @Service
@@ -41,8 +40,7 @@ class LoggingEventDeletionService(
 ) {
 
     @Scheduled(
-        fixedRateString = "\${valtimo.logging.retentionInMinutes:43200}",
-        timeUnit = MINUTES
+        cron = "\${valtimo.logging.deletionCron:0 0 4 * * ?}"
     )
     fun deleteOldLoggingEvents() {
         val retentionDateTime = LocalDateTime.now() - Duration.ofMinutes(retentionInMinutes)

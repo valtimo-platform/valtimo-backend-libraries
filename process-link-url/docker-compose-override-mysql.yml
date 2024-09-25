@@ -1,0 +1,6 @@
+services:
+    db:
+        ports:
+            - "3356:3306"
+        environment:
+            - MYSQL_DATABASE=process-link-url-test

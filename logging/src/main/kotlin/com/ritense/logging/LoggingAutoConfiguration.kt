@@ -64,7 +64,7 @@ class LoggingAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(LoggingEventDeletionService::class)
     fun loggingEventDeletionService(
-        @Value("\${valtimo.logging.retentionInMinutes:43200}") retentionInMinutes: Long,
+        @Value("\${valtimo.logging.retentionInMinutes:30240}") retentionInMinutes: Long,
         loggingEventRepository: LoggingEventRepository,
         loggingEventPropertyRepository: LoggingEventPropertyRepository,
         loggingEventExceptionRepository: LoggingEventExceptionRepository
