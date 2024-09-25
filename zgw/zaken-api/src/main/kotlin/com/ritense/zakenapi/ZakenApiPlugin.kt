@@ -361,7 +361,7 @@ class ZakenApiPlugin(
                     toelichting = toelichting,
                 )
             )
-            
+
             logger.info { "Zaak resultaat created successfully for document with id '$documentId' and zaak with URL '$zaakUrl'" }
         }
     }
@@ -378,11 +378,11 @@ class ZakenApiPlugin(
         @PluginActionProperty toelichtingVerlenging: String,
         @PluginActionProperty toelichtingOpschorting: String,
     ) {
-        logger.info { "Setting zaak opschorting for document ID: ${execution.businessKey}, verlengingsduur: $verlengingsduur" }
+        logger.debug { "Setting zaak opschorting for document with id '${execution.businessKey}'" }
         val documentId = UUID.fromString(execution.businessKey)
         val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
-        client.setZaakOpschorting(
+        val zaakOpschorting = client.setZaakOpschorting(
             authenticationPluginConfiguration,
             zaakUrl,
             ZaakopschortingRequest(
@@ -396,7 +396,7 @@ class ZakenApiPlugin(
                 )
             )
         )
-        logger.info { "Zaak opschorting set successfully for zaak URL: $zaakUrl" }
+        logger.info { "Zaak opschorting with url '${zaakOpschorting.url}' set successfully for zaak with URL '$zaakUrl' and document with id '${documentId}'" }
     }
 
     @PluginAction(
