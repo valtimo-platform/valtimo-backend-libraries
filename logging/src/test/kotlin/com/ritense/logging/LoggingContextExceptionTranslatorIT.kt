@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
 
 @Transactional
-class LoggingContextExceptionHandlerIT : BaseIntegrationTest() {
+class LoggingContextExceptionTranslatorIT : BaseIntegrationTest() {
 
     @Autowired
     lateinit var webApplicationContext: WebApplicationContext

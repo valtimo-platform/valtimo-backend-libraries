@@ -30,6 +30,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.dao.ConcurrencyFailureException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
@@ -40,6 +41,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
+
+import static com.ritense.logging.LoggingContextKt.withErrorLoggingContext;
 
 /**
  * Controller advice to translate the server side exceptions to client-friendly json structures.
@@ -137,6 +140,19 @@ public class WebModuleExceptionTranslator extends ExceptionTranslator {
     @ExceptionHandler
     public ResponseEntity<Problem> handleValtimoRuntimeException(ValtimoRuntimeException ex, NativeWebRequest request) {
         return create(Status.BAD_REQUEST, ex, request, HeaderUtil.createFailureAlert(ex.getMessage(), ex.getCategory(), ex.getErrorDescription()));
+    }
+
+    @Override
+    public void log(
+        final Throwable throwable,
+        final Problem problem,
+        final NativeWebRequest request,
+        final HttpStatus status
+    ) {
+        withErrorLoggingContext(() -> {
+            super.log(throwable, problem, request, status);
+            return null;
+        });
     }
 
 }

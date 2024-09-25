@@ -17,25 +17,23 @@
 package com.ritense.logging
 
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import org.apiguardian.api.API
-import org.springframework.http.ResponseEntity
+import com.ritense.valtimo.contract.hardening.service.HardeningService
+import com.ritense.valtimo.contract.web.rest.error.ExceptionTranslator
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ControllerAdvice
-import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.NativeWebRequest
 import org.zalando.problem.Problem
-import org.zalando.problem.spring.web.advice.AdviceTrait
+import java.util.Optional
 
 @SkipComponentScan
 @ControllerAdvice
-class LoggingContextExceptionHandler(
-    private val adviceTrait: AdviceTrait
-) {
+class LoggingContextExceptionTranslator(
+    hardeningService: HardeningService?
+) : ExceptionTranslator(Optional.ofNullable(hardeningService)) {
 
-    @API(status = API.Status.INTERNAL)
-    @ExceptionHandler
-    fun handleThrowable(throwable: Throwable, request: NativeWebRequest): ResponseEntity<Problem>? {
-        return withErrorLoggingContext {
-            adviceTrait.create(throwable, request)
+    override fun log(throwable: Throwable, problem: Problem, request: NativeWebRequest, status: HttpStatus) {
+        withErrorLoggingContext {
+            super.log(throwable, problem, request, status)
         }
     }
 }
