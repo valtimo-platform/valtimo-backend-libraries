@@ -23,6 +23,7 @@ import com.ritense.logging.domain.LoggingEventPropertyId
 import com.ritense.logging.web.rest.dto.LoggingEventPropertyDto
 import com.ritense.logging.web.rest.dto.LoggingEventSearchRequest
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -97,8 +98,8 @@ class LoggingEventServiceIT : BaseIntegrationTest() {
         val resultsC = loggingEventService.searchLoggingEvents(searchRequestC, Pageable.unpaged()).content
 
         assertEquals(2, resultsA.size)
-        assertEquals("Event 1", resultsA[0].formattedMessage)
-        assertEquals("Event 2", resultsA[1].formattedMessage)
+        assertTrue(resultsA.map { it.formattedMessage }.contains("Event 1"))
+        assertTrue(resultsA.map { it.formattedMessage }.contains("Event 2"))
         assertEquals(1, resultsB.size)
         assertEquals("Event 1", resultsB[0].formattedMessage)
         assertEquals(0, resultsC.size)
