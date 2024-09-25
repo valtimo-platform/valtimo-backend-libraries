@@ -18,19 +18,22 @@ package com.ritense.logging
 
 import com.ritense.logging.repository.LoggingEventSpecificationHelper.Companion.byCallerClass
 import com.ritense.logging.repository.LoggingEventSpecificationHelper.Companion.byLevel
-import jakarta.transaction.Transactional
+import com.ritense.logging.repository.LoggingEventSpecificationHelper.Companion.byLikeFormattedMessage
 import mu.KLogger
 import mu.KotlinLogging
 import mu.withLoggingContext
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import org.springframework.transaction.annotation.Transactional
 
 @Transactional
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ValtimoDatabaseAppenderIT : BaseIntegrationTest() {
 
-    @BeforeEach
-    fun beforeEach() {
+    @BeforeAll
+    fun beforeAll() {
         loggingEventPropertyRepository.deleteAll()
         loggingEventExceptionRepository.deleteAll()
         loggingEventRepository.deleteAll()
@@ -65,7 +68,8 @@ class ValtimoDatabaseAppenderIT : BaseIntegrationTest() {
         logger.error(IllegalStateException("Test exception")) { veryLongExceptionMessage }
 
         val spec = byCallerClass(ValtimoDatabaseAppenderIT::class.java)
-        val errorEvent = loggingEventRepository.findOne(spec.and(byLevel("ERROR"))).orElseThrow()
+            .and(byLikeFormattedMessage("Very long exception message"))
+        val errorEvent = loggingEventRepository.findOne(spec).orElseThrow()
 
         assertEquals(veryLongExceptionMessage, errorEvent.formattedMessage)
         assertEquals(3921, veryLongExceptionMessage.length)
