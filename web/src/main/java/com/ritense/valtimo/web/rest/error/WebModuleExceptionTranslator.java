@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.web.rest.error;
 
+import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import com.ritense.valtimo.contract.exception.DocumentParserException;
 import com.ritense.valtimo.contract.exception.ProcessNotFoundException;
 import com.ritense.valtimo.contract.exception.ValtimoRuntimeException;
@@ -39,14 +40,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
-import org.zalando.problem.spring.web.advice.ProblemHandling;
 
 /**
  * Controller advice to translate the server side exceptions to client-friendly json structures.
  * The error response follows RFC7807 - Problem Details for HTTP APIs (<a href="https://tools.ietf.org/html/rfc7807">...</a>)
  */
+@SkipComponentScan
 @ControllerAdvice
-public class WebModuleExceptionTranslator extends ExceptionTranslator implements ProblemHandling {
+public class WebModuleExceptionTranslator extends ExceptionTranslator {
     private static final String MESSAGE = "message";
 
     public WebModuleExceptionTranslator(Optional<HardeningService> hardeningServiceOptional) {

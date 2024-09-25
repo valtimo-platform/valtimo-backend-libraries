@@ -36,6 +36,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
+import org.zalando.problem.spring.web.advice.AdviceTrait
 import javax.sql.DataSource
 
 @AutoConfiguration
@@ -110,5 +111,14 @@ class LoggingAutoConfiguration {
     @ConditionalOnMissingBean(name = ["loggingLiquibaseMasterChangeLogLocation"])
     fun loggingLiquibaseMasterChangeLogLocation(): LiquibaseMasterChangeLogLocation {
         return LiquibaseMasterChangeLogLocation("config/liquibase/logging-master.xml")
+    }
+
+    @Order(1000)
+    @Bean
+    @ConditionalOnMissingBean(LoggingContextExceptionHandler::class)
+    fun loggingContextExceptionHandler(
+        adviceTraits: List<AdviceTrait>
+    ): LoggingContextExceptionHandler {
+        return LoggingContextExceptionHandler(adviceTraits.first())
     }
 }

@@ -21,7 +21,6 @@ import com.ritense.logging.repository.LoggingEventSpecificationHelper.Companion.
 import com.ritense.logging.repository.LoggingEventSpecificationHelper.Companion.byLikeFormattedMessage
 import mu.KLogger
 import mu.KotlinLogging
-import mu.withLoggingContext
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test

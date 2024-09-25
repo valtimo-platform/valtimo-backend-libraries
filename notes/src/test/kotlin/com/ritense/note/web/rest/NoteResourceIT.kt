@@ -147,7 +147,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
         )
             .andDo(print())
             // For some reason, the @ExceptionHandler is not picked up when using mockMvc
-            .andExpect(status().is5xxServerError)
+            .andExpect(status().isForbidden)
             .andExpect(jsonPath("$.detail").value("Unauthorized"))
     }
 

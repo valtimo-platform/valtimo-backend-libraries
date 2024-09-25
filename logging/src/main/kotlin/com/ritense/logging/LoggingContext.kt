@@ -16,7 +16,9 @@
 
 package com.ritense.logging
 
-import mu.withLoggingContext
+import org.slf4j.MDC
+
+val MDC_ERROR_CONTEXT: ThreadLocal<Map<String, String>> = ThreadLocal()
 
 fun <T> withLoggingContext(
     contextKey: Class<*>,
@@ -35,5 +37,72 @@ fun withLoggingContext(
 ) {
     return withLoggingContext(mapOf(contextKey.canonicalName to contextValue), true) {
         runnable.run()
+    }
+}
+
+inline fun <T> withLoggingContext(
+    contextKey: String,
+    contextValue: String?,
+    body: () -> T
+): T = withLoggingContext(contextKey to contextValue, true, body)
+
+inline fun <T> withLoggingContext(
+    pair: Pair<String, String?>,
+    body: () -> T
+): T = withLoggingContext(pair, true, body)
+
+inline fun <T> withLoggingContext(
+    vararg pair: Pair<String, String?>,
+    body: () -> T
+): T = withLoggingContext(*pair, restorePrevious = true, body = body)
+
+inline fun <T> withLoggingContext(
+    map: Map<String, String?>,
+    body: () -> T
+): T = withLoggingContext(map, true, body)
+
+inline fun <T> withLoggingContext(
+    pair: Pair<String, String?>,
+    restorePrevious: Boolean = true,
+    body: () -> T
+): T = mu.withLoggingContext(pair, restorePrevious) { catchMdcErrorContext(body) }
+
+inline fun <T> withLoggingContext(
+    vararg pair: Pair<String, String?>,
+    restorePrevious: Boolean = true,
+    body: () -> T
+): T = mu.withLoggingContext(*pair, restorePrevious = restorePrevious) { catchMdcErrorContext(body) }
+
+inline fun <T> withLoggingContext(
+    map: Map<String, String?>,
+    restorePrevious: Boolean = true,
+    body: () -> T
+): T = mu.withLoggingContext(map, restorePrevious) { catchMdcErrorContext(body) }
+
+inline fun <T> withErrorLoggingContext(
+    body: () -> T
+): T {
+    val mdcErrorContext = MDC_ERROR_CONTEXT.get()
+    return if (mdcErrorContext == null) {
+        body()
+    } else {
+        mu.withLoggingContext(mdcErrorContext, true, body)
+    }
+}
+
+fun setErrorLoggingContext() {
+    val mdcErrorContext = MDC_ERROR_CONTEXT.get()
+    if (mdcErrorContext != null) {
+        MDC.setContextMap(mdcErrorContext)
+    }
+}
+
+inline fun <T> catchMdcErrorContext(body: () -> T): T {
+    val mdcContext = MDC.getCopyOfContextMap()
+    return try {
+        body()
+    } catch (e: Throwable) {
+        MDC_ERROR_CONTEXT.set(mdcContext)
+        throw e
     }
 }

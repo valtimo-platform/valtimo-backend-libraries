@@ -17,13 +17,29 @@
 package com.ritense.logging
 
 import com.ritense.logging.testimpl.LogResourceBean
+import com.ritense.valtimo.contract.hardening.service.HardeningService
+import com.ritense.valtimo.contract.web.rest.error.ExceptionTranslator
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
+import org.springframework.core.Ordered
+import org.springframework.core.annotation.Order
+import java.util.Optional
 
 @AutoConfiguration
 class TestAutoConfiguration {
+
     @Bean
     fun logResourceBean(): LogResourceBean {
         return LogResourceBean()
+    }
+
+    @Order(Ordered.LOWEST_PRECEDENCE)
+    @Bean
+    @ConditionalOnMissingBean(ExceptionTranslator::class)
+    fun testLoggingExceptionTranslator(
+        hardeningService: Optional<HardeningService>
+    ): ExceptionTranslator {
+        return ExceptionTranslator(hardeningService)
     }
 }
