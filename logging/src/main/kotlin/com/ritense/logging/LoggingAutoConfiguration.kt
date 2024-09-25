@@ -31,6 +31,7 @@ import com.ritense.valtimo.contract.hardening.service.HardeningService
 import com.ritense.valtimo.contract.web.rest.error.ExceptionTranslator
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -131,6 +132,7 @@ class LoggingAutoConfiguration {
         return LoggingErrorWithContextErrorHandler()
     }
 
+    @ConditionalOnBean(ThreadPoolTaskScheduler::class)
     @ConditionalOnMissingBean(name = ["loggingErrorWithContextThreadPoolTaskScheduler"])
     @Bean
     fun loggingErrorWithContextThreadPoolTaskScheduler(
