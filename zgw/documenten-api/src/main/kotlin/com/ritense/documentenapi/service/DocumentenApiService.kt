@@ -76,7 +76,7 @@ class DocumentenApiService(
         @LoggableResource(resourceType = PluginConfigurationId::class) pluginConfigurationId: String,
         @LoggableResource(resourceTypeName = DOCUMENTEN_API.ENKELVOUDIG_INFORMATIE_OBJECT) documentId: String
     ): DocumentInformatieObject {
-        logger.info { "Get informatie object $documentId" }
+        logger.debug { "Get informatie object $documentId" }
         val documentApiPlugin = pluginService.createInstance<DocumentenApiPlugin>(pluginConfigurationId)
         return documentApiPlugin.getInformatieObject(documentId)
     }
