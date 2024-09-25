@@ -453,7 +453,8 @@ class ZakenApiPlugin(
     fun endHersteltermijn(
         execution: DelegateExecution,
     ) {
-        logger.info { "Ending hersteltermijn for document ID: ${execution.businessKey}" }
+        logger.debug { "Ending hersteltermijn for document with id '${execution.businessKey}'" }
+
         TransactionTemplate(platformTransactionManager).executeWithoutResult {
             val documentId = UUID.fromString(execution.businessKey)
             val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
@@ -479,8 +480,9 @@ class ZakenApiPlugin(
             }
 
             zaakHersteltermijnRepository.save(updatedHersteltermijn)
+
+            logger.info { "Hersteltermijn ended for zaak with URL '${zaak.url}'" }
         }
-        logger.info { "Hersteltermijn ended for zaak URL: ${zaakUrlProvider.getZaakUrl(UUID.fromString(execution.businessKey))}" }
     }
 
     @PluginAction(
