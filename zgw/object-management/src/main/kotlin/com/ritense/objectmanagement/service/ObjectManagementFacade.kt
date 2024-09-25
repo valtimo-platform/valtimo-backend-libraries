@@ -39,32 +39,31 @@ class ObjectManagementFacade(
     private val pluginService: PluginService
 ) {
     fun getObjectByUuid(objectName: String, uuid: UUID): ObjectWrapper {
+        logger.debug { "get object by UUID objectName=$objectName uuid=$uuid" }
         val accessObject = getAccessObject(objectName)
-
         return findObjectByUuid(accessObject = accessObject, uuid = uuid)
     }
 
     fun getObjectsByUuids(objectName: String, uuids: List<UUID>): ObjectsList {
+        logger.debug { "get object by UUIDs objectName=$objectName uuids=$uuids" }
         val accessObject = getAccessObject(objectName)
         val objects = uuids.map { findObjectByUuid(accessObject = accessObject, uuid = it) }
-
         return ObjectsList(count = objects.size, results = objects)
     }
 
     fun getObjectByUri(objectName: String, objectUrl: URI): ObjectWrapper {
+        logger.debug { "get object by URI objectName=$objectName objectUrl=$objectUrl" }
         val accessObject = getAccessObject(objectName)
-
         return findObjectByUri(accessObject = accessObject, objectUrl = objectUrl)
     }
 
     fun getObjectsByUris(objectName: String, objectUrls: List<URI>): ObjectsList {
+        logger.debug { "get object by URIs objectName=$objectName objectUrls=$objectUrls" }
         val accessObject = getAccessObject(objectName)
         val objects = mutableListOf<ObjectWrapper>()
-
         objectUrls.forEach {
             objects.add(findObjectByUri(accessObject = accessObject, objectUrl = it))
         }
-
         return ObjectsList(count = objects.size, results = objects)
     }
 
@@ -74,8 +73,11 @@ class ObjectManagementFacade(
         pageNumber: Int,
         pageSize: Int
     ): ObjectsList {
+        logger.debug {
+            "get objects paged objectName=$objectName " +
+                "searchString=$searchString, pageNumber=$pageNumber, pageSize=$pageSize"
+        }
         val accessObject = getAccessObject(objectName)
-
         return findObjectsPaged(
             accessObject = accessObject,
             objectName = objectName,
@@ -91,6 +93,7 @@ class ObjectManagementFacade(
         objectName: String,
         searchString: String?
     ): ObjectsList {
+        logger.debug { "get objects unpaged objectName=$objectName searchString=$searchString" }
         val accessObject = getAccessObject(objectName)
 
         var pageNumber = 0
@@ -126,9 +129,11 @@ class ObjectManagementFacade(
         data: JsonNode,
         objectId: UUID? = null
     ): ObjectWrapper {
+        logger.info { "Create object objectName=$objectName data=$data objectId=$objectId" }
         val accessObject = getAccessObject(objectName)
-        val objectTypeUrl =
-            accessObject.objectTypenApiPlugin.getObjectTypeUrlById(accessObject.objectManagement.objecttypeId)
+        val objectTypeUrl = accessObject.objectTypenApiPlugin.getObjectTypeUrlById(
+            accessObject.objectManagement.objecttypeId
+        )
 
         val objectRequest = ObjectRequest(
             objectId,
@@ -141,7 +146,7 @@ class ObjectManagementFacade(
         )
 
         try {
-            logger.trace { "Creating object $objectRequest" }
+            logger.info { "Creating object $objectRequest" }
             return accessObject.objectenApiPlugin.createObject(objectRequest)
         } catch (ex: RestClientResponseException) {
             throw Exception("Exception thrown while making a call to the Objects API. Response from the API: ${ex.responseBodyAsString}")
@@ -153,9 +158,11 @@ class ObjectManagementFacade(
         objectName: String,
         data: JsonNode,
     ): ObjectWrapper {
+        logger.info { "Update object objectId=$objectId objectName=$objectName data=$data" }
         val accessObject = getAccessObject(objectName)
-        val objectTypeUrl =
-            accessObject.objectTypenApiPlugin.getObjectTypeUrlById(accessObject.objectManagement.objecttypeId)
+        val objectTypeUrl = accessObject.objectTypenApiPlugin.getObjectTypeUrlById(
+            accessObject.objectManagement.objecttypeId
+        )
 
         val objectRequest = ObjectRequest(
             objectTypeUrl,
@@ -167,7 +174,7 @@ class ObjectManagementFacade(
         )
 
         try {
-            logger.trace { "Updating object $objectRequest" }
+            logger.info { "Updating object $objectRequest" }
             return accessObject.objectenApiPlugin
                 .objectUpdate(
                     URI(
@@ -181,6 +188,7 @@ class ObjectManagementFacade(
     }
 
     private fun getAccessObject(objectName: String): ObjectManagementAccessObject {
+        logger.debug { "Get access object objectName=$objectName" }
         val objectManagement = objectManagementRepository.findByTitle(objectName)
             ?: throw NoSuchElementException("Object type $objectName is not found in Object Management.")
         val objectenApiPlugin =
@@ -196,6 +204,7 @@ class ObjectManagementFacade(
     }
 
     private fun findObjectByUuid(accessObject: ObjectManagementAccessObject, uuid: UUID): ObjectWrapper {
+        logger.debug { "Find object by uuid accessObject=$accessObject uuid=$uuid" }
         val objectUrl = UriComponentsBuilder
             .fromUri(accessObject.objectenApiPlugin.url)
             .pathSegment("objects")
@@ -204,13 +213,11 @@ class ObjectManagementFacade(
             .toUri()
 
         logger.trace { "Getting object $objectUrl" }
-
         return accessObject.objectenApiPlugin.getObject(objectUrl)
     }
 
     private fun findObjectByUri(accessObject: ObjectManagementAccessObject, objectUrl: URI): ObjectWrapper {
-        logger.trace { "Getting object $objectUrl" }
-
+        logger.debug { "Getting object $objectUrl" }
         return accessObject.objectenApiPlugin.getObject(objectUrl)
     }
 
@@ -222,7 +229,7 @@ class ObjectManagementFacade(
         pageSize: Int
     ): ObjectsList {
         return if (!searchString.isNullOrBlank()) {
-            logger.trace { "Getting object page for object type $objectName with search string $searchString" }
+            logger.debug { "Getting object page for object type $objectName with search string $searchString" }
 
             accessObject.objectenApiPlugin.getObjectsByObjectTypeIdWithSearchParams(
                 accessObject.objectTypenApiPlugin.url,
@@ -231,7 +238,7 @@ class ObjectManagementFacade(
                 PageRequest.of(pageNumber, pageSize)
             )
         } else {
-            logger.trace { "Getting object page for object type $objectName" }
+            logger.debug { "Getting object page for object type $objectName" }
 
             accessObject.objectenApiPlugin.getObjectsByObjectTypeId(
                 accessObject.objectTypenApiPlugin.url,
