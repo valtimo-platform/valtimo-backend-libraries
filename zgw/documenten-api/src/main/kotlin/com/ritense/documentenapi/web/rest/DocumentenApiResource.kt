@@ -61,7 +61,6 @@ class DocumentenApiResource(
         } catch (exception: RuntimeException) {
             MediaType.APPLICATION_OCTET_STREAM
         }
-
         return ResponseEntity
             .ok()
             .headers(responseHeaders)
