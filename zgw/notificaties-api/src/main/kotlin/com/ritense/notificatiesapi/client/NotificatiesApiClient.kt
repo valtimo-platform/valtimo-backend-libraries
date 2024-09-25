@@ -19,14 +19,26 @@ package com.ritense.notificatiesapi.client
 import com.ritense.notificatiesapi.NotificatiesApiAuthentication
 import com.ritense.notificatiesapi.domain.Abonnement
 import com.ritense.notificatiesapi.domain.Kanaal
+import java.net.URI
 import org.springframework.http.MediaType
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
-import java.net.URI
 
 class NotificatiesApiClient(
     private val restClientBuilder: RestClient.Builder
 ) {
+
+    fun getAbonnement(
+        authentication: NotificatiesApiAuthentication,
+        baseUrl: URI,
+        abonnmentId: String
+    ): Abonnement {
+        return buildNotificatiesRestClient(authentication, baseUrl)
+            .get()
+            .uri("abonnement/$abonnmentId")
+            .retrieve()
+            .body<Abonnement>()!!
+    }
 
     fun createAbonnement(
         authentication: NotificatiesApiAuthentication,

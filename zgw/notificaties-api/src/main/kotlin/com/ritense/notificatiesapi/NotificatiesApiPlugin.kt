@@ -29,14 +29,16 @@ import com.ritense.plugin.domain.EventType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.valtimo.contract.validation.Url
+import java.net.URI
+import java.security.SecureRandom
+import java.util.Base64
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import mu.withLoggingContext
 import org.springframework.data.repository.findByIdOrNull
-import java.net.URI
-import java.security.SecureRandom
-import java.util.Base64
+import org.springframework.http.HttpStatus
+import org.springframework.web.client.HttpClientErrorException
 
 @Plugin(
     key = "notificatiesapi",
@@ -129,10 +131,13 @@ class NotificatiesApiPlugin(
     )
     {
         logger.debug { "Updating abonnement for Notificaties API configuration with id '${notificatiesApiConfigurationId.id}'" }
-        deleteAbonnement()
-        createAbonnement()
-    }
 
+        if (!doesRemoteAbonnementExist()) {
+            logger.debug { "Not able to find an existing abonnement in the Notificaties API. Creating a new one." }
+            notificatiesApiAbonnementLinkRepository.deleteById(notificatiesApiConfigurationId)
+            createAbonnement()
+        }
+    }
 
     fun ensureKanalenExist(kanalen: Set<String>) = runBlocking {
         logger.debug { "Ensuring Notificaties API kanalen '$kanalen' exist for authentication configuration with id '${authenticationPluginConfiguration.configurationId.id}'" }
@@ -148,6 +153,26 @@ class NotificatiesApiPlugin(
                     logger.info { "Successfully created Notificaties API kanaal with name '$kanaalNaam' for authentication configuration with id '${authenticationPluginConfiguration.configurationId.id}'" }
                 }
             }
+    }
+
+    private fun doesRemoteAbonnementExist(): Boolean {
+        logger.debug { "Determining whether an abonnement exists in the Notificaties API for Notificaties API configuration with id '${notificatiesApiConfigurationId.id}'" }
+
+        val abonnement = notificatiesApiAbonnementLinkRepository.findByIdOrNull(notificatiesApiConfigurationId)
+            ?: return false
+
+        try {
+            val abonnementId = abonnement.url.substringAfterLast("/")
+            client.getAbonnement(authenticationPluginConfiguration, url, abonnementId)
+
+            return true
+        } catch (ex: HttpClientErrorException) {
+            if (ex.statusCode != HttpStatus.NOT_FOUND) {
+                throw ex
+            }
+
+            return false
+        }
     }
 
     private fun createRandomKey(): String {

@@ -57,6 +57,53 @@ class NotificatiesApiClientTest {
     }
 
     @Test
+    fun `should get Abonnement in Notificaties API`() {
+
+        mockNotificatiesApi.enqueue(
+            mockResponse(
+                """
+                    {
+                      "url": "http://example.com/abonnement/test-abonnement",
+                      "callbackUrl": "http://example.com/callback",
+                      "auth": "Bearer token",
+                      "kanalen": [
+                        {
+                          "filters": {
+                            "url": "http://example.com",
+                            "someid": "1234"
+                          },
+                          "naam": "Test Kanaal"
+                        }
+                      ]
+                    }
+        """.trimIndent()
+            )
+        )
+
+        val result = client.getAbonnement(
+            authentication = TestAuthentication(),
+            baseUrl = mockNotificatiesApi.url("/").toUri(),
+            abonnmentId = "test-abonnement"
+        )
+        val recordedRequest = mockNotificatiesApi.takeRequest()
+
+        assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
+        assertEquals("/abonnement/test-abonnement", recordedRequest.path)
+
+        assertEquals("http://example.com/abonnement/test-abonnement", result.url)
+        assertEquals("http://example.com/callback", result.callbackUrl)
+        assertEquals("Bearer token", result.auth)
+        assertEquals("Test Kanaal", result.kanalen[0].naam)
+        assertEquals(
+            mapOf(
+                "url" to "http://example.com",
+                "someid" to "1234"
+            ), result.kanalen[0].filters
+        )
+
+    }
+
+    @Test
     fun `should create Kanaal in Notificaties API`() {
 
         mockNotificatiesApi.enqueue(
