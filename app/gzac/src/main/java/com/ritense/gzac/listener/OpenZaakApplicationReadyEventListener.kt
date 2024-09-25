@@ -17,11 +17,13 @@
 package com.ritense.gzac.listener
 
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
+import com.ritense.logging.withLoggingContext
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.zakenapi.service.ZaakTypeLinkService
 import com.ritense.zakenapi.web.rest.request.CreateZaakTypeLinkRequest
 import org.springframework.context.event.EventListener
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.net.URI
 import java.util.UUID
@@ -34,6 +36,13 @@ class OpenZaakApplicationReadyEventListener(
     @EventListener(DocumentDefinitionDeployedEvent::class)
     fun handleDocumentDefinitionDeployed(event: DocumentDefinitionDeployedEvent) {
         connectZaakType(event)
+    }
+
+    @Scheduled(fixedDelay = 5000)
+    fun testCron() {
+        withLoggingContext("test key" to "test value") {
+            throw IllegalStateException("test error")
+        }
     }
 
     private fun connectZaakType(event: DocumentDefinitionDeployedEvent) {
