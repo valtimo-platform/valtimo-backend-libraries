@@ -315,7 +315,7 @@ class ZakenApiPlugin(
         withLoggingContext(
             CATALOGI_API.STATUSTYPE to statustypeUrl.toString(),
         ) {
-            logger.info { "Setting zaak status for document ID: ${execution.businessKey}, status type URL: $statustypeUrl" }
+            logger.debug { "Setting zaak status with type URL '$statustypeUrl' for document with id '${execution.businessKey}'" }
             val documentId = UUID.fromString(execution.businessKey)
             val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
@@ -329,7 +329,8 @@ class ZakenApiPlugin(
                     statustoelichting = statustoelichting,
                 )
             )
-            logger.info { "Zaak status set successfully for zaak URL: $zaakUrl" }
+
+            logger.info { "Zaak status with type URL '$statustypeUrl' set successfully for zaak with URL: '$zaakUrl'" }
         }
     }
 
@@ -344,20 +345,25 @@ class ZakenApiPlugin(
         @PluginActionProperty resultaattypeUrl: URI,
         @PluginActionProperty toelichting: String?,
     ) {
-        logger.info { "Creating zaak resultaat for document ID: ${execution.businessKey}, resultaattype URL: $resultaattypeUrl" }
-        val documentId = UUID.fromString(execution.businessKey)
-        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+        withLoggingContext(
+            CATALOGI_API.RESULTAATTYPE to resultaattypeUrl.toString(),
+        ) {
+            logger.debug { "Creating zaak resultaat with type URL '$resultaattypeUrl' for document with id '${execution.businessKey}'" }
+            val documentId = UUID.fromString(execution.businessKey)
+            val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
-        client.createZaakResultaat(
-            authenticationPluginConfiguration,
-            url,
-            CreateZaakResultaatRequest(
-                zaak = zaakUrl,
-                resultaattype = resultaattypeUrl,
-                toelichting = toelichting,
+            client.createZaakResultaat(
+                authenticationPluginConfiguration,
+                url,
+                CreateZaakResultaatRequest(
+                    zaak = zaakUrl,
+                    resultaattype = resultaattypeUrl,
+                    toelichting = toelichting,
+                )
             )
-        )
-        logger.info { "Zaak resultaat created successfully for zaak URL: $zaakUrl" }
+            
+            logger.info { "Zaak resultaat created successfully for document with id '$documentId' and zaak with URL '$zaakUrl'" }
+        }
     }
 
     @PluginAction(
