@@ -215,7 +215,7 @@ class ZakenApiPlugin(
                 )
             )
 
-            logger.info { "Zaak created successfully for document with id '$documentId'. Zaak URL: '${zaak.url}'" }
+            logger.info { "Zaak with URL '${zaak.url}' created successfully for document with id '$documentId''" }
         }
     }
 
@@ -330,7 +330,7 @@ class ZakenApiPlugin(
                 )
             )
 
-            logger.info { "Zaak status with type URL '$statustypeUrl' set successfully for zaak with URL: '$zaakUrl'" }
+            logger.info { "Zaak status with type URL '$statustypeUrl' set successfully for zaak with URL '$zaakUrl'" }
         }
     }
 
@@ -352,7 +352,7 @@ class ZakenApiPlugin(
             val documentId = UUID.fromString(execution.businessKey)
             val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
-            client.createZaakResultaat(
+            val zaakResultaat = client.createZaakResultaat(
                 authenticationPluginConfiguration,
                 url,
                 CreateZaakResultaatRequest(
@@ -362,7 +362,7 @@ class ZakenApiPlugin(
                 )
             )
 
-            logger.info { "Zaak resultaat created successfully for document with id '$documentId' and zaak with URL '$zaakUrl'" }
+            logger.info { "Zaak resultaat with URL '${zaakResultaat.url}' created successfully for document with id '$documentId' and zaak with URL '$zaakUrl'" }
         }
     }
 
@@ -620,7 +620,7 @@ class ZakenApiPlugin(
     }
 
     fun getZaakStatus(zaakUrl: URI): ZaakStatus? {
-        logger.debug { "Fetching zaak status for zaak with URL: '$zaakUrl'" }
+        logger.debug { "Fetching zaak status for zaak with URL '$zaakUrl'" }
         val zaak = getZaak(zaakUrl)
         return if (zaak.status == null) {
             null
@@ -630,7 +630,7 @@ class ZakenApiPlugin(
     }
 
     fun getZaakResultaat(zaakUrl: URI): ZaakResultaat? {
-        logger.debug { "Fetching zaak resultaat for zaak with URL: '$zaakUrl'" }
+        logger.debug { "Fetching zaak resultaat for zaak with URL '$zaakUrl'" }
         val zaak = getZaak(zaakUrl)
         return if (zaak.resultaat == null) {
             null
