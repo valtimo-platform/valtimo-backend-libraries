@@ -409,7 +409,8 @@ class ZakenApiPlugin(
         execution: DelegateExecution,
         @PluginActionProperty maxDurationInDays: Int,
     ) {
-        logger.info { "Starting hersteltermijn for document ID: ${execution.businessKey}, max duration in days: $maxDurationInDays" }
+        logger.debug { "Starting hersteltermijn for document with id '${execution.businessKey}'" }
+
         TransactionTemplate(platformTransactionManager).executeWithoutResult {
             val documentId = UUID.fromString(execution.businessKey)
             val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
@@ -430,15 +431,17 @@ class ZakenApiPlugin(
             require(uiterlijkeEinddatumAfdoening != null) { "No 'uiterlijkeEinddatumAfdoening' available for zaak '$zaakUrl' " }
             require(zaak.opschorting == null || !zaak.opschorting.indicatie) { "Can't start recovery period for a suspended zaak" }
 
-            client.patchZaak(
+            val patchedZaak = client.patchZaak(
                 authenticationPluginConfiguration, url, zaakUrl, PatchZaakRequest(
                     uiterlijkeEinddatumAfdoening = uiterlijkeEinddatumAfdoening.plusDays(maxDurationInDays.toLong()),
                     opschorting = Opschorting(true, "hersteltermijn")
                 )
             )
+
             zaakHersteltermijnRepository.save(hersteltermijn)
+
+            logger.info { "Opschorting because of hersteltermijn set for zaak with URL '${zaak.url}' with updated due date '${patchedZaak.uiterlijkeEinddatumAfdoening}'" }
         }
-        logger.info { "Hersteltermijn started for zaak URL: ${zaakUrlProvider.getZaakUrl(UUID.fromString(execution.businessKey))}" }
     }
 
     @PluginAction(
