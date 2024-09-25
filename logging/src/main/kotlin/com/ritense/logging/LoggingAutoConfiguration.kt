@@ -115,10 +115,9 @@ class LoggingAutoConfiguration {
         return LiquibaseMasterChangeLogLocation("config/liquibase/logging-master.xml")
     }
 
-    @Order(LOWEST_PRECEDENCE - 1)
+    @Order(LOWEST_PRECEDENCE - 100)
     @Bean
-    @ConditionalOnMissingBean(ExceptionTranslator::class)
-    fun loggingContextExceptionHandler(
+    fun loggingContextExceptionTranslator(
         hardeningService: HardeningService?
     ): ExceptionTranslator {
         return LoggingContextExceptionTranslator(hardeningService)
