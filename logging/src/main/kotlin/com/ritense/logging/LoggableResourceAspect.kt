@@ -38,13 +38,21 @@ class LoggableResourceAspect {
                 }
                 val keyName = when {
                     parameterAnnotation.resourceType.java != Void::class.java &&
-                        parameterAnnotation.resourceTypeName.isEmpty() -> {
+                        parameterAnnotation.resourceTypeName.isEmpty() &&
+                        parameterAnnotation.value.isEmpty() -> {
                         parameterAnnotation.resourceType.java.canonicalName
                     }
 
                     parameterAnnotation.resourceTypeName.isNotEmpty() &&
-                        parameterAnnotation.resourceType.java == Void::class.java -> {
+                        parameterAnnotation.resourceType.java == Void::class.java &&
+                        parameterAnnotation.value.isEmpty() -> {
                         parameterAnnotation.resourceTypeName
+                    }
+
+                    parameterAnnotation.value.isNotEmpty() &&
+                        parameterAnnotation.resourceType.java == Void::class.java &&
+                        parameterAnnotation.resourceTypeName.isEmpty() -> {
+                        parameterAnnotation.value
                     }
 
                     else -> {
