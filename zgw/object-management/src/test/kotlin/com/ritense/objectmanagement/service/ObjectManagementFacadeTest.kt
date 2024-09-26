@@ -174,6 +174,7 @@ internal class ObjectManagementFacadeTest {
     fun shouldGetObjectsPagedWithSearchString() {
         val objectName = "myObject"
         val searchString = "mySearchString"
+        val ordering = "myOrdering"
         val pageNumber = 1
         val pageSize = 20
 
@@ -193,7 +194,7 @@ internal class ObjectManagementFacadeTest {
             pageable = expectedPageRequest)
         ).thenReturn(expectedObjectsList)
 
-        val result = objectManagementFacade.getObjectsPaged(objectName, searchString, pageNumber, pageSize)
+        val result = objectManagementFacade.getObjectsPaged(objectName, searchString, pageNumber, ordering, pageSize)
 
         verify(objectManagementRepository).findByTitle(objectName)
         verify(pluginService).createInstance<ObjectenApiPlugin>(objectenApiPluginConfigurationId)
@@ -213,6 +214,7 @@ internal class ObjectManagementFacadeTest {
     fun shouldGetObjectsPagedWithoutSearchString() {
         val objectName = "myObject"
         val searchString = null
+        val ordering = null
         val pageNumber = 1
         val pageSize = 20
 
@@ -234,7 +236,7 @@ internal class ObjectManagementFacadeTest {
             pageable = expectedPageRequest)
         ).thenReturn(expectedObjectsList)
 
-        val result = objectManagementFacade.getObjectsPaged(objectName, searchString, pageNumber, pageSize)
+        val result = objectManagementFacade.getObjectsPaged(objectName, searchString, pageNumber, ordering, pageSize)
 
         verify(objectManagementRepository).findByTitle(objectName)
         verify(pluginService).createInstance<ObjectenApiPlugin>(objectenApiPluginConfigurationId)
@@ -254,6 +256,7 @@ internal class ObjectManagementFacadeTest {
     fun shouldGetObjectsUnpagedWithSearchString() {
         val objectName = "myObject"
         val searchString = "mySearchString"
+        val ordering = "myOrdering"
 
         val objectenApiPlugin = mock<ObjectenApiPlugin>()
         val objecttypenApiPlugin = mock<ObjecttypenApiPlugin>()
@@ -271,7 +274,7 @@ internal class ObjectManagementFacadeTest {
             pageable = expectedPageRequest)
         ).thenReturn(expectedObjectsList)
 
-        val result = objectManagementFacade.getObjectsUnpaged(objectName, searchString)
+        val result = objectManagementFacade.getObjectsUnpaged(objectName, searchString, ordering)
 
         verify(objectManagementRepository).findByTitle(objectName)
         verify(pluginService).createInstance<ObjectenApiPlugin>(objectenApiPluginConfigurationId)
@@ -294,6 +297,7 @@ internal class ObjectManagementFacadeTest {
     fun shouldGetObjectsUnpagedWithoutSearchString() {
         val objectName = "myObject"
         val searchString = null
+        val ordering = null
 
         val objectenApiPlugin = mock<ObjectenApiPlugin>()
         val objecttypenApiPlugin = mock<ObjecttypenApiPlugin>()
@@ -313,7 +317,7 @@ internal class ObjectManagementFacadeTest {
             pageable = expectedPageRequest)
         ).thenReturn(expectedObjectsList)
 
-        val result = objectManagementFacade.getObjectsUnpaged(objectName, searchString)
+        val result = objectManagementFacade.getObjectsUnpaged(objectName, searchString, ordering)
 
         verify(objectManagementRepository).findByTitle(objectName)
         verify(pluginService).createInstance<ObjectenApiPlugin>(objectenApiPluginConfigurationId)

@@ -85,7 +85,7 @@ class ObjectManagementFacade(
             accessObject = accessObject,
             objectName = objectName,
             searchString = searchString,
-            ordering = ordering ?: "",
+            ordering = ordering,
             pageNumber = pageNumber,
             pageSize = pageSize
         )
@@ -95,7 +95,8 @@ class ObjectManagementFacade(
     // It is advised to use getObjectsPaged() instead, where possible.
     fun getObjectsUnpaged(
         objectName: String,
-        searchString: String?
+        searchString: String?,
+        ordering: String?
     ): ObjectsList {
         logger.debug { "get objects unpaged objectName=$objectName searchString=$searchString" }
         val accessObject = getAccessObject(objectName)
@@ -111,6 +112,7 @@ class ObjectManagementFacade(
                 accessObject = accessObject,
                 objectName = objectName,
                 searchString = searchString,
+                ordering = ordering,
                 pageNumber = pageNumber,
                 pageSize = 500
             )
@@ -243,7 +245,7 @@ class ObjectManagementFacade(
         accessObject: ObjectManagementAccessObject,
         objectName: String,
         searchString: String?,
-        ordering: String = "",
+        ordering: String? = "",
         pageNumber: Int,
         pageSize: Int
     ): ObjectsList {
