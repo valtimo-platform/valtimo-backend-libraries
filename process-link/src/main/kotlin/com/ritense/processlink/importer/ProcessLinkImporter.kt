@@ -79,14 +79,13 @@ class ProcessLinkImporter(
                         .toProcessLinkUpdateRequestDto(deployDto, e.existingProcessLinkId)
                     processLinkService.updateProcessLink(processLinkUpdateDto)
                 } catch (e: IllegalStateException) {
-                    logger.error { "${e.message} Skipping autodeployment." }
+                    throw IllegalStateException("Failed to deploy process link. For file: ${request.fileName} and activity-id: ${deployDto.activityId}", e)
                 }
             }
         }
     }
 
     private companion object {
-        val logger: KLogger = KotlinLogging.logger {}
         val FILENAME_REGEX = """(?:.*\/)?(.+)\.processlink\.json""".toRegex()
     }
 }
