@@ -38,6 +38,7 @@ dependencies {
     implementation project(":contract")
     implementation project(":core")
     implementation project(":document")
+    implementation project(":logging")
     implementation project(":process-document")
     implementation project(":process-link")
     implementation project(":resource")
