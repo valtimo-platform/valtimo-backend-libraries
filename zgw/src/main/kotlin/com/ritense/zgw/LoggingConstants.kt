@@ -22,8 +22,4 @@ object LoggingConstants {
         const val EIGENSCHAP = "Catalogi API: eigenschap"
         const val ZAAKTYPE = "Catalogi API: zaaktype"
     }
-
-    object ZAKEN_API {
-        const val ZAAK = "Zaken API: zaak"
-    }
 }
