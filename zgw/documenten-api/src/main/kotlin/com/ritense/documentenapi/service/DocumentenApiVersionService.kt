@@ -58,7 +58,7 @@ class DocumentenApiVersionService(
     private val camundaRepositoryService: CamundaRepositoryService,
 ) {
 
-    private val documentenApiVersions: Map<String, DocumentenApiVersion>
+    private var documentenApiVersions: Map<String, DocumentenApiVersion> = emptyMap()
 
     init {
         val resourceDocumentenApiVersions = loadResources()

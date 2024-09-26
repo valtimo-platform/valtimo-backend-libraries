@@ -43,48 +43,48 @@ class ZgwDocumentTrefwoordAutoConfiguration {
         zgwDocumentTrefwoordService: ZgwDocumentTrefwoordService,
         changelogService: ChangelogService,
         @Value("\${valtimo.changelog.zgw-document-trefwoord.clear-tables:false}") clearTables: Boolean
-    ): ZgwDocumentTrefwoordDeploymentService {
-        return ZgwDocumentTrefwoordDeploymentService(
-            objectMapper,
-            zgwDocumentTrefwoordRepository,
-            zgwDocumentTrefwoordService,
-            changelogService,
-            clearTables
-        )
-    }
+    ) = ZgwDocumentTrefwoordDeploymentService(
+        objectMapper,
+        zgwDocumentTrefwoordRepository,
+        zgwDocumentTrefwoordService,
+        changelogService,
+        clearTables
+    )
 
     @Bean
     @ConditionalOnMissingBean(ZgwDocumentTrefwoordService::class)
     fun zgwDocumentTrefwoordService(
         zgwDocumentTrefwoordRepository: ZgwDocumentTrefwoordRepository
-    ): ZgwDocumentTrefwoordService {
-        return ZgwDocumentTrefwoordService(
-            zgwDocumentTrefwoordRepository
-        )
-    }
+    ) = ZgwDocumentTrefwoordService(
+        zgwDocumentTrefwoordRepository
+    )
 
     @Bean
     @ConditionalOnMissingBean(ZgwDocumentTrefwoordResource::class)
     fun zgwDocumentTrefwoordResource(
         zgwDocumentTrefwoordService: ZgwDocumentTrefwoordService
-    ): ZgwDocumentTrefwoordResource {
-        return ZgwDocumentTrefwoordResource(
-            zgwDocumentTrefwoordService
-        )
-    }
+    ) = ZgwDocumentTrefwoordResource(
+        zgwDocumentTrefwoordService
+    )
 
     @Bean
     @ConditionalOnMissingBean(ZgwDocumentTrefwoordExporter::class)
     fun zgwDocumentTrefwoordExporter(
         objectMapper: ObjectMapper,
         zgwDocumentTrefwoordService: ZgwDocumentTrefwoordService,
-    ) = ZgwDocumentTrefwoordExporter(objectMapper, zgwDocumentTrefwoordService)
+    ) = ZgwDocumentTrefwoordExporter(
+        objectMapper,
+        zgwDocumentTrefwoordService
+    )
 
     @Bean
     @ConditionalOnMissingBean(ZgwDocumentTrefwoordImporter::class)
     fun zgwDocumentTrefwoordImporter(
         zgwDocumentTrefwoordDeploymentService: ZgwDocumentTrefwoordDeploymentService,
         changelogDeployer: ChangelogDeployer,
-    ) = ZgwDocumentTrefwoordImporter(zgwDocumentTrefwoordDeploymentService, changelogDeployer)
+    ) = ZgwDocumentTrefwoordImporter(
+        zgwDocumentTrefwoordDeploymentService,
+        changelogDeployer
+    )
 
 }
