@@ -25,6 +25,7 @@ import com.ritense.document.domain.search.SearchWithConfigRequest;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.impl.SearchRequest;
 import com.ritense.document.web.rest.DocumentSearchResource;
+import com.ritense.logging.LoggableResource;
 import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -61,7 +62,7 @@ public class JsonSchemaDocumentSearchResource implements DocumentSearchResource 
     @Override
     @PostMapping("/v1/document-definition/{name}/search")
     public ResponseEntity<Page<? extends Document>> search(
-        @PathVariable(name = "name") String documentDefinitionName,
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "name") String documentDefinitionName,
         @RequestBody SearchWithConfigRequest searchRequest,
         @PageableDefault(sort = {"createdOn"}, direction = DESC) Pageable pageable
     ) {

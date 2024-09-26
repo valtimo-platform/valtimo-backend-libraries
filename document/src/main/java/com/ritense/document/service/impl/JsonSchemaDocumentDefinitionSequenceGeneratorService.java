@@ -17,10 +17,12 @@
 package com.ritense.document.service.impl;
 
 import com.ritense.document.domain.DocumentDefinition;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.sequence.JsonSchemaDocumentDefinitionSequenceRecord;
 import com.ritense.document.repository.DocumentDefinitionSequenceRepository;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
+import com.ritense.logging.LoggableResource;
 import org.hibernate.exception.LockAcquisitionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +51,9 @@ public class JsonSchemaDocumentDefinitionSequenceGeneratorService implements Doc
         maxAttempts = 5,
         backoff = @Backoff(delay = 500, maxDelay = 5000)
     )
-    public long next(DocumentDefinition.Id documentDefinitionId) {
+    public long next(
+        @LoggableResource(resourceType = JsonSchemaDocumentDefinition.class) DocumentDefinition.Id documentDefinitionId
+    ) {
         final var optionalSequence = documentDefinitionSequenceRepository
             .findByDefinitionName(documentDefinitionId.name());
 
@@ -74,7 +78,9 @@ public class JsonSchemaDocumentDefinitionSequenceGeneratorService implements Doc
 
     @Transactional
     @Override
-    public void deleteSequenceRecordBy(String documentDefinitionName) {
+    public void deleteSequenceRecordBy(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName
+    ) {
         documentDefinitionSequenceRepository.deleteByDocumentDefinitionName(documentDefinitionName);
     }
 

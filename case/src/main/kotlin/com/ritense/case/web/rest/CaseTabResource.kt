@@ -40,7 +40,7 @@ class CaseTabResource(
     @Deprecated("Since 12.2.0")
     @GetMapping("/v1/case-definition/{caseDefinitionName}/tab")
     fun getCaseTabs(
-        @LoggableResource(resourceTypeName = "jsonSchemaDocumentName") @PathVariable caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String
     ): ResponseEntity<List<CaseTabDto>> {
         val tabs = caseTabService.getCaseTabs(caseDefinitionName)
             .map { CaseTabDto.of(it) }
