@@ -82,8 +82,8 @@ class DocumentObjectenApiSyncService(
         documentDefinitionVersion: Long
     ) {
         logger.info {
-            "Delete sync configuration " +
-                "documentDefinitionName=$documentDefinitionName documentDefinitionVersion=$documentDefinitionVersion"
+            """Delete sync configuration documentDefinitionName=$documentDefinitionName
+                documentDefinitionVersion=$documentDefinitionVersion"""
         }
         documentObjectenApiSyncRepository.deleteByDocumentDefinitionNameAndDocumentDefinitionVersion(
             documentDefinitionName,
