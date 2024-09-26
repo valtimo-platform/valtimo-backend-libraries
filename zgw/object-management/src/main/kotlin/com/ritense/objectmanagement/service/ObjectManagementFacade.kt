@@ -29,6 +29,7 @@ import com.ritense.plugin.service.PluginService
 import mu.KotlinLogging
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
@@ -72,6 +73,7 @@ class ObjectManagementFacade(
         objectName: String,
         searchString: String?,
         pageNumber: Int,
+        ordering: String?,
         pageSize: Int
     ): ObjectsList {
         logger.debug {
@@ -83,6 +85,7 @@ class ObjectManagementFacade(
             accessObject = accessObject,
             objectName = objectName,
             searchString = searchString,
+            ordering = ordering ?: "",
             pageNumber = pageNumber,
             pageSize = pageSize
         )
@@ -193,12 +196,12 @@ class ObjectManagementFacade(
         val accessObject = getAccessObject(objectName)
 
         try {
-            logger.trace { "Deleting object $objectId" }
+            logger.trace { "Deleting object '$objectId' of type '${accessObject.objectManagement.objecttypeId}' from Objecten API using plugin ${accessObject.objectManagement.objectenApiPluginConfigurationId}" }
             return accessObject.objectenApiPlugin.deleteObject(
-                URI(accessObject.objectenApiPlugin.url.toString() + "objects/" + objectId)
+                URI("${accessObject.objectenApiPlugin.url}objects/$objectId")
             )
-        } catch (ex: RestClientResponseException) {
-            throw Exception("Exception thrown while making a call to the Objects API. Response from the API: ${ex.responseBodyAsString}")
+        } catch (ex: HttpClientErrorException) {
+            throw HttpClientErrorException(ex.statusCode, "Error while deleting object $objectId. Response from Objects API: ${ex.responseBodyAsString}")
         }
     }
 
