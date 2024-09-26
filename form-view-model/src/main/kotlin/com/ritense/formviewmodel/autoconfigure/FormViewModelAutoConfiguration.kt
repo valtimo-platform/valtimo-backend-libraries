@@ -31,7 +31,6 @@ import com.ritense.formviewmodel.submission.FormViewModelStartFormSubmissionHand
 import com.ritense.formviewmodel.submission.FormViewModelUserTaskSubmissionHandler
 import com.ritense.formviewmodel.submission.FormViewModelUserTaskSubmissionHandlerFactory
 import com.ritense.formviewmodel.validation.OnStartUpViewModelValidator
-import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.formviewmodel.viewmodel.ViewModelLoader
 import com.ritense.formviewmodel.viewmodel.ViewModelLoaderFactory
 import com.ritense.formviewmodel.web.rest.FormViewModelResource
@@ -49,6 +48,7 @@ import org.springframework.core.annotation.Order
 @AutoConfiguration
 class FormViewModelAutoConfiguration {
 
+    @Order(Ordered.HIGHEST_PRECEDENCE)
     @Bean
     fun formViewModelModuleExceptionTranslator() = FormViewModelModuleExceptionTranslator()
 

@@ -16,8 +16,10 @@
 
 package com.ritense.valtimo.autoconfigure;
 
+import com.ritense.valtimo.contract.hardening.service.HardeningService;
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import com.ritense.valtimo.contract.security.config.oauth2.NoOAuth2ClientsConfiguredCondition;
+import com.ritense.valtimo.contract.web.rest.error.ExceptionTranslator;
 import com.ritense.valtimo.security.ActuatorSecurityFilterChainFactory;
 import com.ritense.valtimo.security.CoreSecurityFactory;
 import com.ritense.valtimo.security.Http401UnauthorizedEntryPoint;
@@ -47,6 +49,7 @@ import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationServic
 import com.ritense.valtimo.security.matcher.SecurityWhitelistProperties;
 import com.ritense.valtimo.security.matcher.WhitelistIpRequestMatcher;
 import java.util.List;
+import java.util.Optional;
 import org.camunda.bpm.engine.IdentityService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -56,6 +59,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -304,6 +308,15 @@ public class HttpSecurityAutoConfiguration {
         CoreSecurityFactory coreSecurityFactory
     ) {
         return coreSecurityFactory.createWebSecurityCustomizer();
+    }
+
+    @Order(Ordered.LOWEST_PRECEDENCE)
+    @Bean
+    @ConditionalOnMissingBean(ExceptionTranslator.class)
+    public ExceptionTranslator defaultCoreExceptionTranslator(
+        Optional<HardeningService> hardeningService
+    ) {
+        return new ExceptionTranslator(hardeningService);
     }
 
 }

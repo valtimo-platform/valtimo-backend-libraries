@@ -16,15 +16,12 @@
 
 package com.ritense.logging
 
-import com.ritense.logging.testimpl.LogResourceBean
-import org.springframework.boot.autoconfigure.AutoConfiguration
-import org.springframework.context.annotation.Bean
+import org.springframework.boot.SpringBootExceptionReporter
 
-@AutoConfiguration
-class TestAutoConfiguration {
+class LoggingContextExceptionReporter : SpringBootExceptionReporter {
 
-    @Bean
-    fun logResourceBean(): LogResourceBean {
-        return LogResourceBean()
+    override fun reportException(failure: Throwable?): Boolean {
+        setErrorLoggingContext()
+        return false
     }
 }

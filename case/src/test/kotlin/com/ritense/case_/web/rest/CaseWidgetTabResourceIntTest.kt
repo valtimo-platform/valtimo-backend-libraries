@@ -86,7 +86,7 @@ class CaseWidgetTabResourceIntTest @Autowired constructor(
             get("/api/v1/document/{documentId}/widget-tab/{tabKey}", documentId, tabKey)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andDo(print())
-            .andExpect(status().is5xxServerError)
+            .andExpect(status().isForbidden)
     }
 
     @Test
@@ -127,7 +127,7 @@ class CaseWidgetTabResourceIntTest @Autowired constructor(
             get("/api/v1/document/{documentId}/widget-tab/{tabKey}/widget/{widgetKey}", documentId, tabKey, widgetKey)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andDo(print())
-            .andExpect(status().is5xxServerError)
+            .andExpect(status().isForbidden)
     }
 
     @Test
