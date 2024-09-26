@@ -31,6 +31,7 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.OrderBy
 import jakarta.persistence.Table
+import mu.withLoggingContext
 import java.util.Objects
 import org.hibernate.annotations.Type
 import org.json.JSONObject
@@ -73,15 +74,17 @@ class FormFlowInstance(
         currentFormFlowStepInstanceId: FormFlowStepInstanceId,
         submissionData: JSONObject
     ): FormFlowStepInstance? {
-        if (this.currentFormFlowStepInstanceId != currentFormFlowStepInstanceId) {
-            return getCurrentStep()
+        return withLoggingContext(FormFlowStepInstance::class.java.canonicalName to currentFormFlowStepInstanceId.toString()) {
+            if (this.currentFormFlowStepInstanceId != currentFormFlowStepInstanceId) {
+                return getCurrentStep()
+            }
+
+            val formFlowStepInstance = getCurrentStep()
+
+            formFlowStepInstance.complete(submissionData.toString())
+
+            navigateToNextStep()
         }
-
-        val formFlowStepInstance = getCurrentStep()
-
-        formFlowStepInstance.complete(submissionData.toString())
-
-        return navigateToNextStep()
     }
 
     /**
@@ -108,15 +111,17 @@ class FormFlowInstance(
      * @return The target step
      */
     fun navigateToStep(targetId: FormFlowStepInstanceId): FormFlowStepInstance {
-        val targetStep = history.single { it.id == targetId }
-        val currentStep = getCurrentStep()
-        if (targetStep.order < currentStep.order) {
-            for (i in history.indexOf(currentStep) downTo history.indexOf(targetStep) + 1) {
-                history[i].back()
+        return withLoggingContext(FormFlowStepInstance::class.java.canonicalName to targetId.toString()) {
+            val targetStep = history.single { it.id == targetId }
+            val currentStep = getCurrentStep()
+            if (targetStep.order < currentStep.order) {
+                for (i in history.indexOf(currentStep) downTo history.indexOf(targetStep) + 1) {
+                    history[i].back()
+                }
             }
+            currentFormFlowStepInstanceId = targetStep.id
+            targetStep
         }
-        currentFormFlowStepInstanceId = targetStep.id
-        return targetStep
     }
 
     /**

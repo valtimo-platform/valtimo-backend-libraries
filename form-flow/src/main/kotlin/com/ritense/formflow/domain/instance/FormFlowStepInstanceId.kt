@@ -26,6 +26,9 @@ class FormFlowStepInstanceId(
     @Column(name = "form_flow_step_instance_id")
     val id: UUID
 ) : AbstractId<FormFlowStepInstanceId>() {
+
+    override fun toString(): String = id.toString()
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
