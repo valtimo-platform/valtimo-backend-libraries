@@ -28,15 +28,14 @@ class ObjecttypenApiAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ObjecttypenApiClient::class)
-    fun objecttypenApiClient(restClientBuilder: RestClient.Builder): ObjecttypenApiClient {
-        return ObjecttypenApiClient(restClientBuilder)
-    }
+    fun objecttypenApiClient(restClientBuilder: RestClient.Builder) = ObjecttypenApiClient(restClientBuilder)
 
     @Bean
     fun objecttypenApiPluginFactory(
         pluginService: PluginService,
         objecttypenApiClient: ObjecttypenApiClient
-    ): ObjecttypenApiPluginFactory {
-        return ObjecttypenApiPluginFactory(pluginService, objecttypenApiClient)
-    }
+    ) = ObjecttypenApiPluginFactory(
+        pluginService,
+        objecttypenApiClient
+    )
 }
