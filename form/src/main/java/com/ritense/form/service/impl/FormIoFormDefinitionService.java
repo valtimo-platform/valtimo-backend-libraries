@@ -18,6 +18,8 @@ package com.ritense.form.service.impl;
 
 import com.ritense.form.domain.FormDefinition;
 import com.ritense.form.domain.FormIoFormDefinition;
+import com.ritense.form.domain.event.FormCreatedEvent;
+import com.ritense.form.domain.event.FormUpdatedEvent;
 import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.form.domain.request.ModifyFormDefinitionRequest;
 import com.ritense.form.repository.FormDefinitionRepository;
@@ -27,15 +29,20 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public class FormIoFormDefinitionService implements FormDefinitionService {
 
     private final FormDefinitionRepository formDefinitionRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
-    public FormIoFormDefinitionService(final FormDefinitionRepository formDefinitionRepository) {
+    public FormIoFormDefinitionService(final FormDefinitionRepository formDefinitionRepository,
+        ApplicationEventPublisher applicationEventPublisher
+    ) {
         this.formDefinitionRepository = formDefinitionRepository;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Override
@@ -77,7 +84,8 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
         if (formDefinitionRepository.findByName(request.getName()).isPresent()) {
             throw new IllegalArgumentException("Duplicate name for new form: " + request.getName());
         }
-        return formDefinitionRepository.save(
+
+        FormIoFormDefinition form = formDefinitionRepository.save(
             new FormIoFormDefinition(
                 UUID.randomUUID(),
                 request.getName(),
@@ -85,6 +93,8 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
                 request.isReadOnly()
             )
         );
+        applicationEventPublisher.publishEvent(new FormCreatedEvent(form));
+        return form;
     }
 
     @Override
@@ -93,19 +103,22 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
         if (!formDefinitionRepository.existsById(request.getId())) {
             throw new RuntimeException("Form definition not found with id " + request.getId().toString());
         }
-        return formDefinitionRepository
+
+        FormIoFormDefinition form = formDefinitionRepository
             .findById(request.getId())
             .map(formIoFormDefinition -> {
                 formIoFormDefinition.changeName(request.getName());
                 formIoFormDefinition.changeDefinition(request.getFormDefinition());
                 return formDefinitionRepository.save(formIoFormDefinition);
             }).orElseThrow();
+        applicationEventPublisher.publishEvent(new FormUpdatedEvent(form));
+        return form;
     }
 
     @Override
     @Transactional
     public FormIoFormDefinition modifyFormDefinition(UUID id, String name, String definition, Boolean readOnly) {
-        return formDefinitionRepository
+        FormIoFormDefinition form = formDefinitionRepository
             .findById(id)
             .map(
                 formIoFormDefinition -> {
@@ -118,6 +131,8 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
                 }
             )
             .orElseThrow();
+        applicationEventPublisher.publishEvent(new FormUpdatedEvent(form));
+        return form;
     }
 
     @Override

@@ -35,7 +35,7 @@ public class FormIoFormDefinitionServiceIntTest extends BaseIntegrationTest {
 
     @BeforeEach
     public void setUp() {
-        formIoFormDefinitionService = new FormIoFormDefinitionService(formDefinitionRepository);
+        formIoFormDefinitionService = new FormIoFormDefinitionService(formDefinitionRepository, applicationEventPublisher);
     }
 
     @Test

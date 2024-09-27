@@ -77,8 +77,11 @@ public class FormAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(FormDefinitionService.class)
-    public FormIoFormDefinitionService formDefinitionService(final FormDefinitionRepository formDefinitionRepository) {
-        return new FormIoFormDefinitionService(formDefinitionRepository);
+    public FormIoFormDefinitionService formDefinitionService(
+        final FormDefinitionRepository formDefinitionRepository,
+        final ApplicationEventPublisher applicationEventPublisher
+    ) {
+        return new FormIoFormDefinitionService(formDefinitionRepository, applicationEventPublisher);
     }
 
     @Bean

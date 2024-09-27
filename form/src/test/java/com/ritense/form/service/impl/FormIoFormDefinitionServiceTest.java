@@ -28,16 +28,18 @@ import com.ritense.form.repository.FormDefinitionRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationEventPublisher;
 
 public class FormIoFormDefinitionServiceTest extends BaseTest {
 
     private FormDefinitionRepository formDefinitionRepository;
     private FormIoFormDefinitionService formIoFormDefinitionService;
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @BeforeEach
     public void setUp() {
         formDefinitionRepository = mock(FormDefinitionRepository.class);
-        formIoFormDefinitionService = new FormIoFormDefinitionService(formDefinitionRepository);
+        formIoFormDefinitionService = new FormIoFormDefinitionService(formDefinitionRepository, applicationEventPublisher);
     }
 
     @Test

@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @SpringBootTest
@@ -50,6 +51,9 @@ public abstract class BaseIntegrationTest extends BaseTest {
 
     @Inject
     public FormDefinitionRepository formDefinitionRepository;
+
+    @Inject
+    public ApplicationEventPublisher applicationEventPublisher;
 
     @BeforeAll
     static void beforeAll() {
