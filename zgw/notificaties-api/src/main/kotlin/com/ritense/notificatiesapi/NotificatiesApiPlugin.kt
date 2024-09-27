@@ -16,6 +16,7 @@
 
 package com.ritense.notificatiesapi
 
+import com.ritense.logging.withLoggingContext
 import com.ritense.notificatiesapi.client.NotificatiesApiClient
 import com.ritense.notificatiesapi.domain.Abonnement
 import com.ritense.notificatiesapi.domain.Kanaal
@@ -32,7 +33,6 @@ import com.ritense.valtimo.contract.validation.Url
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import mu.withLoggingContext
 import org.springframework.data.repository.findByIdOrNull
 import java.net.URI
 import java.security.SecureRandom

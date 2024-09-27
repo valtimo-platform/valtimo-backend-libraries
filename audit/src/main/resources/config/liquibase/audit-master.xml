@@ -16,9 +16,9 @@
   -->
 
 <databaseChangeLog
-        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
     <property name="uuidType" value="uuid" dbms="postgresql"/>
@@ -30,4 +30,5 @@
     <include file="changelog/20210414-audit-record-add-document-id-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20210708-update-document-id-audit-event.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20220104-rename-indexes.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20240926-rename-anonymous-to-system.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

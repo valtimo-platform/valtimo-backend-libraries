@@ -1,0 +1,1 @@
+org.springframework.boot.SpringBootExceptionReporter=com.ritense.logging.LoggingContextExceptionReporter
