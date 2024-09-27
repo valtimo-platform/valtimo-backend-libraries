@@ -50,6 +50,7 @@ import com.ritense.document.web.rest.impl.SearchFieldResource;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import com.ritense.valtimo.web.rest.error.WebModuleExceptionTranslator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +69,9 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private DocumentModuleExceptionTranslator documentModuleExceptionTranslator;
+
+    @Autowired
+    private WebModuleExceptionTranslator webModuleExceptionTranslator;
 
     @Autowired
     private AuthorizationService authorizationService;
@@ -98,7 +102,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
 
         mockMvc = MockMvcBuilders
                 .standaloneSetup(searchFieldResource)
-                .setControllerAdvice(documentModuleExceptionTranslator)
+                .setControllerAdvice(documentModuleExceptionTranslator, webModuleExceptionTranslator)
                 .setMessageConverters(mappingJackson2HttpMessageConverter)
                 .build();
     }

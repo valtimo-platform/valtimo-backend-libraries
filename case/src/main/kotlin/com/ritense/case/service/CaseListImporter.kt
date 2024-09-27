@@ -20,7 +20,7 @@ import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_LIST
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
-import mu.withLoggingContext
+import com.ritense.logging.withLoggingContext
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional

@@ -48,6 +48,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
 @AutoConfiguration
@@ -153,6 +154,7 @@ public class CamundaAutoConfiguration {
         return new ProcessDefinitionDeployedEventPublisher(applicationEventPublisher);
     }
 
+    @Order(Ordered.HIGHEST_PRECEDENCE)
     @Bean
     @ConditionalOnMissingBean(CamundaExceptionTranslator.class)
     public CamundaExceptionTranslator camundaExceptionTranslator() {
