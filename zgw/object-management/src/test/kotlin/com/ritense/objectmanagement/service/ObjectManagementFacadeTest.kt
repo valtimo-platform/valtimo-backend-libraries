@@ -191,6 +191,7 @@ internal class ObjectManagementFacadeTest {
             objecttypesApiUrl = expectedUrl,
             objecttypeId = objectTypeId,
             searchString = searchString,
+            ordering = ordering,
             pageable = expectedPageRequest)
         ).thenReturn(expectedObjectsList)
 
@@ -205,6 +206,7 @@ internal class ObjectManagementFacadeTest {
             objecttypesApiUrl = expectedUrl,
             objecttypeId = objectTypeId,
             searchString = searchString,
+            ordering = ordering,
             pageable = expectedPageRequest)
         verify(objectenApiPlugin, never()).getObjectsByObjectTypeId(any(), any(), any(), any(), any())
         assertThat(result).isEqualTo(expectedObjectsList)
@@ -233,6 +235,7 @@ internal class ObjectManagementFacadeTest {
             objecttypesApiUrl = expectedUrl1,
             objectsApiUrl = expectedUrl2,
             objecttypeId = objectTypeId,
+            ordering = ordering,
             pageable = expectedPageRequest)
         ).thenReturn(expectedObjectsList)
 
@@ -247,6 +250,7 @@ internal class ObjectManagementFacadeTest {
             objecttypesApiUrl = expectedUrl1,
             objectsApiUrl = expectedUrl2,
             objecttypeId = objectTypeId,
+            ordering = ordering,
             pageable = expectedPageRequest)
         verify(objectenApiPlugin, never()).getObjectsByObjectTypeIdWithSearchParams(any(), any(), any(), any(), any())
         assertThat(result).isEqualTo(expectedObjectsList)
@@ -271,6 +275,7 @@ internal class ObjectManagementFacadeTest {
             objecttypesApiUrl = expectedUrl,
             objecttypeId = objectTypeId,
             searchString = searchString,
+            ordering = ordering,
             pageable = expectedPageRequest)
         ).thenReturn(expectedObjectsList)
 
@@ -285,6 +290,7 @@ internal class ObjectManagementFacadeTest {
             objecttypesApiUrl = expectedUrl,
             objecttypeId = objectTypeId,
             searchString = searchString,
+            ordering = ordering,
             pageable = expectedPageRequest)
         verify(objectenApiPlugin, never()).getObjectsByObjectTypeId(any(), any(), any(), any(), any())
         assertThat(result.count).isEqualTo(expectedObjectsList.count)
@@ -314,6 +320,7 @@ internal class ObjectManagementFacadeTest {
             objecttypesApiUrl = expectedUrl1,
             objectsApiUrl = expectedUrl2,
             objecttypeId = objectTypeId,
+            ordering = ordering,
             pageable = expectedPageRequest)
         ).thenReturn(expectedObjectsList)
 
@@ -328,6 +335,7 @@ internal class ObjectManagementFacadeTest {
             objecttypesApiUrl = expectedUrl1,
             objectsApiUrl = expectedUrl2,
             objecttypeId = objectTypeId,
+            ordering = ordering,
             pageable = expectedPageRequest)
         verify(objectenApiPlugin, never()).getObjectsByObjectTypeIdWithSearchParams(any(), any(), any(), any(), any())
         assertThat(result.count).isEqualTo(expectedObjectsList.count)
