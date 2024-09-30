@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import com.ritense.logging.LoggableResource;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.zalando.problem.Status;
@@ -56,7 +57,10 @@ public class SearchFieldService {
         this.authorizationService = authorizationService;
     }
 
-    public void addSearchField(String documentDefinitionName, SearchField searchField) {
+    public void addSearchField(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName,
+        SearchField searchField
+    ) {
         denyAuthorization();
 
         Optional<SearchField> optSearchField = searchFieldRepository
@@ -73,7 +77,9 @@ public class SearchFieldService {
         searchFieldRepository.save(searchField);
     }
 
-    public List<SearchField> getSearchFields(String documentDefinitionName) {
+    public List<SearchField> getSearchFields(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName
+    ) {
         Specification<SearchField> authorizationSpec = authorizationService.getAuthorizationSpecification(
             new EntityAuthorizationRequest<>(
                 SearchField.class,
@@ -88,11 +94,16 @@ public class SearchFieldService {
         );
     }
 
-    public void deleteSearchFields(String documentDefinitionName) {
+    public void deleteSearchFields(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName
+    ) {
         searchFieldRepository.deleteAllByIdDocumentDefinitionName(documentDefinitionName);
     }
 
-    public void updateSearchFields(String documentDefinitionName, List<SearchFieldDto> searchFieldDtos) {
+    public void updateSearchFields(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName,
+        List<SearchFieldDto> searchFieldDtos
+    ) {
         denyAuthorization();
 
         searchFieldDtos.forEach(this::validateSearchField);

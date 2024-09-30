@@ -21,6 +21,7 @@ import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
 import com.ritense.importer.ValtimoImportTypes.Companion.SEARCH
+import com.ritense.logging.withLoggingContext
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
@@ -35,7 +36,9 @@ class SearchFieldImporter(
 
     override fun import(request: ImportRequest) {
         val documentDefinitionName = FILENAME_REGEX.matchEntire(request.fileName)!!.groupValues[1]
-        searchConfigurationDeploymentService.deploy(documentDefinitionName, request.content.toString(Charsets.UTF_8))
+        withLoggingContext("documentDefinitionName" to documentDefinitionName) {
+            searchConfigurationDeploymentService.deploy(documentDefinitionName, request.content.toString(Charsets.UTF_8))
+        }
     }
 
     private companion object {

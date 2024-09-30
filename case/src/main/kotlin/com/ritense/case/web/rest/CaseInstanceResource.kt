@@ -40,7 +40,7 @@ class CaseInstanceResource(
 
     @PostMapping("/v1/case/{caseDefinitionName}/search")
     fun search(
-        @LoggableResource(resourceTypeName = "jsonSchemaDocumentName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
         @RequestBody searchRequest: SearchWithConfigRequest,
         pageable: Pageable
     ): ResponseEntity<Page<CaseListRowDto>> {

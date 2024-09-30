@@ -22,6 +22,7 @@ import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.web.rest.DocumentSearchFieldsManagement;
+import com.ritense.logging.LoggableResource;
 import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +45,7 @@ public class SearchFieldManagementResource implements DocumentSearchFieldsManage
     @Override
     @GetMapping("/v1/document-search/{documentDefinitionName}/fields")
     public ResponseEntity<List<SearchFieldDto>> getAdminSearchFields(
-        @PathVariable String documentDefinitionName) {
+        @LoggableResource("documentDefinitionName") @PathVariable String documentDefinitionName) {
         return AuthorizationContext.runWithoutAuthorization(() -> ResponseEntity.ok(SearchFieldMapper
                 .toDtoList(searchFieldService.getSearchFields(documentDefinitionName))));
     }

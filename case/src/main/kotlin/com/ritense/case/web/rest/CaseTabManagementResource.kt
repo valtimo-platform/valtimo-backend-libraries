@@ -48,7 +48,7 @@ class CaseTabManagementResource(
     @RunWithoutAuthorization
     @PostMapping("/v1/case-definition/{caseDefinitionName}/tab")
     fun createCaseTab(
-        @LoggableResource(resourceTypeName = "jsonSchemaDocumentName") @PathVariable caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @RequestBody caseTabDto: CaseTabDto
     ): ResponseEntity<CaseTabWithMetadataDto> {
         return try {
@@ -62,7 +62,7 @@ class CaseTabManagementResource(
     @RunWithoutAuthorization
     @PutMapping("/v1/case-definition/{caseDefinitionName}/tab")
     fun updateOrderCaseTab(
-        @LoggableResource(resourceTypeName = "jsonSchemaDocumentName") @PathVariable caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @RequestBody caseTabDtos: List<CaseTabUpdateOrderDto>
     ): ResponseEntity<List<CaseTabWithMetadataDto>> {
         val caseTabs = caseTabService.updateCaseTabs(caseDefinitionName, caseTabDtos)
@@ -73,7 +73,7 @@ class CaseTabManagementResource(
     @RunWithoutAuthorization
     @PutMapping("/v1/case-definition/{caseDefinitionName}/tab/{tabKey}")
     fun updateCaseTab(
-        @LoggableResource(resourceTypeName = "jsonSchemaDocumentName") @PathVariable caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @PathVariable tabKey: String,
         @RequestBody caseTab: CaseTabUpdateDto
     ): ResponseEntity<Unit> {
@@ -84,7 +84,7 @@ class CaseTabManagementResource(
     @RunWithoutAuthorization
     @DeleteMapping("/v1/case-definition/{caseDefinitionName}/tab/{tabKey}")
     fun deleteCaseTab(
-        @LoggableResource(resourceTypeName = "jsonSchemaDocumentName") @PathVariable caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @PathVariable tabKey: String
     ): ResponseEntity<Unit> {
         caseTabService.deleteCaseTab(caseDefinitionName, tabKey)
@@ -94,7 +94,7 @@ class CaseTabManagementResource(
     @RunWithoutAuthorization
     @GetMapping("/v1/case-definition/{caseDefinitionName}/tab")
     fun getCaseTabs(
-        @LoggableResource(resourceTypeName = "jsonSchemaDocumentName") @PathVariable caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String
     ): ResponseEntity<List<CaseTabWithMetadataDto>> {
         val caseTabs = caseTabService.getCaseTabs(caseDefinitionName)
             .map { CaseTabWithMetadataDto.of(it, userManagementService) }
@@ -104,7 +104,7 @@ class CaseTabManagementResource(
     @RunWithoutAuthorization
     @GetMapping("/v1/case-definition/{caseDefinitionName}/tab/{tabKey}")
     fun getCaseTab(
-        @LoggableResource(resourceTypeName = "jsonSchemaDocumentName") @PathVariable caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @PathVariable tabKey: String
     ): ResponseEntity<CaseTabWithMetadataDto> {
         val caseTab = caseTabService.getCaseTab(caseDefinitionName, tabKey)
