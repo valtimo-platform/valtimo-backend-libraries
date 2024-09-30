@@ -23,6 +23,7 @@ import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
 import java.io.InputStream
 import java.nio.charset.StandardCharsets
 import mu.KotlinLogging
+import mu.withLoggingContext
 import org.everit.json.schema.loader.SchemaLoader
 import org.json.JSONObject
 import org.json.JSONTokener
@@ -60,41 +61,47 @@ class FormFlowDeploymentService(
     }
 
     private fun deploy(formFlowKey: String, formFlowJson: InputStream) {
-        deploy(formFlowKey, StreamUtils.copyToString(formFlowJson, StandardCharsets.UTF_8))
+        withLoggingContext("formFlowDefinitionKey" to formFlowKey) {
+            deploy(formFlowKey, StreamUtils.copyToString(formFlowJson, StandardCharsets.UTF_8))
+        }
     }
 
     fun deploy(formFlowKey: String, formFlowJson: String) {
-        validate(formFlowJson)
+        withLoggingContext("formFlowDefinitionKey" to formFlowKey) {
+            validate(formFlowJson)
 
-        val formFlowDefinitionConfig = objectMapper.readValue(formFlowJson, FormFlowDefinition::class.java)
+            val formFlowDefinitionConfig = objectMapper.readValue(formFlowJson, FormFlowDefinition::class.java)
 
-        validate(formFlowDefinitionConfig)
+            validate(formFlowDefinitionConfig)
 
-        try {
-            val existingDefinition = formFlowService.findLatestDefinitionByKey(formFlowKey)
-            var definitionId = FormFlowDefinitionId.newId(formFlowKey)
+            try {
+                val existingDefinition = formFlowService.findLatestDefinitionByKey(formFlowKey)
+                var definitionId = FormFlowDefinitionId.newId(formFlowKey)
 
-            if (existingDefinition != null) {
-                if (formFlowDefinitionConfig.contentEquals(existingDefinition)) {
-                    logger.info("Form Flow already deployed - {}", definitionId.toString())
-                    return
-                } else {
-                    definitionId = FormFlowDefinitionId.nextVersion(existingDefinition.id)
-                    logger.info("Form Flow changed. Deploying next version - {}", definitionId.toString())
+                if (existingDefinition != null) {
+                    if (formFlowDefinitionConfig.contentEquals(existingDefinition)) {
+                        logger.info("Form Flow already deployed - {}", definitionId.toString())
+                        return
+                    } else {
+                        definitionId = FormFlowDefinitionId.nextVersion(existingDefinition.id)
+                        logger.info("Form Flow changed. Deploying next version - {}", definitionId.toString())
+                    }
                 }
-            }
 
-            formFlowService.save(formFlowDefinitionConfig.toDefinition(definitionId))
-            logger.info("Deployed Form Flow - {}", definitionId.toString())
-        } catch (e: Exception) {
-            throw RuntimeException("Failed to deploy Form Flow $formFlowKey", e)
+                formFlowService.save(formFlowDefinitionConfig.toDefinition(definitionId))
+                logger.info("Deployed Form Flow - {}", definitionId.toString())
+            } catch (e: Exception) {
+                throw RuntimeException("Failed to deploy Form Flow $formFlowKey", e)
+            }
         }
     }
 
     fun isAutoDeployed(formFlowDefinitionKey: String): Boolean {
-        return ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
-            .getResource(FORM_FLOW_DEFINITIONS_PATH.replace("*", formFlowDefinitionKey))
-            .exists()
+        withLoggingContext("formFlowDefinitionKey" to formFlowDefinitionKey) {
+            return ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
+                .getResource(FORM_FLOW_DEFINITIONS_PATH.replace("*", formFlowDefinitionKey))
+                .exists()
+        }
     }
 
     private fun validate(formFlowJson: String) {
