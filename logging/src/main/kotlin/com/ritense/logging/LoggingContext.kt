@@ -17,18 +17,21 @@
 package com.ritense.logging
 
 import org.slf4j.MDC
+import kotlin.reflect.KClass
 
 val MDC_ERROR_CONTEXT: ThreadLocal<Pair<Throwable, Map<String, String>>> = ThreadLocal()
 
 fun <T> withLoggingContext(
+    contextKey: KClass<*>,
+    contextValue: Any?,
+    body: () -> T
+): T = withLoggingContext(contextKey.java, contextValue.toString(), body)
+
+fun <T> withLoggingContext(
     contextKey: Class<*>,
-    contextValue: String?,
-    callable: Function0<T>
-): T {
-    return withLoggingContext(mapOf(contextKey.canonicalName to contextValue), true) {
-        callable.invoke()
-    }
-}
+    contextValue: Any?,
+    body: () -> T
+): T = withLoggingContext(contextKey.canonicalName, contextValue.toString(), body)
 
 fun withLoggingContext(
     contextKey: Class<*>,

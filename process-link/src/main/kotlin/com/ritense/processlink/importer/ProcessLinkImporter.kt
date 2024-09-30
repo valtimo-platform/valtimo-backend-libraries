@@ -26,12 +26,11 @@ import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.PROCESS_DEFINITION
 import com.ritense.importer.ValtimoImportTypes.Companion.PROCESS_LINK
+import com.ritense.logging.withLoggingContext
 import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
-import com.ritense.processlink.service.ProcessLinkExistsException
+import com.ritense.processlink.exception.ProcessLinkExistsException
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
-import mu.KLogger
-import mu.KotlinLogging
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
@@ -51,35 +50,40 @@ class ProcessLinkImporter(
 
     override fun import(request: ImportRequest) {
         val processDefinitionKey = FILENAME_REGEX.matchEntire(request.fileName)!!.groupValues[1]
-        val processDefinitionId = AuthorizationContext.runWithoutAuthorization {
-            repositoryService.findLatestProcessDefinition(processDefinitionKey)?.id
-                ?: throw IllegalStateException("Error while deploying '${request.fileName}'. Could not find Process definition with key '$processDefinitionKey'.")
-        }
-
-        val jsonTree = objectMapper.readTree(request.content.toString(Charsets.UTF_8))
-        require(jsonTree is ArrayNode) { "Error while processing file ${request.fileName}. Expected root item to be an array!" }
-
-        jsonTree.forEachIndexed { index, node ->
-            require(node is ObjectNode) { "Error while processing file ${request.fileName}. Expected item at index $index to be an object!" }
-
-            if (!node.has("processDefinitionId")) {
-                node.set<ObjectNode>("processDefinitionId", TextNode.valueOf(processDefinitionId))
+        withLoggingContext("processDefinitionKey", processDefinitionKey) {
+            val processDefinitionId = AuthorizationContext.runWithoutAuthorization {
+                repositoryService.findLatestProcessDefinition(processDefinitionKey)?.id
+                    ?: throw IllegalStateException("Error while deploying '${request.fileName}'. Could not find Process definition with key '$processDefinitionKey'.")
             }
 
-            val deployDto = objectMapper.treeToValue<ProcessLinkDeployDto>(node)
+            val jsonTree = objectMapper.readTree(request.content.toString(Charsets.UTF_8))
+            require(jsonTree is ArrayNode) { "Error while processing file ${request.fileName}. Expected root item to be an array!" }
 
-            val processLinkCreateDto = processLinkService.getProcessLinkMapper(deployDto.processLinkType)
-                .toProcessLinkCreateRequestDto(deployDto)
+            jsonTree.forEachIndexed { index, node ->
+                require(node is ObjectNode) { "Error while processing file ${request.fileName}. Expected item at index $index to be an object!" }
 
-            try {
-                processLinkService.createProcessLink(processLinkCreateDto)
-            } catch (e: ProcessLinkExistsException) {
+                if (!node.has("processDefinitionId")) {
+                    node.set<ObjectNode>("processDefinitionId", TextNode.valueOf(processDefinitionId))
+                }
+
+                val deployDto = objectMapper.treeToValue<ProcessLinkDeployDto>(node)
+
+                val processLinkCreateDto = processLinkService.getProcessLinkMapper(deployDto.processLinkType)
+                    .toProcessLinkCreateRequestDto(deployDto)
+
                 try {
-                    val processLinkUpdateDto = processLinkService.getProcessLinkMapper(deployDto.processLinkType)
-                        .toProcessLinkUpdateRequestDto(deployDto, e.existingProcessLinkId)
-                    processLinkService.updateProcessLink(processLinkUpdateDto)
-                } catch (e: IllegalStateException) {
-                    throw IllegalStateException("Failed to deploy process link. For file: ${request.fileName} and activity-id: ${deployDto.activityId}", e)
+                    processLinkService.createProcessLink(processLinkCreateDto)
+                } catch (e: ProcessLinkExistsException) {
+                    try {
+                        val processLinkUpdateDto = processLinkService.getProcessLinkMapper(deployDto.processLinkType)
+                            .toProcessLinkUpdateRequestDto(deployDto, e.existingProcessLinkId)
+                        processLinkService.updateProcessLink(processLinkUpdateDto)
+                    } catch (e: IllegalStateException) {
+                        throw IllegalStateException(
+                            "Failed to deploy process link. For file: ${request.fileName} and activity-id: ${deployDto.activityId}",
+                            e
+                        )
+                    }
                 }
             }
         }

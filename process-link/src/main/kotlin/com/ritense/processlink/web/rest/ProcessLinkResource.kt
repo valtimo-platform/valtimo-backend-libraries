@@ -17,6 +17,9 @@
 package com.ritense.processlink.web.rest
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.logging.LoggableResource
+import com.ritense.logging.withLoggingContext
+import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.domain.ProcessLinkType
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.service.ProcessLinkService
@@ -24,6 +27,7 @@ import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import java.util.UUID
@@ -49,7 +53,7 @@ class ProcessLinkResource(
 
     @GetMapping("/v1/process-link")
     fun getProcessLinks(
-        @RequestParam("processDefinitionId") processDefinitionId: String,
+        @LoggableResource(resourceType = CamundaProcessDefinition::class) @RequestParam("processDefinitionId") processDefinitionId: String,
         @RequestParam("activityId") activityId: String
     ): ResponseEntity<List<ProcessLinkResponseDto>> {
         val list = processLinkService.getProcessLinks(processDefinitionId, activityId)
@@ -69,23 +73,25 @@ class ProcessLinkResource(
     fun createProcessLink(
         @RequestBody processLink: ProcessLinkCreateRequestDto
     ): ResponseEntity<Unit> {
-        processLinkService.createProcessLink(processLink)
-
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+        return withLoggingContext(CamundaProcessDefinition::class.java, processLink.processDefinitionId) {
+            processLinkService.createProcessLink(processLink)
+            ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+        }
     }
 
     @PutMapping("/v1/process-link")
     fun updateProcessLink(
         @RequestBody processLink: ProcessLinkUpdateRequestDto
     ): ResponseEntity<Unit> {
-        processLinkService.updateProcessLink(processLink)
-
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+        return withLoggingContext(ProcessLink::class, processLink.id) {
+            processLinkService.updateProcessLink(processLink)
+            ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+        }
     }
 
     @DeleteMapping("/v1/process-link/{processLinkId}")
     fun deleteProcessLink(
-        @PathVariable(name = "processLinkId") processLinkId: UUID
+        @LoggableResource(resourceType = ProcessLink::class) @PathVariable(name = "processLinkId") processLinkId: UUID
     ): ResponseEntity<Unit> {
         processLinkService.deleteProcessLink(processLinkId)
 
@@ -95,7 +101,7 @@ class ProcessLinkResource(
 
     @GetMapping("/v1/process-link/export")
     fun exportProcessLinks(
-        @RequestParam("processDefinitionKey") processDefinitionKey: String
+        @LoggableResource("processDefinitionKey") @RequestParam("processDefinitionKey") processDefinitionKey: String
     ): ResponseEntity<List<ProcessLinkExportResponseDto>> {
         val list = runWithoutAuthorization {
             processLinkService.getProcessLinksByProcessDefinitionKey(processDefinitionKey)
