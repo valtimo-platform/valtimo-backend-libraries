@@ -16,6 +16,8 @@
 
 package com.ritense.plugin.web.rest
 
+import com.ritense.logging.LoggableResource
+import com.ritense.logging.withLoggingContext
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginConfigurationSearchParameters
@@ -27,6 +29,7 @@ import com.ritense.plugin.web.rest.result.PluginConfigurationExportDto
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import org.camunda.bpm.engine.repository.ProcessDefinition
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -49,7 +52,7 @@ class PluginConfigurationResource(
 
     @GetMapping("/v1/plugin/configuration")
     fun getPluginDefinitions(
-        @RequestParam("pluginDefinitionKey") pluginDefinitionKey: String?,
+        @LoggableResource(resourceType = ProcessDefinition::class) @RequestParam("pluginDefinitionKey") pluginDefinitionKey: String?,
         @RequestParam("pluginConfigurationTitle") pluginConfigurationTitle: String?,
         @RequestParam("category") category: String?,
         @RequestParam("activityType") activityType: ActivityTypeWithEventName?
@@ -72,27 +75,29 @@ class PluginConfigurationResource(
     fun createPluginConfiguration(
         @RequestBody createPluginConfiguration: CreatePluginConfigurationDto
     ): ResponseEntity<PluginConfigurationDto> {
-        val pluginConfigurationId = if (createPluginConfiguration.id == null) {
-            PluginConfigurationId.newId()
-        } else {
-            PluginConfigurationId.existingId(createPluginConfiguration.id)
-        }
+        return withLoggingContext(PluginConfiguration::class, createPluginConfiguration.id) {
+            val pluginConfigurationId = if (createPluginConfiguration.id == null) {
+                PluginConfigurationId.newId()
+            } else {
+                PluginConfigurationId.existingId(createPluginConfiguration.id)
+            }
 
-        return ResponseEntity.ok(
-            PluginConfigurationDto(
-                pluginService.createPluginConfiguration(
-                    pluginConfigurationId,
-                    createPluginConfiguration.title,
-                    createPluginConfiguration.properties,
-                    createPluginConfiguration.definitionKey
+            ResponseEntity.ok(
+                PluginConfigurationDto(
+                    pluginService.createPluginConfiguration(
+                        pluginConfigurationId,
+                        createPluginConfiguration.title,
+                        createPluginConfiguration.properties,
+                        createPluginConfiguration.definitionKey
+                    )
                 )
             )
-        )
+        }
     }
 
     @PutMapping("/v1/plugin/configuration/{pluginConfigurationId}")
     fun updatePluginConfiguration(
-        @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: UUID,
+        @LoggableResource(resourceType = PluginConfiguration::class) @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: UUID,
         @RequestBody updatePluginConfiguration: UpdatePluginConfigurationDto
     ): ResponseEntity<PluginConfigurationDto> {
         val newPluginConfigurationId = if (updatePluginConfiguration.newId == null) {
@@ -128,7 +133,7 @@ class PluginConfigurationResource(
 
     @DeleteMapping("/v1/plugin/configuration/{pluginConfigurationId}")
     fun deletePluginConfiguration(
-        @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: UUID
+        @LoggableResource(resourceType = PluginConfiguration::class) @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: UUID
     ): ResponseEntity<Void> {
         pluginService.deletePluginConfiguration(PluginConfigurationId.existingId(pluginConfigurationId))
         return ResponseEntity.noContent().build()

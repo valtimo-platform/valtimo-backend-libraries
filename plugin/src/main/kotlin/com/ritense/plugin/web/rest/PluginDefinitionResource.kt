@@ -16,6 +16,7 @@
 
 package com.ritense.plugin.web.rest
 
+import com.ritense.logging.LoggableResource
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.result.PluginActionDefinitionDto
@@ -43,7 +44,7 @@ class PluginDefinitionResource(
 
     @GetMapping("/v1/plugin/definition/{pluginDefinitionKey}/action")
     fun getPluginDefinitionActions(
-        @PathVariable pluginDefinitionKey: String,
+        @LoggableResource(resourceType = PluginDefinition::class) @PathVariable pluginDefinitionKey: String,
         @RequestParam("activityType") activityType: ActivityTypeWithEventName?
     ): ResponseEntity<List<PluginActionDefinitionDto>> {
         return ResponseEntity.ok(
