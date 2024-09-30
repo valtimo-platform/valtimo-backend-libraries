@@ -24,12 +24,14 @@ import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.document.domain.Document;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import com.ritense.document.exception.DocumentNotFoundException;
 import com.ritense.document.repository.DocumentSnapshotRepository;
 import com.ritense.document.service.DocumentSnapshotService;
+import com.ritense.logging.LoggableResource;
 import jakarta.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -74,8 +76,8 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
 
     @Override
     public Page<JsonSchemaDocumentSnapshot> getDocumentSnapshots(
-        @Nullable String definitionName,
-        @Nullable JsonSchemaDocumentId documentId,
+        @LoggableResource("documentDefinitionName") @Nullable String definitionName,
+        @LoggableResource(resourceType = JsonSchemaDocument.class) @Nullable JsonSchemaDocumentId documentId,
         @Nullable LocalDateTime fromDateTime,
         @Nullable LocalDateTime toDateTime,
         Pageable pageable

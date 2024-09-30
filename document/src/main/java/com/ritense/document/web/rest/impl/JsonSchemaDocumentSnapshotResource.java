@@ -18,12 +18,14 @@ package com.ritense.document.web.rest.impl;
 
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshotId;
 import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSnapshotService;
 import com.ritense.document.web.rest.DocumentSnapshotResource;
+import com.ritense.logging.LoggableResource;
 import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -64,8 +66,8 @@ public class JsonSchemaDocumentSnapshotResource implements DocumentSnapshotResou
     @Override
     @GetMapping("/v1/document-snapshot")
     public ResponseEntity<Page<? extends DocumentSnapshot>> getDocumentSnapshots(
-        @RequestParam(value = "definitionName", required = false) String definitionName,
-        @RequestParam(value = "documentId", required = false) UUID documentId,
+        @LoggableResource("documentDefinitionName") @RequestParam(value = "definitionName", required = false) String definitionName,
+        @LoggableResource(resourceType = JsonSchemaDocument.class) @RequestParam(value = "documentId", required = false) UUID documentId,
         @RequestParam(value = "fromDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDateTime,
         @RequestParam(value = "toDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDateTime,
         Pageable pageable

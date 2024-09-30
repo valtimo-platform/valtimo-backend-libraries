@@ -22,6 +22,7 @@ import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.web.rest.DocumentSearchFields;
+import com.ritense.logging.LoggableResource;
 import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -49,8 +50,9 @@ public class SearchFieldResource implements DocumentSearchFields {
     @Override
     @PostMapping("/v1/document-search/{documentDefinitionName}/fields")
     public ResponseEntity<Void> addSearchField(
-            @PathVariable String documentDefinitionName,
-            @RequestBody SearchFieldDto searchField) {
+        @LoggableResource("documentDefinitionName") @PathVariable String documentDefinitionName,
+        @RequestBody SearchFieldDto searchField
+    ) {
         if (documentDefinitionName == null
                 || documentDefinitionName.trim().isEmpty()
                 || searchField.getKey() == null
@@ -70,7 +72,8 @@ public class SearchFieldResource implements DocumentSearchFields {
     @Override
     @GetMapping("/v1/document-search/{documentDefinitionName}/fields")
     public ResponseEntity<List<SearchFieldDto>> getSearchFields(
-            @PathVariable String documentDefinitionName) {
+        @LoggableResource("documentDefinitionName") @PathVariable String documentDefinitionName
+    ) {
         return ResponseEntity.ok(SearchFieldMapper
                 .toDtoList(searchFieldService.getSearchFields(documentDefinitionName)));
     }
@@ -78,8 +81,9 @@ public class SearchFieldResource implements DocumentSearchFields {
     @Override
     @PutMapping("/v1/document-search/{documentDefinitionName}/fields")
     public ResponseEntity<Void> updateSearchField(
-            @PathVariable String documentDefinitionName,
-            @RequestBody List<SearchFieldDto> searchFieldDtos) {
+        @LoggableResource("documentDefinitionName") @PathVariable String documentDefinitionName,
+        @RequestBody List<SearchFieldDto> searchFieldDtos
+    ) {
         if (searchFieldDtos.stream().anyMatch(searchFieldDto -> searchFieldDto.getKey() == null || searchFieldDto.getKey().trim().isEmpty())) {
             return ResponseEntity.badRequest().build();
         }
@@ -96,8 +100,9 @@ public class SearchFieldResource implements DocumentSearchFields {
     @Override
     @DeleteMapping("/v1/document-search/{documentDefinitionName}/fields")
     public ResponseEntity<Void> deleteSearchField(
-            @PathVariable String documentDefinitionName,
-            @RequestParam String key) {
+        @LoggableResource("documentDefinitionName") @PathVariable String documentDefinitionName,
+        @RequestParam String key
+    ) {
         if (documentDefinitionName == null || documentDefinitionName.trim().isEmpty() || key == null || key.trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }

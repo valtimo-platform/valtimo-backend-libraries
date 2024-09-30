@@ -43,7 +43,7 @@ class TaskListResource(
     @GetMapping("/v1/case/{caseDefinitionName}/task-list-column")
     @RunWithoutAuthorization
     fun getTaskListColumn(
-        @LoggableResource(resourceTypeName = "jsonSchemaDocumentName") @PathVariable caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String
     ): ResponseEntity<List<TaskListColumnDto>> {
         return ResponseEntity.ok().body(service.getListColumns(caseDefinitionName))
     }
@@ -51,13 +51,13 @@ class TaskListResource(
     @GetMapping("/management/v1/case/{caseDefinitionName}/task-list-column")
     @RunWithoutAuthorization
     fun getTaskListColumnForManagement(
-        @LoggableResource(resourceTypeName = "jsonSchemaDocumentName") @PathVariable caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String
     ): ResponseEntity<List<TaskListColumnDto>> = getTaskListColumn(caseDefinitionName)
 
     @PutMapping("/management/v1/case/{caseDefinitionName}/task-list-column/{columnKey}")
     @RunWithoutAuthorization
     fun createListColumnForManagement(
-        @LoggableResource(resourceTypeName = "jsonSchemaDocumentName") @PathVariable caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @RequestBody taskListColumnDto: TaskListColumnDto
     ): ResponseEntity<Any> {
         service.saveListColumn(caseDefinitionName, taskListColumnDto)
@@ -67,7 +67,7 @@ class TaskListResource(
     @PostMapping("/management/v1/case/{caseDefinitionName}/task-list-column")
     @RunWithoutAuthorization
     fun swapColumnOrderForManagement(
-        @LoggableResource(resourceTypeName = "jsonSchemaDocumentName") @PathVariable caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @RequestBody taskListColumnDto: Pair<String, String>
     ): ResponseEntity<Any> {
         service.swapColumnOrder(caseDefinitionName, taskListColumnDto.first, taskListColumnDto.second)
@@ -77,7 +77,7 @@ class TaskListResource(
     @DeleteMapping("/management/v1/case/{caseDefinitionName}/task-list-column/{columnKey}")
     @RunWithoutAuthorization
     fun deleteListColumnForManagement(
-        @LoggableResource(resourceTypeName = "jsonSchemaDocumentName") @PathVariable caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @PathVariable columnKey: String
     ): ResponseEntity<Any> {
         service.deleteTaskListColumn(caseDefinitionName, columnKey)

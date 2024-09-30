@@ -22,6 +22,7 @@ import com.ritense.document.web.rest.dto.InternalCaseStatusCreateRequestDto
 import com.ritense.document.web.rest.dto.InternalCaseStatusResponseDto
 import com.ritense.document.web.rest.dto.InternalCaseStatusUpdateOrderRequestDto
 import com.ritense.document.web.rest.dto.InternalCaseStatusUpdateRequestDto
+import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType
 import jakarta.validation.Valid
@@ -45,7 +46,7 @@ class InternalCaseStatusResource(
 
     @GetMapping("/v1/case-definition/{caseDefinitionName}/internal-status")
     fun getInternalCaseStatuses(
-        @PathVariable caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String
     ): ResponseEntity<List<InternalCaseStatusResponseDto>> {
         val internalCaseStatuses = internalCaseStatusService.getInternalCaseStatuses(caseDefinitionName)
         return ResponseEntity.ok(internalCaseStatuses.map { InternalCaseStatusResponseDto(it) })
@@ -54,7 +55,7 @@ class InternalCaseStatusResource(
     @RunWithoutAuthorization
     @GetMapping("/management/v1/case-definition/{caseDefinitionName}/internal-status")
     fun getInternalCaseStatusesForManagement(
-        @PathVariable caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String
     ): ResponseEntity<List<InternalCaseStatusResponseDto>> {
         val internalCaseStatuses = internalCaseStatusService.getInternalCaseStatuses(caseDefinitionName)
         return ResponseEntity.ok(internalCaseStatuses.map { InternalCaseStatusResponseDto(it) })
@@ -63,7 +64,7 @@ class InternalCaseStatusResource(
     @RunWithoutAuthorization
     @PostMapping("/management/v1/case-definition/{caseDefinitionName}/internal-status")
     fun createInternalCaseStatus(
-        @PathVariable caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @Valid @RequestBody internalCaseStatusCreateRequest: InternalCaseStatusCreateRequestDto
     ): ResponseEntity<InternalCaseStatusResponseDto> {
         return try {
@@ -82,7 +83,7 @@ class InternalCaseStatusResource(
     @RunWithoutAuthorization
     @PutMapping("/management/v1/case-definition/{caseDefinitionName}/internal-status")
     fun editInternalCaseStatuses(
-        @PathVariable caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @Valid @RequestBody requestDtos: List<InternalCaseStatusUpdateOrderRequestDto>
     ): ResponseEntity<List<InternalCaseStatusResponseDto>> {
         val internalCaseStatuses = internalCaseStatusService.update(caseDefinitionName, requestDtos)
@@ -92,7 +93,7 @@ class InternalCaseStatusResource(
     @RunWithoutAuthorization
     @PutMapping("/management/v1/case-definition/{caseDefinitionName}/internal-status/{internalStatusKey}")
     fun updateInternalCaseStatus(
-        @PathVariable caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @PathVariable internalStatusKey: String,
         @Valid @RequestBody requestDto: InternalCaseStatusUpdateRequestDto
     ): ResponseEntity<Unit> {
@@ -103,7 +104,7 @@ class InternalCaseStatusResource(
     @RunWithoutAuthorization
     @DeleteMapping("/management/v1/case-definition/{caseDefinitionName}/internal-status/{internalStatusKey}")
     fun deleteInternalCaseStatus(
-        @PathVariable caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @PathVariable internalStatusKey: String,
     ) {
         internalCaseStatusService.delete(caseDefinitionName, internalStatusKey)
