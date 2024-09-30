@@ -1,0 +1,22 @@
+{
+    "display": "form",
+    "components": [
+        {
+            "label": "Test",
+            "spellcheck": true,
+            "tableView": true,
+            "calculateServer": false,
+            "key": "test",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "type": "button",
+            "label": "Submit",
+            "key": "submit",
+            "disableOnInvalid": true,
+            "input": true,
+            "tableView": false
+        }
+    ]
+}
