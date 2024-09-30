@@ -38,6 +38,7 @@ dependencies {
     implementation project(":changelog")
     implementation project(":contract")
     implementation project(":data-provider")
+    implementation project(":logging")
     implementation project(":outbox")
     implementation project(":resource")
     implementation project(":web")

@@ -27,4 +27,6 @@ public @interface LoggableResource {
     Class<?> resourceType() default Void.class;
 
     String resourceTypeName() default "";
+
+    String value() default "";
 }

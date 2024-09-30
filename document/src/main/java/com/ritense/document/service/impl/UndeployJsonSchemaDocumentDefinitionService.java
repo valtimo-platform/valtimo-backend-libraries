@@ -21,6 +21,7 @@ import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionPro
 
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.UndeployDocumentDefinitionService;
@@ -28,6 +29,7 @@ import com.ritense.document.service.result.UndeployDocumentDefinitionResult;
 import com.ritense.document.service.result.UndeployDocumentDefinitionResultFailed;
 import com.ritense.document.service.result.UndeployDocumentDefinitionResultSucceeded;
 import com.ritense.document.service.result.error.DocumentDefinitionError;
+import com.ritense.logging.LoggableResource;
 import com.ritense.valtimo.contract.event.UndeployDocumentDefinitionEvent;
 import java.util.List;
 import java.util.Optional;
@@ -55,7 +57,9 @@ public class UndeployJsonSchemaDocumentDefinitionService implements UndeployDocu
 
     @Override
     @Transactional
-    public UndeployDocumentDefinitionResult undeploy(String documentDefinitionName) {
+    public UndeployDocumentDefinitionResult undeploy(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName
+    ) {
         try {
             Optional<JsonSchemaDocumentDefinition> documentDefinition = documentDefinitionService.findLatestByName(
                 documentDefinitionName);

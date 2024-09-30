@@ -29,12 +29,14 @@ import com.ritense.document.domain.getProperty
 import com.ritense.document.domain.getTypeReference
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.patch.JsonPatchFilterFlag
 import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.document.exception.DocumentMigrationPatchException
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository
 import com.ritense.document.repository.impl.specification.JsonSchemaDocumentSpecificationHelper.Companion.byDocumentDefinitionId
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
+import com.ritense.logging.withLoggingContext
 import com.ritense.valtimo.contract.annotation.PublicBean
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
@@ -59,65 +61,69 @@ class DocumentMigrationService(
 ) {
     fun getConflicts(migrationRequest: DocumentMigrationRequest): DocumentMigrationConflictResponse {
         val sourceId = migrationRequest.getDocumentDefinitionIdSource()
-        val targetId = migrationRequest.getDocumentDefinitionIdTarget()
-        val sourceSchema = documentDefinitionService.findBy(sourceId).orElseThrow().schema.schema
-        val targetDefinition = documentDefinitionService.findBy(targetId).orElseThrow()
-        val targetSchema = targetDefinition.schema.schema
+        return withLoggingContext(JsonSchemaDocumentDefinition::class.java, sourceId.toString()) {
+            val targetId = migrationRequest.getDocumentDefinitionIdTarget()
+            val sourceSchema = documentDefinitionService.findBy(sourceId).orElseThrow().schema.schema
+            val targetDefinition = documentDefinitionService.findBy(targetId).orElseThrow()
+            val targetSchema = targetDefinition.schema.schema
 
-        val modifiedContent = try {
-            getModifiedContent(migrationRequest).map { (_, modifiedContent) -> modifiedContent }
-        } catch (e: DocumentMigrationPatchException) {
-            return DocumentMigrationConflictResponse.of(
-                migrationRequest = migrationRequest,
-                conflicts = listOf(e.getConflict()),
-            )
-        } catch (e: Exception) {
-            return DocumentMigrationConflictResponse.of(
-                migrationRequest = migrationRequest,
-                errors = listOf(e.localizedMessage),
-            )
-        }
-        val jsonPointers = modifiedContent
-            .flatMap { it.asJson().getJsonPointers() }
-            .distinct()
-            .filter { jsonPointer -> !migrationRequest.patches.any { it.target == jsonPointer.toString() } }
-
-        val conflicts = jsonPointers.mapNotNull { jsonPointer ->
-            val propertySourceSchema = sourceSchema.getProperty(jsonPointer.toString())
-            val propertyTargetSchema = targetSchema.getProperty(jsonPointer.toString())
-            if (propertySourceSchema != null && propertySourceSchema != propertyTargetSchema) {
-                DocumentMigrationConflict(
-                    jsonPointer.toString(),
-                    if (propertyTargetSchema == null) null else jsonPointer.toString(),
-                    if (propertyTargetSchema == null) "No longer exists" else "Type changed"
+            val modifiedContent = try {
+                getModifiedContent(migrationRequest).map { (_, modifiedContent) -> modifiedContent }
+            } catch (e: DocumentMigrationPatchException) {
+                return@withLoggingContext DocumentMigrationConflictResponse.of(
+                    migrationRequest = migrationRequest,
+                    conflicts = listOf(e.getConflict()),
                 )
-            } else {
-                null
+            } catch (e: Exception) {
+                return@withLoggingContext DocumentMigrationConflictResponse.of(
+                    migrationRequest = migrationRequest,
+                    errors = listOf(e.localizedMessage),
+                )
             }
+            val jsonPointers = modifiedContent
+                .flatMap { it.asJson().getJsonPointers() }
+                .distinct()
+                .filter { jsonPointer -> !migrationRequest.patches.any { it.target == jsonPointer.toString() } }
+
+            val conflicts = jsonPointers.mapNotNull { jsonPointer ->
+                val propertySourceSchema = sourceSchema.getProperty(jsonPointer.toString())
+                val propertyTargetSchema = targetSchema.getProperty(jsonPointer.toString())
+                if (propertySourceSchema != null && propertySourceSchema != propertyTargetSchema) {
+                    DocumentMigrationConflict(
+                        jsonPointer.toString(),
+                        if (propertyTargetSchema == null) null else jsonPointer.toString(),
+                        if (propertyTargetSchema == null) "No longer exists" else "Type changed"
+                    )
+                } else {
+                    null
+                }
+            }
+
+            val errors = modifiedContent.flatMap { content ->
+                targetDefinition.validate(content).validationErrors().map { error -> error.toString() }
+            }.distinct()
+
+            return@withLoggingContext DocumentMigrationConflictResponse.of(
+                migrationRequest = migrationRequest,
+                conflicts = conflicts,
+                errors = errors,
+                documentCount = modifiedContent.size,
+            )
         }
-
-        val errors = modifiedContent.flatMap { content ->
-            targetDefinition.validate(content).validationErrors().map { error -> error.toString() }
-        }.distinct()
-
-        return DocumentMigrationConflictResponse.of(
-            migrationRequest = migrationRequest,
-            conflicts = conflicts,
-            errors = errors,
-            documentCount = modifiedContent.size,
-        )
     }
 
     fun migrateDocuments(migrationRequest: DocumentMigrationRequest) {
-        val targetId = migrationRequest.getDocumentDefinitionIdTarget()
-        val targetDefinition = documentDefinitionService.findBy(targetId).orElseThrow()
+        return withLoggingContext(JsonSchemaDocumentDefinition::class.java, migrationRequest.getDocumentDefinitionIdSource().toString()) {
+            val targetId = migrationRequest.getDocumentDefinitionIdTarget()
+            val targetDefinition = documentDefinitionService.findBy(targetId).orElseThrow()
 
-        getModifiedContent(migrationRequest).forEach { (sourceDocument, modifiedContent) ->
-            val result = sourceDocument.applyModifiedContent(modifiedContent, targetDefinition)
-            check(result.errors().isEmpty()) { result.errors().joinToString { it.toString() } }
-            val targetDocument = result.resultingDocument().orElseThrow()
-            targetDocument.setDefinitionId(targetId)
-            documentRepository.save(targetDocument)
+            getModifiedContent(migrationRequest).forEach { (sourceDocument, modifiedContent) ->
+                val result = sourceDocument.applyModifiedContent(modifiedContent, targetDefinition)
+                check(result.errors().isEmpty()) { result.errors().joinToString { it.toString() } }
+                val targetDocument = result.resultingDocument().orElseThrow()
+                targetDocument.setDefinitionId(targetId)
+                documentRepository.save(targetDocument)
+            }
         }
     }
 
