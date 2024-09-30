@@ -23,9 +23,9 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
+import com.ritense.logging.withLoggingContext
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import mu.KotlinLogging
-import mu.withLoggingContext
 import org.springframework.context.event.EventListener
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils

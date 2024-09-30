@@ -24,11 +24,11 @@ import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.repository.CaseTabSpecificationHelper.Companion.byCaseDefinitionName
 import com.ritense.case.service.CaseTabService
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
+import com.ritense.logging.withLoggingContext
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import mu.withLoggingContext
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

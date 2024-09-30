@@ -21,11 +21,11 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.repository.TaskListColumnRepository
 import com.ritense.case.service.TaskColumnService
+import com.ritense.logging.withLoggingContext
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import mu.withLoggingContext
 import org.springframework.stereotype.Service
 
 @Service

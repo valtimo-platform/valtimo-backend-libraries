@@ -16,15 +16,20 @@
 
 package com.ritense.logging
 
-import com.ritense.logging.testimpl.LogResourceBean
-import org.springframework.boot.autoconfigure.AutoConfiguration
-import org.springframework.context.annotation.Bean
+import com.ritense.valtimo.contract.annotation.AllOpen
+import mu.KotlinLogging
+import org.springframework.util.ErrorHandler
 
-@AutoConfiguration
-class TestAutoConfiguration {
+@AllOpen
+class LoggingErrorWithContextErrorHandler : ErrorHandler {
 
-    @Bean
-    fun logResourceBean(): LogResourceBean {
-        return LogResourceBean()
+    override fun handleError(t: Throwable) {
+        withErrorLoggingContext {
+            logger.error("Unexpected error occurred in scheduled task", t)
+        }
+    }
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
     }
 }

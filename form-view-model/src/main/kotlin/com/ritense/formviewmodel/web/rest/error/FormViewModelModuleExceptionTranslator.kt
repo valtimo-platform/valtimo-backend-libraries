@@ -20,17 +20,15 @@ import com.ritense.formviewmodel.error.BusinessException
 import com.ritense.formviewmodel.error.FormException
 import com.ritense.formviewmodel.web.rest.dto.BusinessRuleError
 import com.ritense.formviewmodel.web.rest.dto.FormError
-import org.springframework.core.Ordered
-import org.springframework.core.annotation.Order
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.NativeWebRequest
-import org.zalando.problem.spring.web.advice.ProblemHandling
 
+@SkipComponentScan
 @ControllerAdvice
-@Order(Ordered.HIGHEST_PRECEDENCE)
-class FormViewModelModuleExceptionTranslator : ProblemHandling {
+class FormViewModelModuleExceptionTranslator {
 
     @ExceptionHandler(FormException::class)
     fun handleFormException(
