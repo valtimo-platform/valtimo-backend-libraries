@@ -16,6 +16,7 @@
 
 package com.ritense.resource.service
 
+import com.ritense.logging.LoggableResource
 import com.ritense.resource.service.request.FileUploadRequest
 import com.ritense.resource.web.ObjectContentDTO
 import com.ritense.resource.web.ObjectUrlDTO
@@ -32,7 +33,11 @@ interface ResourceService {
 
     fun store(key: String, multipartFile: MultipartFile, fileStatus: FileStatus): Resource
 
-    fun store(documentDefinitionName: String, name: String, multipartFile: MultipartFile): Resource
+    fun store(
+        @LoggableResource("documentDefinitionName") documentDefinitionName: String,
+        name: String,
+        multipartFile: MultipartFile
+    ): Resource
 
     fun store(key: String, fileUploadRequest: FileUploadRequest): Resource
 
