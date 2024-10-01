@@ -51,7 +51,7 @@ class ZaakObjectListener(
             }.forEach { objectTypeGroup ->
                 val zaakObject = zaakObjectService.getZaakObjectOfTypeByName(event.documentId, objectTypeGroup.key)
                 objectTypeGroup.value.forEach { requestedField ->
-                    logger.trace { "Updating field ${requestedField.path} with value ${requestedField.value} in object type '${objectTypeGroup.key}'" }
+                    logger.trace { "Updating field ${requestedField.path} with value ${requestedField.value} in object '${zaakObject.url}' of type '${objectTypeGroup.key}'" }
                     // For each requestedField update the value in the zaakObject record data
                     val startPath = requestedField.path.substring(1)
                     val newValueNode = getValueNode(requestedField.value)
