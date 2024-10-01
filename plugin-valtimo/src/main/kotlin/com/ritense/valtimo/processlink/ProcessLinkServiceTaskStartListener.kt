@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.processlink
 
+import com.ritense.logging.withLoggingContext
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.service.PluginService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
@@ -34,14 +35,16 @@ open class ProcessLinkServiceTaskStartListener(
 
     @Transactional
     override fun notify(execution: DelegateExecution) {
-        val pluginProcessLinks = pluginProcessLinkRepository.findByProcessDefinitionIdAndActivityIdAndActivityType(
-            execution.processDefinitionId,
-            execution.currentActivityId,
-            ActivityTypeWithEventName.SERVICE_TASK_START
-        )
+        withLoggingContext("com.ritense.document.domain.impl.JsonSchemaDocument", execution.processBusinessKey) {
+            val pluginProcessLinks = pluginProcessLinkRepository.findByProcessDefinitionIdAndActivityIdAndActivityType(
+                execution.processDefinitionId,
+                execution.currentActivityId,
+                ActivityTypeWithEventName.SERVICE_TASK_START
+            )
 
-        pluginProcessLinks.forEach { pluginProcessLink ->
-            pluginService.invoke(execution, pluginProcessLink)
+            pluginProcessLinks.forEach { pluginProcessLink ->
+                pluginService.invoke(execution, pluginProcessLink)
+            }
         }
     }
 }
