@@ -124,10 +124,10 @@ class ObjectManagementService(
         val objectenPluginInstance = getObjectenApiPlugin(objectManagement.objectenApiPluginConfigurationId)
 
         val objectsList = objectenPluginInstance.getObjectsByObjectTypeId(
-            objectTypePluginInstance.url,
-            objectenPluginInstance.url,
-            objectManagement.objecttypeId,
-            pageable
+            objecttypesApiUrl = objectTypePluginInstance.url,
+            objectsApiUrl = objectenPluginInstance.url,
+            objecttypeId = objectManagement.objecttypeId,
+            pageable = pageable
         )
 
         val objectsListDto = objectsList.results.map {
@@ -182,10 +182,10 @@ class ObjectManagementService(
         val objectenPluginInstance = getObjectenApiPlugin(objectManagement.objectenApiPluginConfigurationId)
 
         val objectsList = objectenPluginInstance.getObjectsByObjectTypeIdWithSearchParams(
-            objectTypePluginInstance.url,
-            objectManagement.objecttypeId,
-            searchString,
-            pageable
+            objecttypesApiUrl = objectTypePluginInstance.url,
+            objecttypeId = objectManagement.objecttypeId,
+            searchString = searchString,
+            pageable = pageable
         )
 
         return PageImpl(objectsList.results, pageable, objectsList.count.toLong())
