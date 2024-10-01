@@ -81,9 +81,9 @@ public class FormIoFormManagementResource implements FormManagementResource {
 
     @Override
     public ResponseEntity<? extends FormDefinition> modifyFormDefinition(@Valid @RequestBody ModifyFormDefinitionRequest request) {
-        return withLoggingContext(FormIoFormDefinition.class, request.getId().toString(), () ->
-            parseResult(formDefinitionService.modifyFormDefinition(request))
-        );
+        return withLoggingContext(FormIoFormDefinition.class, request.getId().toString(), () -> {
+            return parseResult(formDefinitionService.modifyFormDefinition(request));
+        });
     }
 
     @Override
