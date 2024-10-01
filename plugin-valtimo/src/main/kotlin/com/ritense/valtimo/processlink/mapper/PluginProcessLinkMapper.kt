@@ -17,6 +17,8 @@
 package com.ritense.valtimo.processlink.mapper
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.logging.LoggableResource
+import com.ritense.logging.withLoggingContext
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.service.PluginService.Companion.PROCESS_LINK_TYPE_PLUGIN
@@ -28,8 +30,12 @@ import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import org.springframework.stereotype.Component
 import java.util.UUID
 
+@Component
+@SkipComponentScan
 class PluginProcessLinkMapper(
     objectMapper: ObjectMapper
 ) : ProcessLinkMapper {
@@ -47,16 +53,18 @@ class PluginProcessLinkMapper(
     override fun supportsProcessLinkType(processLinkType: String) = processLinkType == PROCESS_LINK_TYPE_PLUGIN
 
     override fun toProcessLinkResponseDto(processLink: ProcessLink): PluginProcessLinkResultDto {
-        processLink as PluginProcessLink
-        return PluginProcessLinkResultDto(
-            id = processLink.id,
-            processDefinitionId = processLink.processDefinitionId,
-            activityId = processLink.activityId,
-            activityType = processLink.activityType,
-            pluginConfigurationId = processLink.pluginConfigurationId.id,
-            pluginActionDefinitionKey = processLink.pluginActionDefinitionKey,
-            actionProperties = processLink.actionProperties,
-        )
+        return withLoggingContext(ProcessLink::class, processLink.id) {
+            processLink as PluginProcessLink
+            PluginProcessLinkResultDto(
+                id = processLink.id,
+                processDefinitionId = processLink.processDefinitionId,
+                activityId = processLink.activityId,
+                activityType = processLink.activityType,
+                pluginConfigurationId = processLink.pluginConfigurationId.id,
+                pluginActionDefinitionKey = processLink.pluginActionDefinitionKey,
+                actionProperties = processLink.actionProperties,
+            )
+        }
     }
 
     override fun toProcessLinkCreateRequestDto(deployDto: ProcessLinkDeployDto): PluginProcessLinkCreateDto {
@@ -73,7 +81,7 @@ class PluginProcessLinkMapper(
 
     override fun toProcessLinkUpdateRequestDto(
         deployDto: ProcessLinkDeployDto,
-        existingProcessLinkId: UUID
+        @LoggableResource(resourceType = ProcessLink::class) existingProcessLinkId: UUID
     ): ProcessLinkUpdateRequestDto {
         deployDto as PluginProcessLinkDeployDto
         return PluginProcessLinkUpdateDto(
@@ -85,14 +93,16 @@ class PluginProcessLinkMapper(
     }
 
     override fun toProcessLinkExportResponseDto(processLink: ProcessLink): PluginProcessLinkExportResponseDto {
-        processLink as PluginProcessLink
-        return PluginProcessLinkExportResponseDto(
-            activityId = processLink.activityId,
-            activityType = processLink.activityType,
-            pluginConfigurationId = processLink.pluginConfigurationId.id,
-            pluginActionDefinitionKey = processLink.pluginActionDefinitionKey,
-            actionProperties = processLink.actionProperties,
-        )
+        return withLoggingContext(ProcessLink::class, processLink.id) {
+            processLink as PluginProcessLink
+            PluginProcessLinkExportResponseDto(
+                activityId = processLink.activityId,
+                activityType = processLink.activityType,
+                pluginConfigurationId = processLink.pluginConfigurationId.id,
+                pluginActionDefinitionKey = processLink.pluginActionDefinitionKey,
+                actionProperties = processLink.actionProperties,
+            )
+        }
     }
 
     override fun toNewProcessLink(createRequestDto: ProcessLinkCreateRequestDto): PluginProcessLink {
@@ -112,15 +122,17 @@ class PluginProcessLinkMapper(
         processLinkToUpdate: ProcessLink,
         updateRequestDto: ProcessLinkUpdateRequestDto
     ): PluginProcessLink {
-        updateRequestDto as PluginProcessLinkUpdateDto
-        return PluginProcessLink(
-            id = updateRequestDto.id,
-            processDefinitionId = processLinkToUpdate.processDefinitionId,
-            activityId = processLinkToUpdate.activityId,
-            activityType = processLinkToUpdate.activityType,
-            pluginConfigurationId = PluginConfigurationId.existingId(updateRequestDto.pluginConfigurationId),
-            pluginActionDefinitionKey = updateRequestDto.pluginActionDefinitionKey,
-            actionProperties = updateRequestDto.actionProperties,
-        )
+        return withLoggingContext(ProcessLink::class, processLinkToUpdate.id) {
+            updateRequestDto as PluginProcessLinkUpdateDto
+            PluginProcessLink(
+                id = updateRequestDto.id,
+                processDefinitionId = processLinkToUpdate.processDefinitionId,
+                activityId = processLinkToUpdate.activityId,
+                activityType = processLinkToUpdate.activityType,
+                pluginConfigurationId = PluginConfigurationId.existingId(updateRequestDto.pluginConfigurationId),
+                pluginActionDefinitionKey = updateRequestDto.pluginActionDefinitionKey,
+                actionProperties = updateRequestDto.actionProperties,
+            )
+        }
     }
 }
