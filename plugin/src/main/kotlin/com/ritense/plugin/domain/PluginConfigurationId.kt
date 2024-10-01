@@ -29,6 +29,8 @@ data class PluginConfigurationId(
     val id: UUID
 ): AbstractId<PluginConfigurationId>(){
 
+    override fun toString() = id.toString()
+
     companion object {
 
         fun existingId(id: String): PluginConfigurationId {
