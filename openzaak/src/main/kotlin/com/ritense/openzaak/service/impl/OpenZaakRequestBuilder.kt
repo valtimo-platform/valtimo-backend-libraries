@@ -151,7 +151,7 @@ data class OpenZaakRequestBuilder(
         if (this.acceptHeader == null) {
             headers.accept = listOf(MediaType.APPLICATION_JSON)
         } else {
-            headers.accept = this.acceptHeader
+            headers.accept = this.acceptHeader!!
         }
         headers.set("Accept-Crs", HEADER_DATA)
         headers.set("Content-Crs", HEADER_DATA)
@@ -169,7 +169,7 @@ data class OpenZaakRequestBuilder(
         if (this.acceptHeader == null) {
             headers.accept = listOf(MediaType.APPLICATION_JSON)
         } else {
-            headers.accept = this.acceptHeader
+            headers.accept = this.acceptHeader!!
         }
         headers.contentType = MediaType.APPLICATION_JSON
         headers.set("Accept-Crs", HEADER_DATA)

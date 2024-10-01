@@ -1,0 +1,47 @@
+spring:
+    datasource:
+        type: com.zaxxer.hikari.HikariDataSource
+    liquibase:
+        enabled: false
+    jpa:
+        show_sql: true
+        open-in-view: false
+        properties:
+            hibernate:
+                hbm2ddl.auto: none
+                generate_statistics: false
+                naming-strategy: org.springframework.boot.orm.jpa.hibernate.SpringNamingStrategy
+                cache:
+                    use_second_level_cache: false
+                    use_query_cache: false
+                    region.factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
+                format_sql: true
+                jdbc:
+                    time_zone: UTC
+                connection:
+                    provider_disables_autocommit: true
+        hibernate:
+            ddl-auto: none
+    security:
+        oauth2:
+            resourceserver:
+                jwt:
+                    jwk-set-uri: https://ritense.com/auth/realms/valtimo/protocol/openid-connect/certs
+            client:
+                provider:
+                    keycloakjwt:
+                        issuer-uri: https://ritense.com/auth/realms/valtimo
+                    keycloakapi:
+                        issuer-uri: https://ritense.com/auth/realms/valtimo
+                registration:
+                    keycloakjwt:
+                        client-id: valtimo-console
+                    keycloakapi:
+                        client-id: valtimo-user-m2m-client
+                        client-secret: 6ef6ca16-6b86-482a-a3d9-0561704c1db9
+                        authorization-grant-type: authorization_code
+                        scope: openid
+
+spring-actuator:
+    username: test
+    password: test

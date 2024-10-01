@@ -16,20 +16,19 @@
 
 package com.ritense.valtimo.web.rest.error;
 
+import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import com.ritense.valtimo.contract.exception.DocumentParserException;
 import com.ritense.valtimo.contract.exception.ProcessNotFoundException;
 import com.ritense.valtimo.web.rest.util.HeaderUtil;
 import org.camunda.bpm.engine.impl.form.validator.FormFieldValidatorException;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+@SkipComponentScan
 @ControllerAdvice
-@Order(Ordered.HIGHEST_PRECEDENCE)
 public class CamundaExceptionTranslator {
 
     @ExceptionHandler(ProcessNotFoundException.class)

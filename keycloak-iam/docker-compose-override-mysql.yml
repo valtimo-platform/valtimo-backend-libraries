@@ -1,0 +1,6 @@
+services:
+    db:
+        ports:
+            - "3354:3306"
+        environment:
+            - MYSQL_DATABASE=keycloak-iam-test

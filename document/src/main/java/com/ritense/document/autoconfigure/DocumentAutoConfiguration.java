@@ -53,18 +53,18 @@ import com.ritense.outbox.OutboxService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
-import com.ritense.valtimo.contract.hardening.service.HardeningService;
 import jakarta.persistence.EntityManager;
+import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.zalando.problem.spring.web.advice.AdviceTrait;
 
 @AutoConfiguration
 @EnableJpaRepositories(basePackages = "com.ritense.document.repository")
@@ -244,8 +244,10 @@ public class DocumentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DocumentModuleExceptionTranslator.class)
     public DocumentModuleExceptionTranslator documentModuleExceptionTranslator(
-        Optional<HardeningService> hardeningServiceOptional
+        List<AdviceTrait> adviceTraits
     ) {
-        return new DocumentModuleExceptionTranslator(hardeningServiceOptional);
+        return new DocumentModuleExceptionTranslator(
+            adviceTraits.get(0)
+        );
     }
 }

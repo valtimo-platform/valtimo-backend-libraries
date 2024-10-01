@@ -1,0 +1,16 @@
+{
+    "changesetId": "case-widget-tabs-case-tab-v1",
+    "case-definitions": [
+        {
+            "key": "some-other-case-type",
+            "tabs": [
+                {
+                    "name": "Widget Tab",
+                    "key": "widget-tab",
+                    "type": "widgets",
+                    "contentKey": "-"
+                }
+            ]
+        }
+    ]
+}

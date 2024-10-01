@@ -31,6 +31,7 @@ dockerCompose {
 
 dependencies {
     implementation project(':contract')
+    implementation project(':logging')
     implementation project(':plugin')
 
     implementation "org.springframework.boot:spring-boot-starter-security"
@@ -49,7 +50,6 @@ dependencies {
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinCoroutinesVersion"
-
 
     jar {
         enabled = true

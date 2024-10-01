@@ -40,11 +40,11 @@ class CamundaProcessJsonSchemaDocumentDeploymentServiceJavaIntTest extends BaseI
 
     @Test
     void shouldDeployProcessDocumentLinkFromResourceFolder() {
-        Boolean startableByUser = null;
-        final var processDocumentDefinitions = AuthorizationContext
-            .runWithoutAuthorization(
-                () -> camundaProcessJsonSchemaDocumentAssociationService
-                    .findProcessDocumentDefinitions(DOCUMENT_DEFINITION_NAME, startableByUser));
+        final var processDocumentDefinitions = AuthorizationContext.runWithoutAuthorization(() ->
+            camundaProcessJsonSchemaDocumentAssociationService.findProcessDocumentDefinitions(
+                DOCUMENT_DEFINITION_NAME
+            )
+        );
 
         assertThat(processDocumentDefinitions.size()).isGreaterThanOrEqualTo(1);
         assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().processDefinitionKey()).hasToString(PROCESS_DEFINITION_KEY);
@@ -56,25 +56,53 @@ class CamundaProcessJsonSchemaDocumentDeploymentServiceJavaIntTest extends BaseI
     @Test
     public void findProcessDocumentDefinitionWithStartableByUserTrue() {
         Boolean startableByUser = true;
-        final var processDocumentDefinitions = AuthorizationContext
-            .runWithoutAuthorization(
-                () -> camundaProcessJsonSchemaDocumentAssociationService
-                    .findProcessDocumentDefinitions(DOCUMENT_DEFINITION_NAME, startableByUser));
+        final var processDocumentDefinitions = AuthorizationContext.runWithoutAuthorization(() ->
+            camundaProcessJsonSchemaDocumentAssociationService.findProcessDocumentDefinitions(
+                DOCUMENT_DEFINITION_NAME, startableByUser
+            )
+        );
+
+        assertThat(processDocumentDefinitions.size()).isGreaterThanOrEqualTo(1);
+        assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().processDefinitionKey().toString()).isEqualTo(PROCESS_DEFINITION_KEY);
+        assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().documentDefinitionId().name()).isEqualTo(DOCUMENT_DEFINITION_NAME);
+        assertThat(processDocumentDefinitions.get(0).startableByUser()).isTrue();
+    }
+
+    @Test
+    public void findProcessDocumentDefinitionWithStartableByUserFalse() {
+        Boolean startableByUser = false;
+        final var processDocumentDefinitions = AuthorizationContext.runWithoutAuthorization(() ->
+            camundaProcessJsonSchemaDocumentAssociationService.findProcessDocumentDefinitions(
+                DOCUMENT_DEFINITION_NAME, startableByUser
+            )
+        );
+
+        assertThat(processDocumentDefinitions.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void findProcessDocumentDefinitionWithCanInitializeDocumentTrue() {
+        Boolean canInitializeDocument = true;
+        final var processDocumentDefinitions = AuthorizationContext.runWithoutAuthorization(() ->
+            camundaProcessJsonSchemaDocumentAssociationService.findProcessDocumentDefinitions(
+                DOCUMENT_DEFINITION_NAME, null, canInitializeDocument
+            )
+        );
 
         assertThat(processDocumentDefinitions.size()).isGreaterThanOrEqualTo(1);
         assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().processDefinitionKey().toString()).isEqualTo(PROCESS_DEFINITION_KEY);
         assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().documentDefinitionId().name()).isEqualTo(DOCUMENT_DEFINITION_NAME);
         assertThat(processDocumentDefinitions.get(0).canInitializeDocument()).isTrue();
-        assertThat(processDocumentDefinitions.get(0).startableByUser()).isTrue();
     }
 
     @Test
-    public void findProcessDocumentDefinitionStartableByUserFalse() {
-        Boolean startableByUser = false;
-        final var processDocumentDefinitions = AuthorizationContext
-            .runWithoutAuthorization(
-                () -> camundaProcessJsonSchemaDocumentAssociationService
-                    .findProcessDocumentDefinitions(DOCUMENT_DEFINITION_NAME, startableByUser));
+    public void findProcessDocumentDefinitionWithCanInitializeDocumentFalse() {
+        Boolean canInitializeDocument = false;
+        final var processDocumentDefinitions = AuthorizationContext.runWithoutAuthorization(() ->
+            camundaProcessJsonSchemaDocumentAssociationService.findProcessDocumentDefinitions(
+                DOCUMENT_DEFINITION_NAME, null, canInitializeDocument
+            )
+        );
 
         assertThat(processDocumentDefinitions.size()).isEqualTo(0);
     }
@@ -82,7 +110,7 @@ class CamundaProcessJsonSchemaDocumentDeploymentServiceJavaIntTest extends BaseI
     @Test
     void shouldCopyProcessDocumentLinkToLatestVersino() {
         var result = AuthorizationContext.runWithoutAuthorization(() -> {
-            documentDefinitionService.deploy("" +
+            documentDefinitionService.deploy(
                 "{\n" +
                 "    \"$id\": \"test.schema\",\n" +
                 "    \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
@@ -95,7 +123,8 @@ class CamundaProcessJsonSchemaDocumentDeploymentServiceJavaIntTest extends BaseI
                 "            \"minimum\": 0\n" +
                 "        }\n" +
                 "    }\n" +
-                "}");
+                "}"
+            );
 
             camundaProcessJsonSchemaDocumentAssociationService.createProcessDocumentDefinition(new ProcessDocumentDefinitionRequest(
                 "deadlock-process",
@@ -103,7 +132,7 @@ class CamundaProcessJsonSchemaDocumentDeploymentServiceJavaIntTest extends BaseI
                 true
             ));
 
-            return documentDefinitionService.deploy("" +
+            return documentDefinitionService.deploy(
                 "{\n" +
                 "    \"$id\": \"test.schema\",\n" +
                 "    \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
@@ -116,12 +145,15 @@ class CamundaProcessJsonSchemaDocumentDeploymentServiceJavaIntTest extends BaseI
                 "            \"minimum\": 0\n" +
                 "        }\n" +
                 "    }\n" +
-                "}");
+                "}"
+            );
         });
 
         var association = AuthorizationContext.runWithoutAuthorization(() ->
             camundaProcessJsonSchemaDocumentAssociationService.findProcessDocumentDefinition(
-                new CamundaProcessDefinitionKey("deadlock-process")).get());
+                new CamundaProcessDefinitionKey("deadlock-process")
+            ).orElseThrow()
+        );
 
         assertThat(result.errors()).isEmpty();
         assertThat(result.documentDefinition().id().version()).isEqualTo(2);

@@ -43,6 +43,7 @@ class DocumentenApiPluginFactory(
             objectMapper,
             documentDeleteHandlers,
             documentenApiVersionService,
+            pluginService
         )
     }
 }

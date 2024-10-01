@@ -22,7 +22,10 @@ import com.ritense.case.service.exception.TabAlreadyExistsException
 import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateOrderDto
+import com.ritense.case.web.rest.dto.CaseTabWithMetadataDto
+import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -38,17 +41,19 @@ import org.springframework.web.bind.annotation.RequestMapping
 @Controller
 @SkipComponentScan
 @RequestMapping("/api/management", produces = [APPLICATION_JSON_UTF8_VALUE])
-open class CaseTabManagementResource(
-    private val caseTabService: CaseTabService
+class CaseTabManagementResource(
+    private val caseTabService: CaseTabService,
+    private val userManagementService: UserManagementService,
 ) {
     @RunWithoutAuthorization
     @PostMapping("/v1/case-definition/{caseDefinitionName}/tab")
-    open fun createCaseTab(
-        @PathVariable caseDefinitionName: String,
-        @RequestBody caseTab: CaseTabDto
-    ): ResponseEntity<CaseTabDto> {
+    fun createCaseTab(
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
+        @RequestBody caseTabDto: CaseTabDto
+    ): ResponseEntity<CaseTabWithMetadataDto> {
         return try {
-            ResponseEntity.ok(caseTabService.createCaseTab(caseDefinitionName, caseTab))
+            val caseTab = caseTabService.createCaseTab(caseDefinitionName, caseTabDto)
+            ResponseEntity.ok(CaseTabWithMetadataDto.of(caseTab, userManagementService))
         } catch (ex: TabAlreadyExistsException) {
             ResponseEntity.status(HttpStatus.CONFLICT).build()
         }
@@ -56,19 +61,19 @@ open class CaseTabManagementResource(
 
     @RunWithoutAuthorization
     @PutMapping("/v1/case-definition/{caseDefinitionName}/tab")
-    open fun updateOrderCaseTab(
-        @PathVariable caseDefinitionName: String,
+    fun updateOrderCaseTab(
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @RequestBody caseTabDtos: List<CaseTabUpdateOrderDto>
-    ): ResponseEntity<List<CaseTabDto>> {
+    ): ResponseEntity<List<CaseTabWithMetadataDto>> {
         val caseTabs = caseTabService.updateCaseTabs(caseDefinitionName, caseTabDtos)
-            .map { CaseTabDto.of(it) }
+            .map { CaseTabWithMetadataDto.of(it, userManagementService) }
         return ResponseEntity.ok(caseTabs)
     }
 
     @RunWithoutAuthorization
     @PutMapping("/v1/case-definition/{caseDefinitionName}/tab/{tabKey}")
-    open fun updateCaseTab(
-        @PathVariable caseDefinitionName: String,
+    fun updateCaseTab(
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @PathVariable tabKey: String,
         @RequestBody caseTab: CaseTabUpdateDto
     ): ResponseEntity<Unit> {
@@ -78,8 +83,8 @@ open class CaseTabManagementResource(
 
     @RunWithoutAuthorization
     @DeleteMapping("/v1/case-definition/{caseDefinitionName}/tab/{tabKey}")
-    open fun deleteCaseTab(
-        @PathVariable caseDefinitionName: String,
+    fun deleteCaseTab(
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @PathVariable tabKey: String
     ): ResponseEntity<Unit> {
         caseTabService.deleteCaseTab(caseDefinitionName, tabKey)
@@ -88,10 +93,21 @@ open class CaseTabManagementResource(
 
     @RunWithoutAuthorization
     @GetMapping("/v1/case-definition/{caseDefinitionName}/tab")
-    open fun getCaseTabs(
-        @PathVariable caseDefinitionName: String
-    ): ResponseEntity<List<CaseTabDto>> {
-        val caseTabs = caseTabService.getCaseTabs(caseDefinitionName).map { CaseTabDto.of(it) }
+    fun getCaseTabs(
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String
+    ): ResponseEntity<List<CaseTabWithMetadataDto>> {
+        val caseTabs = caseTabService.getCaseTabs(caseDefinitionName)
+            .map { CaseTabWithMetadataDto.of(it, userManagementService) }
         return ResponseEntity.ok(caseTabs)
+    }
+
+    @RunWithoutAuthorization
+    @GetMapping("/v1/case-definition/{caseDefinitionName}/tab/{tabKey}")
+    fun getCaseTab(
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
+        @PathVariable tabKey: String
+    ): ResponseEntity<CaseTabWithMetadataDto> {
+        val caseTab = caseTabService.getCaseTab(caseDefinitionName, tabKey)
+        return ResponseEntity.ok(CaseTabWithMetadataDto.of(caseTab, userManagementService))
     }
 }

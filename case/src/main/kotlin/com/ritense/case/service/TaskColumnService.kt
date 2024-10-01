@@ -32,12 +32,16 @@ import com.ritense.case.web.rest.mapper.TaskListColumnMapper
 import com.ritense.document.domain.DocumentDefinition
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valueresolver.ValueResolverService
-import kotlin.jvm.optionals.getOrNull
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.zalando.problem.Status
+import kotlin.jvm.optionals.getOrNull
 
 @Transactional
+@Service
+@SkipComponentScan
 class TaskColumnService(
     private val taskListColumnRepository: TaskListColumnRepository,
     private val documentDefinitionService: DocumentDefinitionService,

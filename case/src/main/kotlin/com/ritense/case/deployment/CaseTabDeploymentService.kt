@@ -23,15 +23,19 @@ import com.ritense.case.domain.CaseTabType
 import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.repository.CaseTabSpecificationHelper.Companion.byCaseDefinitionName
 import com.ritense.case.service.CaseTabService
-import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
+import com.ritense.logging.withLoggingContext
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
 import com.ritense.valtimo.changelog.service.ChangelogService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.springframework.context.event.EventListener
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-open class CaseTabDeploymentService(
+@Service
+@SkipComponentScan
+class CaseTabDeploymentService(
     private val objectMapper: ObjectMapper,
     private val caseTabRepository: CaseTabRepository,
     private val changelogService: ChangelogService,
@@ -61,7 +65,7 @@ open class CaseTabDeploymentService(
 
     @Transactional
     @EventListener(DocumentDefinitionDeployedEvent::class)
-    open fun createCaseTabs(event: DocumentDefinitionDeployedEvent) {
+    fun createCaseTabs(event: DocumentDefinitionDeployedEvent) {
         if (event.documentDefinition().id().version() == 1L) {
             deploy(listOf(CaseDefinitionsTabCollection(event.documentDefinition().id().name(), STANDARD_CASE_TABS)))
         }
@@ -69,13 +73,20 @@ open class CaseTabDeploymentService(
 
     private fun deploy(caseDefinitions: List<CaseDefinitionsTabCollection>) {
         runWithoutAuthorization {
-            caseDefinitions.forEach {
-                caseTabRepository.deleteAll(caseTabRepository.findAll(byCaseDefinitionName(it.key)))
-                it.tabs.map { caseTabDto ->
-                    caseTabService.createCaseTab(
-                        it.key,
-                        caseTabDto
-                    )
+            caseDefinitions.forEach { caseDefinition ->
+                withLoggingContext("jsonSchemaDocumentName" to caseDefinition.key) {
+                    caseTabRepository.deleteAll(caseTabRepository.findAll(byCaseDefinitionName(caseDefinition.key)))
+                    caseDefinition.tabs.map { caseTabDto ->
+                        caseTabService.createCaseTab(
+                            caseDefinition.key,
+                            com.ritense.case.web.rest.dto.CaseTabDto(
+                                key = caseTabDto.key,
+                                name = caseTabDto.name,
+                                type = caseTabDto.type,
+                                contentKey = caseTabDto.contentKey
+                            )
+                        )
+                    }
                 }
             }
         }

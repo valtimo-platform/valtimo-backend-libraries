@@ -16,6 +16,7 @@
 
 package com.ritense.notificatiesapi
 
+import com.ritense.logging.withLoggingContext
 import com.ritense.notificatiesapi.client.NotificatiesApiClient
 import com.ritense.notificatiesapi.domain.Abonnement
 import com.ritense.notificatiesapi.domain.Kanaal
@@ -26,6 +27,7 @@ import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.EventType
+import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.valtimo.contract.validation.Url
 import kotlinx.coroutines.launch
@@ -60,8 +62,12 @@ class NotificatiesApiPlugin(
     lateinit var authenticationPluginConfiguration: NotificatiesApiAuthentication
 
     @PluginEvent(invokedOn = [EventType.CREATE])
-    fun createAbonnement() {
+    fun createAbonnement() = withLoggingContext(
+        PluginConfiguration::class.java.canonicalName to notificatiesApiConfigurationId.toString()
+    ) {
         val authKey = createRandomKey()
+
+        logger.debug { "Creating new abonnement for Notificaties API plugin configuration with id '${notificatiesApiConfigurationId.id}'" }
 
         ensureKanalenExist(DEFAULT_KANALEN_NAMES)
         runBlocking {
@@ -82,11 +88,17 @@ class NotificatiesApiPlugin(
                     auth = it.auth ?: authKey
                 )
             )
+
+            logger.info { "Abonnement created and saved with URL '${it.url}' for Notificaties API configuration with id '${notificatiesApiConfigurationId.id}'" }
         }
     }
 
     @PluginEvent(invokedOn = [EventType.DELETE])
-    fun deleteAbonnement() {
+    fun deleteAbonnement() = withLoggingContext(
+        PluginConfiguration::class.java.canonicalName to notificatiesApiConfigurationId.toString()
+    )
+    {
+        logger.debug { "Deleting abonnement for Notificaties API configuration with id '${notificatiesApiConfigurationId.id}'" }
 
         notificatiesApiAbonnementLinkRepository.findByIdOrNull(notificatiesApiConfigurationId)
             ?.let {
@@ -98,30 +110,43 @@ class NotificatiesApiPlugin(
                             it.url.substringAfterLast("/")
                         )
                     }
+                    logger.info { "Abonnement with url '${it.url}' successfully deleted for Notificaties API configuration with id '${notificatiesApiConfigurationId.id}'" }
                 } catch (e: Exception) {
-                    logger.warn(e) { "Abonnement could not be deleted in Notificaties API" }
+                    logger.warn(e) { "Abonnement with url '${it.url}' could not be deleted for Notificaties API configuration with id '${notificatiesApiConfigurationId.id}'" }
                 }
                 notificatiesApiAbonnementLinkRepository.deleteById(notificatiesApiConfigurationId)
+                logger.info { "Abonnement link deleted for Notificaties API configuration with id '${notificatiesApiConfigurationId.id}'" }
             }
             ?: logger.warn {
-                "Abonnement link was not found in the NotificatiesApiAbonnementLinkRepository" +
-                    "for plugin configuration with id: ${notificatiesApiConfigurationId.id}"
+                "Abonnement link was not found for Notificaties API configuration with id '${notificatiesApiConfigurationId.id}'"
             }
+
     }
 
     @PluginEvent(invokedOn = [EventType.UPDATE])
-    fun updateAbonnement() {
+    fun updateAbonnement() = withLoggingContext(
+        PluginConfiguration::class.java.canonicalName to notificatiesApiConfigurationId.toString()
+    )
+    {
+        logger.debug { "Updating abonnement for Notificaties API configuration with id '${notificatiesApiConfigurationId.id}'" }
         deleteAbonnement()
         createAbonnement()
     }
 
-    fun ensureKanalenExist(kanalen: Set<String>): Unit = runBlocking {
-        val existingKanalen = client.getKanalen(authenticationPluginConfiguration, url).map { kanaal -> kanaal.naam }
+
+    fun ensureKanalenExist(kanalen: Set<String>) = runBlocking {
+        logger.debug { "Ensuring Notificaties API kanalen '$kanalen' exist for authentication configuration with id '${authenticationPluginConfiguration.configurationId.id}'" }
+
+        val existingKanalen = client.getKanalen(authenticationPluginConfiguration, url).map { it.naam }
 
         kanalen
             .filter { !existingKanalen.contains(it) }
             .forEach { kanaalNaam ->
-                launch { client.createKanaal(authenticationPluginConfiguration, url, Kanaal(naam = kanaalNaam)) }
+                logger.debug { "Attempting to create Notificaties API kanaal with name '$kanaalNaam' for authentication configuration with id '${authenticationPluginConfiguration.configurationId.id}'" }
+                launch {
+                    client.createKanaal(authenticationPluginConfiguration, url, Kanaal(naam = kanaalNaam))
+                    logger.info { "Successfully created Notificaties API kanaal with name '$kanaalNaam' for authentication configuration with id '${authenticationPluginConfiguration.configurationId.id}'" }
+                }
             }
     }
 

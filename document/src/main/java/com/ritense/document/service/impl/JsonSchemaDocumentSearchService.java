@@ -17,6 +17,7 @@
 package com.ritense.document.service.impl;
 
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
+import static com.ritense.logging.LoggingContextKt.withLoggingContext;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
 
@@ -34,6 +35,7 @@ import com.ritense.document.domain.search.SearchWithConfigRequest;
 import com.ritense.document.event.DocumentsListed;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.SearchFieldService;
+import com.ritense.logging.LoggableResource;
 import com.ritense.outbox.OutboxService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
@@ -124,14 +126,20 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         final SearchRequest searchRequest,
         final Pageable pageable
     ) {
-        return search(
-            (cb, query, documentRoot) -> buildQueryWhere(searchRequest, cb, query, documentRoot),
-            pageable
+        return withLoggingContext("documentDefinitionName", searchRequest.getDocumentDefinitionName(), () ->
+            search(
+                (cb, query, documentRoot) -> buildQueryWhere(searchRequest, cb, query, documentRoot),
+                pageable
+            )
         );
     }
 
     @Override
-    public Page<JsonSchemaDocument> search(String documentDefinitionName, SearchWithConfigRequest searchWithConfigRequest, Pageable pageable) {
+    public Page<JsonSchemaDocument> search(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName,
+        SearchWithConfigRequest searchWithConfigRequest,
+        Pageable pageable
+    ) {
         ZoneOffset zoneOffset = RequestHelper.getZoneOffset();
         var searchFieldMap = searchFieldService.getSearchFields(documentDefinitionName).stream()
             .collect(toMap(SearchField::getKey, searchField -> searchField));
@@ -150,7 +158,11 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     }
 
     @Override
-    public Page<JsonSchemaDocument> search(String documentDefinitionName, AdvancedSearchRequest advancedSearchRequest, Pageable pageable) {
+    public Page<JsonSchemaDocument> search(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName,
+        AdvancedSearchRequest advancedSearchRequest,
+        Pageable pageable
+    ) {
         SearchRequestValidator.validate(advancedSearchRequest);
         return search(
             (cb, query, documentRoot) -> buildQueryWhere(documentDefinitionName, advancedSearchRequest, cb, query, documentRoot),
@@ -159,7 +171,10 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     }
 
     @Override
-    public Long count(String documentDefinitionName, AdvancedSearchRequest advancedSearchRequest) {
+    public Long count(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName,
+        AdvancedSearchRequest advancedSearchRequest
+    ) {
         return count(
             (cb, query, documentRoot) -> buildQueryWhere(documentDefinitionName, advancedSearchRequest, cb, query, documentRoot)
         );
@@ -190,25 +205,15 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         return new PageImpl<>(documents, pageable, count(queryWhereBuilder));
     }
 
-    private Long count(
-        QueryWhereBuilder queryWhereBuilder
-    ) {
+    private Long count(QueryWhereBuilder queryWhereBuilder) {
         final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         final CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
         Root<JsonSchemaDocument> countRoot = countQuery.from(JsonSchemaDocument.class);
-        countQuery.select(cb.count(countRoot));
+        countQuery.select(cb.countDistinct(countRoot));
         queryWhereBuilder.apply(cb, countQuery, countRoot);
 
         // TODO: Should be turned into a subquery, and then do a count over the results from the subquery.
-        List<Long> countResultList = entityManager.createQuery(countQuery).getResultList();
-
-        long count = 0L;
-
-        if (!countResultList.isEmpty()) {
-            count = countResultList.size();
-        }
-
-        return count;
+        return entityManager.createQuery(countQuery).getSingleResult();
     }
 
     private void buildQueryWhere(SearchRequest searchRequest, CriteriaBuilder cb, CriteriaQuery<?> query, Root<JsonSchemaDocument> documentRoot) {

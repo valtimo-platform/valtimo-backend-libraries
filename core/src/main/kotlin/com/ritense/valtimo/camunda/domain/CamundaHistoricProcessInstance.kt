@@ -24,72 +24,88 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import jakarta.persistence.Transient
+import org.hibernate.annotations.Immutable
 import java.time.LocalDateTime
 
+@Immutable
 @Entity
 @Table(name = "ACT_HI_PROCINST")
 class CamundaHistoricProcessInstance(
 
     @Id
-    @Column(name = "ID_")
+    @Column(name = "ID_", insertable = false, updatable = false)
     val id: String,
 
-    @Column(name = "PROC_INST_ID_")
+    @Column(name = "PROC_INST_ID_", insertable = false, updatable = false)
     val processInstanceId: String?,
 
-    @Column(name = "BUSINESS_KEY_")
+    @Column(name = "BUSINESS_KEY_", insertable = false, updatable = false)
     val businessKey: String?,
 
-    @Column(name = "PROC_DEF_KEY_")
+    @Column(name = "PROC_DEF_KEY_", insertable = false, updatable = false)
     val processDefinitionKey: String?,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PROC_DEF_ID_")
+    @JoinColumn(name = "PROC_DEF_ID_", insertable = false, updatable = false)
     val processDefinition: CamundaProcessDefinition?,
 
-    @Column(name = "START_TIME_")
+    @Column(name = "START_TIME_", insertable = false, updatable = false)
     val startTime: LocalDateTime?,
 
-    @Column(name = "END_TIME_")
+    @Column(name = "END_TIME_", insertable = false, updatable = false)
     val endTime: LocalDateTime?,
 
-    @Column(name = "REMOVAL_TIME_")
+    @Column(name = "REMOVAL_TIME_", insertable = false, updatable = false)
     val removalTime: LocalDateTime?,
 
-    @Column(name = "DURATION_")
+    @Column(name = "DURATION_", insertable = false, updatable = false)
     val durationInMillis: Long?,
 
-    @Column(name = "START_USER_ID_")
+    @Column(name = "START_USER_ID_", insertable = false, updatable = false)
     val startUserId: String?,
 
-    @Column(name = "START_ACT_ID_")
+    @Column(name = "START_ACT_ID_", insertable = false, updatable = false)
     val startActivityId: String?,
 
-    @Column(name = "END_ACT_ID_")
+    @Column(name = "END_ACT_ID_", insertable = false, updatable = false)
     val endActivityId: String?,
 
-    @Column(name = "SUPER_PROCESS_INSTANCE_ID_")
+    @Column(name = "SUPER_PROCESS_INSTANCE_ID_", insertable = false, updatable = false)
     val superProcessInstanceId: String?,
 
-    @Column(name = "ROOT_PROC_INST_ID_")
+    @Column(name = "ROOT_PROC_INST_ID_", insertable = false, updatable = false)
     val rootProcessInstanceId: String?,
 
-    @Column(name = "SUPER_CASE_INSTANCE_ID_")
+    @Column(name = "SUPER_CASE_INSTANCE_ID_", insertable = false, updatable = false)
     val superCaseInstanceId: String?,
 
-    @Column(name = "CASE_INST_ID_")
+    @Column(name = "CASE_INST_ID_", insertable = false, updatable = false)
     val caseInstanceId: String?,
 
-    @Column(name = "DELETE_REASON_")
+    @Column(name = "DELETE_REASON_", insertable = false, updatable = false)
     val deleteReason: String?,
 
-    @Column(name = "TENANT_ID_")
+    @Column(name = "TENANT_ID_", insertable = false, updatable = false)
     val tenantId: String?,
 
-    @Column(name = "STATE_")
+    @Column(name = "STATE_", insertable = false, updatable = false)
     val state: String?
 
 ) {
     @Transient
     fun getProcessDefinitionId() = processDefinition!!.id
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is CamundaHistoricProcessInstance) return false
+
+        if (id != other.id) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
+
+
 }

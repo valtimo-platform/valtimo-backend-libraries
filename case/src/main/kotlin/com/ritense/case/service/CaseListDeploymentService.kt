@@ -20,6 +20,8 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.case.web.rest.dto.CaseListColumnDto
+import com.ritense.logging.withLoggingContext
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import mu.KotlinLogging
 import org.everit.json.schema.loader.SchemaLoader
 import org.json.JSONArray
@@ -29,12 +31,15 @@ import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.core.io.Resource
 import org.springframework.core.io.support.ResourcePatternResolver
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.StreamUtils
 import java.io.FileNotFoundException
 import java.nio.charset.StandardCharsets
 
 @Transactional
+@Service
+@SkipComponentScan
 class CaseListDeploymentService(
     private val resourcePatternResolver: ResourcePatternResolver,
     private val objectMapper: ObjectMapper,
@@ -49,10 +54,13 @@ class CaseListDeploymentService(
             val resources = loadCaseListResources()
             resources.forEach { resource ->
                 if (resource.filename != null) {
-                    deployColumns(
-                        caseDefinitionName = resource.filename!!.substringBeforeLast("."),
-                        jsonContent = StreamUtils.copyToString(resource.inputStream, StandardCharsets.UTF_8)
-                    )
+                    val caseDefinitionName = resource.filename!!.substringBeforeLast(".")
+                    withLoggingContext("jsonSchemaDocumentName" to caseDefinitionName) {
+                        deployColumns(
+                            caseDefinitionName = caseDefinitionName,
+                            jsonContent = StreamUtils.copyToString(resource.inputStream, StandardCharsets.UTF_8)
+                        )
+                    }
                 }
             }
         } catch (e: Exception) {

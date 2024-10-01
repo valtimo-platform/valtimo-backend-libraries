@@ -15,20 +15,25 @@
  */
 package com.ritense.document.service
 
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot
+import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshotId
+import com.ritense.document.repository.DocumentSnapshotRepository
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
+import java.util.UUID
 
 class JsonSchemaDocumentSnapshotSpecification(
-        authRequest: AuthorizationRequest<JsonSchemaDocumentSnapshot>,
-        permissions: List<Permission>,
-        private val queryDialectHelper: QueryDialectHelper
+    authRequest: AuthorizationRequest<JsonSchemaDocumentSnapshot>,
+    permissions: List<Permission>,
+    private val queryDialectHelper: QueryDialectHelper,
+    private val repository: DocumentSnapshotRepository<JsonSchemaDocumentSnapshot>
 ) : AuthorizationSpecification<JsonSchemaDocumentSnapshot>(authRequest, permissions) {
 
     override fun toPredicate(
@@ -52,7 +57,7 @@ class JsonSchemaDocumentSnapshotSpecification(
                     root,
                     query,
                     criteriaBuilder,
-                    authRequest.resourceType,
+                    authRequest,
                     queryDialectHelper
                 )
             }
@@ -60,6 +65,8 @@ class JsonSchemaDocumentSnapshotSpecification(
     }
 
     override fun identifierToEntity(identifier: String): JsonSchemaDocumentSnapshot {
-        TODO("Not implemented yet")
+        return runWithoutAuthorization {
+            repository.findById(JsonSchemaDocumentSnapshotId.existingId(UUID.fromString(identifier))).get()
+        }
     }
 }

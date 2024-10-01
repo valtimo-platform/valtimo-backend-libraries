@@ -71,6 +71,19 @@ class PluginProcessLinkMapper(
         )
     }
 
+    override fun toProcessLinkUpdateRequestDto(
+        deployDto: ProcessLinkDeployDto,
+        existingProcessLinkId: UUID
+    ): ProcessLinkUpdateRequestDto {
+        deployDto as PluginProcessLinkDeployDto
+        return PluginProcessLinkUpdateDto(
+            id = existingProcessLinkId,
+            pluginConfigurationId = deployDto.pluginConfigurationId,
+            pluginActionDefinitionKey = deployDto.pluginActionDefinitionKey,
+            actionProperties = deployDto.actionProperties,
+        )
+    }
+
     override fun toProcessLinkExportResponseDto(processLink: ProcessLink): PluginProcessLinkExportResponseDto {
         processLink as PluginProcessLink
         return PluginProcessLinkExportResponseDto(

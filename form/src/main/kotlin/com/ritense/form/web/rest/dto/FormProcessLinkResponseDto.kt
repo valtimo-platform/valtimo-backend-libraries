@@ -16,6 +16,8 @@
 
 package com.ritense.form.web.rest.dto
 
+import com.ritense.form.domain.FormSizes
+import com.ritense.form.domain.FormDisplayType
 import com.ritense.form.mapper.FormProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
@@ -28,5 +30,7 @@ data class FormProcessLinkResponseDto(
     override val activityType: ActivityTypeWithEventName,
     override val processLinkType: String = PROCESS_LINK_TYPE_FORM,
     val formDefinitionId: UUID,
-    val viewModelEnabled: Boolean
+    val viewModelEnabled: Boolean,
+    val formDisplayType: FormDisplayType,
+    val formSize: FormSizes,
 ) : ProcessLinkResponseDto

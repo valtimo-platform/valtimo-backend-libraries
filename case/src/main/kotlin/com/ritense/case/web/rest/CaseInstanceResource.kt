@@ -19,6 +19,7 @@ package com.ritense.case.web.rest
 import com.ritense.case.service.CaseInstanceService
 import com.ritense.case.web.rest.dto.CaseListRowDto
 import com.ritense.document.domain.search.SearchWithConfigRequest
+import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.data.domain.Page
@@ -39,7 +40,7 @@ class CaseInstanceResource(
 
     @PostMapping("/v1/case/{caseDefinitionName}/search")
     fun search(
-        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
         @RequestBody searchRequest: SearchWithConfigRequest,
         pageable: Pageable
     ): ResponseEntity<Page<CaseListRowDto>> {

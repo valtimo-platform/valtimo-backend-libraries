@@ -65,5 +65,8 @@ services:
 #   url: jdbc:mysql://localhost:3349/localization-test
 #   url: jdbc:mysql://localhost:3351/zaakdetails-test
 #   url: jdbc:mysql://localhost:3352/form-view-model-test
-#   url: jdbc:mysql://localhost:3352/command-handling-test
+#   url: jdbc:mysql://localhost:3353/command-handling-test
+#   url: jdbc:mysql://localhost:3354/keycloak-iam-test
+#   url: jdbc:mysql://localhost:3355/logging-test
+#   url: jdbc:mysql://localhost:3356/process-link-url-test
 #   url: localhost:55672 <--rabbitmq

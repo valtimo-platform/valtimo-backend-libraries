@@ -20,13 +20,23 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.ritense.documentenapi.DocumentenApiPlugin.Companion.PLUGIN_KEY
-import com.ritense.documentenapi.client.*
+import com.ritense.documentenapi.client.CreateDocumentRequest
+import com.ritense.documentenapi.client.DocumentInformatieObject
+import com.ritense.documentenapi.client.DocumentStatusType
+import com.ritense.documentenapi.client.DocumentenApiClient
+import com.ritense.documentenapi.client.PatchDocumentRequest
 import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.documentenapi.service.DocumentDeleteHandler
 import com.ritense.documentenapi.service.DocumentenApiVersionService
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
-import com.ritense.plugin.annotation.*
+import com.ritense.plugin.annotation.Plugin
+import com.ritense.plugin.annotation.PluginAction
+import com.ritense.plugin.annotation.PluginActionProperty
+import com.ritense.plugin.annotation.PluginEvent
+import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.EventType
+import com.ritense.plugin.domain.PluginConfiguration
+import com.ritense.plugin.service.PluginService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
@@ -37,13 +47,13 @@ import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.hibernate.validator.constraints.Length
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.web.util.UriComponentsBuilder
 import java.io.InputStream
 import java.net.URI
 import java.time.LocalDate
+import java.util.UUID
 
 @Plugin(
     key = PLUGIN_KEY,
@@ -57,6 +67,7 @@ class DocumentenApiPlugin(
     private val objectMapper: ObjectMapper,
     private val documentDeleteHandlers: List<DocumentDeleteHandler>,
     private val documentenApiVersionService: DocumentenApiVersionService,
+    private val pluginService: PluginService
 ) {
     @Url
     @PluginProperty(key = URL_PROPERTY, secret = false)
@@ -95,7 +106,7 @@ class DocumentenApiPlugin(
         val contentAsInputStream = storageService.getResourceContentAsInputStream(documentLocation)
         val metadata = storageService.getResourceMetadata(documentLocation)
 
-        val documentCreateResult = storeDocument(
+        storeDocument(
             execution = execution,
             metadata = metadata,
             titel = title,
@@ -105,11 +116,9 @@ class DocumentenApiPlugin(
             bestandsnaam = fileName,
             inhoudAsInputStream = contentAsInputStream,
             beschrijving = description,
-            informatieobjecttype = informatieobjecttype
+            informatieobjecttype = informatieobjecttype,
+            storedDocumentUrl = storedDocumentUrl
         )
-
-        publishCreateDocumentEvent(documentCreateResult)
-        execution.setVariable(storedDocumentUrl, documentCreateResult.url)
     }
 
     @PluginAction(
@@ -219,7 +228,10 @@ class DocumentenApiPlugin(
         return client.getInformatieObject(authenticationPluginConfiguration, objectUrl)
     }
 
-    fun getInformatieObjecten(documentSearchRequest: DocumentSearchRequest, pageable: Pageable): Page<DocumentInformatieObject> {
+    fun getInformatieObjecten(
+        documentSearchRequest: DocumentSearchRequest,
+        pageable: Pageable
+    ): Page<DocumentInformatieObject> {
         return client.getInformatieObjecten(authenticationPluginConfiguration, url, pageable, documentSearchRequest)
     }
 
@@ -228,13 +240,11 @@ class DocumentenApiPlugin(
         client.deleteInformatieObject(authenticationPluginConfiguration, objectUrl)
     }
 
-    fun createInformatieObjectUrl(objectId: String): URI {
-        return UriComponentsBuilder
-            .fromUri(url)
-            .pathSegment("enkelvoudiginformatieobjecten", objectId)
-            .build()
-            .toUri()
-    }
+    fun createInformatieObjectUrl(objectId: String) = UriComponentsBuilder
+        .fromUri(url)
+        .pathSegment("enkelvoudiginformatieobjecten", objectId)
+        .build()
+        .toUri()
 
     fun modifyInformatieObject(documentUrl: URI, patchDocumentRequest: PatchDocumentRequest): DocumentInformatieObject {
         val documentLock = client.lockInformatieObject(authenticationPluginConfiguration, documentUrl)
@@ -250,6 +260,7 @@ class DocumentenApiPlugin(
 
     @PluginEvent(invokedOn = [EventType.CREATE, EventType.UPDATE])
     fun onSave() {
+        logger.info { "Documenten API plugin saved" }
         if (apiVersion != null && !documentenApiVersionService.isValidVersion(apiVersion!!)) {
             throw ValidationException("Unknown API version '$apiVersion'.")
         }
@@ -293,6 +304,8 @@ class DocumentenApiPlugin(
             formaat = getMetadataField(metadata, FORMAAT_FIELD),
             trefwoorden = trefwoorden,
         )
+        logger.info { "Store document $request" }
+        val documentCreateResult = client.storeDocument(authenticationPluginConfiguration, url, request)
 
         return client.storeDocument(authenticationPluginConfiguration, url, request)
     }
@@ -355,6 +368,31 @@ class DocumentenApiPlugin(
             documentCreateResult.beginRegistratie
         )
         applicationEventPublisher.publishEvent(event)
+        execution.setVariable(storedDocumentUrl, documentCreateResult.url)
+        val documentId = documentCreateResult.url.substringAfterLast('/')
+        execution.setVariable(DOCUMENT_ID_PROCESS_VAR, documentId)
+        try {
+            val test = URI.create(documentCreateResult.url)
+            val pluginConfiguration = getDocumentenApiPluginByInformatieobjectUrl(test)
+            execution.setVariable(DOWNLOAD_URL_PROCESS_VAR, createDownloadUrl(pluginConfiguration.id.id, documentId))
+        } catch (e: Exception) {
+            throw IllegalStateException(
+                "Failed to set the $DOWNLOAD_URL_PROCESS_VAR variable in the DelegateExecution", e
+            )
+        }
+    }
+
+    private fun getDocumentenApiPluginByInformatieobjectUrl(informatieobjectUrl: URI): PluginConfiguration {
+        return checkNotNull(
+            pluginService.findPluginConfiguration(
+                DocumentenApiPlugin::class.java,
+                findConfigurationByUrl(informatieobjectUrl)
+            )
+        ) { "Could not find ${DocumentenApiPlugin::class.simpleName} configuration for informatieobjectUrl: $informatieobjectUrl" }
+    }
+
+    private fun createDownloadUrl(pluginId: UUID, documentId: String): String {
+        return "/api/v1/documenten-api/${pluginId}/files/${documentId}/download"
     }
 
     private fun <T> getMetadataField(metadata: Map<String, Any?>, field: List<String>): T? =
@@ -381,6 +419,8 @@ class DocumentenApiPlugin(
         const val DEFAULT_LANGUAGE = "nld"
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"
         const val DOCUMENT_URL_PROCESS_VAR = "documentUrl"
+        const val DOCUMENT_ID_PROCESS_VAR = "documentId"
+        const val DOWNLOAD_URL_PROCESS_VAR = "downloadUrl"
 
         val BESTANDSNAAM_FIELD = listOf("filename", "bestandsnaam", MetadataType.FILE_NAME.key)
         val TITEL_FIELD = listOf("title", "titel") + BESTANDSNAAM_FIELD
@@ -396,10 +436,10 @@ class DocumentenApiPlugin(
         val FORMAAT_FIELD = listOf("contentType", "formaat")
         val TREFWOORDEN_FIELD = listOf("trefwoorden")
 
-        val logger = KotlinLogging.logger {  }
+        val logger = KotlinLogging.logger { }
 
         fun findConfigurationByUrl(url: URI) = { properties: JsonNode ->
-            url.toString().startsWith(properties.get(URL_PROPERTY).textValue())
+            url.toString().startsWith(properties[URL_PROPERTY].textValue())
         }
     }
 }

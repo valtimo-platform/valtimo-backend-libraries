@@ -34,41 +34,47 @@ import org.springframework.stereotype.Repository;
 public interface ProcessDocumentDefinitionRepository extends
     JpaRepository<CamundaProcessJsonSchemaDocumentDefinition, ProcessDocumentDefinitionId> {
 
-    @Query("" +
+    @Query(
         "SELECT  pdd " +
         "FROM    CamundaProcessJsonSchemaDocumentDefinition pdd " +
         "WHERE   pdd.processDocumentDefinitionId.documentDefinitionId.version = ( " +
         "   SELECT  MAX(dd.id.version) " +
         "   FROM    JsonSchemaDocumentDefinition dd " +
         "   WHERE   dd.id.name = pdd.id.documentDefinitionId.name " +
-        ")")
+        ")"
+    )
     Page<CamundaProcessJsonSchemaDocumentDefinition> findAllByLatestDocumentDefinitionVersion(Pageable pageable);
 
-    @Query("" +
+    @Query(
         "SELECT  pdd " +
         "FROM    CamundaProcessJsonSchemaDocumentDefinition pdd " +
         "WHERE   pdd.processDocumentDefinitionId.documentDefinitionId.name = :documentDefinitionName " +
         "AND     pdd.processDocumentDefinitionId.documentDefinitionId.version = ( " +
         "   SELECT  MAX(dd.id.version) " +
         "   FROM    JsonSchemaDocumentDefinition dd " +
-        "   WHERE   dd.id.name = pdd.id.documentDefinitionId.name " +        ") " +
-        "AND (:startableByUser IS NULL OR pdd.startableByUser = :startableByUser)")
+        "   WHERE   dd.id.name = pdd.id.documentDefinitionId.name " +
+        ") " +
+        "AND (:startableByUser IS NULL OR pdd.startableByUser = :startableByUser)" +
+        "AND (:canInitializeDocument IS NULL OR pdd.canInitializeDocument = :canInitializeDocument)"
+    )
     List<CamundaProcessJsonSchemaDocumentDefinition> findAll(
         @Param("documentDefinitionName") String documentDefinitionName,
-        @Nullable @Param("startableByUser") Boolean startableByUser
+        @Nullable @Param("startableByUser") Boolean startableByUser,
+        @Nullable @Param("canInitializeDocument") Boolean canInitializeDocument
     );
 
-    @Query("" +
+    @Query(
         "SELECT  pdd " +
         "FROM    CamundaProcessJsonSchemaDocumentDefinition pdd " +
         "WHERE   pdd.processDocumentDefinitionId.documentDefinitionId.name = :documentDefinitionName " +
-        "AND     pdd.processDocumentDefinitionId.documentDefinitionId.version = :documentDefinitionVersion")
+        "AND     pdd.processDocumentDefinitionId.documentDefinitionId.version = :documentDefinitionVersion"
+    )
     List<CamundaProcessJsonSchemaDocumentDefinition> findAllByDocumentDefinitionNameAndVersion(
         @Param("documentDefinitionName") String documentDefinitionName,
         @Param("documentDefinitionVersion") long documentDefinitionVersion
     );
 
-    @Query("" +
+    @Query(
         "SELECT  pdd " +
         "FROM    CamundaProcessJsonSchemaDocumentDefinition pdd " +
         "WHERE   pdd.processDocumentDefinitionId.processDefinitionKey.key = :processDefinitionKey " +
@@ -76,12 +82,13 @@ public interface ProcessDocumentDefinitionRepository extends
         "   SELECT  MAX(dd.id.version) " +
         "   FROM    JsonSchemaDocumentDefinition dd " +
         "   WHERE   dd.id.name = pdd.id.documentDefinitionId.name " +
-        ")")
+        ")"
+    )
     List<CamundaProcessJsonSchemaDocumentDefinition> findAllByProcessDefinitionKeyAndLatestDocumentDefinitionVersion(
         @Param("processDefinitionKey") String processDefinitionKey
     );
 
-    @Query("" +
+    @Query(
         "SELECT  pdd " +
         "FROM    CamundaProcessJsonSchemaDocumentDefinition pdd " +
         "WHERE   pdd.processDocumentDefinitionId.documentDefinitionId.name = :documentDefinitionName"
@@ -90,7 +97,7 @@ public interface ProcessDocumentDefinitionRepository extends
         @Param("documentDefinitionName") String documentDefinitionName
     );
 
-    @Query("" +
+    @Query(
         "SELECT  pdd " +
         "FROM    CamundaProcessJsonSchemaDocumentDefinition pdd " +
         "WHERE   pdd.processDocumentDefinitionId.processDefinitionKey = :processDefinitionKey " +
@@ -98,12 +105,13 @@ public interface ProcessDocumentDefinitionRepository extends
         "   SELECT  MAX(dd.id.version) " +
         "   FROM    JsonSchemaDocumentDefinition dd " +
         "   WHERE   dd.id.name = pdd.id.documentDefinitionId.name " +
-        ")")
+        ")"
+    )
     Optional<CamundaProcessJsonSchemaDocumentDefinition> findByProcessDefinitionKeyAndLatestDocumentDefinitionVersion(
         @Param("processDefinitionKey") ProcessDefinitionKey processDefinitionKey
     );
 
-    @Query("" +
+    @Query(
         "SELECT  pdd " +
         "FROM    CamundaProcessJsonSchemaDocumentDefinition pdd " +
         "WHERE   pdd.processDocumentDefinitionId.processDefinitionKey = :processDefinitionKey " +
@@ -111,26 +119,29 @@ public interface ProcessDocumentDefinitionRepository extends
         "   SELECT MAX(dd.id.version) " +
         "   FROM   JsonSchemaDocumentDefinition dd " +
         "   WHERE  dd.id.name = pdd.id.documentDefinitionId.name " +
-        ")")
+        ")"
+    )
     List<CamundaProcessJsonSchemaDocumentDefinition> findAllByProcessDefinitionKeyAndLatestDocumentDefinitionVersion(
         @Param("processDefinitionKey") ProcessDefinitionKey processDefinitionKey
     );
 
-    @Query("" +
+    @Query(
         "SELECT  pdd " +
         "FROM    CamundaProcessJsonSchemaDocumentDefinition pdd " +
         "WHERE   pdd.processDocumentDefinitionId.processDefinitionKey = :processDefinitionKey " +
-        "AND     pdd.processDocumentDefinitionId.documentDefinitionId.version = :documentDefinitionVersion ")
+        "AND     pdd.processDocumentDefinitionId.documentDefinitionId.version = :documentDefinitionVersion "
+    )
     Optional<CamundaProcessJsonSchemaDocumentDefinition> findByProcessDefinitionKeyAndDocumentDefinitionVersion(
         @Param("processDefinitionKey") ProcessDefinitionKey processDefinitionKey,
         @Param("documentDefinitionVersion") long documentDefinitionVersion
     );
 
     @Modifying
-    @Query("" +
-        "   DELETE " +
-        "   FROM    CamundaProcessJsonSchemaDocumentDefinition pdd " +
-        "   WHERE   pdd.processDocumentDefinitionId.documentDefinitionId.name = :documentDefinitionName")
+    @Query(
+        "DELETE " +
+        "FROM    CamundaProcessJsonSchemaDocumentDefinition pdd " +
+        "WHERE   pdd.processDocumentDefinitionId.documentDefinitionId.name = :documentDefinitionName"
+    )
     void deleteByDocumentDefinition(@Param("documentDefinitionName") String documentDefinitionName);
 
 }

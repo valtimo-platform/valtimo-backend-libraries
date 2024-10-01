@@ -20,83 +20,99 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import org.hibernate.annotations.Immutable
 import java.time.LocalDateTime
 
+@Immutable
 @Entity
 @Table(name = "ACT_HI_VARINST")
 class CamundaHistoricVariableInstance(
 
     @Id
-    @Column(name = "ID_")
+    @Column(name = "ID_", insertable = false, updatable = false)
     val id: String,
 
-    @Column(name = "PROC_DEF_KEY_")
+    @Column(name = "PROC_DEF_KEY_", insertable = false, updatable = false)
     val processDefinitionKey: String?,
 
-    @Column(name = "PROC_DEF_ID_")
+    @Column(name = "PROC_DEF_ID_", insertable = false, updatable = false)
     val processDefinitionId: String?,
 
-    @Column(name = "ROOT_PROC_INST_ID_")
+    @Column(name = "ROOT_PROC_INST_ID_", insertable = false, updatable = false)
     val rootProcessInstanceId: String?,
 
-    @Column(name = "PROC_INST_ID_")
+    @Column(name = "PROC_INST_ID_", insertable = false, updatable = false)
     val processInstanceId: String?,
 
-    @Column(name = "EXECUTION_ID_")
+    @Column(name = "EXECUTION_ID_", insertable = false, updatable = false)
     val executionId: String?,
 
-    @Column(name = "ACT_INST_ID_")
+    @Column(name = "ACT_INST_ID_", insertable = false, updatable = false)
     val activityInstanceId: String?,
 
-    @Column(name = "CASE_DEF_KEY_")
+    @Column(name = "CASE_DEF_KEY_", insertable = false, updatable = false)
     val caseDefinitionKey: String?,
 
-    @Column(name = "CASE_DEF_ID_")
+    @Column(name = "CASE_DEF_ID_", insertable = false, updatable = false)
     val caseDefinitionId: String?,
 
-    @Column(name = "CASE_INST_ID_")
+    @Column(name = "CASE_INST_ID_", insertable = false, updatable = false)
     val caseInstanceId: String?,
 
-    @Column(name = "CASE_EXECUTION_ID_")
+    @Column(name = "CASE_EXECUTION_ID_", insertable = false, updatable = false)
     val caseExecutionId: String?,
 
-    @Column(name = "TASK_ID_")
+    @Column(name = "TASK_ID_", insertable = false, updatable = false)
     val taskId: String?,
 
-    @Column(name = "NAME_")
+    @Column(name = "NAME_", insertable = false, updatable = false)
     val name: String?,
 
-    @Column(name = "VAR_TYPE_")
+    @Column(name = "VAR_TYPE_", insertable = false, updatable = false)
     val serializerName: String?,
 
-    @Column(name = "CREATE_TIME_")
+    @Column(name = "CREATE_TIME_", insertable = false, updatable = false)
     val createTime: LocalDateTime?,
 
-    @Column(name = "REV_")
+    @Column(name = "REV_", insertable = false, updatable = false)
     val revision: Int,
 
-    @Column(name = "BYTEARRAY_ID_")
+    @Column(name = "BYTEARRAY_ID_", insertable = false, updatable = false)
     val byteArrayId: String?,
 
-    @Column(name = "DOUBLE_")
+    @Column(name = "DOUBLE_", insertable = false, updatable = false)
     val doubleValue: Double?,
 
-    @Column(name = "LONG_")
+    @Column(name = "LONG_", insertable = false, updatable = false)
     val longValue: Long?,
 
-    @Column(name = "TEXT_")
+    @Column(name = "TEXT_", insertable = false, updatable = false)
     val textValue: String?,
 
-    @Column(name = "TEXT2_")
+    @Column(name = "TEXT2_", insertable = false, updatable = false)
     val textValue2: String?,
 
-    @Column(name = "TENANT_ID_")
+    @Column(name = "TENANT_ID_", insertable = false, updatable = false)
     val tenantId: String?,
 
-    @Column(name = "STATE_")
+    @Column(name = "STATE_", insertable = false, updatable = false)
     val state: String?,
 
-    @Column(name = "REMOVAL_TIME_")
+    @Column(name = "REMOVAL_TIME_", insertable = false, updatable = false)
     val removalTime: LocalDateTime?
 
-)
+) {
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is CamundaHistoricVariableInstance) return false
+
+        if (id != other.id) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
+}

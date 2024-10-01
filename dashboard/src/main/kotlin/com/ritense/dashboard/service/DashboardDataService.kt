@@ -24,11 +24,15 @@ import com.ritense.dashboard.domain.Dashboard
 import com.ritense.dashboard.domain.WidgetConfiguration
 import com.ritense.dashboard.repository.WidgetConfigurationRepository
 import com.ritense.dashboard.web.rest.dto.DashboardWidgetDataResultDto
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.context.ApplicationContext
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional(readOnly = true)
+@Service
+@SkipComponentScan
 class DashboardDataService(
     private val applicationContext: ApplicationContext,
     private val widgetDataSourceResolver: WidgetDataSourceResolver,

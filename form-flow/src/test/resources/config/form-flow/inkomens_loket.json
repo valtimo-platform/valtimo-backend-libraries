@@ -3,6 +3,7 @@
     "steps": [
         {
             "key": "woonplaats",
+            "title": "Woonplaats",
             "onOpen": [
                 "${'Hello '+'World!'}",
                 "${4*3}",
@@ -31,6 +32,7 @@
         },
         {
             "key": "leeftijd",
+            "title": "Leeftijd",
             "onBack": [
                 "${formFlowBeanTestHelper.parseAdditionalProperties(additionalProperties)}"
             ],
@@ -52,6 +54,7 @@
         },
         {
             "key": "gezinssituatie",
+            "title": "Gezinssituatie",
             "nextSteps": [
                 {
                     "step": "thuiswonende-kinderen"

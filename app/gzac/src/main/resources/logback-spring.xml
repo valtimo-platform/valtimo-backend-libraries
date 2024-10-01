@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <configuration scan="true">
-    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <include resource="config/logging/logback/valtimo-defaults.xml" />
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+    <include resource="config/logging/logback/valtimo-database-appender.xml" />
 
     <logger name="com.ritense.valtimo" level="#logback.loglevel#"/>
+    <logger name="com.ritense.valtimo.web.logging" level="DEBUG"/>
 
     <logger name="jakarta.activation" level="WARN"/>
     <logger name="jakarta.mail" level="WARN"/>
@@ -47,6 +50,7 @@
 
     <root level="#logback.loglevel#">
         <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="VALTIMODBASYNC"/>
     </root>
 
 </configuration>

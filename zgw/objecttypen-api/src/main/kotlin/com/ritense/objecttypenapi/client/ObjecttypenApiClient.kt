@@ -17,12 +17,12 @@
 package com.ritense.objecttypenapi.client
 
 import com.ritense.objecttypenapi.ObjecttypenApiAuthentication
-import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.toEntityList
+import org.springframework.web.client.RestClient
+import org.springframework.web.client.body
 import java.net.URI
 
 class ObjecttypenApiClient(
-    private val webclientBuilder: WebClient.Builder
+    private val restClientBuilder: RestClient.Builder
 ) {
 
     fun getObjecttype(
@@ -30,22 +30,16 @@ class ObjecttypenApiClient(
         objecttypeUrl: URI
     ): Objecttype {
         val url = sanitizeUriHost(objecttypeUrl)
-        val response = webclientBuilder
+        return restClientBuilder
             .clone()
-            .filter(authentication)
+            .apply {
+                authentication.applyAuth(it)
+            }
             .build()
             .get()
             .uri(url)
             .retrieve()
-            .toEntity(Objecttype::class.java)
-            .block()
-
-        response?.statusCode?.isError?.let { isError ->
-            if (isError) {
-                throw RuntimeException("Error while fetching objecttype: ${response.statusCode}")
-            }
-        }
-        return response?.body ?: throw RuntimeException("Error: response body is null")
+            .body(Objecttype::class.java)!!
     }
 
     fun getObjecttypes(
@@ -53,22 +47,16 @@ class ObjecttypenApiClient(
         objecttypesUrl: URI
     ): List<Objecttype> {
         val url = sanitizeUriHost(objecttypesUrl)
-        val response = webclientBuilder
+        return restClientBuilder
             .clone()
-            .filter(authentication)
+            .apply {
+                authentication.applyAuth(it)
+            }
             .build()
             .get()
             .uri(url)
             .retrieve()
-            .toEntityList<Objecttype>()
-            .block()
-
-        response?.statusCode?.isError?.let { isError ->
-            if (isError) {
-                throw RuntimeException("Error while fetching objecttypes: ${response.statusCode}")
-            }
-        }
-        return response?.body ?: throw RuntimeException("Error: response body is null")
+            .body<List<Objecttype>>()!!
     }
 
     private fun sanitizeUriHost(objecttypesUrl: URI): URI {

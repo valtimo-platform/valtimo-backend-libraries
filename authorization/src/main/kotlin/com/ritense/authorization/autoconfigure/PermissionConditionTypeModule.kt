@@ -22,7 +22,7 @@ import com.ritense.authorization.permission.condition.ContainerPermissionConditi
 import com.ritense.authorization.permission.condition.ExpressionPermissionCondition
 import com.ritense.authorization.permission.condition.FieldPermissionCondition
 
-class PermissionConditionTypeModule: SimpleModule() {
+class PermissionConditionTypeModule: SimpleModule("PermissionConditionTypeModule") {
 
     override fun setupModule(context: SetupContext) {
         super.setupModule(context)

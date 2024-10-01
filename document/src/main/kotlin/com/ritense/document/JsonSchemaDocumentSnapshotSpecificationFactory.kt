@@ -21,11 +21,13 @@ import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.specification.AuthorizationSpecificationFactory
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot
+import com.ritense.document.repository.DocumentSnapshotRepository
 import com.ritense.document.service.JsonSchemaDocumentSnapshotSpecification
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 
 class JsonSchemaDocumentSnapshotSpecificationFactory(
-    private var queryDialectHelper: QueryDialectHelper
+    private var queryDialectHelper: QueryDialectHelper,
+    private val repository: DocumentSnapshotRepository<JsonSchemaDocumentSnapshot>
 ) : AuthorizationSpecificationFactory<JsonSchemaDocumentSnapshot> {
 
     override fun create(
@@ -35,7 +37,8 @@ class JsonSchemaDocumentSnapshotSpecificationFactory(
         return JsonSchemaDocumentSnapshotSpecification(
             request,
             permissions,
-            queryDialectHelper
+            queryDialectHelper,
+            repository
         )
     }
 

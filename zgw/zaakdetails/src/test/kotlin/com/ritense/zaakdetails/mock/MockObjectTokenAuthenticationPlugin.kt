@@ -20,6 +20,7 @@ import com.ritense.objectenapi.ObjectenApiAuthentication
 import com.ritense.objecttypenapi.ObjecttypenApiAuthentication
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
+import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
@@ -34,6 +35,12 @@ class MockObjectTokenAuthenticationPlugin : ObjectenApiAuthentication, Objecttyp
 
     @PluginProperty(key = "token", secret = true, required = true)
     lateinit var token: String
+
+    override fun applyAuth(builder: RestClient.Builder): RestClient.Builder {
+        return builder.defaultHeaders { headers ->
+            headers.setBearerAuth(token)
+        }
+    }
 
     override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
         return next.exchange(ClientRequest.from(request).build())

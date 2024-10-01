@@ -21,6 +21,7 @@ import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.document.domain.RelatedFile
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.Companion.VIEW
@@ -34,16 +35,24 @@ import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
 import com.ritense.documentenapi.web.rest.dto.ModifyDocumentRequest
 import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
+import com.ritense.logging.LoggableResource
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.zgw.LoggingConstants.DOCUMENTEN_API
+import mu.KLogger
+import mu.KotlinLogging
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.InputStream
 import java.net.URI
 import java.util.UUID
 
 @Transactional
+@Service
+@SkipComponentScan
 class DocumentenApiService(
     private val pluginService: PluginService,
     private val catalogiService: CatalogiService,
@@ -53,19 +62,28 @@ class DocumentenApiService(
     private val documentDefinitionService: JsonSchemaDocumentDefinitionService,
     private val documentenApiVersionService: DocumentenApiVersionService,
 ) {
-    fun downloadInformatieObject(pluginConfigurationId: String, documentId: String): InputStream {
-        val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
+
+    fun downloadInformatieObject(
+        @LoggableResource(resourceType = PluginConfigurationId::class) pluginConfigurationId: String,
+        @LoggableResource(resourceTypeName = DOCUMENTEN_API.ENKELVOUDIG_INFORMATIE_OBJECT) documentId: String
+    ): InputStream {
+        logger.info { "Download informatie object $documentId" }
+        val documentApiPlugin = pluginService.createInstance<DocumentenApiPlugin>(pluginConfigurationId)
         return documentApiPlugin.downloadInformatieObject(documentId)
     }
 
-    fun getInformatieObject(pluginConfigurationId: String, documentId: String): DocumentInformatieObject {
-        val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
+    fun getInformatieObject(
+        @LoggableResource(resourceType = PluginConfigurationId::class) pluginConfigurationId: String,
+        @LoggableResource(resourceTypeName = DOCUMENTEN_API.ENKELVOUDIG_INFORMATIE_OBJECT) documentId: String
+    ): DocumentInformatieObject {
+        logger.debug { "Get informatie object $documentId" }
+        val documentApiPlugin = pluginService.createInstance<DocumentenApiPlugin>(pluginConfigurationId)
         return documentApiPlugin.getInformatieObject(documentId)
     }
 
     fun getCaseInformatieObjecten(
-        documentId: UUID,
-        documentSearchRequest: DocumentSearchRequest,
+        @LoggableResource(resourceType = JsonSchemaDocument::class) documentId: UUID,
+        @LoggableResource(resourceType = DocumentSearchRequest::class) documentSearchRequest: DocumentSearchRequest,
         pageable: Pageable
     ): Page<DocumentInformatieObject> {
         val documentDefinitionName = valtimoDocumentService.get(documentId.toString()).definitionId().name()
@@ -79,35 +97,46 @@ class DocumentenApiService(
         pageable.sort.forEach { sortColumn ->
             check(version.sortableColumns.contains(sortColumn.property))
         }
+        logger.debug { "Get Case Informatie Objecten $documentSearchRequest" }
         return plugin.getInformatieObjecten(documentSearchRequest, pageable)
     }
 
     fun modifyInformatieObject(
-        pluginConfigurationId: String,
-        documentenApiDocumentId: String,
+        @LoggableResource(resourceType = PluginConfigurationId::class) pluginConfigurationId: String,
+        @LoggableResource(resourceTypeName = DOCUMENTEN_API.ENKELVOUDIG_INFORMATIE_OBJECT) documentId: String,
         modifyDocumentRequest: ModifyDocumentRequest
     ): RelatedFile? {
         val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
         if (modifyDocumentRequest.trefwoorden?.isNotEmpty() == true) {
             val version = documentenApiVersionService.getVersionByTag(documentApiPlugin.apiVersion)
             check(version != null && version.supportsTrefwoorden) {
-                val pluginConfiguration = pluginService.getPluginConfiguration(PluginConfigurationId.existingId(pluginConfigurationId))
+                val pluginConfiguration = pluginService.getPluginConfiguration(
+                    PluginConfigurationId.existingId(pluginConfigurationId)
+                )
                 "Documenten API plugin '${pluginConfiguration.title}' doesn't support 'trefwoorden'"
             }
         }
-        val documentUrl = documentApiPlugin.createInformatieObjectUrl(documentenApiDocumentId)
-        val informatieObject =
-            documentApiPlugin.modifyInformatieObject(documentUrl, PatchDocumentRequest(modifyDocumentRequest))
+        logger.info { "Create Informatie Object Url $documentId" }
+        val documentUrl = documentApiPlugin.createInformatieObjectUrl(documentId)
+        logger.info { "Modify Informatie Object $documentUrl $modifyDocumentRequest " }
+        val informatieObject = documentApiPlugin.modifyInformatieObject(
+            documentUrl,
+            PatchDocumentRequest(modifyDocumentRequest)
+        )
         return getRelatedFiles(informatieObject, pluginConfigurationId)
     }
 
-    fun deleteInformatieObject(pluginConfigurationId: String, documentId: String) {
+    fun deleteInformatieObject(
+        @LoggableResource(resourceType = PluginConfigurationId::class) pluginConfigurationId: String,
+        @LoggableResource(resourceTypeName = DOCUMENTEN_API.ENKELVOUDIG_INFORMATIE_OBJECT) documentId: String
+    ) {
         val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
         val documentUrl = documentApiPlugin.createInformatieObjectUrl(documentId)
         documentApiPlugin.deleteInformatieObject(documentUrl)
     }
 
     fun getColumns(caseDefinitionName: String): List<DocumentenApiColumn> {
+        logger.debug { "Get columns $caseDefinitionName" }
         val documentDefinition = documentDefinitionService.findLatestByName(caseDefinitionName)
             .orElseThrow { IllegalArgumentException("Unknown case-definition '$caseDefinitionName'") }
         authorizationService.requirePermission(
@@ -122,6 +151,7 @@ class DocumentenApiService(
     }
 
     fun getAllColumnKeys(caseDefinitionName: String): List<DocumentenApiColumnKey> {
+        logger.debug { "Get all column keys $caseDefinitionName" }
         val version = documentenApiVersionService.getVersion(caseDefinitionName)
         val columnKeys = DocumentenApiColumnKey.entries.sortedBy { it.name }
         return if (!version.supportsTrefwoorden) {
@@ -132,6 +162,7 @@ class DocumentenApiService(
     }
 
     fun updateColumnOrder(columns: List<DocumentenApiColumn>): List<DocumentenApiColumn> {
+        logger.info { "Update column order $columns" }
         denyAuthorization()
         require(columns.isNotEmpty()) { "Failed to sort empty Document API columns" }
         val caseDefinitionName = columns[0].id.caseDefinitionName
@@ -148,6 +179,7 @@ class DocumentenApiService(
     }
 
     fun createOrUpdateColumn(column: DocumentenApiColumn): DocumentenApiColumn {
+        logger.info { "Create or updateColumn $column" }
         documentDefinitionService.findLatestByName(column.id.caseDefinitionName)
             .orElseThrow { IllegalArgumentException("Unknown case-definition '${column.id.caseDefinitionName}'") }
         denyAuthorization()
@@ -165,6 +197,7 @@ class DocumentenApiService(
     }
 
     fun deleteColumn(caseDefinitionName: String, columnKey: String) {
+        logger.info { "Delete column $caseDefinitionName $columnKey" }
         denyAuthorization()
         val documentenApiColumnKey = DocumentenApiColumnKey.fromProperty(columnKey)
             ?: throw IllegalStateException("Unknown column '$columnKey'")
@@ -175,6 +208,7 @@ class DocumentenApiService(
         informatieObject: DocumentInformatieObject,
         pluginConfigurationId: String
     ): RelatedFileDto {
+        logger.debug { "Get related files" }
         return RelatedFileDto(
             fileId = UUID.fromString(informatieObject.url.path.substringAfterLast("/")),
             fileName = informatieObject.bestandsnaam,
@@ -210,5 +244,9 @@ class DocumentenApiService(
                 Action.deny()
             )
         )
+    }
+
+    companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
     }
 }

@@ -102,32 +102,31 @@ internal class FormFlowInstanceTest : BaseTest() {
     }
 
     @Test
-    fun `complete should throw exception when step in not current active step`() {
-        val definition: FormFlowDefinition = mock()
-        val steps: Set<FormFlowStep> = mutableSetOf(
-            FormFlowStep(
-                id = FormFlowStepId.create("test"),
-                nextSteps = mutableListOf(
-                    FormFlowNextStep(null, "test2")
+    fun `complete should return current step when step in not current active step`() {
+        val definition = FormFlowDefinition(
+            id = FormFlowDefinitionId.newId("test"),
+            startStep = "step1",
+            steps = mutableSetOf(
+                FormFlowStep(
+                    id = FormFlowStepId.create("step1"),
+                    nextSteps = mutableListOf(
+                        FormFlowNextStep(null, "step2")
+                    ),
+                    type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
                 ),
-                type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
-            ),
-            FormFlowStep(
-                id = FormFlowStepId.create("test2"),
-                type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
+                FormFlowStep(
+                    id = FormFlowStepId.create("step2"),
+                    type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
+                )
             )
         )
-
-        whenever(definition.startStep).thenReturn("test")
-        whenever(definition.steps).thenReturn(steps)
-
         val instance = FormFlowInstance(
             formFlowDefinition = definition
         )
 
-        assertThrows<AssertionError> {
-            instance.complete(FormFlowStepInstanceId.newId(), JSONObject("{\"data\": \"data\"}"))
-        }
+        val stepInstance = instance.complete(FormFlowStepInstanceId.newId(), JSONObject("{\"data\": \"data\"}"))
+
+        assertEquals("step1", stepInstance!!.definition.id.key)
     }
 
     @Test

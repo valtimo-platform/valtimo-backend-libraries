@@ -21,11 +21,16 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.repository.TaskListColumnRepository
 import com.ritense.case.service.TaskColumnService
+import com.ritense.logging.withLoggingContext
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
 import com.ritense.valtimo.changelog.service.ChangelogService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import org.springframework.stereotype.Service
 
-open class CaseTaskListDeploymentService(
+@Service
+@SkipComponentScan
+class CaseTaskListDeploymentService(
     private val objectMapper: ObjectMapper,
     private val taskListColumnRepository: TaskListColumnRepository,
     private val changelogService: ChangelogService,
@@ -55,9 +60,11 @@ open class CaseTaskListDeploymentService(
 
     private fun deploy(caseDefinitions: List<CaseDefinitionsTaskListCollection>) {
         runWithoutAuthorization {
-            caseDefinitions.forEach {
-                it.columns.map { taskListColumnDto ->
-                    taskColumnService.saveListColumn(it.key, taskListColumnDto)
+            caseDefinitions.forEach { caseDefinition ->
+                withLoggingContext("jsonSchemaDocumentName" to caseDefinition.key) {
+                    caseDefinition.columns.map { taskListColumnDto ->
+                        taskColumnService.saveListColumn(caseDefinition.key, taskListColumnDto)
+                    }
                 }
             }
         }

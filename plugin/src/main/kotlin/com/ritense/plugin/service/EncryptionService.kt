@@ -16,6 +16,8 @@
 
 package com.ritense.plugin.service
 
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import org.springframework.stereotype.Service
 import java.nio.ByteBuffer
 import java.security.SecureRandom
 import java.security.spec.AlgorithmParameterSpec
@@ -25,7 +27,8 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
-
+@Service
+@SkipComponentScan
 class EncryptionService(
     secret: String
 ) {

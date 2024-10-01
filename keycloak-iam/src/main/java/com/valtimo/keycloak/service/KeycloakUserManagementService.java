@@ -48,11 +48,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 
 public class KeycloakUserManagementService implements UserManagementService {
     private static final Logger logger = LoggerFactory.getLogger(KeycloakUserManagementService.class);
     protected static final int MAX_USERS = 1000;
     private static final String MAX_USERS_WARNING_MESSAGE = "Maximum number of users retrieved from keycloak: " + MAX_USERS + ".";
+    private static final ValtimoUser SYSTEM_VALTIMO_USER = new ValtimoUserBuilder().id(SYSTEM_ACCOUNT).lastName(SYSTEM_ACCOUNT).build();
 
     private final KeycloakService keycloakService;
     private final String clientName;
@@ -154,10 +156,14 @@ public class KeycloakUserManagementService implements UserManagementService {
     @Override
     public ValtimoUser findById(String userId) {
         UserRepresentation user;
-        try (Keycloak keycloak = keycloakService.keycloak()) {
-            user = keycloakService.usersResource(keycloak).get(userId).toRepresentation();
+        if (userId.equals(SYSTEM_ACCOUNT)) {
+            return SYSTEM_VALTIMO_USER;
+        } else {
+            try (Keycloak keycloak = keycloakService.keycloak()) {
+                user = keycloakService.usersResource(keycloak).get(userId).toRepresentation();
+            }
+            return Boolean.TRUE.equals(user.isEnabled()) ? toValtimoUserByRetrievingRoles(user) : null;
         }
-        return Boolean.TRUE.equals(user.isEnabled()) ? toValtimoUserByRetrievingRoles(user) : null;
     }
 
     @Override
@@ -200,12 +206,14 @@ public class KeycloakUserManagementService implements UserManagementService {
 
     @Override
     public ManageableUser getCurrentUser() {
-        if (SecurityUtils.getCurrentUserAuthentication() != null) {
+        if (SecurityUtils.getCurrentUserAuthentication() == null) {
+            return SYSTEM_VALTIMO_USER;
+        } else if (SecurityUtils.getCurrentUserAuthentication() instanceof AnonymousAuthenticationToken) {
+            return null;
+        } else {
             return findByEmail(SecurityUtils.getCurrentUserLogin()).orElseThrow(() ->
                 new IllegalStateException("No user found for email: ${currentUserService.currentUser.email}")
             );
-        } else {
-            return new ValtimoUserBuilder().id(SYSTEM_ACCOUNT).lastName(SYSTEM_ACCOUNT).build();
         }
     }
 
@@ -260,7 +268,10 @@ public class KeycloakUserManagementService implements UserManagementService {
             }
             try {
                 for (GroupRepresentation group : roleGroups) {
-                    usersList.add(keycloakService.realmResource(keycloak).groups().group(group.getId()).members(0, MAX_USERS));
+                    usersList.add(keycloakService.realmResource(keycloak)
+                        .groups()
+                        .group(group.getId())
+                        .members(0, MAX_USERS));
                 }
             } catch (NotFoundException e) {
                 logger.debug("Failed to find users by group. Error: {}", e.getMessage());

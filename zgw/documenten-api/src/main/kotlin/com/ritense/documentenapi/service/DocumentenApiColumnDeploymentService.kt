@@ -27,17 +27,24 @@ import com.ritense.documentenapi.domain.DocumentenApiColumnKey.CREATIEDATUM
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.INFORMATIEOBJECTTYPE_OMSCHRIJVING
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.TITEL
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import mu.KLogger
+import mu.KotlinLogging
 import org.springframework.context.event.EventListener
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-open class DocumentenApiColumnDeploymentService(
+@Service
+@SkipComponentScan
+class DocumentenApiColumnDeploymentService(
     private val documentenApiService: DocumentenApiService,
     private val documentenApiColumnRepository: DocumentenApiColumnRepository
 ) {
     @Transactional
     @RunWithoutAuthorization
     @EventListener(DocumentDefinitionDeployedEvent::class)
-    open fun createDocumentenApiColumns(event: DocumentDefinitionDeployedEvent) {
+    fun createDocumentenApiColumns(event: DocumentDefinitionDeployedEvent) {
+        logger.info { "Create columns for document definition ${event.documentDefinition().id().name()}" }
         if (event.documentDefinition().id()
                 .version() == 1L && !columnsExistForDocumentDefinitionName(event.documentDefinition().id().name())
         ) {
@@ -59,5 +66,9 @@ open class DocumentenApiColumnDeploymentService(
 
     private fun columnsExistForDocumentDefinitionName(documentDefinitionName: String): Boolean {
         return documentenApiColumnRepository.existsByIdCaseDefinitionName(documentDefinitionName)
+    }
+
+    companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
     }
 }

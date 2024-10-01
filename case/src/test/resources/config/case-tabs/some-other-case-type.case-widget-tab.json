@@ -1,0 +1,54 @@
+{
+    "changesetId": "some-other-case-type.case-widget-tab",
+    "tabs": [
+        {
+            "caseDefinitionName": "some-other-case-type",
+            "key": "widget-tab",
+            "widgets": [
+                {
+                    "type": "fields",
+                    "key": "test-widget-2",
+                    "title": "Widget 2",
+                    "width": 2,
+                    "highContrast": true,
+                    "properties": {
+                        "columns": [
+                            [
+                                {
+                                    "key": "someKey",
+                                    "title": "Some key",
+                                    "value": "test:/myKey"
+                                }
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "type": "fields",
+                    "key": "test-widget-1",
+                    "title": "Widget 1",
+                    "width": 1,
+                    "highContrast": false,
+                    "properties": {
+                        "columns": [
+                            [
+                                {
+                                    "key": "someKey",
+                                    "title": "Some key",
+                                    "value": "test:/myKey"
+                                }
+                            ],
+                            [
+                                {
+                                    "key": "someKey2",
+                                    "title": "Some key 2",
+                                    "value": "test:/myKey2"
+                                }
+                            ]
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

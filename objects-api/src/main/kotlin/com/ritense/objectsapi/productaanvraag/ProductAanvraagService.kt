@@ -28,10 +28,14 @@ import com.ritense.openzaak.service.ZaakRolService
 import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.domain.OpenZaakResource
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
-import java.net.URI
 import mu.KotlinLogging
+import org.springframework.stereotype.Service
+import java.net.URI
 
+@Service
+@SkipComponentScan
 class ProductAanvraagService(
     private val processDocumentService: ProcessDocumentService,
     private val documentService: DocumentService,

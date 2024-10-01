@@ -16,6 +16,7 @@
 
 package com.ritense.mail.service
 
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.basictype.EmailAddress
 import com.ritense.valtimo.contract.basictype.SimpleName
 import com.ritense.valtimo.contract.mail.MailSender
@@ -27,9 +28,12 @@ import com.ritense.valtimo.contract.mail.model.value.Sender
 import com.ritense.valtimo.contract.mail.model.value.Subject
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
+import org.springframework.stereotype.Service
 import java.util.Optional
 import java.util.regex.Pattern
 
+@Service
+@SkipComponentScan
 class MailService(
     private val mailSender: MailSender
 ) {

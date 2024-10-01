@@ -19,15 +19,20 @@ package com.ritense.authorization
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.permission.PermissionRepository
 import com.ritense.authorization.request.AuthorizationRequest
+import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.role.Role
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.specification.AuthorizationSpecificationFactory
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.utils.SecurityUtils
-import java.lang.reflect.ParameterizedType
 import mu.KotlinLogging
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.stereotype.Service
+import java.lang.reflect.ParameterizedType
 
+@Service
+@SkipComponentScan
 class ValtimoAuthorizationService(
     private val authorizationSpecificationFactories: List<AuthorizationSpecificationFactory<*>>,
     private val mappers: List<AuthorizationEntityMapper<*, *>>,
@@ -122,7 +127,14 @@ class ValtimoAuthorizationService(
         }
         return permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(userRoles)
             .filter { permission ->
-                context.resourceType == permission.resourceType && context.action == permission.action
+                context.resourceType == permission.resourceType
+                    && context.action == permission.action
+                    && if (context is EntityAuthorizationRequest) {
+                        permission.appliesInContext(context.context?.resourceType, context.context?.entity)
+                    } else {
+                        val requestContextResourceType: Class<*>? = null
+                        permission.appliesInContext(requestContextResourceType, null)
+                    }
             }
     }
 

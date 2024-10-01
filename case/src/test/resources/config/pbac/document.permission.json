@@ -1,0 +1,10 @@
+{
+    "changesetId": "document-v1",
+    "permissions": [
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "action": "view",
+            "roleKey": "ROLE_USER"
+        }
+    ]
+}

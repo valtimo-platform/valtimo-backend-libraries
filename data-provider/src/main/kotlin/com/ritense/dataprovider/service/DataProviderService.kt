@@ -18,7 +18,11 @@ package com.ritense.dataprovider.service
 
 import com.ritense.dataprovider.domain.DataProvider
 import com.ritense.dataprovider.exception.ProviderNotFoundException
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import org.springframework.stereotype.Service
 
+@Service
+@SkipComponentScan
 class DataProviderService(
     private val dataProviders: Map<String, DataProvider<*>>
 ) {

@@ -19,16 +19,18 @@ package com.ritense.documentenapi.deployment
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.case.deployment.CaseDefinitionTrefwoordCollection
-import com.ritense.case.deployment.ZgwDocumentTrefwoordChangeset
 import com.ritense.documentenapi.repository.ZgwDocumentTrefwoordRepository
 import com.ritense.documentenapi.service.ZgwDocumentTrefwoordService
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
 import com.ritense.valtimo.changelog.service.ChangelogService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.springframework.data.domain.Pageable
+import org.springframework.stereotype.Service
 
-open class ZgwDocumentTrefwoordDeploymentService(
+@Service
+@SkipComponentScan
+class ZgwDocumentTrefwoordDeploymentService(
     private val objectMapper: ObjectMapper,
     private val zgwDocumentTrefwoordRepository: ZgwDocumentTrefwoordRepository,
     private val zgwDocumentTrefwoordService: ZgwDocumentTrefwoordService,

@@ -16,8 +16,10 @@
 
 package com.ritense.formflow.service
 
+import com.ritense.formflow.domain.FormFlowBreadcrumb
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
+import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
@@ -27,8 +29,9 @@ import com.ritense.formflow.handler.TypeProperties
 import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
-import kotlin.jvm.optionals.getOrNull
+import mu.withLoggingContext
 import org.springframework.transaction.annotation.Transactional
+import kotlin.jvm.optionals.getOrNull
 
 @Transactional
 class FormFlowService(
@@ -43,20 +46,22 @@ class FormFlowService(
     }
 
     fun findDefinition(formFlowId: FormFlowDefinitionId): FormFlowDefinition {
-        return formFlowDefinitionRepository.getReferenceById(formFlowId)
+        withLoggingContext(FormFlowDefinition::class.java.canonicalName to formFlowId.toString()) {
+            return formFlowDefinitionRepository.getReferenceById(formFlowId)
+        }
     }
 
     fun findDefinition(formFlowDefinitionId: String): FormFlowDefinition? {
-        val formFlowIdAsArray = formFlowDefinitionId.split(":")
-        if (formFlowIdAsArray.size != 2) {
-            throw IllegalArgumentException("Invalid Format found for formFlowId '${formFlowIdAsArray.joinToString(":")}'. Form flow id must have format key:version")
-        }
-        return if (formFlowIdAsArray[1] == "latest") {
-            findLatestDefinitionByKey(formFlowIdAsArray[0])
-        } else {
-            formFlowDefinitionRepository.findById(
-                FormFlowDefinitionId(formFlowIdAsArray[0], formFlowIdAsArray[1].toLong())
-            ).getOrNull()
+        return withLoggingContext(FormFlowDefinition::class.java.canonicalName to formFlowDefinitionId) {
+            val formFlowIdAsArray = formFlowDefinitionId.split(":")
+            require(formFlowIdAsArray. size == 2) { "Invalid Format found for formFlowId '${formFlowIdAsArray. joinToString(":")}'. Form flow id must have format key:version"}
+            if (formFlowIdAsArray[1] == "latest") {
+                findLatestDefinitionByKey(formFlowIdAsArray[0])
+            } else {
+                formFlowDefinitionRepository.findById(
+                    FormFlowDefinitionId(formFlowIdAsArray[0], formFlowIdAsArray[1].toLong())
+                ).getOrNull()
+            }
         }
     }
 
@@ -65,23 +70,31 @@ class FormFlowService(
     }
 
     fun save(formFlowDefinition: FormFlowDefinition): FormFlowDefinition {
-        if (formFlowDefinitionRepository.existsById(formFlowDefinition.id)) {
-            throw UnsupportedOperationException("Failed to save From Flow. Form Flow already exists: ${formFlowDefinition.id}")
-        } else {
-            return formFlowDefinitionRepository.save(formFlowDefinition)
+        return withLoggingContext(FormFlowDefinition::class.java.canonicalName to formFlowDefinition.id.toString()) {
+            if (formFlowDefinitionRepository.existsById(formFlowDefinition.id)) {
+                throw UnsupportedOperationException("Failed to save From Flow. Form Flow already exists: ${formFlowDefinition.id}")
+            } else {
+                formFlowDefinitionRepository.save(formFlowDefinition)
+            }
         }
     }
 
     fun getInstanceById(formFlowInstanceId: FormFlowInstanceId): FormFlowInstance {
-        return formFlowInstanceRepository.getReferenceById(formFlowInstanceId)
+        return withLoggingContext(FormFlowDefinition::class.java.canonicalName to formFlowInstanceId.toString()) {
+            formFlowInstanceRepository.getReferenceById(formFlowInstanceId)
+        }
     }
 
     fun getByInstanceIdIfExists(formFlowInstanceId: FormFlowInstanceId): FormFlowInstance? {
-        return formFlowInstanceRepository.getReferenceById(formFlowInstanceId)
+        return withLoggingContext(FormFlowDefinition::class.java.canonicalName to formFlowInstanceId.toString()) {
+            formFlowInstanceRepository.getReferenceById(formFlowInstanceId)
+        }
     }
 
     fun save(formFlowInstance: FormFlowInstance): FormFlowInstance {
-        return formFlowInstanceRepository.save(formFlowInstance)
+        return withLoggingContext(FormFlowDefinition::class.java.canonicalName to formFlowInstance.id.toString()) {
+            formFlowInstanceRepository.save(formFlowInstance)
+        }
     }
 
     fun findInstances(additionalProperties: Map<String, Any>): List<FormFlowInstance> {
@@ -94,10 +107,45 @@ class FormFlowService(
     }
 
     fun getTypeProperties(stepInstance: FormFlowStepInstance): TypeProperties {
-        return getFormFlowStepTypeHandler(stepInstance.definition.type).getTypeProperties(stepInstance)
+        return withLoggingContext(FormFlowStepInstance::class.java.canonicalName to stepInstance.id.toString()) {
+            getFormFlowStepTypeHandler(stepInstance.definition.type).getTypeProperties(stepInstance)
+        }
     }
 
     fun deleteByKey(definitionKey: String) {
         formFlowDefinitionRepository.deleteAllByIdKey(definitionKey)
+    }
+
+    fun getBreadcrumbs(instance: FormFlowInstance): List<FormFlowBreadcrumb> {
+        return withLoggingContext(FormFlowInstance::class.java.canonicalName to instance.id.toString()) {
+            val lastCompletedOrder = instance.getHistory()
+                .filter { it.submissionData != null }
+                .maxByOrNull { it.submissionOrder }
+                ?.order ?: -1
+            val historicBreadcrumbs = instance.getHistory()
+                .map { FormFlowBreadcrumb.of(it, it.order <= lastCompletedOrder + 1, it.order <= lastCompletedOrder) }
+            val futureBreadcrumbs = getFutureSteps(instance)
+                .map { FormFlowBreadcrumb.of(it) }
+            historicBreadcrumbs + futureBreadcrumbs
+        }
+    }
+
+    private fun getFutureSteps(instance: FormFlowInstance): List<FormFlowStep> {
+        return withLoggingContext(FormFlowInstance::class.java.canonicalName to instance.id.toString()) {
+            getFutureSteps(instance.getHistory().last().definition)
+        }
+    }
+
+    private fun getFutureSteps(step: FormFlowStep, result: MutableList<FormFlowStep> = mutableListOf()): List<FormFlowStep> {
+        return withLoggingContext(FormFlowStep::class.java.canonicalName to step.id.toString()) {
+            step.nextSteps.forEach { nextStep ->
+                val futureStep = step.id.formFlowDefinition!!.steps.first { it.id.key == nextStep.step }
+                if (!result.contains(futureStep)) {
+                    result.add(futureStep)
+                    return getFutureSteps(futureStep, result)
+                }
+            }
+            result
+        }
     }
 }
