@@ -203,7 +203,7 @@ class ObjectManagementFacade(
                 URI("${accessObject.objectenApiPlugin.url}objects/$objectId")
             )
         } catch (ex: HttpClientErrorException) {
-            throw HttpClientErrorException(ex.statusCode, "Error while deleting object $objectId. Response from Objects API: ${ex.responseBodyAsString}")
+            throw IllegalStateException("Error while deleting object $objectId. Response from Objects API: ${ex.responseBodyAsString}", ex)
         }
     }
 
