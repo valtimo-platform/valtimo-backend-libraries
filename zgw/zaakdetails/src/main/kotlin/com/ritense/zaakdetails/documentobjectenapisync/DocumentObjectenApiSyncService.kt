@@ -117,10 +117,10 @@ class DocumentObjectenApiSyncService(
             )
 
             val syncObject = objectenApiPlugin.getObjectsByObjectTypeIdWithSearchParams(
-                objecttypenApiPlugin.url,
-                objectManagementConfiguration.objecttypeId,
-                searchString,
-                PageRequest.of(0, 2)
+                objecttypesApiUrl = objecttypenApiPlugin.url,
+                objecttypeId = objectManagementConfiguration.objecttypeId,
+                searchString = searchString,
+                pageable = PageRequest.of(0, 2)
             ).results.firstOrNull()
 
             val content = document.content().asJson() as ObjectNode
