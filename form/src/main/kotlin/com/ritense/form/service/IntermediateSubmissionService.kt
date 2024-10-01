@@ -6,6 +6,7 @@ import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.form.domain.IntermediateSubmission
 import com.ritense.form.repository.IntermediateSubmissionRepository
 import com.ritense.form.util.EventDispatcherHelper.Companion.dispatchEvents
+import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Companion.COMPLETE
 import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Companion.VIEW
 import com.ritense.valtimo.camunda.domain.CamundaTask
@@ -26,7 +27,9 @@ class IntermediateSubmissionService(
     private val camundaTaskService: CamundaTaskService
 ) {
 
-    fun get(taskInstanceId: String): IntermediateSubmission? {
+    fun get(
+        @LoggableResource(resourceType = CamundaTask::class) taskInstanceId: String
+    ): IntermediateSubmission? {
         val task = camundaTaskService.findTaskById(taskInstanceId)
         authorizationService.requirePermission(
             EntityAuthorizationRequest(CamundaTask::class.java, VIEW, task)
@@ -36,7 +39,7 @@ class IntermediateSubmissionService(
 
     fun store(
         submission: ObjectNode,
-        taskInstanceId: String
+        @LoggableResource(resourceType = CamundaTask::class) taskInstanceId: String
     ): IntermediateSubmission {
         val task = camundaTaskService.findTaskById(taskInstanceId)
         authorizationService.requirePermission(
@@ -68,7 +71,9 @@ class IntermediateSubmissionService(
         }
     }
 
-    fun clear(taskInstanceId: String) {
+    fun clear(
+        @LoggableResource(resourceType = CamundaTask::class) taskInstanceId: String
+    ) {
         val task = camundaTaskService.findTaskById(taskInstanceId)
         authorizationService.requirePermission(
             EntityAuthorizationRequest(CamundaTask::class.java, COMPLETE, task)

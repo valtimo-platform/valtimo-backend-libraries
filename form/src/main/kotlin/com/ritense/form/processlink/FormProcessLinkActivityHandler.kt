@@ -16,15 +16,22 @@
 
 package com.ritense.form.processlink
 
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.form.domain.FormProcessLink
 import com.ritense.form.domain.FormTaskOpenResultProperties
 import com.ritense.form.service.PrefillFormService
+import com.ritense.logging.LoggableResource
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import org.springframework.stereotype.Component
 import java.util.UUID
 
+@Component
+@SkipComponentScan
 class FormProcessLinkActivityHandler(
     private val prefillFormService: PrefillFormService,
 ) : ProcessLinkActivityHandler<FormTaskOpenResultProperties> {
@@ -56,9 +63,9 @@ class FormProcessLinkActivityHandler(
     }
 
     override fun getStartEventObject(
-        processDefinitionId: String,
-        documentId: UUID?,
-        documentDefinitionName: String?,
+        @LoggableResource(resourceType = CamundaProcessDefinition::class) processDefinitionId: String,
+        @LoggableResource(resourceType = JsonSchemaDocument::class) documentId: UUID?,
+        @LoggableResource("documentDefinitionName") documentDefinitionName: String?,
         processLink: ProcessLink
     ): ProcessLinkActivityResult<FormTaskOpenResultProperties> {
         processLink as FormProcessLink
