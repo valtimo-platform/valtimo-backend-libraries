@@ -25,6 +25,7 @@ import com.ritense.documentenapi.web.rest.dto.DocumentenApiVersionManagementDto
 import com.ritense.documentenapi.web.rest.dto.DocumentenApiVersionsManagementDto
 import com.ritense.documentenapi.web.rest.dto.ReorderColumnRequest
 import com.ritense.documentenapi.web.rest.dto.UpdateColumnRequest
+import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
@@ -46,7 +47,7 @@ class DocumentenApiManagementResource(
     @RunWithoutAuthorization
     @GetMapping("/v1/case-definition/{caseDefinitionName}/zgw-document-column-key")
     fun getColumnKeys(
-        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<List<ColumnKeyResponse>> {
         val version = documentenApiVersionService.getVersion(caseDefinitionName)
         val columns = documentenApiService.getAllColumnKeys(caseDefinitionName)
@@ -57,7 +58,7 @@ class DocumentenApiManagementResource(
     @RunWithoutAuthorization
     @GetMapping("/v1/case-definition/{caseDefinitionName}/zgw-document-column")
     fun getConfiguredColumns(
-        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<List<ColumnResponse>> {
         val version = documentenApiVersionService.getVersion(caseDefinitionName)
         val columns = documentenApiService.getColumns(caseDefinitionName)
@@ -68,7 +69,7 @@ class DocumentenApiManagementResource(
     @RunWithoutAuthorization
     @PutMapping("/v1/case-definition/{caseDefinitionName}/zgw-document-column")
     fun updateColumnOrder(
-        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
         @RequestBody columnDtos: List<ReorderColumnRequest>,
     ): ResponseEntity<List<ColumnResponse>> {
         val version = documentenApiVersionService.getVersion(caseDefinitionName)
@@ -81,7 +82,7 @@ class DocumentenApiManagementResource(
     @RunWithoutAuthorization
     @PutMapping("/v1/case-definition/{caseDefinitionName}/zgw-document-column/{columnKey}")
     fun createOrUpdateColumn(
-        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
         @PathVariable(name = "columnKey") columnKey: String,
         @RequestBody column: UpdateColumnRequest,
     ): ResponseEntity<ColumnResponse> {
@@ -93,7 +94,7 @@ class DocumentenApiManagementResource(
     @RunWithoutAuthorization
     @DeleteMapping("/v1/case-definition/{caseDefinitionName}/zgw-document-column/{columnKey}")
     fun deleteColumn(
-        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
         @PathVariable(name = "columnKey") columnKey: String,
     ): ResponseEntity<Unit> {
         documentenApiService.deleteColumn(caseDefinitionName, columnKey)
@@ -103,7 +104,7 @@ class DocumentenApiManagementResource(
     @RunWithoutAuthorization
     @GetMapping("/v1/case-definition/{caseDefinitionName}/documenten-api/version")
     fun getApiVersion(
-        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<DocumentenApiVersionManagementDto> {
         val apiVersions = documentenApiVersionService.detectPluginVersions(caseDefinitionName)
             .mapNotNull { it.third }

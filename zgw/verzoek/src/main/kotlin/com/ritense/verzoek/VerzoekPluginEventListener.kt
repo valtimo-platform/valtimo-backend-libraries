@@ -23,9 +23,11 @@ import com.ritense.authorization.AuthorizationContext
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.document.service.DocumentService
+import com.ritense.logging.withLoggingContext
 import com.ritense.notificatiesapi.event.NotificatiesApiNotificationReceivedEvent
 import com.ritense.notificatiesapi.exception.NotificatiesNotificationEventException
 import com.ritense.objectenapi.ObjectenApiPlugin
@@ -78,32 +80,34 @@ open class VerzoekPluginEventListener(
             val verzoekObjectData = getVerzoekObjectData(objectManagement, event)
             val verzoekTypeProperties = getVerzoekTypeProperties(verzoekObjectData, event) ?: return
             val document = createDocument(verzoekTypeProperties, verzoekObjectData)
-            val zaakTypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
-            val initiatorType = if (verzoekObjectData.has("kvk")) {
-                "kvk"
-            } else {
-                "bsn"
+            withLoggingContext(JsonSchemaDocument::class, document.id()) {
+                val zaakTypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
+                val initiatorType = if (verzoekObjectData.has("kvk")) {
+                    "kvk"
+                } else {
+                    "bsn"
+                }
+
+                val verzoekVariables = mutableMapOf(
+                    "RSIN" to this.rsin.toString(),
+                    "zaakTypeUrl" to zaakTypeUrl.toString(),
+                    "rolTypeUrl" to verzoekTypeProperties.initiatorRoltypeUrl.toString(),
+                    "rolDescription" to verzoekTypeProperties.initiatorRolDescription,
+                    "verzoekObjectUrl" to event.resourceUrl,
+                    "initiatorType" to initiatorType,
+                    "initiatorValue" to verzoekObjectData.get(initiatorType).textValue(),
+                    "processDefinitionKey" to verzoekTypeProperties.processDefinitionKey,
+                    "documentUrls" to getDocumentUrls(verzoekObjectData)
+                )
+
+                addVerzoekVariablesToProcessVariable(verzoekTypeProperties, verzoekObjectData, verzoekVariables)
+
+                val startProcessRequest = StartProcessForDocumentRequest(
+                    document.id(), processToStart, verzoekVariables
+                )
+
+                return@withLoggingContext startProcess(startProcessRequest)
             }
-
-            val verzoekVariables = mutableMapOf(
-                "RSIN" to this.rsin.toString(),
-                "zaakTypeUrl" to zaakTypeUrl.toString(),
-                "rolTypeUrl" to verzoekTypeProperties.initiatorRoltypeUrl.toString(),
-                "rolDescription" to verzoekTypeProperties.initiatorRolDescription,
-                "verzoekObjectUrl" to event.resourceUrl,
-                "initiatorType" to initiatorType,
-                "initiatorValue" to verzoekObjectData.get(initiatorType).textValue(),
-                "processDefinitionKey" to verzoekTypeProperties.processDefinitionKey,
-                "documentUrls" to getDocumentUrls(verzoekObjectData)
-            )
-
-            addVerzoekVariablesToProcessVariable(verzoekTypeProperties, verzoekObjectData, verzoekVariables)
-
-            val startProcessRequest = StartProcessForDocumentRequest(
-                document.id(), processToStart, verzoekVariables
-            )
-
-            startProcess(startProcessRequest)
         }
     }
 

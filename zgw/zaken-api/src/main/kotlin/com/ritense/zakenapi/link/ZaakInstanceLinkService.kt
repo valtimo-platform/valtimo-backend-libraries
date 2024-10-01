@@ -22,7 +22,6 @@ import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
-import mu.withLoggingContext
 import org.springframework.stereotype.Service
 import java.net.URI
 import java.util.UUID
