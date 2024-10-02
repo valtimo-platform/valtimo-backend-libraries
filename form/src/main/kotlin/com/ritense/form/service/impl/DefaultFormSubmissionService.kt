@@ -25,6 +25,7 @@ import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthor
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.exception.DocumentNotFoundException
@@ -37,6 +38,8 @@ import com.ritense.form.service.PrefillFormService
 import com.ritense.form.web.rest.dto.FormSubmissionResult
 import com.ritense.form.web.rest.dto.FormSubmissionResultFailed
 import com.ritense.form.web.rest.dto.FormSubmissionResultSucceeded
+import com.ritense.logging.LoggableResource
+import com.ritense.logging.withLoggingContext
 import com.ritense.processdocument.domain.ProcessDocumentDefinition
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest
@@ -91,11 +94,11 @@ class DefaultFormSubmissionService(
 
     @Transactional
     override fun handleSubmission(
-        processLinkId: UUID,
+        @LoggableResource(resourceType = ProcessLink::class) processLinkId: UUID,
         formData: JsonNode,
-        documentDefinitionName: String?,
-        documentId: String?,
-        taskInstanceId: String?,
+        @LoggableResource("documentDefinitionName") documentDefinitionName: String?,
+        @LoggableResource(resourceType = JsonSchemaDocument::class) documentId: String?,
+        @LoggableResource(resourceType = CamundaTask::class) taskInstanceId: String?,
     ): FormSubmissionResult {
         return try {
             // TODO: Implement else, done by verifying what the processLink contains
@@ -428,10 +431,12 @@ class DefaultFormSubmissionService(
                 FormSubmissionResultFailed(result.errors())
             } else {
                 val submittedDocument = result.resultingDocument().orElseThrow()
-                formFields.forEach { it.postProcess(submittedDocument) }
-                publishExternalDataSubmittedEvent(externalFormData, documentDefinitionName, submittedDocument)
-                valueResolverService.handleValues(submittedDocument.id.id, remainingValueResolverValues)
-                FormSubmissionResultSucceeded(submittedDocument.id().toString())
+                withLoggingContext(JsonSchemaDocument::class, submittedDocument.id()) {
+                    formFields.forEach { it.postProcess(submittedDocument) }
+                    publishExternalDataSubmittedEvent(externalFormData, documentDefinitionName, submittedDocument)
+                    valueResolverService.handleValues(submittedDocument.id.id, remainingValueResolverValues)
+                    FormSubmissionResultSucceeded(submittedDocument.id().toString())
+                }
             }
         } catch (ex: RuntimeException) {
             val referenceId = UUID.randomUUID()
