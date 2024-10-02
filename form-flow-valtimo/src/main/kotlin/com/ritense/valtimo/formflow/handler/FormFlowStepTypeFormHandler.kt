@@ -26,7 +26,12 @@ import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.domain.instance.FormFlowStepInstance
 import com.ritense.formflow.handler.FormFlowStepTypeHandler
+import com.ritense.logging.withLoggingContext
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import org.springframework.stereotype.Component
 
+@Component
+@SkipComponentScan
 class FormFlowStepTypeFormHandler(
     private val formIoFormDefinitionService: FormIoFormDefinitionService,
     private val prefillFormService: PrefillFormService,
@@ -36,19 +41,27 @@ class FormFlowStepTypeFormHandler(
 
     override fun getType() = TYPE
 
-    override fun getTypeProperties(stepInstance: FormFlowStepInstance): FormTypeProperties {
-        val formDefinition = getFormDefinition(stepInstance)
-        prefillWithAdditionalData(formDefinition, stepInstance.instance.getAdditionalProperties())
-        prefillWithSubmissionData(formDefinition, stepInstance)
-        return FormTypeProperties(formDefinition.formDefinition)
+    override fun getTypeProperties(
+        stepInstance: FormFlowStepInstance
+    ): FormTypeProperties {
+        return withLoggingContext(FormFlowStepInstance::class, stepInstance.id) {
+            val formDefinition = getFormDefinition(stepInstance)
+            prefillWithAdditionalData(formDefinition, stepInstance.instance.getAdditionalProperties())
+            prefillWithSubmissionData(formDefinition, stepInstance)
+            FormTypeProperties(formDefinition.formDefinition)
+        }
     }
 
-    private fun getFormDefinition(stepInstance: FormFlowStepInstance): FormIoFormDefinition {
-        val stepDefinitionType = stepInstance.definition.type
-        require(stepDefinitionType.name == getType())
-        val formDefinitionName = (stepDefinitionType.properties as FormStepTypeProperties).definition
-        return formIoFormDefinitionService.getFormDefinitionByName(formDefinitionName)
-            .orElseThrow { IllegalStateException("No FormDefinition found by name $formDefinitionName") }
+    private fun getFormDefinition(
+        stepInstance: FormFlowStepInstance
+    ): FormIoFormDefinition {
+        return withLoggingContext(FormFlowStepInstance::class, stepInstance.id) {
+            val stepDefinitionType = stepInstance.definition.type
+            require(stepDefinitionType.name == getType())
+            val formDefinitionName = (stepDefinitionType.properties as FormStepTypeProperties).definition
+            formIoFormDefinitionService.getFormDefinitionByName(formDefinitionName)
+                .orElseThrow { IllegalStateException("No FormDefinition found by name $formDefinitionName") }
+        }
     }
 
     private fun prefillWithSubmissionData(formDefinition: FormDefinition, stepInstance: FormFlowStepInstance) {
