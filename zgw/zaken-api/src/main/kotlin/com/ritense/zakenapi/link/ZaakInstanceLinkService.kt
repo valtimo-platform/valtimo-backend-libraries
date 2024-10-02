@@ -16,6 +16,8 @@
 
 package com.ritense.zakenapi.link
 
+import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
@@ -29,7 +31,12 @@ import java.util.UUID
 class  ZaakInstanceLinkService(
     private val zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
 ) {
-    fun createZaakInstanceLink(zaakInstanceUrl: URI, zaakInstanceId: UUID, documentId: UUID, zaakTypeUrl: URI): ZaakInstanceLink {
+    fun createZaakInstanceLink(
+        zaakInstanceUrl: URI,
+        zaakInstanceId: UUID,
+        @LoggableResource(resourceType = JsonSchemaDocument::class) documentId: UUID,
+        zaakTypeUrl: URI
+    ): ZaakInstanceLink {
         val zaakInstanceLink = ZaakInstanceLink(
             ZaakInstanceLinkId.newId(UUID.randomUUID()),
             zaakInstanceUrl,
@@ -50,7 +57,9 @@ class  ZaakInstanceLinkService(
     }
 
     @Throws(ZaakInstanceLinkNotFoundException::class)
-    fun getByDocumentId(documentId: UUID): ZaakInstanceLink {
+    fun getByDocumentId(
+        @LoggableResource(resourceType = JsonSchemaDocument::class) documentId: UUID
+    ): ZaakInstanceLink {
         return zaakInstanceLinkRepository.findByDocumentId(documentId)
             ?: throw ZaakInstanceLinkNotFoundException("No ZaakInstanceLink found for document id $documentId")
     }

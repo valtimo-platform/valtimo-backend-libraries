@@ -17,6 +17,7 @@
 package com.ritense.zakenapi.service
 
 import com.ritense.catalogiapi.service.CatalogiService
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey
@@ -32,6 +33,7 @@ import com.ritense.documentenapi.service.DocumentenApiVersionService
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
 import com.ritense.documentenapi.web.rest.dto.DocumentenApiDocumentDto
 import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
+import com.ritense.logging.LoggableResource
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
@@ -60,7 +62,9 @@ class ZaakDocumentService(
     private val documentenApiVersionService: DocumentenApiVersionService,
 ) {
 
-    fun getInformatieObjectenAsRelatedFiles(documentId: UUID): List<RelatedFileDto> {
+    fun getInformatieObjectenAsRelatedFiles(
+        @LoggableResource(resourceType = JsonSchemaDocument::class) documentId: UUID
+    ): List<RelatedFileDto> {
         val zaakUri = zaakUrlProvider.getZaakUrl(documentId)
 
         val zakenApiPlugin = checkNotNull(
@@ -75,7 +79,7 @@ class ZaakDocumentService(
     }
 
     fun getInformatieObjectenAsRelatedFilesPage(
-        documentId: UUID,
+        @LoggableResource(resourceType = JsonSchemaDocument::class) documentId: UUID,
         documentSearchRequest: DocumentSearchRequest,
         pageable: Pageable,
     ): Page<DocumentenApiDocumentDto> {
@@ -242,7 +246,9 @@ class ZaakDocumentService(
 
     }
 
-    fun getZaakByDocumentId(documentId: UUID): ZaakResponse? {
+    fun getZaakByDocumentId(
+        @LoggableResource(resourceType = JsonSchemaDocument::class) documentId: UUID
+    ): ZaakResponse? {
         val url = try {
             zaakUrlProvider.getZaakUrl(documentId)
         } catch (e: ZaakInstanceLinkNotFoundException) {
@@ -256,7 +262,9 @@ class ZaakDocumentService(
         return plugin?.getZaak(url)
     }
 
-    fun getZaakByDocumentIdOrThrow(documentId: UUID): ZaakResponse {
+    fun getZaakByDocumentIdOrThrow(
+        @LoggableResource(resourceType = JsonSchemaDocument::class) documentId: UUID
+    ): ZaakResponse {
         val url = zaakUrlProvider.getZaakUrl(documentId)
         val plugin = pluginService.createInstance(
             ZakenApiPlugin::class.java,
