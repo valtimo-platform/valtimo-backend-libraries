@@ -21,14 +21,16 @@ import com.ritense.resource.service.request.FileUploadRequest
 import com.ritense.resource.web.ObjectContentDTO
 import com.ritense.resource.web.ObjectUrlDTO
 import com.ritense.resource.web.ResourceDTO
-import com.ritense.valtimo.contract.annotation.AllOpen
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.resource.FileStatus
 import com.ritense.valtimo.contract.resource.Resource
+import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.net.URL
 import java.util.UUID
 
-@AllOpen
+@Service
+@SkipComponentScan
 interface ResourceService {
 
     fun store(key: String, multipartFile: MultipartFile): Resource
