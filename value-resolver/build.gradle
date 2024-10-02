@@ -37,6 +37,8 @@ dockerCompose {
 
 dependencies {
     implementation(project(":contract"))
+    implementation(project(":logging"))
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"

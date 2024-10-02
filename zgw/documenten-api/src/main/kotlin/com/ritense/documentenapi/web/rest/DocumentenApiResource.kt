@@ -22,6 +22,8 @@ import com.ritense.documentenapi.service.DocumentenApiVersionService
 import com.ritense.documentenapi.web.rest.dto.ColumnResponse
 import com.ritense.documentenapi.web.rest.dto.DocumentenApiVersionDto
 import com.ritense.documentenapi.web.rest.dto.ModifyDocumentRequest
+import com.ritense.logging.LoggableResource
+import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.core.io.InputStreamResource
@@ -46,7 +48,7 @@ class DocumentenApiResource(
 ) {
     @GetMapping("/v1/documenten-api/{pluginConfigurationId}/files/{documentId}/download")
     fun downloadDocument(
-        @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: String,
+        @LoggableResource(resourceType = PluginConfiguration::class) @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: String,
         @PathVariable(name = "documentId") documentId: String,
     ): ResponseEntity<InputStreamResource> {
 
@@ -70,7 +72,7 @@ class DocumentenApiResource(
 
     @PutMapping("/v1/documenten-api/{pluginConfigurationId}/files/{documentId}")
     fun modifyDocument(
-        @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: String,
+        @LoggableResource(resourceType = PluginConfiguration::class) @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: String,
         @PathVariable(name = "documentId") documentId: String,
         @RequestBody modifyDocumentRequest: ModifyDocumentRequest,
     ): ResponseEntity<RelatedFile> {
@@ -81,7 +83,7 @@ class DocumentenApiResource(
 
     @DeleteMapping("/v1/documenten-api/{pluginConfigurationId}/files/{documentId}")
     fun deleteDocument(
-        @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: String,
+        @LoggableResource(resourceType = PluginConfiguration::class) @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: String,
         @PathVariable(name = "documentId") documentId: String,
     ): ResponseEntity<Unit> {
         documentenApiService.deleteInformatieObject(pluginConfigurationId, documentId)
@@ -92,7 +94,7 @@ class DocumentenApiResource(
 
     @GetMapping("/v1/case-definition/{caseDefinitionName}/zgw-document-column")
     fun getColumns(
-        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<List<ColumnResponse>> {
         val version = documentenApiVersionService.getVersion(caseDefinitionName)
         val columns = documentenApiService.getColumns(caseDefinitionName)
@@ -102,7 +104,7 @@ class DocumentenApiResource(
 
     @GetMapping("/v1/case-definition/{caseDefinitionName}/documenten-api/version")
     fun getApiVersion(
-        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<DocumentenApiVersionDto> {
         val version = documentenApiVersionService.getVersion(caseDefinitionName)
         return ResponseEntity.ok(DocumentenApiVersionDto.of(version))

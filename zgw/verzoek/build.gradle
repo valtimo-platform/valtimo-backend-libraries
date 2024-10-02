@@ -33,16 +33,18 @@ dependencies {
     implementation project(":authorization")
     implementation project(":contract")
     implementation project(":document")
+    implementation project(":logging")
     implementation project(":process-document")
     implementation project(":plugin")
     implementation project(":plugin-authentication:notificaties-api-authentication")
+    implementation project(":value-resolver")
     implementation project(":zgw")
     implementation project(":zgw:catalogi-api")
     implementation project(":zgw:notificaties-api")
-    implementation project(":value-resolver")
-    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation project(":zgw:object-management")
     implementation project(":zgw:objecten-api")
+
+    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-web"
