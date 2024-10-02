@@ -37,6 +37,7 @@ import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
+import mu.KotlinLogging
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.VariableScope
 import org.springframework.context.event.EventListener
@@ -66,6 +67,7 @@ open class PortaalTaakEventListener(
             !event.actie.equals("update", ignoreCase = true) ||
             objectType == null
         ) {
+            logger.debug { "Notificaties API event does not match criteria for completing a portaaltaak. Ignoring." }
             return
         }
 
@@ -221,7 +223,7 @@ open class PortaalTaakEventListener(
         } catch (ex: RuntimeException) {
             throw NotificatiesNotificationEventException(
                 "Could not start process with definition: $processDefinitionKey and businessKey: $businessKey.\n " +
-                        "Reason: ${ex.message}"
+                    "Reason: ${ex.message}"
             )
         }
     }
@@ -239,4 +241,8 @@ open class PortaalTaakEventListener(
             )
     }
 
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 }

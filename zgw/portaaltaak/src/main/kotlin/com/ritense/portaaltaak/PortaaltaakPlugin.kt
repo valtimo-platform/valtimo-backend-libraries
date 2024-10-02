@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.patch.JsonPatchService
+import com.ritense.logging.withLoggingContext
 import com.ritense.notificatiesapi.NotificatiesApiPlugin
 import com.ritense.objectenapi.ObjectenApiPlugin
 import com.ritense.objectenapi.client.ObjectRecord
@@ -49,7 +50,6 @@ import com.ritense.zakenapi.link.ZaakInstanceLinkNotFoundException
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import mu.KLogger
 import mu.KotlinLogging
-import mu.withLoggingContext
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
 import java.net.URI
