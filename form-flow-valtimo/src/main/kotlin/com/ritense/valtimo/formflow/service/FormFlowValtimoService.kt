@@ -25,6 +25,7 @@ import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.domain.instance.FormFlowInstance
+import com.ritense.logging.withLoggingContext
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import org.springframework.stereotype.Service
@@ -43,32 +44,34 @@ class FormFlowValtimoService(
     ) : this(formDefinitionService, objectMapper, true)
 
     fun getVerifiedSubmissionData(submissionData: JsonNode?, formFlowInstance: FormFlowInstance): JsonNode? {
-        if (submissionData == null) {
-            return null
-        }
-
-        val currentStepTypeProperties = formFlowInstance.getCurrentStep().definition.type.properties
-        if (currentStepTypeProperties !is FormStepTypeProperties || !doSubmissionDataFiltering) {
-            return submissionData
-        }
-
-        val jsonPatchBuilder = JsonPatchBuilder()
-        val verifiedSubmissionData = objectMapper.createObjectNode()
-
-        val validJsonPointers = formDefinitionService.getFormDefinitionByName(currentStepTypeProperties.definition)
-            .orElseThrow().inputFields
-            .mapNotNull { field -> FormIoFormDefinition.getKey(field).getOrNull() }
-            .map { fieldKey -> JsonPointer.valueOf("/${fieldKey.replace('.', '/')}") }
-
-        validJsonPointers.forEach { validJsonPointer ->
-            val verifiedSubmissionNode = submissionData.at(validJsonPointer)
-            if (verifiedSubmissionNode !is MissingNode) {
-                jsonPatchBuilder.addJsonNodeValue(verifiedSubmissionData, validJsonPointer, verifiedSubmissionNode)
+        return withLoggingContext(FormFlowInstance::class, formFlowInstance.id) {
+            if (submissionData == null) {
+                return@withLoggingContext null
             }
+
+            val currentStepTypeProperties = formFlowInstance.getCurrentStep().definition.type.properties
+            if (currentStepTypeProperties !is FormStepTypeProperties || !doSubmissionDataFiltering) {
+                return@withLoggingContext submissionData
+            }
+
+            val jsonPatchBuilder = JsonPatchBuilder()
+            val verifiedSubmissionData = objectMapper.createObjectNode()
+
+            val validJsonPointers = formDefinitionService.getFormDefinitionByName(currentStepTypeProperties.definition)
+                .orElseThrow().inputFields
+                .mapNotNull { field -> FormIoFormDefinition.getKey(field).getOrNull() }
+                .map { fieldKey -> JsonPointer.valueOf("/${fieldKey.replace('.', '/')}") }
+
+            validJsonPointers.forEach { validJsonPointer ->
+                val verifiedSubmissionNode = submissionData.at(validJsonPointer)
+                if (verifiedSubmissionNode !is MissingNode) {
+                    jsonPatchBuilder.addJsonNodeValue(verifiedSubmissionData, validJsonPointer, verifiedSubmissionNode)
+                }
+            }
+
+            JsonPatchService.apply(jsonPatchBuilder.build(), verifiedSubmissionData)
+
+            verifiedSubmissionData
         }
-
-        JsonPatchService.apply(jsonPatchBuilder.build(), verifiedSubmissionData)
-
-        return verifiedSubmissionData
     }
 }

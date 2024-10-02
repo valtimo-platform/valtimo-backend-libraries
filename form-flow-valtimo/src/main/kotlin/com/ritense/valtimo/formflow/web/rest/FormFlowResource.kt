@@ -17,10 +17,12 @@
 package com.ritense.valtimo.formflow.web.rest
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
 import com.ritense.formflow.domain.instance.FormFlowStepInstance
 import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 import com.ritense.formflow.service.FormFlowService
+import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.valtimo.formflow.service.FormFlowValtimoService
@@ -53,7 +55,7 @@ class FormFlowResource(
     )
     @Transactional
     fun getFormFlowState(
-        @PathVariable(name = "formFlowInstanceId") instanceId: String,
+        @LoggableResource(resourceType = FormFlowInstance::class) @PathVariable(name = "formFlowInstanceId") instanceId: String,
     ): ResponseEntity<GetFormFlowStateResult>? {
         val instance = formFlowService.getByInstanceIdIfExists(
             FormFlowInstanceId.existingId(instanceId)
@@ -75,8 +77,8 @@ class FormFlowResource(
     )
     @Transactional
     fun completeStep(
-        @PathVariable(name = "formFlowId") formFlowId: String,
-        @PathVariable(name = "stepInstanceId") stepInstanceId: String,
+        @LoggableResource(resourceType = FormFlowInstance::class) @PathVariable(name = "formFlowId") formFlowId: String,
+        @LoggableResource(resourceType = FormFlowStepInstance::class) @PathVariable(name = "stepInstanceId") stepInstanceId: String,
         @RequestBody submissionData: JsonNode?
     ): ResponseEntity<CompleteStepResult> {
         val instance = formFlowService.getByInstanceIdIfExists(FormFlowInstanceId.existingId(formFlowId))!!
@@ -99,7 +101,7 @@ class FormFlowResource(
     )
     @Transactional
     fun backStep(
-        @PathVariable(name = "formFlowId") formFlowId: String,
+        @LoggableResource(resourceType = FormFlowInstance::class) @PathVariable(name = "formFlowId") formFlowId: String,
         @RequestBody incompleteSubmissionData: JsonNode?
     ): ResponseEntity<GetFormFlowStateResult> {
         val instance = formFlowService.getByInstanceIdIfExists(FormFlowInstanceId.existingId(formFlowId))!!
@@ -121,7 +123,7 @@ class FormFlowResource(
     )
     @Transactional
     fun saveStep(
-        @PathVariable(name = "formFlowId") formFlowId: String,
+        @LoggableResource(resourceType = FormFlowInstance::class) @PathVariable(name = "formFlowId") formFlowId: String,
         @RequestBody incompleteSubmissionData: JsonNode?
     ): ResponseEntity<Unit> {
         val instance = formFlowService.getByInstanceIdIfExists(FormFlowInstanceId.existingId(formFlowId))!!
@@ -135,8 +137,8 @@ class FormFlowResource(
     @PostMapping("/v1/form-flow/instance/{formFlowId}/step/instance/{stepInstanceId}/to/step/instance/{targetStepInstanceId}")
     @Transactional
     fun navigateToStep(
-        @PathVariable(name = "formFlowId") formFlowId: String,
-        @PathVariable(name = "stepInstanceId") stepInstanceId: String,
+        @LoggableResource(resourceType = FormFlowInstance::class) @PathVariable(name = "formFlowId") formFlowId: String,
+        @LoggableResource(resourceType = FormFlowStepInstance::class) @PathVariable(name = "stepInstanceId") stepInstanceId: String,
         @PathVariable(name = "targetStepInstanceId") targetStepInstanceId: String,
         @RequestBody incompleteSubmissionData: JsonNode?
     ): ResponseEntity<GetFormFlowStateResult> {
@@ -158,7 +160,7 @@ class FormFlowResource(
     @GetMapping("/v1/form-flow/instance/{formFlowId}/breadcrumbs")
     @Transactional
     fun getBreadcrumbs(
-        @PathVariable(name = "formFlowId") formFlowId: String,
+        @LoggableResource(resourceType = FormFlowInstance::class) @PathVariable(name = "formFlowId") formFlowId: String,
     ): ResponseEntity<FormFlowBreadcrumbsResponse> {
         val instance = formFlowService.getByInstanceIdIfExists(FormFlowInstanceId.existingId(formFlowId))!!
         val breadcrumbs = formFlowService.getBreadcrumbs(instance)
