@@ -16,6 +16,8 @@
 
 package com.ritense.zakenapi.service
 
+import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.logging.withLoggingContext
 import com.ritense.zakenapi.event.ResourceStorageDocumentMetadataAvailableEvent
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.context.ApplicationEventPublisher
@@ -25,13 +27,15 @@ class UploadProcessDelegate(
 ) {
 
     fun publishFileUploadedEvent(execution: DelegateExecution) {
-        val event = ResourceStorageDocumentMetadataAvailableEvent(
-            this,
-            resourceId = execution.getVariable("resourceId") as String,
-            documentId = execution.getVariable("documentId") as? String ?: "",
-            documentUrl = execution.getVariable("documentUrl") as? String ?: "",
-            downloadUrl = execution.getVariable("downloadUrl") as? String ?: "",
-        )
-        eventPublisher.publishEvent(event)
+        withLoggingContext(JsonSchemaDocument::class, execution.processBusinessKey) {
+            val event = ResourceStorageDocumentMetadataAvailableEvent(
+                this,
+                resourceId = execution.getVariable("resourceId") as String,
+                documentId = execution.getVariable("documentId") as? String ?: "",
+                documentUrl = execution.getVariable("documentUrl") as? String ?: "",
+                downloadUrl = execution.getVariable("downloadUrl") as? String ?: "",
+            )
+            eventPublisher.publishEvent(event)
+        }
     }
 }
