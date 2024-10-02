@@ -16,6 +16,8 @@
 
 package com.ritense.zakenapi.web.rest
 
+import com.ritense.logging.LoggableResource
+import com.ritense.logging.withLoggingContext
 import com.ritense.zakenapi.domain.ZaakTypeLink
 import com.ritense.zakenapi.service.ZaakTypeLinkService
 import com.ritense.zakenapi.web.rest.request.CreateZaakTypeLinkRequest
@@ -23,27 +25,35 @@ import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.noContent
 import org.springframework.http.ResponseEntity.ok
 
-open class DefaultZaakTypeLinkResource(
+class DefaultZaakTypeLinkResource(
     private val zaakTypeLinkService: ZaakTypeLinkService
 ) : ZaakTypeLinkResource {
 
-    override fun get(documentDefinitionName: String): ResponseEntity<ZaakTypeLink?> {
+    override fun get(
+        @LoggableResource("documentDefinitionName") documentDefinitionName: String
+    ): ResponseEntity<ZaakTypeLink?> {
         return when (val zaakTypeLink = zaakTypeLinkService.get(documentDefinitionName)) {
             null -> noContent().build()
             else -> ok(zaakTypeLink)
         }
     }
 
-    override fun getByProcess(processDefinitionKey: String): ResponseEntity<List<ZaakTypeLink>> {
+    override fun getByProcess(
+        @LoggableResource("processDefinitionKey") processDefinitionKey: String
+    ): ResponseEntity<List<ZaakTypeLink>> {
         return ok(zaakTypeLinkService.getByProcess(processDefinitionKey))
     }
 
     override fun create(request: CreateZaakTypeLinkRequest): ResponseEntity<ZaakTypeLink> {
-        val result = zaakTypeLinkService.createZaakTypeLink(request)
-        return ok(result)
+        return withLoggingContext("documentDefinitionName", request.documentDefinitionName) {
+            val result = zaakTypeLinkService.createZaakTypeLink(request)
+            ok(result)
+        }
     }
 
-    override fun remove(documentDefinitionName: String): ResponseEntity<Void> {
+    override fun remove(
+        @LoggableResource("documentDefinitionName") documentDefinitionName: String
+    ): ResponseEntity<Void> {
         zaakTypeLinkService.deleteZaakTypeLinkBy(documentDefinitionName)
         return noContent().build()
     }

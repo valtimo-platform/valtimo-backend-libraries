@@ -18,20 +18,29 @@ package com.ritense.zakenapi.provider
 
 import com.ritense.catalogiapi.exception.ZaakTypeLinkNotFoundException
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
+import com.ritense.logging.LoggableResource
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.zakenapi.service.ZaakTypeLinkService
+import org.springframework.stereotype.Component
 import java.net.URI
 
+@Component
+@SkipComponentScan
 class DefaultZaaktypeUrlProvider(
     private val zaakTypeLinkService: ZaakTypeLinkService
 ) : ZaaktypeUrlProvider {
 
-    override fun getZaaktypeUrl(documentDefinitionName: String): URI {
+    override fun getZaaktypeUrl(
+        @LoggableResource("documentDefinitionName") documentDefinitionName: String
+    ): URI {
         val zaakTypeLink = zaakTypeLinkService.get(documentDefinitionName)
             ?: throw ZaakTypeLinkNotFoundException("For document definition with name $documentDefinitionName")
         return zaakTypeLink.zaakTypeUrl
     }
 
-    override fun getZaaktypeUrlByCaseDefinitionName(caseDefinitionName: String): URI {
+    override fun getZaaktypeUrlByCaseDefinitionName(
+        @LoggableResource("documentDefinitionName") caseDefinitionName: String
+    ): URI {
         val zaakTypeLink = zaakTypeLinkService.get(caseDefinitionName)
             ?: throw ZaakTypeLinkNotFoundException("For case definition with name $caseDefinitionName")
         return zaakTypeLink.zaakTypeUrl

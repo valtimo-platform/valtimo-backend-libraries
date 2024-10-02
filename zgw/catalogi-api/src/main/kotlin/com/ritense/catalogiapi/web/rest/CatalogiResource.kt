@@ -24,6 +24,7 @@ import com.ritense.catalogiapi.web.rest.result.ResultaattypeDto
 import com.ritense.catalogiapi.web.rest.result.RoltypeDto
 import com.ritense.catalogiapi.web.rest.result.StatustypeDto
 import com.ritense.catalogiapi.web.rest.result.ZaaktypeDto
+import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
@@ -40,7 +41,7 @@ class CatalogiResource(
 ) {
     @GetMapping("/v1/documentdefinition/{documentDefinitionName}/zaaktype/documenttype")
     fun getZaakObjecttypes(
-        @PathVariable(name = "documentDefinitionName") documentDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "documentDefinitionName") documentDefinitionName: String
     ): ResponseEntity<List<InformatieobjecttypeDto>> {
         val zaakObjectTypes = catalogiService.getInformatieobjecttypes(documentDefinitionName).map {
             InformatieobjecttypeDto(
@@ -53,7 +54,7 @@ class CatalogiResource(
 
     @GetMapping("/v1/case-definition/{caseDefinitionName}/zaaktype/roltype")
     fun getZaakRoltypes(
-        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<List<RoltypeDto>> {
         val zaakRolTypes = catalogiService.getRoltypes(caseDefinitionName).map {
             RoltypeDto(
@@ -66,7 +67,7 @@ class CatalogiResource(
 
     @GetMapping("/v1/case-definition/{caseDefinitionName}/zaaktype/statustype")
     fun getZaakStatustypen(
-        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<List<StatustypeDto>> {
         val zaakStatusTypes = catalogiService.getStatustypen(caseDefinitionName).map {
             StatustypeDto(
@@ -79,7 +80,7 @@ class CatalogiResource(
 
     @GetMapping("/v1/case-definition/{caseDefinitionName}/zaaktype/resultaattype")
     fun getZaakResultaattypen(
-        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<List<ResultaattypeDto>> {
         val zaakResultaatTypes = catalogiService.getResultaattypen(caseDefinitionName).map {
             ResultaattypeDto(
@@ -92,7 +93,7 @@ class CatalogiResource(
 
     @GetMapping("/v1/case-definition/{caseDefinitionName}/zaaktype/besluittype")
     fun getZaakBesuilttypen(
-        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<List<BesluittypeDto>> {
         val zaakBesluitTypes = catalogiService.getBesluittypen(caseDefinitionName).map {
             BesluittypeDto(
@@ -111,7 +112,7 @@ class CatalogiResource(
 
     @GetMapping("/management/v1/case-definition/{caseDefinitionName}/catalogi-eigenschappen")
     fun getEigenschappen(
-        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<List<EigenschapDto>> {
         val eigenschappen = catalogiService.getEigenschappen(caseDefinitionName)
             .map { EigenschapDto.of(it) }
