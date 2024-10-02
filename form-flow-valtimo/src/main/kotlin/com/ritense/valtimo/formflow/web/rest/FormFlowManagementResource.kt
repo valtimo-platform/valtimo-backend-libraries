@@ -19,6 +19,7 @@ package com.ritense.valtimo.formflow.web.rest
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.service.FormFlowDeploymentService
 import com.ritense.formflow.service.FormFlowService
+import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.valtimo.formflow.web.rest.result.FormFlowDefinitionDto
@@ -58,7 +59,7 @@ class FormFlowManagementResource(
     @GetMapping("/v1/form-flow/definition/{definitionKey}/{definitionVersion}")
     @Transactional
     fun getFormFlowDefinitionById(
-        @PathVariable definitionKey: String,
+        @LoggableResource("formFlowDefinitionKey") @PathVariable definitionKey: String,
         @PathVariable definitionVersion: Long,
     ): ResponseEntity<FormFlowDefinitionDto> {
         val definition = formFlowService.findDefinition(FormFlowDefinitionId(definitionKey, definitionVersion))
@@ -69,7 +70,7 @@ class FormFlowManagementResource(
     @DeleteMapping("/v1/form-flow/definition/{definitionKey}")
     @Transactional
     fun deleteFormFlowDefinition(
-        @PathVariable definitionKey: String,
+        @LoggableResource("formFlowDefinitionKey") @PathVariable definitionKey: String,
     ): ResponseEntity<Unit> {
         if (formFlowDeploymentService.isAutoDeployed(definitionKey)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
@@ -93,7 +94,7 @@ class FormFlowManagementResource(
     @PutMapping("/v1/form-flow/definition/{definitionKey}")
     @Transactional
     fun updateFormFlowDefinition(
-        @PathVariable definitionKey: String,
+        @LoggableResource("formFlowDefinitionKey") @PathVariable definitionKey: String,
         @RequestBody definitionDto: FormFlowDefinitionDto
     ): ResponseEntity<FormFlowDefinitionDto> {
         val readOnly = formFlowDeploymentService.isAutoDeployed(definitionKey)
