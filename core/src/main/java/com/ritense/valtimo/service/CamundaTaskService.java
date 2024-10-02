@@ -159,9 +159,10 @@ public class CamundaTaskService {
 
     @Transactional(readOnly = true)
     public CamundaTask findTaskById(String taskId) {
-        var spec = getAuthorizationSpecification(VIEW);
-        return Optional.ofNullable(findTask(spec.and(byId(taskId))))
+        var task = camundaTaskRepository.findById(taskId)
             .orElseThrow(() -> new TaskNotFoundException(taskId));
+        requirePermission(task, VIEW);
+        return task;
     }
 
     @Transactional
@@ -319,6 +320,14 @@ public class CamundaTaskService {
     public CamundaTask findTask(Specification<CamundaTask> specification) {
         var spec = getAuthorizationSpecification(VIEW);
         return camundaTaskRepository.findOne(spec.and(specification)).orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public CamundaTask findTaskOrThrow(Specification<CamundaTask> specification) {
+        var task = camundaTaskRepository.findOne(specification)
+            .orElseThrow(TaskNotFoundException::new);
+        requirePermission(task, VIEW);
+        return task;
     }
 
     @Transactional(readOnly = true)
