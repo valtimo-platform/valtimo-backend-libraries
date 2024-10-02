@@ -28,6 +28,8 @@ import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.service.PluginService
 import mu.KotlinLogging
 import org.springframework.data.domain.PageRequest
+import org.springframework.http.HttpStatus
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
@@ -71,6 +73,7 @@ class ObjectManagementFacade(
         objectName: String,
         searchString: String?,
         pageNumber: Int,
+        ordering: String?,
         pageSize: Int
     ): ObjectsList {
         logger.debug {
@@ -82,6 +85,7 @@ class ObjectManagementFacade(
             accessObject = accessObject,
             objectName = objectName,
             searchString = searchString,
+            ordering = ordering,
             pageNumber = pageNumber,
             pageSize = pageSize
         )
@@ -91,7 +95,8 @@ class ObjectManagementFacade(
     // It is advised to use getObjectsPaged() instead, where possible.
     fun getObjectsUnpaged(
         objectName: String,
-        searchString: String?
+        searchString: String?,
+        ordering: String?
     ): ObjectsList {
         logger.debug { "get objects unpaged objectName=$objectName searchString=$searchString" }
         val accessObject = getAccessObject(objectName)
@@ -107,6 +112,7 @@ class ObjectManagementFacade(
                 accessObject = accessObject,
                 objectName = objectName,
                 searchString = searchString,
+                ordering = ordering,
                 pageNumber = pageNumber,
                 pageSize = 500
             )
@@ -185,6 +191,22 @@ class ObjectManagementFacade(
         }
     }
 
+    fun deleteObject(
+        objectName: String,
+        objectId: UUID
+    ): HttpStatus {
+        val accessObject = getAccessObject(objectName)
+
+        try {
+            logger.trace { "Deleting object '$objectId' of type '${accessObject.objectManagement.objecttypeId}' from Objecten API using plugin ${accessObject.objectManagement.objectenApiPluginConfigurationId}" }
+            return accessObject.objectenApiPlugin.deleteObject(
+                URI("${accessObject.objectenApiPlugin.url}objects/$objectId")
+            )
+        } catch (ex: HttpClientErrorException) {
+            throw IllegalStateException("Error while deleting object $objectId. Response from Objects API: ${ex.responseBodyAsString}", ex)
+        }
+    }
+
     private fun getAccessObject(objectName: String): ObjectManagementAccessObject {
         logger.debug { "Get access object objectName=$objectName" }
         val objectManagement = objectManagementRepository.findByTitle(objectName)
@@ -223,6 +245,7 @@ class ObjectManagementFacade(
         accessObject: ObjectManagementAccessObject,
         objectName: String,
         searchString: String?,
+        ordering: String? = "",
         pageNumber: Int,
         pageSize: Int
     ): ObjectsList {
@@ -233,6 +256,7 @@ class ObjectManagementFacade(
                 accessObject.objectTypenApiPlugin.url,
                 accessObject.objectManagement.objecttypeId,
                 searchString,
+                ordering,
                 PageRequest.of(pageNumber, pageSize)
             )
         } else {
@@ -242,6 +266,7 @@ class ObjectManagementFacade(
                 accessObject.objectTypenApiPlugin.url,
                 accessObject.objectenApiPlugin.url,
                 accessObject.objectManagement.objecttypeId,
+                ordering,
                 PageRequest.of(pageNumber, pageSize)
             )
         }
