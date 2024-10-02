@@ -20,6 +20,9 @@ import com.ritense.form.service.IntermediateSubmissionService
 import com.ritense.form.web.rest.dto.IntermediateSaveRequest
 import com.ritense.form.web.rest.dto.IntermediateSubmission
 import com.ritense.form.web.rest.dto.toResponse
+import com.ritense.logging.LoggableResource
+import com.ritense.logging.withLoggingContext
+import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
@@ -39,7 +42,9 @@ class IntermediateSubmissionResource(
 ) {
 
     @GetMapping
-    fun getIntermediateSubmission(@RequestParam taskInstanceId: String): ResponseEntity<IntermediateSubmission> {
+    fun getIntermediateSubmission(
+        @LoggableResource(resourceType = CamundaTask::class) @RequestParam taskInstanceId: String
+    ): ResponseEntity<IntermediateSubmission> {
         val intermediateSubmission = intermediateSubmissionService.get(taskInstanceId)
         return intermediateSubmission?.let { ResponseEntity.ok(it.toResponse()) } ?: ResponseEntity.notFound().build()
     }
@@ -48,15 +53,19 @@ class IntermediateSubmissionResource(
     fun storeIntermediateSubmission(
         @RequestBody request: IntermediateSaveRequest
     ): ResponseEntity<IntermediateSubmission> {
-        val intermediateSubmission = intermediateSubmissionService.store(
-            submission = request.submission,
-            taskInstanceId = request.taskInstanceId
-        )
-        return ResponseEntity.ok(intermediateSubmission.toResponse())
+        return withLoggingContext(CamundaTask::class, request.taskInstanceId) {
+            val intermediateSubmission = intermediateSubmissionService.store(
+                submission = request.submission,
+                taskInstanceId = request.taskInstanceId
+            )
+            ResponseEntity.ok(intermediateSubmission.toResponse())
+        }
     }
 
     @DeleteMapping
-    fun clearIntermediateSubmission(@RequestParam taskInstanceId: String): ResponseEntity<Void> {
+    fun clearIntermediateSubmission(
+        @LoggableResource(resourceType = CamundaTask::class) @RequestParam taskInstanceId: String
+    ): ResponseEntity<Void> {
         intermediateSubmissionService.clear(
             taskInstanceId = taskInstanceId
         )

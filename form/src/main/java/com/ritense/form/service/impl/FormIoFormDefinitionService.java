@@ -23,12 +23,15 @@ import com.ritense.form.domain.request.ModifyFormDefinitionRequest;
 import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.form.web.rest.dto.FormOption;
+import com.ritense.logging.LoggableResource;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import static com.ritense.logging.LoggingContextKt.withLoggingContext;
 
 public class FormIoFormDefinitionService implements FormDefinitionService {
 
@@ -57,54 +60,69 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     }
 
     @Override
-    public Optional<FormIoFormDefinition> getFormDefinitionById(UUID formDefinitionId) {
+    public Optional<FormIoFormDefinition> getFormDefinitionById(
+        @LoggableResource(resourceType = FormIoFormDefinition.class) UUID formDefinitionId
+    ) {
         return formDefinitionRepository.findById(formDefinitionId);
     }
 
     @Override
-    public Optional<FormIoFormDefinition> getFormDefinitionByName(String name) {
+    public Optional<FormIoFormDefinition> getFormDefinitionByName(
+        @LoggableResource("formDefinitionName") String name
+    ) {
         return formDefinitionRepository.findByName(name);
     }
 
     @Override
-    public Optional<FormIoFormDefinition> getFormDefinitionByNameIgnoringCase(String name) {
+    public Optional<FormIoFormDefinition> getFormDefinitionByNameIgnoringCase(
+        @LoggableResource("formDefinitionName") String name
+    ) {
         return formDefinitionRepository.findByNameIgnoreCase(name);
     }
 
     @Override
     @Transactional
     public FormIoFormDefinition createFormDefinition(CreateFormDefinitionRequest request) {
-        if (formDefinitionRepository.findByName(request.getName()).isPresent()) {
-            throw new IllegalArgumentException("Duplicate name for new form: " + request.getName());
-        }
-        return formDefinitionRepository.save(
-            new FormIoFormDefinition(
-                UUID.randomUUID(),
-                request.getName(),
-                request.getFormDefinition(),
-                request.isReadOnly()
-            )
-        );
+        return withLoggingContext("formDefinitionName", request.getName(), () -> {
+            if (formDefinitionRepository.findByName(request.getName()).isPresent()) {
+                throw new IllegalArgumentException("Duplicate name for new form: " + request.getName());
+            }
+            return formDefinitionRepository.save(
+                new FormIoFormDefinition(
+                    UUID.randomUUID(),
+                    request.getName(),
+                    request.getFormDefinition(),
+                    request.isReadOnly()
+                )
+            );
+        });
     }
 
     @Override
     @Transactional
     public FormIoFormDefinition modifyFormDefinition(ModifyFormDefinitionRequest request) {
-        if (!formDefinitionRepository.existsById(request.getId())) {
-            throw new RuntimeException("Form definition not found with id " + request.getId().toString());
-        }
-        return formDefinitionRepository
-            .findById(request.getId())
-            .map(formIoFormDefinition -> {
-                formIoFormDefinition.changeName(request.getName());
-                formIoFormDefinition.changeDefinition(request.getFormDefinition());
-                return formDefinitionRepository.save(formIoFormDefinition);
-            }).orElseThrow();
+        return withLoggingContext("formDefinitionName", request.getName(), () -> {
+            if (!formDefinitionRepository.existsById(request.getId())) {
+                throw new RuntimeException("Form definition not found with id " + request.getId().toString());
+            }
+            return formDefinitionRepository
+                .findById(request.getId())
+                .map(formIoFormDefinition -> {
+                    formIoFormDefinition.changeName(request.getName());
+                    formIoFormDefinition.changeDefinition(request.getFormDefinition());
+                    return formDefinitionRepository.save(formIoFormDefinition);
+                }).orElseThrow();
+        });
     }
 
     @Override
     @Transactional
-    public FormIoFormDefinition modifyFormDefinition(UUID id, String name, String definition, Boolean readOnly) {
+    public FormIoFormDefinition modifyFormDefinition(
+        @LoggableResource(resourceType = FormIoFormDefinition.class) UUID id,
+        String name,
+        String definition,
+        Boolean readOnly
+    ) {
         return formDefinitionRepository
             .findById(id)
             .map(
@@ -122,12 +140,16 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
 
     @Override
     @Transactional
-    public void deleteFormDefinition(UUID formDefinitionId) {
+    public void deleteFormDefinition(
+        @LoggableResource(resourceType = FormIoFormDefinition.class) UUID formDefinitionId
+    ) {
         formDefinitionRepository.deleteById(formDefinitionId);
     }
 
     @Override
-    public boolean formDefinitionExistsById(UUID id) {
+    public boolean formDefinitionExistsById(
+        @LoggableResource(resourceType = FormIoFormDefinition.class) UUID id
+    ) {
         return formDefinitionRepository.existsById(id);
     }
 
