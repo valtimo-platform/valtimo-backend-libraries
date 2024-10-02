@@ -42,7 +42,7 @@ class ProcessLinkActivityService(
     fun openTask(
         @LoggableResource(resourceType = CamundaTask::class) taskId: UUID
     ): ProcessLinkActivityResult<*> {
-        val task = taskService.findTask(
+        val task = taskService.findTaskOrThrow(
             byId(taskId.toString())
                 .and(byActive())
         )
