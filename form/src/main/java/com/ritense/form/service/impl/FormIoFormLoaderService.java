@@ -21,10 +21,12 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.Document;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.form.service.FormLoaderService;
 import com.ritense.form.service.PrefillFormService;
+import com.ritense.logging.LoggableResource;
 import java.util.Optional;
 
 public class FormIoFormLoaderService implements FormLoaderService {
@@ -41,15 +43,17 @@ public class FormIoFormLoaderService implements FormLoaderService {
     }
 
     @Override
-    public Optional<JsonNode> getFormDefinitionByName(final String formDefinitionName) {
+    public Optional<JsonNode> getFormDefinitionByName(
+        @LoggableResource("formDefinitionName")final String formDefinitionName
+    ) {
         assertArgumentNotNull(formDefinitionName, "formDefinitionName is required");
         return formDefinitionRepository.findByName(formDefinitionName).map(FormIoFormDefinition::asJson);
     }
 
     @Override
     public Optional<JsonNode> getFormDefinitionByNamePreFilled(
-        final String formDefinitionName,
-        final Document.Id documentId
+        @LoggableResource("formDefinitionName") final String formDefinitionName,
+        @LoggableResource(resourceType = JsonSchemaDocument.class) final Document.Id documentId
     ) {
         assertArgumentNotNull(documentId, "documentId is required");
         return AuthorizationContext.runWithoutAuthorization(

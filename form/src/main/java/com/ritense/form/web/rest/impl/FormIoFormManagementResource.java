@@ -16,13 +16,16 @@
 
 package com.ritense.form.web.rest.impl;
 
+import static com.ritense.logging.LoggingContextKt.withLoggingContext;
 import static org.springframework.data.domain.Sort.Direction.ASC;
 
 import com.ritense.form.domain.FormDefinition;
+import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.form.domain.request.ModifyFormDefinitionRequest;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.form.web.rest.FormManagementResource;
+import com.ritense.logging.LoggableResource;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -57,14 +60,17 @@ public class FormIoFormManagementResource implements FormManagementResource {
     }
 
     @Override
-    public ResponseEntity<? extends FormDefinition> getFormDefinitionById(@PathVariable String formDefinitionId) {
+    public ResponseEntity<? extends FormDefinition> getFormDefinitionById(
+        @LoggableResource(resourceType = FormIoFormDefinition.class) @PathVariable String formDefinitionId) {
         return formDefinitionService.getFormDefinitionById(UUID.fromString(formDefinitionId))
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.noContent().build());
     }
 
     @Override
-    public ResponseEntity<? extends Boolean> getExistsByName(@PathVariable String name) {
+    public ResponseEntity<? extends Boolean> getExistsByName(
+        @LoggableResource("formDefinitionName") @PathVariable String name
+    ) {
         return ResponseEntity.ok(formDefinitionService.getFormDefinitionByName(name).isPresent());
     }
 
@@ -75,11 +81,15 @@ public class FormIoFormManagementResource implements FormManagementResource {
 
     @Override
     public ResponseEntity<? extends FormDefinition> modifyFormDefinition(@Valid @RequestBody ModifyFormDefinitionRequest request) {
-        return parseResult(formDefinitionService.modifyFormDefinition(request));
+        return withLoggingContext(FormIoFormDefinition.class, request.getId().toString(), () -> {
+            return parseResult(formDefinitionService.modifyFormDefinition(request));
+        });
     }
 
     @Override
-    public ResponseEntity<Void> deleteFormDefinition(@PathVariable String formDefinitionId) {
+    public ResponseEntity<Void> deleteFormDefinition(
+        @LoggableResource(resourceType = FormIoFormDefinition.class) @PathVariable String formDefinitionId
+    ) {
         formDefinitionService.deleteFormDefinition(UUID.fromString(formDefinitionId));
         return ResponseEntity.noContent().build();
     }
