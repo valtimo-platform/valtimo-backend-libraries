@@ -19,6 +19,7 @@ package com.ritense.valtimo.formflow
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
+import com.ritense.logging.withLoggingContext
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import org.camunda.bpm.engine.RuntimeService
 
@@ -28,26 +29,28 @@ abstract class AbstractFormFlowLinkTaskProvider(
 ) {
 
     protected fun getAdditionalProperties(task: CamundaTask): Map<String, Any> {
-        val processInstance = runtimeService.createProcessInstanceQuery()
-            .processInstanceId(task.getProcessInstanceId())
-            .singleResult()
+        return withLoggingContext(CamundaTask::class, task.id) {
+            val processInstance = runtimeService.createProcessInstanceQuery()
+                .processInstanceId(task.getProcessInstanceId())
+                .singleResult()
 
-        val additionalProperties = mutableMapOf(
-            "processInstanceId" to task.getProcessInstanceId(),
-            "processInstanceBusinessKey" to processInstance.businessKey,
-            "taskInstanceId" to task.id
-        )
+            val additionalProperties = mutableMapOf(
+                "processInstanceId" to task.getProcessInstanceId(),
+                "processInstanceBusinessKey" to processInstance.businessKey,
+                "taskInstanceId" to task.id
+            )
 
-        try {
-            val document = AuthorizationContext.runWithoutAuthorization { documentService[processInstance.businessKey] }
-            if (document != null) {
-                additionalProperties["documentId"] = processInstance.businessKey
+            try {
+                val document = AuthorizationContext.runWithoutAuthorization { documentService[processInstance.businessKey] }
+                if (document != null) {
+                    additionalProperties["documentId"] = processInstance.businessKey
+                }
+            } catch (e: DocumentNotFoundException) {
+                // we do nothing here, intentional
             }
-        } catch (e: DocumentNotFoundException) {
-            // we do nothing here, intentional
-        }
 
-        return additionalProperties
+            additionalProperties
+        }
     }
 
     companion object {

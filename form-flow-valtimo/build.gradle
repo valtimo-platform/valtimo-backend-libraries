@@ -35,11 +35,12 @@ dockerCompose {
 
 dependencies {
     api project(":form-flow")
-    implementation project(":outbox")
-    implementation project(":process-link")
-    implementation project(":process-document")
     implementation project(":exporter")
     implementation project(":importer")
+    implementation project(":logging")
+    implementation project(":outbox")
+    implementation project(":process-document")
+    implementation project(":process-link")
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
