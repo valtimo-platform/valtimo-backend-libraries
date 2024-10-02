@@ -22,12 +22,14 @@ import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider
 import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.documentenapi.domain.DocumentenApiVersion
+import com.ritense.logging.LoggableResource
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
@@ -74,19 +76,27 @@ class DocumentenApiVersionService(
         return documentenApiVersions.values.sortedDescending()
     }
 
-    fun getVersion(caseDefinitionName: String): DocumentenApiVersion {
+    fun getVersion(
+        @LoggableResource("documentDefinitionName") caseDefinitionName: String
+    ): DocumentenApiVersion {
         return getPluginVersion(caseDefinitionName).third ?: MINIMUM_VERSION
     }
 
-    fun getVersionByDocumentId(documentId: UUID): DocumentenApiVersion {
+    fun getVersionByDocumentId(
+        @LoggableResource(resourceType = JsonSchemaDocument::class) documentId: UUID
+    ): DocumentenApiVersion {
         return getVersion(documentService.get(documentId.toString()).definitionId().name())
     }
 
-    fun getPluginVersion(caseDefinitionName: String): Triple<PluginConfiguration?, DocumentenApiPlugin?, DocumentenApiVersion?> {
+    fun getPluginVersion(
+        @LoggableResource("documentDefinitionName") caseDefinitionName: String
+    ): Triple<PluginConfiguration?, DocumentenApiPlugin?, DocumentenApiVersion?> {
         return detectPluginVersions(caseDefinitionName).lastOrNull() ?: Triple(null, null, null)
     }
 
-    fun detectPluginVersions(caseDefinitionName: String): List<Triple<PluginConfiguration, DocumentenApiPlugin, DocumentenApiVersion?>> {
+    fun detectPluginVersions(
+        @LoggableResource("documentDefinitionName") caseDefinitionName: String
+    ): List<Triple<PluginConfiguration, DocumentenApiPlugin, DocumentenApiVersion?>> {
         return detectPluginConfigurations(caseDefinitionName)
             .map {  pluginConfiguration ->
                 val plugin = pluginService.createInstance(pluginConfiguration) as DocumentenApiPlugin
@@ -97,7 +107,9 @@ class DocumentenApiVersionService(
             .toList()
     }
 
-    fun detectPluginConfigurations(caseDefinitionName: String): List<PluginConfiguration> {
+    fun detectPluginConfigurations(
+        @LoggableResource("documentDefinitionName") caseDefinitionName: String
+    ): List<PluginConfiguration> {
         documentDefinitionService.requirePermission(caseDefinitionName, JsonSchemaDocumentDefinitionActionProvider.VIEW)
         val link = documentDefinitionProcessLinkService.getDocumentDefinitionProcessLink(
             caseDefinitionName,

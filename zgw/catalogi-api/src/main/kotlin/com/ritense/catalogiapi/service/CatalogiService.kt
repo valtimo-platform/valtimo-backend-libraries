@@ -24,6 +24,7 @@ import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.exception.ZaakTypeLinkNotFoundException
+import com.ritense.logging.LoggableResource
 import com.ritense.plugin.service.PluginConfigurationSearchParameters
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
@@ -39,7 +40,9 @@ class CatalogiService(
     val zaaktypeUrlProvider: ZaaktypeUrlProvider,
     val pluginService: PluginService
 ) {
-    fun getInformatieobjecttypes(documentDefinitionName: String): List<Informatieobjecttype> {
+    fun getInformatieobjecttypes(
+        @LoggableResource("documentDefinitionName") documentDefinitionName: String
+    ): List<Informatieobjecttype> {
         logger.debug { "Getting documenttypes for document definition $documentDefinitionName" }
         val zaakTypeUrl = getZaaktypeUrlByDocumentDefinitionName(documentDefinitionName) ?: return emptyList()
         val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
@@ -54,7 +57,9 @@ class CatalogiService(
         return catalogiApiPluginInstance?.getInformatieobjecttype(typeUrl)
     }
 
-    fun getRoltypes(caseDefinitionName: String): List<Roltype> {
+    fun getRoltypes(
+        @LoggableResource("documentDefinitionName") caseDefinitionName: String
+    ): List<Roltype> {
         logger.debug { "Getting roltypes for case definition $caseDefinitionName" }
         val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionName(caseDefinitionName) ?: return emptyList()
         val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
@@ -62,7 +67,9 @@ class CatalogiService(
         return catalogiApiPluginInstance.getRoltypes(zaakTypeUrl)
     }
 
-    fun getStatustypen(caseDefinitionName: String): List<Statustype> {
+    fun getStatustypen(
+        @LoggableResource("documentDefinitionName") caseDefinitionName: String
+    ): List<Statustype> {
         logger.debug { "Getting statustypen for case definition $caseDefinitionName" }
         val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionName(caseDefinitionName) ?: return emptyList()
         val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
@@ -70,7 +77,9 @@ class CatalogiService(
         return catalogiApiPluginInstance.getStatustypen(zaakTypeUrl)
     }
 
-    fun getResultaattypen(caseDefinitionName: String): List<Resultaattype> {
+    fun getResultaattypen(
+        @LoggableResource("documentDefinitionName") caseDefinitionName: String
+    ): List<Resultaattype> {
         logger.debug { "Getting resultaattypen for case definition $caseDefinitionName" }
         val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionName(caseDefinitionName) ?: return emptyList()
         val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
@@ -78,7 +87,9 @@ class CatalogiService(
         return catalogiApiPluginInstance.getResultaattypen(zaakTypeUrl)
     }
 
-    fun getBesluittypen(caseDefinitionName: String): List<Besluittype> {
+    fun getBesluittypen(
+        @LoggableResource("documentDefinitionName") caseDefinitionName: String
+    ): List<Besluittype> {
         logger.debug { "Getting besluittypen for case definition $caseDefinitionName" }
         val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionName(caseDefinitionName) ?: return emptyList()
         val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
@@ -86,7 +97,9 @@ class CatalogiService(
         return catalogiApiPluginInstance.getBesluittypen(zaakTypeUrl)
     }
 
-    fun getEigenschappen(caseDefinitionName: String): List<Eigenschap> {
+    fun getEigenschappen(
+        @LoggableResource("documentDefinitionName") caseDefinitionName: String
+    ): List<Eigenschap> {
         logger.debug { "Getting zgw eigenschappen for case definition $caseDefinitionName" }
         val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionName(caseDefinitionName) ?: return emptyList()
         val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()

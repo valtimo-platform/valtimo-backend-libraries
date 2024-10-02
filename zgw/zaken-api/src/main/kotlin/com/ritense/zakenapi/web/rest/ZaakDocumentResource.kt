@@ -17,8 +17,10 @@
 package com.ritense.zakenapi.web.rest
 
 import com.ritense.document.domain.RelatedFile
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
 import com.ritense.documentenapi.web.rest.dto.DocumentenApiDocumentDto
+import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.zakenapi.domain.ZaakResponse
@@ -39,13 +41,15 @@ class ZaakDocumentResource(
 ) {
 
     @GetMapping("/v1/zaken-api/document/{documentId}/files")
-    fun getFiles(@PathVariable(name = "documentId") documentId: UUID): List<RelatedFile> {
+    fun getFiles(
+        @LoggableResource(resourceType = JsonSchemaDocument::class) @PathVariable(name = "documentId") documentId: UUID
+    ): List<RelatedFile> {
         return zaakDocumentService.getInformatieObjectenAsRelatedFiles(documentId)
     }
 
     @GetMapping("/v2/zaken-api/document/{documentId}/files")
     fun getFiles(
-        @PathVariable(name = "documentId") documentId: UUID,
+        @LoggableResource(resourceType = JsonSchemaDocument::class) @PathVariable(name = "documentId") documentId: UUID,
         documentSearchRequest: DocumentSearchRequest,
         pageable: Pageable,
     ): Page<DocumentenApiDocumentDto> {
@@ -53,7 +57,9 @@ class ZaakDocumentResource(
     }
 
     @GetMapping("/v1/zaken-api/document/{documentId}/zaak")
-    fun getZaakMetadata(@PathVariable(name = "documentId") documentId: UUID): ZaakResponse? {
+    fun getZaakMetadata(
+        @LoggableResource(resourceType = JsonSchemaDocument::class) @PathVariable(name = "documentId") documentId: UUID
+    ): ZaakResponse? {
         return zaakDocumentService.getZaakByDocumentId(documentId)
     }
 }
