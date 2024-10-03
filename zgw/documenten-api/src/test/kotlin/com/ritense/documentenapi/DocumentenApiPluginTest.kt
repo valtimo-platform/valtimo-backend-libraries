@@ -55,6 +55,7 @@ import kotlin.test.assertNull
 internal class DocumentenApiPluginTest {
 
     lateinit var pluginService: PluginService
+    lateinit var client: DocumentenApiClient
 
     @BeforeEach
     fun setUp() {
@@ -72,11 +73,12 @@ internal class DocumentenApiPluginTest {
             title = "title"
         )
         whenever(pluginService.findPluginConfiguration(any(), any())).thenReturn(pluginConfiguration)
+
+        client = mock()
     }
 
     @Test
     fun `should call client to store file`() {
-        val client: DocumentenApiClient = mock()
         val storageService: TemporaryResourceStorageService = mock()
         val applicationEventPublisher: ApplicationEventPublisher= mock()
         val authenticationMock = mock<DocumentenApiAuthentication>()
@@ -93,8 +95,7 @@ internal class DocumentenApiPluginTest {
             "returnedFileName",
             1L,
             LocalDateTime.of(2020, 1, 1, 1, 1, 1),
-            lock = "",
-            bestandsdelen = listOf()
+            listOf()
         )
 
         whenever(executionMock.getVariable("localDocumentVariableName"))
@@ -168,7 +169,6 @@ internal class DocumentenApiPluginTest {
 
     @Test
     fun `should call client to store file after document upload`() {
-        val client: DocumentenApiClient = mock()
         val storageService: TemporaryResourceStorageService = mock()
         val applicationEventPublisher: ApplicationEventPublisher= mock()
         val authenticationMock = mock<DocumentenApiAuthentication>()
@@ -184,7 +184,6 @@ internal class DocumentenApiPluginTest {
             "returnedFileName",
             1L,
             LocalDateTime.now(),
-            "",
             listOf()
         )
 
@@ -254,7 +253,6 @@ internal class DocumentenApiPluginTest {
 
     @Test
     fun `should call client to store file after document upload with minimal properties`() {
-        val client: DocumentenApiClient = mock()
         val storageService: TemporaryResourceStorageService = mock()
         val applicationEventPublisher: ApplicationEventPublisher= mock()
         val authenticationMock = mock<DocumentenApiAuthentication>()
@@ -270,7 +268,6 @@ internal class DocumentenApiPluginTest {
             "returnedFileName",
             1L,
             LocalDateTime.now(),
-            "",
             listOf()
         )
 
@@ -334,7 +331,6 @@ internal class DocumentenApiPluginTest {
 
     @Test
     fun `should call client to get document`() {
-        val client: DocumentenApiClient = mock()
         val storageService: TemporaryResourceStorageService = mock()
         val applicationEventPublisher: ApplicationEventPublisher= mock()
         val authenticationMock = mock<DocumentenApiAuthentication>()

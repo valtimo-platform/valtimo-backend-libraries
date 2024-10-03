@@ -56,7 +56,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.io.InputStream
 import java.net.URI
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 
 @Plugin(
     key = PLUGIN_KEY,
@@ -152,7 +152,6 @@ class DocumentenApiPlugin(
             storedDocumentUrl = "",
         )
 
-//        publishCreateDocumentEvent(documentCreateResult)
         execution.setVariable(DOCUMENT_URL_PROCESS_VAR, documentCreateResult.url)
     }
 
@@ -360,7 +359,7 @@ class DocumentenApiPlugin(
 
         val bestandsdelenRequest = BestandsdelenRequest(
             inhoud = inhoudAsInputStream,
-            lock = documentCreateResult.lock
+            lock = documentCreateResult.getLockFromBestanddelen()
         )
 
         client.storeDocumentInParts(
@@ -370,7 +369,7 @@ class DocumentenApiPlugin(
             documentCreateResult.getBestandsdelenIdFromUrl(),
             bestandsnaam)
 
-        val documentLock = DocumentLock(documentCreateResult.lock)
+        val documentLock = DocumentLock(documentCreateResult.getLockFromBestanddelen())
         client.unlockDocument(
             authenticationPluginConfiguration,
             url,

@@ -35,9 +35,9 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import okio.Buffer
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -59,9 +59,11 @@ import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
+import java.io.InputStream
 import java.net.URI
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
 import java.util.function.Supplier
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -132,7 +134,8 @@ DocumentenApiClientTest {
                 "datum": "2019-08-24"
               },
               "informatieobjecttype": "http://example.com",
-              "locked": true
+              "locked": true,
+              "bestandsdelen": []
             }
         """.trimIndent()
 
@@ -160,6 +163,67 @@ DocumentenApiClientTest {
 
         assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
         assertEquals("http://example.com", result.url)
+    }
+
+    @Test
+    fun `should make put call for bestanddelen`() {
+        val restClientBuilder = RestClient.builder()
+        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock())
+
+        val request = BestandsdelenRequest(
+            inhoud = InputStream.nullInputStream(),
+            lock = UUID.randomUUID().toString()
+        )
+
+        val putResponseBody = """
+            {
+                "url": "https://example.com/54ff8243-83f9-4fa3-a32e-29970db52ced",
+                "volgnummer": 1,
+                "omvang": 1234,
+                "voltooid": true,
+                "lock": "de9c883a-cdfc-493b-9c38-5824e334a1b1"
+            }
+        """.trimIndent()
+
+        mockDocumentenApi.enqueue(mockResponse(putResponseBody))
+
+        val result = client.storeDocumentInParts(
+            TestAuthentication(),
+            mockDocumentenApi.url("/").toUri(),
+            request,
+            "UUID",
+            "bestand.jpg")
+
+        assertNotNull(result)
+        assertEquals("https://example.com/54ff8243-83f9-4fa3-a32e-29970db52ced", result.url)
+
+        val recordedRequest = mockDocumentenApi.takeRequest()
+        assertNotNull(recordedRequest)
+
+        assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
+        assertEquals("PUT", recordedRequest.method)
+    }
+
+    @Test
+    fun `should fail if bestandsnaam for bestanddelen is empty`() {
+        val restClientBuilder = RestClient.builder()
+        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock())
+
+        val request = BestandsdelenRequest(
+            inhoud = InputStream.nullInputStream(),
+            lock = UUID.randomUUID().toString()
+        )
+
+        val exception = assertThrows<IllegalArgumentException> {
+            client.storeDocumentInParts(
+                TestAuthentication(),
+                mockDocumentenApi.url("/").toUri(),
+                request,
+                "UUID",
+                null)
+        }
+
+        assertEquals("Bestandsnaam must be set otherwise uploading in bestanddelen will fail", exception.message)
     }
 
     @Test
@@ -200,7 +264,8 @@ DocumentenApiClientTest {
                 "datum": "2019-08-24"
               },
               "informatieobjecttype": "http://example.com",
-              "locked": true
+              "locked": true,
+              "bestandsdelen": []
             }
         """.trimIndent()
 
@@ -233,9 +298,9 @@ DocumentenApiClientTest {
         val firstEventValue = eventCapture.firstValue.get()
         val mappedFirstEventResult: CreateDocumentResult = objectMapper.readValue(firstEventValue.result.toString())
 
-        Assertions.assertThat(firstEventValue).isInstanceOf(DocumentStored::class.java)
-        Assertions.assertThat(firstEventValue.resultId.toString()).isEqualTo(documentURL)
-        Assertions.assertThat(mappedFirstEventResult.auteur).isEqualTo(result.auteur)
+        assertThat(firstEventValue).isInstanceOf(DocumentStored::class.java)
+        assertThat(firstEventValue.resultId.toString()).isEqualTo(documentURL)
+        assertThat(mappedFirstEventResult.auteur).isEqualTo(result.auteur)
     }
 
     @Test
@@ -309,7 +374,8 @@ DocumentenApiClientTest {
                 "datum": "2019-08-20"
               },
               "informatieobjecttype": "http://example.com",
-              "locked": true
+              "locked": true,
+              "bestandsdelen": []
             }
         """.trimIndent()
 
@@ -381,7 +447,8 @@ DocumentenApiClientTest {
                 "datum": "2019-08-20"
               },
               "informatieobjecttype": "http://example.com",
-              "locked": true
+              "locked": true,
+              "bestandsdelen": []
             }
         """.trimIndent()
 
