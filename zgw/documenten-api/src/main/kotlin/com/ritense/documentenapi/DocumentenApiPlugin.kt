@@ -20,8 +20,11 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.ritense.documentenapi.DocumentenApiPlugin.Companion.PLUGIN_KEY
+import com.ritense.documentenapi.client.BestandsdelenRequest
 import com.ritense.documentenapi.client.CreateDocumentRequest
+import com.ritense.documentenapi.client.CreateDocumentResult
 import com.ritense.documentenapi.client.DocumentInformatieObject
+import com.ritense.documentenapi.client.DocumentLock
 import com.ritense.documentenapi.client.DocumentStatusType
 import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.documentenapi.client.PatchDocumentRequest
@@ -53,7 +56,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.io.InputStream
 import java.net.URI
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 
 @Plugin(
     key = PLUGIN_KEY,
@@ -146,9 +149,10 @@ class DocumentenApiPlugin(
             inhoudAsInputStream = contentAsInputStream,
             beschrijving = null,
             informatieobjecttype = null,
+            storedDocumentUrl = "",
         )
 
-        publishCreateDocumentEvent(documentCreateResult)
+//        publishCreateDocumentEvent(documentCreateResult)
         execution.setVariable(DOCUMENT_URL_PROCESS_VAR, documentCreateResult.url)
     }
 
@@ -169,17 +173,10 @@ class DocumentenApiPlugin(
         val documentCreateResult = storeDocumentInParts(
             execution = execution,
             metadata = metadata,
-            titel = null,
-            vertrouwelijkheidaanduiding = null,
-            status = null,
-            taal = null,
-            bestandsnaam = null,
+            bestandsnaam = metadata["filename"].toString(),
             inhoudAsInputStream = contentAsInputStream,
-            beschrijving = null,
-            informatieobjecttype = null,
         )
 
-        publishCreateDocumentEvent(documentCreateResult)
         execution.setVariable(DOCUMENT_URL_PROCESS_VAR, documentCreateResult.url)
     }
 
@@ -277,7 +274,8 @@ class DocumentenApiPlugin(
         inhoudAsInputStream: InputStream,
         beschrijving: String?,
         informatieobjecttype: String?,
-    ):CreateDocumentResult {
+        storedDocumentUrl: String,
+    ): CreateDocumentResult {
         val vertrouwelijkheidaanduidingEnum = Vertrouwelijkheid.fromKey(
             vertrouwelijkheidaanduiding ?: getMetadataField(
                 metadata,
@@ -307,59 +305,6 @@ class DocumentenApiPlugin(
         logger.info { "Store document $request" }
         val documentCreateResult = client.storeDocument(authenticationPluginConfiguration, url, request)
 
-        return client.storeDocument(authenticationPluginConfiguration, url, request)
-    }
-
-    /**
-     * Using the bestandsdelen api a document can be uploaded in chunks. This upload method entails several api calls
-     * to store a document:
-     *  - First the document metadata is uploaded without the 'inhoud' parameter. The response of this method will
-     *    contain a 'lock' parameter that must be used in the next call
-     *  - Using the provided lock the contents of the file is uploaded to the bestandsdelen api
-     *  - When the complete file is uploaded the unlock api must be called. This will unlock the document enabling it
-     *    for download.
-     */
-    private fun storeDocumentInParts(
-        execution: DelegateExecution,
-        metadata: Map<String, Any?>,
-        titel: String?,
-        vertrouwelijkheidaanduiding: String?,
-        status: DocumentStatusType?,
-        taal: String?,
-        bestandsnaam: String?,
-        inhoudAsInputStream: InputStream,
-        beschrijving: String?,
-        informatieobjecttype: String?
-    ):CreateDocumentResult {
-        val documentCreateResult = storeDocument(
-            execution = execution,
-            metadata = metadata,
-            titel = titel,
-            vertrouwelijkheidaanduiding = vertrouwelijkheidaanduiding,
-            status = status,
-            taal = taal,
-            bestandsnaam = bestandsnaam,
-            inhoudAsInputStream = InputStream.nullInputStream(),
-            beschrijving = beschrijving,
-            informatieobjecttype = informatieobjecttype,
-        )
-
-        // TODO add method to divide the input stream in parts
-        val bestandsdelenRequest = BestandsdelenRequest(
-            inhoud =  ByteArrayResource(inhoudAsInputStream.readBytes()),
-            lock = documentCreateResult.lock
-        )
-
-        client.storeDocumentInParts(authenticationPluginConfiguration, url, bestandsdelenRequest, documentCreateResult.getBestandsdelenIdFromUrl())
-
-        logger.info { "Finished uploading the document in parts. Now unlocking the document" }
-        val documentLock = DocumentLock(documentCreateResult.lock)
-        client.unlockDocument(authenticationPluginConfiguration, url, documentLock, documentCreateResult.getBestandsdelenIdFromUrl())
-
-        return documentCreateResult
-    }
-
-    private fun publishCreateDocumentEvent(documentCreateResult: CreateDocumentResult) {
         val event = DocumentCreated(
             documentCreateResult.url,
             documentCreateResult.auteur,
@@ -380,6 +325,59 @@ class DocumentenApiPlugin(
                 "Failed to set the $DOWNLOAD_URL_PROCESS_VAR variable in the DelegateExecution", e
             )
         }
+
+        return documentCreateResult
+    }
+
+    /**
+     * Using the bestandsdelen api a document can be uploaded in chunks. This upload method entails several api calls
+     * to store a document:
+     *  - First the document metadata is uploaded without the 'inhoud' parameter. The response of this method will
+     *    contain a 'lock' parameter that must be used in the next call
+     *  - Using the provided lock the contents of the file is uploaded to the bestandsdelen api
+     *  - When the complete file is uploaded the unlock api must be called. This will unlock the document enabling it
+     *    for download.
+     */
+    private fun storeDocumentInParts(
+        execution: DelegateExecution,
+        metadata: Map<String, Any?>,
+        bestandsnaam: String?,
+        inhoudAsInputStream: InputStream,
+    ):CreateDocumentResult {
+        val documentCreateResult = storeDocument(
+            execution = execution,
+            metadata = metadata,
+            titel = null,
+            vertrouwelijkheidaanduiding = null,
+            status = null,
+            taal = null,
+            bestandsnaam = bestandsnaam,
+            inhoudAsInputStream = InputStream.nullInputStream(),
+            beschrijving = null,
+            informatieobjecttype = null,
+            storedDocumentUrl = ""
+        )
+
+        val bestandsdelenRequest = BestandsdelenRequest(
+            inhoud = inhoudAsInputStream,
+            lock = documentCreateResult.lock
+        )
+
+        client.storeDocumentInParts(
+            authenticationPluginConfiguration,
+            url,
+            bestandsdelenRequest,
+            documentCreateResult.getBestandsdelenIdFromUrl(),
+            bestandsnaam)
+
+        val documentLock = DocumentLock(documentCreateResult.lock)
+        client.unlockDocument(
+            authenticationPluginConfiguration,
+            url,
+            documentLock,
+            documentCreateResult.getDocumentUUIDFromUrl())
+
+        return documentCreateResult
     }
 
     private fun getDocumentenApiPluginByInformatieobjectUrl(informatieobjectUrl: URI): PluginConfiguration {

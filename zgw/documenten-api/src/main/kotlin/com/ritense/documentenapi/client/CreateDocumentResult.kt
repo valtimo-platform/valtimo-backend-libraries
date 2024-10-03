@@ -30,4 +30,8 @@ class CreateDocumentResult(
     fun getBestandsdelenIdFromUrl(): String {
         return bestandsdelen[0].url.substring(bestandsdelen[0].url.lastIndexOf("/") + 1)
     }
+
+    fun getDocumentUUIDFromUrl(): String {
+        return url.substring(url.lastIndexOf("/") + 1)
+    }
 }

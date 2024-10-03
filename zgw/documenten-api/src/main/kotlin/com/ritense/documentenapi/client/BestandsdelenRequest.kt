@@ -1,8 +1,8 @@
 package com.ritense.documentenapi.client
 
-import org.springframework.core.io.ByteArrayResource
+import java.io.InputStream
 
 class BestandsdelenRequest(
-    val inhoud: ByteArrayResource,
+    val inhoud: InputStream,
     val lock:String
 )

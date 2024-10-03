@@ -92,7 +92,9 @@ internal class DocumentenApiPluginTest {
             "returnedAuthor",
             "returnedFileName",
             1L,
-            LocalDateTime.of(2020, 1, 1, 1, 1, 1)
+            LocalDateTime.of(2020, 1, 1, 1, 1, 1),
+            lock = "",
+            bestandsdelen = listOf()
         )
 
         whenever(executionMock.getVariable("localDocumentVariableName"))
@@ -181,7 +183,9 @@ internal class DocumentenApiPluginTest {
             "returnedAuthor",
             "returnedFileName",
             1L,
-            LocalDateTime.now()
+            LocalDateTime.now(),
+            "",
+            listOf()
         )
 
         whenever(executionMock.getVariable(RESOURCE_ID_PROCESS_VAR))
@@ -265,7 +269,9 @@ internal class DocumentenApiPluginTest {
             "returnedAuthor",
             "returnedFileName",
             1L,
-            LocalDateTime.now()
+            LocalDateTime.now(),
+            "",
+            listOf()
         )
 
         whenever(executionMock.getVariable(RESOURCE_ID_PROCESS_VAR))

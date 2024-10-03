@@ -16,9 +16,9 @@
 
 package com.ritense.documentenapi.client
 
+import BestandsdelenResult
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.documentenapi.DocumentenApiAuthentication
-import com.ritense.documentenapi.domain.DocumentenApiColumn
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey
 import com.ritense.documentenapi.event.DocumentDeleted
 import com.ritense.documentenapi.event.DocumentInformatieObjectDownloaded
@@ -31,6 +31,8 @@ import com.ritense.outbox.OutboxService
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.ClientTools.Companion.optionalQueryParam
 import com.ritense.zgw.Page
+import mu.KotlinLogging
+import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.Resource
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -38,6 +40,8 @@ import org.springframework.http.MediaType
 import org.springframework.http.converter.ResourceHttpMessageConverter
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
+import org.springframework.util.LinkedMultiValueMap
+import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 import org.springframework.web.util.UriBuilder
@@ -73,15 +77,26 @@ class DocumentenApiClient(
         return result
     }
 
-    fun storeDocumentInParts(
+     fun storeDocumentInParts(
         authentication: DocumentenApiAuthentication,
         baseUrl: URI,
         request: BestandsdelenRequest,
-        bestandsdelenId: String
-    ) {
-        val body = BodyInserters.fromMultipartData("inhoud", request.inhoud)
-            .with("lock", request.lock)
-        val response = buildFilteredClient(authentication)
+        bestandsdelenId: String,
+        bestandsnaam: String?
+    ): BestandsdelenResult {
+         requireNotNull(bestandsnaam) { "Bestandsnaam must be set otherwise uploading in bestanddelen will fail" }
+
+         val fileResource = object : ByteArrayResource(request.inhoud.readAllBytes()) {
+             override fun getFilename(): String {
+                 return bestandsnaam
+             }
+         }
+
+         val body: MultiValueMap<String, Any> = LinkedMultiValueMap()
+         body.add("inhoud", fileResource)
+         body.add("lock", request.lock)
+
+         val response = restClient(authentication)
             .put()
             .uri { ClientTools.baseUrlToBuilder(it, baseUrl)
                 .path("bestandsdelen/{uuid}")
@@ -90,27 +105,23 @@ class DocumentenApiClient(
             .contentType(MediaType.MULTIPART_FORM_DATA)
             .body(body)
             .retrieve()
-            .toBodilessEntity()
-            .block()
+            .body<BestandsdelenResult>()!!
 
-        logger.info("Response: $response")
+         return response
     }
 
     fun unlockDocument(authentication: DocumentenApiAuthentication, baseUrl: URI,
                        documentLock: DocumentLock, bestandsdelenId: String) {
-        val response = buildFilteredClient(authentication)
+        restClient(authentication)
             .post()
             .uri { ClientTools.baseUrlToBuilder(it, baseUrl)
                 .path("enkelvoudiginformatieobjecten/{uuid}/unlock")
                 .build(bestandsdelenId)
             }
             .contentType(MediaType.APPLICATION_JSON)
-            .body(
-                BodyInserters.fromValue(documentLock)
-            )
+            .body(documentLock)
             .retrieve()
-            .bodyToMono(String::class.java)
-            .block()
+            .toBodilessEntity()
     }
 
     fun getInformatieObject(
@@ -149,12 +160,8 @@ class DocumentenApiClient(
     ): org.springframework.data.domain.Page<DocumentInformatieObject> {
         // because the documenten api only supports a fixed page size, we will try to calculate the page we need to request
         // the only page sizes that are supported are those that can fit n times in the itemsPerPage
-        if (ITEMS_PER_PAGE % pageable.pageSize != 0) {
-            throw IllegalArgumentException("Page size is not supported")
-        }
-        if (documentSearchRequest.zaakUrl == null) {
-            throw IllegalArgumentException("Zaak URL is required")
-        }
+        require(ITEMS_PER_PAGE % pageable. pageSize == 0) { "Page size is not supported" }
+        requireNotNull(documentSearchRequest.zaakUrl) { "Zaak URL is required" }
 
         val pageToRequest = ((pageable.pageSize * pageable.pageNumber) / ITEMS_PER_PAGE) + 1
         val result =
@@ -324,17 +331,6 @@ class DocumentenApiClient(
             .build()
     }
 
-    private fun Flux<DataBuffer>.toInputStream(doOnComplete: Runnable): InputStream {
-        val osPipe = PipedOutputStream()
-        val isPipe = PipedInputStream(osPipe)
-        val flux = this
-            .doOnError { isPipe.use {} }
-            .doFinally { osPipe.use {} }
-            .doOnComplete(doOnComplete)
-        DataBufferUtils.write(flux, osPipe).subscribe(DataBufferUtils.releaseConsumer())
-        return isPipe
-    }
-
     fun UriBuilder.addSortParameter(pageable: Pageable): UriBuilder {
         val sortString = pageable.sort.map {
             val property = DocumentenApiColumnKey.fromProperty(it.property)
@@ -350,5 +346,6 @@ class DocumentenApiClient(
 
     companion object {
         const val ITEMS_PER_PAGE = 100
+        var logger = KotlinLogging.logger{}
     }
 }

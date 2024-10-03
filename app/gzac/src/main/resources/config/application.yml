@@ -95,6 +95,10 @@ spring:
     messages:
         basename: i18n/messages
     main.allow-bean-definition-overriding: true
+    servlet:
+        multipart:
+            max-file-size: 10MB
+            max-request-size: 10MB
     jersey:
         application-path: /api/camunda-rest
     autoconfigure:
@@ -219,8 +223,9 @@ valtimo:
         acceptedMimeTypes:
             - text/plain
             - application/pdf
-            - image/jpeg
             - application/xml
+            - image/jpeg
+            - image/png
     changelog:
         pbac:
             clear-tables: true
