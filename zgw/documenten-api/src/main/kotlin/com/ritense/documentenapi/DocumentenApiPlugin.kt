@@ -56,7 +56,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.io.InputStream
 import java.net.URI
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 
 @Plugin(
     key = PLUGIN_KEY,
