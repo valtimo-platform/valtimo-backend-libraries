@@ -36,6 +36,7 @@ import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
 import com.ritense.documentenapi.web.rest.dto.ModifyDocumentRequest
 import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
 import com.ritense.logging.LoggableResource
+import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
@@ -83,7 +84,7 @@ class DocumentenApiService(
 
     fun getCaseInformatieObjecten(
         @LoggableResource(resourceType = JsonSchemaDocument::class) documentId: UUID,
-        @LoggableResource(resourceType = DocumentSearchRequest::class) documentSearchRequest: DocumentSearchRequest,
+        documentSearchRequest: DocumentSearchRequest,
         pageable: Pageable
     ): Page<DocumentInformatieObject> {
         val documentDefinitionName = valtimoDocumentService.get(documentId.toString()).definitionId().name()
@@ -135,7 +136,9 @@ class DocumentenApiService(
         documentApiPlugin.deleteInformatieObject(documentUrl)
     }
 
-    fun getColumns(caseDefinitionName: String): List<DocumentenApiColumn> {
+    fun getColumns(
+        @LoggableResource("documentDefinitionName") caseDefinitionName: String
+    ): List<DocumentenApiColumn> {
         logger.debug { "Get columns $caseDefinitionName" }
         val documentDefinition = documentDefinitionService.findLatestByName(caseDefinitionName)
             .orElseThrow { IllegalArgumentException("Unknown case-definition '$caseDefinitionName'") }
@@ -150,7 +153,9 @@ class DocumentenApiService(
         return documentenApiColumnRepository.findAllByIdCaseDefinitionNameOrderByOrder(caseDefinitionName)
     }
 
-    fun getAllColumnKeys(caseDefinitionName: String): List<DocumentenApiColumnKey> {
+    fun getAllColumnKeys(
+        @LoggableResource("documentDefinitionName") caseDefinitionName: String
+    ): List<DocumentenApiColumnKey> {
         logger.debug { "Get all column keys $caseDefinitionName" }
         val version = documentenApiVersionService.getVersion(caseDefinitionName)
         val columnKeys = DocumentenApiColumnKey.entries.sortedBy { it.name }
@@ -196,7 +201,10 @@ class DocumentenApiService(
         return documentenApiColumnRepository.save(column.copy(order = order))
     }
 
-    fun deleteColumn(caseDefinitionName: String, columnKey: String) {
+    fun deleteColumn(
+        @LoggableResource("documentDefinitionName") caseDefinitionName: String,
+        columnKey: String
+    ) {
         logger.info { "Delete column $caseDefinitionName $columnKey" }
         denyAuthorization()
         val documentenApiColumnKey = DocumentenApiColumnKey.fromProperty(columnKey)
@@ -206,7 +214,7 @@ class DocumentenApiService(
 
     private fun getRelatedFiles(
         informatieObject: DocumentInformatieObject,
-        pluginConfigurationId: String
+        @LoggableResource(resourceType = PluginConfiguration::class) pluginConfigurationId: String
     ): RelatedFileDto {
         logger.debug { "Get related files" }
         return RelatedFileDto(

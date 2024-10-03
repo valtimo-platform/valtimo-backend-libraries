@@ -16,6 +16,7 @@
 
 package com.ritense.zaakdetails.documentobjectenapisync
 
+import com.ritense.logging.LoggableResource
 import com.ritense.objectenapi.management.ObjectManagementInfoProvider
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
@@ -37,7 +38,7 @@ class DocumentObjectenApiSyncManagementResource(
 ) {
     @GetMapping("/v1/document-definition/{name}/version/{version}/objecten-api-sync")
     fun getSyncConfiguration(
-        @PathVariable(name = "name") documentDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "name") documentDefinitionName: String,
         @PathVariable(name = "version") documentDefinitionVersion: Long,
     ): ResponseEntity<DocumentObjectenApiSyncResponse?> {
         val syncConfiguration =
@@ -52,7 +53,7 @@ class DocumentObjectenApiSyncManagementResource(
 
     @PutMapping("/v1/document-definition/{name}/version/{version}/objecten-api-sync")
     fun createOrUpdateSyncConfiguration(
-        @PathVariable(name = "name") documentDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "name") documentDefinitionName: String,
         @PathVariable(name = "version") documentDefinitionVersion: Long,
         @RequestBody syncRequest: DocumentObjectenApiSyncRequest
     ): ResponseEntity<Unit> {
@@ -63,7 +64,7 @@ class DocumentObjectenApiSyncManagementResource(
 
     @DeleteMapping("/v1/document-definition/{name}/version/{version}/objecten-api-sync")
     fun deleteSyncConfiguration(
-        @PathVariable(name = "name") documentDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "name") documentDefinitionName: String,
         @PathVariable(name = "version") documentDefinitionVersion: Long,
     ): ResponseEntity<Unit> {
         documentObjectenApiSyncService.deleteSyncConfigurationByDocumentDefinition(

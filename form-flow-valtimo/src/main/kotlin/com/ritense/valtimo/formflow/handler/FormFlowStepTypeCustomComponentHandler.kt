@@ -19,16 +19,24 @@ package com.ritense.valtimo.formflow.handler
 import com.ritense.formflow.domain.definition.configuration.step.CustomComponentStepTypeProperties
 import com.ritense.formflow.domain.instance.FormFlowStepInstance
 import com.ritense.formflow.handler.FormFlowStepTypeHandler
+import com.ritense.logging.withLoggingContext
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import org.springframework.stereotype.Component
 
-class FormFlowStepTypeCustomComponentHandler(
-) : FormFlowStepTypeHandler {
+@Component
+@SkipComponentScan
+class FormFlowStepTypeCustomComponentHandler : FormFlowStepTypeHandler {
 
     override fun getType() = "custom-component"
 
-    override fun getTypeProperties(stepInstance: FormFlowStepInstance): CustomComponentTypeProperties {
-        val stepDefinitionType = stepInstance.definition.type
-        require(stepDefinitionType.name == getType())
-        val angularComponentId = (stepDefinitionType.properties as CustomComponentStepTypeProperties).componentId
-        return CustomComponentTypeProperties(angularComponentId)
+    override fun getTypeProperties(
+        stepInstance: FormFlowStepInstance
+    ): CustomComponentTypeProperties {
+        return withLoggingContext(FormFlowStepInstance::class, stepInstance.id) {
+            val stepDefinitionType = stepInstance.definition.type
+            require(stepDefinitionType.name == getType())
+            val angularComponentId = (stepDefinitionType.properties as CustomComponentStepTypeProperties).componentId
+            CustomComponentTypeProperties(angularComponentId)
+        }
     }
 }

@@ -16,6 +16,7 @@
 
 package com.ritense.form.autodeployment;
 
+import static com.ritense.logging.LoggingContextKt.withLoggingContext;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,6 +31,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import com.ritense.logging.LoggableResource;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,25 +76,33 @@ public class FormDefinitionDeploymentService {
     }
 
     public Optional<FormDefinition> deploy(Resource resource) {
-        try {
-            if (resource.getFilename() == null) {
+        if (resource.getFilename() == null) {
+            return Optional.empty();
+        }
+        var name = getFormName(resource);
+        return withLoggingContext("formDefinitionName", name, () -> {
+            try {
+                return deploy(name, IOUtils.toString(resource.getInputStream(), UTF_8), true);
+            } catch (IOException e) {
+                logger.error("Error while deploying form definition {}", getFormName(resource), e);
                 return Optional.empty();
             }
-            var name = getFormName(resource);
-            return deploy(name, IOUtils.toString(resource.getInputStream(), UTF_8), true);
-        } catch (IOException e) {
-            logger.error("Error while deploying form definition {}", getFormName(resource), e);
-        }
-
-        return Optional.empty();
+        });
     }
 
     @Deprecated(since = "12.0.0", forRemoval = true)
-    public Optional<FormDefinition> deploy(String name, String formDefinitionAsString) throws JsonProcessingException {
+    public Optional<FormDefinition> deploy(
+        @LoggableResource("formDefinitionName") String name,
+        String formDefinitionAsString
+    ) throws JsonProcessingException {
         return deploy(name, formDefinitionAsString, true);
     }
 
-    public Optional<FormDefinition> deploy(String name, String formDefinitionAsString, boolean readOnly) throws JsonProcessingException {
+    public Optional<FormDefinition> deploy(
+        @LoggableResource("formDefinitionName") String name,
+        String formDefinitionAsString,
+        boolean readOnly
+    ) throws JsonProcessingException {
         var rawFormDefinition = getJson(formDefinitionAsString);
         var optionalFormDefinition = formDefinitionRepository.findByName(name);
         if (optionalFormDefinition.isPresent()) {

@@ -374,6 +374,9 @@ class PluginService(
     fun invoke(execution: DelegateExecution, processLink: PluginProcessLink): Any? {
         return withLoggingContext(
             mapOf(
+                "com.ritense.document.domain.impl.JsonSchemaDocument" to execution.processBusinessKey,
+                "activityId" to execution.currentActivityId,
+                "activityName" to execution.currentActivityName,
                 ProcessLink::class.java.canonicalName to processLink.id.toString(),
                 PluginConfiguration::class.java.canonicalName to processLink.pluginConfigurationId.toString()
             )
@@ -392,6 +395,9 @@ class PluginService(
     fun invoke(task: DelegateTask, processLink: PluginProcessLink): Any? {
         return withLoggingContext(
             mapOf(
+                "com.ritense.document.domain.impl.JsonSchemaDocument" to task.execution.processBusinessKey,
+                "activityId" to task.taskDefinitionKey,
+                "activityName" to task.name,
                 ProcessLink::class.java.canonicalName to processLink.id.toString(),
                 PluginConfiguration::class.java.canonicalName to processLink.pluginConfigurationId.toString()
             )

@@ -17,6 +17,9 @@
 package com.ritense.zakenapi.service
 
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.logging.LoggableResource
+import com.ritense.logging.withLoggingContext
+import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
@@ -37,15 +40,21 @@ class DefaultZaakTypeLinkService(
     private val processDocumentAssociationService: ProcessDocumentAssociationService
 ) : ZaakTypeLinkService {
 
-    override fun get(documentDefinitionName: String): ZaakTypeLink? {
+    override fun get(
+        @LoggableResource("documentDefinitionName") documentDefinitionName: String
+    ): ZaakTypeLink? {
         return zaakTypeLinkRepository.findByDocumentDefinitionName(documentDefinitionName)
     }
 
-    override fun getByPluginConfigurationId(id: UUID): List<ZaakTypeLink> {
+    override fun getByPluginConfigurationId(
+        @LoggableResource(resourceType = PluginConfiguration::class) id: UUID
+    ): List<ZaakTypeLink> {
         return zaakTypeLinkRepository.findByZakenApiPluginConfigurationId(id)
     }
 
-    override fun getByProcess(processDefinitionKey: String): List<ZaakTypeLink> {
+    override fun getByProcess(
+        @LoggableResource("processDefinitionKey") processDefinitionKey: String
+    ): List<ZaakTypeLink> {
         val processDocumentDefinitions = AuthorizationContext.runWithoutAuthorization {
             processDocumentAssociationService.findAllProcessDocumentDefinitions(
                 CamundaProcessDefinitionKey(processDefinitionKey)
@@ -60,24 +69,28 @@ class DefaultZaakTypeLinkService(
     }
 
     override fun createZaakTypeLink(request: CreateZaakTypeLinkRequest): ZaakTypeLink {
-        var zaakTypeLink = zaakTypeLinkRepository.findByDocumentDefinitionName(request.documentDefinitionName)
-        if (zaakTypeLink == null) {
-            zaakTypeLink = ZaakTypeLink(
-                ZaakTypeLinkId.newId(UUID.randomUUID()),
-                request.documentDefinitionName,
-                request.zaakTypeUrl,
-                request.createWithDossier ?: false,
-                request.zakenApiPluginConfigurationId,
-                request.rsin?.let { Rsin(it) }
-            )
-        } else {
-            zaakTypeLink.processUpdateRequest(request)
+        return withLoggingContext("documentDefinitionName", request.documentDefinitionName) {
+            var zaakTypeLink = zaakTypeLinkRepository.findByDocumentDefinitionName(request.documentDefinitionName)
+            if (zaakTypeLink == null) {
+                zaakTypeLink = ZaakTypeLink(
+                    ZaakTypeLinkId.newId(UUID.randomUUID()),
+                    request.documentDefinitionName,
+                    request.zaakTypeUrl,
+                    request.createWithDossier ?: false,
+                    request.zakenApiPluginConfigurationId,
+                    request.rsin?.let { Rsin(it) }
+                )
+            } else {
+                zaakTypeLink.processUpdateRequest(request)
+            }
+            val newZaakTypeLink = zaakTypeLinkRepository.save(zaakTypeLink)
+            newZaakTypeLink
         }
-        val newZaakTypeLink = zaakTypeLinkRepository.save(zaakTypeLink)
-        return newZaakTypeLink
     }
 
-    override fun deleteZaakTypeLinkBy(documentDefinitionName: String) {
+    override fun deleteZaakTypeLinkBy(
+        @LoggableResource("documentDefinitionName") documentDefinitionName: String
+    ) {
         zaakTypeLinkRepository.deleteByDocumentDefinitionName(documentDefinitionName)
     }
 
