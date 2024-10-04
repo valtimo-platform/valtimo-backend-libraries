@@ -119,7 +119,7 @@ class DocumentenApiClient(
                  .uri {
                      ClientTools.baseUrlToBuilder(it, baseUrl)
                          .path("bestandsdelen/{uuid}")
-                         .build(createDocumentResult.getBestandsdelenIdFromUrl())
+                         .build(bestandsdeel.url.substring(bestandsdeel.url.lastIndexOf("/") + 1))
                  }
                  .contentType(MediaType.MULTIPART_FORM_DATA)
                  .body(body)
