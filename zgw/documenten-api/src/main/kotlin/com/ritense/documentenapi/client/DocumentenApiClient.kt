@@ -81,33 +81,55 @@ class DocumentenApiClient(
         authentication: DocumentenApiAuthentication,
         baseUrl: URI,
         request: BestandsdelenRequest,
-        bestandsdelenId: String,
+        createDocumentResult: CreateDocumentResult,
         bestandsnaam: String?
     ): BestandsdelenResult {
          requireNotNull(bestandsnaam) { "Bestandsnaam must be set otherwise uploading in bestanddelen will fail" }
 
-         val fileResource = object : ByteArrayResource(request.inhoud.readAllBytes()) {
-             override fun getFilename(): String {
-                 return bestandsnaam
+         // Inside the CreateDocumentResult there is an array of bestandsdelen.
+         // Each bestandsdeel needs to be sent separately
+         // So the documenten api determines the amount of chunks, not this application.
+         val fileBytes = request.inhoud.readAllBytes()
+         var response: BestandsdelenResult? = null
+         var start = 0
+
+         logger.info("Starting upload of file in {} chunks\n", createDocumentResult.bestandsdelen?.size)
+
+         for(bestandsdeel in createDocumentResult.bestandsdelen!!) {
+             logger.info("Sending chunk #{} for a size of {}",
+                 bestandsdeel.volgnummer,
+                 bestandsdeel.omvang)
+
+             // Compute the correct end index of the chunk
+             val end = start + bestandsdeel.omvang
+             val chunk = fileBytes.copyOfRange(start, end)
+
+             val fileResource = object : ByteArrayResource(chunk) {
+                 override fun getFilename(): String {
+                     return bestandsnaam
+                 }
              }
+
+             val body: MultiValueMap<String, Any> = LinkedMultiValueMap()
+             body.add("inhoud", fileResource)
+             body.add("lock", request.lock)
+
+             response = restClient(authentication)
+                 .put()
+                 .uri {
+                     ClientTools.baseUrlToBuilder(it, baseUrl)
+                         .path("bestandsdelen/{uuid}")
+                         .build(createDocumentResult.getBestandsdelenIdFromUrl())
+                 }
+                 .contentType(MediaType.MULTIPART_FORM_DATA)
+                 .body(body)
+                 .retrieve()
+                 .body<BestandsdelenResult>()!!
+
+             start = end
          }
 
-         val body: MultiValueMap<String, Any> = LinkedMultiValueMap()
-         body.add("inhoud", fileResource)
-         body.add("lock", request.lock)
-
-         val response = restClient(authentication)
-            .put()
-            .uri { ClientTools.baseUrlToBuilder(it, baseUrl)
-                .path("bestandsdelen/{uuid}")
-                .build(bestandsdelenId)
-            }
-            .contentType(MediaType.MULTIPART_FORM_DATA)
-            .body(body)
-            .retrieve()
-            .body<BestandsdelenResult>()!!
-
-         return response
+         return response ?: throw IllegalStateException("Upload failed")
     }
 
     fun unlockDocument(authentication: DocumentenApiAuthentication, baseUrl: URI,

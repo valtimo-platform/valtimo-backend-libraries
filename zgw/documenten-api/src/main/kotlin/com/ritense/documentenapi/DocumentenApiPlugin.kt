@@ -366,7 +366,7 @@ class DocumentenApiPlugin(
             authenticationPluginConfiguration,
             url,
             bestandsdelenRequest,
-            documentCreateResult.getBestandsdelenIdFromUrl(),
+            documentCreateResult,
             bestandsnaam)
 
         val documentLock = DocumentLock(documentCreateResult.getLockFromBestanddelen())
