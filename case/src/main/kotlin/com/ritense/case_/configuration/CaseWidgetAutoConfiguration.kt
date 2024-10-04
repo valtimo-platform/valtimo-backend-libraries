@@ -36,6 +36,7 @@ import com.ritense.case_.widget.CaseWidgetMapper
 import com.ritense.case_.widget.collection.CollectionCaseWidgetDataProvider
 import com.ritense.case_.widget.collection.CollectionCaseWidgetMapper
 import com.ritense.case_.widget.custom.CustomCaseWidgetMapper
+import com.ritense.case_.widget.displayproperties.codelist.CodeListProvider
 import com.ritense.case_.widget.fields.FieldsCaseWidgetDataProvider
 import com.ritense.case_.widget.fields.FieldsCaseWidgetMapper
 import com.ritense.case_.widget.table.TableCaseWidgetDataProvider
@@ -131,8 +132,9 @@ class CaseWidgetAutoConfiguration {
     @ConditionalOnMissingBean(CaseWidgetTabManagementResource::class)
     @Bean
     fun caseWidgetTabManagementResource(
-        caseWidgetTabService: CaseWidgetTabService
-    ) = CaseWidgetTabManagementResource(caseWidgetTabService)
+        caseWidgetTabService: CaseWidgetTabService,
+        codeListProviders: List<CodeListProvider>
+    ) = CaseWidgetTabManagementResource(caseWidgetTabService, codeListProviders)
 
     @ConditionalOnMissingBean(CaseWidgetAnnotatedClassResolver::class)
     @Bean
@@ -143,8 +145,9 @@ class CaseWidgetAutoConfiguration {
     @ConditionalOnMissingBean(CaseWidgetJacksonModule::class)
     @Bean
     fun caseWidgetJacksonModule(
-        annotatedClassResolver: CaseWidgetAnnotatedClassResolver
-    ) = CaseWidgetJacksonModule(annotatedClassResolver)
+        annotatedClassResolver: CaseWidgetAnnotatedClassResolver,
+        codeListProviders: List<CodeListProvider>
+    ) = CaseWidgetJacksonModule(annotatedClassResolver, codeListProviders)
 
     @ConditionalOnMissingBean(FieldsCaseWidgetMapper::class)
     @Bean

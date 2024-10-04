@@ -29,7 +29,8 @@ object MapperSingleton {
     val customizer = Jackson2ObjectMapperBuilderCustomizer { builder ->
         builder.simpleDateFormat(DATE_TIME_FORMAT)
         builder.serializers(LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)))
-        builder.defaultViewInclusion(false)
+        //TODO: Discuss how we want to handle this properly. Annotating every (nested) class/property with JsonView isn't really pretty.
+        builder.defaultViewInclusion(true)
     }
 
     private var mapper: ObjectMapper

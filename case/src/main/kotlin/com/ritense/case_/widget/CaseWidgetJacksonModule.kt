@@ -18,10 +18,19 @@ package com.ritense.case_.widget
 
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.fasterxml.jackson.databind.module.SimpleModule
+import com.ritense.case_.widget.displayproperties.CodeListDisplayProperties
+import com.ritense.case_.widget.displayproperties.codelist.CodeListProvider
+import com.ritense.case_.widget.displayproperties.codelist.CodeListSerializer
 
 class CaseWidgetJacksonModule(
-    private val annotatedClassResolver: CaseWidgetAnnotatedClassResolver
+    private val annotatedClassResolver: CaseWidgetAnnotatedClassResolver,
+    codeListProviders: List<CodeListProvider>
 ): SimpleModule("CaseWidgetModule") {
+
+    init {
+        this.addSerializer(CodeListDisplayProperties::class.java, CodeListSerializer(codeListProviders))
+    }
+
     override fun setupModule(context: SetupContext) {
         super.setupModule(context)
 

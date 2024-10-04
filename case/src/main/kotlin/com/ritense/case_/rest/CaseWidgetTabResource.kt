@@ -16,8 +16,10 @@
 
 package com.ritense.case_.rest
 
+import com.fasterxml.jackson.annotation.JsonView
 import com.ritense.case_.rest.dto.CaseWidgetTabDto
 import com.ritense.case_.service.CaseWidgetTabService
+import com.ritense.case_.widget.WidgetView
 import com.ritense.document.domain.impl.JsonSchemaDocumentId.existingId
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
@@ -38,6 +40,7 @@ class CaseWidgetTabResource(
 ) {
 
     @GetMapping("/v1/document/{documentId}/widget-tab/{tabKey}")
+    @JsonView(WidgetView.User::class)
     fun getCaseWidgetTab(
         @PathVariable documentId: String,
         @PathVariable tabKey: String
@@ -47,6 +50,7 @@ class CaseWidgetTabResource(
     }
 
     @GetMapping("/v1/document/{documentId}/widget-tab/{tabKey}/widget/{widgetKey}")
+    @JsonView(WidgetView.User::class)
     fun getCaseWidgetData(
         @PathVariable documentId: UUID,
         @PathVariable tabKey: String,

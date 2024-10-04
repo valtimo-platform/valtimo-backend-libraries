@@ -16,9 +16,12 @@
 
 package com.ritense.case_.rest
 
+import com.fasterxml.jackson.annotation.JsonView
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case_.rest.dto.CaseWidgetTabDto
 import com.ritense.case_.service.CaseWidgetTabService
+import com.ritense.case_.widget.WidgetView
+import com.ritense.case_.widget.displayproperties.codelist.CodeListProvider
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import jakarta.validation.Valid
@@ -34,10 +37,12 @@ import org.springframework.web.bind.annotation.RequestMapping
 @SkipComponentScan
 @RequestMapping("/api/management", produces = [APPLICATION_JSON_UTF8_VALUE])
 class CaseWidgetTabManagementResource(
-    private val caseWidgetTabService: CaseWidgetTabService
+    private val caseWidgetTabService: CaseWidgetTabService,
+    private val codeListProviders: List<CodeListProvider>
 ) {
 
     @GetMapping("/v1/case-definition/{caseDefinitionName}/widget-tab/{tabKey}")
+    @JsonView(WidgetView.Management::class)
     fun getCaseWidgetTab(
         @PathVariable caseDefinitionName: String,
         @PathVariable tabKey: String
@@ -49,6 +54,7 @@ class CaseWidgetTabManagementResource(
     }
 
     @PostMapping("/v1/case-definition/{caseDefinitionName}/widget-tab/{tabKey}")
+    @JsonView(WidgetView.Management::class)
     fun updateCaseWidgetTab(
         @PathVariable caseDefinitionName: String,
         @PathVariable tabKey: String,
@@ -58,5 +64,10 @@ class CaseWidgetTabManagementResource(
             caseWidgetTabService.updateWidgetTab(caseWidgetTabDto)
         }
         return ResponseEntity.ofNullable(widgetTab)
+    }
+
+    @GetMapping("/v1/codelist-providers")
+    fun getCodeListProviderNames(): List<String> {
+        return codeListProviders.map { it.name }
     }
 }
