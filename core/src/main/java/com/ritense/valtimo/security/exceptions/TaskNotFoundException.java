@@ -20,6 +20,11 @@ public class TaskNotFoundException extends RuntimeException {
 
     private final String taskId;
 
+    public TaskNotFoundException() {
+        super("Task not found");
+        this.taskId = null;
+    }
+
     public TaskNotFoundException(String taskId) {
         super(String.format("Cannot find task %s", taskId));
         this.taskId = taskId;

@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.exporter.request.ExportRequest
 import com.ritense.exporter.request.FormFlowDefinitionExportRequest
 import com.ritense.formflow.service.FormFlowService
+import com.ritense.logging.withLoggingContext
 import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.mapper.ProcessLinkMapper
@@ -27,14 +28,20 @@ import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.formflow.domain.FormFlowProcessLink
 import com.ritense.valtimo.formflow.processlink.dto.FormFlowProcessLinkDeployDto
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkCreateRequestDto
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkExportResponseDto
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkResponseDto
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkUpdateRequestDto
+import org.camunda.bpm.engine.repository.ProcessDefinition
+import org.springframework.stereotype.Component
 import java.util.UUID
 
+@Component
+@SkipComponentScan
 class FormFlowProcessLinkMapper(
     objectMapper: ObjectMapper,
     private val formFlowService: FormFlowService,
@@ -52,94 +59,113 @@ class FormFlowProcessLinkMapper(
 
     override fun supportsProcessLinkType(processLinkType: String) = processLinkType == PROCESS_LINK_TYPE_FORM_FLOW
 
-    override fun toProcessLinkResponseDto(processLink: ProcessLink): ProcessLinkResponseDto {
-        processLink as FormFlowProcessLink
-        return FormFlowProcessLinkResponseDto(
-            id = processLink.id,
-            processDefinitionId = processLink.processDefinitionId,
-            activityId = processLink.activityId,
-            activityType = processLink.activityType,
-            formFlowDefinitionId = processLink.formFlowDefinitionId,
-            formDisplayType = processLink.formDisplayType,
-            formSize = processLink.formSize,
-        )
+    override fun toProcessLinkResponseDto(
+        processLink: ProcessLink
+    ): ProcessLinkResponseDto {
+        return withLoggingContext(ProcessLink::class, processLink.id) {
+            processLink as FormFlowProcessLink
+            FormFlowProcessLinkResponseDto(
+                id = processLink.id,
+                processDefinitionId = processLink.processDefinitionId,
+                activityId = processLink.activityId,
+                activityType = processLink.activityType,
+                formFlowDefinitionId = processLink.formFlowDefinitionId,
+                formDisplayType = processLink.formDisplayType,
+                formSize = processLink.formSize,
+            )
+        }
     }
 
     override fun toProcessLinkCreateRequestDto(deployDto: ProcessLinkDeployDto): ProcessLinkCreateRequestDto {
-        deployDto as FormFlowProcessLinkDeployDto
+        return withLoggingContext(CamundaProcessDefinition::class, deployDto.processDefinitionId) {
+            deployDto as FormFlowProcessLinkDeployDto
 
-        return FormFlowProcessLinkCreateRequestDto(
-            processDefinitionId = deployDto.processDefinitionId,
-            activityId = deployDto.activityId,
-            activityType = deployDto.activityType,
-            formFlowDefinitionId = deployDto.formFlowDefinitionId,
-            formDisplayType = deployDto.formDisplayType,
-            formSize = deployDto.formSize,
-        )
-
+            FormFlowProcessLinkCreateRequestDto(
+                processDefinitionId = deployDto.processDefinitionId,
+                activityId = deployDto.activityId,
+                activityType = deployDto.activityType,
+                formFlowDefinitionId = deployDto.formFlowDefinitionId,
+                formDisplayType = deployDto.formDisplayType,
+                formSize = deployDto.formSize,
+            )
+        }
     }
 
     override fun toProcessLinkUpdateRequestDto(
         deployDto: ProcessLinkDeployDto,
         existingProcessLinkId: UUID
     ): ProcessLinkUpdateRequestDto {
-        deployDto as FormFlowProcessLinkDeployDto
+        return withLoggingContext(CamundaProcessDefinition::class, deployDto.processDefinitionId) {
+            deployDto as FormFlowProcessLinkDeployDto
 
-        return FormFlowProcessLinkUpdateRequestDto(
-            id = existingProcessLinkId,
-            formFlowDefinitionId = deployDto.formFlowDefinitionId
-        )
+            FormFlowProcessLinkUpdateRequestDto(
+                id = existingProcessLinkId,
+                formFlowDefinitionId = deployDto.formFlowDefinitionId
+            )
+        }
     }
 
-    override fun toProcessLinkExportResponseDto(processLink: ProcessLink): ProcessLinkExportResponseDto {
-        processLink as FormFlowProcessLink
-        return FormFlowProcessLinkExportResponseDto(
-            activityId = processLink.activityId,
-            activityType = processLink.activityType,
-            formFlowDefinitionId = "${processLink.formFlowDefinitionId.substringBeforeLast(":")}:latest",
-            formDisplayType = processLink.formDisplayType,
-            formSize = processLink.formSize,
-        )
+    override fun toProcessLinkExportResponseDto(
+        processLink: ProcessLink
+    ): ProcessLinkExportResponseDto {
+        return withLoggingContext(ProcessLink::class, processLink.id) {
+            processLink as FormFlowProcessLink
+            FormFlowProcessLinkExportResponseDto(
+                activityId = processLink.activityId,
+                activityType = processLink.activityType,
+                formFlowDefinitionId = "${processLink.formFlowDefinitionId.substringBeforeLast(":")}:latest",
+                formDisplayType = processLink.formDisplayType,
+                formSize = processLink.formSize,
+            )
+        }
     }
 
     override fun toNewProcessLink(createRequestDto: ProcessLinkCreateRequestDto): ProcessLink {
-        createRequestDto as FormFlowProcessLinkCreateRequestDto
-        if (formFlowService.findDefinition(createRequestDto.formFlowDefinitionId) == null) {
-            throw RuntimeException("FormFlow definition not found with id ${createRequestDto.formFlowDefinitionId}")
+        return withLoggingContext(ProcessDefinition::class, createRequestDto.processDefinitionId) {
+            createRequestDto as FormFlowProcessLinkCreateRequestDto
+            if (formFlowService.findDefinition(createRequestDto.formFlowDefinitionId) == null) {
+                throw RuntimeException("FormFlow definition not found with id ${createRequestDto.formFlowDefinitionId}")
+            }
+            FormFlowProcessLink(
+                id = UUID.randomUUID(),
+                processDefinitionId = createRequestDto.processDefinitionId,
+                activityId = createRequestDto.activityId,
+                activityType = createRequestDto.activityType,
+                formFlowDefinitionId = createRequestDto.formFlowDefinitionId,
+                formDisplayType = createRequestDto.formDisplayType,
+                formSize = createRequestDto.formSize,
+            )
         }
-        return FormFlowProcessLink(
-            id = UUID.randomUUID(),
-            processDefinitionId = createRequestDto.processDefinitionId,
-            activityId = createRequestDto.activityId,
-            activityType = createRequestDto.activityType,
-            formFlowDefinitionId = createRequestDto.formFlowDefinitionId,
-            formDisplayType = createRequestDto.formDisplayType,
-            formSize = createRequestDto.formSize,
-        )
     }
 
     override fun toUpdatedProcessLink(
         processLinkToUpdate: ProcessLink,
         updateRequestDto: ProcessLinkUpdateRequestDto
     ): ProcessLink {
-        updateRequestDto as FormFlowProcessLinkUpdateRequestDto
-        if (formFlowService.findDefinition(updateRequestDto.formFlowDefinitionId) == null) {
-            throw RuntimeException("FormFlow definition not found with id ${updateRequestDto.formFlowDefinitionId}")
+        return withLoggingContext(ProcessLink::class, processLinkToUpdate.id) {
+            updateRequestDto as FormFlowProcessLinkUpdateRequestDto
+            if (formFlowService.findDefinition(updateRequestDto.formFlowDefinitionId) == null) {
+                throw RuntimeException("FormFlow definition not found with id ${updateRequestDto.formFlowDefinitionId}")
+            }
+            FormFlowProcessLink(
+                id = updateRequestDto.id,
+                processDefinitionId = processLinkToUpdate.processDefinitionId,
+                activityId = processLinkToUpdate.activityId,
+                activityType = processLinkToUpdate.activityType,
+                formFlowDefinitionId = updateRequestDto.formFlowDefinitionId,
+                formDisplayType = updateRequestDto.formDisplayType,
+                formSize = updateRequestDto.formSize,
+            )
         }
-        return FormFlowProcessLink(
-            id = updateRequestDto.id,
-            processDefinitionId = processLinkToUpdate.processDefinitionId,
-            activityId = processLinkToUpdate.activityId,
-            activityType = processLinkToUpdate.activityType,
-            formFlowDefinitionId = updateRequestDto.formFlowDefinitionId,
-            formDisplayType = updateRequestDto.formDisplayType,
-            formSize = updateRequestDto.formSize,
-        )
     }
 
-    override fun createRelatedExportRequests(processLink: ProcessLink): Set<ExportRequest> {
-        processLink as FormFlowProcessLink
-        return setOf(FormFlowDefinitionExportRequest(processLink.formFlowDefinitionId))
+    override fun createRelatedExportRequests(
+        processLink: ProcessLink
+    ): Set<ExportRequest> {
+        return withLoggingContext(ProcessLink::class, processLink.id) {
+            processLink as FormFlowProcessLink
+            setOf(FormFlowDefinitionExportRequest(processLink.formFlowDefinitionId))
+        }
     }
 
     override fun getImporterType() = "formflow"

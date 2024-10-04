@@ -204,14 +204,14 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     }
 
     @Override
-    public List<String> getPropertyNames(
-        @LoggableResource(resourceType = JsonSchemaDocumentDefinition.class) DocumentDefinition definition
-    ) {
-        JsonSchemaDocumentDefinition jsonSchemaDocumentDefinition = (JsonSchemaDocumentDefinition) definition;
-        ObjectNode propertiesObjectNode = (ObjectNode) jsonSchemaDocumentDefinition.getSchema()
-            .asJson()
-            .get("properties");
-        return getPropertyNamesFromObjectNode(jsonSchemaDocumentDefinition, propertiesObjectNode, "/");
+    public List<String> getPropertyNames(DocumentDefinition definition) {
+        return withLoggingContext(JsonSchemaDocumentDefinition.class, definition.id(), () -> {
+            JsonSchemaDocumentDefinition jsonSchemaDocumentDefinition = (JsonSchemaDocumentDefinition) definition;
+            ObjectNode propertiesObjectNode = (ObjectNode) jsonSchemaDocumentDefinition.getSchema()
+                .asJson()
+                .get("properties");
+            return getPropertyNamesFromObjectNode(jsonSchemaDocumentDefinition, propertiesObjectNode, "/");
+        });
     }
 
     @Override

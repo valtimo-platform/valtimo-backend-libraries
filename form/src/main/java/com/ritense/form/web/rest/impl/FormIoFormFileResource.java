@@ -17,6 +17,7 @@
 package com.ritense.form.web.rest.impl;
 
 import com.ritense.form.web.rest.FormFileResource;
+import com.ritense.logging.LoggableResource;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.resource.Resource;
 import org.springframework.http.MediaType;
@@ -40,7 +41,7 @@ public class FormIoFormFileResource implements FormFileResource {
     @Override
     @PostMapping(value = "/v1/form-file/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<? extends Resource> uploadFile(
-        @RequestParam("documentDefinitionName") String documentDefinitionName,
+        @LoggableResource(resourceTypeName = "jsonSchemaDocumentName") @RequestParam("documentDefinitionName") String documentDefinitionName,
         @RequestParam("name") String fileName,
         @RequestParam("file") MultipartFile file
     ) {

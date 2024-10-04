@@ -16,6 +16,7 @@
 
 package com.ritense.zakenapi.uploadprocess
 
+import com.ritense.logging.LoggableResource
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
@@ -34,11 +35,11 @@ class UploadProcessResource(
 ) {
 
     @Deprecated("Marked for removal since 9.22.0")
-    @GetMapping("/v1/uploadprocess/case/{caseDefinitionKey}/check-link")
+    @GetMapping("/v1/uploadprocess/case/{caseDefinitionName}/check-link")
     fun checkCaseProcessLink(
-        @PathVariable caseDefinitionKey: String
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String
     ): ResponseEntity<CheckLinkResponse> {
-        val link = documentDefinitionProcessLinkService.getDocumentDefinitionProcessLink(caseDefinitionKey, DOCUMENT_UPLOAD)
+        val link = documentDefinitionProcessLinkService.getDocumentDefinitionProcessLink(caseDefinitionName, DOCUMENT_UPLOAD)
         return ResponseEntity.ok(CheckLinkResponse(link.isPresent))
     }
 }
