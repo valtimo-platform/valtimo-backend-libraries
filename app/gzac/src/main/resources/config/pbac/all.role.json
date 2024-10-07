@@ -2,6 +2,14 @@
     "changesetId": "roles-v1",
     "roles": [
         "ROLE_USER",
-        "ROLE_ADMIN"
+        "ROLE_ADMIN",
+        "ROLE_EXTRA1",
+        "ROLE_EXTRA2",
+        "ROLE_EXTRA3",
+        "ROLE_EXTRA4",
+        "ROLE_EXTRA5",
+        "ROLE_EXTRA6",
+        "ROLE_EXTRA7",
+        "ROLE_EXTRA8"
     ]
 }
