@@ -357,26 +357,46 @@ class PrefillFormService(
         val sourceJsonPatchBuilder = JsonPatchBuilder()
         val submissionJsonPatchBuilder = JsonPatchBuilder()
         formDefinition.inputFields.forEach { field ->
-            val container = field.at("/$CUSTOM_PROPERTIES/$CONTAINER_KEY").asText()
-            if (container != null
-                && submission.has(field[FormIoFormDefinition.PROPERTY_KEY].textValue())
+            val containerPropertyValue = field.at("/$CUSTOM_PROPERTIES/$CONTAINER_KEY")
+            val targetKeyPropertyValue = field.at("/$CUSTOM_PROPERTIES/$TARGET_KEY")
+
+            var container: JsonNode
+            var submissionPropertyPath: String?
+
+            if (!targetKeyPropertyValue.isMissingNode) {
+                container = targetKeyPropertyValue
+                val containerpath = container.asText().substringAfter(":")
+                submissionPropertyPath = if (containerpath.contains("/{")) {
+                    containerpath.substringBefore("/{")
+                } else if (containerpath.contains("/-/")) {
+                    containerpath.substringBefore("/-")
+                } else {
+                    null
+                }
+            } else {
+                container = containerPropertyValue
+                submissionPropertyPath = "/${field[FormIoFormDefinition.PROPERTY_KEY].textValue()}"
+            }
+
+            if (!container.isMissingNode
+                && !submission.at(submissionPropertyPath).isMissingNode
             ) {
                 val propertyName = field[FormIoFormDefinition.PROPERTY_KEY].textValue()
                 val propertyValue = submission.at("/$propertyName")
                 val submissionProperty =
                     JsonPointer.valueOf("/$propertyName")
-                if (container.contains("/{indexOf")) {
-                    val indexValueJsonPointer = getIndexValueJsonPointer(container)
+                if (container.asText().contains("/{indexOf")) {
+                    val indexValueJsonPointer = getIndexValueJsonPointer(container.asText())
                     val id = placeholders.at(indexValueJsonPointer).textValue()
-                    val arrayPointer = JsonPointer.compile(container.substringBefore("/{"))
+                    val arrayPointer = JsonPointer.compile(container.asText().substringBefore("/{"))
                     val list = source.at(arrayPointer) as ArrayNode //get sources array
                     val calculatedArrayItemIndex = lookupIndexForIdValue(list, id)
                     val arrayItemForSourceJsonPointer =
                         JsonPointer.compile("$arrayPointer/$calculatedArrayItemIndex/$propertyName")
                     sourceJsonPatchBuilder.replace(arrayItemForSourceJsonPointer, propertyValue)
                     submissionJsonPatchBuilder.remove(submissionProperty)
-                } else if (container.contains("/-/")) {
-                    val arrayPointer = JsonPointer.compile(container.substringBefore("/-"))
+                } else if (container.asText().contains("/-/")) {
+                    val arrayPointer = JsonPointer.compile(container.asText().substringBefore("/-"))
                     val array = source.at(arrayPointer)
                     if (array.isMissingNode) {
                         sourceJsonPatchBuilder.add(arrayPointer, JsonNodeFactory.instance.arrayNode())
@@ -418,6 +438,7 @@ class PrefillFormService(
     companion object {
         private const val CUSTOM_PROPERTIES = "properties"
         private const val CONTAINER_KEY = "container"
+        private const val TARGET_KEY = "targetKey"
         private const val ID_KEY = "_id"
     }
 
