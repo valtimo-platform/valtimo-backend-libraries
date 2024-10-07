@@ -187,11 +187,26 @@ DocumentenApiClientTest {
 
         mockDocumentenApi.enqueue(mockResponse(putResponseBody))
 
+        val bestandsdelen = listOf(Bestandsdelen(
+            "https://www.example.com",
+            1,
+            0,
+            false,
+            "de9c883a-cdfc-493b-9c38-5824e334a1b1"))
+
+        val createResult = CreateDocumentResult(
+            "url",
+            "auteur",
+            "bestandsnaam.jpg",
+            0L,
+            LocalDateTime.now(),
+            bestandsdelen)
+
         val result = client.storeDocumentInParts(
             TestAuthentication(),
             mockDocumentenApi.url("/").toUri(),
             request,
-            "UUID",
+            createResult,
             "bestand.jpg")
 
         assertNotNull(result)
@@ -214,12 +229,27 @@ DocumentenApiClientTest {
             lock = UUID.randomUUID().toString()
         )
 
+        val bestandsdelen = listOf(Bestandsdelen(
+            "https://www.example.com",
+            1,
+            1234,
+            false,
+            "de9c883a-cdfc-493b-9c38-5824e334a1b1"))
+
+        val createResult = CreateDocumentResult(
+            "url",
+            "auteur",
+            "bestandsnaam.jpg",
+            1234L,
+            LocalDateTime.now(),
+            bestandsdelen)
+
         val exception = assertThrows<IllegalArgumentException> {
             client.storeDocumentInParts(
                 TestAuthentication(),
                 mockDocumentenApi.url("/").toUri(),
                 request,
-                "UUID",
+                createResult,
                 null)
         }
 
@@ -962,7 +992,7 @@ DocumentenApiClientTest {
             zaakUrl = URI("http://example.com/zaak/123"),
         )
         val exception = assertThrows<IllegalArgumentException> {
-            val documentSearchResult = doDocumentSearchRequest(pageable, documentSearchRequest, true)
+            doDocumentSearchRequest(pageable, documentSearchRequest, true)
         }
 
         assertEquals("Page size is not supported", exception.message)
@@ -975,7 +1005,7 @@ DocumentenApiClientTest {
         val documentSearchRequest = DocumentSearchRequest()
 
         val exception = assertThrows<IllegalArgumentException> {
-            val documentSearchResult = doDocumentSearchRequest(pageable, documentSearchRequest, true)
+           doDocumentSearchRequest(pageable, documentSearchRequest, true)
         }
 
         assertEquals("Zaak URL is required", exception.message)
@@ -1055,7 +1085,7 @@ DocumentenApiClientTest {
             zaakUrl = URI("http://example.com/zaak/123"),
         )
         assertThrows<IllegalArgumentException> {
-            val documentSearchResult = doDocumentSearchRequest(pageable, documentSearchRequest, true)
+            doDocumentSearchRequest(pageable, documentSearchRequest, true)
         }
     }
 

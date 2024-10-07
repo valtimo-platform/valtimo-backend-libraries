@@ -129,7 +129,7 @@ class DocumentenApiClient(
              start = end
          }
 
-         return response ?: throw IllegalStateException("Upload failed")
+         return response ?: throw IllegalStateException("Upload in chunks failed")
     }
 
     fun unlockDocument(authentication: DocumentenApiAuthentication, baseUrl: URI,
