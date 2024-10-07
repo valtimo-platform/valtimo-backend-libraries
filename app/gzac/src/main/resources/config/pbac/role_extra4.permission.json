@@ -1,0 +1,53 @@
+{
+    "changesetId": "task-admin-v1",
+    "permissions": [
+        {
+            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
+            "action": "assignable",
+            "roleKey": "ROLE_EXTRA4"
+        },
+        {
+            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
+            "action": "view_list",
+            "roleKey": "ROLE_EXTRA4",
+            "conditions": [
+                {
+                    "type": "container",
+                    "resourceType": "com.ritense.valtimo.camunda.domain.CamundaIdentityLink",
+                    "conditions": [
+                        {
+                            "type": "field",
+                            "field": "groupId",
+                            "operator": "==",
+                            "value": "ROLE_EXTRA4"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
+            "action": "view",
+            "roleKey": "ROLE_EXTRA4",
+            "conditions": [
+                {
+                    "type": "container",
+                    "resourceType": "com.ritense.valtimo.camunda.domain.CamundaIdentityLink",
+                    "conditions": [
+                        {
+                            "type": "field",
+                            "field": "groupId",
+                            "operator": "==",
+                            "value": "ROLE_EXTRA4"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
+            "action": "complete",
+            "roleKey": "ROLE_EXTRA4"
+        }
+    ]
+}
