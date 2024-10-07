@@ -97,6 +97,7 @@ class DashboardDeployer(
             displayTypeProperties = widgetConfigurationDto.displayTypeProperties,
             dataSourceProperties = widgetConfigurationDto.dataSourceProperties,
             dashboard = dashboard,
+            url = widgetConfigurationDto.url,
             order = order
         )
     }

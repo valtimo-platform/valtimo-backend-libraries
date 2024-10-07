@@ -36,6 +36,7 @@ import mu.KotlinLogging
 import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.net.URI
 import java.util.SortedSet
 import kotlin.jvm.optionals.getOrElse
 
@@ -140,7 +141,8 @@ class DashboardService(
         dataSourceKey: String,
         displayType: String,
         dataSourceProperties: ObjectNode,
-        displayTypeProperties: ObjectNode
+        displayTypeProperties: ObjectNode,
+        url: URI?
     ): WidgetConfiguration {
         denyAuthorization()
         val key = generateWidgetKey(title)
@@ -155,6 +157,7 @@ class DashboardService(
                 displayTypeProperties = displayTypeProperties,
                 displayType = displayType,
                 order = order,
+                url = url
             )
         )
     }
@@ -181,6 +184,7 @@ class DashboardService(
                 displayTypeProperties = widgetConfigurationUpdateDto.displayTypeProperties,
                 displayType = widgetConfigurationUpdateDto.displayType,
                 order = index,
+                url = widgetConfigurationUpdateDto.url
             )
         }
 
@@ -203,6 +207,7 @@ class DashboardService(
             dataSourceProperties = configUpdateRequest.dataSourceProperties,
             displayTypeProperties = configUpdateRequest.displayTypeProperties,
             displayType = configUpdateRequest.displayType,
+            url = configUpdateRequest.url
         )
 
         return widgetConfigurationRepository.save(updatedConfiguration)

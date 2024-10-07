@@ -104,4 +104,11 @@
                               columnDataType="${jsonType}"/>
     </changeSet>
 
+    <changeSet id="8" author="Ritense">
+        <addColumn tableName="dashboard_widget_configuration">
+            <column name="url" type="text">
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

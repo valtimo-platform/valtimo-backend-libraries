@@ -26,7 +26,8 @@
                         "title": "Zaken zonder behandelaar",
                         "subtitle": "Bezwaar",
                         "label": "zaken"
-                    }
+                    },
+                    "url": "/dossiers/bezwaar"
                 },
                 {
                     "key": "donut_chart",
