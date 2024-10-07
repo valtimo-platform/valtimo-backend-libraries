@@ -26,10 +26,13 @@ import com.ritense.objectenapi.service.ZaakObjectConstants
 import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
+import mu.KLogger
+import mu.KotlinLogging
 import org.springframework.context.event.EventListener
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
+import kotlin.math.log
 
 class ZaakObjectListener(
     private val pluginService: PluginService,
@@ -38,6 +41,7 @@ class ZaakObjectListener(
     @EventListener(ExternalDataSubmittedEvent::class)
     fun handle(event: ExternalDataSubmittedEvent) {
         event.data[ZaakObjectConstants.ZAAKOBJECT_PREFIX]?.let { zaakObjectMap ->
+            logger.debug { "Received external data for zaak object, updating the following properties: ${zaakObjectMap.keys.joinToString() }" }
             zaakObjectMap.entries.map { entry ->
                 RequestedField(
                     entry.key, entry.value
@@ -47,6 +51,7 @@ class ZaakObjectListener(
             }.forEach { objectTypeGroup ->
                 val zaakObject = zaakObjectService.getZaakObjectOfTypeByName(event.documentId, objectTypeGroup.key)
                 objectTypeGroup.value.forEach { requestedField ->
+                    logger.trace { "Updating field ${requestedField.path} with value ${requestedField.value} in object '${zaakObject.url}' of type '${objectTypeGroup.key}'" }
                     // For each requestedField update the value in the zaakObject record data
                     val startPath = requestedField.path.substring(1)
                     val newValueNode = getValueNode(requestedField.value)
@@ -120,5 +125,9 @@ class ZaakObjectListener(
     ) {
         val objectType = variableName.substringBeforeLast(":")
         val path = variableName.substringAfterLast(":")
+    }
+
+    companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
     }
 }

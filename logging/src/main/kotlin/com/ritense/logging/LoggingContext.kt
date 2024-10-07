@@ -21,13 +21,13 @@ import kotlin.reflect.KClass
 
 val MDC_ERROR_CONTEXT: ThreadLocal<Pair<Throwable, Map<String, String>>> = ThreadLocal()
 
-fun <T> withLoggingContext(
+inline fun <T> withLoggingContext(
     contextKey: KClass<*>,
     contextValue: Any?,
     body: () -> T
 ): T = withLoggingContext(contextKey.java, contextValue.toString(), body)
 
-fun <T> withLoggingContext(
+inline fun <T> withLoggingContext(
     contextKey: Class<*>,
     contextValue: Any?,
     body: () -> T
