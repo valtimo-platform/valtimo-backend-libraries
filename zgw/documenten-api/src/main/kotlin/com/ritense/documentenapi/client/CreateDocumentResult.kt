@@ -26,7 +26,7 @@ class CreateDocumentResult(
     val beginRegistratie: LocalDateTime,
     val bestandsdelen: List<Bestandsdeel>
 ) {
-    fun getLockFromBestanddelen(): String {
+    fun getLockFromBestandsdelen(): String {
         if (bestandsdelen.isEmpty()) {
             return ""
         }

@@ -89,7 +89,7 @@ class DocumentenApiClient(
          // So the documenten api determines the amount (and size) of chunks, not this application.
          logger.info { "Starting upload of file $bestandsnaam in ${createDocumentResult.bestandsdelen.size} chunks" }
 
-         for(bestandsdeel in createDocumentResult.bestandsdelen) {
+         createDocumentResult.bestandsdelen.forEach { bestandsdeel ->
              logger.debug { "Sending chunk #${bestandsdeel.volgnummer} for a size of ${bestandsdeel.omvang} bytes" }
 
              val chunk = ByteArray(bestandsdeel.omvang)

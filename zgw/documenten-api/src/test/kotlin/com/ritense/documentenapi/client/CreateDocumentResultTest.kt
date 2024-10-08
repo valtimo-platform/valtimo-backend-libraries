@@ -54,7 +54,7 @@ internal class CreateDocumentResultTest {
             listOf(bestandsdeel)
         )
 
-        assertEquals("847789d3-a8b3-469a-ae01-a49a6bd21783", result.getLockFromBestanddelen())
+        assertEquals("847789d3-a8b3-469a-ae01-a49a6bd21783", result.getLockFromBestandsdelen())
     }
 
     @Test
@@ -68,7 +68,7 @@ internal class CreateDocumentResultTest {
             listOf()
         )
 
-        assertEquals("", result.getLockFromBestanddelen())
+        assertEquals("", result.getLockFromBestandsdelen())
     }
 
 }

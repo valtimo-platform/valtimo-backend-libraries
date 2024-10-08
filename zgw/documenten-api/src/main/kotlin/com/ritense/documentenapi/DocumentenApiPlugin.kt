@@ -359,7 +359,7 @@ class DocumentenApiPlugin(
 
         val bestandsdelenRequest = BestandsdelenRequest(
             inhoud = inhoudAsInputStream,
-            lock = documentCreateResult.getLockFromBestanddelen()
+            lock = documentCreateResult.getLockFromBestandsdelen()
         )
 
         client.storeDocumentInParts(
@@ -369,7 +369,7 @@ class DocumentenApiPlugin(
             documentCreateResult,
             bestandsnaam)
 
-        val documentLock = DocumentLock(documentCreateResult.getLockFromBestanddelen())
+        val documentLock = DocumentLock(documentCreateResult.getLockFromBestandsdelen())
         client.unlockInformatieObject(
             authenticationPluginConfiguration,
             URI.create(documentCreateResult.url),
