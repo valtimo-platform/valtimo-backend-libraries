@@ -31,6 +31,9 @@ import com.ritense.outbox.OutboxService
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.ClientTools.Companion.optionalQueryParam
 import com.ritense.zgw.Page
+import java.io.InputStream
+import java.net.URI
+import kotlin.math.min
 import mu.KotlinLogging
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.Resource
@@ -46,9 +49,6 @@ import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 import org.springframework.web.util.UriBuilder
 import org.springframework.web.util.UriComponentsBuilder
-import java.io.InputStream
-import java.net.URI
-import kotlin.math.min
 
 class DocumentenApiClient(
     private val restClientBuilder: RestClient.Builder,
@@ -89,9 +89,7 @@ class DocumentenApiClient(
          // Inside the CreateDocumentResult there is an array of bestandsdelen.
          // Each bestandsdeel needs to be sent separately
          // So the documenten api determines the amount of chunks, not this application.
-         val fileBytes = request.inhoud.readAllBytes()
          var response: BestandsdelenResult? = null
-         var start = 0
 
          logger.info("Starting upload of file in {} chunks\n", createDocumentResult.bestandsdelen?.size)
 
@@ -100,9 +98,12 @@ class DocumentenApiClient(
                  bestandsdeel.volgnummer,
                  bestandsdeel.omvang)
 
-             // Compute the correct end index of the chunk
-             val end = start + bestandsdeel.omvang
-             val chunk = fileBytes.copyOfRange(start, end)
+             val chunk = ByteArray(bestandsdeel.omvang)
+             val bytesRead = request.inhoud.read(chunk)
+
+             check (bytesRead == chunk.size) {
+                 "Failed to read all the bytes to upload. The expected omvang is larger than the bytes available."
+             }
 
              val fileResource = object : ByteArrayResource(chunk) {
                  override fun getFilename(): String {
@@ -125,8 +126,10 @@ class DocumentenApiClient(
                  .body(body)
                  .retrieve()
                  .body<BestandsdelenResult>()!!
+         }
 
-             start = end
+         check (request.inhoud.read() == -1) {
+             "Failed to upload the full file. The file is larger than the sum of the omvang of all bestandsdelen."
          }
 
          return response ?: throw IllegalStateException("Upload in chunks failed")
