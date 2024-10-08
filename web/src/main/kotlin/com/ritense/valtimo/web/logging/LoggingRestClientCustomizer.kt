@@ -69,7 +69,7 @@ class LoggingRestClientCustomizer : RestClientCustomizer, ClientHttpRequestInter
             Request:
             HTTP Method = ${request.method}
             Request URI = ${request.uri}
-            Headers = ${request.headers}
+            Headernames = ${request.headers.keys}
             Body = ${String(requestBody)}
             ---------------------------------------
             Response:
