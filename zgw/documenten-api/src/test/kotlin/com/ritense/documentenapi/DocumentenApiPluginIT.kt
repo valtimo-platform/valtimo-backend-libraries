@@ -53,8 +53,7 @@ import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
 import java.time.LocalDate
-import java.util.Optional
-import java.util.UUID
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -323,7 +322,8 @@ internal class DocumentenApiPluginIT @Autowired constructor(
                 "datum": "2019-08-24"
               },
               "informatieobjecttype": "http://example.com",
-              "locked": true
+              "locked": true,
+              "bestandsdelen": []
             }
         """.trimIndent()
         return mockResponse(body)
