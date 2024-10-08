@@ -185,7 +185,7 @@ class DocumentenApiClient(
     ): org.springframework.data.domain.Page<DocumentInformatieObject> {
         // because the documenten api only supports a fixed page size, we will try to calculate the page we need to request
         // the only page sizes that are supported are those that can fit n times in the itemsPerPage
-        require(ITEMS_PER_PAGE % pageable. pageSize == 0) { "Page size is not supported" }
+        require(ITEMS_PER_PAGE % pageable.pageSize == 0) { "Page size is not supported" }
         requireNotNull(documentSearchRequest.zaakUrl) { "Zaak URL is required" }
 
         val pageToRequest = ((pageable.pageSize * pageable.pageNumber) / ITEMS_PER_PAGE) + 1
