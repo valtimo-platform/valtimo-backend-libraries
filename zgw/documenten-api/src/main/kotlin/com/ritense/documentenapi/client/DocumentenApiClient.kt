@@ -31,9 +31,6 @@ import com.ritense.outbox.OutboxService
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.ClientTools.Companion.optionalQueryParam
 import com.ritense.zgw.Page
-import java.io.InputStream
-import java.net.URI
-import kotlin.math.min
 import mu.KotlinLogging
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.Resource
@@ -49,6 +46,9 @@ import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 import org.springframework.web.util.UriBuilder
 import org.springframework.web.util.UriComponentsBuilder
+import java.io.InputStream
+import java.net.URI
+import kotlin.math.min
 
 class DocumentenApiClient(
     private val restClientBuilder: RestClient.Builder,
@@ -82,21 +82,15 @@ class DocumentenApiClient(
         baseUrl: URI,
         request: BestandsdelenRequest,
         createDocumentResult: CreateDocumentResult,
-        bestandsnaam: String?
-    ): BestandsdelenResult {
-         requireNotNull(bestandsnaam) { "Bestandsnaam must be set otherwise uploading in bestanddelen will fail" }
-
+        bestandsnaam: String
+    ) {
          // Inside the CreateDocumentResult there is an array of bestandsdelen.
          // Each bestandsdeel needs to be sent separately
-         // So the documenten api determines the amount of chunks, not this application.
-         var response: BestandsdelenResult? = null
+         // So the documenten api determines the amount (and size) of chunks, not this application.
+         logger.info { "Starting upload of file $bestandsnaam in ${createDocumentResult.bestandsdelen.size} chunks" }
 
-         logger.info("Starting upload of file in {} chunks\n", createDocumentResult.bestandsdelen?.size)
-
-         for(bestandsdeel in createDocumentResult.bestandsdelen!!) {
-             logger.info("Sending chunk #{} for a size of {}",
-                 bestandsdeel.volgnummer,
-                 bestandsdeel.omvang)
+         for(bestandsdeel in createDocumentResult.bestandsdelen) {
+             logger.debug { "Sending chunk #${bestandsdeel.volgnummer} for a size of ${bestandsdeel.omvang} bytes" }
 
              val chunk = ByteArray(bestandsdeel.omvang)
              val bytesRead = request.inhoud.read(chunk)
@@ -115,7 +109,7 @@ class DocumentenApiClient(
              body.add("inhoud", fileResource)
              body.add("lock", request.lock)
 
-             response = restClient(authentication)
+             restClient(authentication)
                  .put()
                  .uri {
                      ClientTools.baseUrlToBuilder(it, baseUrl)
@@ -131,22 +125,6 @@ class DocumentenApiClient(
          check (request.inhoud.read() == -1) {
              "Failed to upload the full file. The file is larger than the sum of the omvang of all bestandsdelen."
          }
-
-         return response ?: throw IllegalStateException("Upload in chunks failed")
-    }
-
-    fun unlockDocument(authentication: DocumentenApiAuthentication, baseUrl: URI,
-                       documentLock: DocumentLock, bestandsdelenId: String) {
-        restClient(authentication)
-            .post()
-            .uri { ClientTools.baseUrlToBuilder(it, baseUrl)
-                .path("enkelvoudiginformatieobjecten/{uuid}/unlock")
-                .build(bestandsdelenId)
-            }
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(documentLock)
-            .retrieve()
-            .toBodilessEntity()
     }
 
     fun getInformatieObject(
@@ -371,6 +349,6 @@ class DocumentenApiClient(
 
     companion object {
         const val ITEMS_PER_PAGE = 100
-        var logger = KotlinLogging.logger{}
+        val logger = KotlinLogging.logger{}
     }
 }

@@ -56,7 +56,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.io.InputStream
 import java.net.URI
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 
 @Plugin(
     key = PLUGIN_KEY,
@@ -339,10 +339,10 @@ class DocumentenApiPlugin(
      */
     private fun storeDocumentInParts(
         execution: DelegateExecution,
-        metadata: Map<String, Any?>,
-        bestandsnaam: String?,
+        metadata: Map<String, Any>,
+        bestandsnaam: String,
         inhoudAsInputStream: InputStream,
-    ):CreateDocumentResult {
+    ): CreateDocumentResult {
         val documentCreateResult = storeDocument(
             execution = execution,
             metadata = metadata,
@@ -370,11 +370,10 @@ class DocumentenApiPlugin(
             bestandsnaam)
 
         val documentLock = DocumentLock(documentCreateResult.getLockFromBestanddelen())
-        client.unlockDocument(
+        client.unlockInformatieObject(
             authenticationPluginConfiguration,
-            url,
-            documentLock,
-            documentCreateResult.getDocumentUUIDFromUrl())
+            URI.create(documentCreateResult.url),
+            documentLock)
 
         return documentCreateResult
     }

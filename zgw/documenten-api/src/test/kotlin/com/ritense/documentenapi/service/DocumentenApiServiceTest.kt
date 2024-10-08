@@ -43,7 +43,7 @@ import org.springframework.data.domain.Pageable
 import java.net.URI
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 class DocumentenApiServiceTest {
     private lateinit var service: DocumentenApiService

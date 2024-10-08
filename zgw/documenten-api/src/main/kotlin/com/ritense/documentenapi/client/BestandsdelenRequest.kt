@@ -20,5 +20,5 @@ import java.io.InputStream
 
 class BestandsdelenRequest(
     val inhoud: InputStream,
-    val lock:String
+    val lock: String
 )

@@ -187,7 +187,7 @@ DocumentenApiClientTest {
 
         mockDocumentenApi.enqueue(mockResponse(putResponseBody))
 
-        val bestandsdelen = listOf(Bestandsdelen(
+        val bestandsdelen = listOf(Bestandsdeel(
             "https://www.example.com",
             1,
             0,
@@ -202,58 +202,18 @@ DocumentenApiClientTest {
             LocalDateTime.now(),
             bestandsdelen)
 
-        val result = client.storeDocumentInParts(
+       client.storeDocumentInParts(
             TestAuthentication(),
             mockDocumentenApi.url("/").toUri(),
             request,
             createResult,
             "bestand.jpg")
 
-        assertNotNull(result)
-        assertEquals("https://example.com/54ff8243-83f9-4fa3-a32e-29970db52ced", result.url)
-
         val recordedRequest = mockDocumentenApi.takeRequest()
         assertNotNull(recordedRequest)
 
         assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
         assertEquals("PUT", recordedRequest.method)
-    }
-
-    @Test
-    fun `should fail if bestandsnaam for bestanddelen is empty`() {
-        val restClientBuilder = RestClient.builder()
-        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock())
-
-        val request = BestandsdelenRequest(
-            inhoud = InputStream.nullInputStream(),
-            lock = UUID.randomUUID().toString()
-        )
-
-        val bestandsdelen = listOf(Bestandsdelen(
-            "https://www.example.com",
-            1,
-            1234,
-            false,
-            "de9c883a-cdfc-493b-9c38-5824e334a1b1"))
-
-        val createResult = CreateDocumentResult(
-            "url",
-            "auteur",
-            "bestandsnaam.jpg",
-            1234L,
-            LocalDateTime.now(),
-            bestandsdelen)
-
-        val exception = assertThrows<IllegalArgumentException> {
-            client.storeDocumentInParts(
-                TestAuthentication(),
-                mockDocumentenApi.url("/").toUri(),
-                request,
-                createResult,
-                null)
-        }
-
-        assertEquals("Bestandsnaam must be set otherwise uploading in bestanddelen will fail", exception.message)
     }
 
     @Test
