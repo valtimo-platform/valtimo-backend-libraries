@@ -30,6 +30,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 public class DocumentSearchHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
     private static final String FIELDS_URL = "/api/v1/document-search/{documentDefinitionName}/fields";
+    private static final String FIELDS_MANAGEMENT_URL = "/api/management/v1/document-search/{documentDefinitionName}/fields";
 
     @Override
     public void configure(HttpSecurity http) {
@@ -40,9 +41,11 @@ public class DocumentSearchHttpSecurityConfigurer implements HttpSecurityConfigu
                     .requestMatchers(antMatcher(POST, FIELDS_URL)).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, FIELDS_URL)).authenticated()
                     .requestMatchers(antMatcher(PUT, FIELDS_URL)).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(DELETE, FIELDS_URL)).hasAuthority( ADMIN)
-                    .requestMatchers(antMatcher(
-                        GET, "/api/management/v1/document-search/{documentDefinitionName}/fields")).hasAuthority(ADMIN));
+                    .requestMatchers(antMatcher(DELETE, FIELDS_URL)).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, FIELDS_MANAGEMENT_URL)).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, FIELDS_MANAGEMENT_URL)).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, FIELDS_MANAGEMENT_URL)).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, FIELDS_MANAGEMENT_URL)).hasAuthority(ADMIN));
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

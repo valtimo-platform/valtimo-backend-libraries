@@ -48,7 +48,10 @@ public class SearchFieldResource implements DocumentSearchFields {
     }
 
     @Override
-    @PostMapping("/v1/document-search/{documentDefinitionName}/fields")
+    @PostMapping(value = {
+        "/v1/document-search/{documentDefinitionName}/fields",
+        "/management/v1/document-search/{documentDefinitionName}/fields"
+    })
     public ResponseEntity<Void> addSearchField(
         @LoggableResource("documentDefinitionName") @PathVariable String documentDefinitionName,
         @RequestBody SearchFieldDto searchField
@@ -70,7 +73,10 @@ public class SearchFieldResource implements DocumentSearchFields {
     }
 
     @Override
-    @GetMapping("/v1/document-search/{documentDefinitionName}/fields")
+    @GetMapping(value = {
+        "/v1/document-search/{documentDefinitionName}/fields",
+        "/management/v1/document-search/{documentDefinitionName}/fields"
+    })
     public ResponseEntity<List<SearchFieldDto>> getSearchFields(
         @LoggableResource("documentDefinitionName") @PathVariable String documentDefinitionName
     ) {
@@ -79,7 +85,10 @@ public class SearchFieldResource implements DocumentSearchFields {
     }
 
     @Override
-    @PutMapping("/v1/document-search/{documentDefinitionName}/fields")
+    @PutMapping(value = {
+        "/v1/document-search/{documentDefinitionName}/fields",
+        "/management/v1/document-search/{documentDefinitionName}/fields"
+    })
     public ResponseEntity<Void> updateSearchField(
         @LoggableResource("documentDefinitionName") @PathVariable String documentDefinitionName,
         @RequestBody List<SearchFieldDto> searchFieldDtos
@@ -98,7 +107,10 @@ public class SearchFieldResource implements DocumentSearchFields {
     }
 
     @Override
-    @DeleteMapping("/v1/document-search/{documentDefinitionName}/fields")
+    @DeleteMapping(value = {
+        "/v1/document-search/{documentDefinitionName}/fields",
+        "/management/v1/document-search/{documentDefinitionName}/fields"
+    })
     public ResponseEntity<Void> deleteSearchField(
         @LoggableResource("documentDefinitionName") @PathVariable String documentDefinitionName,
         @RequestParam String key
