@@ -90,15 +90,8 @@ class DocumentenApiClient(
          createDocumentResult.bestandsdelen.forEach { bestandsdeel ->
              logger.debug { "Sending chunk #${bestandsdeel.volgnummer} for a size of ${bestandsdeel.omvang} bytes" }
 
-             val chunk = ByteArray(bestandsdeel.omvang)
-             val bytesRead = request.inhoud.read(chunk)
-
-             check (bytesRead == chunk.size) {
-                 "Failed to read all the bytes to upload. The expected omvang is larger than the bytes available."
-             }
-
-             val uploadPart = FileUploadPart(chunk, bestandsnaam, request.lock)
-             val body = uploadPart.createBody()
+             val body = FileUploadPart(bestandsdeel, request, bestandsnaam)
+                 .createBody()
 
              restClient(authentication)
                  .put()

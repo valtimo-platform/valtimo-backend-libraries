@@ -1,58 +1,60 @@
 package com.ritense.documentenapi.domain
 
+import com.ritense.documentenapi.client.Bestandsdeel
+import com.ritense.documentenapi.client.BestandsdelenRequest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.util.MultiValueMap
+import java.io.ByteArrayInputStream
+import java.io.InputStream
 
 class FileUploadPartTest {
 
     @Test
-    fun `createBody should create valid MultiValueMap with file contents and lock`() {
-        // Given
-        val chunk = ByteArray(1024) { 1 } // Mocked byte array with some data
-        val bestandsnaam = "testFile.txt"
-        val lock = "mock-lock-value"
+    fun `createBody should return a valid MultiValueMap when all bytes are read successfully`() {
+        // Arrange
+        val bestandsdeel = Bestandsdeel(
+            url = "https://example.com/file",
+            omvang = 10,
+            volgnummer = 1,
+            voltooid = false,
+            lock = "test-lock"
+        )
+        val inputStream: InputStream = ByteArrayInputStream(ByteArray(10) { 1 })
+        val bestandsdelenRequest = BestandsdelenRequest(inputStream, lock = "test-lock")
+        val fileUploadPart = FileUploadPart(bestandsdeel, bestandsdelenRequest, "testfile.txt")
 
-        // When
-        val uploadPart = FileUploadPart(chunk, bestandsnaam, lock)
-        val body: MultiValueMap<String, Any> = uploadPart.createBody()
+        // Act
+        val result: MultiValueMap<String, Any> = fileUploadPart.createBody()
 
-        // Then
-        assertNotNull(body)
-        assertEquals(2, body.size)
-
-        // Check the fileResource part of the body
-        val fileResource = body["inhoud"]?.get(0)
-        assertNotNull(fileResource)
-
-        // Check if the lock is correctly added
-        val lockValue = body["lock"]?.get(0)
-        assertEquals(lock, lockValue)
-
-        // Check the filename and content
-        val byteArrayResource = fileResource as ByteArrayResource
-        assertEquals(bestandsnaam, byteArrayResource.filename)
-        assertEquals(chunk.size, byteArrayResource.byteArray.size)
+        // Assert
+        assertNotNull(result)
+        assertEquals(2, result.size)
+        assertEquals("test-lock", result["lock"]?.firstOrNull())
+        assertEquals("testfile.txt", (result["inhoud"]?.firstOrNull() as ByteArrayResource).filename)
     }
 
     @Test
-    fun `createBody should contain correct content type`() {
-        // Given
-        val chunk = ByteArray(512) { 1 }
-        val bestandsnaam = "image.jpg"
-        val lock = "test-lock"
+    fun `createBody should throw an exception when not all bytes are read`() {
+        // Arrange
+        val bestandsdeel = Bestandsdeel(
+            url = "https://example.com/file",
+            omvang = 10,
+            volgnummer = 1,
+            voltooid = false,
+            lock = "test-lock"
+        )
+        val inputStream: InputStream = ByteArrayInputStream(ByteArray(5) { 1 })
+        val bestandsdelenRequest = BestandsdelenRequest(inputStream, lock = "test-lock")
+        val fileUploadPart = FileUploadPart(bestandsdeel, bestandsdelenRequest, "testfile.txt")
 
-        // When
-        val uploadPart = FileUploadPart(chunk, bestandsnaam, lock)
-        val body = uploadPart.createBody()
-
-        // Then
-        val fileResource = body["inhoud"]?.get(0) as ByteArrayResource
-
-        // You can simulate checking the content, but actual multipart validation would happen in integration tests
-        assertEquals(bestandsnaam, fileResource.filename)
-        assertEquals(chunk, fileResource.byteArray)
+        // Act & Assert
+        val exception = assertThrows<IllegalArgumentException> {
+            fileUploadPart.createBody()
+        }
+        assertEquals("Failed to read all the bytes to upload. Expected 10 bytes, but only read 5 bytes. Check bestandsdeel: $bestandsdeel.", exception.message)
     }
 }

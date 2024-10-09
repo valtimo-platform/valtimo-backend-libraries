@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-class BestandsdelenResult(
+data class BestandsdelenResult(
     var url: String?,
     var lock: String?,
     val voltooid: Boolean?,

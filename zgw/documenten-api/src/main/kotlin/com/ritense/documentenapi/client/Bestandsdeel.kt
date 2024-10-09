@@ -16,7 +16,7 @@
 
 package com.ritense.documentenapi.client
 
-class Bestandsdeel(
+data class Bestandsdeel(
     val url: String,
     val volgnummer: Int,
     val omvang: Int,

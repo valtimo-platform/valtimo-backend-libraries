@@ -37,6 +37,7 @@ import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.times
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
@@ -232,7 +233,7 @@ internal class DocumentenApiPluginTest {
 
         val apiRequestCaptor = argumentCaptor<CreateDocumentRequest>()
         verify(client).storeDocument(any(), any(), apiRequestCaptor.capture())
-        verify(executionMock).setVariable(DOCUMENT_URL_PROCESS_VAR, "returnedUrl")
+        verify(executionMock, times(2)).setVariable(DOCUMENT_URL_PROCESS_VAR, "returnedUrl")
 
         val request = apiRequestCaptor.firstValue
         assertEquals("123456789", request.bronorganisatie)
@@ -310,7 +311,7 @@ internal class DocumentenApiPluginTest {
 
         val apiRequestCaptor = argumentCaptor<CreateDocumentRequest>()
         verify(client).storeDocument(any(), any(), apiRequestCaptor.capture())
-        verify(executionMock).setVariable(DOCUMENT_URL_PROCESS_VAR, "returnedUrl")
+        verify(executionMock, times(2)).setVariable(DOCUMENT_URL_PROCESS_VAR, "returnedUrl")
 
         val request = apiRequestCaptor.firstValue
         assertEquals("123456789", request.bronorganisatie)
