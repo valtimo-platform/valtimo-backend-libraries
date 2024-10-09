@@ -13,13 +13,15 @@
             "conditions": [
                 {
                     "type": "container",
-                    "resourceType": "com.ritense.valtimo.camunda.domain.CamundaIdentityLink",
+                    "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
                     "conditions": [
                         {
-                            "type": "field",
-                            "field": "groupId",
+                            "type": "expression",
+                            "field": "content.content",
+                            "path": "$.voornaam",
                             "operator": "==",
-                            "value": "ROLE_EXTRA6"
+                            "value": "mies",
+                            "clazz": "java.lang.String"
                         }
                     ]
                 }

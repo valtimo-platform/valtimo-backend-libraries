@@ -22,6 +22,20 @@
                             "value": "ROLE_EXTRA3"
                         }
                     ]
+                },
+                {
+                    "type": "container",
+                    "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+                    "conditions": [
+                        {
+                            "type": "expression",
+                            "field": "content.content",
+                            "path": "$.height",
+                            "operator": "<",
+                            "value": 40000,
+                            "clazz": "java.lang.Integer"
+                        }
+                    ]
                 }
             ]
         },
