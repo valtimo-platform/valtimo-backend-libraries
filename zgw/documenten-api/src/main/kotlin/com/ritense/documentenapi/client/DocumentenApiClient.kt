@@ -20,6 +20,7 @@ import BestandsdelenResult
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.documentenapi.DocumentenApiAuthentication
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey
+import com.ritense.documentenapi.domain.FileUploadPart
 import com.ritense.documentenapi.event.DocumentDeleted
 import com.ritense.documentenapi.event.DocumentInformatieObjectDownloaded
 import com.ritense.documentenapi.event.DocumentInformatieObjectViewed
@@ -32,7 +33,6 @@ import com.ritense.zgw.ClientTools
 import com.ritense.zgw.ClientTools.Companion.optionalQueryParam
 import com.ritense.zgw.Page
 import mu.KotlinLogging
-import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.Resource
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -40,8 +40,6 @@ import org.springframework.http.MediaType
 import org.springframework.http.converter.ResourceHttpMessageConverter
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
-import org.springframework.util.LinkedMultiValueMap
-import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 import org.springframework.web.util.UriBuilder
@@ -99,15 +97,8 @@ class DocumentenApiClient(
                  "Failed to read all the bytes to upload. The expected omvang is larger than the bytes available."
              }
 
-             val fileResource = object : ByteArrayResource(chunk) {
-                 override fun getFilename(): String {
-                     return bestandsnaam
-                 }
-             }
-
-             val body: MultiValueMap<String, Any> = LinkedMultiValueMap()
-             body.add("inhoud", fileResource)
-             body.add("lock", request.lock)
+             val uploadPart = FileUploadPart(chunk, bestandsnaam, request.lock)
+             val body = uploadPart.createBody()
 
              restClient(authentication)
                  .put()
