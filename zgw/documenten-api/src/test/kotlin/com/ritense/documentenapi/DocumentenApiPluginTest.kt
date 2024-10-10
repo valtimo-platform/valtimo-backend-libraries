@@ -37,7 +37,6 @@ import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
-import org.mockito.Mockito.times
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
@@ -66,7 +65,7 @@ internal class DocumentenApiPluginTest {
             key = "key",
             description = "description",
             fullyQualifiedClassName = "className",
-            title= "title"
+            title = "title"
         )
         val pluginConfiguration = PluginConfiguration(
             id = PluginConfigurationId(UUID.randomUUID()),
@@ -81,7 +80,7 @@ internal class DocumentenApiPluginTest {
     @Test
     fun `should call client to store file`() {
         val storageService: TemporaryResourceStorageService = mock()
-        val applicationEventPublisher: ApplicationEventPublisher= mock()
+        val applicationEventPublisher: ApplicationEventPublisher = mock()
         val authenticationMock = mock<DocumentenApiAuthentication>()
         val objectMapper = MapperSingleton.get()
         val documentenApiVersionService: DocumentenApiVersionService = mock()
@@ -121,12 +120,14 @@ internal class DocumentenApiPluginTest {
         whenever(pluginConfiguration.id).thenReturn(pluginConfigurationId)
         whenever(pluginConfigurationId.id).thenReturn(UUID.randomUUID())
 
-        val pluginAnnotation:Plugin = mock()
+        val pluginAnnotation: Plugin = mock()
         whenever(pluginAnnotation.key).thenReturn("documentenApiPluginKey")
-        whenever(pluginService.findPluginConfiguration(
-            eq(DocumentenApiPlugin::class.java),
-            any()
-        )).thenReturn(pluginConfiguration)
+        whenever(
+            pluginService.findPluginConfiguration(
+                eq(DocumentenApiPlugin::class.java),
+                any()
+            )
+        ).thenReturn(pluginConfiguration)
 
         plugin.storeTemporaryDocument(
             executionMock,
@@ -171,7 +172,7 @@ internal class DocumentenApiPluginTest {
     @Test
     fun `should call client to store file after document upload`() {
         val storageService: TemporaryResourceStorageService = mock()
-        val applicationEventPublisher: ApplicationEventPublisher= mock()
+        val applicationEventPublisher: ApplicationEventPublisher = mock()
         val authenticationMock = mock<DocumentenApiAuthentication>()
         val documentenApiVersionService: DocumentenApiVersionService = mock()
         val pluginConfiguration: PluginConfiguration = mock()
@@ -193,28 +194,34 @@ internal class DocumentenApiPluginTest {
         whenever(storageService.getResourceContentAsInputStream("localDocumentLocation"))
             .thenReturn(inputStream)
         whenever(storageService.getResourceMetadata("localDocumentLocation"))
-            .thenReturn(mapOf("title" to "title",
-                "confidentialityLevel" to "zaakvertrouwelijk",
-                "status" to "in_bewerking",
-                "author" to "author",
-                "language" to "taal",
-                "filename" to "test.ext",
-                "description" to "description",
-                "receiptDate" to "2022-09-15",
-                "sendDate" to "2022-09-16",
-                "description" to "description",
-                "informatieobjecttype" to "type"))
+            .thenReturn(
+                mapOf(
+                    "title" to "title",
+                    "confidentialityLevel" to "zaakvertrouwelijk",
+                    "status" to "in_bewerking",
+                    "author" to "author",
+                    "language" to "taal",
+                    "filename" to "test.ext",
+                    "description" to "description",
+                    "receiptDate" to "2022-09-15",
+                    "sendDate" to "2022-09-16",
+                    "description" to "description",
+                    "informatieobjecttype" to "type"
+                )
+            )
         whenever(client.storeDocument(any(), any(), any())).thenReturn(result)
 
         whenever(pluginConfiguration.id).thenReturn(pluginConfigurationId)
         whenever(pluginConfigurationId.id).thenReturn(UUID.randomUUID())
 
-        val pluginAnnotation:Plugin = mock()
+        val pluginAnnotation: Plugin = mock()
         whenever(pluginAnnotation.key).thenReturn("documentenApiPluginKey")
-        whenever(pluginService.findPluginConfiguration(
-            eq(DocumentenApiPlugin::class.java),
-            any()
-        )).thenReturn(pluginConfiguration)
+        whenever(
+            pluginService.findPluginConfiguration(
+                eq(DocumentenApiPlugin::class.java),
+                any()
+            )
+        ).thenReturn(pluginConfiguration)
 
         val plugin = DocumentenApiPlugin(
             client,
@@ -233,7 +240,7 @@ internal class DocumentenApiPluginTest {
 
         val apiRequestCaptor = argumentCaptor<CreateDocumentRequest>()
         verify(client).storeDocument(any(), any(), apiRequestCaptor.capture())
-        verify(executionMock, times(2)).setVariable(DOCUMENT_URL_PROCESS_VAR, "returnedUrl")
+        verify(executionMock).setVariable(DOCUMENT_URL_PROCESS_VAR, "returnedUrl")
 
         val request = apiRequestCaptor.firstValue
         assertEquals("123456789", request.bronorganisatie)
@@ -255,7 +262,7 @@ internal class DocumentenApiPluginTest {
     @Test
     fun `should call client to store file after document upload with minimal properties`() {
         val storageService: TemporaryResourceStorageService = mock()
-        val applicationEventPublisher: ApplicationEventPublisher= mock()
+        val applicationEventPublisher: ApplicationEventPublisher = mock()
         val authenticationMock = mock<DocumentenApiAuthentication>()
         val documentenApiVersionService: DocumentenApiVersionService = mock()
         val pluginConfiguration: PluginConfiguration = mock()
@@ -277,11 +284,15 @@ internal class DocumentenApiPluginTest {
         whenever(storageService.getResourceContentAsInputStream("localDocumentLocation"))
             .thenReturn(inputStream)
         whenever(storageService.getResourceMetadata("localDocumentLocation"))
-            .thenReturn(mapOf("title" to "title",
-                "status" to "in_bewerking",
-                "language" to "taal",
-                "filename" to "test.ext",
-                "informatieobjecttype" to "type"))
+            .thenReturn(
+                mapOf(
+                    "title" to "title",
+                    "status" to "in_bewerking",
+                    "language" to "taal",
+                    "filename" to "test.ext",
+                    "informatieobjecttype" to "type"
+                )
+            )
         whenever(client.storeDocument(any(), any(), any())).thenReturn(result)
 
         val plugin = DocumentenApiPlugin(
@@ -300,12 +311,14 @@ internal class DocumentenApiPluginTest {
         whenever(pluginConfiguration.id).thenReturn(pluginConfigurationId)
         whenever(pluginConfigurationId.id).thenReturn(UUID.randomUUID())
 
-        val pluginAnnotation:Plugin = mock()
+        val pluginAnnotation: Plugin = mock()
         whenever(pluginAnnotation.key).thenReturn("documentenApiPluginKey")
-        whenever(pluginService.findPluginConfiguration(
-            eq(DocumentenApiPlugin::class.java),
-            any()
-        )).thenReturn(pluginConfiguration)
+        whenever(
+            pluginService.findPluginConfiguration(
+                eq(DocumentenApiPlugin::class.java),
+                any()
+            )
+        ).thenReturn(pluginConfiguration)
 
         plugin.storeUploadedDocument(executionMock)
 
@@ -333,7 +346,7 @@ internal class DocumentenApiPluginTest {
     @Test
     fun `should call client to get document`() {
         val storageService: TemporaryResourceStorageService = mock()
-        val applicationEventPublisher: ApplicationEventPublisher= mock()
+        val applicationEventPublisher: ApplicationEventPublisher = mock()
         val authenticationMock = mock<DocumentenApiAuthentication>()
         val documentenApiVersionService: DocumentenApiVersionService = mock()
 

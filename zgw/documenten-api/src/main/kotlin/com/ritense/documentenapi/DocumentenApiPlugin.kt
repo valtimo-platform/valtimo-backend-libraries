@@ -168,14 +168,12 @@ class DocumentenApiPlugin(
         val contentAsInputStream = storageService.getResourceContentAsInputStream(resourceId)
         val metadata = storageService.getResourceMetadata(resourceId)
 
-        val documentCreateResult = storeDocumentInParts(
+        storeDocumentInParts(
             execution = execution,
             metadata = metadata,
             bestandsnaam = metadata["filename"].toString(),
             inhoudAsInputStream = contentAsInputStream,
         )
-
-        execution.setVariable(DOCUMENT_URL_PROCESS_VAR, documentCreateResult.url)
     }
 
     @PluginAction(
