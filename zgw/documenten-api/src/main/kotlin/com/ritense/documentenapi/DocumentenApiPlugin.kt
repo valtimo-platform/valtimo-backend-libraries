@@ -341,7 +341,7 @@ class DocumentenApiPlugin(
         metadata: Map<String, Any>,
         bestandsnaam: String,
         inhoudAsInputStream: InputStream,
-    ): CreateDocumentResult {
+    ) {
         val documentCreateResult = storeDocument(
             execution = execution,
             metadata = metadata,
