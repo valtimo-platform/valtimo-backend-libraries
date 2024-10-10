@@ -152,7 +152,6 @@ class DocumentenApiPlugin(
             storedDocumentUrl = DOCUMENT_URL_PROCESS_VAR,
         )
 
-        execution.setVariable(DOCUMENT_URL_PROCESS_VAR, documentCreateResult.url)
     }
 
     @PluginAction(
