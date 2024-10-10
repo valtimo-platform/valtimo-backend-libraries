@@ -311,7 +311,7 @@ internal class DocumentenApiPluginTest {
 
         val apiRequestCaptor = argumentCaptor<CreateDocumentRequest>()
         verify(client).storeDocument(any(), any(), apiRequestCaptor.capture())
-        verify(executionMock, times(2)).setVariable(DOCUMENT_URL_PROCESS_VAR, "returnedUrl")
+        verify(executionMock).setVariable(DOCUMENT_URL_PROCESS_VAR, "returnedUrl")
 
         val request = apiRequestCaptor.firstValue
         assertEquals("123456789", request.bronorganisatie)
