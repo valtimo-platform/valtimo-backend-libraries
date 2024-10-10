@@ -63,7 +63,7 @@ import java.io.InputStream
 import java.net.URI
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 import java.util.function.Supplier
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
