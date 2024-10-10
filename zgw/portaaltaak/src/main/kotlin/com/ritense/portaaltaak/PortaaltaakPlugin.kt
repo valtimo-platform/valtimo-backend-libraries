@@ -104,7 +104,7 @@ class PortaaltaakPlugin(
             logger.debug { "Creating portaaltaak for task with id '${delegateTask.id}'" }
 
             val objectManagement = objectManagementService.getById(objectManagementConfigurationId)
-                ?: throw IllegalStateException("Object management not found for portaal taak")
+                ?: throw IllegalStateException("Object management not found for portaaltaak")
 
             val objectenApiPlugin = pluginService.createInstance(
                 PluginConfigurationId

@@ -96,11 +96,7 @@ open class PortaalTaakEventListener(
                             return
                         }
 
-                    val receiveData = getReceiveDataActionProperty(task, it.id.id)
-                        ?: run {
-                            logger.warn { "Receive data not found for task with id '${task.id}'" }
-                            return
-                        }
+                    val receiveData = getReceiveDataActionProperty(task, it.id.id) ?: return
 
                     val portaaltaakPlugin = pluginService.createInstance(it) as PortaaltaakPlugin
                     val processInstanceId = CamundaProcessInstanceId(task.getProcessInstanceId())
