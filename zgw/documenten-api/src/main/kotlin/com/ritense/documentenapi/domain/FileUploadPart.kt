@@ -16,7 +16,7 @@ data class FileUploadPart(
         val chunk = ByteArray(bestandsdeel.omvang)
         val bytesRead = bestandsdelenRequest.inhoud.read(chunk)
 
-        require (bytesRead == chunk.size) {
+        require(bytesRead == chunk.size) {
             "Failed to read all the bytes to upload. " +
                 "Expected ${chunk.size} bytes, but only read $bytesRead bytes. " +
                 "Check bestandsdeel: $bestandsdeel."

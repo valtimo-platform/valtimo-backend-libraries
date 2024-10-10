@@ -75,40 +75,40 @@ class DocumentenApiClient(
         return result
     }
 
-     fun storeDocumentInParts(
+    fun storeDocumentInParts(
         authentication: DocumentenApiAuthentication,
         baseUrl: URI,
         request: BestandsdelenRequest,
         createDocumentResult: CreateDocumentResult,
         bestandsnaam: String
     ) {
-         // Inside the CreateDocumentResult there is an array of bestandsdelen.
-         // Each bestandsdeel needs to be sent separately
-         // So the documenten api determines the amount (and size) of chunks, not this application.
-         logger.info { "Starting upload of file $bestandsnaam in ${createDocumentResult.bestandsdelen.size} chunks" }
+        // Inside the CreateDocumentResult there is an array of bestandsdelen.
+        // Each bestandsdeel needs to be sent separately
+        // So the documenten api determines the amount (and size) of chunks, not this application.
+        logger.info { "Starting upload of file $bestandsnaam in ${createDocumentResult.bestandsdelen.size} chunks" }
 
-         createDocumentResult.bestandsdelen.forEach { bestandsdeel ->
-             logger.debug { "Sending chunk #${bestandsdeel.volgnummer} for a size of ${bestandsdeel.omvang} bytes" }
+        createDocumentResult.bestandsdelen.forEach { bestandsdeel ->
+            logger.debug { "Sending chunk #${bestandsdeel.volgnummer} for a size of ${bestandsdeel.omvang} bytes" }
 
-             val body = FileUploadPart(bestandsdeel, request, bestandsnaam)
-                 .createBody()
+            val body = FileUploadPart(bestandsdeel, request, bestandsnaam)
+                .createBody()
 
-             restClient(authentication)
-                 .put()
-                 .uri {
-                     ClientTools.baseUrlToBuilder(it, baseUrl)
-                         .path("bestandsdelen/{uuid}")
-                         .build(bestandsdeel.url.substring(bestandsdeel.url.lastIndexOf("/") + 1))
-                 }
-                 .contentType(MediaType.MULTIPART_FORM_DATA)
-                 .body(body)
-                 .retrieve()
-                 .body<BestandsdelenResult>()!!
-         }
+            restClient(authentication)
+                .put()
+                .uri {
+                    ClientTools.baseUrlToBuilder(it, baseUrl)
+                        .path("bestandsdelen/{uuid}")
+                        .build(bestandsdeel.url.substring(bestandsdeel.url.lastIndexOf("/") + 1))
+                }
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(body)
+                .retrieve()
+                .body<BestandsdelenResult>()!!
+        }
 
-         check (request.inhoud.read() == -1) {
-             "Failed to upload the full file. The file is larger than the sum of the omvang of all bestandsdelen."
-         }
+        check(request.inhoud.read() == -1) {
+            "Failed to upload the full file. The file is larger than the sum of the omvang of all bestandsdelen."
+        }
     }
 
     fun getInformatieObject(
@@ -333,6 +333,6 @@ class DocumentenApiClient(
 
     companion object {
         const val ITEMS_PER_PAGE = 100
-        val logger = KotlinLogging.logger{}
+        val logger = KotlinLogging.logger {}
     }
 }

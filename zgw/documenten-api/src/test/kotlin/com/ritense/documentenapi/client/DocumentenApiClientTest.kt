@@ -31,15 +31,6 @@ import com.ritense.outbox.domain.BaseEvent
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zgw.Rsin
 import com.ritense.zgw.domain.Vertrouwelijkheid
-import java.io.InputStream
-import java.net.URI
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.util.UUID
-import java.util.function.Supplier
-import kotlin.test.assertEquals
-import kotlin.test.assertIs
-import kotlin.test.assertTrue
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
@@ -68,6 +59,15 @@ import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
+import java.io.InputStream
+import java.net.URI
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.util.*
+import java.util.function.Supplier
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class
@@ -187,12 +187,15 @@ DocumentenApiClientTest {
 
         mockDocumentenApi.enqueue(mockResponse(putResponseBody))
 
-        val bestandsdelen = listOf(Bestandsdeel(
-            "https://www.example.com",
-            1,
-            0,
-            false,
-            "de9c883a-cdfc-493b-9c38-5824e334a1b1"))
+        val bestandsdelen = listOf(
+            Bestandsdeel(
+                "https://www.example.com",
+                1,
+                0,
+                false,
+                "de9c883a-cdfc-493b-9c38-5824e334a1b1"
+            )
+        )
 
         val createResult = CreateDocumentResult(
             "url",
@@ -200,14 +203,16 @@ DocumentenApiClientTest {
             "bestandsnaam.jpg",
             0L,
             LocalDateTime.now(),
-            bestandsdelen)
+            bestandsdelen
+        )
 
-       client.storeDocumentInParts(
+        client.storeDocumentInParts(
             TestAuthentication(),
             mockDocumentenApi.url("/").toUri(),
             request,
             createResult,
-            "bestand.jpg")
+            "bestand.jpg"
+        )
 
         val recordedRequest = mockDocumentenApi.takeRequest()
         assertNotNull(recordedRequest)
@@ -491,7 +496,7 @@ DocumentenApiClientTest {
         val buffer = Buffer()
 
         //buffer.writeUtf8("test")
-        buffer.write(byteArrayOf(72,73,32,84,79,77))
+        buffer.write(byteArrayOf(72, 73, 32, 84, 79, 77))
 
         mockDocumentenApi.enqueue(mockInputStreamResponse(buffer))
 
@@ -965,7 +970,7 @@ DocumentenApiClientTest {
         val documentSearchRequest = DocumentSearchRequest()
 
         val exception = assertThrows<IllegalArgumentException> {
-           doDocumentSearchRequest(pageable, documentSearchRequest, true)
+            doDocumentSearchRequest(pageable, documentSearchRequest, true)
         }
 
         assertEquals("Zaak URL is required", exception.message)

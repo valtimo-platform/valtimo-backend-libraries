@@ -55,6 +55,9 @@ class FileUploadPartTest {
         val exception = assertThrows<IllegalArgumentException> {
             fileUploadPart.createBody()
         }
-        assertEquals("Failed to read all the bytes to upload. Expected 10 bytes, but only read 5 bytes. Check bestandsdeel: $bestandsdeel.", exception.message)
+        assertEquals(
+            "Failed to read all the bytes to upload. Expected 10 bytes, but only read 5 bytes. Check bestandsdeel: $bestandsdeel.",
+            exception.message
+        )
     }
 }

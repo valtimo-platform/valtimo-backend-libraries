@@ -367,13 +367,15 @@ class DocumentenApiPlugin(
             url,
             bestandsdelenRequest,
             documentCreateResult,
-            bestandsnaam)
+            bestandsnaam
+        )
 
         val documentLock = DocumentLock(documentCreateResult.getLockFromBestandsdelen())
         client.unlockInformatieObject(
             authenticationPluginConfiguration,
             URI.create(documentCreateResult.url),
-            documentLock)
+            documentLock
+        )
 
         return documentCreateResult
     }
