@@ -376,7 +376,6 @@ class DocumentenApiPlugin(
             documentLock
         )
 
-        return documentCreateResult
     }
 
     private fun getDocumentenApiPluginByInformatieobjectUrl(informatieobjectUrl: URI): PluginConfiguration {
