@@ -179,7 +179,7 @@ class PortaaltaakPlugin(
 
         runWithoutAuthorization { taskService.complete(verwerkerTaakId) }
 
-        logger.info { "Task with id '${verwerkerTaakId}', corresponding to portaaltaak object with URL '${portaalTaakObjectUrl}', completed" }
+        logger.info { "Task with id '${verwerkerTaakId}' for object with URL '${portaalTaakObjectUrl}' completed" }
 
         val objectenApiPlugin =
             pluginService.createInstance(PluginConfigurationId(UUID.fromString(objectenApiPluginId))) as ObjectenApiPlugin
