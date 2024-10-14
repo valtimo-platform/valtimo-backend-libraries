@@ -30,7 +30,7 @@
         "pluginActionDefinitionKey": "link-document-to-zaak",
         "actionProperties": {
             "documentUrl": "pv:documentUrl",
-            "titel": "Verzoek document",
+            "titel": "${PROCESSVARIABLE_VERZOEK_DOCUMENT}",
             "beschrijving": "Document that belongs to a Verzoek"
         }
     },
