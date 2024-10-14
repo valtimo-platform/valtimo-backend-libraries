@@ -17,10 +17,10 @@ package com.ritense.processlink.autodeployment
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.ritense.importer.ImportRequest
 import com.ritense.processlink.importer.ProcessLinkImporter
 import java.io.IOException
@@ -51,9 +51,10 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
                 val fileName = requireNotNull(resource.filename)
                 logger.info { "Deploying process link from file '${fileName}'" }
 
-                val processLinkNode = objectMapper.readValue<ObjectNode>(resource.inputStream)
+                val processLinkNode = objectMapper.readValue<ArrayNode>(resource.inputStream)
                 val resolvedProcessLinkNode = resolveProperties(processLinkNode)
-                val importRequest = objectMapper.treeToValue<ImportRequest>(resolvedProcessLinkNode)
+
+                val importRequest = ImportRequest(fileName, objectMapper.writeValueAsBytes(resolvedProcessLinkNode))
 
                 processLinkImporter.import(importRequest)
             }
@@ -68,10 +69,10 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
             .getResources(PATH)
     }
 
-    private fun resolveProperties(properties: ObjectNode?): ObjectNode {
-        val result = objectMapper.createObjectNode()
-        properties?.fields()?.forEachRemaining {
-            result.replace(it.key, resolveValue(it.value))
+    private fun resolveProperties(array: ArrayNode?): ArrayNode {
+        val result = objectMapper.createArrayNode()
+        array?.forEach {
+            result.add(resolveValue(it))
         }
         return result
     }
@@ -79,7 +80,11 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
     private fun resolveValue(node: JsonNode?): JsonNode? {
         if (node != null) {
             if (node is ObjectNode) {
-                return resolveProperties(node)
+                val result = objectMapper.createObjectNode()
+                node.fields().forEachRemaining {
+                    result.replace(it.key, resolveValue(it.value))
+                }
+                return result
             } else if (node.isArray) {
                 return objectMapper.createArrayNode().addAll(node.map { resolveValue(it) })
             } else if (node.isTextual) {
