@@ -23,6 +23,7 @@ import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateOrderDto
 import com.ritense.case.web.rest.dto.CaseTabWithMetadataDto
+import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
@@ -40,14 +41,14 @@ import org.springframework.web.bind.annotation.RequestMapping
 @Controller
 @SkipComponentScan
 @RequestMapping("/api/management", produces = [APPLICATION_JSON_UTF8_VALUE])
-open class CaseTabManagementResource(
+class CaseTabManagementResource(
     private val caseTabService: CaseTabService,
     private val userManagementService: UserManagementService,
 ) {
     @RunWithoutAuthorization
     @PostMapping("/v1/case-definition/{caseDefinitionName}/tab")
-    open fun createCaseTab(
-        @PathVariable caseDefinitionName: String,
+    fun createCaseTab(
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @RequestBody caseTabDto: CaseTabDto
     ): ResponseEntity<CaseTabWithMetadataDto> {
         return try {
@@ -60,8 +61,8 @@ open class CaseTabManagementResource(
 
     @RunWithoutAuthorization
     @PutMapping("/v1/case-definition/{caseDefinitionName}/tab")
-    open fun updateOrderCaseTab(
-        @PathVariable caseDefinitionName: String,
+    fun updateOrderCaseTab(
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @RequestBody caseTabDtos: List<CaseTabUpdateOrderDto>
     ): ResponseEntity<List<CaseTabWithMetadataDto>> {
         val caseTabs = caseTabService.updateCaseTabs(caseDefinitionName, caseTabDtos)
@@ -71,8 +72,8 @@ open class CaseTabManagementResource(
 
     @RunWithoutAuthorization
     @PutMapping("/v1/case-definition/{caseDefinitionName}/tab/{tabKey}")
-    open fun updateCaseTab(
-        @PathVariable caseDefinitionName: String,
+    fun updateCaseTab(
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @PathVariable tabKey: String,
         @RequestBody caseTab: CaseTabUpdateDto
     ): ResponseEntity<Unit> {
@@ -82,8 +83,8 @@ open class CaseTabManagementResource(
 
     @RunWithoutAuthorization
     @DeleteMapping("/v1/case-definition/{caseDefinitionName}/tab/{tabKey}")
-    open fun deleteCaseTab(
-        @PathVariable caseDefinitionName: String,
+    fun deleteCaseTab(
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @PathVariable tabKey: String
     ): ResponseEntity<Unit> {
         caseTabService.deleteCaseTab(caseDefinitionName, tabKey)
@@ -92,8 +93,8 @@ open class CaseTabManagementResource(
 
     @RunWithoutAuthorization
     @GetMapping("/v1/case-definition/{caseDefinitionName}/tab")
-    open fun getCaseTabs(
-        @PathVariable caseDefinitionName: String
+    fun getCaseTabs(
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String
     ): ResponseEntity<List<CaseTabWithMetadataDto>> {
         val caseTabs = caseTabService.getCaseTabs(caseDefinitionName)
             .map { CaseTabWithMetadataDto.of(it, userManagementService) }
@@ -102,8 +103,8 @@ open class CaseTabManagementResource(
 
     @RunWithoutAuthorization
     @GetMapping("/v1/case-definition/{caseDefinitionName}/tab/{tabKey}")
-    open fun getCaseTab(
-        @PathVariable caseDefinitionName: String,
+    fun getCaseTab(
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @PathVariable tabKey: String
     ): ResponseEntity<CaseTabWithMetadataDto> {
         val caseTab = caseTabService.getCaseTab(caseDefinitionName, tabKey)

@@ -22,6 +22,7 @@ import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
 import com.ritense.importer.ValtimoImportTypes.Companion.ZGW_DOCUMENT_LIST_COLUMN
 import com.ritense.valtimo.changelog.service.ChangelogDeployer
+import mu.KotlinLogging
 
 class ZgwDocumentListColumnImporter(
     private val deployer: ZgwDocumentListColumnDeploymentService,
@@ -36,10 +37,12 @@ class ZgwDocumentListColumnImporter(
     override fun supports(fileName: String): Boolean = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
+        logger.info { "Importing ZGW document list columns for file ${request.fileName}" }
         changelogDeployer.deploy(deployer, request.fileName, request.content.toString(Charsets.UTF_8))
     }
 
     private companion object {
+        private val logger = KotlinLogging.logger {}
         val FILENAME_REGEX = """config/case/zgw-document-list-columns/([^/]+)\.zgw-document-list-column\.json"""
             .toRegex()
     }

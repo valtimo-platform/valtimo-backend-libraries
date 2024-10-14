@@ -18,7 +18,9 @@ package com.ritense.case.web.rest
 
 import com.ritense.case.service.CaseTabService
 import com.ritense.case.web.rest.dto.CaseTabDto
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId.existingId
+import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
@@ -38,7 +40,7 @@ class CaseTabResource(
     @Deprecated("Since 12.2.0")
     @GetMapping("/v1/case-definition/{caseDefinitionName}/tab")
     fun getCaseTabs(
-        @PathVariable caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String
     ): ResponseEntity<List<CaseTabDto>> {
         val tabs = caseTabService.getCaseTabs(caseDefinitionName)
             .map { CaseTabDto.of(it) }
@@ -47,7 +49,7 @@ class CaseTabResource(
 
     @GetMapping("/v1/document/{documentId}/tab")
     fun getCaseTabsForDocument(
-        @PathVariable documentId: UUID
+        @LoggableResource(resourceType = JsonSchemaDocument::class) @PathVariable documentId: UUID
     ): ResponseEntity<List<CaseTabDto>> {
         val tabs = caseTabService.getCaseTabs(existingId(documentId))
             .map { CaseTabDto.of(it) }

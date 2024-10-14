@@ -16,9 +16,14 @@
 
 package com.ritense.processlink.service
 
+import com.ritense.logging.LoggableResource
+import com.ritense.logging.withLoggingContext
 import com.ritense.processlink.domain.ActivityTypeWithEventName
+import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.exception.ProcessLinkNotFoundException
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
+import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byActive
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byId
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
@@ -34,33 +39,41 @@ class ProcessLinkActivityService(
     private val taskService: CamundaTaskService,
     private val processLinkActivityHandlers: List<ProcessLinkActivityHandler<*>>
 ) {
-    fun openTask(taskId: UUID): ProcessLinkActivityResult<*> {
-        val task = taskService.findTask(
+    fun openTask(
+        @LoggableResource(resourceType = CamundaTask::class) taskId: UUID
+    ): ProcessLinkActivityResult<*> {
+        val task = taskService.findTaskOrThrow(
             byId(taskId.toString())
                 .and(byActive())
         )
 
         return processLinkService.getProcessLinks(task.getProcessDefinitionId(), task.taskDefinitionKey!!)
             .firstNotNullOfOrNull { processLink ->
-                processLinkActivityHandlers.firstOrNull { provider -> provider.supports(processLink) }
-                    ?.openTask(task, processLink)
+                withLoggingContext(ProcessLink::class, processLink.id) {
+                    processLinkActivityHandlers.firstOrNull { provider -> provider.supports(processLink) }
+                        ?.openTask(task, processLink)
+                }
             } ?: throw ProcessLinkNotFoundException("For task with id '$taskId'.")
     }
 
     fun getStartEventObject(
-        processDefinitionId: String,
-        documentId: UUID?,
-        documentDefinitionName: String?
+        @LoggableResource(resourceType = CamundaProcessDefinition::class) processDefinitionId: String,
+        @LoggableResource("com.ritense.document.domain.impl.JsonSchemaDocument") documentId: UUID?,
+        @LoggableResource("documentDefinitionName") documentDefinitionName: String?
     ): ProcessLinkActivityResult<*>? {
-        val processLink = processLinkService.getProcessLinksByProcessDefinitionIdAndActivityType(processDefinitionId,
-            ActivityTypeWithEventName.START_EVENT_START) ?: return null
-        var result: ProcessLinkActivityResult<*>? = null
-        processLinkActivityHandlers.forEach {
-            if(it.supports(processLink)){
-                result = it.getStartEventObject(processDefinitionId, documentId, documentDefinitionName, processLink)
+        val processLink = processLinkService.getProcessLinksByProcessDefinitionIdAndActivityType(
+            processDefinitionId,
+            ActivityTypeWithEventName.START_EVENT_START
+        ) ?: return null
+        return withLoggingContext(ProcessLink::class, processLink.id) {
+            var result: ProcessLinkActivityResult<*>? = null
+            processLinkActivityHandlers.forEach {
+                if (it.supports(processLink)) {
+                    result = it.getStartEventObject(processDefinitionId, documentId, documentDefinitionName, processLink)
+                }
             }
+            result
         }
-        return result
     }
 
     companion object {

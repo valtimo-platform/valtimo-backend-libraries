@@ -31,6 +31,7 @@ dockerCompose {
 
 dependencies {
     implementation project(':contract')
+    implementation project(':logging')
     implementation project(':plugin')
 
     implementation "org.springframework.boot:spring-boot-starter-security"

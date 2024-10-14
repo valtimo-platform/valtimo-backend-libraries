@@ -23,9 +23,11 @@ import com.ritense.authorization.AuthorizationContext
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.document.service.DocumentService
+import com.ritense.logging.withLoggingContext
 import com.ritense.notificatiesapi.event.NotificatiesApiNotificationReceivedEvent
 import com.ritense.notificatiesapi.exception.NotificatiesNotificationEventException
 import com.ritense.objectenapi.ObjectenApiPlugin
@@ -38,12 +40,12 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.verzoek.domain.CopyStrategy
 import com.ritense.verzoek.domain.VerzoekProperties
-import com.ritense.processdocument.resolver.DocumentJsonValueResolverFactory.Companion.PREFIX as DOC_PREFIX
-import com.ritense.valueresolver.ProcessVariableValueResolverFactory.Companion.PREFIX as PV_PREFIX
 import mu.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.transaction.annotation.Transactional
 import java.net.URI
+import com.ritense.processdocument.resolver.DocumentJsonValueResolverFactory.Companion.PREFIX as DOC_PREFIX
+import com.ritense.valueresolver.ProcessVariableValueResolverFactory.Companion.PREFIX as PV_PREFIX
 
 @Transactional
 open class VerzoekPluginEventListener(
@@ -65,7 +67,7 @@ open class VerzoekPluginEventListener(
             !event.actie.equals("create", ignoreCase = true) ||
             objectType == null
         ) {
-
+            logger.debug { "Notificaties API event does not match criteria for creating a zaak. Ignoring." }
             return
         }
 
@@ -78,32 +80,34 @@ open class VerzoekPluginEventListener(
             val verzoekObjectData = getVerzoekObjectData(objectManagement, event)
             val verzoekTypeProperties = getVerzoekTypeProperties(verzoekObjectData, event) ?: return
             val document = createDocument(verzoekTypeProperties, verzoekObjectData)
-            val zaakTypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
-            val initiatorType = if (verzoekObjectData.has("kvk")) {
-                "kvk"
-            } else {
-                "bsn"
+            withLoggingContext(JsonSchemaDocument::class, document.id()) {
+                val zaakTypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
+                val initiatorType = if (verzoekObjectData.has("kvk")) {
+                    "kvk"
+                } else {
+                    "bsn"
+                }
+
+                val verzoekVariables = mutableMapOf(
+                    "RSIN" to this.rsin.toString(),
+                    "zaakTypeUrl" to zaakTypeUrl.toString(),
+                    "rolTypeUrl" to verzoekTypeProperties.initiatorRoltypeUrl.toString(),
+                    "rolDescription" to verzoekTypeProperties.initiatorRolDescription,
+                    "verzoekObjectUrl" to event.resourceUrl,
+                    "initiatorType" to initiatorType,
+                    "initiatorValue" to verzoekObjectData.get(initiatorType).textValue(),
+                    "processDefinitionKey" to verzoekTypeProperties.processDefinitionKey,
+                    "documentUrls" to getDocumentUrls(verzoekObjectData)
+                )
+
+                addVerzoekVariablesToProcessVariable(verzoekTypeProperties, verzoekObjectData, verzoekVariables)
+
+                val startProcessRequest = StartProcessForDocumentRequest(
+                    document.id(), processToStart, verzoekVariables
+                )
+
+                return@withLoggingContext startProcess(startProcessRequest)
             }
-
-            val verzoekVariables = mutableMapOf(
-                "RSIN" to this.rsin.toString(),
-                "zaakTypeUrl" to zaakTypeUrl.toString(),
-                "rolTypeUrl" to verzoekTypeProperties.initiatorRoltypeUrl.toString(),
-                "rolDescription" to verzoekTypeProperties.initiatorRolDescription,
-                "verzoekObjectUrl" to event.resourceUrl,
-                "initiatorType" to initiatorType,
-                "initiatorValue" to verzoekObjectData.get(initiatorType).textValue(),
-                "processDefinitionKey" to verzoekTypeProperties.processDefinitionKey,
-                "documentUrls" to getDocumentUrls(verzoekObjectData)
-            )
-
-            addVerzoekVariablesToProcessVariable(verzoekTypeProperties, verzoekObjectData, verzoekVariables)
-
-            val startProcessRequest = StartProcessForDocumentRequest(
-                document.id(), processToStart, verzoekVariables
-            )
-
-            startProcess(startProcessRequest)
         }
     }
 
@@ -127,16 +131,21 @@ open class VerzoekPluginEventListener(
         objectManagement: ObjectManagement,
         event: NotificatiesApiNotificationReceivedEvent
     ): JsonNode {
+        logger.debug { "Fetching verzoek object data from URL '${event.resourceUrl}'" }
         val objectenApiPlugin =
             pluginService.createInstance(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)) as ObjectenApiPlugin
         val verzoekObjectData = objectenApiPlugin.getObject(URI(event.resourceUrl)).record.data
             ?: throw NotificatiesNotificationEventException(
                 "Verzoek meta data was empty!"
             )
+        logger.debug { "Fetched verzoek object data from URL '${event.resourceUrl}' successfully" }
         return verzoekObjectData
     }
 
-    private fun VerzoekPlugin.getVerzoekTypeProperties(verzoekObjectData: JsonNode, event: NotificatiesApiNotificationReceivedEvent): VerzoekProperties? {
+    private fun VerzoekPlugin.getVerzoekTypeProperties(
+        verzoekObjectData: JsonNode,
+        event: NotificatiesApiNotificationReceivedEvent
+    ): VerzoekProperties? {
         val verzoekType = verzoekObjectData.get("type")?.textValue()
         val verzoekTypeProperties = verzoekProperties.firstOrNull { props -> props.type.equals(verzoekType, true) }
         if (verzoekTypeProperties == null && verzoekType != null) {
@@ -144,6 +153,7 @@ open class VerzoekPluginEventListener(
                 "Failed to find verzoek configuration of type $verzoekType. For object ${event.resourceUrl}"
             )
         }
+        logger.debug { "Found verzoek type properties for type '$verzoekType' for object at URL '${event.resourceUrl}'" }
         return verzoekTypeProperties
     }
 
@@ -151,6 +161,7 @@ open class VerzoekPluginEventListener(
         verzoekTypeProperties: VerzoekProperties,
         verzoekObjectData: JsonNode
     ): Document {
+        logger.debug { "Creating document for verzoek of type '${verzoekTypeProperties.type}'" }
         return AuthorizationContext.runWithoutAuthorization {
             documentService.createDocument(
                 NewDocumentRequest(
@@ -166,7 +177,9 @@ open class VerzoekPluginEventListener(
                         result.errors().joinToString(separator = "\n - ")
                 )
             }
-        }.resultingDocument().orElseThrow()
+        }.resultingDocument().orElseThrow().also { document ->
+            logger.info { "Document with id '${document.id().id}' created successfully for verzoek of type '${verzoekTypeProperties.type}'" }
+        }
     }
 
     private fun getDocumentContent(
@@ -176,6 +189,8 @@ open class VerzoekPluginEventListener(
         val verzoekDataData = verzoekObjectData.get("data") ?: throw NotificatiesNotificationEventException(
             "Verzoek Object data was empty, for verzoek with type '${verzoekTypeProperties.type}'"
         )
+
+        logger.debug { "Building document content for verzoek type '${verzoekTypeProperties.type}'" }
 
         return if (verzoekTypeProperties.copyStrategy == CopyStrategy.FULL) {
             verzoekDataData
@@ -194,11 +209,13 @@ open class VerzoekPluginEventListener(
                 }
             }
             JsonPatchService.apply(jsonPatchBuilder.build(), documentContent)
-            documentContent
+            logger.debug { "Document content for verzoek of type '${verzoekTypeProperties.type}' created successfully" }
+            return documentContent
         }
     }
 
     private fun startProcess(startProcessRequest: StartProcessForDocumentRequest) {
+        logger.debug { "Starting process '${startProcessRequest.processDefinitionKey}' for document with id '${startProcessRequest.documentId.id}'" }
         val result = processDocumentService.startProcessForDocument(startProcessRequest)
         if (result == null || result.errors().size > 0) {
             throw NotificatiesNotificationEventException(
@@ -206,6 +223,11 @@ open class VerzoekPluginEventListener(
                     "Reason:\n" +
                     result.errors().joinToString(separator = "\n - ")
             )
+        }
+        logger.info {
+            "Process of type '${startProcessRequest.processDefinitionKey}' with id '${
+                result.processInstanceId().get()
+            }' for document with id '${startProcessRequest.documentId.id}' started successfully."
         }
     }
 
@@ -219,6 +241,7 @@ open class VerzoekPluginEventListener(
         )
 
         if (verzoekTypeProperties.copyStrategy == CopyStrategy.SPECIFIED) {
+            logger.debug { "Adding specified verzoek variables to process for verzoek of type '${verzoekTypeProperties.type}'" }
             verzoekTypeProperties.mapping?.map {
                 if (it.target.startsWith(PV_PREFIX)) {
                     val verzoekDataItem = verzoekData.at(it.source)
@@ -234,6 +257,7 @@ open class VerzoekPluginEventListener(
                     }
                 }
             }
+            logger.debug { "Verzoek variables added to process successfully for verzoek of type '${verzoekTypeProperties.type}'" }
         }
     }
 

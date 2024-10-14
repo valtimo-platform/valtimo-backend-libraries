@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -76,7 +77,7 @@ class ZakenApiEventListenerTest {
 
         zakenApiEventListener.handle(event)
 
-        verify(zakenApiPlugin).createZaak(any<UUID>(), any(), any())
+        verify(zakenApiPlugin).createZaak(any<UUID>(), any(), any(), anyOrNull(), anyOrNull(), anyOrNull())
     }
 
     @Test
@@ -99,7 +100,7 @@ class ZakenApiEventListenerTest {
 
         zakenApiEventListener.handle(event)
 
-        verify(zakenApiPlugin, never()).createZaak(any<UUID>(), any(), any())
+        verify(zakenApiPlugin, never()).createZaak(any<UUID>(), any(), any(), any(), any(), any())
     }
 
     @Test
@@ -122,7 +123,7 @@ class ZakenApiEventListenerTest {
 
         zakenApiEventListener.handle(event)
 
-        verify(zakenApiPlugin, never()).createZaak(any<UUID>(), any(), any())
+        verify(zakenApiPlugin, never()).createZaak(any<UUID>(), any(), any(), any(), any(), any())
     }
 
     @EventListener(DocumentCreatedEvent::class)

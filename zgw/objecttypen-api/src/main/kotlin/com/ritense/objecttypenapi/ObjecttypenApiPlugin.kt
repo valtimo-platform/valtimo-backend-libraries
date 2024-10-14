@@ -22,13 +22,14 @@ import com.ritense.objecttypenapi.client.ObjecttypenApiClient
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.valtimo.contract.validation.Url
+import mu.KotlinLogging
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
 @Plugin(
-   key = "objecttypenapi",
-   title = "Objecttypen API",
-   description = "Connects to the Objecttypen API"
+    key = "objecttypenapi",
+    title = "Objecttypen API",
+    description = "Connects to the Objecttypen API"
 )
 class ObjecttypenApiPlugin(
     private val objecttypenApiClient: ObjecttypenApiClient
@@ -41,14 +42,16 @@ class ObjecttypenApiPlugin(
     lateinit var authenticationPluginConfiguration: ObjecttypenApiAuthentication
 
     fun getObjecttype(typeUrl: URI): Objecttype {
+        logger.debug { "Get object type typeUrl=$typeUrl" }
         return objecttypenApiClient.getObjecttype(authenticationPluginConfiguration, typeUrl)
     }
 
     fun getObjecttypes(typeUrl: URI): List<Objecttype> {
+        logger.debug { "Get object types typeUrl=$typeUrl" }
         return objecttypenApiClient.getObjecttypes(authenticationPluginConfiguration, typeUrl)
     }
 
-    fun getObjectTypeUrlById(id:String): URI {
+    fun getObjectTypeUrlById(id: String): URI {
         return UriComponentsBuilder.fromUri(url)
             .pathSegment("objecttypes")
             .pathSegment(id)
@@ -64,6 +67,7 @@ class ObjecttypenApiPlugin(
     }
 
     companion object {
+        private val logger = KotlinLogging.logger {}
         const val URL_PROPERTY = "url"
 
         fun findConfigurationByUrl(url: URI) =

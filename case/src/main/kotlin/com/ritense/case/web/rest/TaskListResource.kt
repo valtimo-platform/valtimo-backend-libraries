@@ -19,6 +19,7 @@ package com.ritense.case.web.rest
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.case.service.TaskColumnService
 import com.ritense.case.web.rest.dto.TaskListColumnDto
+import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import mu.KotlinLogging
@@ -42,7 +43,7 @@ class TaskListResource(
     @GetMapping("/v1/case/{caseDefinitionName}/task-list-column")
     @RunWithoutAuthorization
     fun getTaskListColumn(
-        @PathVariable caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String
     ): ResponseEntity<List<TaskListColumnDto>> {
         return ResponseEntity.ok().body(service.getListColumns(caseDefinitionName))
     }
@@ -50,13 +51,13 @@ class TaskListResource(
     @GetMapping("/management/v1/case/{caseDefinitionName}/task-list-column")
     @RunWithoutAuthorization
     fun getTaskListColumnForManagement(
-        @PathVariable caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String
     ): ResponseEntity<List<TaskListColumnDto>> = getTaskListColumn(caseDefinitionName)
 
     @PutMapping("/management/v1/case/{caseDefinitionName}/task-list-column/{columnKey}")
     @RunWithoutAuthorization
     fun createListColumnForManagement(
-        @PathVariable caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @RequestBody taskListColumnDto: TaskListColumnDto
     ): ResponseEntity<Any> {
         service.saveListColumn(caseDefinitionName, taskListColumnDto)
@@ -66,7 +67,7 @@ class TaskListResource(
     @PostMapping("/management/v1/case/{caseDefinitionName}/task-list-column")
     @RunWithoutAuthorization
     fun swapColumnOrderForManagement(
-        @PathVariable caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @RequestBody taskListColumnDto: Pair<String, String>
     ): ResponseEntity<Any> {
         service.swapColumnOrder(caseDefinitionName, taskListColumnDto.first, taskListColumnDto.second)
@@ -76,7 +77,7 @@ class TaskListResource(
     @DeleteMapping("/management/v1/case/{caseDefinitionName}/task-list-column/{columnKey}")
     @RunWithoutAuthorization
     fun deleteListColumnForManagement(
-        @PathVariable caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @PathVariable columnKey: String
     ): ResponseEntity<Any> {
         service.deleteTaskListColumn(caseDefinitionName, columnKey)

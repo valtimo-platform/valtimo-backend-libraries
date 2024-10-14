@@ -28,6 +28,7 @@ import com.ritense.document.service.request.DocumentDefinitionCreateRequest;
 import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import com.ritense.document.service.result.DocumentVersionsResult;
 import com.ritense.document.service.result.UndeployDocumentDefinitionResult;
+import com.ritense.logging.LoggableResource;
 import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -63,22 +64,26 @@ public interface DocumentDefinitionResource {
     );
 
     @GetMapping("/management/v1/document-definition/{name}")
-    ResponseEntity<? extends DocumentDefinition> getDocumentDefinitionForManagement(@PathVariable String name);
+    ResponseEntity<? extends DocumentDefinition> getDocumentDefinitionForManagement(
+        @LoggableResource("documentDefinitionName") @PathVariable String name
+    );
 
     @GetMapping("/v1/document-definition/{name}")
-    ResponseEntity<? extends DocumentDefinition> getDocumentDefinition(@PathVariable String name);
+    ResponseEntity<? extends DocumentDefinition> getDocumentDefinition(
+        @LoggableResource("documentDefinitionName") @PathVariable String name
+    );
 
     @GetMapping("/management/v1/document-definition/{name}/version/{version}")
     ResponseEntity<? extends DocumentDefinition> getDocumentDefinitionVersion(
-        @PathVariable String name,
+        @LoggableResource("documentDefinitionName") @PathVariable String name,
         @PathVariable long version
     );
 
     @GetMapping("/management/v1/document-definition/{name}/version")
     ResponseEntity<DocumentVersionsResult> getDocumentDefinitionVersions(
-        @PathVariable String name
+        @LoggableResource("documentDefinitionName") @PathVariable String name
     );
-    
+
     @GetMapping("/v1/document-definition/open/count")
     ResponseEntity<List<UnassignedDocumentCountDto>> getUnassignedDocumentCount();
 
@@ -94,5 +99,7 @@ public interface DocumentDefinitionResource {
         "/v1/document-definition/{name}", //Deprecated since v11
         "/management/v1/document-definition/{name}"
     })
-    ResponseEntity<UndeployDocumentDefinitionResult> removeDocumentDefinition(@PathVariable String name);
+    ResponseEntity<UndeployDocumentDefinitionResult> removeDocumentDefinition(
+        @LoggableResource("documentDefinitionName") @PathVariable String name
+    );
 }

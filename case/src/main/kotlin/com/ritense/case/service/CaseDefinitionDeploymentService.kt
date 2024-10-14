@@ -23,6 +23,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
+import com.ritense.logging.withLoggingContext
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import mu.KotlinLogging
 import org.springframework.context.event.EventListener
@@ -46,18 +47,20 @@ class CaseDefinitionDeploymentService(
     @EventListener(DocumentDefinitionDeployedEvent::class)
     fun conditionalCreateCase(event: DocumentDefinitionDeployedEvent) {
         val documentDefinitionName = event.documentDefinition().id().name()
-        val caseDefinitionSettings = caseDefinitionSettingsRepository.findByIdOrNull(documentDefinitionName)
-        if (caseDefinitionSettings == null) {
-            val resource = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
-                .getResource("classpath:config/case/definition/$documentDefinitionName.json")
+        withLoggingContext("jsonSchemaDocumentName" to documentDefinitionName) {
+            val caseDefinitionSettings = caseDefinitionSettingsRepository.findByIdOrNull(documentDefinitionName)
+            if (caseDefinitionSettings == null) {
+                val resource = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
+                    .getResource("classpath:config/case/definition/$documentDefinitionName.json")
 
-            if (resource.exists()) {
-                deploy(
-                    resource.filename!!.substringBeforeLast("."),
-                    StreamUtils.copyToString(resource.inputStream, StandardCharsets.UTF_8)
-                )
-            } else {
-                caseDefinitionSettingsRepository.save(CaseDefinitionSettings(documentDefinitionName))
+                if (resource.exists()) {
+                    deploy(
+                        resource.filename!!.substringBeforeLast("."),
+                        StreamUtils.copyToString(resource.inputStream, StandardCharsets.UTF_8)
+                    )
+                } else {
+                    caseDefinitionSettingsRepository.save(CaseDefinitionSettings(documentDefinitionName))
+                }
             }
         }
     }

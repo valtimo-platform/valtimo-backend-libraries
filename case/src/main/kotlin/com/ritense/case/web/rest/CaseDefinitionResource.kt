@@ -26,6 +26,7 @@ import com.ritense.exporter.ExportService
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import com.ritense.importer.ImportService
 import com.ritense.importer.exception.ImportServiceException
+import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import mu.KotlinLogging
@@ -56,7 +57,7 @@ class CaseDefinitionResource(
 
     @GetMapping("/v1/case/{caseDefinitionName}/settings")
     fun getCaseSettings(
-        @PathVariable caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String
     ): ResponseEntity<CaseDefinitionSettings> {
         return try {
             ResponseEntity.ok(
@@ -70,7 +71,7 @@ class CaseDefinitionResource(
     @GetMapping("/management/v1/case/{caseDefinitionName}/settings")
     @RunWithoutAuthorization
     fun getCaseSettingsForManagement(
-        @PathVariable caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String
     ): ResponseEntity<CaseDefinitionSettings> = getCaseSettings(caseDefinitionName)
 
     @Deprecated("Since 11.0.0", ReplaceWith("com.ritense.case.web.rest.CaseDefinitionResource.updateCaseSettingsForManagement"))
@@ -78,14 +79,14 @@ class CaseDefinitionResource(
     @RunWithoutAuthorization
     fun updateCaseSettings(
         @RequestBody caseSettingsDto: CaseSettingsDto,
-        @PathVariable caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String
     ): ResponseEntity<CaseDefinitionSettings> = updateCaseSettingsForManagement(caseSettingsDto, caseDefinitionName)
 
     @PatchMapping("/management/v1/case/{caseDefinitionName}/settings")
     @RunWithoutAuthorization
     fun updateCaseSettingsForManagement(
         @RequestBody caseSettingsDto: CaseSettingsDto,
-        @PathVariable caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String
     ): ResponseEntity<CaseDefinitionSettings> {
         return try {
             ResponseEntity.ok(
@@ -98,7 +99,7 @@ class CaseDefinitionResource(
 
     @GetMapping("/v1/case/{caseDefinitionName}/list-column")
     fun getCaseListColumn(
-        @PathVariable caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String
     ): ResponseEntity<List<CaseListColumnDto>> {
         return ResponseEntity.ok().body(service.getListColumns(caseDefinitionName))
     }
@@ -106,21 +107,21 @@ class CaseDefinitionResource(
     @GetMapping("/management/v1/case/{caseDefinitionName}/list-column")
     @RunWithoutAuthorization
     fun getCaseListColumnForManagement(
-        @PathVariable caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String
     ): ResponseEntity<List<CaseListColumnDto>> = getCaseListColumn(caseDefinitionName)
 
     @Deprecated("Since 11.0.0", ReplaceWith("com.ritense.case.web.rest.CaseDefinitionResource.createCaseListColumnForManagement"))
     @PostMapping("/v1/case/{caseDefinitionName}/list-column")
     @RunWithoutAuthorization
     fun createCaseListColumn(
-        @PathVariable caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @RequestBody caseListColumnDto: CaseListColumnDto
     ): ResponseEntity<Any> = createCaseListColumnForManagement(caseDefinitionName, caseListColumnDto)
 
     @PostMapping("/management/v1/case/{caseDefinitionName}/list-column")
     @RunWithoutAuthorization
     fun createCaseListColumnForManagement(
-        @PathVariable caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @RequestBody caseListColumnDto: CaseListColumnDto
     ): ResponseEntity<Any> {
         service.createListColumn(caseDefinitionName, caseListColumnDto)
@@ -131,14 +132,14 @@ class CaseDefinitionResource(
     @PutMapping("/v1/case/{caseDefinitionName}/list-column")
     @RunWithoutAuthorization
     fun updateListColumn(
-        @PathVariable caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @RequestBody caseListColumnDtoList: List<CaseListColumnDto>
     ): ResponseEntity<Any> = updateListColumnForManagement(caseDefinitionName, caseListColumnDtoList)
 
     @PutMapping("/management/v1/case/{caseDefinitionName}/list-column")
     @RunWithoutAuthorization
     fun updateListColumnForManagement(
-        @PathVariable caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @RequestBody caseListColumnDtoList: List<CaseListColumnDto>
     ): ResponseEntity<Any> {
         service.updateListColumns(caseDefinitionName, caseListColumnDtoList)
@@ -149,14 +150,14 @@ class CaseDefinitionResource(
     @DeleteMapping("/v1/case/{caseDefinitionName}/list-column/{columnKey}")
     @RunWithoutAuthorization
     fun deleteListColumn(
-        @PathVariable caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @PathVariable columnKey: String
     ): ResponseEntity<Any> = deleteListColumnForManagement(caseDefinitionName, columnKey)
 
     @DeleteMapping("/management/v1/case/{caseDefinitionName}/list-column/{columnKey}")
     @RunWithoutAuthorization
     fun deleteListColumnForManagement(
-        @PathVariable caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @PathVariable columnKey: String
     ): ResponseEntity<Any> {
         service.deleteCaseListColumn(caseDefinitionName, columnKey)
@@ -168,7 +169,7 @@ class CaseDefinitionResource(
     )
     @RunWithoutAuthorization
     fun getExport(
-        @PathVariable caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @PathVariable caseDefinitionVersion: Long,
     ): ResponseEntity<ByteArray> {
         val baos = exportService

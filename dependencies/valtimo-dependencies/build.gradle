@@ -34,6 +34,7 @@ dependencies {
     api(project(":importer"))
     api(project(":keycloak-iam"))
     api(project(":localization"))
+    api(project(":logging"))
     api(project(":notes"))
     api(project(":plugin"))
     api(project(":plugin-valtimo"))

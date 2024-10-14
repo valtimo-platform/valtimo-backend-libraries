@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ritense.processlink.service
 
-import jakarta.validation.ValidationException
-import java.util.UUID
-
-class ProcessLinkExistsException(message: String?, val contentsDiffer: Boolean, val existingProcessLinkId: UUID) :
-    ValidationException(message)
+data class BestandsdelenResult(
+    var url: String?,
+    var lock: String?,
+    val voltooid: Boolean?,
+    val volgnummer: Int?,
+    val statusCode: Int?,
+    val errorMessage: String?
+)

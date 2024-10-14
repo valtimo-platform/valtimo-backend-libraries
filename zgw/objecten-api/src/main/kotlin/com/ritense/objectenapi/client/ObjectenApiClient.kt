@@ -69,6 +69,7 @@ class ObjectenApiClient(
         objecttypesApiUrl: URI,
         objectsApiUrl: URI,
         objectypeId: String,
+        ordering: String? = "",
         pageable: Pageable
     ): ObjectsList {
         val host = if (objecttypesApiUrl.host == "localhost") {
@@ -90,6 +91,7 @@ class ObjectenApiClient(
                     .queryParam("type", objectTypeUrl)
                     .queryParam("pageSize", pageable.pageSize)
                     .queryParam("page", pageable.pageNumber + 1) //objects api pagination starts at 1 instead of 0
+                    .queryParam("ordering", ordering)
                     .build()
             }
             .header(ACCEPT_CRS, EPSG_4326)
@@ -110,6 +112,7 @@ class ObjectenApiClient(
         objectsApiUrl: URI,
         objectypeId: String,
         searchString: String,
+        ordering: String? = "",
         pageable: Pageable
     ): ObjectsList {
         val host = if (objecttypesApiUrl.host == "localhost") {
@@ -132,6 +135,7 @@ class ObjectenApiClient(
                     .queryParam("pageSize", pageable.pageSize)
                     .queryParam("page", pageable.pageNumber + 1) //objects api pagination starts at 1 instead of 0
                     .queryParam("data_attrs", searchString)
+                    .queryParam("ordering", ordering)
                     .build()
             }
             .header(ACCEPT_CRS, EPSG_4326)

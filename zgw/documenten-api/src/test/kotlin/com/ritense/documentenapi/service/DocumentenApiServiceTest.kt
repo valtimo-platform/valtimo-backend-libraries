@@ -17,7 +17,6 @@
 package com.ritense.documentenapi.service
 
 import com.ritense.authorization.AuthorizationService
-import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
@@ -28,22 +27,15 @@ import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.domain.DocumentenApiVersion
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
-import com.ritense.documentenapi.web.rest.dto.DocumentenApiDocumentDto
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
-import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.service.PluginService
-import com.ritense.processdocument.domain.impl.DocumentDefinitionProcessLink
-import com.ritense.processdocument.domain.impl.DocumentDefinitionProcessLinkId
-import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.zgw.Rsin
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
-import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.springframework.data.domain.PageImpl

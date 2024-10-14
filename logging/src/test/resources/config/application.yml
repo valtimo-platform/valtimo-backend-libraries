@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+  liquibase:
+    enabled: true
+    change-log: classpath:/config/liquibase/logging-master.xml
+  jpa:
+    show_sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        hbm2ddl.auto: none
+        generate_statistics: false
+        naming-strategy: org.springframework.boot.orm.jpa.hibernate.SpringNamingStrategy
+        cache:
+          use_second_level_cache: false
+          use_query_cache: false
+          region.factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+        connection:
+          provider_disables_autocommit: true
+    hibernate:
+      ddl-auto: none

@@ -46,8 +46,8 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
     @Order(Ordered.LOWEST_PRECEDENCE) //Make sure everything else has been deployed before this listener runs
     open fun deployProcessLinks() {
         logger.info { "Deploying all process links from $PATH" }
-        try {
-            loadResources().forEach { resource ->
+        loadResources().forEach { resource ->
+            try {
                 val fileName = requireNotNull(resource.filename)
                 logger.info { "Deploying process link from file '${fileName}'" }
 
@@ -57,9 +57,9 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
                 val importRequest = ImportRequest(fileName, objectMapper.writeValueAsBytes(resolvedProcessLinkNode))
 
                 processLinkImporter.import(importRequest)
+            } catch (e: Exception) {
+                logger.error(e) { "Error while deploying process-link: '${resource.filename}'" }
             }
-        } catch (e: Exception) {
-            logger.error(e) { "Error while deploying process-links" }
         }
     }
 

@@ -24,6 +24,7 @@ import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.repository.CaseTabSpecificationHelper.Companion.byCaseDefinitionName
 import com.ritense.case.service.CaseTabService
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
+import com.ritense.logging.withLoggingContext
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
 import com.ritense.valtimo.changelog.service.ChangelogService
@@ -72,18 +73,20 @@ class CaseTabDeploymentService(
 
     private fun deploy(caseDefinitions: List<CaseDefinitionsTabCollection>) {
         runWithoutAuthorization {
-            caseDefinitions.forEach {
-                caseTabRepository.deleteAll(caseTabRepository.findAll(byCaseDefinitionName(it.key)))
-                it.tabs.map { caseTabDto ->
-                    caseTabService.createCaseTab(
-                        it.key,
-                        com.ritense.case.web.rest.dto.CaseTabDto(
-                            key = caseTabDto.key,
-                            name = caseTabDto.name,
-                            type = caseTabDto.type,
-                            contentKey = caseTabDto.contentKey
+            caseDefinitions.forEach { caseDefinition ->
+                withLoggingContext("jsonSchemaDocumentName" to caseDefinition.key) {
+                    caseTabRepository.deleteAll(caseTabRepository.findAll(byCaseDefinitionName(caseDefinition.key)))
+                    caseDefinition.tabs.map { caseTabDto ->
+                        caseTabService.createCaseTab(
+                            caseDefinition.key,
+                            com.ritense.case.web.rest.dto.CaseTabDto(
+                                key = caseTabDto.key,
+                                name = caseTabDto.name,
+                                type = caseTabDto.type,
+                                contentKey = caseTabDto.contentKey
+                            )
                         )
-                    )
+                    }
                 }
             }
         }

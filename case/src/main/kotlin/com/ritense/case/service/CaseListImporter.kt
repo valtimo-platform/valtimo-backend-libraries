@@ -20,6 +20,7 @@ import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_LIST
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
+import com.ritense.logging.withLoggingContext
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
@@ -34,7 +35,9 @@ class CaseListImporter(
 
     override fun import(request: ImportRequest) {
         val caseDefinitionName = FILENAME_REGEX.matchEntire(request.fileName)!!.groupValues[1]
-        caseListDeploymentService.deployColumns(caseDefinitionName, request.content.toString(Charsets.UTF_8))
+        withLoggingContext("jsonSchemaDocumentName" to caseDefinitionName) {
+            caseListDeploymentService.deployColumns(caseDefinitionName, request.content.toString(Charsets.UTF_8))
+        }
     }
 
     private companion object {

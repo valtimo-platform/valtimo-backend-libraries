@@ -660,6 +660,9 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
     }
 
     class TestAuthentication : ObjectenApiAuthentication, ObjecttypenApiAuthentication, NotificatiesApiAuthentication {
+        override val configurationId: PluginConfigurationId
+            get() = PluginConfigurationId.newId()
+
         override fun applyAuth(builder: RestClient.Builder): RestClient.Builder {
             return builder
         }

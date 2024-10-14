@@ -19,8 +19,6 @@ package com.ritense.documentenapi.deployment
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.case.deployment.CaseDefinitionTrefwoordCollection
-import com.ritense.case.deployment.ZgwDocumentTrefwoordChangeset
 import com.ritense.documentenapi.repository.ZgwDocumentTrefwoordRepository
 import com.ritense.documentenapi.service.ZgwDocumentTrefwoordService
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer

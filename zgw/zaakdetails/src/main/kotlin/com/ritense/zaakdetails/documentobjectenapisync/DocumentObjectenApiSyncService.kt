@@ -20,7 +20,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.event.DocumentCreatedEvent
 import com.ritense.document.domain.event.DocumentModifiedEvent
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.service.DocumentService
+import com.ritense.logging.LoggableResource
 import com.ritense.objectenapi.ObjectenApiPlugin
 import com.ritense.objectenapi.client.Comparator.EQUAL_TO
 import com.ritense.objectenapi.client.ObjectRecord
@@ -31,6 +33,7 @@ import com.ritense.objectsapi.service.ObjectSyncService
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import mu.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
@@ -48,9 +51,10 @@ class DocumentObjectenApiSyncService(
     private val objectSyncService: ObjectSyncService,
 ) {
     fun getSyncConfiguration(
-        documentDefinitionName: String,
+        @LoggableResource(resourceType = JsonSchemaDocumentDefinition::class) documentDefinitionName: String,
         documentDefinitionVersion: Long
     ): DocumentObjectenApiSync? {
+        logger.debug { "Get sync configuration documentDefinitionName=$documentDefinitionName" }
         return documentObjectenApiSyncRepository.findByDocumentDefinitionNameAndDocumentDefinitionVersion(
             documentDefinitionName,
             documentDefinitionVersion
@@ -58,6 +62,7 @@ class DocumentObjectenApiSyncService(
     }
 
     fun saveSyncConfiguration(sync: DocumentObjectenApiSync) {
+        logger.info { "Save sync configuration documentDefinitionName=${sync.documentDefinitionName}" }
         val modifiedSync = getSyncConfiguration(sync.documentDefinitionName, sync.documentDefinitionVersion)
             ?.copy(
                 objectManagementConfigurationId = sync.objectManagementConfigurationId,
@@ -72,7 +77,14 @@ class DocumentObjectenApiSyncService(
         documentObjectenApiSyncRepository.save(modifiedSync)
     }
 
-    fun deleteSyncConfigurationByDocumentDefinition(documentDefinitionName: String, documentDefinitionVersion: Long) {
+    fun deleteSyncConfigurationByDocumentDefinition(
+        @LoggableResource(resourceType = JsonSchemaDocumentDefinition::class) documentDefinitionName: String,
+        documentDefinitionVersion: Long
+    ) {
+        logger.info {
+            """Delete sync configuration documentDefinitionName=$documentDefinitionName
+                documentDefinitionVersion=$documentDefinitionVersion"""
+        }
         documentObjectenApiSyncRepository.deleteByDocumentDefinitionNameAndDocumentDefinitionVersion(
             documentDefinitionName,
             documentDefinitionVersion
@@ -81,11 +93,13 @@ class DocumentObjectenApiSyncService(
 
     @EventListener(DocumentCreatedEvent::class)
     fun handleDocumentCreatedEvent(event: DocumentCreatedEvent) {
+        logger.info { "handle documentCreatedEvent documentId=${event.documentId()} definitionId=${event.definitionId()}" }
         sync(documentService.get(event.documentId().id.toString()))
     }
 
     @EventListener(DocumentModifiedEvent::class)
     fun handleDocumentModifiedEvent(event: DocumentModifiedEvent) {
+        logger.info { "handle documentModifiedEvent documentId=${event.documentId()}" }
         sync(documentService.get(event.documentId().id.toString()))
     }
 
@@ -103,10 +117,10 @@ class DocumentObjectenApiSyncService(
             )
 
             val syncObject = objectenApiPlugin.getObjectsByObjectTypeIdWithSearchParams(
-                objecttypenApiPlugin.url,
-                objectManagementConfiguration.objecttypeId,
-                searchString,
-                PageRequest.of(0, 2)
+                objecttypesApiUrl = objecttypenApiPlugin.url,
+                objecttypeId = objectManagementConfiguration.objecttypeId,
+                searchString = searchString,
+                pageable = PageRequest.of(0, 2)
             ).results.firstOrNull()
 
             val content = document.content().asJson() as ObjectNode
@@ -128,6 +142,10 @@ class DocumentObjectenApiSyncService(
             }
 
         }
+    }
+
+    companion object {
+        val logger = KotlinLogging.logger {}
     }
 
 }

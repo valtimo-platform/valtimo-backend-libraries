@@ -24,4 +24,17 @@ class CreateDocumentResult(
     val bestandsnaam: String,
     val bestandsomvang: Long,
     val beginRegistratie: LocalDateTime,
-)
+    val bestandsdelen: List<Bestandsdeel>
+) {
+    fun getLockFromBestandsdelen(): String {
+        if (bestandsdelen.isEmpty()) {
+            return ""
+        }
+
+        return bestandsdelen[0].lock
+    }
+
+    fun getDocumentUUIDFromUrl(): String {
+        return url.substring(url.lastIndexOf("/") + 1)
+    }
+}

@@ -56,7 +56,7 @@ class DocumentObjectenApiSyncServiceIntTest : BaseIntegrationTest() {
                 objectManagementConfigurationId = UUID.fromString("462ef788-f7db-4701-9b87-0400fc79ad7e")
             )
         )
-        whenever(objectenApiClient.getObjectsByObjecttypeUrlWithSearchParams(any(), any(), any(), any(), any(), any()))
+        whenever(objectenApiClient.getObjectsByObjecttypeUrlWithSearchParams(any(), any(), any(), any(), any(), any(), any()))
             .thenReturn(ObjectsList(0, null, null, listOf()))
 
         val result = runWithoutAuthorization {
@@ -82,7 +82,7 @@ class DocumentObjectenApiSyncServiceIntTest : BaseIntegrationTest() {
                 objectManagementConfigurationId = UUID.fromString("462ef788-f7db-4701-9b87-0400fc79ad7e")
             )
         )
-        whenever(objectenApiClient.getObjectsByObjecttypeUrlWithSearchParams(any(), any(), any(), any(), any(), any()))
+        whenever(objectenApiClient.getObjectsByObjecttypeUrlWithSearchParams(any(), any(), any(), any(), any(), any(), any()))
             .thenReturn(ObjectsList(0, null, null, listOf()))
         val document = runWithoutAuthorization {
             documentService.createDocument(
@@ -92,7 +92,7 @@ class DocumentObjectenApiSyncServiceIntTest : BaseIntegrationTest() {
                 )
             ).resultingDocument().get()
         }
-        whenever(objectenApiClient.getObjectsByObjecttypeUrlWithSearchParams(any(), any(), any(), any(), any(), any()))
+        whenever(objectenApiClient.getObjectsByObjecttypeUrlWithSearchParams(any(), any(), any(), any(), any(), any(), any()))
             .thenReturn(
                 ObjectsList(
                     1,

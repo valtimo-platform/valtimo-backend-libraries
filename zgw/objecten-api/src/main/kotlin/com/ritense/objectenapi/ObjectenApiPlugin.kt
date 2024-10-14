@@ -17,6 +17,7 @@
 package com.ritense.objectenapi
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.ritense.logging.withLoggingContext
 import com.ritense.objectenapi.client.ObjectRequest
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.client.ObjectenApiClient
@@ -27,6 +28,8 @@ import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valtimo.contract.validation.Url
+import mu.KLogger
+import mu.KotlinLogging
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import java.net.URI
@@ -53,29 +56,39 @@ class ObjectenApiPlugin(
         activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun deleteObject(@PluginActionProperty objectUrl: URI): HttpStatus {
-        if (!objectUrl.toASCIIString().startsWith(url.toASCIIString())) {
-            throw IllegalStateException("Failed to delete object with url '$objectUrl'. Object isn't part of Objecten API with url '$url'.")
-        }
+        withLoggingContext("objectUrl" to objectUrl.toString()) {
+            if (!objectUrl.toASCIIString().startsWith(url.toASCIIString())) {
+                throw IllegalStateException("Failed to delete object with url '$objectUrl'. Object isn't part of Objecten API with url '$url'.")
+            }
 
-        return objectenApiClient.deleteObject(authenticationPluginConfiguration, objectUrl)
+            logger.info { "Deleting Objecten API object with url '$objectUrl'" }
+
+            return objectenApiClient.deleteObject(authenticationPluginConfiguration, objectUrl)
+        }
     }
 
     fun getObject(objectUrl: URI): ObjectWrapper {
-        return objectenApiClient.getObject(authenticationPluginConfiguration, objectUrl)
+        withLoggingContext("objectUrl" to objectUrl.toString()) {
+            logger.debug { "Getting Objecten API object with url '$objectUrl'" }
+            return objectenApiClient.getObject(authenticationPluginConfiguration, objectUrl)
+        }
     }
 
     fun getObjectsByObjectTypeId(
         objecttypesApiUrl: URI,
         objectsApiUrl: URI,
         objecttypeId: String,
+        ordering: String? = "",
         pageable: Pageable
     ): ObjectsList {
+        logger.debug { "Getting Objecten API objects of type '$objecttypeId', page '${pageable.pageNumber}'" }
         return objectenApiClient.getObjectsByObjecttypeUrl(
-            authenticationPluginConfiguration,
-            objecttypesApiUrl,
-            objectsApiUrl,
-            objecttypeId,
-            pageable
+            authentication = authenticationPluginConfiguration,
+            objecttypesApiUrl = objecttypesApiUrl,
+            objectsApiUrl = objectsApiUrl,
+            objectypeId = objecttypeId,
+            ordering = ordering,
+            pageable = pageable
         )
     }
 
@@ -83,31 +96,39 @@ class ObjectenApiPlugin(
         objecttypesApiUrl: URI,
         objecttypeId: String,
         searchString: String,
+        ordering: String? = "",
         pageable: Pageable
     ): ObjectsList {
+        logger.debug { "Searching Objecten API objects of type '$objecttypeId', page '${pageable.pageNumber}', searchString '$searchString'" }
         return objectenApiClient.getObjectsByObjecttypeUrlWithSearchParams(
-            authenticationPluginConfiguration,
-            objecttypesApiUrl,
-            url,
-            objecttypeId,
-            searchString,
-            pageable
+            authentication = authenticationPluginConfiguration,
+            objecttypesApiUrl = objecttypesApiUrl,
+            objectsApiUrl = url,
+            objectypeId = objecttypeId,
+            searchString = searchString,
+            ordering = ordering,
+            pageable = pageable
         )
     }
 
     fun objectUpdate(objectUrl: URI, objectRequest: ObjectRequest): ObjectWrapper {
+        logger.info { "Updating Objecten API object with url '$objectUrl'" }
         return objectenApiClient.objectUpdate(authenticationPluginConfiguration, objectUrl, objectRequest)
     }
 
     fun objectPatch(objectUrl: URI, objectRequest: ObjectRequest): ObjectWrapper {
+        logger.info { "Patching Objecten API object with url '$objectUrl'" }
         return objectenApiClient.objectPatch(authenticationPluginConfiguration, objectUrl, objectRequest)
     }
 
     fun createObject(objectRequest: ObjectRequest): ObjectWrapper {
+        logger.info { "Creating Objecten API object of type '${objectRequest.type}'" }
         return objectenApiClient.createObject(authenticationPluginConfiguration, url, objectRequest)
     }
 
     companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
+
         const val URL_PROPERTY = "url"
 
         fun findConfigurationByUrl(url: URI) =

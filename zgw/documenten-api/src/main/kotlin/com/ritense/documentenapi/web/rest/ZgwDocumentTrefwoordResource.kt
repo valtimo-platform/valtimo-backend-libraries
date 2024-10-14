@@ -18,6 +18,7 @@ package com.ritense.documentenapi.web.rest
 
 import com.ritense.documentenapi.domain.ZgwDocumentTrefwoord
 import com.ritense.documentenapi.service.ZgwDocumentTrefwoordService
+import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType
 import org.springframework.data.domain.Page
@@ -41,7 +42,7 @@ class ZgwDocumentTrefwoordResource(
 
     @GetMapping("/v1/case-definition/{caseDefinitionName}/zgw-document/trefwoord")
     fun getTrefwoorden(
-        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<List<ZgwDocumentTrefwoord>> {
         val trefwoorden = zgwDocumentTrefwoordService.getTrefwoorden(caseDefinitionName)
         return ResponseEntity.ok(trefwoorden)
@@ -49,7 +50,7 @@ class ZgwDocumentTrefwoordResource(
 
     @GetMapping("/management/v1/case-definition/{caseDefinitionName}/zgw-document/trefwoord")
     fun getTrefwoorden(
-        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
         @RequestParam search: String?,
         pageable: Pageable,
     ): ResponseEntity<Page<ZgwDocumentTrefwoord>> {
@@ -59,7 +60,7 @@ class ZgwDocumentTrefwoordResource(
 
     @PostMapping("/management/v1/case-definition/{caseDefinitionName}/zgw-document/trefwoord/{trefwoord}")
     fun createTrefwoord(
-        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
         @PathVariable(name = "trefwoord") trefwoord: String,
     ): ResponseEntity<Page<ZgwDocumentTrefwoord>> {
         zgwDocumentTrefwoordService.createTrefwoord(caseDefinitionName, trefwoord)
@@ -68,7 +69,7 @@ class ZgwDocumentTrefwoordResource(
 
     @DeleteMapping("/management/v1/case-definition/{caseDefinitionName}/zgw-document/trefwoord/{trefwoord}")
     fun deleteTrefwoord(
-        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
         @PathVariable(name = "trefwoord") trefwoord: String,
     ): ResponseEntity<Page<ZgwDocumentTrefwoord>> {
         zgwDocumentTrefwoordService.deleteTrefwoord(caseDefinitionName, trefwoord)
@@ -77,7 +78,7 @@ class ZgwDocumentTrefwoordResource(
 
     @DeleteMapping("/management/v1/case-definition/{caseDefinitionName}/zgw-document/trefwoord")
     fun deleteTrefwoorden(
-        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
         @RequestBody trefwoorden: List<String>,
     ): ResponseEntity<Page<ZgwDocumentTrefwoord>> {
         zgwDocumentTrefwoordService.deleteTrefwoorden(caseDefinitionName, trefwoorden)

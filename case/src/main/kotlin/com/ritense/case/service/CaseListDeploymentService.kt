@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.case.web.rest.dto.CaseListColumnDto
+import com.ritense.logging.withLoggingContext
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import mu.KotlinLogging
 import org.everit.json.schema.loader.SchemaLoader
@@ -53,10 +54,13 @@ class CaseListDeploymentService(
             val resources = loadCaseListResources()
             resources.forEach { resource ->
                 if (resource.filename != null) {
-                    deployColumns(
-                        caseDefinitionName = resource.filename!!.substringBeforeLast("."),
-                        jsonContent = StreamUtils.copyToString(resource.inputStream, StandardCharsets.UTF_8)
-                    )
+                    val caseDefinitionName = resource.filename!!.substringBeforeLast(".")
+                    withLoggingContext("jsonSchemaDocumentName" to caseDefinitionName) {
+                        deployColumns(
+                            caseDefinitionName = caseDefinitionName,
+                            jsonContent = StreamUtils.copyToString(resource.inputStream, StandardCharsets.UTF_8)
+                        )
+                    }
                 }
             }
         } catch (e: Exception) {

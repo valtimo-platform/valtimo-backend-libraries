@@ -16,9 +16,11 @@
 
 package com.ritense.documentenapi.client
 
+import BestandsdelenResult
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.documentenapi.DocumentenApiAuthentication
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey
+import com.ritense.documentenapi.domain.FileUploadPart
 import com.ritense.documentenapi.event.DocumentDeleted
 import com.ritense.documentenapi.event.DocumentInformatieObjectDownloaded
 import com.ritense.documentenapi.event.DocumentInformatieObjectViewed
@@ -30,6 +32,7 @@ import com.ritense.outbox.OutboxService
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.ClientTools.Companion.optionalQueryParam
 import com.ritense.zgw.Page
+import mu.KotlinLogging
 import org.springframework.core.io.Resource
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -72,6 +75,42 @@ class DocumentenApiClient(
         return result
     }
 
+    fun storeDocumentInParts(
+        authentication: DocumentenApiAuthentication,
+        baseUrl: URI,
+        request: BestandsdelenRequest,
+        createDocumentResult: CreateDocumentResult,
+        bestandsnaam: String
+    ) {
+        // Inside the CreateDocumentResult there is an array of bestandsdelen.
+        // Each bestandsdeel needs to be sent separately
+        // So the documenten api determines the amount (and size) of chunks, not this application.
+        logger.info { "Starting upload of file $bestandsnaam in ${createDocumentResult.bestandsdelen.size} chunks" }
+
+        createDocumentResult.bestandsdelen.forEach { bestandsdeel ->
+            logger.debug { "Sending chunk #${bestandsdeel.volgnummer} for a size of ${bestandsdeel.omvang} bytes" }
+
+            val body = FileUploadPart(bestandsdeel, request, bestandsnaam)
+                .createBody()
+
+            restClient(authentication)
+                .put()
+                .uri {
+                    ClientTools.baseUrlToBuilder(it, baseUrl)
+                        .path("bestandsdelen/{uuid}")
+                        .build(bestandsdeel.url.substring(bestandsdeel.url.lastIndexOf("/") + 1))
+                }
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(body)
+                .retrieve()
+                .body<BestandsdelenResult>()!!
+        }
+
+        check(request.inhoud.read() == -1) {
+            "Failed to upload the full file. The file is larger than the sum of the omvang of all bestandsdelen."
+        }
+    }
+
     fun getInformatieObject(
         authentication: DocumentenApiAuthentication,
         baseUrl: URI,
@@ -96,6 +135,7 @@ class DocumentenApiClient(
                 objectMapper.valueToTree(result)
             )
         }
+
         return result
     }
 
@@ -107,12 +147,8 @@ class DocumentenApiClient(
     ): org.springframework.data.domain.Page<DocumentInformatieObject> {
         // because the documenten api only supports a fixed page size, we will try to calculate the page we need to request
         // the only page sizes that are supported are those that can fit n times in the itemsPerPage
-        if (ITEMS_PER_PAGE % pageable.pageSize != 0) {
-            throw IllegalArgumentException("Page size is not supported")
-        }
-        if (documentSearchRequest.zaakUrl == null) {
-            throw IllegalArgumentException("Zaak URL is required")
-        }
+        require(ITEMS_PER_PAGE % pageable.pageSize == 0) { "Page size is not supported" }
+        requireNotNull(documentSearchRequest.zaakUrl) { "Zaak URL is required" }
 
         val pageToRequest = ((pageable.pageSize * pageable.pageNumber) / ITEMS_PER_PAGE) + 1
         val result =
@@ -297,5 +333,6 @@ class DocumentenApiClient(
 
     companion object {
         const val ITEMS_PER_PAGE = 100
+        val logger = KotlinLogging.logger {}
     }
 }
