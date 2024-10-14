@@ -14,27 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.documentenapi.client
-
-import java.time.LocalDateTime
-
-class CreateDocumentResult(
-    val url: String,
-    val auteur: String,
-    val bestandsnaam: String,
-    val bestandsomvang: Long,
-    val beginRegistratie: LocalDateTime,
-    val bestandsdelen: List<Bestandsdeel>
-) {
-    fun getLockFromBestandsdelen(): String {
-        if (bestandsdelen.isEmpty()) {
-            return ""
-        }
-
-        return bestandsdelen[0].lock
-    }
-
-    fun getDocumentUUIDFromUrl(): String {
-        return url.substring(url.lastIndexOf("/") + 1)
-    }
-}
+data class BestandsdelenResult(
+    var url: String?,
+    var lock: String?,
+    val voltooid: Boolean?,
+    val volgnummer: Int?,
+    val statusCode: Int?,
+    val errorMessage: String?
+)
