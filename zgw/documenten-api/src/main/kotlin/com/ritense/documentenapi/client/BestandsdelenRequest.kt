@@ -16,25 +16,9 @@
 
 package com.ritense.documentenapi.client
 
-import java.time.LocalDateTime
+import java.io.InputStream
 
-class CreateDocumentResult(
-    val url: String,
-    val auteur: String,
-    val bestandsnaam: String,
-    val bestandsomvang: Long,
-    val beginRegistratie: LocalDateTime,
-    val bestandsdelen: List<Bestandsdeel>
-) {
-    fun getLockFromBestandsdelen(): String {
-        if (bestandsdelen.isEmpty()) {
-            return ""
-        }
-
-        return bestandsdelen[0].lock
-    }
-
-    fun getDocumentUUIDFromUrl(): String {
-        return url.substring(url.lastIndexOf("/") + 1)
-    }
-}
+data class BestandsdelenRequest(
+    val inhoud: InputStream,
+    val lock: String
+)
