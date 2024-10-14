@@ -23,7 +23,6 @@ import com.ritense.notificatiesapi.domain.NotificatiesApiAbonnementLink
 import com.ritense.notificatiesapi.domain.NotificatiesApiConfigurationId
 import com.ritense.notificatiesapi.repository.NotificatiesApiAbonnementLinkRepository
 import com.ritense.plugin.domain.PluginConfigurationId
-import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
@@ -49,7 +48,6 @@ internal class NotificatiesApiPluginTest {
 
     @BeforeEach
     fun setup() {
-
         notificatiesApiClient = mock()
         abonnementLinkRepository = mock()
         pluginConfigurationId = PluginConfigurationId(UUID.randomUUID())
@@ -65,7 +63,7 @@ internal class NotificatiesApiPluginTest {
 
 
     @Test
-    fun `ensure kanaal exists creates kanaal when kanaal doesnt exist`(): Unit = runBlocking {
+    fun `ensure kanaal exists creates kanaal when kanaal doesnt exist`() {
 
         whenever(notificatiesApiClient.getKanalen(any(), any()))
             .thenReturn(
@@ -81,7 +79,7 @@ internal class NotificatiesApiPluginTest {
     }
 
     @Test
-    fun `ensure kanaal exists doesnt create kanaal when kanaal exists`(): Unit = runBlocking {
+    fun `ensure kanaal exists doesnt create kanaal when kanaal exists`() {
 
         whenever(notificatiesApiClient.getKanalen(any(), any()))
             .thenReturn(
@@ -99,7 +97,7 @@ internal class NotificatiesApiPluginTest {
     }
 
     @Test
-    fun `createAbonnement should create abonnement and save entity`(): Unit = runBlocking {
+    fun `createAbonnement should create abonnement and save entity`() {
 
         val abonnementId = UUID.randomUUID()
         val abonnement = Abonnement(
