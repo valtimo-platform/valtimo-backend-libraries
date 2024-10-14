@@ -16,7 +16,9 @@
 
 package com.ritense.zakenapi
 
+import com.ritense.document.service.DocumentService
 import com.ritense.plugin.service.PluginService
+import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.ZakenApiPlugin.Companion.DOCUMENT_URL_PROCESS_VAR
 import com.ritense.zakenapi.ZakenApiPlugin.Companion.RESOURCE_ID_PROCESS_VAR
@@ -56,8 +58,8 @@ import java.time.LocalDate
 import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 internal class ZakenApiPluginTest {
 
@@ -72,6 +74,8 @@ internal class ZakenApiPluginTest {
         val platformTransactionManager: PlatformTransactionManager = mock()
         val executionMock = mock<DelegateExecution>()
         val authenticationMock = mock<ZakenApiAuthentication>()
+        val documentService: DocumentService = mock()
+        val processDocumentAssociationService: ProcessDocumentAssociationService = mock()
 
         val documentId = UUID.randomUUID()
         whenever(executionMock.businessKey).thenReturn(documentId.toString())
@@ -84,7 +88,9 @@ internal class ZakenApiPluginTest {
             zaakInstanceLinkRepository,
             pluginService,
             zaakHersteltermijnRepository,
-            platformTransactionManager
+            platformTransactionManager,
+            documentService,
+            processDocumentAssociationService
         )
         plugin.url = URI("https://zaken.plugin.url")
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -112,6 +118,8 @@ internal class ZakenApiPluginTest {
         val platformTransactionManager: PlatformTransactionManager = mock()
         val executionMock = mock<DelegateExecution>()
         val authenticationMock = mock<ZakenApiAuthentication>()
+        val documentService: DocumentService = mock()
+        val processDocumentAssociationService: ProcessDocumentAssociationService = mock()
 
         val documentId = UUID.randomUUID()
         whenever(executionMock.businessKey).thenReturn(documentId.toString())
@@ -132,7 +140,9 @@ internal class ZakenApiPluginTest {
             zaakInstanceLinkRepository,
             pluginService,
             zaakHersteltermijnRepository,
-            platformTransactionManager
+            platformTransactionManager,
+            documentService,
+            processDocumentAssociationService
         )
         plugin.url = URI("https://zaken.plugin.url")
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -159,6 +169,8 @@ internal class ZakenApiPluginTest {
         val zaakHersteltermijnRepository: ZaakHersteltermijnRepository = mock()
         val platformTransactionManager: PlatformTransactionManager = mock()
         val authenticationMock = mock<ZakenApiAuthentication>()
+        val documentService: DocumentService = mock()
+        val processDocumentAssociationService: ProcessDocumentAssociationService = mock()
 
         val resultPage = Page(
             2,
@@ -186,7 +198,9 @@ internal class ZakenApiPluginTest {
             zaakInstanceLinkRepository,
             pluginService,
             zaakHersteltermijnRepository,
-            platformTransactionManager
+            platformTransactionManager,
+            documentService,
+            processDocumentAssociationService
         )
         plugin.url = URI("https://zaken.plugin.url")
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -207,6 +221,8 @@ internal class ZakenApiPluginTest {
         val zaakHersteltermijnRepository: ZaakHersteltermijnRepository = mock()
         val platformTransactionManager: PlatformTransactionManager = mock()
         val authenticationMock = mock<ZakenApiAuthentication>()
+        val documentService: DocumentService = mock()
+        val processDocumentAssociationService: ProcessDocumentAssociationService = mock()
 
         val firstResultPage = Page(
             2,
@@ -250,7 +266,9 @@ internal class ZakenApiPluginTest {
             zaakInstanceLinkRepository,
             pluginService,
             zaakHersteltermijnRepository,
-            platformTransactionManager
+            platformTransactionManager,
+            documentService,
+            processDocumentAssociationService
         )
         plugin.url = URI("https://zaken.plugin.url")
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -272,6 +290,8 @@ internal class ZakenApiPluginTest {
         val zaakHersteltermijnRepository: ZaakHersteltermijnRepository = mock()
         val platformTransactionManager: PlatformTransactionManager = mock()
         val authenticationMock = mock<ZakenApiAuthentication>()
+        val documentService: DocumentService = mock()
+        val processDocumentAssociationService: ProcessDocumentAssociationService = mock()
 
         val firstResultPage = Page(
             2,
@@ -315,7 +335,9 @@ internal class ZakenApiPluginTest {
             zaakInstanceLinkRepository,
             pluginService,
             zaakHersteltermijnRepository,
-            platformTransactionManager
+            platformTransactionManager,
+            documentService,
+            processDocumentAssociationService
         )
         plugin.url = URI("https://zaken.plugin.url")
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -338,6 +360,8 @@ internal class ZakenApiPluginTest {
         val platformTransactionManager: PlatformTransactionManager = mock()
         val authenticationMock = mock<ZakenApiAuthentication>()
         val executionMock = mock<DelegateExecution>()
+        val documentService: DocumentService = mock()
+        val processDocumentAssociationService: ProcessDocumentAssociationService = mock()
 
         val documentId = UUID.randomUUID()
         whenever(executionMock.businessKey).thenReturn(documentId.toString())
@@ -350,7 +374,9 @@ internal class ZakenApiPluginTest {
             zaakInstanceLinkRepository,
             pluginService,
             zaakHersteltermijnRepository,
-            platformTransactionManager
+            platformTransactionManager,
+            documentService,
+            processDocumentAssociationService
         )
         plugin.url = URI("https://zaken.plugin.url")
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -390,6 +416,8 @@ internal class ZakenApiPluginTest {
         val platformTransactionManager: PlatformTransactionManager = mock()
         val authenticationMock = mock<ZakenApiAuthentication>()
         val executionMock = mock<DelegateExecution>()
+        val documentService: DocumentService = mock()
+        val processDocumentAssociationService: ProcessDocumentAssociationService = mock()
 
         val documentId = UUID.randomUUID()
         whenever(executionMock.businessKey).thenReturn(documentId.toString())
@@ -402,7 +430,9 @@ internal class ZakenApiPluginTest {
             zaakInstanceLinkRepository,
             pluginService,
             zaakHersteltermijnRepository,
-            platformTransactionManager
+            platformTransactionManager,
+            documentService,
+            processDocumentAssociationService
         )
         plugin.url = URI("https://zaken.plugin.url")
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -441,10 +471,15 @@ internal class ZakenApiPluginTest {
         val platformTransactionManager: PlatformTransactionManager = mock()
         val executionMock = mock<DelegateExecution>()
         val authenticationMock = mock<ZakenApiAuthentication>()
+        val documentService: DocumentService = mock()
+        val processDocumentAssociationService: ProcessDocumentAssociationService = mock()
 
         val documentId = UUID.randomUUID()
         val rsin = Rsin("051845623")
         val zaaktypeUrl = URI("https://example.com/zaaktype/1234")
+        val description = "Omschrijving"
+        val plannedEndDate = LocalDate.now().plusDays(10)
+        val finalDeliveryDate = null
 
         whenever(executionMock.businessKey).thenReturn(documentId.toString())
         whenever(
@@ -471,12 +506,21 @@ internal class ZakenApiPluginTest {
             zaakInstanceLinkRepository,
             pluginService,
             zaakHersteltermijnRepository,
-            platformTransactionManager
+            platformTransactionManager,
+            documentService,
+            processDocumentAssociationService
         )
         plugin.url = URI("https://zaken.plugin.url")
         plugin.authenticationPluginConfiguration = authenticationMock
 
-        plugin.createZaak(executionMock, rsin, zaaktypeUrl)
+        plugin.createZaak(
+            executionMock,
+            rsin,
+            zaaktypeUrl,
+            description,
+            plannedEndDate.toString(),
+            finalDeliveryDate
+        )
 
         val captor = argumentCaptor<CreateZaakRequest>()
         verify(zakenApiClient).createZaak(any(), any(), captor.capture())
@@ -486,6 +530,8 @@ internal class ZakenApiPluginTest {
         assertEquals(zaaktypeUrl, request.zaaktype)
         assertEquals(rsin, request.verantwoordelijkeOrganisatie)
         assertNotNull(request.startdatum)
+        assertEquals(description, request.omschrijving)
+        assertEquals(plannedEndDate, request.einddatumGepland)
     }
 
 
@@ -500,6 +546,8 @@ internal class ZakenApiPluginTest {
         val platformTransactionManager: PlatformTransactionManager = mock()
         val executionMock = mock<DelegateExecution>()
         val authenticationMock = mock<ZakenApiAuthentication>()
+        val documentService: DocumentService = mock()
+        val processDocumentAssociationService: ProcessDocumentAssociationService = mock()
 
         val documentId = UUID.randomUUID()
         val zaakUrl = URI("https://example.com/zaken/1234")
@@ -515,7 +563,9 @@ internal class ZakenApiPluginTest {
             zaakInstanceLinkRepository,
             pluginService,
             zaakHersteltermijnRepository,
-            platformTransactionManager
+            platformTransactionManager,
+            documentService,
+            processDocumentAssociationService
         )
         plugin.url = URI("https://zaken.plugin.url")
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -544,6 +594,8 @@ internal class ZakenApiPluginTest {
         val platformTransactionManager: PlatformTransactionManager = mock()
         val executionMock = mock<DelegateExecution>()
         val authenticationMock = mock<ZakenApiAuthentication>()
+        val documentService: DocumentService = mock()
+        val processDocumentAssociationService: ProcessDocumentAssociationService = mock()
 
         val documentId = UUID.randomUUID()
         val zaakUrl = URI("https://example.com/zaken/1234")
@@ -559,7 +611,9 @@ internal class ZakenApiPluginTest {
             zaakInstanceLinkRepository,
             pluginService,
             zaakHersteltermijnRepository,
-            platformTransactionManager
+            platformTransactionManager,
+            documentService,
+            processDocumentAssociationService
         )
         plugin.url = URI("https://zaken.plugin.url")
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -588,6 +642,8 @@ internal class ZakenApiPluginTest {
         val platformTransactionManager: PlatformTransactionManager = mock()
         val executionMock = mock<DelegateExecution>()
         val authenticationMock = mock<ZakenApiAuthentication>()
+        val documentService: DocumentService = mock()
+        val processDocumentAssociationService: ProcessDocumentAssociationService = mock()
 
         val documentId = UUID.randomUUID()
         val zaakUrl = URI("https://example.com/zaken/1234")
@@ -602,7 +658,9 @@ internal class ZakenApiPluginTest {
             zaakInstanceLinkRepository,
             pluginService,
             zaakHersteltermijnRepository,
-            platformTransactionManager
+            platformTransactionManager,
+            documentService,
+            processDocumentAssociationService
         )
         plugin.url = URI("https://zaken.plugin.url")
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -638,6 +696,8 @@ internal class ZakenApiPluginTest {
         val platformTransactionManager: PlatformTransactionManager = mock()
         val executionMock = mock<DelegateExecution>()
         val authenticationMock = mock<ZakenApiAuthentication>()
+        val documentService: DocumentService = mock()
+        val processDocumentAssociationService: ProcessDocumentAssociationService = mock()
 
         val documentId = UUID.randomUUID()
         val zaakUrl = URI("https://example.com/zaken/1234")
@@ -664,7 +724,9 @@ internal class ZakenApiPluginTest {
             zaakInstanceLinkRepository,
             pluginService,
             zaakHersteltermijnRepository,
-            platformTransactionManager
+            platformTransactionManager,
+            documentService,
+            processDocumentAssociationService
         )
         plugin.url = URI("https://zaken.plugin.url")
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -698,6 +760,8 @@ internal class ZakenApiPluginTest {
         val platformTransactionManager: PlatformTransactionManager = mock()
         val executionMock = mock<DelegateExecution>()
         val authenticationMock = mock<ZakenApiAuthentication>()
+        val documentService: DocumentService = mock()
+        val processDocumentAssociationService: ProcessDocumentAssociationService = mock()
 
         val documentId = UUID.randomUUID()
         val zaakUrl = URI("https://example.com/zaken/1234")
@@ -726,7 +790,9 @@ internal class ZakenApiPluginTest {
             zaakInstanceLinkRepository,
             pluginService,
             zaakHersteltermijnRepository,
-            platformTransactionManager
+            platformTransactionManager,
+            documentService,
+            processDocumentAssociationService
         )
         plugin.url = URI("https://zaken.plugin.url")
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -755,6 +821,8 @@ internal class ZakenApiPluginTest {
         val platformTransactionManager: PlatformTransactionManager = mock()
         val executionMock = mock<DelegateExecution>()
         val authenticationMock = mock<ZakenApiAuthentication>()
+        val documentService: DocumentService = mock()
+        val processDocumentAssociationService: ProcessDocumentAssociationService = mock()
 
         val documentId = UUID.randomUUID()
         val zaakUrl = URI("https://example.com/zaken/1234")
@@ -787,7 +855,9 @@ internal class ZakenApiPluginTest {
             zaakInstanceLinkRepository,
             pluginService,
             zaakHersteltermijnRepository,
-            platformTransactionManager
+            platformTransactionManager,
+            documentService,
+            processDocumentAssociationService
         )
         plugin.url = URI("https://zaken.plugin.url")
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -820,6 +890,8 @@ internal class ZakenApiPluginTest {
         val platformTransactionManager: PlatformTransactionManager = mock()
         val executionMock = mock<DelegateExecution>()
         val authenticationMock = mock<ZakenApiAuthentication>()
+        val documentService: DocumentService = mock()
+        val processDocumentAssociationService: ProcessDocumentAssociationService = mock()
 
         val documentId = UUID.randomUUID()
         val zaakUrl = URI("https://example.com/zaken/1234")
@@ -844,7 +916,9 @@ internal class ZakenApiPluginTest {
             zaakInstanceLinkRepository,
             pluginService,
             zaakHersteltermijnRepository,
-            platformTransactionManager
+            platformTransactionManager,
+            documentService,
+            processDocumentAssociationService
         )
         plugin.url = URI("https://zaken.plugin.url")
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -879,6 +953,8 @@ internal class ZakenApiPluginTest {
         val platformTransactionManager: PlatformTransactionManager = mock()
         val executionMock = mock<DelegateExecution>()
         val authenticationMock = mock<ZakenApiAuthentication>()
+        val documentService: DocumentService = mock()
+        val processDocumentAssociationService: ProcessDocumentAssociationService = mock()
 
         val documentId = UUID.randomUUID()
         val zaakUrl = URI("https://example.com/zaken/1234")
@@ -905,7 +981,9 @@ internal class ZakenApiPluginTest {
             zaakInstanceLinkRepository,
             pluginService,
             zaakHersteltermijnRepository,
-            platformTransactionManager
+            platformTransactionManager,
+            documentService,
+            processDocumentAssociationService
         )
         plugin.url = URI("https://example.com/")
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -940,6 +1018,8 @@ internal class ZakenApiPluginTest {
         val platformTransactionManager: PlatformTransactionManager = mock()
         val executionMock = mock<DelegateExecution>()
         val authenticationMock = mock<ZakenApiAuthentication>()
+        val documentService: DocumentService = mock()
+        val processDocumentAssociationService: ProcessDocumentAssociationService = mock()
 
         val documentId = UUID.randomUUID()
         val zaakUrl = URI("https://example.com/zaken/1234")
@@ -966,7 +1046,9 @@ internal class ZakenApiPluginTest {
             zaakInstanceLinkRepository,
             pluginService,
             zaakHersteltermijnRepository,
-            platformTransactionManager
+            platformTransactionManager,
+            documentService,
+            processDocumentAssociationService
         )
         plugin.url = URI("https://zaken.plugin.url")
         plugin.authenticationPluginConfiguration = authenticationMock
