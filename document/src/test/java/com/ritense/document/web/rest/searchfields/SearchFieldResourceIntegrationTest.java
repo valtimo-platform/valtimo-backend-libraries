@@ -114,7 +114,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
         var searchFieldDto = SearchFieldMapper.toDto(SEARCH_FIELD);
 
         mockMvc.perform(
-                        post("/api/v1/document-search/{documentDefinitionName}/fields",
+                        post("/api/management/v1/document-search/{documentDefinitionName}/fields",
                                 DOCUMENT_DEFINITION_NAME)
                                 .content(objectMapper.writeValueAsString(searchFieldDto))
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -142,7 +142,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
         searchFieldDto.setDataType(SearchFieldDataType.DATE);
         searchFieldDto.setMatchType(LIKE);
         mockMvc.perform(
-                        post("/api/v1/document-search/{documentDefinitionName}/fields",
+                        post("/api/management/v1/document-search/{documentDefinitionName}/fields",
                                 DOCUMENT_DEFINITION_NAME)
                                 .content(objectMapper.writeValueAsString(searchFieldDto))
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -157,7 +157,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
         searchFieldDto.setDataType(SearchFieldDataType.BOOLEAN);
         searchFieldDto.setFieldType(SearchFieldFieldType.RANGE);
         mockMvc.perform(
-                        post("/api/v1/document-search/{documentDefinitionName}/fields",
+                        post("/api/management/v1/document-search/{documentDefinitionName}/fields",
                                 DOCUMENT_DEFINITION_NAME)
                                 .content(objectMapper.writeValueAsString(searchFieldDto))
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -172,7 +172,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
         searchFieldDto.setDataType(SearchFieldDataType.DATE);
         searchFieldDto.setMatchType(LIKE);
         mockMvc.perform(
-                post("/api/v1/document-search/{documentDefinitionName}/fields",
+                post("/api/management/v1/document-search/{documentDefinitionName}/fields",
                     DOCUMENT_DEFINITION_NAME)
                     .content(objectMapper.writeValueAsString(searchFieldDto))
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -187,7 +187,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
         var searchFieldDto = new SearchFieldDto("lastName", "doc:invalid.path", TEXT, SINGLE, LIKE, null, null);
 
         mockMvc.perform(
-                        post("/api/v1/document-search/{documentDefinitionName}/fields",
+                        post("/api/management/v1/document-search/{documentDefinitionName}/fields",
                                 DOCUMENT_DEFINITION_NAME)
                                 .content(objectMapper.writeValueAsString(searchFieldDto))
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -203,14 +203,14 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
 
         var searchFieldDto = SearchFieldMapper.toDto(SEARCH_FIELD);
         mockMvc.perform(
-                        post("/api/v1/document-search/{documentDefinitionName}/fields",
+                        post("/api/management/v1/document-search/{documentDefinitionName}/fields",
                                 DOCUMENT_DEFINITION_NAME)
                                 .content(objectMapper.writeValueAsString(searchFieldDto))
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isOk());
         mockMvc.perform(
-                        get("/api/v1/document-search/{documentDefinitionName}/fields",
+                        get("/api/management/v1/document-search/{documentDefinitionName}/fields",
                                 DOCUMENT_DEFINITION_NAME))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -227,14 +227,14 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
     void shouldNotRetrieveSearchFieldsWithoutPermissions() throws Exception {
         var searchFieldDto = SearchFieldMapper.toDto(SEARCH_FIELD);
         mockMvc.perform(
-                post("/api/v1/document-search/{documentDefinitionName}/fields",
+                post("/api/management/v1/document-search/{documentDefinitionName}/fields",
                     DOCUMENT_DEFINITION_NAME)
                     .content(objectMapper.writeValueAsString(searchFieldDto))
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk());
         mockMvc.perform(
-                get("/api/v1/document-search/{documentDefinitionName}/fields",
+                get("/api/management/v1/document-search/{documentDefinitionName}/fields",
                     DOCUMENT_DEFINITION_NAME))
             .andDo(print())
             .andExpect(status().isOk())
@@ -261,7 +261,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
                 "someTitle");
 
         mockMvc.perform(
-                        put("/api/v1/document-search/{documentDefinitionName}/fields",
+                        put("/api/management/v1/document-search/{documentDefinitionName}/fields",
                                 DOCUMENT_DEFINITION_NAME)
                                 .content(objectMapper.writeValueAsString(List.of(searchFieldToUpdate)))
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -286,7 +286,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
         SearchFieldDto searchFieldDto = SearchFieldMapper.toDto(SEARCH_FIELD);
         searchFieldDto.setKey("   ");
         mockMvc.perform(
-                        put("/api/v1/document-search/{documentDefinitionName}/fields",
+                        put("/api/management/v1/document-search/{documentDefinitionName}/fields",
                                 DOCUMENT_DEFINITION_NAME)
                                 .content(objectMapper.writeValueAsString(List.of(searchFieldDto)))
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -301,7 +301,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
                 new SearchFieldDto("firstName", "doc:firstName", TEXT, SINGLE, LIKE, null, null)
         );
         mockMvc.perform(
-                        put("/api/v1/document-search/{documentDefinitionName}/fields",
+                        put("/api/management/v1/document-search/{documentDefinitionName}/fields",
                                 "person")
                                 .content(objectMapper.writeValueAsString(searchFields))
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -319,7 +319,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
     void shouldDeleteSearchField() throws Exception {
         SearchFieldDto searchFieldDto = SearchFieldMapper.toDto(SEARCH_FIELD);
         mockMvc.perform(
-                        post("/api/v1/document-search/{documentDefinitionName}/fields",
+                        post("/api/management/v1/document-search/{documentDefinitionName}/fields",
                                 DOCUMENT_DEFINITION_NAME)
                                 .content(objectMapper.writeValueAsString(searchFieldDto))
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -329,7 +329,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
                 DOCUMENT_DEFINITION_NAME, SEARCH_FIELD.getKey());
         assertTrue(searchField.isPresent());
         mockMvc.perform(
-                        delete("/api/v1/document-search/{documentDefinitionName}/fields",
+                        delete("/api/management/v1/document-search/{documentDefinitionName}/fields",
                                 DOCUMENT_DEFINITION_NAME).queryParam("key", SEARCH_FIELD.getKey())
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 )
