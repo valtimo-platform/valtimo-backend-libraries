@@ -42,6 +42,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.core.annotation.Order
+import org.springframework.core.env.Environment
 import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
@@ -116,11 +117,15 @@ class ProcessLinkAutoConfiguration {
     @ConditionalOnMissingBean(ProcessLinkDeploymentApplicationReadyEventListener::class)
     fun processLinkDeploymentApplicationReadyEventListener(
         resourceLoader: ResourceLoader,
-        processLinkImporter: ProcessLinkImporter
+        processLinkImporter: ProcessLinkImporter,
+        objectMapper: ObjectMapper,
+        environment: Environment
     ): ProcessLinkDeploymentApplicationReadyEventListener {
         return ProcessLinkDeploymentApplicationReadyEventListener(
             resourceLoader,
-            processLinkImporter
+            processLinkImporter,
+            objectMapper,
+            environment
         )
     }
 
