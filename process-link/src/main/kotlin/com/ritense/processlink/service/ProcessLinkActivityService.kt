@@ -74,7 +74,7 @@ class ProcessLinkActivityService(
         val processLink = processLinkService.getProcessLinksByProcessDefinitionIdAndActivityType(
             processDefinitionId,
             ActivityTypeWithEventName.START_EVENT_START
-        ) ?: throw ProcessLinkNotFoundException("For process definition with id $processDefinitionId")
+        ) ?: return null
 
         val processDefinition = runWithoutAuthorization {
             camundaRepositoryService.findProcessDefinitionById(processLink.processDefinitionId)
