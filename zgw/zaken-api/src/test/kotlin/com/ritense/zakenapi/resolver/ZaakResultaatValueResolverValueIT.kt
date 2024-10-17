@@ -59,26 +59,31 @@ class ZaakResultaatValueResolverValueIT @Autowired constructor(
 
     @Test
     fun `should prefill form with resultaat data from the Zaken API`() {
-        val documentId = runWithoutAuthorization {
-            documentService.createDocument(
+        runWithoutAuthorization {
+            val documentId = documentService.createDocument(
                 NewDocumentRequest("profile", objectMapper.createObjectNode())
             ).resultingDocument().get().id.id
-        }
-        val formDefinition = formDefinitionRepository.findByName("form-with-zaakresultaat-fields").get()
-        val prefilledFormDefinition = prefillFormService.getPrefilledFormDefinition(
-            formDefinition.id!!,
-            documentId
-        )
+            val formDefinition = formDefinitionRepository.findByName("form-with-zaakresultaat-fields").get()
+            val prefilledFormDefinition = prefillFormService.getPrefilledFormDefinition(
+                formDefinition.id!!,
+                documentId
+            )
 
-        assertThat(JsonPath.read<List<String>>(prefilledFormDefinition.asJson().toString(), "$.components[?(@.properties.sourceKey=='zaakresultaat:omschrijving')].defaultValue").toString())
-            .isEqualTo("""["Toegekend"]""")
+            assertThat(
+                JsonPath.read<List<String>>(
+                    prefilledFormDefinition.asJson().toString(),
+                    "$.components[?(@.properties.sourceKey=='zaakresultaat:omschrijving')].defaultValue"
+                ).toString()
+            )
+                .isEqualTo("""["Toegekend"]""")
+        }
     }
 
     private fun setupMockZakenApiServer() {
-        server.dispatcher = object: Dispatcher() {
+        server.dispatcher = object : Dispatcher() {
             @Throws(InterruptedException::class)
             override fun dispatch(request: RecordedRequest): MockResponse {
-                val response = when(request.requestLine) {
+                val response = when (request.requestLine) {
                     "GET /zaken/57f66ff6-db7f-43bc-84ef-6847640d3609 HTTP/1.1" -> getZaakRequest()
                     "GET /zaken/resultaten/2a43ac32-0c7e-45ac-bca5-7621d952ccf9 HTTP/1.1" -> getZaakResultaatRequest()
                     "GET /catalogi/resultaattypen/82576fa3-0832-4301-8744-f72fc49f6381 HTTP/1.1" -> getResultaatTypeRequest()
