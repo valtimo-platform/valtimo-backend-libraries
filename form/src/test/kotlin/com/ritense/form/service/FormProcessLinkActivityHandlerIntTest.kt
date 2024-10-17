@@ -29,11 +29,11 @@ import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
 import org.junit.jupiter.api.Test
+import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 import kotlin.test.assertEquals
-import org.skyscreamer.jsonassert.JSONAssert
 
 @Transactional
 internal class FormProcessLinkActivityHandlerIntTest : BaseIntegrationTest() {
@@ -59,12 +59,14 @@ internal class FormProcessLinkActivityHandlerIntTest : BaseIntegrationTest() {
                 false
             )
         )
-        val documentId = runWithoutAuthorization { documentService.createDocument(
-            NewDocumentRequest(
-                "person",
-                objectMapper.readTree(getDocument())
-            )
-        ).resultingDocument().get().id() }
+        val documentId = runWithoutAuthorization {
+            documentService.createDocument(
+                NewDocumentRequest(
+                    "person",
+                    objectMapper.readTree(getDocument())
+                )
+            ).resultingDocument().get().id()
+        }
         val processDefinitionId: String = UUID.randomUUID().toString()
         val processLinkId = UUID.randomUUID()
         val processLink: ProcessLink = FormProcessLink(
@@ -75,15 +77,22 @@ internal class FormProcessLinkActivityHandlerIntTest : BaseIntegrationTest() {
             formDefinitionId = UUID.fromString(formDefinition.id?.toString()),
             viewModelEnabled = false
         )
-        val result = formProcessLinkActivityHandler.getStartEventObject(
-            "",
-            documentId.id,
-            "",
-            processLink,
-        )
-        assertEquals("form",result.type)
-        assertEquals(formDefinition.id?.toString(),result.properties.formDefinitionId.toString())
-        JSONAssert.assertEquals(getForm(), objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(result.properties.prefilledForm), true)
+        runWithoutAuthorization {
+            val result = formProcessLinkActivityHandler.getStartEventObject(
+                "",
+                documentId.id,
+                "",
+                processLink,
+            )
+
+            assertEquals("form", result.type)
+            assertEquals(formDefinition.id?.toString(), result.properties.formDefinitionId.toString())
+            JSONAssert.assertEquals(
+                getForm(),
+                objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(result.properties.prefilledForm),
+                true
+            )
+        }
     }
 
     private fun getDocument(): String {
@@ -95,7 +104,7 @@ internal class FormProcessLinkActivityHandlerIntTest : BaseIntegrationTest() {
 
     }
 
-    private fun getForm(): String{
+    private fun getForm(): String {
         return """
             {
               "display" : "form",
