@@ -24,13 +24,10 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
-import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.document.domain.Document
-import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.patch.JsonPatchFilterFlag
 import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.document.service.DocumentService
-import com.ritense.document.service.JsonSchemaDocumentActionProvider
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.logging.LoggableResource
@@ -90,16 +87,7 @@ class PrefillFormService(
         val formDefinition = formDefinitionService.getFormDefinitionById(formDefinitionId)
             .orElseThrow { RuntimeException("Form definition not found by id $formDefinitionId") }
         if (documentId != null) {
-            val document = runWithoutAuthorization {
-                documentService.get(documentId.toString())
-            }
-            authorizationService.requirePermission(
-                EntityAuthorizationRequest(
-                    JsonSchemaDocument::class.java,
-                    JsonSchemaDocumentActionProvider.VIEW,
-                    document as JsonSchemaDocument
-                )
-            )
+            val document = documentService.get(documentId.toString())
             prefillFormDefinition(formDefinition, document, null, null)
         }
         return formDefinition
