@@ -144,10 +144,13 @@ public class KeycloakUserManagementService implements UserManagementService {
             switch (OauthConfigHolder.getCurrentInstance().getIdentifierField()) {
                 case USERID ->
                     user = keycloakService.usersResource(keycloak).get(userIdentifier).toRepresentation();
-                case USERNAME ->
-                    user = keycloakService.usersResource(keycloak).search(userIdentifier).get(0);
+                case USERNAME -> {
+                    var users = keycloakService.usersResource(keycloak).search(userIdentifier);
+                    if (!users.isEmpty()) {
+                        user = users.get(0);
+                    }
+                }
             }
-
         }
         Boolean isUserEnabled = user != null ? user.isEnabled() : null;
         return Boolean.TRUE.equals(isUserEnabled) ? toValtimoUserByRetrievingRoles(user) : null;
