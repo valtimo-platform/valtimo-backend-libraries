@@ -16,11 +16,12 @@
 
 package com.ritense.processlink.service
 
+import com.ritense.authorization.AuthorizationService
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
 import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.service.CamundaTaskService
-import java.util.UUID
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mock
@@ -29,6 +30,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.UUID
 
 
 class ProcessLinkActivityServiceTest {
@@ -44,10 +46,22 @@ class ProcessLinkActivityServiceTest {
 
     lateinit var processLinkActivityService: ProcessLinkActivityService
 
+    @Mock
+    lateinit var authorizationService: AuthorizationService
+
+    @Mock
+    lateinit var camundaRepositoryService: CamundaRepositoryService
+
     @BeforeEach
     fun init() {
         MockitoAnnotations.openMocks(this)
-        processLinkActivityService = ProcessLinkActivityService(processLinkService, taskService, listOf(processLinkActivityHandler))
+        processLinkActivityService = ProcessLinkActivityService(
+            processLinkService,
+            taskService,
+            listOf(processLinkActivityHandler),
+            authorizationService,
+            camundaRepositoryService
+        )
     }
 
     @Test
@@ -59,7 +73,7 @@ class ProcessLinkActivityServiceTest {
         whenever(task.taskDefinitionKey).thenReturn("some-activity")
 
         val processLink: ProcessLink = mock()
-        val processLinkActivityResult = ProcessLinkActivityResult<Map<String,Any>>(UUID.randomUUID(), "test", mapOf())
+        val processLinkActivityResult = ProcessLinkActivityResult<Map<String, Any>>(UUID.randomUUID(), "test", mapOf())
 
         whenever(taskService.findTaskOrThrow(any())).thenReturn(task)
         whenever(processLinkService.getProcessLinks(any(), any())).thenReturn(listOf(processLink))

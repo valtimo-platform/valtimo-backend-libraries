@@ -17,6 +17,7 @@
 package com.ritense.form.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.form.autodeployment.FormApplicationReadyEventListener;
 import com.ritense.form.autodeployment.FormDefinitionDeploymentService;
@@ -149,7 +150,8 @@ public class FormAutoConfiguration {
         List<FormFieldDataResolver> formFieldDataResolvers,
         ProcessDocumentAssociationService processDocumentAssociationService,
         ValueResolverService valueResolverService,
-        ObjectMapper objectMapper
+        ObjectMapper objectMapper,
+        AuthorizationService authorizationService
     ) {
         return new PrefillFormService(
             documentService,
@@ -159,7 +161,8 @@ public class FormAutoConfiguration {
             formFieldDataResolvers,
             processDocumentAssociationService,
             valueResolverService,
-            objectMapper
+            objectMapper,
+            authorizationService
         );
     }
 

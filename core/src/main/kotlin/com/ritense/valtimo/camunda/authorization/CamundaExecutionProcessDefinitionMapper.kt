@@ -46,6 +46,6 @@ class CamundaExecutionProcessDefinitionMapper : AuthorizationEntityMapper<Camund
     }
 
     override fun supports(fromClass: Class<*>, toClass: Class<*>): Boolean {
-        return fromClass == CamundaExecution::class && toClass == CamundaProcessDefinition::class
+        return fromClass == CamundaExecution::class.java && toClass == CamundaProcessDefinition::class.java
     }
 }

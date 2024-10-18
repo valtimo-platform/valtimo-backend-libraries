@@ -23,8 +23,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.authorization.AuthorizationService
 import com.ritense.document.domain.Document
-import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.patch.JsonPatchFilterFlag
 import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.document.service.DocumentService
@@ -58,7 +58,8 @@ class PrefillFormService(
     private val formFieldDataResolvers: List<FormFieldDataResolver>,
     private val processDocumentAssociationService: ProcessDocumentAssociationService,
     private val valueResolverService: ValueResolverService,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val authorizationService: AuthorizationService,
 ) {
 
     fun getPrefilledFormDefinition(
@@ -86,7 +87,7 @@ class PrefillFormService(
         val formDefinition = formDefinitionService.getFormDefinitionById(formDefinitionId)
             .orElseThrow { RuntimeException("Form definition not found by id $formDefinitionId") }
         if (documentId != null) {
-            val document = runWithoutAuthorization { documentService.get(documentId.toString()) }
+            val document = documentService.get(documentId.toString())
             prefillFormDefinition(formDefinition, document, null, null)
         }
         return formDefinition
