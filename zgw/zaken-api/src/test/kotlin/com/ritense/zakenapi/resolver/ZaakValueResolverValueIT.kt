@@ -67,24 +67,23 @@ class ZaakValueResolverValueIT @Autowired constructor(
 
     @Test
     fun `should prefill form with data from the Zaken API`() {
-        val documentId = runWithoutAuthorization {
-            documentService.createDocument(
+        runWithoutAuthorization {
+            val documentId = documentService.createDocument(
                 NewDocumentRequest("profile", objectMapper.createObjectNode())
             ).resultingDocument().get().id.id
-        }
-        val formDefinition = formDefinitionRepository.findByName("form-with-zaak-fields").get()
-        val prefilledFormDefinition = prefillFormService.getPrefilledFormDefinition(
-            formDefinition.id!!,
-            documentId
-        )
 
-        assertThat(
-            JsonPath.read<List<String>>(
-                prefilledFormDefinition.asJson().toString(),
-                "$.components[?(@.properties.sourceKey=='zaak:identificatie')].defaultValue"
-            ).toString()
-        )
-            .isEqualTo("""["ZK2023-00001"]""")
+            val formDefinition = formDefinitionRepository.findByName("form-with-zaak-fields").get()
+            val prefilledFormDefinition = prefillFormService.getPrefilledFormDefinition(
+                formDefinition.id!!,
+                documentId
+            )
+            assertThat(
+                JsonPath.read<List<String>>(
+                    prefilledFormDefinition.asJson().toString(),
+                    "$.components[?(@.properties.sourceKey=='zaak:identificatie')].defaultValue"
+                ).toString()
+            ).isEqualTo("""["ZK2023-00001"]""")
+        }
     }
 
     private fun setupMockZakenApiServer() {
