@@ -59,26 +59,30 @@ class ZaakStatusValueResolverValueIT @Autowired constructor(
 
     @Test
     fun `should prefill form with status data from the Zaken API`() {
-        val documentId = runWithoutAuthorization {
-            documentService.createDocument(
+        runWithoutAuthorization {
+            val documentId = documentService.createDocument(
                 NewDocumentRequest("profile", objectMapper.createObjectNode())
             ).resultingDocument().get().id.id
-        }
-        val formDefinition = formDefinitionRepository.findByName("form-with-zaak-fields").get()
-        val prefilledFormDefinition = prefillFormService.getPrefilledFormDefinition(
-            formDefinition.id!!,
-            documentId
-        )
 
-        assertThat(JsonPath.read<List<String>>(prefilledFormDefinition.asJson().toString(), "$.components[?(@.properties.sourceKey=='zaakstatus:omschrijving')].defaultValue").toString())
-            .isEqualTo("""["Zaak gestart"]""")
+            val formDefinition = formDefinitionRepository.findByName("form-with-zaak-fields").get()
+            val prefilledFormDefinition = prefillFormService.getPrefilledFormDefinition(
+                formDefinition.id!!,
+                documentId
+            )
+            assertThat(
+                JsonPath.read<List<String>>(
+                    prefilledFormDefinition.asJson().toString(),
+                    "$.components[?(@.properties.sourceKey=='zaakstatus:omschrijving')].defaultValue"
+                ).toString()
+            ).isEqualTo("""["Zaak gestart"]""")
+        }
     }
 
     private fun setupMockZakenApiServer() {
-        server.dispatcher = object: Dispatcher() {
+        server.dispatcher = object : Dispatcher() {
             @Throws(InterruptedException::class)
             override fun dispatch(request: RecordedRequest): MockResponse {
-                val response = when(request.requestLine) {
+                val response = when (request.requestLine) {
                     "GET /zaken/57f66ff6-db7f-43bc-84ef-6847640d3609 HTTP/1.1" -> getZaakRequest()
                     "GET /zaken/statussen/f0ca7629-115d-4231-b684-7eaa130ac1af HTTP/1.1" -> getZaakStatusRequest()
                     "GET /catalogi/statustypen/40cb531f-fbde-46af-9693-90e78535ff9f HTTP/1.1" -> getStatusTypeRequest()
