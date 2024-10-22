@@ -29,7 +29,6 @@ dependencies {
 apply from: "gradle/publishing.gradle"
 
 bootRun {
-    dependsOn("composeUpGzac")
     doFirst {
         File f = file(".env.properties")
         if (f.isFile()) {

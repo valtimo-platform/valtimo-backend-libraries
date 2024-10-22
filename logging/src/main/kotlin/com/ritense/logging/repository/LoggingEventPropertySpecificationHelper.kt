@@ -36,5 +36,13 @@ class LoggingEventPropertySpecificationHelper {
             val timestamp = localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
             cb.lessThan(root.join<Any, Any>(EVENT)[TIMESTAMP], timestamp)
         }
+
+        @JvmStatic
+        fun byKeyValue(key: String, value: String) = Specification<LoggingEventProperty> { root, _, cb ->
+            cb.and(
+                cb.equal(root.get<Any>(ID).get<Any>(KEY), key),
+                cb.equal(root.get<Any>(VALUE), value),
+            )
+        }
     }
 }

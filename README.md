@@ -30,7 +30,7 @@ Starting up the Valtimo platform required three steps:
 - (Optional) An IDE like [IntelliJ](https://www.jetbrains.com/idea/download/) or [Eclipse](https://www.eclipse.org/downloads/)
 
 #### Start Application
-Run the following command to start the Spring Boot application: `./gradlew :app:gzac:bootRun`.
+Run the following command to start the Spring Boot application: `./gradlew :app:gzac:bootRunWithDocker`.
 
 ### Test users
 Keycloak management can be accessed on http://localhost:8081 with the default credentials of username <ins>admin</ins> and password <ins>admin</ins>.
