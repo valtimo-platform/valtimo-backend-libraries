@@ -19,9 +19,9 @@ package com.ritense.zakenapi.service
 import com.ritense.zakenapi.BaseIntegrationTest
 import com.ritense.zakenapi.web.rest.request.CreateZaakTypeLinkRequest
 import jakarta.inject.Inject
-import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.transaction.annotation.Transactional
 import java.net.URI
 
 @Transactional

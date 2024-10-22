@@ -26,8 +26,6 @@ import com.ritense.authorization.role.Role
 import com.ritense.authorization.role.RoleRepository
 import com.ritense.authorization.testimpl.TestEntity
 import com.ritense.authorization.testimpl.TestEntityActionProvider
-import jakarta.transaction.Transactional
-import java.util.UUID
 import org.hamcrest.CoreMatchers.hasItems
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
@@ -39,6 +37,8 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Transactional
 class AuthorizationServiceIntTest @Autowired constructor(

@@ -20,12 +20,12 @@ import com.ritense.connector.domain.ConnectorInstance
 import com.ritense.objectsapi.BaseIntegrationTest
 import com.ritense.objectsapi.web.rest.request.CreateObjectSyncConfigRequest
 import com.ritense.objectsapi.web.rest.request.ModifyObjectSyncConfigRequest
-import jakarta.transaction.Transactional
-import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Transactional
 class ObjectSyncServiceIntTest : BaseIntegrationTest() {

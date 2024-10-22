@@ -31,12 +31,10 @@ import com.ritense.search.domain.DataType
 import com.ritense.search.domain.DisplayType
 import com.ritense.search.domain.EmptyDisplayTypeParameter
 import com.ritense.search.domain.FieldType
-import com.ritense.search.domain.SearchFieldV2
 import com.ritense.search.domain.SearchListColumn
 import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.search.service.SearchListColumnService
 import com.ritense.search.web.rest.dto.LegacySearchFieldV2Dto
-import jakarta.transaction.Transactional
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
@@ -46,6 +44,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
+import org.springframework.transaction.annotation.Transactional
 import java.net.URI
 import java.util.UUID
 

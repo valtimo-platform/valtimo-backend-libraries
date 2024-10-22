@@ -23,9 +23,9 @@ import com.ritense.logging.repository.LoggingEventPropertySpecificationHelper
 import com.ritense.logging.repository.LoggingEventRepository
 import com.ritense.logging.repository.LoggingEventSpecificationHelper
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import jakarta.transaction.Transactional
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
 import java.time.LocalDateTime
 

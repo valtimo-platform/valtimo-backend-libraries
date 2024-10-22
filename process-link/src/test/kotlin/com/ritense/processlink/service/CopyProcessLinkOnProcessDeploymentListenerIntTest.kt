@@ -25,11 +25,11 @@ import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificat
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersion
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.service.CamundaProcessService
-import jakarta.transaction.Transactional
-import kotlin.test.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.annotation.Transactional
+import kotlin.test.assertEquals
 
 @Transactional
 internal class CopyProcessLinkOnProcessDeploymentListenerIntTest : BaseIntegrationTest() {
