@@ -23,6 +23,7 @@ import com.ritense.case.domain.EnumDisplayTypeParameter
 import com.ritense.case.exception.InvalidListColumnException
 import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
+import com.ritense.case.repository.CaseDefinitionRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
@@ -57,18 +58,22 @@ class CaseDefinitionServiceTest {
 
     lateinit var valueResolverService: ValueResolverService
 
+    lateinit var caseDefinitionRepository: CaseDefinitionRepository
+
     @BeforeEach
     fun setUp() {
         caseDefinitionSettingsRepository = mock()
         documentDefinitionService = mock()
         caseDefinitionListColumnRepository = mock()
         valueResolverService = mock()
+        caseDefinitionRepository = mock()
         service = CaseDefinitionService(
             caseDefinitionSettingsRepository,
             caseDefinitionListColumnRepository,
             documentDefinitionService,
             valueResolverService,
-            mock()
+            mock(),
+            caseDefinitionRepository
         )
     }
 
@@ -78,7 +83,9 @@ class CaseDefinitionServiceTest {
         val caseDefinitionSettings = CaseDefinitionSettings(caseDefinitionName, true)
 
         whenever(documentDefinitionService.findLatestByName(caseDefinitionName)).thenReturn(Optional.of(mock()))
-        whenever(caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)).thenReturn(caseDefinitionSettings)
+        whenever(caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)).thenReturn(
+            caseDefinitionSettings
+        )
 
         val foundCaseDefinitionSettings = service.getCaseSettings(caseDefinitionName)
 
@@ -103,7 +110,9 @@ class CaseDefinitionServiceTest {
         val updatedCaseDefinitionSettings = CaseDefinitionSettings(caseDefinitionName, false)
         val caseSettingsDto: CaseSettingsDto = mock()
         whenever(documentDefinitionService.findLatestByName(caseDefinitionName)).thenReturn(Optional.of(mock()))
-        whenever(caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)).thenReturn(currentCaseDefinitionSettings)
+        whenever(caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)).thenReturn(
+            currentCaseDefinitionSettings
+        )
         whenever(caseDefinitionSettingsRepository.save(updatedCaseDefinitionSettings)).thenReturn(
             updatedCaseDefinitionSettings
         )
@@ -213,8 +222,8 @@ class CaseDefinitionServiceTest {
         doAnswer {
             throw ValueResolverValidationException(
                 "JsonPath '"
-                        + listColumnDto.path +
-                        "' doesn't point to any property inside document definition '" + caseDefinitionName + "'"
+                    + listColumnDto.path +
+                    "' doesn't point to any property inside document definition '" + caseDefinitionName + "'"
             )
         }
             .whenever(valueResolverService).validateValues(caseDefinitionName, listOf(listColumnDto.path))
@@ -228,8 +237,8 @@ class CaseDefinitionServiceTest {
         verify(valueResolverService).validateValues(caseDefinitionName, listOf(listColumnDto.path))
         assertEquals(
             "JsonPath '"
-                    + listColumnDto.path +
-                    "' doesn't point to any property inside document definition '" + caseDefinitionName + "'",
+                + listColumnDto.path +
+                "' doesn't point to any property inside document definition '" + caseDefinitionName + "'",
             exception.message
         )
 
@@ -339,8 +348,8 @@ class CaseDefinitionServiceTest {
         doAnswer {
             throw ValueResolverValidationException(
                 "JsonPath '"
-                        + listColumnDtoFirstName.path +
-                        "' doesn't point to any property inside document definition '" + caseDefinitionName + "'"
+                    + listColumnDtoFirstName.path +
+                    "' doesn't point to any property inside document definition '" + caseDefinitionName + "'"
             )
         }
             .whenever(valueResolverService).validateValues(caseDefinitionName, listOf(listColumnDtoFirstName.path))
@@ -354,8 +363,8 @@ class CaseDefinitionServiceTest {
         verify(valueResolverService).validateValues(caseDefinitionName, listOf(listColumnDtoFirstName.path))
         assertEquals(
             "JsonPath '"
-                    + listColumnDtoFirstName.path +
-                    "' doesn't point to any property inside document definition '" + caseDefinitionName + "'",
+                + listColumnDtoFirstName.path +
+                "' doesn't point to any property inside document definition '" + caseDefinitionName + "'",
             exception.message
         )
     }

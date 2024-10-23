@@ -2,14 +2,21 @@ package com.ritense.case.domain.casedefinition
 
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
+import jakarta.persistence.Transient
 
 @Embeddable
 data class SemVer(
     @Column(name = "semver_version")
     private val version: String = "1.0.0" // Single column for the version
 ) {
+
+    @Transient
     private val major: Int
+
+    @Transient
     private val minor: Int
+
+    @Transient
     private val patch: Int
 
     init {

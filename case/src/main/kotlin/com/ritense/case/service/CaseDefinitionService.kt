@@ -21,9 +21,12 @@ import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthor
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.case.domain.CaseDefinitionSettings
+import com.ritense.case.domain.casedefinition.CaseDefinition
+import com.ritense.case.domain.casedefinition.SemVer
 import com.ritense.case.exception.InvalidListColumnException
 import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
+import com.ritense.case.repository.CaseDefinitionRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.case.service.validations.CreateCaseListColumnValidator
 import com.ritense.case.service.validations.ListColumnValidator
@@ -39,6 +42,7 @@ import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valueresolver.ValueResolverService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 
 @Transactional
@@ -49,7 +53,8 @@ class CaseDefinitionService(
     private val caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
     private val documentDefinitionService: DocumentDefinitionService,
     valueResolverService: ValueResolverService,
-    private val authorizationService: AuthorizationService
+    private val authorizationService: AuthorizationService,
+    private val caseDefinitionRepository: CaseDefinitionRepository
 ) {
     var validators: Map<Operation, ListColumnValidator<CaseListColumnDto>> = mapOf(
         Operation.CREATE to CreateCaseListColumnValidator(
@@ -158,5 +163,15 @@ class CaseDefinitionService(
     private fun assertDocumentDefinitionExists(caseDefinitionName: String): DocumentDefinition {
         return documentDefinitionService.findLatestByName(caseDefinitionName)
             .getOrNull() ?: throw UnknownCaseDefinitionException(caseDefinitionName)
+    }
+
+    fun deployCaseDefinition(id: UUID, name: String, version: SemVer): CaseDefinition {
+        val caseDefinition = CaseDefinition(
+            id = UUID.randomUUID(),
+            name = name,
+            version = version
+        )
+        caseDefinitionRepository.save(caseDefinition)
+        return caseDefinition
     }
 }

@@ -25,6 +25,7 @@ import com.ritense.case.domain.BooleanDisplayTypeParameter
 import com.ritense.case.domain.DateFormatDisplayTypeParameter
 import com.ritense.case.domain.EnumDisplayTypeParameter
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
+import com.ritense.case.repository.CaseDefinitionRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.case.repository.CaseTabDocumentDefinitionMapper
 import com.ritense.case.repository.CaseTabRepository
@@ -138,13 +139,15 @@ class CaseAutoConfiguration {
         documentDefinitionService: DocumentDefinitionService,
         valueResolverService: ValueResolverService,
         authorizationService: AuthorizationService,
+        caseDefinitionRepository: CaseDefinitionRepository
     ): CaseDefinitionService {
         return CaseDefinitionService(
             repository,
             caseDefinitionListColumnRepository,
             documentDefinitionService,
             valueResolverService,
-            authorizationService
+            authorizationService,
+            caseDefinitionRepository
         )
     }
 
