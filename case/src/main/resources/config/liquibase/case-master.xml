@@ -43,4 +43,5 @@
     <include file="changelog/20240514-add-case-widget-tab-widget.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20240527-add-createdon-createdby-to-case-tabs.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20240617-add-showtasks-to-case-tabs.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20241023-add-case-definition.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
