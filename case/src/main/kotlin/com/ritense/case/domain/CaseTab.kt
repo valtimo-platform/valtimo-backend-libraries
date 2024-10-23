@@ -22,6 +22,7 @@ import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import jakarta.persistence.Table
 import java.time.LocalDateTime
+import java.util.UUID
 
 @Entity
 @Table(name = "case_tab")
@@ -42,7 +43,8 @@ data class CaseTab(
     val createdOn: LocalDateTime? = LocalDateTime.now(),
 
     val createdBy: String? = null,
-    val showTasks: Boolean = false
+    val showTasks: Boolean = false,
+    var caseDefinitionId: UUID? = null
 ) {
     constructor(
         id: CaseTabId,

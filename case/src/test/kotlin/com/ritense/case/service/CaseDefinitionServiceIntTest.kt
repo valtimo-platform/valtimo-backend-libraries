@@ -1,6 +1,9 @@
 package com.ritense.case.service
 
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.BaseIntegrationTest
+import com.ritense.case.domain.CaseTabType
+import com.ritense.case.web.rest.dto.CaseTabDto
 import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -9,7 +12,8 @@ import java.util.UUID
 
 @Transactional
 class CaseDefinitionServiceIntTest @Autowired constructor(
-    private val caseDefinitionService: CaseDefinitionService
+    private val caseDefinitionService: CaseDefinitionService,
+    private val caseTabService: CaseTabService
 ) : BaseIntegrationTest() {
 
     @Test
@@ -25,6 +29,31 @@ class CaseDefinitionServiceIntTest @Autowired constructor(
         assertThat(result.id).isEqualTo(id)
         assertThat(result.name).isEqualTo(name)
         assertThat(result.version.toString()).isEqualTo(version)
+    }
+
+    @Test
+    fun `should link case-definition to CaseTab`(): Unit = runWithoutAuthorization {
+        // Given
+        val id = UUID.randomUUID()
+        val name = "definition-test"
+        val version = "1.0.0"
+        val caseDefinition = caseDefinitionService.deployCaseDefinition(
+            id = id,
+            name = name,
+            version = version
+        )
+        // When
+        val result = caseTabService.createCaseTab(
+            caseDefinitionName = name, // Reuse the name here, if this is not f
+            caseTabDto = CaseTabDto(
+                key = "case-tab-key",
+                type = CaseTabType.CUSTOM,
+                contentKey = "case-tab-content-key"
+            ),
+            caseDefinitionId = caseDefinition.id,
+        )
+        // Then
+        assertThat(result.caseDefinitionId).isEqualTo(id)
     }
 
 }

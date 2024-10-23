@@ -44,6 +44,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 
 @Transactional
@@ -105,7 +106,11 @@ class CaseTabService(
         )
     }
 
-    fun createCaseTab(caseDefinitionName: String, caseTabDto: CaseTabDto): CaseTab {
+    fun createCaseTab(
+        caseDefinitionName: String,
+        caseTabDto: CaseTabDto,
+        caseDefinitionId: UUID? = null,
+    ): CaseTab {
         denyAuthorization()
 
         documentDefinitionService.findLatestByName(caseDefinitionName).getOrNull()
@@ -130,6 +135,7 @@ class CaseTabService(
             userManagementService.currentUserId,
             caseTabDto.showTasks
         )
+        caseTab.caseDefinitionId = caseDefinitionId
 
         val savedTab = caseTabRepository.save(caseTab)
 
