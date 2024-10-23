@@ -1,7 +1,6 @@
 package com.ritense.case.service
 
 import com.ritense.case.BaseIntegrationTest
-import com.ritense.case.domain.casedefinition.SemVer
 import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -21,11 +20,11 @@ class CaseDefinitionServiceIntTest @Autowired constructor(
         val result = caseDefinitionService.deployCaseDefinition(
             id = id,
             name = name,
-            version = SemVer.fromString(version)
+            version = version
         )
         assertThat(result.id).isEqualTo(id)
         assertThat(result.name).isEqualTo(name)
-        assertThat(result.version).isEqualTo(version)
+        assertThat(result.version.toString()).isEqualTo(version)
     }
 
 }

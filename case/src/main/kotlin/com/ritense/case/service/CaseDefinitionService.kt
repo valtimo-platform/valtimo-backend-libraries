@@ -165,11 +165,15 @@ class CaseDefinitionService(
             .getOrNull() ?: throw UnknownCaseDefinitionException(caseDefinitionName)
     }
 
-    fun deployCaseDefinition(id: UUID, name: String, version: SemVer): CaseDefinition {
+    fun deployCaseDefinition(
+        id: UUID,
+        name: String,
+        version: String
+    ): CaseDefinition {
         val caseDefinition = CaseDefinition(
-            id = UUID.randomUUID(),
+            id = id,
             name = name,
-            version = version
+            version = SemVer.fromString(version)
         )
         caseDefinitionRepository.save(caseDefinition)
         return caseDefinition
