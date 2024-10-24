@@ -37,7 +37,7 @@ plugins {
     id "com.avast.gradle.docker-compose" version "${dockerComposePluginVersion}"
     id "com.github.jk1.dependency-license-report" version "${dependencyLicenseReportVersion}"
     id "project-report"
-    id "org.owasp.dependencycheck" version "8.4.0"
+    id "org.owasp.dependencycheck" version "8.4.3"
 }
 
 jacoco {
