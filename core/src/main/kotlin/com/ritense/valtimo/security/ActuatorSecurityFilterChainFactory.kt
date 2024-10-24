@@ -57,6 +57,7 @@ class ActuatorSecurityFilterChainFactory {
         password: String
     ): SecurityFilterChain {
         val matchers = getActuatorMatchers(webEndpointProperties.basePath)
+        val healthMatchers = getHealthMatchers(webEndpointProperties.basePath)
         http
             .securityMatcher(OrRequestMatcher(*matchers))
             .authorizeHttpRequests {
@@ -64,10 +65,10 @@ class ActuatorSecurityFilterChainFactory {
                         //Allow access to this endpoint only if the details are not shown to anonymous users or users without ROLE_ACTUATOR
                         healthEndpointProperties.showDetails == Show.NEVER || (
                             healthEndpointProperties.showDetails == Show.WHEN_AUTHORIZED &&
-                            healthEndpointProperties.roles.contains(ACTUATOR)
-                        )
-                )) {
-                    it.requestMatchers(getHealthMatcher(webEndpointProperties.basePath)).permitAll()
+                                healthEndpointProperties.roles.contains(ACTUATOR)
+                            )
+                        )) {
+                    it.requestMatchers(*healthMatchers).permitAll()
                 }
                 it.requestMatchers(*matchers).hasAuthority(ACTUATOR)
             }
@@ -108,9 +109,7 @@ class ActuatorSecurityFilterChainFactory {
         antMatcher(GET, actuatorPath),
         antMatcher(GET, "${actuatorPath}/configprops"),
         antMatcher(GET, "${actuatorPath}/env"),
-        getHealthMatcher(actuatorPath),
-        antMatcher(GET, "${actuatorPath}/health/liveness"),
-        antMatcher(GET, "${actuatorPath}/health/readiness"),
+        *getHealthMatchers(actuatorPath),
         antMatcher(GET, "${actuatorPath}/mappings"),
         antMatcher(GET, "${actuatorPath}/logfile"),
         antMatcher(GET, "${actuatorPath}/loggers"),
@@ -118,8 +117,12 @@ class ActuatorSecurityFilterChainFactory {
         antMatcher(GET, "${actuatorPath}/info"),
     )
 
-    private fun getHealthMatcher(actuatorPath: String) =
-        antMatcher(GET, "${actuatorPath}/health")
+    private fun getHealthMatchers(actuatorPath: String) =
+        arrayOf(
+            antMatcher(GET, "${actuatorPath}/health"),
+            antMatcher(GET, "${actuatorPath}/health/liveness"),
+            antMatcher(GET, "${actuatorPath}/health/readiness")
+        )
 
     companion object {
         const val ACTUATOR_REALM = "Actuator realm"
