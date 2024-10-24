@@ -1,7 +1,6 @@
 package com.ritense.case.service
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.authorization.AuthorizationService
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.domain.CaseTabType
 import com.ritense.case.web.rest.dto.CaseTabDto
@@ -15,8 +14,7 @@ import java.util.UUID
 @Transactional
 class CaseDefinitionServiceIntTest @Autowired constructor(
     private val caseDefinitionService: CaseDefinitionService,
-    private val caseTabService: CaseTabService,
-    private val authorizationService: AuthorizationService
+    private val caseTabService: CaseTabService
 ) : BaseIntegrationTest() {
 
     @Test
