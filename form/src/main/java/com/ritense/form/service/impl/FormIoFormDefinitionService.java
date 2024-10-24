@@ -16,6 +16,8 @@
 
 package com.ritense.form.service.impl;
 
+import static com.ritense.logging.LoggingContextKt.withLoggingContext;
+
 import com.ritense.form.domain.FormDefinition;
 import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.domain.request.CreateFormDefinitionRequest;
@@ -24,14 +26,12 @@ import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.form.web.rest.dto.FormOption;
 import com.ritense.logging.LoggableResource;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import static com.ritense.logging.LoggingContextKt.withLoggingContext;
+import org.springframework.transaction.annotation.Transactional;
 
 public class FormIoFormDefinitionService implements FormDefinitionService {
 

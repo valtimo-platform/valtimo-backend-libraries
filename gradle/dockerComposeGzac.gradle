@@ -14,37 +14,47 @@
  * limitations under the License.
  */
 
-tasks.register("downloadValtimoDockerCompose") {
+tasks.register("downloadGzacDockerCompose") {
     doFirst {
         file(buildDir.absolutePath + "/docker").mkdirs()
-        File dockerFile = file(buildDir.absolutePath + "/docker/valtimo-docker-compose.zip")
+        File dockerFile = file(buildDir.absolutePath + "/docker/gzac-docker-compose.zip")
         new URL("https://codeload.github.com/generiekzaakafhandelcomponent/gzac-docker-compose/zip/refs/heads/main")
             .withInputStream { i -> dockerFile.withOutputStream { it << i } }
     }
 }
 
-tasks.register("downloadAndUnzipValtimoDockerCompose", Copy) {
-    dependsOn tasks.downloadValtimoDockerCompose
-    from zipTree(buildDir.absolutePath + "/docker/valtimo-docker-compose.zip")
+tasks.register("downloadAndUnzipGzacDockerCompose", Copy) {
+    dependsOn tasks.downloadGzacDockerCompose
+    from zipTree(buildDir.absolutePath + "/docker/gzac-docker-compose.zip")
     into file(buildDir.absolutePath + "/docker/extract/")
 }
 
 tasks.register("composeUpGzac") {
     group = "docker"
-    dependsOn tasks.downloadAndUnzipValtimoDockerCompose
+    dependsOn tasks.downloadAndUnzipGzacDockerCompose
     dependsOn tasks.composeUp
-    tasks.composeUp.mustRunAfter(tasks.downloadAndUnzipValtimoDockerCompose)
+    tasks.composeUp.mustRunAfter(tasks.downloadAndUnzipGzacDockerCompose)
 }
 
 composeBuild {
-    dependsOn tasks.downloadAndUnzipValtimoDockerCompose
+    dependsOn tasks.downloadAndUnzipGzacDockerCompose
 }
 
 composeUp {
-    dependsOn tasks.downloadAndUnzipValtimoDockerCompose
+    dependsOn tasks.downloadAndUnzipGzacDockerCompose
 }
 
 dockerCompose {
+    projectName = "gzac-docker-compose"
     useComposeFiles.addAll(buildDir.absolutePath + "/docker/extract/gzac-docker-compose-main/docker-compose.yaml")
     composeAdditionalArgs = ["--profile", "zgw"]
+    stopContainers = false
+    removeContainers = false
+    removeVolumes = false
+}
+
+tasks.register("bootRunWithDocker") {
+    group = "application"
+    dependsOn("composeUpGzac")
+    dependsOn("bootRun")
 }

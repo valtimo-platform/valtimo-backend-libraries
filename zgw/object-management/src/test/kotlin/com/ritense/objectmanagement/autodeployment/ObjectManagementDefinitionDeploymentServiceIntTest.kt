@@ -18,10 +18,10 @@ package com.ritense.objectmanagement.autodeployment
 
 import com.ritense.objectmanagement.BaseIntegrationTest
 import com.ritense.objectmanagement.service.ObjectManagementService
-import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 

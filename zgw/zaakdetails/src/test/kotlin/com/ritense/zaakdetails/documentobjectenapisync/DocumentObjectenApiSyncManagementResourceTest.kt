@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.objectenapi.management.ObjectManagementInfoProvider
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zaakdetails.mock.MockObjectManagement
-import jakarta.transaction.Transactional
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -37,6 +36,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Transactional

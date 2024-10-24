@@ -29,7 +29,6 @@ import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentService
-import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -37,6 +36,7 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 class CaseWidgetTabWidgetSpecificationIntTest @Autowired constructor(

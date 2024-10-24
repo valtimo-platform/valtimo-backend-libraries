@@ -31,7 +31,6 @@ import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
-import jakarta.transaction.Transactional
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
@@ -48,6 +47,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.annotation.Transactional
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID

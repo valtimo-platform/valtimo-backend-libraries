@@ -18,12 +18,13 @@ package com.ritense.logging.service
 
 import com.ritense.logging.BaseIntegrationTest
 import com.ritense.logging.domain.LoggingEvent
+import com.ritense.logging.domain.LoggingEventProperty
+import com.ritense.logging.domain.LoggingEventPropertyId
+import com.ritense.logging.repository.LoggingEventPropertySpecificationHelper.Companion.byKeyValue
 import com.ritense.logging.repository.LoggingEventSpecificationHelper.Companion.byFormattedMessage
-import jakarta.transaction.Transactional
-import mu.KLogger
-import mu.KotlinLogging
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -34,24 +35,28 @@ class LoggingEventDeletionServiceIT : BaseIntegrationTest() {
 
     @Test
     fun `should log to database using valtimo-database-appender-xml`() {
-        saveLoggingEvent("log line old", LocalDateTime.now() - Duration.ofDays(356))
-        saveLoggingEvent("log line new", LocalDateTime.now())
+        val eventOld = saveLoggingEvent("log line old", LocalDateTime.now() - Duration.ofDays(356))
+        saveLoggingEventProp(eventOld, "old key", "old value")
+        val eventNew = saveLoggingEvent("log line new")
+        saveLoggingEventProp(eventNew, "new key", "new value")
 
         loggingEventDeletionService.deleteOldLoggingEvents()
 
         assertEquals(0, loggingEventRepository.count(byFormattedMessage("log line old")))
         assertEquals(1, loggingEventRepository.count(byFormattedMessage("log line new")))
+        assertEquals(0, loggingEventPropertyRepository.count(byKeyValue("old key", "old value")))
+        assertEquals(1, loggingEventPropertyRepository.count(byKeyValue("new key", "new value")))
     }
 
-    private fun saveLoggingEvent(message: String, localDateTime: LocalDateTime) {
+    private fun saveLoggingEvent(message: String, localDateTime: LocalDateTime = LocalDateTime.now()): LoggingEvent {
         val timestamp = localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-        loggingEventRepository.save(
+        return loggingEventRepository.save(
             LoggingEvent(
                 id = Random.nextLong(),
                 timestamp = timestamp,
                 formattedMessage = message,
                 loggerName = "loggerName",
-                level = "level",
+                level = "INFO",
                 threadName = "threadName",
                 referenceFlag = 0,
                 arg0 = "arg0",
@@ -64,6 +69,16 @@ class LoggingEventDeletionServiceIT : BaseIntegrationTest() {
                 callerLine = 0,
                 properties = emptyList(),
                 exceptions = emptyList()
+            )
+        )
+    }
+
+    private fun saveLoggingEventProp(event: LoggingEvent, key: String, value: String) {
+        loggingEventPropertyRepository.save(
+            LoggingEventProperty(
+                id = LoggingEventPropertyId(event.id, key),
+                event = event,
+                value = value
             )
         )
     }

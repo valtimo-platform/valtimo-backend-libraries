@@ -18,6 +18,7 @@ package com.ritense.logging.domain
 
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
+import java.util.Objects
 
 @Embeddable
 class LoggingEventPropertyId(
@@ -27,4 +28,18 @@ class LoggingEventPropertyId(
 
     @Column(name = "mapped_key", updatable = false)
     val key: String,
-)
+) {
+    override fun hashCode() = Objects.hash(eventId, key)
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as LoggingEventPropertyId
+
+        if (eventId != other.eventId) return false
+        if (key != other.key) return false
+
+        return true
+    }
+}

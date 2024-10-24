@@ -16,19 +16,15 @@
 
 package com.ritense.zakenapi
 
-import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.exc.InvalidFormatException
-import com.ritense.authorization.AuthorizationContext
 import com.ritense.catalogiapi.CatalogiApiPlugin
-import com.ritense.document.domain.Document
 import com.ritense.document.service.DocumentService
+import com.ritense.logging.withLoggingContext
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.service.PluginService
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
 import com.ritense.processlink.domain.ActivityTypeWithEventName.USER_TASK_CREATE
@@ -66,7 +62,6 @@ import com.ritense.zgw.Page
 import com.ritense.zgw.Rsin
 import mu.KLogger
 import mu.KotlinLogging
-import mu.withLoggingContext
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate

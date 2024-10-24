@@ -139,6 +139,7 @@ class ValtimoAuthorizationService(
     }
 
     private fun logPermissions(request: AuthorizationRequest<*>, permissions: List<Permission>) {
+        val forUserLogLine = if (request.user.isNullOrEmpty()) "" else " for user '${request.user}'"
         if (!AuthorizationContext.ignoreAuthorization) {
             if (request.action.key == Action.DENY) {
                 logger.error {
@@ -148,13 +149,13 @@ class ValtimoAuthorizationService(
             } else {
                 val permissionsLogLine = permissions.joinToString(", ") { "${it.id}:${it.role.key}" }
                 val logLine =
-                    "Requesting permissions '${request.action.key}:${request.resourceType.simpleName}' for user '${request.user}' and found matching permissions: [$permissionsLogLine]"
+                    "Requesting permissions '${request.action.key}:${request.resourceType.simpleName}'$forUserLogLine and found matching permissions: [$permissionsLogLine]"
                 logger.debug { logLine }
             }
         } else {
             if (request.action.key != Action.DENY) {
                 val logLine =
-                    "Ignoring authorization request for '${request.action.key}:${request.resourceType.simpleName}' for user '${request.user}'. "
+                    "Ignoring authorization request for '${request.action.key}:${request.resourceType.simpleName}'$forUserLogLine. "
                 logger.debug { logLine }
             }
         }

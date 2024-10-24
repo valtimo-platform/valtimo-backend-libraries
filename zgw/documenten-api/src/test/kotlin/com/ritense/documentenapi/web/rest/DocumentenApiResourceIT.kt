@@ -31,7 +31,6 @@ import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
-import jakarta.transaction.Transactional
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -54,6 +53,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.client.RestClient
 import org.springframework.web.context.WebApplicationContext
 import org.springframework.web.reactive.function.client.ClientRequest

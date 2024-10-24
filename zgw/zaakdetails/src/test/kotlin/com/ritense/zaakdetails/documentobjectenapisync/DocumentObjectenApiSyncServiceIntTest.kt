@@ -23,7 +23,6 @@ import com.ritense.document.service.DocumentService
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.client.ObjectsList
 import com.ritense.zaakdetails.BaseIntegrationTest
-import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -31,6 +30,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.annotation.Transactional
 import java.net.URI
 import java.util.UUID
 import kotlin.test.assertTrue

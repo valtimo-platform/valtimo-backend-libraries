@@ -40,7 +40,6 @@ import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.authentication.NamedUser
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser
-import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
@@ -55,6 +54,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
 import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 import java.util.function.Supplier
 

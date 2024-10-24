@@ -18,10 +18,10 @@ package com.ritense.search.autodeployment
 
 import com.ritense.search.BaseIntegrationTest
 import com.ritense.search.service.SearchListColumnService
-import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.annotation.Transactional
 
 
 @Transactional

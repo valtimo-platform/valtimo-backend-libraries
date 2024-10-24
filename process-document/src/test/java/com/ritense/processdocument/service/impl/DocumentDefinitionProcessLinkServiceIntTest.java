@@ -22,10 +22,10 @@ import com.ritense.processdocument.BaseIntegrationTest;
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest;
 import com.ritense.processdocument.repository.DocumentDefinitionProcessLinkRepository;
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 class DocumentDefinitionProcessLinkServiceIntTest extends BaseIntegrationTest {

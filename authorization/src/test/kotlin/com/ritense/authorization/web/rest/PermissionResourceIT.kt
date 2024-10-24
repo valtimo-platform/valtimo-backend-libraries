@@ -31,8 +31,6 @@ import com.ritense.authorization.testimpl.TestEntity
 import com.ritense.authorization.testimpl.TestEntityActionProvider
 import com.ritense.authorization.web.request.PermissionAvailableRequest
 import com.ritense.authorization.web.request.PermissionContext
-import jakarta.transaction.Transactional
-import java.util.UUID
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -44,7 +42,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
+import java.util.UUID
 
 @Transactional
 class PermissionResourceIT: BaseIntegrationTest() {
