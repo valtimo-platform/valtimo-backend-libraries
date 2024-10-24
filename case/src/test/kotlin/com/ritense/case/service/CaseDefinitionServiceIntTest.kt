@@ -1,6 +1,7 @@
 package com.ritense.case.service
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.authorization.AuthorizationService
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.domain.CaseTabType
 import com.ritense.case.web.rest.dto.CaseTabDto
@@ -13,7 +14,8 @@ import java.util.UUID
 @Transactional
 class CaseDefinitionServiceIntTest @Autowired constructor(
     private val caseDefinitionService: CaseDefinitionService,
-    private val caseTabService: CaseTabService
+    private val caseTabService: CaseTabService,
+    private val authorizationService: AuthorizationService
 ) : BaseIntegrationTest() {
 
     @Test
@@ -32,28 +34,37 @@ class CaseDefinitionServiceIntTest @Autowired constructor(
     }
 
     @Test
-    fun `should link case-definition to CaseTab`(): Unit = runWithoutAuthorization {
-        // Given
-        val id = UUID.randomUUID()
-        val name = "definition-test"
-        val version = "1.0.0"
-        val caseDefinition = caseDefinitionService.deployCaseDefinition(
-            id = id,
-            name = name,
-            version = version
-        )
-        // When
-        val result = caseTabService.createCaseTab(
-            caseDefinitionName = name, // Reuse the name here, if this is not f
-            caseTabDto = CaseTabDto(
-                key = "case-tab-key",
-                type = CaseTabType.CUSTOM,
-                contentKey = "case-tab-content-key"
-            ),
-            caseDefinitionId = caseDefinition.id,
-        )
-        // Then
-        assertThat(result.caseDefinitionId).isEqualTo(id)
-    }
+    fun `should link case-definition to CaseTab`() {
+        runWithoutAuthorization {
+            // Given
+            val id = UUID.randomUUID()
+            val name = "definition-test"
+            val version = "1.0.0"
+            val caseDefinition = caseDefinitionService.deployCaseDefinition(
+                id = id,
+                name = name,
+                version = version
+            )
+            // When
+            val result = caseTabService.createCaseTab(
+                caseDefinitionName = name, // Reuse the name here, if this is not f
+                caseTabDto = CaseTabDto(
+                    key = "case-tab-key",
+                    type = CaseTabType.CUSTOM,
+                    contentKey = "case-tab-content-key"
+                ),
+                caseDefinitionId = caseDefinition.id,
+            )
+            // Then
+            assertThat(result.caseDefinitionId).isEqualTo(id)
+        }
 
+        // Check PBAC Mapper
+       /* authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                CaseTab::class.java,
+                deny()
+            )
+        )*/
+    }
 }

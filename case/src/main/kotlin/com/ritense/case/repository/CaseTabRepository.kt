@@ -20,5 +20,9 @@ import com.ritense.case.domain.CaseTab
 import com.ritense.case.domain.CaseTabId
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import java.util.UUID
 
-interface CaseTabRepository : JpaRepository<CaseTab, CaseTabId>, JpaSpecificationExecutor<CaseTab>
+interface CaseTabRepository : JpaRepository<CaseTab, CaseTabId>, JpaSpecificationExecutor<CaseTab> {
+
+    fun findAllByCaseDefinitionId(caseDefinitionId: UUID) : List<CaseTab>
+}
