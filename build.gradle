@@ -41,7 +41,7 @@ plugins {
 }
 
 jacoco {
-    toolVersion = "0.8.9"
+    toolVersion = "0.8.12"
 }
 
 def allTestCoverageFile = "${rootDir}/build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml"
