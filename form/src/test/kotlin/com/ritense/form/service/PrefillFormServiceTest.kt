@@ -19,6 +19,7 @@ package com.ritense.form.service
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.authorization.AuthorizationService
 import com.ritense.document.domain.DocumentDefinition
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchema
@@ -61,7 +62,7 @@ class PrefillFormServiceTest : BaseTest() {
     lateinit var formFieldDataResolver: FormFieldDataResolver
     lateinit var processDocumentAssociationService: ProcessDocumentAssociationService
     lateinit var valueResolverService: ValueResolverService
-
+    lateinit var authorizationService: AuthorizationService
     @BeforeEach
     fun setUp() {
         documentService = mock()
@@ -71,6 +72,7 @@ class PrefillFormServiceTest : BaseTest() {
         formFieldDataResolver = mock()
         processDocumentAssociationService = mock()
         valueResolverService = mock()
+        authorizationService = mock()
         prefillFormService = PrefillFormService(
             documentService,
             formDefinitionService,
@@ -79,7 +81,8 @@ class PrefillFormServiceTest : BaseTest() {
             listOf(formFieldDataResolver),
             processDocumentAssociationService,
             valueResolverService,
-            MapperSingleton.get()
+            MapperSingleton.get(),
+            authorizationService
         )
     }
 

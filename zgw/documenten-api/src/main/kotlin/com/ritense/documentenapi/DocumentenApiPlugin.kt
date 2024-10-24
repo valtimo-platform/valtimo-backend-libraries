@@ -120,7 +120,7 @@ class DocumentenApiPlugin(
             inhoudAsInputStream = contentAsInputStream,
             beschrijving = description,
             informatieobjecttype = informatieobjecttype,
-            storedDocumentUrl = storedDocumentUrl
+            storedDocumentKey = storedDocumentUrl
         )
     }
 
@@ -138,7 +138,7 @@ class DocumentenApiPlugin(
         val contentAsInputStream = storageService.getResourceContentAsInputStream(resourceId)
         val metadata = storageService.getResourceMetadata(resourceId)
 
-        val documentCreateResult = storeDocument(
+        storeDocument(
             execution = execution,
             metadata = metadata,
             titel = null,
@@ -149,7 +149,7 @@ class DocumentenApiPlugin(
             inhoudAsInputStream = contentAsInputStream,
             beschrijving = null,
             informatieobjecttype = null,
-            storedDocumentUrl = DOCUMENT_URL_PROCESS_VAR,
+            storedDocumentKey = DOCUMENT_URL_PROCESS_VAR,
         )
 
     }
@@ -270,7 +270,7 @@ class DocumentenApiPlugin(
         inhoudAsInputStream: InputStream,
         beschrijving: String?,
         informatieobjecttype: String?,
-        storedDocumentUrl: String,
+        storedDocumentKey: String,
     ): CreateDocumentResult {
         val vertrouwelijkheidaanduidingEnum = Vertrouwelijkheid.fromKey(
             vertrouwelijkheidaanduiding ?: getMetadataField(
@@ -309,7 +309,7 @@ class DocumentenApiPlugin(
             documentCreateResult.beginRegistratie
         )
         applicationEventPublisher.publishEvent(event)
-        execution.setVariable(storedDocumentUrl, documentCreateResult.url)
+        execution.setVariable(storedDocumentKey, documentCreateResult.url)
         val documentId = documentCreateResult.url.substringAfterLast('/')
         execution.setVariable(DOCUMENT_ID_PROCESS_VAR, documentId)
         try {
@@ -351,7 +351,7 @@ class DocumentenApiPlugin(
             inhoudAsInputStream = InputStream.nullInputStream(),
             beschrijving = null,
             informatieobjecttype = null,
-            storedDocumentUrl = ""
+            storedDocumentKey = DOCUMENT_URL_PROCESS_VAR
         )
 
         val bestandsdelenRequest = BestandsdelenRequest(
