@@ -21,41 +21,39 @@ import com.ritense.authorization.AuthorizationEntityMapper
 import com.ritense.authorization.AuthorizationEntityMapperResult
 import com.ritense.case.domain.CaseTab
 import com.ritense.case.repository.CaseDefinitionRepository
-import com.ritense.case.repository.CaseTabRepository
 import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Root
 import java.util.UUID
 
-class CaseDefinitionCaseTabMapper(
-    private val caseDefinitionRepository: CaseDefinitionRepository,
-    private val caseTabRepository: CaseTabRepository
-) : AuthorizationEntityMapper<CaseDefinition, CaseTab> {
+class CaseTabCaseDefinitionMapper(
+    private val caseDefinitionRepository: CaseDefinitionRepository
+) : AuthorizationEntityMapper<CaseTab, CaseDefinition> {
 
-    override fun mapRelated(entity: CaseDefinition): List<CaseTab> {
+    override fun mapRelated(entity: CaseTab): List<CaseDefinition> {
         return runWithoutAuthorization {
-            caseTabRepository.findAllByCaseDefinitionId(entity.id)
+            listOf(caseDefinitionRepository.getReferenceById(entity.caseDefinitionId!!))
         }
     }
 
     override fun mapQuery(
-        root: Root<CaseDefinition>,
+        root: Root<CaseTab>,
         query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
-    ): AuthorizationEntityMapperResult<CaseTab> {
-        val definitionRoot: Root<CaseTab> = query.from(CaseTab::class.java)
-        //query.groupBy(query.groupList + root.get<JsonSchemaDocumentDefinitionId>("documentDefinitionId"))
+    ): AuthorizationEntityMapperResult<CaseDefinition> {
+        val definitionRoot: Root<CaseDefinition> = query.from(CaseDefinition::class.java)
         return AuthorizationEntityMapperResult(
-            definitionRoot,
-            query,
-            criteriaBuilder.equal(
+            root = definitionRoot,
+            query = query,
+            joinPredicate = criteriaBuilder.equal(
                 root.get<UUID>("caseDefinitionId"),
-                definitionRoot.get<CaseTab>("caseDefinitionId")
+                definitionRoot.get<UUID>("id")
             )
         )
     }
 
     override fun supports(fromClass: Class<*>, toClass: Class<*>): Boolean {
-        return fromClass == CaseDefinition::class.java && toClass == CaseTab::class.java
+        return fromClass == CaseTab::class.java && toClass == CaseDefinition::class.java
     }
+
 }

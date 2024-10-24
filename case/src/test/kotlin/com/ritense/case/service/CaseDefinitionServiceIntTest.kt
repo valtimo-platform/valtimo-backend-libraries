@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.test.context.support.WithMockUser
 import java.util.UUID
 
 @Transactional
@@ -34,12 +35,14 @@ class CaseDefinitionServiceIntTest @Autowired constructor(
     }
 
     @Test
+    @WithMockUser(username = "john.doe@ritense.com", authorities = ["ROLE_CUSTOM_TEST"])
     fun `should link case-definition to CaseTab`() {
+        val id = UUID.randomUUID()
+        val name = "definition-test"
+        val version = "1.0.0"
+
+        // Given
         runWithoutAuthorization {
-            // Given
-            val id = UUID.randomUUID()
-            val name = "definition-test"
-            val version = "1.0.0"
             val caseDefinition = caseDefinitionService.deployCaseDefinition(
                 id = id,
                 name = name,
@@ -59,12 +62,18 @@ class CaseDefinitionServiceIntTest @Autowired constructor(
             assertThat(result.caseDefinitionId).isEqualTo(id)
         }
 
-        // Check PBAC Mapper
-       /* authorizationService.requirePermission(
-            EntityAuthorizationRequest(
-                CaseTab::class.java,
-                deny()
-            )
-        )*/
+        // Retrieve the case tab
+        val caseTab = caseTabService.getCaseTab(
+            caseDefinitionName = "definition-test",
+            key = "case-tab-key"
+        )
+        assertThat(caseTab.caseDefinitionId).isEqualTo(id)
+
+        // Retrieve the case tab via list call
+        val caseTabs = caseTabService.getCaseTabs(
+            caseDefinitionName = "definition-test"
+        )
+        assertThat(caseTabs).hasSize(1)
+
     }
 }

@@ -24,9 +24,11 @@ import com.ritense.case.deployment.CaseTaskListDeploymentService
 import com.ritense.case.domain.BooleanDisplayTypeParameter
 import com.ritense.case.domain.DateFormatDisplayTypeParameter
 import com.ritense.case.domain.EnumDisplayTypeParameter
+import com.ritense.case.domain.casedefinition.CaseTabCaseDefinitionMapper
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
+import com.ritense.case.repository.CaseDefinitionSpecificationFactory
 import com.ritense.case.repository.CaseTabDocumentDefinitionMapper
 import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.repository.CaseTabSpecificationFactory
@@ -391,4 +393,21 @@ class CaseAutoConfiguration {
     ): CaseTabDocumentDefinitionMapper {
         return CaseTabDocumentDefinitionMapper(documentDefinitionService)
     }
+
+    @Bean
+    fun caseTabCaseDefinitionMapper(
+        caseDefinitionRepository: CaseDefinitionRepository
+    ) = CaseTabCaseDefinitionMapper(
+        caseDefinitionRepository
+    )
+
+    @Bean
+    fun caseDefinitionSpecificationFactory(
+        caseDefinitionRepository: CaseDefinitionRepository,
+        queryDialectHelper: QueryDialectHelper
+    ) = CaseDefinitionSpecificationFactory(
+        caseDefinitionRepository,
+        queryDialectHelper
+    )
+
 }
