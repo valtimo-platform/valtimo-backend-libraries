@@ -19,6 +19,7 @@ package com.ritense.processdocument.resolver
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.jayway.jsonpath.InvalidPathException
 import com.jayway.jsonpath.JsonPath
@@ -143,9 +144,28 @@ class DocumentJsonValueResolverFactory(
         val jsonPatchBuilder = JsonPatchBuilder()
 
         values.forEach {
-            val path = JsonPointer.valueOf(it.key.substringAfter(":"))
+            val pathString = it.key.substringAfter(":")
             val valueNode = toValueNode(it.value)
-            jsonPatchBuilder.addJsonNodeValue(jsonNode, path, valueNode)
+            //support for the old style of adding items to an array by using /-/ in the path
+            if (pathString.contains("/-/")) {
+                val arrayPointer = JsonPointer.compile(pathString.substringBefore("/-"))
+                val array = jsonNode.at(arrayPointer)
+                if (array.isMissingNode) {
+                    jsonPatchBuilder.add(arrayPointer, JsonNodeFactory.instance.arrayNode())
+                }
+
+                //ensure object exist in array
+                val itemPointer =
+                    arrayPointer.appendIndex(array.size()) //array.size returns 0 for MissingNode
+                val newArrayObject = JsonNodeFactory.instance.objectNode()
+                //Add actual item to its position
+                val property = pathString.substringAfter("/-")
+                buildJsonPatch(newArrayObject, mapOf(property to it.value))
+                jsonPatchBuilder.add(itemPointer, newArrayObject)
+            } else {
+                val path = JsonPointer.valueOf(pathString)
+                jsonPatchBuilder.addJsonNodeValue(jsonNode, path, valueNode)
+            }
         }
 
         JsonPatchService.apply(jsonPatchBuilder.build(), jsonNode)

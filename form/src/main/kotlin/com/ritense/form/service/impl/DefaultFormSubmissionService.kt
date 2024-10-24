@@ -115,7 +115,7 @@ class DefaultFormSubmissionService(
             val processVariables = getProcessVariables(taskInstanceId)
             val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId).orElseThrow()
 
-            val categorizedKeyValues = getCategorizedSubmitValues(formDefinition, formData)
+            val categorizedKeyValues = getCategorizedSubmitValues(formDefinition, formData, document)
             val formFields = getFormFields(formDefinition, formData)
             // Merge the document results from 'legacy' mapping and value-resolvers.
             val submittedDocumentContent = JsonMerger.merge(
@@ -181,7 +181,8 @@ class DefaultFormSubmissionService(
      */
     private fun getCategorizedSubmitValues(
         formDefinition: FormIoFormDefinition,
-        formData: JsonNode
+        formData: JsonNode,
+        document: Document?
     ): CategorizedSubmitValues {
         val categorizedMap = formDefinition.inputFields
             .mapNotNull { field ->
@@ -189,16 +190,15 @@ class DefaultFormSubmissionService(
             }.groupBy { (key, _) ->
                 val prefix = key.substringBefore(ValueResolverServiceImpl.DELIMITER, missingDelimiterValue = "")
                 when (prefix) {
-                    DOC_PREFIX -> DOC_PREFIX
+                    DOC_PREFIX -> if (document == null) DOC_PREFIX else OTHER
                     PV_PREFIX -> PV_PREFIX
                     else -> OTHER
                 }
             }.mapValues { it.value.toMap() }
 
-        // Preprocess the document paths & values. The result is an ObjectNode.
         val documentValues = categorizedMap[DOC_PREFIX]
-            ?.let { valueResolverService.preProcessValuesForNewCase(it)[DOC_PREFIX] as? ObjectNode }
-            ?: objectMapper.createObjectNode()
+                ?.let { valueResolverService.preProcessValuesForNewCase(it)[DOC_PREFIX] as? ObjectNode }
+                ?: objectMapper.createObjectNode()
 
         // After pre-processing process-variables we have a key-value map where the prefix is stripped from the keys.
         val processVariables = categorizedMap[PV_PREFIX]
