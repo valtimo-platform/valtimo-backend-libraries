@@ -332,6 +332,7 @@ class DocumentenApiClient(
     }
 
     companion object {
+        const val HOST_DOCKER_INTERNAL = "host.docker.internal"
         const val ITEMS_PER_PAGE = 100
         val logger = KotlinLogging.logger {}
     }

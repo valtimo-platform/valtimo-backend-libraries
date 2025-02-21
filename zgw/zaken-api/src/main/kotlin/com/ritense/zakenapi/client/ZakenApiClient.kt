@@ -554,7 +554,7 @@ class ZakenApiClient(
     }
 
     companion object {
-        private const val HOST_DOCKER_INTERNAL = "host.docker.internal"
+        const val HOST_DOCKER_INTERNAL = "host.docker.internal"
         private const val LOCALHOST = "localhost"
     }
 }
