@@ -28,6 +28,7 @@ public class SearchWithConfigRequest {
     private AssigneeFilter assigneeFilter = AssigneeFilter.ALL;
     private List<SearchWithConfigFilter> otherFilters = List.of();
     private Set<String> statusFilter = Set.of();
+    private Set<String> tagFilter = Set.of();
 
     public SearchWithConfigRequest() {
     }
@@ -35,11 +36,13 @@ public class SearchWithConfigRequest {
     public SearchWithConfigRequest(
         SearchOperator searchOperator,
         List<SearchWithConfigFilter> otherFilters,
-        Set<String> statusFilter
+        Set<String> statusFilter,
+        Set<String> tagFilter
     ) {
         this.searchOperator = searchOperator;
         this.otherFilters = otherFilters;
         this.statusFilter = statusFilter;
+        this.tagFilter = tagFilter;
     }
 
     public SearchOperator getSearchOperator() {
@@ -72,6 +75,14 @@ public class SearchWithConfigRequest {
 
     public void setStatusFilter(Set<String> statusFilter) {
         this.statusFilter = statusFilter;
+    }
+
+    public Set<String> getTagFilter() {
+        return tagFilter;
+    }
+
+    public void setTagFilter(Set<String> tagFilter) {
+        this.tagFilter = tagFilter;
     }
 
     public static class SearchWithConfigFilter {

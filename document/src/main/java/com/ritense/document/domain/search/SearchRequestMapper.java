@@ -72,6 +72,7 @@ public class SearchRequestMapper {
         advancedSearchRequest.setAssigneeFilter(searchRequest.getAssigneeFilter());
         advancedSearchRequest.setOtherFilters(otherFilters);
         advancedSearchRequest.setStatusFilter(searchRequest.getStatusFilter());
+        advancedSearchRequest.setTagFilter(searchRequest.getTagFilter());
         return advancedSearchRequest;
     }
 

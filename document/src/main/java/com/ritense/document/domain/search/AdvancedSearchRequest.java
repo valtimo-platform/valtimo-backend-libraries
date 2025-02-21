@@ -26,8 +26,8 @@ public class AdvancedSearchRequest {
     private SearchOperator searchOperator = SearchOperator.AND;
     private AssigneeFilter assigneeFilter = AssigneeFilter.ALL;
     private List<OtherFilter> otherFilters = List.of();
-
     private Set<String> statusFilter = new HashSet<>();
+    private Set<String> tagFilter = new HashSet<>();
 
     public AdvancedSearchRequest() {
         // Jackson needs the empty constructor
@@ -83,6 +83,19 @@ public class AdvancedSearchRequest {
 
     public AdvancedSearchRequest statusFilter(String status) {
         this.statusFilter.add(status);
+        return this;
+    }
+
+    public Set<String> getTagFilter() {
+        return tagFilter;
+    }
+
+    public void setTagFilter(Set<String> tagFilter) {
+        this.tagFilter = tagFilter != null ? tagFilter : new HashSet<>();
+    }
+
+    public AdvancedSearchRequest tagFilter(String tag) {
+        this.tagFilter.add(tag);
         return this;
     }
 
