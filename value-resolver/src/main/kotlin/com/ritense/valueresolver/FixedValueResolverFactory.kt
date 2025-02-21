@@ -69,7 +69,7 @@ class FixedValueResolverFactory(
     }
 
     private fun toLongOrNullSave(value: String): Long? {
-        return if (value.length >= 2 && value[0] == '0') {
+        return if (value != value.toLongOrNull().toString()) {
             null
         } else {
             value.toLongOrNull()
@@ -77,7 +77,7 @@ class FixedValueResolverFactory(
     }
 
     private fun toDoubleOrNullSave(value: String): Double? {
-        return if (value.length >= 2 && value[0] == '0' && value[1] != '.') {
+        return if (value != value.toDoubleOrNull().toString()) {
             null
         } else {
             value.toDoubleOrNull()
