@@ -14,17 +14,6 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization.web.request
+package com.ritense.resource.authorization
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-
-data class PermissionAvailableRequest(
-    val resource: String,
-    val action: String,
-    val context: PermissionContext? = null,
-) {
-    @JsonIgnore
-    fun getResourceAsClass(): Class<*> {
-        return Class.forName(resource)
-    }
-}
+class ResourcePermission

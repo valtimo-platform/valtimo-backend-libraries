@@ -17,6 +17,7 @@
 dependencies {
     api project(':contract')
     api project(':logging')
+    implementation project(":authorization")
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
