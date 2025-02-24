@@ -165,7 +165,7 @@ mailing:
     sendRedirectedMailsTo:
 
 valtimo:
-                    app:
+    app:
         scheme: http
     database: postgres
     mandrill:
