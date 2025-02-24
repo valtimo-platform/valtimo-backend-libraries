@@ -281,8 +281,11 @@ class DocumentenApiClient(
         patchDocumentRequest: PatchDocumentRequest
     ): DocumentInformatieObject {
 
-        check(getInformatieObject(authentication, documentUrl).status != DocumentStatusType.DEFINITIEF) {
-            "InformatieObject ${documentUrl.path.substringAfterLast("/")} with status 'definitief' cannot be updated!"
+        check(
+            patchDocumentRequest.lock != null
+                || getInformatieObject(authentication, documentUrl).status != DocumentStatusType.DEFINITIEF
+        ) {
+            "InformatieObject ${documentUrl.path.substringAfterLast("/")} with status 'definitief' cannot be updated unless locked"
         }
 
         val result = restClient(authentication)
