@@ -29,13 +29,16 @@ import com.ritense.note.service.NoteActionProvider.Companion.DELETE
 import com.ritense.note.service.NoteActionProvider.Companion.MODIFY
 import com.ritense.note.service.NoteActionProvider.Companion.VIEW_LIST
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
+import com.ritense.valtimo.contract.authentication.ManageableUser
 import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.contract.authentication.model.ValtimoUser
 import com.ritense.valtimo.contract.mail.MailSender
 import jakarta.inject.Inject
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
@@ -104,6 +107,15 @@ abstract class BaseIntegrationTest {
             ),
         )
         permissionRepository.saveAllAndFlush(permissions)
+
+        val user = ValtimoUser().apply {
+            id = UUID.randomUUID().toString()
+            username = "test"
+            email = "test@example.org"
+            firstName = "Test"
+            lastName = "User"
+        }
+        whenever(userManagementService.currentUser).thenReturn(user)
     }
 
     @AfterEach
