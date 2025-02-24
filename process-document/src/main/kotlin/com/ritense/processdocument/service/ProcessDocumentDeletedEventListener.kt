@@ -41,6 +41,7 @@ class ProcessDocumentDeletedEventListener(
             runWithoutAuthorization {
                 runtimeService.createProcessInstanceQuery()
                     .processInstanceBusinessKey(event.documentId.toString())
+                    .rootProcessInstances()
                     .list()
                     .forEach {
                         runtimeService.deleteProcessInstance(it.processInstanceId, "Document deleted", false, true)
