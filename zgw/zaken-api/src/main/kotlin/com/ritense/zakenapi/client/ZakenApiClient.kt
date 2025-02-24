@@ -17,7 +17,11 @@
 package com.ritense.zakenapi.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.outbox.OutboxService
+import com.ritense.resource.authorization.ResourcePermission
+import com.ritense.resource.authorization.ResourcePermissionActionProvider
 import com.ritense.zakenapi.ZakenApiAuthentication
 import com.ritense.zakenapi.domain.CreateZaakRequest
 import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
@@ -68,13 +72,25 @@ import java.net.URI
 class ZakenApiClient(
     private val restClientBuilder: RestClient.Builder,
     private val outboxService: OutboxService,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val authorizationService: AuthorizationService,
+    private val authorizationEnabled: Boolean = false,
 ) {
     fun linkDocument(
         authentication: ZakenApiAuthentication,
         baseUrl: URI,
         request: LinkDocumentRequest
     ): LinkDocumentResult {
+        if (authorizationEnabled) {
+            authorizationService.requirePermission(
+                EntityAuthorizationRequest(
+                    ResourcePermission::class.java,
+                    ResourcePermissionActionProvider.CREATE,
+                    ResourcePermission()
+                )
+            )
+        }
+
         val result = buildRestClient(authentication)
             .post()
             .uri {
@@ -143,6 +159,16 @@ class ZakenApiClient(
         zaakUrl: URI? = null,
         informatieobjectUrl: URI? = null,
     ): List<ZaakInformatieObject> {
+        if (authorizationEnabled && !authorizationService.hasPermission(
+            EntityAuthorizationRequest(
+                ResourcePermission::class.java,
+                ResourcePermissionActionProvider.VIEW_LIST,
+                ResourcePermission()
+            )
+        )) {
+            return emptyList()
+        }
+
         val result = buildRestClient(authentication)
             .get()
             .uri {
@@ -461,6 +487,16 @@ class ZakenApiClient(
         require(zaakInformatieobjectUrl.toString().startsWith(baseUrl.toString())) {
             "zaakInformatieobjectUrl '$zaakInformatieobjectUrl' does not start with baseUrl '$baseUrl'"
         }
+        if (authorizationEnabled) {
+            authorizationService.requirePermission(
+                EntityAuthorizationRequest(
+                    ResourcePermission::class.java,
+                    ResourcePermissionActionProvider.DELETE,
+                    ResourcePermission()
+                )
+            )
+        }
+
         buildRestClient(authentication)
             .delete()
             .uri(zaakInformatieobjectUrl)

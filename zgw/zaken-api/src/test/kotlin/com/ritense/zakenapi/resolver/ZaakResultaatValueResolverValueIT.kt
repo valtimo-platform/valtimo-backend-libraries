@@ -172,10 +172,4 @@ class ZaakResultaatValueResolverValueIT @Autowired constructor(
         return mockResponse(body)
     }
 
-    private fun mockResponse(body: String): MockResponse {
-        return MockResponse()
-            .addHeader("Content-Type", "application/json")
-            .setBody(body)
-    }
-
 }
