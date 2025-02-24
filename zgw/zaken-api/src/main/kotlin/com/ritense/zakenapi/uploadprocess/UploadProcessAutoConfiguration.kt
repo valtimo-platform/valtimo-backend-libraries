@@ -16,10 +16,12 @@
 
 package com.ritense.zakenapi.uploadprocess
 
+import com.ritense.authorization.AuthorizationService
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.TemporaryResourceStorageService
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -43,10 +45,15 @@ class UploadProcessAutoConfiguration {
     fun resourceUploadedEventListener(
         resourceService: TemporaryResourceStorageService,
         uploadProcessService: UploadProcessService,
+        authorizationService: AuthorizationService,
+        @Value("\${valtimo.authorization.zgwDocuments.enabled:false}")
+        authorizationEnabled: Boolean,
     ): ResourceUploadedToDocumentEventListener {
         return ResourceUploadedToDocumentEventListener(
             resourceService,
             uploadProcessService,
+            authorizationService,
+            authorizationEnabled,
         )
     }
 

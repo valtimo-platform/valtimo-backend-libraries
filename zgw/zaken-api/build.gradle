@@ -35,6 +35,7 @@ dependencies {
     implementation project(":document")
     implementation project(":plugin")
     implementation project(":process-document")
+    implementation project(":resource")
     implementation project(":resource:temporary-resource-storage")
     implementation project(":value-resolver")
     implementation project(":zgw")
@@ -55,6 +56,7 @@ dependencies {
     testImplementation project(":resource")
 
     testImplementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
