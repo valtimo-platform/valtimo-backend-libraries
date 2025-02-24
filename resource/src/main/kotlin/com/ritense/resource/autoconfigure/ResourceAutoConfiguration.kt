@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization.web.request
+package com.ritense.resource.autoconfigure
 
-import com.fasterxml.jackson.annotation.JsonIgnore
+import com.ritense.resource.authorization.ResourceSpecificationFactory
+import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.context.annotation.Bean
 
-data class PermissionAvailableRequest(
-    val resource: String,
-    val action: String,
-    val context: PermissionContext? = null,
-) {
-    @JsonIgnore
-    fun getResourceAsClass(): Class<*> {
-        return Class.forName(resource)
+@AutoConfiguration
+class ResourceAutoConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean(ResourceSpecificationFactory::class)
+    fun resourceSpecificationFactory(
+    ): ResourceSpecificationFactory {
+        return ResourceSpecificationFactory()
     }
+
 }
