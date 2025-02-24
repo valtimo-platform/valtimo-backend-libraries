@@ -277,7 +277,7 @@ internal class DocumentenApiPluginIT @Autowired constructor(
                         -> handleDocumentRequest()
 
                     "/enkelvoudiginformatieobjecten/$DOCUMENT_ID"
-                        -> handleDocumentRequest("+02:00")
+                        -> handleDocumentRequest()
 
                     "/enkelvoudiginformatieobjecten/$DOCUMENT_ID/download"
                         -> handleDocumentDownloadRequest()
