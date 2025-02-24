@@ -18,6 +18,7 @@ package com.ritense.documentenapi.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.authorization.AuthorizationService
 import com.ritense.documentenapi.DocumentenApiAuthentication
 import com.ritense.documentenapi.event.DocumentDeleted
 import com.ritense.documentenapi.event.DocumentInformatieObjectDownloaded
@@ -43,12 +44,13 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
-import org.mockito.Mockito
+import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -79,12 +81,16 @@ DocumentenApiClientTest {
 
     lateinit var outboxService: OutboxService
 
+    lateinit var authorizationService: AuthorizationService
+
     @BeforeAll
     fun setUp() {
         mockDocumentenApi = MockWebServer()
         mockDocumentenApi.start()
         objectMapper = MapperSingleton.get()
-        outboxService = Mockito.mock(OutboxService::class.java)
+        outboxService = mock()
+        authorizationService = mock()
+        whenever(authorizationService.hasPermission<Any>(any())).thenReturn(true)
     }
 
     @BeforeEach
@@ -100,7 +106,7 @@ DocumentenApiClientTest {
     @Test
     fun `should send request and parse response`() {
         val restClientBuilder = RestClient.builder()
-        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock())
+        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock(), authorizationService)
 
         val responseBody = """
             {
@@ -168,7 +174,7 @@ DocumentenApiClientTest {
     @Test
     fun `should make put call for bestanddelen`() {
         val restClientBuilder = RestClient.builder()
-        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock())
+        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock(), authorizationService)
 
         val request = BestandsdelenRequest(
             inhoud = InputStream.nullInputStream(),
@@ -224,7 +230,7 @@ DocumentenApiClientTest {
     @Test
     fun `should send outbox message on saving document`() {
         val restClientBuilder = RestClient.builder()
-        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock())
+        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock(), authorizationService)
         val documentURL = "http://example.com"
 
         val responseBody = """
@@ -301,7 +307,7 @@ DocumentenApiClientTest {
     @Test
     fun `should not send outbox message on error when saving document`() {
         val restClientBuilder = RestClient.builder()
-        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock())
+        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock(), authorizationService)
 
         mockDocumentenApi.enqueue(mockResponse("").setResponseCode(400))
 
@@ -335,7 +341,7 @@ DocumentenApiClientTest {
     @Test
     fun `should send get document request and parse response`() {
         val restClientBuilder = RestClient.builder()
-        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock())
+        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock(), authorizationService)
 
         val responseBody = """
             {
@@ -408,7 +414,7 @@ DocumentenApiClientTest {
     @Test
     fun `should send outbox message on retrieving document informatieobject`() {
         val restClientBuilder = RestClient.builder()
-        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock())
+        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock(), authorizationService)
         val documentInformatieObjectUrl = "http://example.com/informatie-object/123"
         val responseBody = """
             {
@@ -470,7 +476,7 @@ DocumentenApiClientTest {
     @Test
     fun `should not send outbox message on error retrieving document informatieobject`() {
         val restClientBuilder = RestClient.builder()
-        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock())
+        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock(), authorizationService)
 
         mockDocumentenApi.enqueue(mockResponse("").setResponseCode(400))
 
@@ -491,7 +497,7 @@ DocumentenApiClientTest {
     @Test
     fun `should send outbox message on download document informatieobject content`() {
         val restClientBuilder = RestClient.builder()
-        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock())
+        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock(), authorizationService)
         val documentInformatieObjectId = "123"
         val buffer = Buffer()
 
@@ -523,7 +529,7 @@ DocumentenApiClientTest {
     @Test
     fun `should not send outbox message on error download document informatieobject content`() {
         val restClientBuilder = RestClient.builder()
-        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock())
+        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock(), authorizationService)
         val documentInformatieObjectId = "123"
 
         mockDocumentenApi.enqueue(mockResponse("").setResponseCode(400))
@@ -546,7 +552,7 @@ DocumentenApiClientTest {
     @Test
     fun `should send delete document request and send event`() {
         val restClientBuilder = RestClient.builder()
-        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock())
+        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock(), authorizationService)
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
         mockDocumentenApi.enqueue(MockResponse().setResponseCode(204))
@@ -574,7 +580,7 @@ DocumentenApiClientTest {
     @Test
     fun `should not send outbox message on error deleting document informatieobject`() {
         val restClientBuilder = RestClient.builder()
-        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock())
+        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock(), authorizationService)
 
         mockDocumentenApi.enqueue(mockResponse("{}").setResponseCode(400))
 
@@ -595,7 +601,7 @@ DocumentenApiClientTest {
     @Test
     fun `should send patch document object request and send event`() {
         val restClientBuilder = RestClient.builder()
-        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock())
+        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock(), authorizationService)
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
         val documentInformatieObjectUrl = mockDocumentenApi.url("/informatie-object/123").toUri()
@@ -697,7 +703,7 @@ DocumentenApiClientTest {
     @Test
     fun `should not send patch document when document status is definitief`() {
         val restClientBuilder = RestClient.builder()
-        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock())
+        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock(), authorizationService)
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
         val documentInformatieObjectUrl = mockDocumentenApi.url("/informatie-object/123").toUri()
@@ -778,7 +784,7 @@ DocumentenApiClientTest {
     @Test
     fun `should not send outbox message on error updating document informatieobject`() {
         val restClientBuilder = RestClient.builder()
-        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock())
+        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock(), authorizationService)
 
         mockDocumentenApi.enqueue(mockResponse("{}").setResponseCode(400))
 
@@ -1067,7 +1073,7 @@ DocumentenApiClientTest {
         expectException: Boolean = false
     ): DocumentSearchResult {
         val restClientBuilder = RestClient.builder()
-        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock())
+        val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock(), authorizationService)
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
         // prevent queuing of response when exception is expected to avoid other tests breaking with old data in the queue
