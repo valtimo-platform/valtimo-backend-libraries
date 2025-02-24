@@ -219,7 +219,7 @@ class ProcessLinkResource(
             val correctFileExtension = bpmn.originalFilename?.endsWith(".bpmn") == true
 
             if (!correctFileExtension) {
-                return ResponseEntity.badRequest().body("Invalid file name. Must have '.bpmn' or '.dmn' suffix.")
+                return ResponseEntity.badRequest().body("Invalid file name. Must have '.bpmn' suffix.")
             }
 
             try {

@@ -358,6 +358,8 @@ public class CamundaProcessService {
         } else if (fileName.endsWith(".dmn")) {
             DmnModelInstance dmnModel = Dmn.readModelFromStream(fileInput);
 
+            setDecisionsVersionTag(dmnModel, caseDefinitionId);
+
             return repositoryService.createDeployment().addModelInstance(fileName, dmnModel).deployWithResult();
         } else {
             String[] splitFileName = fileName.split("\\.");
