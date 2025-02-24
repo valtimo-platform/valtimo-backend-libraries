@@ -32,6 +32,9 @@ valtimo:
         secret: "abcdefghijklmnop"
     plugin:
         encryption-secret: "abcdefghijklmnop"
+    authorization:
+        zgwDocuments:
+            enabled: true
 
 camunda:
     bpm:
