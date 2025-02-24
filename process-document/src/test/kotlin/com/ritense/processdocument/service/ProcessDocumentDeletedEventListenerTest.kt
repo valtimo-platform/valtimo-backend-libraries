@@ -68,7 +68,7 @@ class ProcessDocumentDeletedEventListenerTest {
         val pdiId = mock<ProcessDocumentInstanceId>()
         whenever(processDocumentInstance.processDocumentInstanceId()).thenReturn(pdiId)
 
-        whenever(runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(documentId.toString()).list())
+        whenever(runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(documentId.toString()).rootProcessInstances().list())
             .thenReturn(listOf(processInstance1, processInstance2))
 
         processDocumentDeletedEventListener!!.handle(DocumentDeletedEvent(documentId))
@@ -95,7 +95,7 @@ class ProcessDocumentDeletedEventListenerTest {
 
         whenever(functionResult.isError).thenReturn(true)
 
-        whenever(runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(documentId.toString()).list())
+        whenever(runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(documentId.toString()).rootProcessInstances().list())
             .thenReturn(listOf(processInstance1, processInstance2))
 
         processDocumentDeletedEventListener!!.handle(DocumentDeletedEvent(documentId))
