@@ -49,6 +49,7 @@ abstract class FormField(
                 return null
             }
             return when {
+                DataGridField.isDataGridFieldComponent(objectNode) -> DataGridField(value, jsonPointer, applicationEventPublisher, objectNode)
                 UploadField.isUploadComponent(objectNode) -> UploadField(value, jsonPointer, applicationEventPublisher)
                 DataField.isDataFieldComponent(objectNode) -> DataField(value, jsonPointer, applicationEventPublisher)
                 else -> null
