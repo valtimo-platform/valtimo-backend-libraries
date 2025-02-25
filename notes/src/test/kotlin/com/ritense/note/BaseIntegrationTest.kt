@@ -107,15 +107,6 @@ abstract class BaseIntegrationTest {
             ),
         )
         permissionRepository.saveAllAndFlush(permissions)
-
-        val user = ValtimoUser().apply {
-            id = UUID.randomUUID().toString()
-            username = "test"
-            email = "test@example.org"
-            firstName = "Test"
-            lastName = "User"
-        }
-        whenever(userManagementService.currentUser).thenReturn(user)
     }
 
     @AfterEach
