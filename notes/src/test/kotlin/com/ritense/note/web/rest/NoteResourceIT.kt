@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.jayway.jsonpath.JsonPath
 import com.ritense.audit.service.AuditService
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.UserManagementServiceHolder
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentDefinitionService
@@ -32,6 +33,7 @@ import com.ritense.note.web.rest.dto.NoteUpdateRequestDto
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.shouldBe
+import mu.KotlinLogging
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -89,8 +91,12 @@ internal class NoteResourceIT : BaseIntegrationTest() {
                 NewDocumentRequest(PROFILE_DOCUMENT_DEFINITION_NAME, objectMapper.createObjectNode())
             ).resultingDocument().get().id()!!.id
         }
-        whenever(userManagementService.currentUser)
-            .thenReturn(ValtimoUserBuilder().id("anId").firstName("aFirstName").lastName("aLastName").build())
+
+        val user = ValtimoUserBuilder().id("anId").firstName("aFirstName").lastName("aLastName").build()
+
+        // for some reason the mock object is not the one used by the permission check when this test runs after the service integration test
+        whenever(UserManagementServiceHolder.currentInstance.currentUser).thenReturn(user)
+        whenever(userManagementService.currentUser).thenReturn(user)
     }
 
     @Test
