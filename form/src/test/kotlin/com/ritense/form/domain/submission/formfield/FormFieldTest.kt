@@ -77,12 +77,12 @@ internal class FormFieldTest : BaseTest() {
         assertEquals("UploadField", dataGrid.childFormFields[1].javaClass.simpleName)
         assertTrue(dataGrid.childFormFields[1].value.toString().contains(""""filename":"img2.jpg""""))
         assertEquals("/documentenApiFile2", dataGrid.childFormFields[1].pointer.toString())
-        assertEquals("UploadField", dataGrid.childFormFields[0].javaClass.simpleName)
+        assertEquals("UploadField", dataGrid.childFormFields[2].javaClass.simpleName)
         assertTrue(dataGrid.childFormFields[2].value.toString().contains(""""filename":"img3.jpg""""))
-        assertEquals("/documentenApiFile", dataGrid.childFormFields[0].pointer.toString())
-        assertEquals("UploadField", dataGrid.childFormFields[1].javaClass.simpleName)
+        assertEquals("/documentenApiFile", dataGrid.childFormFields[2].pointer.toString())
+        assertEquals("UploadField", dataGrid.childFormFields[3].javaClass.simpleName)
         assertTrue(dataGrid.childFormFields[3].value.toString().contains(""""filename":"img4.jpg""""))
-        assertEquals("/documentenApiFile2", dataGrid.childFormFields[1].pointer.toString())
+        assertEquals("/documentenApiFile2", dataGrid.childFormFields[3].pointer.toString())
     }
 
 }
