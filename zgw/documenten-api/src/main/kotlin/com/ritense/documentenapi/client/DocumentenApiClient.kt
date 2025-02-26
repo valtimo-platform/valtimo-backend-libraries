@@ -59,14 +59,14 @@ class DocumentenApiClient(
     private val objectMapper: ObjectMapper,
     private val platformTransactionManager: PlatformTransactionManager,
     private val authorizationService: AuthorizationService,
-    private val authrizationEnabled: Boolean = false,
+    private val authorizationEnabled: Boolean = false,
 ) {
     fun storeDocument(
         authentication: DocumentenApiAuthentication,
         baseUrl: URI,
         request: CreateDocumentRequest
     ): CreateDocumentResult {
-        if (authrizationEnabled) {
+        if (authorizationEnabled) {
             authorizationService.requirePermission(
                 EntityAuthorizationRequest(
                     ResourcePermission::class.java,
@@ -145,7 +145,7 @@ class DocumentenApiClient(
             .retrieve()
             .body<DocumentInformatieObject>()!!
 
-        if (authrizationEnabled) {
+        if (authorizationEnabled) {
             authorizationService.requirePermission(
                 EntityAuthorizationRequest(
                     ResourcePermission::class.java,
@@ -176,7 +176,7 @@ class DocumentenApiClient(
         require(ITEMS_PER_PAGE % pageable.pageSize == 0) { "Page size is not supported" }
         requireNotNull(documentSearchRequest.zaakUrl) { "Zaak URL is required" }
 
-        if (authrizationEnabled && !authorizationService.hasPermission(
+        if (authorizationEnabled && !authorizationService.hasPermission(
             EntityAuthorizationRequest(
                 ResourcePermission::class.java,
                 ResourcePermissionActionProvider.VIEW_LIST,
@@ -254,7 +254,7 @@ class DocumentenApiClient(
         authentication: DocumentenApiAuthentication,
         objectUrl: URI
     ): InputStream {
-        if (authrizationEnabled) {
+        if (authorizationEnabled) {
             authorizationService.requirePermission(
                 EntityAuthorizationRequest(
                     ResourcePermission::class.java,
@@ -312,7 +312,7 @@ class DocumentenApiClient(
     }
 
     fun deleteInformatieObject(authentication: DocumentenApiAuthentication, url: URI) {
-        if (authrizationEnabled) {
+        if (authorizationEnabled) {
             authorizationService.requirePermission(
                 EntityAuthorizationRequest(
                     ResourcePermission::class.java,
@@ -337,7 +337,7 @@ class DocumentenApiClient(
         patchDocumentRequest: PatchDocumentRequest
     ): DocumentInformatieObject {
 
-        if (authrizationEnabled) {
+        if (authorizationEnabled) {
             authorizationService.requirePermission(
                 EntityAuthorizationRequest(
                     ResourcePermission::class.java,
