@@ -16,12 +16,16 @@
 
 package com.ritense.document.autoconfiguration
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
+import com.ritense.document.deployment.CaseTagDeployer
 import com.ritense.document.repository.CaseTagRepository
 import com.ritense.document.security.CaseTagHttpSecurityConfigurer
 import com.ritense.document.service.CaseTagService
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.web.rest.CaseTagResource
+import com.ritense.valtimo.changelog.service.ChangelogService
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -54,6 +58,24 @@ class CaseTagAutoConfiguration {
         authorizationService: AuthorizationService,
     ): CaseTagService {
         return CaseTagService(repository, documentDefinitionService, authorizationService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CaseTagDeployer::class)
+    fun caseTagDeployer(
+        repository: CaseTagRepository,
+        service: CaseTagService,
+        objectMapper: ObjectMapper,
+        changelogService: ChangelogService,
+        @Value("\${valtimo.changelog.case-tag.clear-tables:false}") clearTables: Boolean
+    ): CaseTagDeployer {
+        return CaseTagDeployer(
+            repository,
+            service,
+            objectMapper,
+            changelogService,
+            clearTables
+        )
     }
 
 }
