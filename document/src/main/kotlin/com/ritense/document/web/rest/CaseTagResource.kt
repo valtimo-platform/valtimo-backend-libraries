@@ -48,7 +48,7 @@ class CaseTagResource(
         @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String
     ): ResponseEntity<List<CaseTagResponseDto>> {
         val caseTags = caseTagService.getCaseTags(caseDefinitionName)
-        return ResponseEntity.ok(caseTags.map { CaseTagResponseDto(it) })
+        return ResponseEntity.ok(caseTags.map { CaseTagResponseDto(it) }.sortedBy { it.order })
     }
 
     @RunWithoutAuthorization
@@ -57,7 +57,7 @@ class CaseTagResource(
         @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String
     ): ResponseEntity<List<CaseTagResponseDto>> {
         val caseTags = caseTagService.getCaseTags(caseDefinitionName)
-        return ResponseEntity.ok(caseTags.map { CaseTagResponseDto(it) })
+        return ResponseEntity.ok(caseTags.map { CaseTagResponseDto(it) }.sortedBy { it.order })
     }
 
     @RunWithoutAuthorization
@@ -86,7 +86,7 @@ class CaseTagResource(
         @Valid @RequestBody requestDtos: List<CaseTagUpdateRequestDto>
     ): ResponseEntity<List<CaseTagResponseDto>> {
         val caseTags = caseTagService.update(caseDefinitionName, requestDtos)
-        return ResponseEntity.ok(caseTags.map { CaseTagResponseDto(it) })
+        return ResponseEntity.ok(caseTags.map { CaseTagResponseDto(it) }.sortedBy { it.order })
     }
 
     @RunWithoutAuthorization
