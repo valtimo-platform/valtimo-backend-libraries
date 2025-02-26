@@ -106,7 +106,10 @@ class DocumentenApiPlugin(
         @PluginActionProperty status: DocumentStatusType = DocumentStatusType.DEFINITIEF
     ) {
         val resourceId = getResourceId(execution, localDocumentLocation)
-        if (enkelvoudinginformatieobjectExists(resourceId)) {
+        val documentUrl = storageService.getMetadataValueOrNull(resourceId, StorageMetadataKeys.DOCUMENT_URL)
+        if (documentUrl?.startsWith(url.toString()) == true) {
+            logger.warn { "Skipping document upload. Document already exists with url '$documentUrl'." }
+            execution.setVariable(localDocumentLocation, documentUrl)
             return
         }
         val contentAsInputStream = storageService.getResourceContentAsInputStream(resourceId)
@@ -138,7 +141,10 @@ class DocumentenApiPlugin(
         execution: DelegateExecution
     ) {
         val resourceId = getResourceId(execution)
-        if (enkelvoudinginformatieobjectExists(resourceId)) {
+        val documentUrl = storageService.getMetadataValueOrNull(resourceId, StorageMetadataKeys.DOCUMENT_URL)
+        if (documentUrl?.startsWith(url.toString()) == true) {
+            logger.warn { "Skipping document upload. Document already exists with url '$documentUrl'." }
+            execution.setVariable(DOCUMENT_URL_PROCESS_VAR, documentUrl)
             return
         }
         val contentAsInputStream = storageService.getResourceContentAsInputStream(resourceId)
@@ -164,7 +170,10 @@ class DocumentenApiPlugin(
         execution: DelegateExecution
     ) {
         val resourceId = getResourceId(execution)
-        if (enkelvoudinginformatieobjectExists(resourceId)) {
+        val documentUrl = storageService.getMetadataValueOrNull(resourceId, StorageMetadataKeys.DOCUMENT_URL)
+        if (documentUrl?.startsWith(url.toString()) == true) {
+            logger.warn { "Skipping document upload. Document already exists with url '$documentUrl'." }
+            execution.setVariable(DOCUMENT_URL_PROCESS_VAR, documentUrl)
             return
         }
         val contentAsInputStream = storageService.getResourceContentAsInputStream(resourceId)
@@ -268,14 +277,6 @@ class DocumentenApiPlugin(
     ): String {
         return execution.getVariable(localDocumentLocation) as String?
             ?: throw IllegalStateException("Failed to store document. No process variable '$localDocumentLocation' found.")
-    }
-
-    private fun enkelvoudinginformatieobjectExists(resourceId: String): Boolean {
-        val existingEnkelvoudiginformatieobjectUrl = storageService.getMetadataValueOrNull(
-            resourceId,
-            StorageMetadataKeys.DOCUMENT_URL
-        )
-        return existingEnkelvoudiginformatieobjectUrl?.startsWith(url.toString()) == true
     }
 
     private fun storeDocument(

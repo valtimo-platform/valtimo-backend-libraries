@@ -29,7 +29,6 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
 import com.ritense.processlink.domain.ActivityTypeWithEventName.USER_TASK_CREATE
 import com.ritense.resource.service.TemporaryResourceStorageService
-import com.ritense.temporaryresource.domain.StorageMetadataKeys.ZAAK_LINK_URL
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
@@ -117,6 +116,11 @@ class ZakenApiPlugin(
             val documentId = UUID.fromString(execution.businessKey)
             val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
+            if (getZaakInformatieObject(zaakUrl, URI(documentUrl)) != null) {
+                logger.warn { "Skipping document-zaak-link creation. Link already exists between zaak '$zaakUrl' and document: '$documentUrl'." }
+                return
+            }
+
             val request = LinkDocumentRequest(
                 documentUrl,
                 zaakUrl.toString(),
@@ -140,17 +144,17 @@ class ZakenApiPlugin(
         execution: DelegateExecution
     ) {
         logger.debug { "Starting to link uploaded document to zaak." }
+        val documentUrl = execution.getVariable(DOCUMENT_URL_PROCESS_VAR) as String
         val resourceId = execution.getVariable(RESOURCE_ID_PROCESS_VAR) as String
-        val existingLinkUrl = storageService.getMetadataValueOrNull(resourceId, ZAAK_LINK_URL)
-        if (existingLinkUrl?.startsWith(url.toString()) == true) {
-            logger.warn { "Skipping document-zaak-link creation. Link already exists with linkUrl '$existingLinkUrl'." }
-            return
-        }
         val metadata = storageService.getResourceMetadata(resourceId)
 
-        val documentUrl = execution.getVariable(DOCUMENT_URL_PROCESS_VAR) as String
         val documentId = UUID.fromString(execution.businessKey)
         val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+
+        if (getZaakInformatieObject(zaakUrl, URI(documentUrl)) != null) {
+            logger.warn { "Skipping document-zaak-link creation. Link already exists between zaak '$zaakUrl' and document: '$documentUrl'." }
+            return
+        }
 
         val request = LinkDocumentRequest(
             documentUrl,
@@ -158,8 +162,7 @@ class ZakenApiPlugin(
             metadata["title"] as String?,
             metadata["description"] as String?,
         )
-        val result = client.linkDocument(authenticationPluginConfiguration, url, request)
-        storageService.saveMetadataValue(resourceId, ZAAK_LINK_URL, result.url)
+        client.linkDocument(authenticationPluginConfiguration, url, request)
         logger.info { "Linked uploaded document with URL '$documentUrl' to zaak with URL '$zaakUrl'" }
     }
 
@@ -630,6 +633,17 @@ class ZakenApiPlugin(
             baseUrl = url,
             informatieobjectUrl = informatieobjectUrl
         )
+    }
+
+    fun getZaakInformatieObject(zaakUrl: URI, informatieobjectUrl: URI): ZaakInformatieObject? {
+        logger.debug { "Fetching zaak informatie object by '$zaakUrl' and '$informatieobjectUrl'" }
+        val results = client.getZaakInformatieObjecten(
+            authentication = authenticationPluginConfiguration,
+            baseUrl = url,
+            zaakUrl = zaakUrl,
+            informatieobjectUrl = informatieobjectUrl,
+        )
+        return results.singleOrNull()
     }
 
     fun deleteZaakInformatieobject(zaakInformatieobjectUrl: URI) {
