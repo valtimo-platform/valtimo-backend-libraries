@@ -31,6 +31,7 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.temporaryresource.domain.StorageMetadataKeys
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -57,6 +58,7 @@ import java.util.Optional
 import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @Transactional
 internal class DocumentenApiPluginIT @Autowired constructor(
@@ -165,6 +167,10 @@ internal class DocumentenApiPluginIT @Autowired constructor(
         assertEquals(false, parsedOutput["indicatieGebruiksrecht"])
 
         assertEquals(server.url("/").toString(), resourceId)
+        assertTrue(
+            temporaryResourceStorageService.getMetadataValue(documentId, StorageMetadataKeys.DOCUMENT_URL.key)
+                .contains(server.url("/").toString())
+        )
     }
 
     @Test
@@ -197,6 +203,10 @@ internal class DocumentenApiPluginIT @Autowired constructor(
 
         val parsedOutput = objectMapper.readValue(server.takeRequest().body.readUtf8(), Map::class.java)
         assertEquals("my-document.pdf", parsedOutput["bestandsnaam"])
+        assertTrue(
+            temporaryResourceStorageService.getMetadataValue(documentId, StorageMetadataKeys.DOCUMENT_URL.key)
+                .contains(server.url("/").toString())
+        )
     }
 
     @Test

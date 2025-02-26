@@ -29,6 +29,7 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
 import com.ritense.processlink.domain.ActivityTypeWithEventName.USER_TASK_CREATE
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.temporaryresource.domain.StorageMetadataKeys.ZAAK_LINK_URL
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
@@ -139,10 +140,15 @@ class ZakenApiPlugin(
         execution: DelegateExecution
     ) {
         logger.debug { "Starting to link uploaded document to zaak." }
-        val documentUrl = execution.getVariable(DOCUMENT_URL_PROCESS_VAR) as String
         val resourceId = execution.getVariable(RESOURCE_ID_PROCESS_VAR) as String
+        val existingLinkUrl = storageService.getMetadataValueOrNull(resourceId, ZAAK_LINK_URL)
+        if (existingLinkUrl?.startsWith(url.toString()) == true) {
+            logger.warn { "Skipping document-zaak-link creation. Link already exists with linkUrl '$existingLinkUrl'." }
+            return
+        }
         val metadata = storageService.getResourceMetadata(resourceId)
 
+        val documentUrl = execution.getVariable(DOCUMENT_URL_PROCESS_VAR) as String
         val documentId = UUID.fromString(execution.businessKey)
         val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
@@ -152,7 +158,8 @@ class ZakenApiPlugin(
             metadata["title"] as String?,
             metadata["description"] as String?,
         )
-        client.linkDocument(authenticationPluginConfiguration, url, request)
+        val result = client.linkDocument(authenticationPluginConfiguration, url, request)
+        storageService.saveMetadataValue(resourceId, ZAAK_LINK_URL, result.url)
         logger.info { "Linked uploaded document with URL '$documentUrl' to zaak with URL '$zaakUrl'" }
     }
 
@@ -588,7 +595,7 @@ class ZakenApiPlugin(
         objectUrl: URI,
         objectTypeOverige: String,
         documentId: UUID
-        ) {
+    ) {
         withLoggingContext(
             LoggingConstants.ZAKEN_API.ZAAK to zaakUrl.toString(),
             LoggingConstants.ZAKEN_API.OBJECT to objectUrl.toString()
