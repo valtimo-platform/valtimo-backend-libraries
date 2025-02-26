@@ -46,8 +46,16 @@ public class JsonSchemaDocumentId extends AbstractId<JsonSchemaDocumentId> imple
         return new JsonSchemaDocumentId(id);
     }
 
+    public static JsonSchemaDocumentId existingId(String id) {
+        return existingId(UUID.fromString(id));
+    }
+
     public static JsonSchemaDocumentId newId(UUID id) {
         return new JsonSchemaDocumentId(id).newIdentity();
+    }
+
+    public static JsonSchemaDocumentId newId(String id) {
+        return newId(UUID.fromString(id));
     }
 
     @Override

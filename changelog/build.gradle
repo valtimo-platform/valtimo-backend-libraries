@@ -46,8 +46,12 @@ dependencies {
     testImplementation (project(":core")) {
         exclude(group: "com.ritense.valtimo", module: "changelog")
     }
-    testImplementation project(":resource:local-resource")
-    testImplementation project(":test-utils-common")
+    testImplementation (project(":resource:local-resource")) {
+        exclude(group: "com.ritense.valtimo", module: "changelog")
+    }
+    testImplementation (project(":test-utils-common")) {
+        exclude(group: "com.ritense.valtimo", module: "changelog")
+    }
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 

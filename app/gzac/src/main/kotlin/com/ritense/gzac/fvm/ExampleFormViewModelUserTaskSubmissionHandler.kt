@@ -16,21 +16,32 @@
 
 package com.ritense.gzac.fvm
 
-import com.ritense.formviewmodel.viewmodel.ViewModelLoader
+import com.ritense.formviewmodel.submission.FormViewModelUserTaskSubmissionHandler
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.valtimo.camunda.domain.CamundaTask
+import mu.KLogger
+import mu.KotlinLogging
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 
 @Component
 @Order(Ordered.LOWEST_PRECEDENCE)
-class NoopFormViewModelLoader(
-) : ViewModelLoader<NoopViewModel> {
+class ExampleFormViewModelUserTaskSubmissionHandler: FormViewModelUserTaskSubmissionHandler<ExampleViewModel> {
 
     override fun supports(processLink: ProcessLink) = true
 
-    override fun load(task: CamundaTask?): NoopViewModel {
-        return NoopViewModel()
+    override fun <T> handle(submission: T, task: CamundaTask, businessKey: String) {
+        logger.debug { "User task submission handle: taskId=${task.id}, businessKey=$businessKey" }
+
+        (submission as? ExampleViewModel)?.let {
+            if (it.enableSubmissionValidation == true) {
+                it.validate()
+            }
+        }
+    }
+
+    companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
     }
 }

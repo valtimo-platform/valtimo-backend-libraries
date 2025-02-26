@@ -248,6 +248,8 @@ valtimo:
     authorization:
         dashboard:
             enabled: true
+        zgwDocuments:
+            enabled:true
     logging:
         retentionInMinutes: 1440
 

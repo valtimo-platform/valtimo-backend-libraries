@@ -22,6 +22,7 @@ import com.ritense.resource.service.ResourceService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
 import com.ritense.zakenapi.service.ZaakDocumentService
+import okhttp3.mockwebserver.MockResponse
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -57,4 +58,10 @@ class BaseIntegrationTest {
 
     @SpyBean
     lateinit var zaakDocumentService: ZaakDocumentService
+
+    fun mockResponse(body: String): MockResponse {
+        return MockResponse()
+            .addHeader("Content-Type", "application/json")
+            .setBody(body)
+    }
 }

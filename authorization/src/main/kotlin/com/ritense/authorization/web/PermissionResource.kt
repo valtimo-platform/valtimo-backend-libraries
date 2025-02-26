@@ -18,6 +18,7 @@ package com.ritense.authorization.web
 
 import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.request.RelatedEntityAuthorizationRequest
 import com.ritense.authorization.web.request.PermissionAvailableRequest
 import com.ritense.authorization.web.result.PermissionAvailableResult
@@ -49,14 +50,20 @@ class PermissionResource(
         val permissionResponse: List<PermissionAvailableResult> = permissionsPresentRequest.map {
             val hasPermission =
                 try {
-                    authorizationService.hasPermission(
+                    val authorizationRequest = if (it.context == null) {
+                        EntityAuthorizationRequest(
+                            it.getResourceAsClass(),
+                            Action(it.action),
+                        )
+                    } else {
                         RelatedEntityAuthorizationRequest(
                             it.getResourceAsClass(),
                             Action(it.action),
                             it.context.getResourceAsClass(),
                             it.context.identifier
                         )
-                    )
+                    }
+                    authorizationService.hasPermission(authorizationRequest)
                 } catch (ex: Exception) {
                     logger.error("Failed to determine permissions for $it", ex)
                     false
