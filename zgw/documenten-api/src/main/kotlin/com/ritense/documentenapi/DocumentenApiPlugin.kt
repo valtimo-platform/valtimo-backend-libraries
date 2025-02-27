@@ -19,6 +19,7 @@ package com.ritense.documentenapi
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.documentenapi.DocumentenApiPlugin.Companion.PLUGIN_KEY
 import com.ritense.documentenapi.client.BestandsdelenRequest
 import com.ritense.documentenapi.client.CreateDocumentRequest
@@ -244,6 +245,16 @@ class DocumentenApiPlugin(
         val documentLock = client.lockInformatieObject(authenticationPluginConfiguration, documentUrl)
         try {
             patchDocumentRequest.lock = documentLock.lock
+
+            runWithoutAuthorization {
+                require(
+                    documentenApiVersionService.getVersionByTag(apiVersion).supportsUpdatingDefinitiveDocument
+                        || getInformatieObject(documentUrl).status != DocumentStatusType.DEFINITIEF
+                ) {
+                    "InformatieObject ${documentUrl.path.substringAfterLast("/")} with status 'definitief' cannot be updated in Documenten API '$apiVersion'"
+                }
+            }
+
             val modifiedDocument =
                 client.modifyInformatieObject(authenticationPluginConfiguration, documentUrl, patchDocumentRequest)
             return modifiedDocument

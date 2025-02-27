@@ -184,6 +184,7 @@ internal class DocumentenApiResourceIT : BaseIntegrationTest() {
             .andExpect(jsonPath("$.supportsFilterableColumns").value(true))
             .andExpect(jsonPath("$.supportsSortableColumns").value(true))
             .andExpect(jsonPath("$.supportsTrefwoorden").value(true))
+            .andExpect(jsonPath("$.supportsUpdatingDefinitiveDocument").value(true))
     }
 
     @Test
