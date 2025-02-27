@@ -19,6 +19,7 @@ package com.ritense.objecttypenapi
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.objecttypenapi.client.Objecttype
 import com.ritense.objecttypenapi.client.ObjecttypenApiClient
+import com.ritense.objecttypenapi.client.ObjecttypenApiClient.Companion.HOST_DOCKER_INTERNAL
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.valtimo.contract.validation.Url
@@ -70,7 +71,12 @@ class ObjecttypenApiPlugin(
         private val logger = KotlinLogging.logger {}
         const val URL_PROPERTY = "url"
 
-        fun findConfigurationByUrl(url: URI) =
-            { properties: JsonNode -> url.toString().startsWith(properties.get(URL_PROPERTY).textValue()) }
+        fun findConfigurationByUrl(url: URI) = { properties: JsonNode ->
+            if (url.host == HOST_DOCKER_INTERNAL) {
+                url.toString().replace(HOST_DOCKER_INTERNAL, "localhost")
+            } else {
+                url.toString()
+            }.startsWith(properties[URL_PROPERTY].textValue())
+        }
     }
 }
