@@ -24,7 +24,7 @@ import com.ritense.document.domain.Document
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 
-data class DataGridField(
+data class ComponentsField(
     override val value: JsonNode,
     override val pointer: JsonPointer,
     override val applicationEventPublisher: ApplicationEventPublisher,
@@ -34,18 +34,17 @@ data class DataGridField(
     val childFormFields: List<FormField> = createChildFormFields()
 
     override fun preProcess(document: Document?) {
-        logger.debug { "preProcess DataGridField[$pointer:${value.asText()}]" }
+        logger.debug { "preProcess ComponentsField[$pointer:${value.asText()}]" }
         childFormFields.forEach { formField -> formField.preProcess(document) }
     }
 
     override fun postProcess(document: Document?) {
-        logger.debug { "postProcess DataGridField[$pointer:${value.asText()}]" }
+        logger.debug { "postProcess ComponentsField[$pointer:${value.asText()}]" }
         childFormFields.forEach { formField -> formField.postProcess(document) }
     }
 
     private fun createChildFormFields(): List<FormField> {
-        val childComponents = objectNode["components"] as ArrayNode?
-            ?: return emptyList()
+        val childComponents = objectNode["components"] as ArrayNode
         val childValues = value as ArrayNode
         return childValues.flatMap { childValue ->
             childComponents.mapNotNull { childComponent ->
@@ -61,12 +60,11 @@ data class DataGridField(
     companion object {
         private val logger = KotlinLogging.logger {}
 
-        fun isDataGridFieldComponent(jsonNode: ObjectNode): Boolean {
-            return (jsonNode.has("type")
-                && (jsonNode["type"].textValue().equals("datagrid", ignoreCase = true) ||
-                jsonNode["type"].textValue().equals("editgrid", ignoreCase = true))
+        fun isComponentsComponent(jsonNode: ObjectNode): Boolean {
+            return jsonNode.has("components")
+                && jsonNode["components"].isArray
                 && jsonNode["input"].booleanValue()
-                && jsonNode.has(PROPERTY_KEY))
+                && jsonNode.has(PROPERTY_KEY)
         }
     }
 }

@@ -68,9 +68,9 @@ internal class FormFieldTest : BaseTest() {
         assertEquals("DataField", formFields[0].javaClass.simpleName)
         assertEquals("1234", formFields[0].value.textValue())
         assertEquals("/textField", formFields[0].pointer.toString())
-        assertEquals("DataGridField", formFields[1].javaClass.simpleName)
+        assertEquals("ComponentsField", formFields[1].javaClass.simpleName)
         assertEquals("/dataGrid", formFields[1].pointer.toString())
-        val dataGrid = formFields[1] as DataGridField
+        val dataGrid = formFields[1] as ComponentsField
         assertEquals("UploadField", dataGrid.childFormFields[0].javaClass.simpleName)
         assertTrue(dataGrid.childFormFields[0].value.toString().contains(""""filename":"img1.jpg""""))
         assertEquals("/documentenApiFile", dataGrid.childFormFields[0].pointer.toString())
