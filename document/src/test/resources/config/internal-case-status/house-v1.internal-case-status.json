@@ -1,5 +1,5 @@
 {
-    "changesetId": "house.internal-case-status",
+    "changesetId": "house-v1.internal-case-status",
     "internalCaseStatuses": [
         {
             "key": "suspended",

@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import org.apache.commons.lang3.NotImplementedException;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RoleResource;
@@ -47,8 +46,6 @@ import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -61,16 +58,16 @@ public class KeycloakUserManagementService implements UserManagementService {
 
     private final KeycloakService keycloakService;
     private final String clientName;
-    private final CacheManager cacheManager;
+    private final UserCache userCache;
 
     public KeycloakUserManagementService(
         KeycloakService keycloakService,
         String keycloakClientName,
-        CacheManager cacheManager
+        UserCache userCache
     ) {
         this.keycloakService = keycloakService;
         this.clientName = keycloakClientName;
-        this.cacheManager = cacheManager;
+        this.userCache = userCache;
     }
 
     @Override
@@ -137,34 +134,44 @@ public class KeycloakUserManagementService implements UserManagementService {
     }
 
     @Override
-    @Cacheable("manageableUserByEmail")
     public Optional<ManageableUser> findByEmail(String email) {
-        return findUserRepresentationByEmailCached(email).map(this::toManageableUserByRetrievingRoles);
+        return Optional.ofNullable(
+            userCache.get(
+                CacheType.EMAIL,
+                email,
+                (emailToRetrieve) -> findUserRepresentationByEmail(emailToRetrieve).map(this::toManageableUserByRetrievingRoles).orElse(null)
+            )
+        );
     }
 
     @Override
     public Optional<NamedUser> findNamedUserByEmail(String email) {
-        return findUserRepresentationByEmailCached(email).map(this::toNamedUser);
+        return findUserRepresentationByEmail(email).map(this::toNamedUser);
     }
 
     @Override
-    @Cacheable("valtimoUserByIdentifier")
     public ValtimoUser findByUserIdentifier(String userIdentifier) {
-        UserRepresentation user = null;
-        try (Keycloak keycloak = keycloakService.keycloak()) {
-            switch (OauthConfigHolder.getCurrentInstance().getIdentifierField()) {
-                case USERID ->
-                    user = keycloakService.usersResource(keycloak).get(userIdentifier).toRepresentation();
-                case USERNAME -> {
-                    var users = keycloakService.usersResource(keycloak).search(userIdentifier);
-                    if (!users.isEmpty()) {
-                        user = users.get(0);
+        return userCache.get(
+            CacheType.USER_IDENTIFIER,
+            userIdentifier,
+            (identifier) -> {
+                UserRepresentation user = null;
+                try (Keycloak keycloak = keycloakService.keycloak()) {
+                    switch (OauthConfigHolder.getCurrentInstance().getIdentifierField()) {
+                        case USERID ->
+                            user = keycloakService.usersResource(keycloak).get(userIdentifier).toRepresentation();
+                        case USERNAME -> {
+                            var users = keycloakService.usersResource(keycloak).search(userIdentifier);
+                            if (!users.isEmpty()) {
+                                user = users.get(0);
+                            }
+                        }
                     }
                 }
+                Boolean isUserEnabled = user != null ? user.isEnabled() : null;
+                return Boolean.TRUE.equals(isUserEnabled) ? toValtimoUserByRetrievingRoles(user) : null;
             }
-        }
-        Boolean isUserEnabled = user != null ? user.isEnabled() : null;
-        return Boolean.TRUE.equals(isUserEnabled) ? toValtimoUserByRetrievingRoles(user) : null;
+        );
     }
 
     @Override
@@ -234,7 +241,7 @@ public class KeycloakUserManagementService implements UserManagementService {
     @Override
     public String getCurrentUserId() {
         if (SecurityUtils.getCurrentUserAuthentication() != null) {
-            return findUserRepresentationByEmailCached(SecurityUtils.getCurrentUserLogin()).orElseThrow(() ->
+            return findUserRepresentationByEmail(SecurityUtils.getCurrentUserLogin()).orElseThrow(() ->
                 new IllegalStateException("No user found for email: " + SecurityUtils.getCurrentUserLogin())
             ).getId();
         } else {
@@ -242,14 +249,9 @@ public class KeycloakUserManagementService implements UserManagementService {
         }
     }
 
-    private Optional<UserRepresentation> findUserRepresentationByEmailCached(String email) {
-        final var user = getOrPutCache("userRepresentationByEmail", email, this::findUserRepresentationByEmail);
-        return Optional.ofNullable(user);
-    }
-
-    private UserRepresentation findUserRepresentationByEmail(String email) {
+    private Optional<UserRepresentation> findUserRepresentationByEmail(String email) {
         if (email == null || !email.contains("@")) {
-            return null;
+            return Optional.empty();
         }
         List<UserRepresentation> userList;
         try (Keycloak keycloak = keycloakService.keycloak()) {
@@ -258,9 +260,9 @@ public class KeycloakUserManagementService implements UserManagementService {
                 .search(null, null, null, email, 0, 1, true, true);
         }
         if (userList.isEmpty() || !Objects.equals(userList.get(0).getEmail(), email)) {
-            return null;
+            return Optional.empty();
         } else {
-            return userList.get(0);
+            return Optional.of(userList.get(0));
         }
     }
 
@@ -362,23 +364,6 @@ public class KeycloakUserManagementService implements UserManagementService {
             }
             return roles;
         }
-    }
-
-    private <T, R> R getOrPutCache(String cacheName, T key, Function<T, R> retrieve) {
-        final var cache = cacheManager.getCache(cacheName);
-        if (cache == null) {
-            return retrieve.apply(key);
-        }
-        final var wrapper = cache.get(key);
-        if (wrapper != null) {
-            logger.debug("Returning user information from cache {} with key {}.", cacheName, key);
-            return (R) wrapper.get();
-        }
-
-        logger.debug("Cache miss for {} with key {}. Adding user to cache.", cacheName, key);
-        final var value = retrieve.apply(key);
-        cache.put(key, value);
-        return value;
     }
 
     private ValtimoUser toValtimoUserByRetrievingRoles(UserRepresentation userRepresentation) {

@@ -22,6 +22,7 @@ import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.repository.InternalCaseStatusRepository
 import com.ritense.document.service.InternalCaseStatusService
 import com.ritense.document.web.rest.dto.InternalCaseStatusCreateRequestDto
+import com.ritense.document.web.rest.dto.InternalCaseStatusUpdateRequestDto
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
 import com.ritense.valtimo.changelog.service.ChangelogService
@@ -57,15 +58,28 @@ class InternalCaseStatusDeployer(
     private fun deploy(internalCaseStatuses: List<InternalCaseStatusDto>) {
         AuthorizationContext.runWithoutAuthorization {
             internalCaseStatuses.forEach {
-                internalCaseStatusService.create(
-                    it.caseDefinitionName,
-                    InternalCaseStatusCreateRequestDto(
-                        it.key,
-                        it.title,
-                        it.visibleInCaseListByDefault,
-                        it.color
+                if ( ! internalCaseStatusService.exists(it.caseDefinitionName, it.key) ) {
+                    internalCaseStatusService.create(
+                        it.caseDefinitionName,
+                        InternalCaseStatusCreateRequestDto(
+                            it.key,
+                            it.title,
+                            it.visibleInCaseListByDefault,
+                            it.color
+                        )
                     )
-                )
+                } else {
+                    internalCaseStatusService.update(
+                        it.caseDefinitionName,
+                        it.key,
+                        InternalCaseStatusUpdateRequestDto(
+                            it.key,
+                            it.title,
+                            it.visibleInCaseListByDefault,
+                            it.color
+                        )
+                    )
+                }
             }
         }
     }

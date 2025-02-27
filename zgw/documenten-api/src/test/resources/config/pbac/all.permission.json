@@ -2,6 +2,31 @@
     "changesetId": "document-definitions-v1",
     "permissions": [
         {
+            "resourceType": "com.ritense.resource.authorization.ResourcePermission",
+            "action": "view_list",
+            "roleKey": "ROLE_USER"
+        },
+        {
+            "resourceType": "com.ritense.resource.authorization.ResourcePermission",
+            "action": "view",
+            "roleKey": "ROLE_USER"
+        },
+        {
+            "resourceType": "com.ritense.resource.authorization.ResourcePermission",
+            "action": "create",
+            "roleKey": "ROLE_USER"
+        },
+        {
+            "resourceType": "com.ritense.resource.authorization.ResourcePermission",
+            "action": "modify",
+            "roleKey": "ROLE_USER"
+        },
+        {
+            "resourceType": "com.ritense.resource.authorization.ResourcePermission",
+            "action": "delete",
+            "roleKey": "ROLE_USER"
+        },
+        {
             "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocumentDefinition",
             "action": "view",
             "roleKey": "ROLE_USER"

@@ -423,12 +423,6 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         return objectMapper.readValue(findRequest(method, path)!!.body.readUtf8(), clazz)
     }
 
-    private fun mockResponse(body: String): MockResponse {
-        return MockResponse()
-            .addHeader("Content-Type", "application/json")
-            .setBody(body)
-    }
-
     class TestAuthentication : ZakenApiAuthentication, CatalogiApiAuthentication {
         override fun applyAuth(builder: RestClient.Builder): RestClient.Builder {
             return builder.defaultHeaders { headers ->

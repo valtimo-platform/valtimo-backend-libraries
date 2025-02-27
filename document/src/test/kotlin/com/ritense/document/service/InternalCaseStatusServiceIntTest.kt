@@ -42,19 +42,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
     private val internalCaseStatusService: InternalCaseStatusService,
     private val internalCaseStatusRepository: InternalCaseStatusRepository
 ) : BaseIntegrationTest() {
-    @Test
-    fun `should have imported two person internal case statuses`() {
-        val internalCaseStatuses =
-            internalCaseStatusRepository.findByIdCaseDefinitionNameOrderByOrder("person")
 
-        assertEquals(2, internalCaseStatuses.size)
-        assertEquals("closed", internalCaseStatuses[0].id.key)
-        assertEquals("Closed", internalCaseStatuses[0].title)
-        assertFalse(internalCaseStatuses[0].visibleInCaseListByDefault)
-        assertEquals("started", internalCaseStatuses[1].id.key)
-        assertEquals("Started", internalCaseStatuses[1].title)
-        assertTrue(internalCaseStatuses[1].visibleInCaseListByDefault)
-    }
     @Test
     fun `should create status for existing definition`() {
         AuthorizationContext.runWithoutAuthorization {

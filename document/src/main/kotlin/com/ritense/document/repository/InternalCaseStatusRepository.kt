@@ -23,4 +23,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface InternalCaseStatusRepository : JpaRepository<InternalCaseStatus, InternalCaseStatusId> {
     fun findByIdCaseDefinitionNameOrderByOrder(caseDefinitionName: String): List<InternalCaseStatus>
     fun findDistinctByIdCaseDefinitionNameAndIdKey(caseDefinitionName: String, key: String): InternalCaseStatus?
+    fun existsByIdCaseDefinitionNameAndIdKey(caseDefinitionName: String, key: String): Boolean
 }

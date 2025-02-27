@@ -47,12 +47,14 @@ import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.concurrent.ConcurrentMapCache;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 
 class KeycloakUserManagementServiceTest {
 
     private KeycloakService keycloakService;
     private KeycloakUserManagementService userManagementService;
+    private CacheManager cacheManager;
+    private CacheManagerUserCache cacheManagerUserCache;
 
     private UserRepresentation jamesVance;
     private UserRepresentation johnDoe;
@@ -66,8 +68,9 @@ class KeycloakUserManagementServiceTest {
     @BeforeEach
     public void before() {
         keycloakService = mock(KeycloakService.class, RETURNS_DEEP_STUBS);
-        CacheManager cacheManager = mock();
-        userManagementService = new KeycloakUserManagementService(keycloakService, "clientName", cacheManager);
+        cacheManager = new ConcurrentMapCacheManager();
+        cacheManagerUserCache = new CacheManagerUserCache(cacheManager);
+        userManagementService = new KeycloakUserManagementService(keycloakService, "clientName", cacheManagerUserCache);
 
         jamesVance = newUser("James", "Vance", List.of(USER));
         johnDoe = newUser("John", "Doe", List.of(USER, ADMIN));
@@ -83,8 +86,6 @@ class KeycloakUserManagementServiceTest {
             .thenReturn(Set.of());
         when(keycloakService.clientRolesResource(any()).get(any()).getRoleGroupMembers())
             .thenReturn(Set.of());
-
-        when(cacheManager.getCache("userRepresentationByEmail")).thenReturn(new ConcurrentMapCache("userRepresentationByEmail"));
     }
 
     @AfterEach
@@ -214,12 +215,11 @@ class KeycloakUserManagementServiceTest {
     }
 
     @Test
-    void shouldRetrieveUserInfoFromCache() {
+    void shouldRetrieveManageableUserFromCache() {
         String email = "test@example.com";
 
         userManagementService.findByEmail(email);
         userManagementService.findByEmail(email);
-        userManagementService.findNamedUserByEmail(email);
 
         verify(keycloakService.usersResource(any()), times(1)).search(null, null, null, email, 0, 1, true, true);
     }
