@@ -16,11 +16,13 @@
 
 package com.ritense.zaakdetails.documentobjectenapisync
 
+import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.logging.LoggableResource
 import com.ritense.objectsapi.service.ObjectSyncService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.zaakdetails.documentobjectenapisync.DocumentObjectenApiSyncService.Companion.logger
+import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -30,8 +32,25 @@ import org.springframework.transaction.annotation.Transactional
 class DocumentObjectenApiSyncManagementService(
     private val documentObjectenApiSyncRepository: DocumentObjectenApiSyncRepository,
     private val objectSyncService: ObjectSyncService,
+) {
 
-    ) {
+    @EventListener(DocumentDefinitionDeployedEvent::class)
+    fun deployNewSyncConfiguration(event: DocumentDefinitionDeployedEvent) {
+        val newDocumentDefinitionId = event.documentDefinition().id()
+        val latest = documentObjectenApiSyncRepository
+            .findFirstByDocumentDefinitionNameOrderByDocumentDefinitionVersionDesc(newDocumentDefinitionId.name())
+        if (latest != null && latest.documentDefinitionVersion + 1 == newDocumentDefinitionId.version()) {
+            saveSyncConfiguration(
+                DocumentObjectenApiSync(
+                    documentDefinitionName = latest.documentDefinitionName,
+                    documentDefinitionVersion = newDocumentDefinitionId.version(),
+                    objectManagementConfigurationId = latest.objectManagementConfigurationId,
+                    enabled = latest.enabled,
+                )
+            )
+        }
+    }
+
     fun getSyncConfiguration(
         @LoggableResource(resourceType = JsonSchemaDocumentDefinition::class) documentDefinitionName: String,
         documentDefinitionVersion: Long
