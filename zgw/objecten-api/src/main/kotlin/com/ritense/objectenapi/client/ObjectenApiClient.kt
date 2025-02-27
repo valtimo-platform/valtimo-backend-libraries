@@ -276,7 +276,7 @@ class ObjectenApiClient(
     }
 
     companion object {
-        private const val HOST_DOCKER_INTERNAL = "host.docker.internal"
+        const val HOST_DOCKER_INTERNAL = "host.docker.internal"
         private const val CONTENT_CRS = "Content-Crs"
         private const val ACCEPT_CRS = "Accept-Crs"
         private const val EPSG_4326 = "EPSG:4326"
