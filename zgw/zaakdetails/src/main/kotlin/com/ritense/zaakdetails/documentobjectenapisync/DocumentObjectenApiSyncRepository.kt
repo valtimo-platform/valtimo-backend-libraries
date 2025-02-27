@@ -28,6 +28,8 @@ interface DocumentObjectenApiSyncRepository : JpaRepository<DocumentObjectenApiS
         documentDefinitionVersion: Long
     ): DocumentObjectenApiSync?
 
+    fun findFirstByDocumentDefinitionNameOrderByDocumentDefinitionVersionDesc(documentDefinitionName: String): DocumentObjectenApiSync?
+
     fun deleteByDocumentDefinitionNameAndDocumentDefinitionVersion(
         documentDefinitionName: String,
         documentDefinitionVersion: Long
