@@ -69,6 +69,6 @@ class ObjecttypenApiClient(
     }
 
     companion object {
-        private const val HOST_DOCKER_INTERNAL = "host.docker.internal"
+        const val HOST_DOCKER_INTERNAL = "host.docker.internal"
     }
 }
