@@ -56,6 +56,6 @@ class CaseTagExporter(
     }
 
     companion object {
-        private const val PATH = "config/case-tag/%s.case-tag.json"
+        private const val PATH = "config/case-tags/%s.case-tags.json"
     }
 }

@@ -20,11 +20,13 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.document.deployment.CaseTagDeployer
 import com.ritense.document.exporter.CaseTagExporter
+import com.ritense.document.importer.CaseTagImporter
 import com.ritense.document.repository.CaseTagRepository
 import com.ritense.document.security.CaseTagHttpSecurityConfigurer
 import com.ritense.document.service.CaseTagService
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.web.rest.CaseTagResource
+import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import com.ritense.valtimo.changelog.service.ChangelogService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration
@@ -86,6 +88,15 @@ class CaseTagAutoConfiguration {
         service: CaseTagService,
     ): CaseTagExporter {
         return CaseTagExporter(objectMapper, service)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CaseTagImporter::class)
+    fun caseTagImporter(
+        caseTagDeployer: CaseTagDeployer,
+        changelogDeployer: ChangelogDeployer,
+    ): CaseTagImporter {
+        return CaseTagImporter(caseTagDeployer, changelogDeployer)
     }
 
 }

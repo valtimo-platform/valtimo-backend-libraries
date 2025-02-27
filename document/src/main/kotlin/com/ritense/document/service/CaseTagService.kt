@@ -35,6 +35,10 @@ class CaseTagService(
         return caseTagRepository.getReferenceById(CaseTagId(caseDefinitionName, caseTagKey))
     }
 
+    fun exists(caseDefinitionName: String, caseTagKey: String): Boolean {
+        return caseTagRepository.existsByIdCaseDefinitionNameAndIdKey(caseDefinitionName, caseTagKey)
+    }
+
     fun create(
         caseDefinitionName: String,
         @Valid request: CaseTagCreateRequestDto) : CaseTag{

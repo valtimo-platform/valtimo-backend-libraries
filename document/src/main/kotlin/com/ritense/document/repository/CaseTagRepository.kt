@@ -23,4 +23,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface CaseTagRepository : JpaRepository<CaseTag, CaseTagId> {
     fun findByIdCaseDefinitionName(caseDefinitionName: String): List<CaseTag>
     fun findDistinctByIdCaseDefinitionNameAndIdKey(caseDefinitionName: String, key: String): CaseTag?
+    fun existsByIdCaseDefinitionNameAndIdKey(caseDefinitionName: String, key: String): Boolean
 }

@@ -22,6 +22,7 @@ import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.repository.CaseTagRepository
 import com.ritense.document.service.CaseTagService
 import com.ritense.document.web.rest.dto.CaseTagCreateRequestDto
+import com.ritense.document.web.rest.dto.CaseTagUpdateRequestDto
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
 import com.ritense.valtimo.changelog.service.ChangelogService
@@ -33,7 +34,7 @@ class CaseTagDeployer(
     private val changelogService: ChangelogService,
     private val clearTables: Boolean
 ) : ChangesetDeployer {
-    override fun getPath() = "classpath*:**/*.case-tag.json"
+    override fun getPath() = "classpath*:**/*.case-tags.json"
 
     override fun before() {
         if (clearTables) {
@@ -57,15 +58,28 @@ class CaseTagDeployer(
     private fun deploy(caseTags: List<CaseTagDto>) {
         AuthorizationContext.runWithoutAuthorization {
             caseTags.forEach {
-                caseTagService.create(
-                    it.caseDefinitionName,
-                    CaseTagCreateRequestDto(
-                        it.key,
-                        it.title,
-                        it.color,
-                        it.order
+                if ( ! caseTagService.exists(it.caseDefinitionName, it.key) ) {
+                    caseTagService.create(
+                        it.caseDefinitionName,
+                        CaseTagCreateRequestDto(
+                            it.key,
+                            it.title,
+                            it.color,
+                            it.order
+                        )
                     )
-                )
+                } else {
+                    caseTagService.update(
+                        it.caseDefinitionName,
+                        it.key,
+                        CaseTagUpdateRequestDto(
+                            it.key,
+                            it.title,
+                            it.color,
+                            it.order
+                        )
+                    )
+                }
             }
         }
     }
