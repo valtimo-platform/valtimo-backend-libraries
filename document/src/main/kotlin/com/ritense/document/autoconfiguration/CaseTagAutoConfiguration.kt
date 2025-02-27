@@ -19,6 +19,7 @@ package com.ritense.document.autoconfiguration
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.document.deployment.CaseTagDeployer
+import com.ritense.document.exporter.CaseTagExporter
 import com.ritense.document.repository.CaseTagRepository
 import com.ritense.document.security.CaseTagHttpSecurityConfigurer
 import com.ritense.document.service.CaseTagService
@@ -76,6 +77,15 @@ class CaseTagAutoConfiguration {
             changelogService,
             clearTables
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CaseTagExporter::class)
+    fun caseTagExporter(
+        objectMapper: ObjectMapper,
+        service: CaseTagService,
+    ): CaseTagExporter {
+        return CaseTagExporter(objectMapper, service)
     }
 
 }
