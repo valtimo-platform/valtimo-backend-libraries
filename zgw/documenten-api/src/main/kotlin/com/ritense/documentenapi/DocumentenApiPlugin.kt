@@ -252,7 +252,7 @@ class DocumentenApiPlugin(
                     documentenApiVersionService.getVersionByTag(apiVersion).supportsUpdatingDefinitiveDocument
                         || getInformatieObject(documentUrl).status != DocumentStatusType.DEFINITIEF
                 ) {
-                    "InformatieObject ${documentUrl.path.substringAfterLast("/")} with status 'definitief' cannot be updated in Documenten API '$apiVersion'"
+                    "InformatieObject ${documentUrl.path.substringAfterLast("/")} with status 'definitief' cannot be updated in Documenten API with '$apiVersion'"
                 }
             }
 
