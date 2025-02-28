@@ -103,13 +103,13 @@ class CaseTagService(
             )
         }
 
-        val updatedCaseTags = requests.mapIndexed { _, request ->
+        val updatedCaseTags = requests.mapIndexed { index, request ->
             val existingCaseTag = existingCaseTags.find { it.id.key == request.key }
                 ?: throw CaseTagNotFoundException(request.key, caseDefinitionName)
             existingCaseTag.copy(
                 title = request.title,
                 color = request.color,
-                order = request.order
+                order = index
             )
         }
 
