@@ -5,8 +5,8 @@ import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.document.domain.CaseTag
 import com.ritense.document.domain.CaseTagId
+import com.ritense.document.exception.CaseTagAlreadyExistsException
 import com.ritense.document.exception.CaseTagNotFoundException
-import com.ritense.document.exception.InternalCaseStatusAlreadyExistsException
 import com.ritense.document.repository.CaseTagRepository
 import com.ritense.document.web.rest.dto.CaseTagCreateRequestDto
 import com.ritense.document.web.rest.dto.CaseTagUpdateRequestDto
@@ -51,7 +51,7 @@ class CaseTagService(
         if (currentCaseTags.any { status ->
                 status.id.key == request.key
             }) {
-            throw InternalCaseStatusAlreadyExistsException(request.key)
+            throw CaseTagAlreadyExistsException(request.key, caseDefinitionName)
         }
 
         return caseTagRepository.save(
@@ -62,7 +62,7 @@ class CaseTagService(
                 ),
                 request.title,
                 request.color,
-                request.order
+                order = currentCaseTags.size
             )
         )
     }
