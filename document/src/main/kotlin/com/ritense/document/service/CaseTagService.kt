@@ -28,7 +28,7 @@ class CaseTagService(
 ) {
 
     fun getCaseTags(documentDefinitionName: String): List<CaseTag> {
-        return caseTagRepository.findByIdCaseDefinitionName(documentDefinitionName)
+        return caseTagRepository.findByIdCaseDefinitionNameOrderByOrder(documentDefinitionName)
     }
 
     fun get(caseDefinitionName: String, caseTagKey: String): CaseTag {
@@ -95,7 +95,7 @@ class CaseTagService(
         denyManagementOperation()
 
         val existingCaseTags = caseTagRepository
-            .findByIdCaseDefinitionName(caseDefinitionName)
+            .findByIdCaseDefinitionNameOrderByOrder(caseDefinitionName)
         check(existingCaseTags.size == requests.size) {
             throw IllegalStateException(
                 "Failed to update case tags. Reason: the number of "
@@ -125,6 +125,14 @@ class CaseTagService(
             ) ?: throw CaseTagNotFoundException(caseTagKey, caseDefinitionName)
 
         caseTagRepository.delete(caseTag)
+        reorder(caseDefinitionName)
+    }
+
+    private fun reorder(caseDefinitionName: String) {
+        val caseTags = caseTagRepository.findByIdCaseDefinitionNameOrderByOrder(
+            caseDefinitionName
+        ).mapIndexed { index, caseTag -> caseTag.copy(order = index) }
+        caseTagRepository.saveAll(caseTags)
     }
 
     private fun denyManagementOperation() {
