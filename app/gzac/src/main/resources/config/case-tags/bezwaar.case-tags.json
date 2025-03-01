@@ -5,13 +5,15 @@
             "key": "test4",
             "caseDefinitionName": "bezwaar",
             "title": "Test 4",
-            "color": "BLUE"
+            "color": "BLUE",
+            "order": 0
         },
         {
             "key": "test5",
             "caseDefinitionName": "bezwaar",
             "title": "Test 5",
-            "color": "PURPLE"
+            "color": "PURPLE",
+            "order": 1
         }
     ]
 }
