@@ -29,7 +29,8 @@ class CaseTagServiceIntTest @Autowired constructor(
         val request = CaseTagCreateRequestDto(
             key = "some-tag",
             title = "Some Tag",
-            color = CaseTagColor.COOLGRAY
+            color = CaseTagColor.COOLGRAY,
+            order = 1
         )
 
         AuthorizationContext.runWithoutAuthorization {
@@ -48,7 +49,8 @@ class CaseTagServiceIntTest @Autowired constructor(
                     CaseTagCreateRequestDto(
                         key = "<this-is-not-a-valid-tag#>",
                         title = "Some Tag",
-                        color = CaseTagColor.COOLGRAY
+                        color = CaseTagColor.COOLGRAY,
+                        order = 1
                     )
                 )
             }
@@ -64,7 +66,8 @@ class CaseTagServiceIntTest @Autowired constructor(
                 CaseTagCreateRequestDto(
                     key = "some-tag",
                     title = "Some Tag",
-                    color = CaseTagColor.COOLGRAY
+                    color = CaseTagColor.COOLGRAY,
+                    order = 1
                 )
             )
 
@@ -74,7 +77,8 @@ class CaseTagServiceIntTest @Autowired constructor(
                 CaseTagUpdateRequestDto(
                     key = "some-tag",
                     title = "New Title",
-                    color = CaseTagColor.BLUE
+                    color = CaseTagColor.BLUE,
+                    order = 1
                 )
             )
 
@@ -90,7 +94,9 @@ class CaseTagServiceIntTest @Autowired constructor(
     fun `should add case tag `() {
 
         AuthorizationContext.runWithoutAuthorization {
-            caseTagService.create("house", CaseTagCreateRequestDto("some-tag", "Some Tag", CaseTagColor.MAGENTA))
+            caseTagService.create(
+                "house",
+                CaseTagCreateRequestDto("some-tag", "Some Tag", CaseTagColor.MAGENTA, 1))
         }
 
         val content = JsonDocumentContent("{\"street\": \"Funenpark\"}")

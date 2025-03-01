@@ -20,7 +20,8 @@ class CaseTagRepositoryIntTest @Autowired constructor(
         val tag = CaseTag(
             id = CaseTagId("bezwaar", "test"),
             title = "Some Tag",
-            color = CaseTagColor.COOLGRAY
+            color = CaseTagColor.COOLGRAY,
+            order = 1
         )
 
         repository.save(tag)

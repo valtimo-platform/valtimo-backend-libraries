@@ -39,6 +39,7 @@ import com.ritense.document.event.DocumentViewed
 import com.ritense.document.event.DocumentsListed
 import com.ritense.document.repository.CaseTagRepository
 import com.ritense.document.service.JsonSchemaDocumentActionProvider
+import com.ritense.document.web.rest.dto.CaseTagResponseDto
 import com.ritense.outbox.domain.BaseEvent
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
@@ -207,12 +208,14 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         val tag1 = CaseTag(
             CaseTagId("house", "new"),
             "New",
-            CaseTagColor.GREEN
+            CaseTagColor.GREEN,
+            order = 0
         )
         val tag2 = CaseTag(
             CaseTagId("house", "priority-request"),
             "Priority request",
-            CaseTagColor.MAGENTA
+            CaseTagColor.MAGENTA,
+            order = 1
         )
         caseTagRepository.save(tag1)
         caseTagRepository.save(tag2)
@@ -248,13 +251,15 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         val tag1 = CaseTag(
             CaseTagId("house", caseTagKey1),
             "New",
-            CaseTagColor.GREEN
+            CaseTagColor.GREEN,
+            0
         )
         val caseTagKey2 = "priority-request"
         val tag2 = CaseTag(
             CaseTagId("house", caseTagKey2),
             "Priority request",
-            CaseTagColor.MAGENTA
+            CaseTagColor.MAGENTA,
+            1
         )
         caseTagRepository.save(tag1)
         caseTagRepository.save(tag2)
@@ -269,7 +274,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         //Assert change
         val modifiedDocument = documentService.findBy(document.id).get()
         assertThat(modifiedDocument.caseTags()).hasSize(2)
-        assertThat(modifiedDocument.caseTags()).containsExactlyInAnyOrder(tag1, tag2)
+        assertThat(modifiedDocument.caseTags()).containsExactlyInAnyOrder(CaseTagResponseDto(tag1), CaseTagResponseDto(tag2))
 
         //Assert outbox event
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
