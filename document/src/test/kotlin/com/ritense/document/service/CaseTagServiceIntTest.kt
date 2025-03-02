@@ -6,6 +6,9 @@ import com.ritense.document.BaseTest
 import com.ritense.document.domain.CaseTagColor
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.document.exception.CaseTagAlreadyExistsException
+import com.ritense.document.exception.CaseTagNotFoundException
+import com.ritense.document.repository.CaseTagRepository
 import com.ritense.document.web.rest.dto.CaseTagCreateRequestDto
 import com.ritense.document.web.rest.dto.CaseTagUpdateRequestDto
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
@@ -14,13 +17,17 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 
 @Transactional
 class CaseTagServiceIntTest @Autowired constructor(
-    private val caseTagService: CaseTagService
+    private val caseTagService: CaseTagService,
+    private val caseTagRepository: CaseTagRepository
 ) : BaseIntegrationTest() {
 
     @Test
@@ -29,15 +36,24 @@ class CaseTagServiceIntTest @Autowired constructor(
         val request = CaseTagCreateRequestDto(
             key = "some-tag",
             title = "Some Tag",
-            color = CaseTagColor.COOLGRAY,
-            order = 1
+            color = CaseTagColor.COOLGRAY
         )
 
         AuthorizationContext.runWithoutAuthorization {
             caseTagService.create("house", request)
         }
 
-        assertEquals(CaseTagColor.COOLGRAY, caseTagService.get("house", "some-tag" ).color)
+        val caseTag = caseTagRepository
+            .findDistinctByIdCaseDefinitionNameAndIdKey("house", "some-tag")
+
+        val caseTagCount = caseTagRepository
+            .findByIdCaseDefinitionNameOrderByOrder("house").size
+
+        assertNotNull(caseTag)
+        kotlin.test.assertEquals("house", caseTag.id.caseDefinitionName)
+        kotlin.test.assertEquals("some-tag", caseTag.id.key)
+        kotlin.test.assertEquals("Some Tag", caseTag.title)
+        kotlin.test.assertEquals(caseTagCount - 1, caseTag.order)
     }
 
     @Test
@@ -49,12 +65,66 @@ class CaseTagServiceIntTest @Autowired constructor(
                     CaseTagCreateRequestDto(
                         key = "<this-is-not-a-valid-tag#>",
                         title = "Some Tag",
-                        color = CaseTagColor.COOLGRAY,
-                        order = 1
+                        color = CaseTagColor.COOLGRAY
                     )
                 )
             }
-            kotlin.test.assertEquals("""create.request.key: must match "[a-z][a-z0-9-_]+"""", exception.message)
+            assertEquals("""create.request.key: must match "[a-z][a-z0-9-_]+"""", exception.message)
+        }
+    }
+
+    @Test
+    fun `should not create case tag without proper permissions`() {
+        assertThrows<AccessDeniedException> {
+            caseTagService.create(
+                "house",
+                CaseTagCreateRequestDto(
+                    key = "some-tag",
+                    title = "Some Tag",
+                    color = CaseTagColor.COOLGRAY
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `should not create case tag for missing definition`() {
+        assertThrows<NoSuchElementException> {
+            AuthorizationContext.runWithoutAuthorization {
+                caseTagService.create(
+                    "case-definition-that-does-not-exist",
+                    CaseTagCreateRequestDto(
+                        key = "some-tag",
+                        title = "Some Tag",
+                        color = CaseTagColor.COOLGRAY
+                    )
+                )
+            }
+        }
+    }
+
+    @Test
+    fun shouldNotCreateTagForWhenTagAlreadyExists() {
+        AuthorizationContext.runWithoutAuthorization {
+            caseTagService.create(
+                "house",
+                CaseTagCreateRequestDto(
+                    key = "some-tag",
+                    title = "Some Tag",
+                    color = CaseTagColor.COOLGRAY
+                )
+            )
+
+            assertThrows<CaseTagAlreadyExistsException> {
+                caseTagService.create(
+                    "house",
+                    CaseTagCreateRequestDto(
+                        key = "some-tag",
+                        title = "Some Tag",
+                        color = CaseTagColor.COOLGRAY
+                    )
+                )
+            }
         }
     }
 
@@ -66,8 +136,7 @@ class CaseTagServiceIntTest @Autowired constructor(
                 CaseTagCreateRequestDto(
                     key = "some-tag",
                     title = "Some Tag",
-                    color = CaseTagColor.COOLGRAY,
-                    order = 1
+                    color = CaseTagColor.COOLGRAY
                 )
             )
 
@@ -77,8 +146,7 @@ class CaseTagServiceIntTest @Autowired constructor(
                 CaseTagUpdateRequestDto(
                     key = "some-tag",
                     title = "New Title",
-                    color = CaseTagColor.BLUE,
-                    order = 1
+                    color = CaseTagColor.BLUE
                 )
             )
 
@@ -96,7 +164,7 @@ class CaseTagServiceIntTest @Autowired constructor(
         AuthorizationContext.runWithoutAuthorization {
             caseTagService.create(
                 "house",
-                CaseTagCreateRequestDto("some-tag", "Some Tag", CaseTagColor.MAGENTA, 1))
+                CaseTagCreateRequestDto("some-tag", "Some Tag", CaseTagColor.MAGENTA))
         }
 
         val content = JsonDocumentContent("{\"street\": \"Funenpark\"}")
@@ -116,6 +184,195 @@ class CaseTagServiceIntTest @Autowired constructor(
 
         println(updatedDocument.caseTags())
 
+    }
+
+    @Test
+    fun shouldReorderTagsForExistingTags() {
+        AuthorizationContext.runWithoutAuthorization {
+            caseTagRepository.deleteAll()
+
+            caseTagService.create(
+                "house",
+                CaseTagCreateRequestDto(
+                    key = "some-tag-1",
+                    title = "Some Tag 1",
+                    color = CaseTagColor.COOLGRAY
+                )
+            )
+
+            caseTagService.create(
+                "house",
+                CaseTagCreateRequestDto(
+                    key = "some-tag-2",
+                    title = "Some Tag 2",
+                    color = CaseTagColor.COOLGRAY
+                )
+            )
+
+            caseTagService.create(
+                "house",
+                CaseTagCreateRequestDto(
+                    key = "some-tag-3",
+                    title = "Some Tag 3",
+                    color = CaseTagColor.COOLGRAY
+                )
+            )
+        }
+
+        val caseTags = caseTagRepository
+            .findByIdCaseDefinitionNameOrderByOrder("house")
+
+        kotlin.test.assertEquals(3, caseTags.size)
+        kotlin.test.assertEquals("some-tag-1", caseTags[0].id.key)
+        kotlin.test.assertEquals(caseTags.size - 3, caseTags[0].order)
+        kotlin.test.assertEquals("some-tag-2", caseTags[1].id.key)
+        kotlin.test.assertEquals(caseTags.size - 2, caseTags[1].order)
+        kotlin.test.assertEquals("some-tag-3", caseTags[2].id.key)
+        kotlin.test.assertEquals(caseTags.size - 1, caseTags[2].order)
+
+        AuthorizationContext.runWithoutAuthorization {
+            caseTagService.update(
+                "house",
+                listOf(
+                    CaseTagUpdateRequestDto(
+                        key = "some-tag-1",
+                        title = "New Title 1",
+                        color = CaseTagColor.BLUE
+                    ),
+                    CaseTagUpdateRequestDto(
+                        key = "some-tag-3",
+                        title = "New Title 3",
+                        color = CaseTagColor.BLUE
+                    ),
+                    CaseTagUpdateRequestDto(
+                        key = "some-tag-2",
+                        title = "New Title 2",
+                        color = CaseTagColor.BLUE
+                    ),
+                )
+            )
+        }
+
+        val postUpdateCaseTags = caseTagRepository
+            .findByIdCaseDefinitionNameOrderByOrder("house")
+
+        kotlin.test.assertEquals(3, postUpdateCaseTags.size)
+        kotlin.test.assertEquals("some-tag-1", postUpdateCaseTags[0].id.key)
+        kotlin.test.assertEquals(postUpdateCaseTags.size - 3, postUpdateCaseTags[0].order)
+        kotlin.test.assertEquals("some-tag-3", postUpdateCaseTags[1].id.key)
+        kotlin.test.assertEquals(postUpdateCaseTags.size - 2, postUpdateCaseTags[1].order)
+        kotlin.test.assertEquals("some-tag-2", postUpdateCaseTags[2].id.key)
+        kotlin.test.assertEquals(postUpdateCaseTags.size - 1, postUpdateCaseTags[2].order)
+    }
+
+    @Test
+    fun shouldNotReorderForIncorrectNumberOfTags() {
+        AuthorizationContext.runWithoutAuthorization {
+            caseTagRepository.deleteAll()
+
+            caseTagService.create(
+                "house",
+                CaseTagCreateRequestDto(
+                    key = "some-tag-1",
+                    title = "Some Tag 1",
+                    color = CaseTagColor.COOLGRAY
+                )
+            )
+
+            caseTagService.create(
+                "house",
+                CaseTagCreateRequestDto(
+                    key = "some-tag-2",
+                    title = "Some Tag 2",
+                    color = CaseTagColor.COOLGRAY
+                )
+            )
+
+            caseTagService.create(
+                "house",
+                CaseTagCreateRequestDto(
+                    key = "some-tag-3",
+                    title = "Some Tag 3",
+                    color = CaseTagColor.COOLGRAY
+                )
+            )
+        }
+
+        assertThrows<IllegalStateException> {
+            AuthorizationContext.runWithoutAuthorization {
+                caseTagService.update(
+                    "house",
+                    listOf(
+                        CaseTagUpdateRequestDto(
+                            key = "some-tag-1",
+                            title = "New Title 1",
+                            color = CaseTagColor.GREEN
+                        )
+                    )
+                )
+            }
+        }
+    }
+
+    @Test
+    fun shouldNotUpdateTagWithoutProperPermissions() {
+        assertThrows<AccessDeniedException> {
+            caseTagService.update(
+                "house",
+                listOf(
+                    CaseTagUpdateRequestDto(
+                        key = "some-tag-1",
+                        title = "New Title 1",
+                        color = CaseTagColor.GREEN
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
+    fun shouldDeleteTagForExistingTag() {
+        AuthorizationContext.runWithoutAuthorization {
+            caseTagService.create(
+                "house",
+                CaseTagCreateRequestDto(
+                    key = "some-tag-1",
+                    title = "Some Tag 1",
+                    color = CaseTagColor.COOLGRAY
+                )
+            )
+        }
+
+        val initialCaseTag = caseTagRepository
+            .findDistinctByIdCaseDefinitionNameAndIdKey("house", "some-tag-1")
+
+        assertNotNull(initialCaseTag)
+
+        AuthorizationContext.runWithoutAuthorization {
+            caseTagService.delete("house", "some-tag-1")
+        }
+
+        val postDeleteInternalCaseTag = caseTagRepository
+            .findDistinctByIdCaseDefinitionNameAndIdKey("house", "some-tag-1")
+
+        assertNull(postDeleteInternalCaseTag)
+
+    }
+
+    @Test
+    fun shouldNotDeleteTagForMissingTag() {
+        assertThrows<CaseTagNotFoundException> {
+            AuthorizationContext.runWithoutAuthorization {
+                caseTagService.delete("house", "some-non-existing-tag")
+            }
+        }
+    }
+
+    @Test
+    fun shouldNotDeleteTagWithoutProperPermissions() {
+        assertThrows<AccessDeniedException> {
+            caseTagService.delete("house", "some-tag")
+        }
     }
 
     companion object {

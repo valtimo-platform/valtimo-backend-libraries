@@ -23,6 +23,5 @@ import jakarta.validation.constraints.Pattern
 data class CaseTagUpdateRequestDto(
     @field:Pattern(regexp = Constants.KEY_REGEX) val key: String,
     val title: String,
-    val color: CaseTagColor,
-    val order: Int
+    val color: CaseTagColor
 )

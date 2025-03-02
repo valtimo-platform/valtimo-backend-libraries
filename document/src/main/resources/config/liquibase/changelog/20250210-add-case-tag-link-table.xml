@@ -26,7 +26,7 @@
             <column name="case_definition_name" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="json_schema_document_id" type="uuid">
+            <column name="json_schema_document_id" type="${uuidType}">
                 <constraints nullable="false"/>
             </column>
         </createTable>

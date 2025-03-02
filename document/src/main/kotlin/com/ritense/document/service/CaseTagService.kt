@@ -82,8 +82,7 @@ class CaseTagService(
         caseTagRepository.save(
             oldCaseTag.copy(
                 title = request.title,
-                color = request.color,
-                order = request.order
+                color = request.color
             )
         )
     }

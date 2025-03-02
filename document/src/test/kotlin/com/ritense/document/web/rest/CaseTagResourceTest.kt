@@ -143,7 +143,7 @@ class CaseTagResourceTest : BaseTest() {
 
     @Test
     fun `should reorder a list of caseTags`() {
-        val requests = caseTags.map { it.toUpdateOrderRequestDto() }.shuffled()
+        val requests = caseTags.map { it.toUpdateRequestDto() }.shuffled()
         whenever(caseTagService.update(eq(caseDefinitionName), eq(requests))).thenReturn(
             requests.mapIndexed { index, dto -> dto.toCaseTag(index) }
         )
@@ -171,7 +171,7 @@ class CaseTagResourceTest : BaseTest() {
 
     @Test
     fun `should update a caseTag`() {
-        val updateDto = CaseTagUpdateRequestDto("test", "Test", CaseTagColor.GRAY, 0)
+        val updateDto = CaseTagUpdateRequestDto("test", "Test", CaseTagColor.GRAY)
 
         mockMvc.perform(
             put("/api/management/v1/case-definition/{caseDefinitionName}/case-tag/{key}", caseDefinitionName, updateDto.key)
@@ -208,9 +208,9 @@ class CaseTagResourceTest : BaseTest() {
         )
     }
 
-    private fun CaseTag.toUpdateOrderRequestDto(): CaseTagUpdateRequestDto {
+    private fun CaseTag.toUpdateRequestDto(): CaseTagUpdateRequestDto {
         return CaseTagUpdateRequestDto(
-            this.id.key, this.title, this.color, this.order
+            this.id.key, this.title, this.color
         )
     }
 
