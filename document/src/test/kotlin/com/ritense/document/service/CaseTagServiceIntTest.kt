@@ -184,17 +184,15 @@ class CaseTagServiceIntTest @Autowired constructor(
     @Test
     fun shouldNotUpdateTagWithoutProperPermissions() {
         assertThrows<AccessDeniedException> {
-            AuthorizationContext.runWithoutAuthorization {
-                caseTagService.update(
-                    "house",
-                    "some-tag",
-                    CaseTagUpdateRequestDto(
-                        key = "some-tag",
-                        title = "New Title",
-                        color = CaseTagColor.BLUE
-                    )
+            caseTagService.update(
+                "house",
+                "some-tag",
+                CaseTagUpdateRequestDto(
+                    key = "some-tag",
+                    title = "New Title",
+                    color = CaseTagColor.BLUE
                 )
-            }
+            )
         }
     }
 

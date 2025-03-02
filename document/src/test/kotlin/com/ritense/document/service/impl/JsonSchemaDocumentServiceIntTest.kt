@@ -226,7 +226,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
 
         //Assert change
         val modifiedDocument = documentService.findBy(document.id).get()
-        assertThat(modifiedDocument.caseTags().first()).isEqualTo(tag1)
+        assertThat(modifiedDocument.caseTags().first()).isEqualTo(CaseTagResponseDto(tag1))
 
         //Assert outbox event
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
