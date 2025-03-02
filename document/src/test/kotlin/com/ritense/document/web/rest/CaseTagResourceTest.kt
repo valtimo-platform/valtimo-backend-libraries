@@ -118,8 +118,7 @@ class CaseTagResourceTest : BaseTest() {
                     {
                         "key": "test",
                         "title": "Test",
-                        "color": "RED",
-                        "order": 1
+                        "color": "RED"
                     }
                 """.trimIndent()
         val requestDto = jacksonObjectMapper().readValue<CaseTagCreateRequestDto>(json)
