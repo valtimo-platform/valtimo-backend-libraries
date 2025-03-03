@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import com.ritense.logging.LoggableResource;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,49 +63,14 @@ public class FormDefinitionDeploymentService {
         this.objectMapper = objectMapper;
     }
 
-    void deployAllFromResourceFiles() {
-        logger.info("Deploying all forms from {}", PATH);
-        final Resource[] resources = loadResources();
-        List<FormDefinition> formDefinitions = Arrays
-            .stream(resources)
-            .map(this::deploy)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .toList();
-
-        applicationEventPublisher.publishEvent(new FormsAutoDeploymentFinishedEvent(formDefinitions));
-    }
-
-    public Optional<FormDefinition> deploy(Resource resource) {
-        if (resource.getFilename() == null) {
-            return Optional.empty();
-        }
-        var name = getFormName(resource);
-        return withLoggingContext("formDefinitionName", name, () -> {
-            try {
-                return deploy(name, IOUtils.toString(resource.getInputStream(), UTF_8), true);
-            } catch (IOException e) {
-                logger.error("Error while deploying form definition {}", getFormName(resource), e);
-                return Optional.empty();
-            }
-        });
-    }
-
-    @Deprecated(since = "12.0.0", forRemoval = true)
-    public Optional<FormDefinition> deploy(
-        @LoggableResource("formDefinitionName") String name,
-        String formDefinitionAsString
-    ) throws JsonProcessingException {
-        return deploy(name, formDefinitionAsString, true);
-    }
-
     public Optional<FormDefinition> deploy(
         @LoggableResource("formDefinitionName") String name,
         String formDefinitionAsString,
+        CaseDefinitionId caseDefinitionId,
         boolean readOnly
     ) throws JsonProcessingException {
         var rawFormDefinition = getJson(formDefinitionAsString);
-        var optionalFormDefinition = formDefinitionRepository.findByName(name);
+        var optionalFormDefinition = formDefinitionRepository.findByNameAndCaseDefinitionId(name, caseDefinitionId);
         if (optionalFormDefinition.isPresent()) {
             var existingFormDefinition = optionalFormDefinition.get();
             if (!rawFormDefinition.equals(existingFormDefinition.getFormDefinition())) {
@@ -114,18 +80,21 @@ public class FormDefinitionDeploymentService {
                     rawFormDefinition.toString(),
                     readOnly
                 );
-                logger.info("Modified existing form definition {}", name);
+                logger.info(
+                    "Modified existing form definition {} for case definition {}", name, caseDefinitionId.toString()
+                );
                 return Optional.of(formDefinition);
             }
         } else {
             var formDefinition = formDefinitionService.createFormDefinition(
+                caseDefinitionId,
                 new CreateFormDefinitionRequest(
                     name,
                     rawFormDefinition.toString(),
                     readOnly
                 )
             );
-            logger.info("Deployed form definition {}", name);
+            logger.info("Deployed form definition {} for case definition {}", name, caseDefinitionId.toString());
             return Optional.of(formDefinition);
         }
 
@@ -134,23 +103,6 @@ public class FormDefinitionDeploymentService {
 
     private JsonNode getJson(String rawJson) throws JsonProcessingException {
         return objectMapper.readTree(rawJson);
-    }
-
-    private String getFormName(Resource resource) {
-        String formName = resource.getFilename();
-        if (formName != null && formName.endsWith(".json")) {
-            formName = formName.substring(0, formName.length() - 5);
-        }
-        return formName;
-    }
-
-    private Resource[] loadResources() {
-        try {
-            return ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(PATH);
-        } catch (IOException ioe) {
-            logger.error("Failed to load resources from " + PATH, ioe);
-            return new Resource[0];
-        }
     }
 
 }

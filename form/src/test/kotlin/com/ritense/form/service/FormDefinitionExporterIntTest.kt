@@ -44,6 +44,6 @@ class FormDefinitionExporterIntTest @Autowired constructor(
     }
 
     companion object {
-        private const val PATH = "config/form/%s.json"
+        private const val PATH = "config/case/person/1-0-0/form/%s.json"
     }
 }

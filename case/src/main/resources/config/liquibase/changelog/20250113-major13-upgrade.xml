@@ -45,4 +45,19 @@
                       newColumnName="ics_case_definition_key"/>
     </changeSet>
 
+    <changeSet id="6" author="Ritense">
+        <renameColumn tableName="json_schema_document" oldColumnName="case_definition_name"
+                      newColumnName="case_definition_key"/>
+        <addColumn tableName="json_schema_document">
+            <column name="case_definition_version_tag" type="VARCHAR(256)" defaultValue="1.0.0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addColumn tableName="json_schema_document">
+            <column name="ics_case_definition_key" type="VARCHAR(256)">
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

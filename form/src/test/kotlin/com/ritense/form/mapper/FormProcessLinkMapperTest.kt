@@ -26,6 +26,7 @@ import com.ritense.form.web.rest.dto.FormProcessLinkCreateRequestDto
 import com.ritense.form.web.rest.dto.FormProcessLinkResponseDto
 import com.ritense.form.web.rest.dto.FormProcessLinkUpdateRequestDto
 import com.ritense.processlink.domain.ActivityTypeWithEventName.USER_TASK_CREATE
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.json.MapperSingleton
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -189,6 +190,7 @@ internal class FormProcessLinkMapperTest {
             UUID.randomUUID(),
             "testing",
             "{}",
+            CaseDefinitionId.of("house", "1.0.0"),
             true
         )
         val formProcessLink = FormProcessLink(

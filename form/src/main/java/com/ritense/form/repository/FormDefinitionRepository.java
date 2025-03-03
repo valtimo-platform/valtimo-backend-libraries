@@ -21,6 +21,7 @@ import com.ritense.form.domain.FormIoFormDefinition;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,8 +36,21 @@ public interface FormDefinitionRepository extends JpaRepository<FormIoFormDefini
 
     Optional<FormIoFormDefinition> findByName(String name);
 
+    Optional<FormIoFormDefinition> findByNameAndCaseDefinitionId(String name, CaseDefinitionId caseDefinitionId);
+
     Optional<FormIoFormDefinition> findByNameIgnoreCase(String name);
 
     @Query("SELECT f FROM FormIoFormDefinition f WHERE upper(f.name) LIKE upper(concat('%', :name, '%'))")
     Page<FormDefinition> findAllByNameContainingIgnoreCase(@Param("name") String name, Pageable pageable);
+
+    @Query("" +
+        "SELECT f " +
+        "FROM FormIoFormDefinition f " +
+        "WHERE f.caseDefinitionId = :caseDefinitionId " +
+        "AND upper(f.name) LIKE upper(concat('%', :name, '%'))")
+    Page<FormDefinition> findAllByCaseDefinitionIdAndNameContainingIgnoreCase(
+        @Param("caseDefinitionId") CaseDefinitionId caseDefinitionId,
+        @Param("name") String name,
+        Pageable pageable
+    );
 }

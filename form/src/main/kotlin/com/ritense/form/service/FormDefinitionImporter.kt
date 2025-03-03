@@ -19,6 +19,7 @@ package com.ritense.form.service
 import com.ritense.form.autodeployment.FormDefinitionDeploymentService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
+import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
 import com.ritense.importer.ValtimoImportTypes.Companion.FORM
 import org.springframework.transaction.annotation.Transactional
 
@@ -28,12 +29,9 @@ class FormDefinitionImporter(
 ) : Importer {
     override fun type(): String = FORM
 
-    override fun dependsOn(): Set<String> = emptySet()
+    override fun dependsOn(): Set<String> = setOf(CASE_DEFINITION)
 
-    override fun supports(fileName: String): Boolean {
-        return fileName.substringBeforeLast('/') == PATH
-            && fileName.substringAfterLast('.') == EXTENSION
-    }
+    override fun supports(fileName: String): Boolean = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
         val formDefinitionAsString = request.content.toString(Charsets.UTF_8)
@@ -41,6 +39,7 @@ class FormDefinitionImporter(
             .deploy(
                 fileNameWithoutPathAndExtension(request.fileName),
                 formDefinitionAsString,
+                request.caseDefinitionId,
                 false
             )
     }
@@ -50,7 +49,6 @@ class FormDefinitionImporter(
     }
 
     companion object {
-        private const val PATH = "config/form"
-        private const val EXTENSION = "json"
+        val FILENAME_REGEX = """/form/([^/]+)\.json""".toRegex()
     }
 }

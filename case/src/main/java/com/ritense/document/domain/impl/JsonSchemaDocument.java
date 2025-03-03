@@ -108,8 +108,9 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     private Long sequence;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    // TODO: Fix this. Using a new column for it is not nice at all
     @JoinColumn(
-        name = "JsonSchemaDocumentDefinitionId_CaseDefinitionId_case_definition_key",
+        name = "ics_case_definition_key",
         referencedColumnName = "case_definition_key"
     )
     @JoinColumn(name = "internal_case_status_key", referencedColumnName = "internal_case_status_key")
