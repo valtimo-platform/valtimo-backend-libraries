@@ -77,6 +77,20 @@ class ObjectenApiPlugin(
         }
     }
 
+    fun getObjectAtIndex(objectUrl: URI, index: Int): ObjectWrapper {
+        withLoggingContext("objectUrl" to objectUrl.toString()) {
+            logger.debug { "Getting Objecten API object with url '$objectUrl' and index '$index'" }
+
+            val objectUrlWithIndex = UriComponentsBuilder
+                .fromUri(objectUrl)
+                .pathSegment(index.toString())
+                .build()
+                .toUri()
+
+            return objectenApiClient.getObject(authenticationPluginConfiguration, objectUrlWithIndex)
+        }
+    }
+
     fun getObjectsByObjectTypeId(
         objecttypesApiUrl: URI,
         objectsApiUrl: URI,
