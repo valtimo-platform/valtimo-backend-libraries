@@ -40,8 +40,12 @@ import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
 import com.ritense.valtimo.contract.config.ValtimoProperties
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import com.ritense.valtimo.decision.CamundaDecisionService
 import com.ritense.valtimo.repository.ValtimoApplicationPropertyRepository
+import com.ritense.valtimo.security.DecisionHttpSecurityConfigurer
+import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.web.rest.DecisionManagementResource
 import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
@@ -52,6 +56,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Lazy
+import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @AutoConfiguration
@@ -182,4 +187,27 @@ class ValtimoCamundaAutoConfiguration {
         valtimoProperties: ValtimoProperties
     ): ValtimoApplicationPropertyService = ValtimoApplicationPropertyService(repository, valtimoProperties)
 
+    @Bean
+    @Order(350)
+    @ConditionalOnMissingBean(DecisionHttpSecurityConfigurer::class)
+    fun decisionHttpSecurityConfigurer(): DecisionHttpSecurityConfigurer {
+        return DecisionHttpSecurityConfigurer()
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CamundaDecisionService::class)
+    fun camundaDecisionService(
+        repositoryService: RepositoryService
+    ): CamundaDecisionService {
+        return CamundaDecisionService(repositoryService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DecisionManagementResource::class)
+    fun decisionManagementResource(
+        camundaProcessService: CamundaProcessService,
+        camundaDecisionService: CamundaDecisionService,
+    ): DecisionManagementResource {
+        return DecisionManagementResource(camundaProcessService, camundaDecisionService)
+    }
 }

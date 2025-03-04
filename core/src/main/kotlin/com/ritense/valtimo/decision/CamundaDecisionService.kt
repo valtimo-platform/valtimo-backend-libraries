@@ -45,6 +45,11 @@ class CamundaDecisionService(
             .decisionDefinitionKey(decisionDefinitionKey)
             .singleResult()
 
+        if (decisionDefinition == null) {
+            logger.error { "Failed to delete decision definition $decisionDefinitionKey for case definition $caseDefinitionId." }
+            return
+        }
+
         val allDecisions = repositoryService
             .createDecisionDefinitionQuery()
             .deploymentId(decisionDefinition.deploymentId)
@@ -56,8 +61,8 @@ class CamundaDecisionService(
             .list()
 
         if (allDecisions.size > 1 || allProcesses.isNotEmpty()) {
-            logger.error { "Failed to delete decision definition $decisionDefinitionKey for case definition $caseDefinitionId. " +
-                "The deployment ${decisionDefinition.deploymentId} has more resources than only the single decision definition." }
+            throw IllegalStateException("Failed to delete decision definition $decisionDefinitionKey for case definition $caseDefinitionId. " +
+                "The deployment ${decisionDefinition.deploymentId} has more resources than only the single decision definition.")
         } else {
             repositoryService.deleteDeployment(decisionDefinition.deploymentId)
         }

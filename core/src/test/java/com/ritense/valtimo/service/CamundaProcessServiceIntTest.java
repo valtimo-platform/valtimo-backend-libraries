@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.valtimo.BaseIntegrationTest;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import com.ritense.valtimo.exception.FileExtensionNotSupportedException;
 import com.ritense.valtimo.exception.NoFileExtensionFoundException;
 import com.ritense.valtimo.exception.ProcessNotDeployableException;
@@ -35,6 +36,9 @@ import org.camunda.bpm.engine.repository.DecisionDefinition;
 import org.camunda.bpm.model.bpmn.Bpmn;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
 import org.camunda.bpm.model.bpmn.instance.Process;
+import org.camunda.bpm.model.dmn.Dmn;
+import org.camunda.bpm.model.dmn.DmnModelInstance;
+import org.camunda.bpm.model.dmn.instance.Decision;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -67,6 +71,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
         List<Resource> processes = List.of(bpmn);
         AuthorizationContext.runWithoutAuthorization(() -> {
             camundaProcessService.deploy(
+                CaseDefinitionId.of("deployedProcess", "1.0.0"),
                 "aProcessName.bpmn",
                 new ByteArrayInputStream(processes.stream().filter(process -> Objects.equals(process.getFilename(), "shouldDeploy.xml"))
                     .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes())
@@ -103,6 +108,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
         List<Resource> tables = List.of(dmn);
         AuthorizationContext.runWithoutAuthorization(() -> {
             camundaProcessService.deploy(
+                CaseDefinitionId.of("deployedProcess", "1.0.0"),
                 "aDmnName.dmn",
                 new ByteArrayInputStream(tables.stream().filter(table -> Objects.equals(table.getFilename(), "sampleDecisionTable.xml"))
                     .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes())
@@ -120,9 +126,10 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
         Assertions.assertThrows(FileExtensionNotSupportedException.class,
             () -> AuthorizationContext.runWithoutAuthorization(() -> {
                 camundaProcessService.deploy(
-                        textFileName,
-                        new ByteArrayInputStream(testFiles.stream().filter(testFile -> Objects.equals(testFile.getFilename(), "sampleTextFile.txt"))
-                                .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes())
+                    CaseDefinitionId.of("deployedProcess", "1.0.0"),
+                    textFileName,
+                    new ByteArrayInputStream(testFiles.stream().filter(testFile -> Objects.equals(testFile.getFilename(), "sampleTextFile.txt"))
+                            .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes())
                 );
                 return null;
             }
@@ -141,9 +148,10 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
         Assertions.assertThrows(NoFileExtensionFoundException.class,
             () -> AuthorizationContext.runWithoutAuthorization(() -> {
                 camundaProcessService.deploy(
-                        sampleFileName,
-                        new ByteArrayInputStream(testFiles.stream().filter(testFile -> Objects.equals(testFile.getFilename(), "sampleTestFile"))
-                                .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes())
+                    CaseDefinitionId.of("deployedProcess", "1.0.0"),
+                    sampleFileName,
+                    new ByteArrayInputStream(testFiles.stream().filter(testFile -> Objects.equals(testFile.getFilename(), "sampleTestFile"))
+                            .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes())
                 );
                 return null;
                 }
@@ -161,6 +169,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
         Assertions.assertThrows(ProcessNotDeployableException.class,
             () -> AuthorizationContext.runWithoutAuthorization(() -> {
                 camundaProcessService.deploy(
+                    CaseDefinitionId.of("deployedProcess", "1.0.0"),
                     "aProcessName.bpmn",
                     new ByteArrayInputStream(processes.stream().filter(process -> Objects.equals(process.getFilename(), "shouldNotDeploy.xml"))
                         .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes()));
@@ -186,6 +195,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
         Assertions.assertThrows(ProcessNotDeployableException.class,
             () -> AuthorizationContext.runWithoutAuthorization(() -> {
                 camundaProcessService.deploy(
+                    CaseDefinitionId.of("deployedProcess", "1.0.0"),
                     "aProcessName.bpmn",
                     new ByteArrayInputStream(processes.stream().filter(process -> Objects.equals(process.getFilename(), "shouldNotDeploy.xml"))
                         .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes()));

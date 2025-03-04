@@ -54,7 +54,9 @@ class DecisionManagementResource(
         @RequestPart(name = "file") dmn: MultipartFile?
     ): ResponseEntity<List<DecisionDefinition>> {
 
-        val decisionDefinitions = camundaDecisionService.getDecisionDefinitions(CaseDefinitionId(caseDefinitionKey, caseDefinitionVersionTag))
+        val decisionDefinitions = runWithoutAuthorization {
+            camundaDecisionService.getDecisionDefinitions(CaseDefinitionId(caseDefinitionKey, caseDefinitionVersionTag))
+        }
 
         return ResponseEntity.ok(decisionDefinitions)
     }
@@ -87,7 +89,7 @@ class DecisionManagementResource(
             )
         }
 
-        return ResponseEntity.ok().build()
+        return ResponseEntity.noContent().build()
     }
 
     @DeleteMapping(
@@ -100,10 +102,12 @@ class DecisionManagementResource(
         @PathVariable(name = "decisionDefinitionKey") decisionDefinitionKey: String,
     ): ResponseEntity<Any> {
 
-        camundaDecisionService.deleteDecisionDefinition(
-            CaseDefinitionId(caseDefinitionKey, caseDefinitionVersionTag),
-            decisionDefinitionKey
-        )
+        runWithoutAuthorization {
+            camundaDecisionService.deleteDecisionDefinition(
+                CaseDefinitionId(caseDefinitionKey, caseDefinitionVersionTag),
+                decisionDefinitionKey
+            )
+        }
 
         return ResponseEntity.noContent().build()
     }

@@ -74,6 +74,7 @@ import org.camunda.bpm.model.bpmn.instance.Process;
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties;
 import org.camunda.bpm.model.dmn.Dmn;
 import org.camunda.bpm.model.dmn.DmnModelInstance;
+import org.camunda.bpm.model.dmn.instance.Decision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
@@ -440,8 +441,8 @@ public class CamundaProcessService {
     }
 
     private void setDecisionsVersionTag(DmnModelInstance dmnModel, CaseDefinitionId caseDefinitionId) {
-        dmnModel.getDefinitions().getChildElementsByType(Process.class).forEach(
-            dmn -> dmn.setCamundaVersionTag(  caseDefinitionId.toString())
+        dmnModel.getDefinitions().getChildElementsByType(Decision.class).forEach(
+            dmn -> dmn.setVersionTag(caseDefinitionId.toString())
         );
     }
 
