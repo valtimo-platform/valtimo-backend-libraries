@@ -382,6 +382,8 @@ class CaseTaskListSearchService(
             if (values.size == 1 && values[0] == true) {
                 getAuthorizationSpecification(CamundaTaskActionProvider.VIEW).toPredicate(taskRoot, query, cb)
             } else {
+                // Returning a no-op/always true value so that
+                // the code doesn't continue and try to find `hideInaccessibleTasks` in the task table.
                 cb.conjunction()
             }
         } else {
