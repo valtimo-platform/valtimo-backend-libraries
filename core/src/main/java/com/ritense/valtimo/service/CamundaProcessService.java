@@ -295,7 +295,9 @@ public class CamundaProcessService {
     public List<CamundaProcessDefinition> getDeployedDefinitions(CaseDefinitionId caseDefinitionId) {
         denyAuthorization();
         return AuthorizationContext.runWithoutAuthorization(() -> camundaRepositoryService.findProcessDefinitions(
-            byActive().and(byVersionTag(caseDefinitionId.toString())),
+            byActive()
+                .and(byVersionTag(caseDefinitionId.toString()))
+                .and(byLatestVersion()),
             Sort.by(NAME)
         ));
     }
