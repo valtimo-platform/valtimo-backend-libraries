@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.catalogiapi.client.BesluittypeRequest
 import com.ritense.catalogiapi.client.CatalogiApiClient
+import com.ritense.catalogiapi.client.CatalogiApiClient.Companion.HOST_DOCKER_INTERNAL
 import com.ritense.catalogiapi.client.EigenschapRequest
 import com.ritense.catalogiapi.client.ResultaattypeRequest
 import com.ritense.catalogiapi.client.RoltypeRequest
@@ -403,7 +404,12 @@ class CatalogiApiPlugin(
         const val URL_PROPERTY = "url"
         private val HTTPS_REGEX = "https?://.+".toRegex()
 
-        fun findConfigurationByUrl(url: URI) =
-            { properties: JsonNode -> url.toString().startsWith(properties.get(URL_PROPERTY).textValue()) }
+        fun findConfigurationByUrl(url: URI) = { properties: JsonNode ->
+            if (url.host == HOST_DOCKER_INTERNAL) {
+                url.toString().replace(HOST_DOCKER_INTERNAL, "localhost")
+            } else {
+                url.toString()
+            }.startsWith(properties[URL_PROPERTY].textValue())
+        }
     }
 }

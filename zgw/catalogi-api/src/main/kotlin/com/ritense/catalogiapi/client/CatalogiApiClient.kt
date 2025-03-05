@@ -314,6 +314,7 @@ open class CatalogiApiClient(
 
     companion object {
         val logger = KotlinLogging.logger {}
+        const val HOST_DOCKER_INTERNAL = "host.docker.internal"
         const val INFORMATIEOBJECTTYPECACHE_KEY = "zgw-catalogiapi-informatieobjecttype"
     }
 }

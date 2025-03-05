@@ -71,4 +71,8 @@ class BesluitenApiClient(
             .retrieve()
             .body<BesluitInformatieObject>()!!
     }
+
+    companion object {
+        const val HOST_DOCKER_INTERNAL = "host.docker.internal"
+    }
 }

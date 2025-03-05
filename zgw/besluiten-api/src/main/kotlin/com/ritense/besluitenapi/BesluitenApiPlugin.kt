@@ -19,6 +19,7 @@ package com.ritense.besluitenapi
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.besluitenapi.client.Besluit
 import com.ritense.besluitenapi.client.BesluitenApiClient
+import com.ritense.besluitenapi.client.BesluitenApiClient.Companion.HOST_DOCKER_INTERNAL
 import com.ritense.besluitenapi.client.CreateBesluitInformatieObject
 import com.ritense.besluitenapi.client.CreateBesluitRequest
 import com.ritense.besluitenapi.client.Vervalreden
@@ -169,7 +170,11 @@ class BesluitenApiPlugin(
         const val URL_PROPERTY = "url"
 
         fun findConfigurationByUrl(url: URI) = { properties: JsonNode ->
-            url.toString().startsWith(properties[URL_PROPERTY].textValue())
+            if (url.host == HOST_DOCKER_INTERNAL) {
+                url.toString().replace(HOST_DOCKER_INTERNAL, "localhost")
+            } else {
+                url.toString()
+            }.startsWith(properties[URL_PROPERTY].textValue())
         }
     }
 }
