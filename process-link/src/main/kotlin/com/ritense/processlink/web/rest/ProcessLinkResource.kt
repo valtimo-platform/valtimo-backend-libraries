@@ -183,19 +183,18 @@ class ProcessLinkResource(
         @PathVariable("versionTag") versionTag: String,
         @PathVariable("processDefinitionId") processDefinitionId: String,
     ): ResponseEntity<Any> {
-
-
-        camundaProcessService
-            .getProcessDefinitionById(processDefinitionId)
-            .let { definition: CamundaProcessDefinition? ->
-                processDefinitionCaseDefinitionService.deleteProcessDocumentDefinition(
-                    ProcessDefinitionId(processDefinitionId),
-                    CaseDefinitionId.of(caseDefinitionKey, versionTag)
-                )
-                processLinkService.deleteProcessLinksForProcessDefinition(processDefinitionId)
-                camundaProcessService.deleteProcessDefinition(processDefinitionId)
-            }
-
+        runWithoutAuthorization {
+            camundaProcessService
+                .getProcessDefinitionById(processDefinitionId)
+                .let { definition: CamundaProcessDefinition? ->
+                    processDefinitionCaseDefinitionService.deleteProcessDocumentDefinition(
+                        ProcessDefinitionId(processDefinitionId),
+                        CaseDefinitionId.of(caseDefinitionKey, versionTag)
+                    )
+                    processLinkService.deleteProcessLinksForProcessDefinition(processDefinitionId)
+                    camundaProcessService.deleteProcessDefinition(processDefinitionId)
+                }
+        }
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
 
