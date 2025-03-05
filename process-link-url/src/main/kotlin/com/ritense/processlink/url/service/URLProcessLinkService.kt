@@ -24,8 +24,6 @@ import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentService
-import com.ritense.processdocument.domain.ProcessDocumentDefinition
-import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionId
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndStartProcessRequest
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
@@ -35,8 +33,8 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkService
-import com.ritense.processlink.url.domain.URLVariables
 import com.ritense.processlink.url.domain.URLProcessLink
+import com.ritense.processlink.url.domain.URLVariables
 import com.ritense.processlink.url.web.rest.dto.URLSubmissionResult
 import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
@@ -71,8 +69,10 @@ class URLProcessLinkService(
         val processDefinition = getProcessDefinition(processLink)
         val documentDefinitionNameToUse = document?.definitionId()?.name()
             ?: documentDefinitionName
-            ?: getProcessDocumentDefinition(processDefinition, document).processDocumentDefinitionId()
-                .documentDefinitionId().name()
+/*            ?: getProcessDocumentDefinition(processDefinition, document).processDocumentDefinitionId()
+                .documentDefinitionId().name()*/
+            //TODO: Fix this
+            ?: "temp-fallback"
 
         val request = getRequest(
             processLink,
@@ -108,7 +108,7 @@ class URLProcessLinkService(
         }
     }
 
-    private fun getProcessDocumentDefinition(
+/*    private fun getProcessDocumentDefinition(
         processDefinition: CamundaProcessDefinition,
         document: Document?
     ): ProcessDocumentDefinition {
@@ -124,7 +124,7 @@ class URLProcessLinkService(
                 )
             }
         }
-    }
+    }*/
 
     private fun getRequest(
         processLink: URLProcessLink,
