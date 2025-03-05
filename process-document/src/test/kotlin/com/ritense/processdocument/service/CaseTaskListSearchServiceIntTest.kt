@@ -152,6 +152,21 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
             )
         )
 
+        searchFieldV2Service.create(
+            TaskListSearchFieldV2Dto(
+                id = UUID.randomUUID(),
+                ownerId = definition!!.id!!.name(),
+                key = "hideInaccessibleTasks",
+                title = "Hide inaccessible tasks",
+                path = "task:hideInaccessibleTasks",
+                order = 1,
+                dataType = DataType.BOOLEAN,
+                fieldType = FieldType.SINGLE,
+                matchType = SearchFieldMatchType.EXACT,
+                dropdownDataProvider = null
+            )
+        )
+
         runWithoutAuthorization {
             camundaProcessJsonSchemaDocumentService.startProcessForDocument(
                 StartProcessForDocumentRequest(
@@ -263,6 +278,52 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
 
         val searchResult = searchTasks(filter)
         assertThat(searchResult).hasSize(0)
+    }
+
+    @Test
+    @Throws(JsonProcessingException::class)
+    @WithMockUser(username = "user@ritense.com", authorities = [AuthoritiesConstants.USER, "ROLE_HOUSE_OWNER"])
+    fun shouldNotFindInaccessibleTasks() {
+        runWithoutAuthorization {
+            camundaProcessJsonSchemaDocumentService.startProcessForDocument(
+                StartProcessForDocumentRequest(
+                    originalDocument!!.resultingDocument().orElseThrow().id(),
+                    "conditional-candidate-group",
+                    mapOf("candidateGroup" to "ROLE_HOUSE_OWNER")
+                )
+            )
+        }
+
+        runWithoutAuthorization {
+            camundaProcessJsonSchemaDocumentService.startProcessForDocument(
+                StartProcessForDocumentRequest(
+                    originalDocument!!.resultingDocument().orElseThrow().id(),
+                    "conditional-candidate-group",
+                    mapOf("candidateGroup" to "ROLE_HOUSE_OWNER")
+                )
+            )
+        }
+
+        runWithoutAuthorization {
+            camundaProcessJsonSchemaDocumentService.startProcessForDocument(
+                StartProcessForDocumentRequest(
+                    originalDocument!!.resultingDocument().orElseThrow().id(),
+                    "conditional-candidate-group",
+                    mapOf("candidateGroup" to "ROLE_ADMIN")
+                )
+            )
+        }
+
+        val filter = SearchWithConfigRequest.SearchWithConfigFilter()
+        filter.key = "hideInaccessibleTasks"
+        filter.setValues(listOf(true))
+
+        val searchWithConfigRequest = SearchWithConfigRequest()
+        searchWithConfigRequest.otherFilters = listOf(filter)
+
+        val searchResult = caseTaskListSearchService.search("house", searchWithConfigRequest, PageRequest.of(0, 50))
+
+        assertThat(searchResult).hasSize(2)
     }
 
     @Test
