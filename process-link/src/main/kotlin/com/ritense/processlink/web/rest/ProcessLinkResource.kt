@@ -175,24 +175,24 @@ class ProcessLinkResource(
     }
 
     @DeleteMapping(
-        value = ["/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/process-definition/{processDefinitionId}"],
+        value = ["/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/process-definition/{processDefinitionKey}"],
     )
     @Transactional
     fun deleteProcessDefinitionsAndProcessLinks(
         @PathVariable("caseDefinitionKey") caseDefinitionKey: String,
         @PathVariable("versionTag") versionTag: String,
-        @PathVariable("processDefinitionId") processDefinitionId: String,
+        @PathVariable("processDefinitionKey") processDefinitionKey: String,
     ): ResponseEntity<Any> {
         runWithoutAuthorization {
             camundaProcessService
-                .getProcessDefinitionById(processDefinitionId)
-                .let { definition: CamundaProcessDefinition? ->
+                .getDefinitionsByKeyAndCaseDefinition(CaseDefinitionId.of(caseDefinitionKey, versionTag), processDefinitionKey)
+                .forEach { definition: CamundaProcessDefinition ->
                     processDefinitionCaseDefinitionService.deleteProcessDocumentDefinition(
-                        ProcessDefinitionId(processDefinitionId),
+                        ProcessDefinitionId(definition.id),
                         CaseDefinitionId.of(caseDefinitionKey, versionTag)
                     )
-                    processLinkService.deleteProcessLinksForProcessDefinition(processDefinitionId)
-                    camundaProcessService.deleteProcessDefinition(processDefinitionId)
+                    processLinkService.deleteProcessLinksForProcessDefinition(definition.id)
+                    camundaProcessService.deleteProcessDefinition(definition.id)
                 }
         }
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()

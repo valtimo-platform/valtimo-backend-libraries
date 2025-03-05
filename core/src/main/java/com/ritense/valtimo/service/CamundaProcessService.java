@@ -302,6 +302,14 @@ public class CamundaProcessService {
         ));
     }
 
+    public List<CamundaProcessDefinition> getDefinitionsByKeyAndCaseDefinition(CaseDefinitionId caseDefinitionId, String processDefinitionKey) {
+        denyAuthorization();
+        return AuthorizationContext.runWithoutAuthorization(() -> camundaRepositoryService.findProcessDefinitions(
+            byVersionTag(caseDefinitionId.toString())
+                .and(byKey(processDefinitionKey))
+        ));
+    }
+
     @Transactional
     public void deleteAllProcesses(String processDefinitionKey, String reason) {
         denyAuthorization();

@@ -48,7 +48,7 @@ class ProcessLinkHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(POST, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/process-definition"))
                     .hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(DELETE, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/process-definition/{processDefinitionId}"))
+                    .requestMatchers(antMatcher(DELETE, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/process-definition/{processDefinitionKey}"))
                     .hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
