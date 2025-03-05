@@ -19,6 +19,9 @@
             <column name="case_tag_order" type="${intType}">
                 <constraints nullable="false"/>
             </column>
+            <column name="visible_in_case_list_by_default" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <addPrimaryKey tableName="case_tag" columnNames="case_tag_key, case_definition_name"

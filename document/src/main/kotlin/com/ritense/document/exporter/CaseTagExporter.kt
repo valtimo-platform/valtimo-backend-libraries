@@ -44,7 +44,7 @@ class CaseTagExporter(
         }
 
         val caseTabChangeset = CaseTagChangeset(
-            "${request.name}.case-tag.${Instant.now().toEpochMilli()}",
+            "${request.name}.case-tags.${Instant.now().toEpochMilli()}",
             caseTags.map(CaseTagDto::of)
         )
         val caseTagExport = ExportFile(

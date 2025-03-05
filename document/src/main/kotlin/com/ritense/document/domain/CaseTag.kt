@@ -16,7 +16,6 @@
 
 package com.ritense.document.domain
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.Column
 import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
@@ -36,7 +35,9 @@ data class CaseTag(
     @Enumerated(EnumType.STRING)
     val color: CaseTagColor,
     @Column(name = "case_tag_order")
-    val order: Int
+    val order: Int,
+    @Column(name = "visible_in_case_list_by_default")
+    val visibleInCaseListByDefault: Boolean
 ) {
     init {
         require(title.isNotBlank()) { "title was blank!" }

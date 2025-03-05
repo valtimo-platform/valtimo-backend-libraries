@@ -62,7 +62,8 @@ class CaseTagService(
                 ),
                 request.title,
                 request.color,
-                order = currentCaseTags.size
+                order = currentCaseTags.size,
+                request.visibleInCaseListByDefault
             )
         )
     }
@@ -82,7 +83,8 @@ class CaseTagService(
         caseTagRepository.save(
             oldCaseTag.copy(
                 title = request.title,
-                color = request.color
+                color = request.color,
+                visibleInCaseListByDefault = request.visibleInCaseListByDefault
             )
         )
     }
@@ -108,7 +110,8 @@ class CaseTagService(
             existingCaseTag.copy(
                 title = request.title,
                 color = request.color,
-                order = index
+                order = index,
+                visibleInCaseListByDefault = request.visibleInCaseListByDefault
             )
         }
 

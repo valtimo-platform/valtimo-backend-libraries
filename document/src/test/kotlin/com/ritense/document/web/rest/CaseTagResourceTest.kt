@@ -170,7 +170,7 @@ class CaseTagResourceTest : BaseTest() {
 
     @Test
     fun `should update a caseTag`() {
-        val updateDto = CaseTagUpdateRequestDto("test", "Test", CaseTagColor.GRAY)
+        val updateDto = CaseTagUpdateRequestDto("test", "Test", CaseTagColor.GRAY, true)
 
         mockMvc.perform(
             put("/api/management/v1/case-definition/{caseDefinitionName}/case-tag/{key}", caseDefinitionName, updateDto.key)
@@ -203,13 +203,17 @@ class CaseTagResourceTest : BaseTest() {
             CaseTagId(caseDefinitionName, statusKey),
             statusKey.replaceFirstChar { it.uppercase() },
             CaseTagColor.entries[order],
-            order
+            order,
+            visibleInCaseListByDefault = true
         )
     }
 
     private fun CaseTag.toUpdateRequestDto(): CaseTagUpdateRequestDto {
         return CaseTagUpdateRequestDto(
-            this.id.key, this.title, this.color
+            this.id.key,
+            this.title,
+            this.color,
+            visibleInCaseListByDefault = true
         )
     }
 
@@ -218,7 +222,8 @@ class CaseTagResourceTest : BaseTest() {
             CaseTagId(caseDefinitionName, this.key),
             this.title,
             this.color,
-            0
+            0,
+            visibleInCaseListByDefault = true
         )
     }
 
@@ -227,7 +232,8 @@ class CaseTagResourceTest : BaseTest() {
             CaseTagId(caseDefinitionName, this.key),
             this.title,
             this.color,
-            order
+            order,
+            visibleInCaseListByDefault = true
         )
     }
 }

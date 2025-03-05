@@ -24,7 +24,8 @@ data class CaseTagDto(
     val caseDefinitionName: String,
     val title: String,
     val color: CaseTagColor,
-    val order: Int
+    val order: Int,
+    val visibleInCaseListByDefault: Boolean
 ) {
     companion object {
         fun of(caseTag: CaseTag) = CaseTagDto(
@@ -32,7 +33,8 @@ data class CaseTagDto(
             caseTag.id.caseDefinitionName,
             caseTag.title,
             caseTag.color,
-            caseTag.order
+            caseTag.order,
+            caseTag.visibleInCaseListByDefault
         )
     }
 }

@@ -1,19 +1,21 @@
 {
-    "changesetId": "house-case-tags-v2",
+    "changesetId": "house.case-tags",
     "caseTags": [
         {
             "key": "important",
             "caseDefinitionName": "house",
             "title": "Important",
             "order": 0,
-            "color": "BLUE"
+            "color": "BLUE",
+            "visibleInCaseListByDefault": true
         },
         {
             "key": "needs-attention",
             "caseDefinitionName": "house",
             "title": "Needs attention!",
             "order": 1,
-            "color": "RED"
+            "color": "RED",
+            "visibleInCaseListByDefault": true
         }
     ]
 }
