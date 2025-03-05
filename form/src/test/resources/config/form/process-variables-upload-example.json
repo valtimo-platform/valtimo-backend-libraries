@@ -1,0 +1,28 @@
+{
+    "display": "form",
+    "components": [
+        {
+            "key": "targetKeyTest",
+            "type": "documenten-api-file",
+            "input": true,
+            "label": "targetKeyTest",
+            "properties": {
+                "targetKey": "pv.test"
+            }
+        },
+        {
+            "key": "pv.keyTest",
+            "type": "documenten-api-file",
+            "input": true,
+            "label": "pvKeyTest"
+        },
+        {
+            "key": "submit",
+            "type": "button",
+            "input": true,
+            "label": "Submit",
+            "tableView": false,
+            "disableOnInvalid": true
+        }
+    ]
+}
