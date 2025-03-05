@@ -92,7 +92,7 @@
                             "type": "field",
                             "field": "documentDefinitionId.name",
                             "operator": "==",
-                            "value": "house"
+                            "value": "museum"
                         }
                     ]
                 }
