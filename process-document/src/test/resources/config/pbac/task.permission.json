@@ -24,25 +24,6 @@
         },
         {
             "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
-            "action": "view",
-            "roleKey": "ROLE_HOUSE_OWNER",
-            "conditions": [
-                {
-                    "type": "container",
-                    "resourceType": "com.ritense.valtimo.camunda.domain.CamundaIdentityLink",
-                    "conditions": [
-                        {
-                            "type": "field",
-                            "field": "groupId",
-                            "operator": "==",
-                            "value": "ROLE_HOUSE_OWNER"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
             "action": "view_list",
             "roleKey": "ROLE_USER",
             "conditions": [
@@ -74,25 +55,6 @@
                             "field": "documentDefinitionId.name",
                             "operator": "==",
                             "value": "notahouse"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
-            "action": "view_list",
-            "roleKey": "ROLE_HOUSE_OWNER",
-            "conditions": [
-                {
-                    "type": "container",
-                    "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
-                    "conditions": [
-                        {
-                            "type": "field",
-                            "field": "documentDefinitionId.name",
-                            "operator": "==",
-                            "value": "museum"
                         }
                     ]
                 }
