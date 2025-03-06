@@ -141,7 +141,7 @@ class HostDockerInternalRestClientCustomizerTest {
         val execution = mock<ClientHttpRequestExecution>()
         val responseBody = """
             {
-               "count":7,
+               "count":1,
                "results":[
                   {
                      "url":"http://localhost:8010/api/v2/objects/f710ad49-8c90-4b4d-bf94-83555212dd5c",
