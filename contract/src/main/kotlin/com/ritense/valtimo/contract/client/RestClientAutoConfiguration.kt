@@ -17,8 +17,10 @@
 package com.ritense.valtimo.contract.client
 
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
+import org.springframework.core.env.Environment
 
 @AutoConfiguration
 @EnableConfigurationProperties(ValtimoHttpRestClientConfigurationProperties::class)
@@ -29,6 +31,16 @@ class RestClientAutoConfiguration {
         valtimoHttpRestClientConfigurationProperties: ValtimoHttpRestClientConfigurationProperties
     ): ApacheRequestFactoryCustomizer {
         return ApacheRequestFactoryCustomizer(valtimoHttpRestClientConfigurationProperties)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(HostDockerInternalRestClientCustomizer::class)
+    fun hostDockerInternalRestClientCustomizer(
+        environment: Environment,
+    ): HostDockerInternalRestClientCustomizer {
+        return HostDockerInternalRestClientCustomizer(
+            environment,
+        )
     }
 
 }
