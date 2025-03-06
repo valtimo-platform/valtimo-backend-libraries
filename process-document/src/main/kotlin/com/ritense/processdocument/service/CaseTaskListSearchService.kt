@@ -285,7 +285,7 @@ class CaseTaskListSearchService(
         )
 
         if (searchRequest.otherFilters != null && searchRequest.otherFilters.isNotEmpty()) {
-            predicates.add(getOtherFiltersPredicate(cb, taskRoot, documentRoot, searchRequest))
+            predicates.add(getOtherFiltersPredicate(cb, query, taskRoot, documentRoot, searchRequest))
         }
 
         if (searchRequest.statusFilter != null && searchRequest.statusFilter.isNotEmpty()) {
@@ -297,6 +297,7 @@ class CaseTaskListSearchService(
 
     private fun getOtherFiltersPredicate(
         cb: CriteriaBuilder,
+        query: CriteriaQuery<*>,
         taskRoot: Root<CamundaTask>,
         documentRoot: Root<JsonSchemaDocument>,
         searchRequest: AdvancedSearchRequest
@@ -304,6 +305,7 @@ class CaseTaskListSearchService(
         val jsonPredicates: Array<Predicate> = searchRequest.otherFilters.map { currentCriteria: AdvancedSearchRequest.OtherFilter ->
             buildQueryForSearchCriteria(
                 cb,
+                query,
                 taskRoot,
                 documentRoot,
                 currentCriteria
@@ -336,10 +338,13 @@ class CaseTaskListSearchService(
 
     private fun buildQueryForSearchCriteria(
         cb: CriteriaBuilder,
+        query: CriteriaQuery<*>,
         taskRoot: Root<CamundaTask>,
         documentRoot: Root<JsonSchemaDocument>,
         searchCriteria: AdvancedSearchRequest.OtherFilter
     ): Predicate {
+        handleSpecialPaths(cb, query, taskRoot, searchCriteria)?.let { return it }
+
         val value: Expression<Comparable<Any>> =
             if (searchCriteria.path.startsWith(DOC_PREFIX)) {
                 getValueExpressionForDocPrefix(cb, documentRoot, searchCriteria)
@@ -362,6 +367,27 @@ class CaseTaskListSearchService(
             DatabaseSearchType.BETWEEN -> searchBetween(cb, value, rangeFrom, rangeTo)
             DatabaseSearchType.IN -> searchIn(cb, value, searchCriteria.getValues())
             else -> throw NotImplementedException("Searching for search type '" + searchCriteria.searchType + "' hasn't been implemented.")
+        }
+    }
+
+    private fun handleSpecialPaths(
+        cb: CriteriaBuilder,
+        query: CriteriaQuery<*>,
+        taskRoot: Root<CamundaTask>,
+        searchCriteria: AdvancedSearchRequest.OtherFilter
+    ): Predicate? {
+        return if (searchCriteria.path == TASK_PREFIX + "hideInaccessibleTasks") {
+            val values = searchCriteria.getValues<Boolean>()
+
+            if (values.size == 1 && values[0] == true) {
+                getAuthorizationSpecification(CamundaTaskActionProvider.VIEW).toPredicate(taskRoot, query, cb)
+            } else {
+                // Returning a no-op/always true value so that
+                // the code doesn't continue and try to find `hideInaccessibleTasks` in the task table.
+                cb.conjunction()
+            }
+        } else {
+            null
         }
     }
 
