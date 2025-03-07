@@ -55,7 +55,7 @@ class CaseTagExporterIntTest @Autowired constructor(
 
         //Check if the changesetId ends with a timestamp
         val changesetIdField = "changesetId"
-        val changesetRegex = """(person\.case-tags)\.\d+""".toRegex()
+        val changesetRegex = """(person\.case-tag)\.\d+""".toRegex()
         val matchResult = changesetRegex.matchEntire(exportJson.get(changesetIdField).textValue())
         assertThat(matchResult).isNotNull
 
@@ -77,6 +77,6 @@ class CaseTagExporterIntTest @Autowired constructor(
     }
 
     companion object {
-        private const val PATH = "config/case-tags/person.case-tags.json"
+        private const val PATH = "config/case-tag/person.case-tag.json"
     }
 }

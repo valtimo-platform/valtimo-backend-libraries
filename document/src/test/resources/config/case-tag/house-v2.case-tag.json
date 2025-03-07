@@ -1,5 +1,5 @@
 {
-    "changesetId": "house.case-tags",
+    "changesetId": "house-v2.case-tag",
     "caseTags": [
         {
             "key": "important",

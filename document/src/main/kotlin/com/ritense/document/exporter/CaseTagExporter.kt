@@ -44,7 +44,7 @@ class CaseTagExporter(
         }
 
         val caseTabChangeset = CaseTagChangeset(
-            "${request.name}.case-tags.${Instant.now().toEpochMilli()}",
+            "${request.name}.case-tag.${Instant.now().toEpochMilli()}",
             caseTags.map(CaseTagDto::of)
         )
         val caseTagExport = ExportFile(
@@ -56,6 +56,6 @@ class CaseTagExporter(
     }
 
     companion object {
-        private const val PATH = "config/case-tags/%s.case-tags.json"
+        private const val PATH = "config/case-tag/%s.case-tag.json"
     }
 }

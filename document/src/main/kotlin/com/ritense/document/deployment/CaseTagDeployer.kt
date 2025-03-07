@@ -34,7 +34,7 @@ class CaseTagDeployer(
     private val changelogService: ChangelogService,
     private val clearTables: Boolean
 ) : ChangesetDeployer {
-    override fun getPath() = "classpath*:**/*.case-tags.json"
+    override fun getPath() = "classpath*:**/*.case-tag.json"
 
     override fun before() {
         if (clearTables) {

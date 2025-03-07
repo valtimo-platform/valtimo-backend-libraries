@@ -57,8 +57,8 @@ class CaseTagImporterTest(
 
     @Test
     fun `should not support non-case-tag fileName`() {
-        assertThat(importer.supports("config/case-tags/x/test.json")).isFalse()
-        assertThat(importer.supports("config/case-tags/test-json")).isFalse()
+        assertThat(importer.supports("config/case-tag/x/test.json")).isFalse()
+        assertThat(importer.supports("config/case-tag/test-json")).isFalse()
     }
 
     @Test
@@ -71,6 +71,6 @@ class CaseTagImporterTest(
     }
 
     private companion object {
-        const val FILENAME = "config/case-tags/my-doc-def.case-tags.json"
+        const val FILENAME = "config/case-tag/my-doc-def.case-tag.json"
     }
 }

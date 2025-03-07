@@ -24,11 +24,11 @@
     <bpmn:startEvent id="start-event-bezwaar-proces-gestart" name="Bezwaar proces gestart">
       <bpmn:outgoing>Flow_162004p</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:serviceTask id="Activity_0r8lucn" name="add tag 1" camunda:expression="${documentDelegateService.addCaseTag(execution,&#34;test4&#34;)}">
+    <bpmn:serviceTask id="Activity_0r8lucn" name="add tag 1" camunda:expression="${documentDelegateService.addCaseTag(execution,&#34;test1&#34;)}">
       <bpmn:incoming>Flow_162004p</bpmn:incoming>
       <bpmn:outgoing>Flow_1e5lhmc</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="Activity_1eiexpp" name="add tag 2" camunda:expression="${documentDelegateService.addCaseTag(execution,&#34;test5&#34;)}">
+    <bpmn:serviceTask id="Activity_1eiexpp" name="add tag 2" camunda:expression="${documentDelegateService.addCaseTag(execution,&#34;test2&#34;)}">
       <bpmn:incoming>Flow_0ytx5d7</bpmn:incoming>
       <bpmn:outgoing>Flow_1crortz</bpmn:outgoing>
     </bpmn:serviceTask>

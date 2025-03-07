@@ -40,6 +40,6 @@ class CaseTagImporter(
     }
 
     private companion object {
-        val FILENAME_REGEX = """config/case-tags/([^/]+)\.case-tags\.json""".toRegex()
+        val FILENAME_REGEX = """config/case-tag/([^/]+)\.case-tag\.json""".toRegex()
     }
 }

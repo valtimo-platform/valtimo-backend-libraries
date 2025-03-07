@@ -1,9 +1,9 @@
 {
-    "changesetId": "person.case-tags",
+    "changesetId": "house-v1.case-tag",
     "caseTags": [
         {
             "key": "important",
-            "caseDefinitionName": "person",
+            "caseDefinitionName": "house",
             "title": "Important",
             "order": 0,
             "color": "BLUE",
@@ -11,7 +11,7 @@
         },
         {
             "key": "needs-attention",
-            "caseDefinitionName": "person",
+            "caseDefinitionName": "house",
             "title": "Needs attention!",
             "order": 1,
             "color": "PURPLE",
