@@ -118,6 +118,7 @@ class CaseTagService(
         return caseTagRepository.saveAll(updatedCaseTags)
     }
 
+    // TODO discuss with product team how to handle deletions
     fun delete(caseDefinitionName: String, caseTagKey: String) {
         denyManagementOperation()
 

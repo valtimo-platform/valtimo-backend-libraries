@@ -36,9 +36,10 @@ class CaseTagDeployer(
 ) : ChangesetDeployer {
     override fun getPath() = "classpath*:**/*.case-tag.json"
 
+    // TODO discuss with product team how to handle deletions
     override fun before() {
         if (clearTables) {
-           caseTagRepository.deleteAll()
+            caseTagRepository.deleteAll()
             changelogService.deleteChangesetsByKey(KEY)
         }
     }
