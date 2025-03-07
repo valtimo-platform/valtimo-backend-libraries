@@ -238,7 +238,7 @@ public class CamundaTaskService {
     }
 
     @Transactional
-    public void setDueDate(String taskId, Date dueDate) throws IllegalStateException {
+    public void setDueDate(String taskId, LocalDateTime dueDate) throws IllegalStateException {
         if (dueDate == null) {
             removeDueDate(taskId);
             return;
@@ -248,10 +248,10 @@ public class CamundaTaskService {
 
         requirePermission(task, MODIFY);
 
-        Date formerDueDate = Date.from(task.getDueDate().toInstant(ZoneOffset.UTC));
+        LocalDateTime formerDueDate = task.getDueDate();
 
         try {
-            taskService.setDueDate(task.getId(), dueDate);
+            taskService.setDueDate(task.getId(), Date.from(dueDate.toInstant(ZoneOffset.UTC)));
             entityManager.refresh(task);
             publishTaskDueDateSetEvent(task, formerDueDate, dueDate);
             outboxService.send(() -> new TaskDueDateSet(task.getId(), objectMapper.valueToTree(task)));
@@ -265,15 +265,15 @@ public class CamundaTaskService {
     @Transactional
     public void removeDueDate(String taskId) {
         final CamundaTask task = runWithoutAuthorization(() -> findTaskById(taskId));
-        requirePermission(task, ASSIGN);
+        requirePermission(task, MODIFY);
         try {
-            taskService.setAssignee(task.getId(), NO_USER);
+            taskService.setDueDate(task.getId(), null);
             entityManager.refresh(task);
-            outboxService.send(() -> new TaskUnassigned(task.getId(), objectMapper.valueToTree(task)));
+            outboxService.send(() -> new TaskDueDateSet(task.getId(), objectMapper.valueToTree(task)));
         } catch (AuthorizationException ex) {
-            throw new IllegalStateException("Cannot unassign task: the user has no permission.", ex);
+            throw new IllegalStateException("Cannot remove task due date: the user has no permission.", ex);
         } catch (ProcessEngineException ex) {
-            throw new IllegalStateException("An error occurred while unassigning the task.", ex);
+            throw new IllegalStateException("An error occurred while removing due date from task.", ex);
         }
     }
 
@@ -596,8 +596,8 @@ public class CamundaTaskService {
         );
     }
 
-    private void publishTaskDueDateSetEvent(CamundaTask task, Date formerDueDate, Date newDueDate) {
-        final String businessKey = runtimeService
+    private void publishTaskDueDateSetEvent(CamundaTask task, LocalDateTime formerDueDate, LocalDateTime newDueDate) {
+        String businessKey = runtimeService
             .createProcessInstanceQuery()
             .processInstanceId(task.getProcessInstanceId())
             .singleResult()
@@ -609,18 +609,19 @@ public class CamundaTaskService {
                 RequestHelper.getOrigin(),
                 LocalDateTime.now(),
                 SecurityUtils.getCurrentUserLogin(),
+                formerDueDate,
+                newDueDate,
+                task.getAssignee(),
                 task.getId(),
                 task.getName(),
                 task.getCreateTime(),
-                formerDueDate,
-                newDueDate,
                 task.getProcessDefinitionId(),
                 task.getProcessInstanceId(),
-                businessKey,
-                task.getAssignee()
+                businessKey
             )
         );
     }
+
 
     private Specification<CamundaTask> buildTaskFilterSpecification(TaskFilter taskFilter) {
         var filterSpec = all();

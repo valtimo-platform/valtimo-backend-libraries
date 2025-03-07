@@ -19,16 +19,9 @@ package com.ritense.valtimo.contract.audit;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 
-public interface TaskMetaData {
-
+public interface TaskFormerDueDate {
     @JsonProperty
-    LocalDateTime createdOn();
-
-    @JsonProperty
-    String getAssignee();
-
-    @JsonProperty
-    default LocalDateTime getDueDate() {
+    default LocalDateTime getFormerDueDate() {
         return null;
     }
 }

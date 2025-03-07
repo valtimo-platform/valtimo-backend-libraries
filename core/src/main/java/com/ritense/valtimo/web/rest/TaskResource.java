@@ -38,6 +38,7 @@ import com.ritense.valtimo.web.rest.util.PaginationUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import java.beans.PropertyEditorSupport;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.task.Comment;
 import org.springframework.data.domain.Page;
@@ -152,11 +153,15 @@ public class TaskResource extends AbstractTaskResource {
     }
 
     @PostMapping("/v1/task/{taskId}/set-due-date")
-    public ResponseEntity<Void> assign(
+    public ResponseEntity<Void> setDueDate(
         @LoggableResource(resourceType = CamundaTask.class) @PathVariable String taskId,
-        @RequestBody SetDueDateRequest setDueDateRequest
+        @RequestBody @Nullable SetDueDateRequest setDueDateRequest
     ) {
-        camundaTaskService.assign(taskId, assigneeRequest.getAssignee());
+        camundaTaskService.setDueDate(
+            taskId,
+            (setDueDateRequest != null) ? setDueDateRequest.getDueDate() : null
+        );
+        
         return ResponseEntity.ok().build();
     }
 
