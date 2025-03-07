@@ -37,6 +37,6 @@ interface CorrelationService {
     fun sendCatchEventMessageToAll(message: String, businessKey: String, vararg variables: Any?): List<MessageCorrelationResult>
     fun sendCatchEventMessageToAll(message: String, businessKey: String, variables: Map<String, Any?>?): List<MessageCorrelationResult>
 
-    fun sendMessage(execution: DelegateExecution, message: String): MessageCorrelationResult
-    fun sendMessageToAll(execution: DelegateExecution, message: String): List<MessageCorrelationResult>
+    fun sendMessage(message: String, execution: DelegateExecution): MessageCorrelationResult
+    fun sendMessageToAll(message: String, execution: DelegateExecution): List<MessageCorrelationResult>
 }

@@ -358,10 +358,10 @@ public class CamundaProcessService {
                 if (event.getCamundaType() == null
                     && event.getCamundaClass() == null
                     && event.getCamundaExpression() == null
-                    && event.getCamundaDelegateExpression() == null
-                    && event.getMessage() != null) {
+                    && event.getCamundaDelegateExpression() == null) {
+                    String messageName = event.getMessage() == null ? "MY_MESSAGE" : event.getMessage().getName();
                     event.setCamundaExpression(
-                        "${correlationService.sendMessageToAll(execution,\"" + event.getMessage().getName() + "\")}"
+                        "${correlationService.sendMessageToAll(\"" + messageName + "\",execution)}"
                     );
                 }
             })

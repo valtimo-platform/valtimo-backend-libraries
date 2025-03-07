@@ -147,13 +147,13 @@ class CorrelationServiceImpl(
         return sendCatchEventMessageToAll(message, businessKey, toVariableMap(*variables))
     }
 
-    override fun sendMessage(execution: DelegateExecution, message: String): MessageCorrelationResult {
+    override fun sendMessage(message: String, execution: DelegateExecution): MessageCorrelationResult {
         val result = correlate(message, execution.businessKey, execution.variables)
         associateDocumentToProcess(result, execution.businessKey)
         return result
     }
 
-    override fun sendMessageToAll(execution: DelegateExecution, message: String): List<MessageCorrelationResult> {
+    override fun sendMessageToAll(message: String, execution: DelegateExecution): List<MessageCorrelationResult> {
         val results = correlateAll(message, execution.businessKey, execution.variables)
         results.forEach { associateDocumentToProcess(it, execution.businessKey) }
         return results
