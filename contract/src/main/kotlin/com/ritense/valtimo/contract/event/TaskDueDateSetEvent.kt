@@ -45,7 +45,6 @@ class TaskDueDateSetEvent @JsonCreator constructor(
 
     override fun getProcessDefinitionId(): String = processDefinitionId
     override fun getProcessInstanceId(): String = processInstanceId
-    override fun getDueDate(): LocalDateTime? = dueDate
     override fun getFormerDueDate(): LocalDateTime? = formerDueDate
     override fun getAssignee(): String? = assignee
     override fun createdOn(): LocalDateTime = createdOn

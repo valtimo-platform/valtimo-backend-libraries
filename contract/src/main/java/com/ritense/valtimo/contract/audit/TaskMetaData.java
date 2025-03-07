@@ -26,9 +26,4 @@ public interface TaskMetaData {
 
     @JsonProperty
     String getAssignee();
-
-    @JsonProperty
-    default LocalDateTime getDueDate() {
-        return null;
-    }
 }
