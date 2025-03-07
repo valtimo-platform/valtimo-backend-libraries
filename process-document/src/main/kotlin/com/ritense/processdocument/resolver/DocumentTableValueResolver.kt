@@ -19,7 +19,6 @@ package com.ritense.processdocument.resolver
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
 import com.ritense.document.service.DocumentService
-import com.ritense.document.web.rest.dto.CaseTagResponseDto
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valueresolver.ValueResolverFactory

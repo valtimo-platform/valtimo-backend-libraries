@@ -59,6 +59,7 @@ public class HistoricDocument implements Document {
     @Embedded
     private InternalCaseStatusId internalStatus;
 
+    // TODO: discuss with product team
     // Not persisting caseTags. HistoricDocument will be deprecated.
     @Transient
     private Set<CaseTag> caseTags;
