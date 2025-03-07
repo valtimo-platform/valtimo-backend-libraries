@@ -3,11 +3,11 @@
   <bpmn:collaboration id="Collaboration_0pb2tk4">
     <bpmn:participant id="Participant_0dw45f5" processRef="deployedProcess" />
   </bpmn:collaboration>
-  <bpmn:process id="deployedProcess" isExecutable="true">
+  <bpmn:process id="deployedProcess" isExecutable="false">
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>Flow_019zpy0</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:serviceTask id="Activity_0h6lah5" camunda:expression="${true}">
+    <bpmn:serviceTask id="Activity_0h6lah5">
       <bpmn:extensionElements />
       <bpmn:incoming>Flow_019zpy0</bpmn:incoming>
       <bpmn:outgoing>Flow_1s4tady</bpmn:outgoing>

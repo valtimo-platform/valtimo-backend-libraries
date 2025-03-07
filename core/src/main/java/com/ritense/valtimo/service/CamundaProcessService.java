@@ -62,7 +62,11 @@ import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.model.bpmn.Bpmn;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
+import org.camunda.bpm.model.bpmn.instance.IntermediateThrowEvent;
+import org.camunda.bpm.model.bpmn.instance.MessageEventDefinition;
 import org.camunda.bpm.model.bpmn.instance.Process;
+import org.camunda.bpm.model.bpmn.instance.SendTask;
+import org.camunda.bpm.model.bpmn.instance.ServiceTask;
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties;
 import org.camunda.bpm.model.dmn.Dmn;
 import org.camunda.bpm.model.dmn.DmnModelInstance;
@@ -299,6 +303,9 @@ public class CamundaProcessService {
             }
 
             setProcessesExecutable(bpmnModel);
+            setEmptyServiceTaskExpressionToNull(bpmnModel);
+            setEmptySendTaskExpressionToNull(bpmnModel);
+            setEmptyIntermediateThrowEventExpressionToCorrelateAll(bpmnModel);
 
             repositoryService.createDeployment().addModelInstance(fileName, bpmnModel).deploy();
         } else if (fileName.endsWith(".dmn")) {
@@ -320,6 +327,44 @@ public class CamundaProcessService {
     private void setProcessesExecutable(BpmnModelInstance bpmnModel) {
         bpmnModel.getDefinitions().getChildElementsByType(Process.class).forEach(
             process -> process.setExecutable(true)
+        );
+    }
+
+    private void setEmptyServiceTaskExpressionToNull(BpmnModelInstance bpmnModel) {
+        bpmnModel.getModelElementsByType(ServiceTask.class).forEach(task -> {
+            if (task.getCamundaType() == null
+                && task.getCamundaClass() == null
+                && task.getCamundaExpression() == null
+                && task.getCamundaDelegateExpression() == null) {
+                task.setCamundaExpression("${null}");
+            }
+        });
+    }
+
+    private void setEmptySendTaskExpressionToNull(BpmnModelInstance bpmnModel) {
+        bpmnModel.getModelElementsByType(SendTask.class).forEach(task -> {
+            if (task.getCamundaType() == null
+                && task.getCamundaClass() == null
+                && task.getCamundaExpression() == null
+                && task.getCamundaDelegateExpression() == null) {
+                task.setCamundaExpression("${null}");
+            }
+        });
+    }
+
+    private void setEmptyIntermediateThrowEventExpressionToCorrelateAll(BpmnModelInstance bpmnModel) {
+        bpmnModel.getModelElementsByType(IntermediateThrowEvent.class).forEach(throwEvent ->
+            throwEvent.getChildElementsByType(MessageEventDefinition.class).forEach(event -> {
+                if (event.getCamundaType() == null
+                    && event.getCamundaClass() == null
+                    && event.getCamundaExpression() == null
+                    && event.getCamundaDelegateExpression() == null
+                    && event.getMessage() != null) {
+                    event.setCamundaExpression(
+                        "${correlationService.sendMessageToAll(execution,\"" + event.getMessage().getName() + "\")}"
+                    );
+                }
+            })
         );
     }
 
