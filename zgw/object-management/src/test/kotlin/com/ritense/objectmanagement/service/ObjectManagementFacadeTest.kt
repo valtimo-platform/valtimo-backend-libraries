@@ -101,7 +101,7 @@ internal class ObjectManagementFacadeTest {
 
         whenever(objectenApiPlugin.url).thenReturn(URI.create("www.ritense.com/"))
         val objectUrl = URI.create("www.ritense.com/objects/$objectUuid")
-        val expectedResult = createObjectWrapper(url = objectUrl, uuid = objectUuid)
+        val expectedResult = createObjectRecord(objectUrl, objectUuid)
         whenever(objectenApiPlugin.getObjectAtIndex(objectUrl, objectIndex)).thenReturn(expectedResult)
         whenever(objectenApiPlugin.getObjectUrl(any())).thenCallRealMethod()
 
@@ -519,5 +519,10 @@ internal class ObjectManagementFacadeTest {
         type = URI.create("myURL"),
         url = url,
         uuid = uuid
+    )
+
+    private fun createObjectRecord(url: URI, uuid: UUID): ObjectRecord = ObjectRecord(
+        startAt = LocalDate.now(),
+        typeVersion = 1,
     )
 }

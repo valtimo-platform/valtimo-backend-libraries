@@ -18,6 +18,7 @@ package com.ritense.objectenapi
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.logging.withLoggingContext
+import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectRequest
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.client.ObjectenApiClient
@@ -77,7 +78,7 @@ class ObjectenApiPlugin(
         }
     }
 
-    fun getObjectAtIndex(objectUrl: URI, index: Int): ObjectWrapper {
+    fun getObjectAtIndex(objectUrl: URI, index: Int): ObjectRecord {
         withLoggingContext("objectUrl" to objectUrl.toString()) {
             logger.debug { "Getting Objecten API object with url '$objectUrl' and index '$index'" }
 
@@ -87,7 +88,7 @@ class ObjectenApiPlugin(
                 .build()
                 .toUri()
 
-            return objectenApiClient.getObject(authenticationPluginConfiguration, objectUrlWithIndex)
+            return objectenApiClient.getObjectRecord(authenticationPluginConfiguration, objectUrlWithIndex)
         }
     }
 

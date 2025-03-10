@@ -64,6 +64,25 @@ class ObjectenApiClient(
         return result
     }
 
+    fun getObjectRecord(
+        authentication: ObjectenApiAuthentication,
+        objectUrl: URI
+    ): ObjectRecord {
+        val result = buildRestClient(authentication)
+            .get()
+            .uri(objectUrl)
+            .retrieve()
+            .body<ObjectRecord>()!!
+
+        outboxService.send {
+            ObjectViewed(
+                objectUrl.toString(),
+                objectMapper.valueToTree(result)
+            )
+        }
+        return result
+    }
+
     fun getObjectsByObjecttypeUrl(
         authentication: ObjectenApiAuthentication,
         objecttypesApiUrl: URI,
