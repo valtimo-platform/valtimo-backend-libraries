@@ -55,6 +55,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
@@ -62,11 +63,15 @@ import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.model.bpmn.Bpmn;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
+import org.camunda.bpm.model.bpmn.instance.EndEvent;
 import org.camunda.bpm.model.bpmn.instance.IntermediateThrowEvent;
 import org.camunda.bpm.model.bpmn.instance.MessageEventDefinition;
 import org.camunda.bpm.model.bpmn.instance.Process;
 import org.camunda.bpm.model.bpmn.instance.SendTask;
 import org.camunda.bpm.model.bpmn.instance.ServiceTask;
+import org.camunda.bpm.model.bpmn.instance.TimeDuration;
+import org.camunda.bpm.model.bpmn.instance.TimerEventDefinition;
+import org.camunda.bpm.model.bpmn.instance.UserTask;
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties;
 import org.camunda.bpm.model.dmn.Dmn;
 import org.camunda.bpm.model.dmn.DmnModelInstance;
@@ -303,9 +308,11 @@ public class CamundaProcessService {
             }
 
             setProcessesExecutable(bpmnModel);
-            setEmptyServiceTaskExpressionToNull(bpmnModel);
-            setEmptySendTaskExpressionToNull(bpmnModel);
-            setEmptyIntermediateThrowEventExpressionToCorrelateAll(bpmnModel);
+            setToNullWhenServiceTaskExpressionIsEmpty(bpmnModel);
+            setToNullWhenSendTaskExpressionIsEmpty(bpmnModel);
+            setToCorrelateAllWhenMessageSendEventExpressionIsEmpty(bpmnModel);
+            setToRoleUserWhenUserTaskCandidateGroupsIsEmpty(bpmnModel);
+            setTo60SecondsWhenTimerIsEmpty(bpmnModel);
 
             repositoryService.createDeployment().addModelInstance(fileName, bpmnModel).deploy();
         } else if (fileName.endsWith(".dmn")) {
@@ -330,31 +337,36 @@ public class CamundaProcessService {
         );
     }
 
-    private void setEmptyServiceTaskExpressionToNull(BpmnModelInstance bpmnModel) {
+    private void setToNullWhenServiceTaskExpressionIsEmpty(BpmnModelInstance bpmnModel) {
         bpmnModel.getModelElementsByType(ServiceTask.class).forEach(task -> {
             if (task.getCamundaType() == null
                 && task.getCamundaClass() == null
                 && task.getCamundaExpression() == null
                 && task.getCamundaDelegateExpression() == null) {
                 task.setCamundaExpression("${null}");
+                task.setCamundaAsyncAfter(true);
             }
         });
     }
 
-    private void setEmptySendTaskExpressionToNull(BpmnModelInstance bpmnModel) {
+    private void setToNullWhenSendTaskExpressionIsEmpty(BpmnModelInstance bpmnModel) {
         bpmnModel.getModelElementsByType(SendTask.class).forEach(task -> {
             if (task.getCamundaType() == null
                 && task.getCamundaClass() == null
                 && task.getCamundaExpression() == null
                 && task.getCamundaDelegateExpression() == null) {
                 task.setCamundaExpression("${null}");
+                task.setCamundaAsyncAfter(true);
             }
         });
     }
 
-    private void setEmptyIntermediateThrowEventExpressionToCorrelateAll(BpmnModelInstance bpmnModel) {
-        bpmnModel.getModelElementsByType(IntermediateThrowEvent.class).forEach(throwEvent ->
-            throwEvent.getChildElementsByType(MessageEventDefinition.class).forEach(event -> {
+    private void setToCorrelateAllWhenMessageSendEventExpressionIsEmpty(BpmnModelInstance bpmnModel) {
+        Stream.of(IntermediateThrowEvent.class, EndEvent.class)
+            .flatMap(sendEventClass -> bpmnModel.getModelElementsByType(sendEventClass).stream())
+            .filter(sendEvent -> sendEvent.getId().matches("Event_[a-z0-9]{7}"))
+            .flatMap(sendEvent -> sendEvent.getChildElementsByType(MessageEventDefinition.class).stream())
+            .forEach(event -> {
                 if (event.getCamundaType() == null
                     && event.getCamundaClass() == null
                     && event.getCamundaExpression() == null
@@ -364,8 +376,29 @@ public class CamundaProcessService {
                         "${correlationService.sendMessageToAll(\"" + messageName + "\",execution)}"
                     );
                 }
-            })
-        );
+            });
+    }
+
+    private void setToRoleUserWhenUserTaskCandidateGroupsIsEmpty(BpmnModelInstance bpmnModel) {
+        bpmnModel.getModelElementsByType(UserTask.class).forEach(userTask -> {
+            if (userTask.getId().matches("Activity_[a-z0-9]{7}")
+                && userTask.getCamundaCandidateUsers() == null
+                && userTask.getCamundaCandidateGroups() == null) {
+                userTask.setCamundaCandidateGroups("ROLE_USER");
+            }
+        });
+    }
+
+    private void setTo60SecondsWhenTimerIsEmpty(BpmnModelInstance bpmnModel) {
+        bpmnModel.getModelElementsByType(TimerEventDefinition.class).forEach(timerEvent -> {
+            if (timerEvent.getTimeDate() == null
+                && timerEvent.getTimeDuration() == null
+                && timerEvent.getTimeCycle() == null) {
+                TimeDuration timeDuration = bpmnModel.newInstance(TimeDuration.class);
+                timeDuration.setTextContent("PT60S");
+                timerEvent.addChildElement(timeDuration);
+            }
+        });
     }
 
     private boolean isDeployable(BpmnModelInstance model) {
