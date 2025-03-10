@@ -19,6 +19,7 @@ package com.ritense.valtimo.contract.client
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.io.FindReplaceInputStream
 import org.springframework.boot.web.client.RestClientCustomizer
+import org.springframework.boot.web.client.RestTemplateCustomizer
 import org.springframework.core.env.Environment
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpRequest
@@ -35,7 +36,7 @@ import java.net.URI
 @SkipComponentScan
 class HostDockerInternalRestClientCustomizer(
     environment: Environment,
-) : RestClientCustomizer, ClientHttpRequestInterceptor {
+) : RestClientCustomizer, RestTemplateCustomizer, ClientHttpRequestInterceptor {
 
     private val isDevelopment = environment.activeProfiles.contains("dev")
 
@@ -43,6 +44,12 @@ class HostDockerInternalRestClientCustomizer(
         restClientBuilder.requestInterceptor(this)
     }
 
+    override fun customize(restTemplate: RestTemplate) {
+        if (restTemplate.interceptors.none { it is HostDockerInternalRestClientCustomizer }) {
+            restTemplate.interceptors.add(this)
+        }
+    }
+    
     override fun intercept(
         request: HttpRequest,
         requestBody: ByteArray,
