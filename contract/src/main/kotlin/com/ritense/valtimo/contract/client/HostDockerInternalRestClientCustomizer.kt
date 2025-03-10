@@ -30,15 +30,20 @@ import org.springframework.http.client.ClientHttpResponse
 import org.springframework.http.client.support.HttpRequestWrapper
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
+import org.springframework.web.client.RestTemplate
 import java.net.URI
 
 @Component
 @SkipComponentScan
 class HostDockerInternalRestClientCustomizer(
     environment: Environment,
+    developmentProfiles: List<String>,
+    private val dockerPorts: List<String>
 ) : RestClientCustomizer, RestTemplateCustomizer, ClientHttpRequestInterceptor {
 
-    private val isDevelopment = environment.activeProfiles.contains("dev")
+    private val isDevelopment = developmentProfiles.any { devProfile ->
+        environment.activeProfiles.contains(devProfile)
+    }
 
     override fun customize(restClientBuilder: RestClient.Builder) {
         restClientBuilder.requestInterceptor(this)
@@ -49,7 +54,7 @@ class HostDockerInternalRestClientCustomizer(
             restTemplate.interceptors.add(this)
         }
     }
-    
+
     override fun intercept(
         request: HttpRequest,
         requestBody: ByteArray,
@@ -80,10 +85,7 @@ class HostDockerInternalRestClientCustomizer(
         request: HttpRequest,
         requestBody: ByteArray
     ): ByteArray {
-        return requestBody
-            .decodeToString()
-            .replace(Regex("""http://localhost(?=:[0-9]{4})(?!:${request.uri.port})"""), HTTP_HOST_DOCKER_INTERNAL)
-            .toByteArray()
+        return replaceLocalhost(requestBody.decodeToString(), request.uri.port.toString()).toByteArray()
     }
 
     private fun modifyRequest(
@@ -99,10 +101,7 @@ class HostDockerInternalRestClientCustomizer(
                     oldUri.toString()
                 }
                 val newUri = if (oldUri.rawQuery != null) {
-                    val newRawQuery = oldUri.rawQuery.replace(
-                        Regex("""http://localhost(?=:[0-9]{4})(?!:${request.uri.port})"""),
-                        HTTP_HOST_DOCKER_INTERNAL
-                    )
+                    val newRawQuery = replaceLocalhost(oldUri.rawQuery, request.uri.port.toString())
                     newHostUri.replaceFirst(oldUri.rawQuery, newRawQuery)
                 } else {
                     newHostUri
@@ -128,6 +127,17 @@ class HostDockerInternalRestClientCustomizer(
                 oldValue = HTTP_HOST_DOCKER_INTERNAL,
                 newValue = HTTP_LOCALHOST
             )
+        }
+    }
+
+    private fun replaceLocalhost(stringContainingLocalhost: String, dontReplacePort: String): String {
+        return stringContainingLocalhost.replace(Regex("""http://localhost:([0-9]{4})""")) { match ->
+            val port = match.groupValues[1]
+            if (port != dontReplacePort && dockerPorts.contains(port)) {
+                "$HTTP_HOST_DOCKER_INTERNAL:$port"
+            } else {
+                match.value
+            }
         }
     }
 
