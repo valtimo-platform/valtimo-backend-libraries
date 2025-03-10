@@ -392,7 +392,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     @Override
     public Set<CaseTagResponseDto> caseTags() {
         if (caseTags == null) {
-            return null;
+            return Collections.emptySet();
         } else {
             return caseTags.stream().map(CaseTagResponseDto::new).collect(Collectors.toSet());
         }

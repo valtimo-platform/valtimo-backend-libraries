@@ -200,7 +200,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
     @WithMockUser(username = USERNAME, authorities = [ADMIN])
     fun `should add case tag and send outbox event`() {
         val document = createDocument("""{"street": "Admin street"}""")
-        assertThat(document.caseTags()).isNull()
+        assertThat(document.caseTags()).isEmpty()
 
         reset(outboxService)
 
@@ -245,7 +245,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
     @WithMockUser(username = USERNAME, authorities = [ADMIN])
     fun `ensure case tags are unique`() {
         val document = createDocument("""{"street": "Admin street"}""")
-        assertThat(document.caseTags()).isNull()
+        assertThat(document.caseTags()).isEmpty()
 
         reset(outboxService)
 
