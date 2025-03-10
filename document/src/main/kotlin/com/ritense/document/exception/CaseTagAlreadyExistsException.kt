@@ -20,5 +20,5 @@ class CaseTagAlreadyExistsException(
     caseTagKey: String,
     caseDefinitionName: String
 ) : RuntimeException(
-    "A case tag with key $caseTagKey already exists for case with key $caseDefinitionName"
+    "A case tag with key $caseTagKey already exists for case definition with key $caseDefinitionName"
 )

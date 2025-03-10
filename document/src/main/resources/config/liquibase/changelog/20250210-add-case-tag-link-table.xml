@@ -56,8 +56,5 @@
             <column name="case_definition_name"/>
         </createIndex>
 
-        <addUniqueConstraint tableName="case_tag_link"
-                             columnNames="case_tag_key, case_definition_name, json_schema_document_id"
-                             constraintName="uk_case_tag_link"/>
     </changeSet>
 </databaseChangeLog>

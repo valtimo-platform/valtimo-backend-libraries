@@ -41,7 +41,8 @@ class CaseTagService(
 
     fun create(
         caseDefinitionName: String,
-        @Valid request: CaseTagCreateRequestDto) : CaseTag{
+        @Valid request: CaseTagCreateRequestDto
+    ) : CaseTag {
         denyManagementOperation()
 
         documentDefinitionService.findLatestByName(caseDefinitionName).getOrNull()
