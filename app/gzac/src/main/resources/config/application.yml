@@ -231,7 +231,7 @@ valtimo:
             clear-tables: false
         case-tabs:
             clear-tables: false
-        case-tags:
+        case-tag:
             clear-tables: false
         internal-case-status:
             clear-tables: false

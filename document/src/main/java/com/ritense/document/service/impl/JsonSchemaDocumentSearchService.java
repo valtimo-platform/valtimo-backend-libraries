@@ -275,8 +275,8 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
             predicates.add(getStatusFilterPredicate(cb, documentRoot, searchRequest.getStatusFilter()));
         }
 
-        if (searchRequest.getTagFilter() != null && !searchRequest.getTagFilter().isEmpty()) {
-            predicates.add(getTagFilterPredicate(cb, documentRoot, searchRequest.getTagFilter()));
+        if (searchRequest.getCaseTagsFilter() != null && !searchRequest.getCaseTagsFilter().isEmpty()) {
+            predicates.add(getCaseTagsFilterPredicate(cb, documentRoot, searchRequest.getCaseTagsFilter()));
         }
 
         query.where(predicates.toArray(Predicate[]::new));
@@ -390,11 +390,11 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         return cb.or(predicates);
     }
 
-    private Predicate getTagFilterPredicate(CriteriaBuilder cb, Root<JsonSchemaDocument> root, Set<String> tagFilter) {
+    private Predicate getCaseTagsFilterPredicate(CriteriaBuilder cb, Root<JsonSchemaDocument> root, Set<String> caseTagsFilter) {
 
         Join<JsonSchemaDocument, CaseTag> caseTagJoin = root.join(CASE_TAGS);
         Path<String> caseTagKeyPath = caseTagJoin.get(ID).get(KEY);
-        Predicate[] predicates = tagFilter.stream()
+        Predicate[] predicates = caseTagsFilter.stream()
             .filter(tagKey -> tagKey != null && !tagKey.isEmpty())
             .map(tagKey -> cb.equal(caseTagKeyPath, tagKey))
             .toArray(Predicate[]::new);
