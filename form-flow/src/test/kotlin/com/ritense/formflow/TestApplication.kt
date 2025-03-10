@@ -18,12 +18,14 @@ package com.ritense.formflow
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.formflow.json.MapperSingleton
+import com.ritense.resource.service.ResourceService
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.runApplication
 import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Bean
 import java.util.function.Supplier
 
@@ -37,28 +39,13 @@ class TestApplication {
     @TestConfiguration
     class TestConfig {
 
+        @MockBean
+        lateinit var resourceService: ResourceService
+
         @Bean
         @ConditionalOnMissingBean(ObjectMapper::class)
         fun objectMapper(): ObjectMapper {
             return MapperSingleton.get()
-        }
-
-        @Bean
-        fun hibernateDependencyProcessor(): BeanFactoryPostProcessor? {
-            return BeanFactoryPostProcessor { factory: ConfigurableListableBeanFactory ->
-                val entityManagerDefinition = factory.getBeanDefinition("entityManagerFactory")
-                var entityManagerDependencies = entityManagerDefinition.dependsOn
-                entityManagerDependencies = entityManagerDependencies ?: arrayOf()
-                val newDependencies = arrayOfNulls<String>(entityManagerDependencies.size + 1)
-                System.arraycopy(entityManagerDependencies, 0, newDependencies, 1, entityManagerDependencies.size)
-                newDependencies[0] = "hibernateObjectMapperSupplier"
-                entityManagerDefinition.setDependsOn(*newDependencies)
-            }
-        }
-
-        @Bean
-        fun hibernateObjectMapperSupplier(): Supplier<ObjectMapper> {
-            return HibernateObjectMapperSupplier()
         }
 
         companion object {
