@@ -20,7 +20,6 @@ import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.io.FindReplaceInputStream
 import org.springframework.boot.web.client.RestClientCustomizer
 import org.springframework.boot.web.client.RestTemplateCustomizer
-import org.springframework.core.env.Environment
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpRequest
 import org.springframework.http.MediaType.APPLICATION_JSON
@@ -36,14 +35,8 @@ import java.net.URI
 @Component
 @SkipComponentScan
 class HostDockerInternalRestClientCustomizer(
-    environment: Environment,
-    developmentProfiles: List<String>,
     private val dockerPorts: List<String>
 ) : RestClientCustomizer, RestTemplateCustomizer, ClientHttpRequestInterceptor {
-
-    private val isDevelopment = developmentProfiles.any { devProfile ->
-        environment.activeProfiles.contains(devProfile)
-    }
 
     override fun customize(restClientBuilder: RestClient.Builder) {
         restClientBuilder.requestInterceptor(this)
@@ -60,21 +53,17 @@ class HostDockerInternalRestClientCustomizer(
         requestBody: ByteArray,
         execution: ClientHttpRequestExecution
     ): ClientHttpResponse {
-        val newBody = if (isDevelopment && request.headers.contentType == APPLICATION_JSON) {
+        val newBody = if (request.headers.contentType == APPLICATION_JSON) {
             modifyRequestBody(request, requestBody)
         } else {
             requestBody
         }
 
-        val newRequest = if (isDevelopment) {
-            modifyRequest(request, newBody)
-        } else {
-            request
-        }
+        val newRequest = modifyRequest(request, newBody)
 
         val response = execution.execute(newRequest, newBody)
 
-        return if (isDevelopment && response.headers.contentType == APPLICATION_JSON) {
+        return if (response.headers.contentType == APPLICATION_JSON) {
             modifyResponse(response)
         } else {
             response
@@ -131,7 +120,7 @@ class HostDockerInternalRestClientCustomizer(
     }
 
     private fun replaceLocalhost(stringContainingLocalhost: String, dontReplacePort: String): String {
-        return stringContainingLocalhost.replace(Regex("""http://localhost:([0-9]{4})""")) { match ->
+        return stringContainingLocalhost.replace(Regex("""http://localhost:([0-9]{4,5})""")) { match ->
             val port = match.groupValues[1]
             if (port != dontReplacePort && dockerPorts.contains(port)) {
                 "$HTTP_HOST_DOCKER_INTERNAL:$port"

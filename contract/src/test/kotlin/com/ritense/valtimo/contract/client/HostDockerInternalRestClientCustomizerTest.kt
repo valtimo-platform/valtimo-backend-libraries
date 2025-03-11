@@ -42,8 +42,6 @@ class HostDockerInternalRestClientCustomizerTest {
         environment = mock()
         whenever(environment.activeProfiles).thenReturn(arrayOf("dev"))
         hostDockerInternalRestClientCustomizer = HostDockerInternalRestClientCustomizer(
-            environment = environment,
-            developmentProfiles = listOf("dev"),
             dockerPorts = listOf("8001", "8010", "8011")
         )
     }
