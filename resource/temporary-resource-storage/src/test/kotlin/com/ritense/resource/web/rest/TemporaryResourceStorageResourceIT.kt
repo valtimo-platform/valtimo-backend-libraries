@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.event.EventListener
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.MediaType
 import org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE
 import org.springframework.mock.web.MockMultipartFile
@@ -45,6 +46,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
+import java.util.Optional
 
 @AutoConfigureMockMvc
 internal class TemporaryResourceStorageResourceIT @Autowired constructor(
@@ -107,13 +109,15 @@ internal class TemporaryResourceStorageResourceIT @Autowired constructor(
 
         enumKey.onSuccess { key ->
             `when`(
-                resourceStorageMetadataRepository.getReferenceById(
+                resourceStorageMetadataRepository.findById(
                     ResourceStorageMetadataId(resourceStorageFieldId, key)
                 )
             ).thenReturn(
-                ResourceStorageMetadata(
-                    ResourceStorageMetadataId(resourceStorageFieldId, key),
-                    expectedMetadataValue
+                Optional.of(
+                    ResourceStorageMetadata(
+                        ResourceStorageMetadataId(resourceStorageFieldId, key),
+                        expectedMetadataValue
+                    )
                 )
             )
 
