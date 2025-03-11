@@ -72,7 +72,7 @@ class ProcessLinkImporter(
                     .toProcessLinkCreateRequestDto(deployDto)
 
                 try {
-                    processLinkService.createProcessLink(processLinkCreateDto)
+                    processLinkService.createProcessLink(processLinkCreateDto, request.caseDefinitionId)
                 } catch (e: ProcessLinkExistsException) {
                     try {
                         val processLinkUpdateDto = processLinkService.getProcessLinkMapper(deployDto.processLinkType)

@@ -40,6 +40,7 @@ import com.ritense.formflow.BaseIntegrationTest
 import com.ritense.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.formflow.web.rest.FormFlowResource
 import com.ritense.formflow.web.rest.dto.FormFlowProcessLinkCreateRequestDto
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.service.CamundaTaskService
 import java.util.UUID
 import org.camunda.bpm.engine.HistoryService
@@ -94,6 +95,8 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var objectMapper: ObjectMapper
+
+    val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
 
     @Test
     @WithMockUser(username = TEST_USER, authorities = [AuthoritiesConstants.USER])
@@ -259,7 +262,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     private fun deployFormFlow(onComplete: String) {
         val formFlowJson = readFileAsString("/template/single_step_flow.json")
             .replace("PLACEHOLDER", onComplete)
-        formFlowDeploymentService.deploy("single_step_flow", formFlowJson)
+        formFlowDeploymentService.deploy("single_step_flow", formFlowJson, CaseDefinitionId("profile", "1.0.0"))
     }
 
     private fun linkFormFlowToUserTask() {
@@ -269,7 +272,8 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
                 "do-something",
                 ActivityTypeWithEventName.USER_TASK_CREATE,
                 "single_step_flow:latest"
-            )
+            ),
+            caseDefinitionId
         )
     }
 
@@ -280,7 +284,8 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
                 "start-event",
                 ActivityTypeWithEventName.START_EVENT_START,
                 "single_step_flow:latest"
-            )
+            ),
+            caseDefinitionId
         )
         return processLinkService.getProcessLinks(
             getProcessDefinitionId(),

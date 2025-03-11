@@ -22,6 +22,7 @@ import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.formflow.BaseIntegrationTest
 import com.ritense.formflow.web.rest.result.FormFlowDefinitionDto
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import jakarta.ws.rs.core.MediaType.APPLICATION_JSON
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -62,7 +63,7 @@ class FormFlowManagementResourceIntTest : BaseIntegrationTest() {
     @Test
     fun `should return form flow definitions`() {
         mockMvc
-            .perform(get("/api/management/v1/form-flow/definition"))
+            .perform(get("/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form-flow-definition", "profile", "1.0.0"))
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.content[?(@.key=='inkomens_loket')].key").value("inkomens_loket"))
@@ -73,7 +74,7 @@ class FormFlowManagementResourceIntTest : BaseIntegrationTest() {
     @Test
     fun `should return form flow definition by id`() {
         mockMvc
-            .perform(get("/api/management/v1/form-flow/definition/{key}/{version}", "inkomens_loket", 1))
+            .perform(get("/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form-flow-definition/{definitionKey}/version/{version}", "profile", "1.0.0", "inkomens_loket", 1))
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.key").value("inkomens_loket"))
@@ -84,9 +85,10 @@ class FormFlowManagementResourceIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should delete form flow definition by key`() {
-        formFlowService.save(FormFlowDefinition(FormFlowDefinitionId("test", 1), "start-step", setOf()))
+        val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
+        formFlowService.save(FormFlowDefinition(FormFlowDefinitionId("test", 1, caseDefinitionId), "start-step", setOf()))
         mockMvc
-            .perform(delete("/api/management/v1/form-flow/definition/{key}", "test"))
+            .perform(delete("/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form-flow-definition/{definitionKey}", "profile", "1.0.0", "test"))
             .andDo(print())
             .andExpect(status().isOk)
     }
@@ -101,7 +103,7 @@ class FormFlowManagementResourceIntTest : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            post("/api/management/v1/form-flow/definition")
+            post("/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form-flow-definition", "profile", "1.0.0", "profile", "1.0.0")
                 .contentType(APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(definition))
         )
@@ -115,7 +117,8 @@ class FormFlowManagementResourceIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should update form flow definition`() {
-        formFlowService.save(FormFlowDefinition(FormFlowDefinitionId("test", 1), "start-step", setOf()))
+        val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
+        formFlowService.save(FormFlowDefinition(FormFlowDefinitionId("test", 1, caseDefinitionId), "start-step", setOf()))
 
         val definition = FormFlowDefinitionDto(
             key = "test",
@@ -125,7 +128,7 @@ class FormFlowManagementResourceIntTest : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            put("/api/management/v1/form-flow/definition/{key}", "test")
+            put("/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form-flow-definition/{definitionKey}", "profile", "1.0.0", "test")
                 .contentType(APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(definition))
         )

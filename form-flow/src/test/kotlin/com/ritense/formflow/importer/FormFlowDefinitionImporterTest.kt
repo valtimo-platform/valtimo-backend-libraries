@@ -19,6 +19,7 @@ package com.ritense.formflow.importer
 import com.ritense.formflow.service.FormFlowDeploymentService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.ValtimoImportTypes.Companion.FORM
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -62,16 +63,19 @@ class FormFlowDefinitionImporterTest(
 
     @Test
     fun `should call deploy method for import with correct parameters`() {
+        val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val jsonContent = "{}"
-        formFlowDefinitionImporter.import(ImportRequest(FILENAME, jsonContent.toByteArray()))
+        formFlowDefinitionImporter.import(ImportRequest(FILENAME, jsonContent.toByteArray(), caseDefinitionId))
 
         val formFlowKeyCaptor = argumentCaptor<String>()
         val jsonCaptor = argumentCaptor<String>()
+        val caseDefinitionIdCaptor = argumentCaptor<CaseDefinitionId>()
 
-        verify(formFlowDeploymentService).deploy(formFlowKeyCaptor.capture(), jsonCaptor.capture())
+        verify(formFlowDeploymentService).deploy(formFlowKeyCaptor.capture(), jsonCaptor.capture(), caseDefinitionIdCaptor.capture())
 
         assertThat(formFlowKeyCaptor.firstValue).isEqualTo("my-form")
         assertThat(jsonCaptor.firstValue).isEqualTo(jsonContent)
+        assertThat(jsonCaptor.firstValue).isEqualTo(caseDefinitionId)
     }
 
     private companion object {

@@ -27,6 +27,7 @@ import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Com
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.formflow.domain.FormFlowProcessLink
 import com.ritense.formflow.web.rest.dto.FormFlowProcessLinkCreateRequestDto
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import java.util.UUID
@@ -66,7 +67,7 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
 
     @Test
     fun `should not create form flow instance when Camunda user task is created`() {
-
+        val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val processDefinition = repositoryService.createProcessDefinitionQuery()
             .latestVersion()
             .processDefinitionKey("formflow-one-task-process")
@@ -78,7 +79,8 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
                 activityId = "do-something",
                 activityType = ActivityTypeWithEventName.USER_TASK_START,
                 formFlowDefinitionId = "inkomens_loket:latest"
-            )
+            ),
+            caseDefinitionId
         )
 
         runWithoutAuthorization{
@@ -95,6 +97,7 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
     @Test
     @WithMockUser(username = TEST_USER, authorities = [USER])
     fun `should create form flow instance when task is opened`() {
+        val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val processDefinition = repositoryService.createProcessDefinitionQuery()
             .latestVersion()
             .processDefinitionKey("formflow-one-task-process")
@@ -106,7 +109,8 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
                 activityId = "do-something",
                 activityType = ActivityTypeWithEventName.USER_TASK_START,
                 formFlowDefinitionId = "inkomens_loket:latest"
-            )
+            ),
+            caseDefinitionId
         )
 
         val processInstance = runWithoutAuthorization {
@@ -135,7 +139,7 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
             .processDefinitionKey("formflow-one-task-process")
             .singleResult()
 
-        val formFlowDefinition = formFlowService.findDefinition("inkomens_loket:1")
+        val formFlowDefinition = formFlowService.findDefinition("inkomens_loket:1", CaseDefinitionId("profile", "1.0.0"))
 
         val processLink: ProcessLink = FormFlowProcessLink(
             id = processLinkId,

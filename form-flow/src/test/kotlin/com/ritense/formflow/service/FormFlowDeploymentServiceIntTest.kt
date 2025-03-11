@@ -19,6 +19,7 @@ package com.ritense.formflow.service
 import com.fasterxml.jackson.databind.exc.InvalidTypeIdException
 import com.ritense.formflow.BaseIntegrationTest
 import com.ritense.formflow.expression.ExpressionParseException
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -35,20 +36,8 @@ internal class FormFlowDeploymentServiceIntTest : BaseIntegrationTest() {
     lateinit var formFlowDeploymentService: FormFlowDeploymentService
 
     @Test
-    fun `should auto deploy Form Flow from config directory`() {
-        formFlowDeploymentService.deployAll()
-
-        val inkomensLoket = formFlowService.findLatestDefinitionByKey("inkomens_loket")
-
-        assertThat(inkomensLoket!!).isNotNull
-        assertThat(inkomensLoket.id.key).isEqualTo("inkomens_loket")
-        assertThat(inkomensLoket.id.version).isEqualTo(1L)
-        assertThat(inkomensLoket.startStep).isEqualTo("woonplaats")
-        assertThat(inkomensLoket.steps).hasSize(7)
-    }
-
-    @Test
     fun `should deploy Form Flow when nextStep is provided`() {
+        val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         formFlowDeploymentService.deploy(
             "testOnOpenExpression", """
             {
@@ -66,34 +55,26 @@ internal class FormFlowDeploymentServiceIntTest : BaseIntegrationTest() {
                     }
                 ]
             }
-        """.trimIndent()
+        """.trimIndent(),
+            caseDefinitionId
         )
-    }
-
-
-    @Test
-    fun `should not deploy same Form Flow twice`() {
-        formFlowDeploymentService.deployAll()
-        formFlowDeploymentService.deployAll()
-
-        val inkomensLoket = formFlowService.findLatestDefinitionByKey("inkomens_loket")
-
-        assertThat(inkomensLoket!!.id.version).isEqualTo(1L)
     }
 
     @Test
     fun `should deploy new version Form Flow`() {
+        val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         var inkomensLoketJson = readFileAsString("/config/form-flow/inkomens_loket.json")
         inkomensLoketJson = inkomensLoketJson.replace("4*3", "5*2")
-        formFlowDeploymentService.deploy("inkomens_loket", inkomensLoketJson)
+        formFlowDeploymentService.deploy("inkomens_loket", inkomensLoketJson, caseDefinitionId)
 
-        val inkomensLoket = formFlowService.findLatestDefinitionByKey("inkomens_loket")
+        val inkomensLoket = formFlowService.findLatestDefinitionByKey("inkomens_loket", caseDefinitionId)
 
         assertThat(inkomensLoket!!.id.version).isEqualTo(2L)
     }
 
     @Test
     fun `should fail to deploy Form Flow when error in onOpenExpression`() {
+        val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         assertThrows<ExpressionParseException> {
             formFlowDeploymentService.deploy(
                 "testOnOpenExpression", """
@@ -117,7 +98,8 @@ internal class FormFlowDeploymentServiceIntTest : BaseIntegrationTest() {
                         }
                     ]
                 }
-            """.trimIndent()
+            """.trimIndent(),
+                caseDefinitionId
             )
         }
     }
@@ -125,6 +107,7 @@ internal class FormFlowDeploymentServiceIntTest : BaseIntegrationTest() {
     @Test
     fun `should fail to deploy Form Flow on unknown properties type`() {
         assertThrows<InvalidTypeIdException> {
+            val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
             formFlowDeploymentService.deploy(
                 "testPropertiesType", """
                 {
@@ -144,7 +127,8 @@ internal class FormFlowDeploymentServiceIntTest : BaseIntegrationTest() {
                         }
                     ]
                 }
-            """.trimIndent()
+            """.trimIndent(),
+                caseDefinitionId
             )
         }
     }

@@ -19,14 +19,15 @@ package com.ritense.formflow.mapper
 import com.ritense.exporter.request.FormFlowDefinitionExportRequest
 import com.ritense.form.domain.FormDisplayType
 import com.ritense.form.domain.FormSizes
-import com.ritense.formflow.service.FormFlowService
-import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
-import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.formflow.domain.FormFlowProcessLink
+import com.ritense.formflow.service.FormFlowService
 import com.ritense.formflow.web.rest.dto.FormFlowProcessLinkCreateRequestDto
 import com.ritense.formflow.web.rest.dto.FormFlowProcessLinkExportResponseDto
 import com.ritense.formflow.web.rest.dto.FormFlowProcessLinkResponseDto
 import com.ritense.formflow.web.rest.dto.FormFlowProcessLinkUpdateRequestDto
+import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -45,6 +46,8 @@ internal class FormFlowProcessLinkMapperTest {
     lateinit var formFlowService: FormFlowService
 
     private lateinit var formFlowProcessLinkMapper: FormFlowProcessLinkMapper
+
+    private val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
 
     @BeforeEach
     fun beforeEach() {
@@ -106,6 +109,7 @@ internal class FormFlowProcessLinkMapperTest {
 
     @Test
     fun `should map createRequestDto to FormFlowProcessLink entity`() {
+        val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val createRequestDto = FormFlowProcessLinkCreateRequestDto(
             processDefinitionId = "processDefinitionId",
             activityId = "activityId",
@@ -115,9 +119,9 @@ internal class FormFlowProcessLinkMapperTest {
             formSize = FormSizes.small,
             subtitles = SUBTITLES
         )
-        whenever(formFlowService.findDefinition(createRequestDto.formFlowDefinitionId)).thenReturn(mock())
+        whenever(formFlowService.findDefinition(createRequestDto.formFlowDefinitionId, caseDefinitionId)).thenReturn(mock())
 
-        val formFlowProcessLink = formFlowProcessLinkMapper.toNewProcessLink(createRequestDto)
+        val formFlowProcessLink = formFlowProcessLinkMapper.toNewProcessLink(createRequestDto, caseDefinitionId)
 
         assertTrue(formFlowProcessLink is FormFlowProcessLink)
         assertEquals(createRequestDto.processDefinitionId, formFlowProcessLink.processDefinitionId)
@@ -145,7 +149,7 @@ internal class FormFlowProcessLinkMapperTest {
             formSize = FormSizes.small,
             subtitles = SUBTITLES
         )
-        whenever(formFlowService.findDefinition(updateRequestDto.formFlowDefinitionId)).thenReturn(mock())
+        whenever(formFlowService.findDefinition(updateRequestDto.formFlowDefinitionId, caseDefinitionId)).thenReturn(mock())
 
         val formFlowProcessLink = formFlowProcessLinkMapper.toUpdatedProcessLink(processLinkToUpdate, updateRequestDto)
 
@@ -169,7 +173,7 @@ internal class FormFlowProcessLinkMapperTest {
         )
 
         val exception = assertThrows<RuntimeException> {
-            formFlowProcessLinkMapper.toNewProcessLink(createRequestDto)
+            formFlowProcessLinkMapper.toNewProcessLink(createRequestDto, caseDefinitionId)
         }
 
         assertEquals(
@@ -212,10 +216,10 @@ internal class FormFlowProcessLinkMapperTest {
             formFlowDefinitionId = "testing:latest",
         )
 
-        val relatedExportRequests = formFlowProcessLinkMapper.createRelatedExportRequests(formProcessLink)
+        val relatedExportRequests = formFlowProcessLinkMapper.createRelatedExportRequests(formProcessLink, caseDefinitionId)
 
         Assertions.assertThat(relatedExportRequests).contains(
-            FormFlowDefinitionExportRequest("testing:latest")
+            FormFlowDefinitionExportRequest("testing:latest", caseDefinitionId)
         )
     }
 

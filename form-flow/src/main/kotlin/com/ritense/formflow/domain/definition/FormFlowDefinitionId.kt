@@ -17,9 +17,11 @@
 package com.ritense.formflow.domain.definition
 
 import com.ritense.formflow.domain.AbstractId
-import java.util.Objects
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
+import jakarta.persistence.Embedded
+import java.util.Objects
 
 @Embeddable
 data class FormFlowDefinitionId(
@@ -28,7 +30,10 @@ data class FormFlowDefinitionId(
     val key: String,
 
     @Column(name = "form_flow_definition_version")
-    val version: Long
+    val version: Long,
+
+    @Embedded
+    val caseDefinitionId: CaseDefinitionId
 
 ) : AbstractId<FormFlowDefinitionId>() {
 
@@ -52,20 +57,16 @@ data class FormFlowDefinitionId(
     }
 
     companion object {
-        fun newId(key: String): FormFlowDefinitionId {
-            return FormFlowDefinitionId(key, 1).newIdentity()
+        fun newId(key: String, caseDefinitionId: CaseDefinitionId): FormFlowDefinitionId {
+            return FormFlowDefinitionId(key, 1, caseDefinitionId).newIdentity()
         }
 
         fun nextVersion(id: FormFlowDefinitionId): FormFlowDefinitionId {
-            return FormFlowDefinitionId(id.key, id.version + 1).newIdentity()
+            return FormFlowDefinitionId(id.key, id.version + 1, id.caseDefinitionId).newIdentity()
         }
 
         fun existingId(id: FormFlowDefinitionId): FormFlowDefinitionId {
-            return FormFlowDefinitionId(id.key, id.version)
-        }
-
-        fun existingId(id: String): FormFlowDefinitionId {
-            return FormFlowDefinitionId(id.substringBeforeLast(':'), id.substringAfterLast(':').toLong())
+            return FormFlowDefinitionId(id.key, id.version, id.caseDefinitionId)
         }
     }
 }

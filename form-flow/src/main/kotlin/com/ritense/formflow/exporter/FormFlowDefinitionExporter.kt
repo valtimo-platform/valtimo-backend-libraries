@@ -40,7 +40,7 @@ class FormFlowDefinitionExporter(
 
     override fun export(request: FormFlowDefinitionExportRequest): ExportResult {
         return withLoggingContext(FormFlowDefinition::class, request.formFlowDefinitionId) {
-            val definition = requireNotNull(formFlowService.findDefinition(request.formFlowDefinitionId))
+            val definition = requireNotNull(formFlowService.findDefinition(request.formFlowDefinitionId, request.caseDefinitionId))
 
             val relatedRequests = definition.steps.map { step ->
                 step.type
@@ -48,7 +48,7 @@ class FormFlowDefinitionExporter(
                 type.name == FormFlowStepTypeFormHandler.TYPE
             }.map { type ->
                 val formDefinitionName = (type.properties as FormStepTypeProperties).definition
-                FormDefinitionExportRequest(formDefinitionName)
+                FormDefinitionExportRequest(formDefinitionName, request.caseDefinitionId)
             }.toSet()
 
             ExportResult(

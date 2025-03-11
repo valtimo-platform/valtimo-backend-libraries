@@ -19,6 +19,7 @@ package com.ritense.formflow.exporter
 import com.ritense.exporter.request.FormDefinitionExportRequest
 import com.ritense.exporter.request.FormFlowDefinitionExportRequest
 import com.ritense.formflow.BaseIntegrationTest
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -37,9 +38,10 @@ class FormFlowDefinitionExporterIntTest @Autowired constructor(
 
     @Test
     fun `should export form flow with forms`() {
+        val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val formFlowKey = "loan"
         val result = formFlowDefinitionExporter.export(
-            FormFlowDefinitionExportRequest("${formFlowKey}:latest")
+            FormFlowDefinitionExportRequest("${formFlowKey}:latest", caseDefinitionId)
         )
 
         val exportFile = result.exportFiles.singleOrNull {
@@ -62,7 +64,7 @@ class FormFlowDefinitionExporterIntTest @Autowired constructor(
         )
 
         assertThat(result.relatedRequests).contains(
-            FormDefinitionExportRequest("my-form-definition")
+            FormDefinitionExportRequest("my-form-definition", caseDefinitionId)
         )
     }
 

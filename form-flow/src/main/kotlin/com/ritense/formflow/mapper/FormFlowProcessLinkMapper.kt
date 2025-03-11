@@ -21,7 +21,13 @@ import com.ritense.exporter.request.ExportRequest
 import com.ritense.exporter.request.FormFlowDefinitionExportRequest
 import com.ritense.form.domain.FormDisplayType
 import com.ritense.form.domain.FormSizes
+import com.ritense.formflow.domain.FormFlowProcessLink
+import com.ritense.formflow.processlink.dto.FormFlowProcessLinkDeployDto
 import com.ritense.formflow.service.FormFlowService
+import com.ritense.formflow.web.rest.dto.FormFlowProcessLinkCreateRequestDto
+import com.ritense.formflow.web.rest.dto.FormFlowProcessLinkExportResponseDto
+import com.ritense.formflow.web.rest.dto.FormFlowProcessLinkResponseDto
+import com.ritense.formflow.web.rest.dto.FormFlowProcessLinkUpdateRequestDto
 import com.ritense.logging.withLoggingContext
 import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.domain.ProcessLink
@@ -32,12 +38,7 @@ import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import com.ritense.formflow.domain.FormFlowProcessLink
-import com.ritense.formflow.processlink.dto.FormFlowProcessLinkDeployDto
-import com.ritense.formflow.web.rest.dto.FormFlowProcessLinkCreateRequestDto
-import com.ritense.formflow.web.rest.dto.FormFlowProcessLinkExportResponseDto
-import com.ritense.formflow.web.rest.dto.FormFlowProcessLinkResponseDto
-import com.ritense.formflow.web.rest.dto.FormFlowProcessLinkUpdateRequestDto
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.camunda.bpm.engine.repository.ProcessDefinition
 import org.springframework.stereotype.Component
 import java.util.UUID
@@ -128,10 +129,15 @@ class FormFlowProcessLinkMapper(
         }
     }
 
-    override fun toNewProcessLink(createRequestDto: ProcessLinkCreateRequestDto): ProcessLink {
+    override fun toNewProcessLink(createRequestDto: ProcessLinkCreateRequestDto, caseDefinitionId: CaseDefinitionId?): ProcessLink {
         return withLoggingContext(ProcessDefinition::class, createRequestDto.processDefinitionId) {
+            if (caseDefinitionId == null) {
+                //TODO: change exception type
+                throw RuntimeException("Case definition id is required for creating a new process link")
+            }
+
             createRequestDto as FormFlowProcessLinkCreateRequestDto
-            if (formFlowService.findDefinition(createRequestDto.formFlowDefinitionId) == null) {
+            if (formFlowService.findDefinition(createRequestDto.formFlowDefinitionId, caseDefinitionId) == null) {
                 throw RuntimeException("FormFlow definition not found with id ${createRequestDto.formFlowDefinitionId}")
             }
             FormFlowProcessLink(
@@ -153,7 +159,8 @@ class FormFlowProcessLinkMapper(
     ): ProcessLink {
         return withLoggingContext(ProcessLink::class, processLinkToUpdate.id) {
             updateRequestDto as FormFlowProcessLinkUpdateRequestDto
-            if (formFlowService.findDefinition(updateRequestDto.formFlowDefinitionId) == null) {
+            //TODO: get case definition somehow
+            if (formFlowService.findDefinition(updateRequestDto.formFlowDefinitionId, CaseDefinitionId("test", "1.0.0")) == null) {
                 throw RuntimeException("FormFlow definition not found with id ${updateRequestDto.formFlowDefinitionId}")
             }
             FormFlowProcessLink(
@@ -170,11 +177,12 @@ class FormFlowProcessLinkMapper(
     }
 
     override fun createRelatedExportRequests(
-        processLink: ProcessLink
+        processLink: ProcessLink,
+        caseDefinitionId: CaseDefinitionId
     ): Set<ExportRequest> {
         return withLoggingContext(ProcessLink::class, processLink.id) {
             processLink as FormFlowProcessLink
-            setOf(FormFlowDefinitionExportRequest(processLink.formFlowDefinitionId))
+            setOf(FormFlowDefinitionExportRequest(processLink.formFlowDefinitionId, caseDefinitionId))
         }
     }
 

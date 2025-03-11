@@ -19,6 +19,7 @@ package com.ritense.formflow.web.rest.result
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.configuration.FormFlowStep
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 
 data class FormFlowDefinitionDto(
     val key: String,
@@ -27,8 +28,8 @@ data class FormFlowDefinitionDto(
     val steps: List<FormFlowStep>,
     val readOnly: Boolean = false
 ) {
-    fun toEntity(): FormFlowDefinition = FormFlowDefinition(
-        id = FormFlowDefinitionId(key, version),
+    fun toEntity(caseDefinitionId: CaseDefinitionId): FormFlowDefinition = FormFlowDefinition(
+        id = FormFlowDefinitionId(key, version, caseDefinitionId),
         startStep = startStep,
         steps = steps.map { it.toDefinition() }.toSet()
     )

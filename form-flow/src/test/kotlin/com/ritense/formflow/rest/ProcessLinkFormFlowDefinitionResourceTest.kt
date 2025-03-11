@@ -23,6 +23,7 @@ import com.ritense.formflow.domain.definition.FormFlowStepId
 import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.service.FormFlowService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.hamcrest.Matchers.containsInAnyOrder
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
@@ -50,11 +51,12 @@ internal class ProcessLinkFormFlowDefinitionResourceTest {
 
     @Test
     fun `getFormLinkOptions returns form flow definition with latest`() {
+        val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val step = FormFlowStep(FormFlowStepId("key2"),
             type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
         val definition = FormFlowDefinition(
-            id = FormFlowDefinitionId.newId("key"), "step1", mutableSetOf(step))
+            id = FormFlowDefinitionId.newId("key", caseDefinitionId), "step1", mutableSetOf(step))
         whenever(service.getFormFlowDefinitions()).thenReturn(listOf(definition))
         mockMvc
             .perform(
@@ -71,9 +73,10 @@ internal class ProcessLinkFormFlowDefinitionResourceTest {
 
     @Test
     fun `getFormLinkOptions returns multiple versions of form flow definition with only one latest`() {
+        val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val step = FormFlowStep(FormFlowStepId("key2"),
             type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition")))
-        val formFlowDefinitionId = FormFlowDefinitionId.newId("key")
+        val formFlowDefinitionId = FormFlowDefinitionId.newId("key", caseDefinitionId)
         val definitionVersion1 = FormFlowDefinition(
             id = formFlowDefinitionId, "step1", mutableSetOf(step))
 
@@ -96,13 +99,14 @@ internal class ProcessLinkFormFlowDefinitionResourceTest {
 
     @Test
     fun `getFormLinkOptions returns form flow definitions with one latest per unique key`() {
+        val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val step = FormFlowStep(FormFlowStepId("key2"),
             type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition")))
         val definitionVersion1 = FormFlowDefinition(
-            id = FormFlowDefinitionId.newId("key"), "step1", mutableSetOf(step))
+            id = FormFlowDefinitionId.newId("key", caseDefinitionId), "step1", mutableSetOf(step))
 
         val definitionVersion2 = FormFlowDefinition(
-            id = FormFlowDefinitionId.newId("another-key") , "step1", mutableSetOf(step))
+            id = FormFlowDefinitionId.newId("another-key", caseDefinitionId) , "step1", mutableSetOf(step))
 
         whenever(service.getFormFlowDefinitions()).thenReturn(listOf(definitionVersion1, definitionVersion2))
         mockMvc

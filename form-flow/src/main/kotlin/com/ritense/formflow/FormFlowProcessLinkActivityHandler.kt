@@ -31,6 +31,7 @@ import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.formflow.domain.FormFlowProcessLink
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.camunda.bpm.engine.RuntimeService
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -91,7 +92,8 @@ class FormFlowProcessLinkActivityHandler(
     ): ProcessLinkActivityResult<FormFlowTaskOpenResultProperties> {
         return withLoggingContext(ProcessLink::class, processLink.id) {
             processLink as FormFlowProcessLink
-            val formFlowDefinition = formFlowService.findDefinition(processLink.formFlowDefinitionId)!!
+            //TODO: get case definition
+            val formFlowDefinition = formFlowService.findDefinition(processLink.formFlowDefinitionId, CaseDefinitionId("test", "1.0.0"))!!
             val processDefinition = AuthorizationContext.runWithoutAuthorization {
                 repositoryService.findProcessDefinitionById(processDefinitionId)!!
             }
@@ -114,7 +116,8 @@ class FormFlowProcessLinkActivityHandler(
 
     private fun createFormFlowInstance(task: CamundaTask, processLink: FormFlowProcessLink): FormFlowInstance {
         val additionalProperties = getAdditionalProperties(task)
-        val formFlowDefinition = formFlowService.findDefinition(processLink.formFlowDefinitionId)!!
+        //TODO: get case definition
+        val formFlowDefinition = formFlowService.findDefinition(processLink.formFlowDefinitionId,CaseDefinitionId("test", "1.0.0"))!!
         return formFlowService.save(formFlowDefinition.createInstance(additionalProperties))
     }
 

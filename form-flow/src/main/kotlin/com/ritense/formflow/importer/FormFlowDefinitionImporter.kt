@@ -35,10 +35,10 @@ class FormFlowDefinitionImporter(
 
     override fun import(request: ImportRequest) {
         val formFlowKey = FILENAME_REGEX.matchEntire(request.fileName)!!.groupValues[1]
-        formFlowDeploymentService.deploy(formFlowKey, request.content.toString(Charsets.UTF_8))
+        formFlowDeploymentService.deploy(formFlowKey, request.content.toString(Charsets.UTF_8), request.caseDefinitionId!!)
     }
 
     private companion object {
-        val FILENAME_REGEX = """config/form-flow/([^/]+)\.json""".toRegex()
+        val FILENAME_REGEX = """/form-flow/([^/]+)\.json""".toRegex()
     }
 }

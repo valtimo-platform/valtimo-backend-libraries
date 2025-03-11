@@ -20,20 +20,19 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.configuration.FormFlowDefinition
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
-import java.io.InputStream
-import java.nio.charset.StandardCharsets
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import mu.KotlinLogging
 import mu.withLoggingContext
 import org.everit.json.schema.loader.SchemaLoader
 import org.json.JSONObject
 import org.json.JSONTokener
-import org.springframework.boot.context.event.ApplicationReadyEvent
-import org.springframework.context.event.EventListener
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.StreamUtils
+import java.io.InputStream
+import java.nio.charset.StandardCharsets
 
 @Transactional
 class FormFlowDeploymentService(
@@ -42,31 +41,17 @@ class FormFlowDeploymentService(
     private val objectMapper: ObjectMapper
 ) {
 
-    @EventListener(ApplicationReadyEvent::class)
-    fun deployAll() {
-        logger.info("Deploy all Form Flow definitions")
-        try {
-            loadFormFlowDefinitionsResources().forEach { resource ->
-                if (resource.filename != null) {
-                    deploy(resource)
-                }
-            }
-        } catch (e: Exception) {
-            throw RuntimeException("Error deploying Form Flows", e)
-        }
+    private fun deploy(formFlow: Resource, caseDefinitionId: CaseDefinitionId) {
+        deploy(formFlow.filename!!.substringBeforeLast("."), formFlow.inputStream, caseDefinitionId)
     }
 
-    private fun deploy(formFlow: Resource) {
-        deploy(formFlow.filename!!.substringBeforeLast("."), formFlow.inputStream)
-    }
-
-    private fun deploy(formFlowKey: String, formFlowJson: InputStream) {
+    private fun deploy(formFlowKey: String, formFlowJson: InputStream, caseDefinitionId: CaseDefinitionId) {
         withLoggingContext("formFlowDefinitionKey" to formFlowKey) {
-            deploy(formFlowKey, StreamUtils.copyToString(formFlowJson, StandardCharsets.UTF_8))
+            deploy(formFlowKey, StreamUtils.copyToString(formFlowJson, StandardCharsets.UTF_8), caseDefinitionId)
         }
     }
 
-    fun deploy(formFlowKey: String, formFlowJson: String) {
+    fun deploy(formFlowKey: String, formFlowJson: String, caseDefinitionId: CaseDefinitionId) {
         withLoggingContext("formFlowDefinitionKey" to formFlowKey) {
             validate(formFlowJson)
 
@@ -75,8 +60,8 @@ class FormFlowDeploymentService(
             validate(formFlowDefinitionConfig)
 
             try {
-                val existingDefinition = formFlowService.findLatestDefinitionByKey(formFlowKey)
-                var definitionId = FormFlowDefinitionId.newId(formFlowKey)
+                val existingDefinition = formFlowService.findLatestDefinitionByKey(formFlowKey, caseDefinitionId)
+                var definitionId = FormFlowDefinitionId.newId(formFlowKey, caseDefinitionId)
 
                 if (existingDefinition != null) {
                     if (formFlowDefinitionConfig.contentEquals(existingDefinition)) {
@@ -99,7 +84,7 @@ class FormFlowDeploymentService(
     fun isAutoDeployed(formFlowDefinitionKey: String): Boolean {
         withLoggingContext("formFlowDefinitionKey" to formFlowDefinitionKey) {
             return ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
-                .getResource(FORM_FLOW_DEFINITIONS_PATH.replace("*", formFlowDefinitionKey))
+                .getResource(FORM_FLOW_DEFINITIONS_PATH.replace("{formFlowKey}", formFlowDefinitionKey))
                 .exists()
         }
     }
@@ -124,13 +109,9 @@ class FormFlowDeploymentService(
         return ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResource(FORM_FLOW_SCHEMA_PATH)
     }
 
-    private fun loadFormFlowDefinitionsResources(): Array<Resource> {
-        return ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(FORM_FLOW_DEFINITIONS_PATH)
-    }
-
     companion object {
         private const val FORM_FLOW_SCHEMA_PATH = "classpath:config/form-flow/schema/formflow.schema.json"
-        private const val FORM_FLOW_DEFINITIONS_PATH = "classpath:config/form-flow/*.json"
+        private const val FORM_FLOW_DEFINITIONS_PATH = "classpath:config/case/*/*/form-flow/{formFlowKey}.json"
         val logger = KotlinLogging.logger {}
     }
 }

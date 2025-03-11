@@ -52,7 +52,7 @@ class JsonSchemaDocumentDefinitionExporter(
 
         return ExportResult(
             exportFile,
-            setOf(FormDefinitionExportRequest(request.name + ".summary", false))
+            setOf(FormDefinitionExportRequest(request.name + ".summary", request.caseDefinitionId, false))
         )
     }
 

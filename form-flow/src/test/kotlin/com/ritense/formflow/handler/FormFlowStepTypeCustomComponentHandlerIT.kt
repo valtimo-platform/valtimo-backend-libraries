@@ -18,6 +18,7 @@ package com.ritense.formflow.handler
 
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.formflow.BaseIntegrationTest
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -29,8 +30,9 @@ class FormFlowStepTypeCustomComponentHandlerIT: BaseIntegrationTest() {
 
     @Test
     fun `should find correct properties for custom angular type step`() {
+        val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val formFlowInstance = formFlowService
-            .findDefinition("custom-component-test:latest")!!
+            .findDefinition("custom-component-test:latest", caseDefinitionId)!!
             .createInstance(emptyMap())
 
         val stepProperties = formFlowService.getTypeProperties(formFlowInstance.getCurrentStep())

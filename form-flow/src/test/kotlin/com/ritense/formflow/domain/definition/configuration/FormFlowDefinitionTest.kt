@@ -21,6 +21,7 @@ import com.ritense.formflow.domain.definition.FormFlowStep as FormFlowStepEntity
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.FormFlowStepId
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -30,6 +31,7 @@ import org.mockito.kotlin.whenever
 class FormFlowDefinitionTest {
     @Test
     fun `contentEquals should match when steps match with single entry`() {
+        val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
         val thisStep: FormFlowStep = mock()
         val thisDefinition = FormFlowDefinition("test1", mutableSetOf(thisStep))
         val otherStep = FormFlowStepEntity(
@@ -37,7 +39,7 @@ class FormFlowDefinitionTest {
             type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
         val otherDefinition = FormFlowDefinitionEntity(
-            id = FormFlowDefinitionId.newId("key1"), "test1", mutableSetOf(otherStep)
+            id = FormFlowDefinitionId.newId("key1", caseDefinitionId), "test1", mutableSetOf(otherStep)
         )
 
         whenever(thisStep.contentEquals(otherStep)).thenReturn(true)
@@ -47,6 +49,7 @@ class FormFlowDefinitionTest {
 
     @Test
     fun `contentEquals should match when steps match with multiple entries`() {
+        val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
         val thisStep1: FormFlowStep = mock()
         val thisStep2: FormFlowStep = mock()
         val thisDefinition = FormFlowDefinition("test1", mutableSetOf(thisStep1, thisStep2))
@@ -59,7 +62,7 @@ class FormFlowDefinitionTest {
             type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
         val otherDefinition = FormFlowDefinitionEntity(
-            id = FormFlowDefinitionId.newId("key1"), "test1", mutableSetOf(otherStep1, otherStep2)
+            id = FormFlowDefinitionId.newId("key1", caseDefinitionId), "test1", mutableSetOf(otherStep1, otherStep2)
         )
 
         whenever(thisStep1.contentEquals(otherStep1)).thenReturn(true)
@@ -70,9 +73,10 @@ class FormFlowDefinitionTest {
 
     @Test
     fun `contentEquals should match when no steps`() {
+        val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
         val thisDefinition = FormFlowDefinition("test1", mutableSetOf())
         val otherDefinition = FormFlowDefinitionEntity(
-            id = FormFlowDefinitionId.newId("key1"), "test1", mutableSetOf()
+            id = FormFlowDefinitionId.newId("key1", caseDefinitionId), "test1", mutableSetOf()
         )
 
         assertTrue(thisDefinition.contentEquals(otherDefinition))
@@ -80,6 +84,7 @@ class FormFlowDefinitionTest {
 
     @Test
     fun `contentEquals should not match when this has more steps then other`() {
+        val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
         val thisStep1: FormFlowStep = mock()
         val thisStep2: FormFlowStep = mock()
         val thisDefinition = FormFlowDefinition("test1", mutableSetOf(thisStep1, thisStep2))
@@ -88,7 +93,7 @@ class FormFlowDefinitionTest {
             type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
         val otherDefinition = FormFlowDefinitionEntity(
-            id = FormFlowDefinitionId.newId("key1"), "test1", mutableSetOf(otherStep1)
+            id = FormFlowDefinitionId.newId("key1", caseDefinitionId), "test1", mutableSetOf(otherStep1)
         )
 
         whenever(thisStep1.contentEquals(otherStep1)).thenReturn(true)
@@ -99,6 +104,7 @@ class FormFlowDefinitionTest {
 
     @Test
     fun `contentEquals should not match when other has more steps then this`() {
+        val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
         val thisStep2: FormFlowStep = mock()
         val thisDefinition = FormFlowDefinition("test1", mutableSetOf(thisStep2))
         val otherStep1 = FormFlowStepEntity(
@@ -110,7 +116,7 @@ class FormFlowDefinitionTest {
             type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
         val otherDefinition = FormFlowDefinitionEntity(
-            id = FormFlowDefinitionId.newId("key1"), "test1", mutableSetOf(otherStep1, otherStep2)
+            id = FormFlowDefinitionId.newId("key1", caseDefinitionId), "test1", mutableSetOf(otherStep1, otherStep2)
         )
 
         whenever(thisStep2.contentEquals(otherStep2)).thenReturn(true)
@@ -120,6 +126,7 @@ class FormFlowDefinitionTest {
 
     @Test
     fun `contentEquals should not match when this steps are empty`() {
+        val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
         val thisDefinition = FormFlowDefinition("test1", mutableSetOf())
         val otherStep1 = FormFlowStepEntity(
             FormFlowStepId("key2"),
@@ -130,7 +137,7 @@ class FormFlowDefinitionTest {
             type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
         val otherDefinition = FormFlowDefinitionEntity(
-            id = FormFlowDefinitionId.newId("key1"), "test1", mutableSetOf(otherStep1, otherStep2)
+            id = FormFlowDefinitionId.newId("key1", caseDefinitionId), "test1", mutableSetOf(otherStep1, otherStep2)
         )
 
         assertFalse(thisDefinition.contentEquals(otherDefinition))
@@ -138,11 +145,12 @@ class FormFlowDefinitionTest {
 
     @Test
     fun `contentEquals should not match when other steps are empty`() {
+        val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
         val thisStep1: FormFlowStep = mock()
         val thisStep2: FormFlowStep = mock()
         val thisDefinition = FormFlowDefinition("test1", mutableSetOf(thisStep1, thisStep2))
         val otherDefinition = FormFlowDefinitionEntity(
-            id = FormFlowDefinitionId.newId("key1"), "test1", mutableSetOf()
+            id = FormFlowDefinitionId.newId("key1", caseDefinitionId), "test1", mutableSetOf()
         )
 
         assertFalse(thisDefinition.contentEquals(otherDefinition))
@@ -150,6 +158,7 @@ class FormFlowDefinitionTest {
 
     @Test
     fun `contentEquals should not match when equal number of steps but content is different`() {
+        val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
         val thisStep1: FormFlowStep = mock()
         val thisStep2: FormFlowStep = mock()
         val thisDefinition = FormFlowDefinition("test1", mutableSetOf(thisStep1, thisStep2))
@@ -162,7 +171,7 @@ class FormFlowDefinitionTest {
             type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
         val otherDefinition = FormFlowDefinitionEntity(
-            id = FormFlowDefinitionId.newId("key1"), "test1", mutableSetOf(otherStep1, otherStep2)
+            id = FormFlowDefinitionId.newId("key1", caseDefinitionId), "test1", mutableSetOf(otherStep1, otherStep2)
         )
 
         whenever(thisStep1.contentEquals(otherStep1)).thenReturn(true)
@@ -173,9 +182,10 @@ class FormFlowDefinitionTest {
 
     @Test
     fun `contentEquals should not match when start step is different`() {
+        val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
         val thisDefinition = FormFlowDefinition("test1", mutableSetOf())
         val otherDefinition = FormFlowDefinitionEntity(
-            id = FormFlowDefinitionId.newId("key1"), "test2", mutableSetOf()
+            id = FormFlowDefinitionId.newId("key1", caseDefinitionId), "test2", mutableSetOf()
         )
 
         assertFalse(thisDefinition.contentEquals(otherDefinition))

@@ -29,7 +29,10 @@ import com.ritense.formflow.handler.TypeProperties
 import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import mu.withLoggingContext
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.transaction.annotation.Transactional
 import kotlin.jvm.optionals.getOrNull
 
@@ -45,28 +48,32 @@ class FormFlowService(
         return formFlowDefinitionRepository.findAll()
     }
 
+    fun getFormFlowDefinitions(caseDefinitionId: CaseDefinitionId): List<FormFlowDefinition> {
+        return formFlowDefinitionRepository.findAllByIdCaseDefinitionId(caseDefinitionId)
+    }
+
     fun findDefinition(formFlowId: FormFlowDefinitionId): FormFlowDefinition {
         withLoggingContext(FormFlowDefinition::class.java.canonicalName to formFlowId.toString()) {
             return formFlowDefinitionRepository.getReferenceById(formFlowId)
         }
     }
 
-    fun findDefinition(formFlowDefinitionId: String): FormFlowDefinition? {
+    fun findDefinition(formFlowDefinitionId: String, caseDefinitionId: CaseDefinitionId): FormFlowDefinition? {
         return withLoggingContext(FormFlowDefinition::class.java.canonicalName to formFlowDefinitionId) {
             val formFlowIdAsArray = formFlowDefinitionId.split(":")
             require(formFlowIdAsArray. size == 2) { "Invalid Format found for formFlowId '${formFlowIdAsArray. joinToString(":")}'. Form flow id must have format key:version"}
             if (formFlowIdAsArray[1] == "latest") {
-                findLatestDefinitionByKey(formFlowIdAsArray[0])
+                findLatestDefinitionByKey(formFlowIdAsArray[0], caseDefinitionId)
             } else {
                 formFlowDefinitionRepository.findById(
-                    FormFlowDefinitionId(formFlowIdAsArray[0], formFlowIdAsArray[1].toLong())
+                    FormFlowDefinitionId(formFlowIdAsArray[0], formFlowIdAsArray[1].toLong(), caseDefinitionId)
                 ).getOrNull()
             }
         }
     }
 
-    fun findLatestDefinitionByKey(formFlowKey: String): FormFlowDefinition? {
-        return formFlowDefinitionRepository.findFirstByIdKeyOrderByIdVersionDesc(formFlowKey)
+    fun findLatestDefinitionByKey(formFlowKey: String, caseDefinitionId: CaseDefinitionId): FormFlowDefinition? {
+        return formFlowDefinitionRepository.findFirstByIdKey_AndIdCaseDefinitionId_OrderByIdVersionDesc(formFlowKey, caseDefinitionId)
     }
 
     fun save(formFlowDefinition: FormFlowDefinition): FormFlowDefinition {
@@ -112,8 +119,8 @@ class FormFlowService(
         }
     }
 
-    fun deleteByKey(definitionKey: String) {
-        formFlowDefinitionRepository.deleteAllByIdKey(definitionKey)
+    fun deleteByKeyAndsCaseDefinition(definitionKey: String, caseDefinitionId: CaseDefinitionId) {
+        formFlowDefinitionRepository.deleteAllByIdKeyAndIdCaseDefinitionId(definitionKey, caseDefinitionId)
     }
 
     fun getBreadcrumbs(instance: FormFlowInstance): List<FormFlowBreadcrumb> {
