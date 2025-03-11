@@ -217,7 +217,6 @@ DocumentenApiClientTest {
             mockDocumentenApi.url("/").toUri(),
             request,
             createResult,
-            "bestand.jpg"
         )
 
         val recordedRequest = mockDocumentenApi.takeRequest()
