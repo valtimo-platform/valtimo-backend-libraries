@@ -96,17 +96,16 @@ class DocumentenApiClient(
         baseUrl: URI,
         request: BestandsdelenRequest,
         createDocumentResult: CreateDocumentResult,
-        bestandsnaam: String
     ) {
         // Inside the CreateDocumentResult there is an array of bestandsdelen.
         // Each bestandsdeel needs to be sent separately
         // So the documenten api determines the amount (and size) of chunks, not this application.
-        logger.info { "Starting upload of file $bestandsnaam in ${createDocumentResult.bestandsdelen.size} chunks" }
+        logger.info { "Starting upload of file ${createDocumentResult.bestandsnaam} in ${createDocumentResult.bestandsdelen.size} chunks" }
 
         createDocumentResult.bestandsdelen.forEach { bestandsdeel ->
             logger.debug { "Sending chunk #${bestandsdeel.volgnummer} for a size of ${bestandsdeel.omvang} bytes" }
 
-            val body = FileUploadPart(bestandsdeel, request, bestandsnaam)
+            val body = FileUploadPart(bestandsdeel, request, createDocumentResult.bestandsnaam)
                 .createBody()
 
             restClient(authentication)
