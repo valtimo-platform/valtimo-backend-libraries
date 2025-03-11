@@ -19,6 +19,7 @@ package com.ritense.gzac.listener
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.zakenapi.service.ZaakTypeLinkService
 import com.ritense.zakenapi.web.rest.request.CreateZaakTypeLinkRequest
 import org.springframework.context.event.EventListener
@@ -37,10 +38,13 @@ class OpenZaakApplicationReadyEventListener(
     }
 
     private fun connectZaakType(event: DocumentDefinitionDeployedEvent) {
-        if (event.documentDefinition().id().name() == "bezwaar") {
+        val bezwaarCaseDefinitionId = CaseDefinitionId(BEZWAAR, "1.0.0");
+        val portalPersonCaseDefinitionId = CaseDefinitionId(PORTAL_PERSON, "1.0.0");
+
+        if (event.documentDefinition().id().caseDefinitionId() == bezwaarCaseDefinitionId) {
             zaakTypeLinkService.createZaakTypeLink(
                 CreateZaakTypeLinkRequest(
-                    "bezwaar",
+                    bezwaarCaseDefinitionId,
                     URI(ZAAKTYPE_URL),
                     UUID.fromString(ZAKEN_API_PLUGIN_ID),
                     true,
@@ -48,10 +52,10 @@ class OpenZaakApplicationReadyEventListener(
                 )
             )
         }
-        if (event.documentDefinition().id().name() == PORTAL_PERSON) {
+        if (event.documentDefinition().id().caseDefinitionId() == portalPersonCaseDefinitionId) {
             zaakTypeLinkService.createZaakTypeLink(
                 CreateZaakTypeLinkRequest(
-                    PORTAL_PERSON,
+                    portalPersonCaseDefinitionId,
                     URI(ZAAKTYPE_URL),
                     UUID.fromString(ZAKEN_API_PLUGIN_ID),
                     true,
@@ -73,6 +77,7 @@ class OpenZaakApplicationReadyEventListener(
         private const val ZAAKTYPE_URL =
             "http://localhost:8001/catalogi/api/v1/zaaktypen/744ca059-f412-49d4-8963-5800e4afd486"
         private const val PORTAL_PERSON = "portal-person"
+        private const val BEZWAAR = "bezwaar"
         private const val ZAKEN_API_PLUGIN_ID = "3079d6fe-42e3-4f8f-a9db-52ce2507b7ee"
         private const val RSIN = "438605688"
     }

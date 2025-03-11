@@ -10,9 +10,6 @@ dependencies {
 
     implementation("io.github.microutils:kotlin-logging")
 
-    compileOnly(project(":besluit"))
-    compileOnly(project(":openzaak"))
-    compileOnly(project(":contactmoment"))
     compileOnly(project(":objects-api"))
 
     // Spring cloud stream RabbitMQ

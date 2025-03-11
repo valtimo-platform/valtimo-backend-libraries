@@ -17,6 +17,7 @@
 package com.ritense.zakenapi.web.rest
 
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.zakenapi.domain.ZaakTypeLink
 import com.ritense.zakenapi.web.rest.request.CreateZaakTypeLinkRequest
@@ -35,8 +36,8 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/management", produces = [APPLICATION_JSON_UTF8_VALUE])
 interface ZaakTypeLinkResource {
 
-    @GetMapping("/v1/zaak-type-link/{documentDefinitionName}")
-    fun get(@PathVariable(name = "documentDefinitionName") documentDefinitionName: String): ResponseEntity<ZaakTypeLink?>
+    @GetMapping("/v1/zaak-type-link/{caseDefinitionId}")
+    fun get(@PathVariable(name = "caseDefinitionId") caseDefinitionId: CaseDefinitionId): ResponseEntity<ZaakTypeLink?>
 
     @GetMapping("/v1/zaak-type-link/process/{processDefinitionId}")
     fun getByProcess(@PathVariable(name = "processDefinitionId") processDefinitionId: String): ResponseEntity<ZaakTypeLink?>
@@ -44,7 +45,7 @@ interface ZaakTypeLinkResource {
     @PostMapping("/v1/zaak-type-link")
     fun create(@Valid @RequestBody request: CreateZaakTypeLinkRequest): ResponseEntity<ZaakTypeLink>
 
-    @DeleteMapping("/v1/zaak-type-link/{documentDefinitionName}")
-    fun remove(@PathVariable(name = "documentDefinitionName") documentDefinitionName: String): ResponseEntity<Void>
+    @DeleteMapping("/v1/zaak-type-link/{caseDefinitionId}")
+    fun remove(@PathVariable(name = "caseDefinitionId") caseDefinitionId: CaseDefinitionId): ResponseEntity<Void>
 
 }
