@@ -19,10 +19,13 @@ package com.ritense.formflow
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
+import com.ritense.formflow.domain.FormFlowProcessLink
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.logging.LoggableResource
 import com.ritense.logging.withLoggingContext
+import com.ritense.processdocument.domain.ProcessDefinitionId
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
@@ -30,8 +33,6 @@ import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import com.ritense.formflow.domain.FormFlowProcessLink
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.camunda.bpm.engine.RuntimeService
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -42,6 +43,7 @@ import java.util.UUID
 class FormFlowProcessLinkActivityHandler(
     private val formFlowService: FormFlowService,
     private val repositoryService: CamundaRepositoryService,
+    private val processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
     documentService: DocumentService,
     runtimeService: RuntimeService,
 ) : AbstractFormFlowLinkTaskProvider(
@@ -92,8 +94,8 @@ class FormFlowProcessLinkActivityHandler(
     ): ProcessLinkActivityResult<FormFlowTaskOpenResultProperties> {
         return withLoggingContext(ProcessLink::class, processLink.id) {
             processLink as FormFlowProcessLink
-            //TODO: get case definition
-            val formFlowDefinition = formFlowService.findDefinition(processLink.formFlowDefinitionId, CaseDefinitionId("test", "1.0.0"))!!
+            val processDefinitionCaseDefinitionLink = processDefinitionCaseDefinitionService.findByProcessDefinitionId(ProcessDefinitionId(processDefinitionId))
+            val formFlowDefinition = formFlowService.findDefinition(processLink.formFlowDefinitionKey, processDefinitionCaseDefinitionLink.id.caseDefinitionId)!!
             val processDefinition = AuthorizationContext.runWithoutAuthorization {
                 repositoryService.findProcessDefinitionById(processDefinitionId)!!
             }
@@ -116,8 +118,11 @@ class FormFlowProcessLinkActivityHandler(
 
     private fun createFormFlowInstance(task: CamundaTask, processLink: FormFlowProcessLink): FormFlowInstance {
         val additionalProperties = getAdditionalProperties(task)
-        //TODO: get case definition
-        val formFlowDefinition = formFlowService.findDefinition(processLink.formFlowDefinitionId,CaseDefinitionId("test", "1.0.0"))!!
+        val processDefinitionCaseDefinitionLink = processDefinitionCaseDefinitionService
+            .findByProcessDefinitionId(ProcessDefinitionId(processLink.processDefinitionId))
+
+        val formFlowDefinition = formFlowService
+            .findDefinition(processLink.formFlowDefinitionKey, processDefinitionCaseDefinitionLink.id.caseDefinitionId)!!
         return formFlowService.save(formFlowDefinition.createInstance(additionalProperties))
     }
 

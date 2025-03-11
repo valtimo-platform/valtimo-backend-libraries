@@ -78,7 +78,7 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
                 processDefinitionId = processDefinition.id,
                 activityId = "do-something",
                 activityType = ActivityTypeWithEventName.USER_TASK_START,
-                formFlowDefinitionId = "inkomens_loket:latest"
+                formFlowDefinitionKey = "inkomens_loket"
             ),
             caseDefinitionId
         )
@@ -108,7 +108,7 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
                 processDefinitionId = processDefinition.id,
                 activityId = "do-something",
                 activityType = ActivityTypeWithEventName.USER_TASK_START,
-                formFlowDefinitionId = "inkomens_loket:latest"
+                formFlowDefinitionKey = "inkomens_loket"
             ),
             caseDefinitionId
         )
@@ -139,14 +139,14 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
             .processDefinitionKey("formflow-one-task-process")
             .singleResult()
 
-        val formFlowDefinition = formFlowService.findDefinition("inkomens_loket:1", CaseDefinitionId("profile", "1.0.0"))
+        val formFlowDefinition = formFlowService.findDefinition("inkomens_loket", CaseDefinitionId("profile", "1.0.0"))
 
         val processLink: ProcessLink = FormFlowProcessLink(
             id = processLinkId,
             processDefinitionId = processDefinition.id,
             activityId = "some_activity_id",
             activityType = ActivityTypeWithEventName.START_EVENT_START,
-            formFlowDefinitionId = formFlowDefinition?.id.toString())
+            formFlowDefinitionKey = formFlowDefinition?.id?.key!!)
 
         val result = processLinkActivityHandler.getStartEventObject(
             processDefinition.id,

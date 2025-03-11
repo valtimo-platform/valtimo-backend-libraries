@@ -51,7 +51,7 @@ class ProcessLinkDeploymentApplicationReadyEventListenerIntTest @Autowired const
         val processLink = processLinks.first()
         assertThat(processLink, Matchers.isA(FormFlowProcessLink::class.java))
         processLink as FormFlowProcessLink
-        assertThat(processLink.formFlowDefinitionId, equalTo("inkomens_loket:latest"))
+        assertThat(processLink.formFlowDefinitionKey, equalTo("inkomens_loket"))
     }
 
     private fun getLatestProcessDefinition(): CamundaProcessDefinition {

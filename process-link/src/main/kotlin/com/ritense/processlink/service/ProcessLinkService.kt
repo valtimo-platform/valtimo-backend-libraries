@@ -117,12 +117,12 @@ class ProcessLinkService(
     }
 
     @Transactional
-    fun updateProcessLink(updateRequest: ProcessLinkUpdateRequestDto): ProcessLink {
+    fun updateProcessLink(updateRequest: ProcessLinkUpdateRequestDto, caseDefinitionId: CaseDefinitionId?): ProcessLink {
         return withLoggingContext(ProcessLink::class, updateRequest.id) {
             val processLinkToUpdate = processLinkRepository.findById(updateRequest.id)
                 .getOrElse { throw IllegalStateException("No ProcessLink found with id ${updateRequest.id}") }
             val mapper = getProcessLinkMapper(updateRequest.processLinkType)
-            val processLinkUpdated = mapper.toUpdatedProcessLink(processLinkToUpdate, updateRequest)
+            val processLinkUpdated = mapper.toUpdatedProcessLink(processLinkToUpdate, updateRequest, caseDefinitionId)
             if (processLinkToUpdate::class != processLinkUpdated::class) {
                 // Hibernate does not allow 2 different objects with the same identifier in the session, so do delete + insert instead
                 processLinkRepository.delete(processLinkToUpdate)

@@ -75,10 +75,10 @@ class FormFlowDefinitionImporterTest(
 
         assertThat(formFlowKeyCaptor.firstValue).isEqualTo("my-form")
         assertThat(jsonCaptor.firstValue).isEqualTo(jsonContent)
-        assertThat(jsonCaptor.firstValue).isEqualTo(caseDefinitionId)
+        assertThat(caseDefinitionIdCaptor.firstValue).isEqualTo(caseDefinitionId)
     }
 
     private companion object {
-        const val FILENAME = "config/form-flow/my-form.json"
+        const val FILENAME = "/form-flow/my-form.json"
     }
 }

@@ -26,7 +26,7 @@ import java.util.UUID
 @JsonTypeName(PROCESS_LINK_TYPE_FORM_FLOW)
 data class FormFlowProcessLinkUpdateRequestDto(
     override val id: UUID,
-    val formFlowDefinitionId: String,
+    val formFlowDefinitionKey: String,
     val formDisplayType: FormDisplayType? = FormDisplayType.modal,
     val formSize: FormSizes? = FormSizes.medium,
     val subtitles: List<String>? = null

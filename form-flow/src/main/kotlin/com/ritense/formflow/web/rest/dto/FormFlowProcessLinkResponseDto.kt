@@ -29,7 +29,7 @@ data class FormFlowProcessLinkResponseDto(
     override val activityId: String,
     override val activityType: ActivityTypeWithEventName,
     override val processLinkType: String = PROCESS_LINK_TYPE_FORM_FLOW,
-    val formFlowDefinitionId: String,
+    val formFlowDefinitionKey: String,
     val formDisplayType: FormDisplayType,
     val formSize: FormSizes,
     val subtitles: List<String>? = null

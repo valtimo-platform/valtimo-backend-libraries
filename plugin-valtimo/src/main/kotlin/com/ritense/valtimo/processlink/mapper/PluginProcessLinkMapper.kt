@@ -121,7 +121,8 @@ class PluginProcessLinkMapper(
 
     override fun toUpdatedProcessLink(
         processLinkToUpdate: ProcessLink,
-        updateRequestDto: ProcessLinkUpdateRequestDto
+        updateRequestDto: ProcessLinkUpdateRequestDto,
+        caseDefinitionId: CaseDefinitionId?
     ): PluginProcessLink {
         return withLoggingContext(ProcessLink::class, processLinkToUpdate.id) {
             updateRequestDto as PluginProcessLinkUpdateDto

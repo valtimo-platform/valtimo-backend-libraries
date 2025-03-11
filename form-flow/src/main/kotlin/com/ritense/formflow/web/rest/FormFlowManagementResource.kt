@@ -20,13 +20,13 @@ import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.service.FormFlowDeploymentService
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.formflow.web.rest.result.FormFlowDefinitionDto
-import com.ritense.formflow.web.rest.result.ListFormFlowDefinitionResponse
 import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.transaction.annotation.Transactional
@@ -51,25 +51,23 @@ class FormFlowManagementResource(
     fun getAllFormFlowDefinitions(
         @PathVariable("caseDefinitionKey") caseDefinitionKey: String,
         @PathVariable("versionTag") versionTag: String,
-    ): ResponseEntity<List<ListFormFlowDefinitionResponse>> {
+        @PageableDefault pageable: Pageable
+    ): ResponseEntity<Page<FormFlowDefinitionDto>> {
         val caseDefinitionId = CaseDefinitionId(caseDefinitionKey, versionTag)
-        val definitions = formFlowService.getFormFlowDefinitions(caseDefinitionId)
-            .groupBy { it.id.key }
-            .map { ListFormFlowDefinitionResponse.of(it.value, formFlowDeploymentService.isAutoDeployed(it.value.first().id.key)) }
-            .sortedBy { it.key }
+        val definitions = formFlowService.getFormFlowDefinitions(caseDefinitionId, pageable)
+            .map { FormFlowDefinitionDto.of(it, formFlowDeploymentService.isAutoDeployed(it.id.key)) }
         return ResponseEntity.ok(definitions)
     }
 
-    @GetMapping("/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form-flow-definition/{definitionKey}/version/{definitionVersion}")
+    @GetMapping("/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form-flow-definition/{definitionKey}")
     @Transactional
     fun getFormFlowDefinitionById(
         @LoggableResource("formFlowDefinitionKey") @PathVariable definitionKey: String,
         @PathVariable("caseDefinitionKey") caseDefinitionKey: String,
         @PathVariable("versionTag") versionTag: String,
-        @PathVariable definitionVersion: Long,
     ): ResponseEntity<FormFlowDefinitionDto> {
         val caseDefinitionId = CaseDefinitionId(caseDefinitionKey, versionTag)
-        val definition = formFlowService.findDefinition(FormFlowDefinitionId(definitionKey, definitionVersion, caseDefinitionId))
+        val definition = formFlowService.findDefinition(FormFlowDefinitionId(definitionKey, caseDefinitionId))
         val readOnly = formFlowDeploymentService.isAutoDeployed(definition.id.key)
         return ResponseEntity.ok(FormFlowDefinitionDto.of(definition, readOnly))
     }
@@ -97,7 +95,7 @@ class FormFlowManagementResource(
         @RequestBody definitionDto: FormFlowDefinitionDto
     ): ResponseEntity<FormFlowDefinitionDto> {
         val caseDefinitionId = CaseDefinitionId(caseDefinitionKey, versionTag)
-        if (formFlowService.findLatestDefinitionByKey(definitionDto.key, caseDefinitionId) != null) {
+        if (formFlowService.findDefinition(definitionDto.key, caseDefinitionId) != null) {
             return ResponseEntity.badRequest().build()
         }
         val newDefinition = formFlowService.save(definitionDto.toEntity(caseDefinitionId))
@@ -116,11 +114,6 @@ class FormFlowManagementResource(
         val readOnly = formFlowDeploymentService.isAutoDeployed(definitionKey)
         if (readOnly) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
-        }
-        val oldDefinition = formFlowService.findLatestDefinitionByKey(definitionDto.key, caseDefinitionId)
-            ?: return ResponseEntity.notFound().build()
-        if (definitionDto.version != oldDefinition.id.version + 1) {
-            return ResponseEntity.badRequest().build()
         }
 
         val newDefinition = formFlowService.save(definitionDto.toEntity(caseDefinitionId))

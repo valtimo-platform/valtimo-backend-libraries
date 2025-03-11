@@ -79,7 +79,8 @@ class UIComponentProcessLinkMapper : ProcessLinkMapper {
 
     override fun toUpdatedProcessLink(
         processLinkToUpdate: ProcessLink,
-        updateRequestDto: ProcessLinkUpdateRequestDto
+        updateRequestDto: ProcessLinkUpdateRequestDto,
+        caseDefinitionId: CaseDefinitionId?
     ): ProcessLink {
         updateRequestDto as UIComponentProcessLinkUpdateRequestDto
         assert(processLinkToUpdate.id == updateRequestDto.id)

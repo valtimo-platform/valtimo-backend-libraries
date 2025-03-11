@@ -60,4 +60,13 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="7" author="Ritense">
+        <addColumn tableName="json_schema_document_snapshot">
+            <column name="case_definition_key" type="VARCHAR(256)"/>
+        </addColumn>
+        <addColumn tableName="json_schema_document_snapshot">
+            <column name="case_definition_version_tag" type="VARCHAR(256)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

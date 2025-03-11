@@ -41,7 +41,7 @@ internal class FormFlowServiceIntTest @Autowired constructor(
 
     @Test
     fun `finds 2 formFlowInstances for 1 additionalProperty`() {
-        val definition = formFlowService.findLatestDefinitionByKey("inkomens_loket", caseDefinitionId)!!
+        val definition = formFlowService.findDefinition("inkomens_loket", caseDefinitionId)!!
         formFlowService.save(definition.createInstance(mutableMapOf("taskId" to "123")))
         formFlowService.save(definition.createInstance(mutableMapOf("taskId" to "123")))
         assertEquals(2, formFlowService.findInstances(mutableMapOf("taskId" to "123")).size)
@@ -49,7 +49,7 @@ internal class FormFlowServiceIntTest @Autowired constructor(
 
     @Test
     fun `finds 1 formFlowInstance for 1 additionalProperty`() {
-        val definition = formFlowService.findLatestDefinitionByKey("inkomens_loket", caseDefinitionId)!!
+        val definition = formFlowService.findDefinition("inkomens_loket", caseDefinitionId)!!
         formFlowService.save(definition.createInstance(mutableMapOf("taskId" to "123")))
         formFlowService.save(definition.createInstance(mutableMapOf("taskId" to "1234")))
         assertEquals(1, formFlowService.findInstances(mutableMapOf("taskId" to "123")).size)
@@ -58,7 +58,7 @@ internal class FormFlowServiceIntTest @Autowired constructor(
 //    TODO: Make this working for MySQL
 //    @Test
 //    fun `finds 1 formFlowInstance for 1 complex additionalProperty`() {
-//        val definition = formFlowService.findLatestDefinitionByKey("inkomens_loket")!!
+//        val definition = formFlowService.findByKey("inkomens_loket")!!
 //        val henk = formFlowService.save(definition.createInstance(mutableMapOf("taskId" to mutableMapOf("actualTaskId" to "123"))))
 //        formFlowService.save(definition.createInstance(mutableMapOf("taskId" to mutableMapOf("actualTaskId" to "1234"))))
 //        assertEquals(1, formFlowService.findInstances(mutableMapOf("taskId" to mutableMapOf("actualTaskId" to "123"))).size)
@@ -67,7 +67,7 @@ internal class FormFlowServiceIntTest @Autowired constructor(
 //    TODO: Implement this as a feature
 //    @Test
 //    fun `finds 1 formFlowInstance for 1 complex additionalProperty with complex path`() {
-//        val definition = formFlowService.findLatestDefinitionByKey("inkomens_loket")!!
+//        val definition = formFlowService.findByKey("inkomens_loket")!!
 //        formFlowService.save(definition.createInstance(mutableMapOf("taskId" to mutableMapOf("actualTaskId" to "123"))))
 //        formFlowService.save(definition.createInstance(mutableMapOf("taskId" to mutableMapOf("actualTaskId" to "1234"))))
 //        assertEquals(1, formFlowService.findInstances(mutableMapOf("taskId.actualTaskId" to "123")).size)
@@ -75,7 +75,7 @@ internal class FormFlowServiceIntTest @Autowired constructor(
 
     @Test
     fun `finds 0 formFlowInstances for 1 additionalProperty`() {
-        val definition = formFlowService.findLatestDefinitionByKey("inkomens_loket", caseDefinitionId)!!
+        val definition = formFlowService.findDefinition("inkomens_loket", caseDefinitionId)!!
         formFlowService.save(definition.createInstance(mutableMapOf("taskId" to "123")))
         formFlowService.save(definition.createInstance(mutableMapOf("taskId" to "1234")))
         assertEquals(0, formFlowService.findInstances(mutableMapOf("documentId" to "123")).size)
@@ -83,7 +83,7 @@ internal class FormFlowServiceIntTest @Autowired constructor(
 
     @Test
     fun `finds 2 formFlowInstances for 2 additionalProperties`() {
-        val definition = formFlowService.findLatestDefinitionByKey("inkomens_loket", caseDefinitionId)!!
+        val definition = formFlowService.findDefinition("inkomens_loket", caseDefinitionId)!!
         formFlowService.save(
             definition.createInstance(
                 mutableMapOf(
@@ -124,7 +124,7 @@ internal class FormFlowServiceIntTest @Autowired constructor(
 
     @Test
     fun `finds 1 formFlowInstance for 1 non-string additionalProperty`() {
-        val definition = formFlowService.findLatestDefinitionByKey("inkomens_loket", caseDefinitionId)!!
+        val definition = formFlowService.findDefinition("inkomens_loket", caseDefinitionId)!!
         formFlowService.save(definition.createInstance(mutableMapOf("taskId" to 123)))
         formFlowService.save(definition.createInstance(mutableMapOf("taskId" to 1234)))
         assertEquals(1, formFlowService.findInstances(mutableMapOf("taskId" to 123)).size)
@@ -132,7 +132,7 @@ internal class FormFlowServiceIntTest @Autowired constructor(
 
     @Test
     fun `should find breadcrumbs`() {
-        val definition = formFlowService.findLatestDefinitionByKey("inkomens_loket", caseDefinitionId)!!
+        val definition = formFlowService.findDefinition("inkomens_loket", caseDefinitionId)!!
 
         val breadcrumbs = formFlowService.getBreadcrumbs(definition.createInstance(mutableMapOf("taskId" to 123)))
 

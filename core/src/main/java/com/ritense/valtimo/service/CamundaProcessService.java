@@ -84,6 +84,7 @@ public class CamundaProcessService {
 
     private static final String UNDEFINED_BUSINESS_KEY = "UNDEFINED_BUSINESS_KEY";
     private static final String SYSTEM_PROCESS_PROPERTY = "systemProcess";
+    private static final String CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX = "CD:";
     private static final Logger logger = LoggerFactory.getLogger(CamundaProcessService.class);
 
     private final RuntimeService runtimeService;
@@ -432,7 +433,7 @@ public class CamundaProcessService {
                         var elementBinding = callActivity.getCamundaCalledElementBinding();
                         if (elementBinding == null) {
                             callActivity.setCamundaCalledElementBinding("versionTag");
-                            callActivity.setCamundaCalledElementVersionTag("CD:" + caseDefinitionId);
+                            callActivity.setCamundaCalledElementVersionTag(CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId);
                         }
                     }
                 );
@@ -442,7 +443,7 @@ public class CamundaProcessService {
                         var elementBinding = businessRuleTask.getCamundaDecisionRefBinding();
                         if (elementBinding == null) {
                             businessRuleTask.setCamundaDecisionRefBinding("versionTag");
-                            businessRuleTask.setCamundaDecisionRefVersionTag("CD:" + caseDefinitionId);
+                            businessRuleTask.setCamundaDecisionRefVersionTag(CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId);
                         }
                     }
                 );
@@ -452,7 +453,7 @@ public class CamundaProcessService {
 
     private void setDecisionsVersionTag(DmnModelInstance dmnModel, CaseDefinitionId caseDefinitionId) {
         dmnModel.getDefinitions().getChildElementsByType(Decision.class).forEach(
-            dmn -> dmn.setVersionTag(caseDefinitionId.toString())
+            dmn -> dmn.setVersionTag(CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.toString())
         );
     }
 

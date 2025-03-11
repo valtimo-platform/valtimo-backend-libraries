@@ -57,7 +57,7 @@ internal class FormFlowInstanceTest : BaseTest() {
         val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val instance = FormFlowInstance(
             formFlowDefinition = FormFlowDefinition(
-                id = FormFlowDefinitionId("test", 1L, caseDefinitionId),
+                id = FormFlowDefinitionId("test", caseDefinitionId),
                 startStep = "test",
                 steps = mutableSetOf(
                     FormFlowStep(
@@ -86,7 +86,7 @@ internal class FormFlowInstanceTest : BaseTest() {
         val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val instance = FormFlowInstance(
             formFlowDefinition = FormFlowDefinition(
-                id = FormFlowDefinitionId("test", 1L, caseDefinitionId),
+                id = FormFlowDefinitionId("test", caseDefinitionId),
                 startStep = "test",
                 steps = mutableSetOf(
                     FormFlowStep(
@@ -110,7 +110,7 @@ internal class FormFlowInstanceTest : BaseTest() {
         val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val instance = FormFlowInstance(
             formFlowDefinition = FormFlowDefinition(
-                id = FormFlowDefinitionId("test", 1L, caseDefinitionId),
+                id = FormFlowDefinitionId("test", caseDefinitionId),
                 startStep = "lastStep",
                 steps = mutableSetOf(
                     FormFlowStep(
@@ -126,7 +126,7 @@ internal class FormFlowInstanceTest : BaseTest() {
         }
 
         assertEquals(
-            "Form flow end reached but no action was taken because the 'onComplete' is empty. For form flow step: 'test:1:lastStep'",
+            "Form flow end reached but no action was taken because the 'onComplete' is empty. For form flow step: 'test:lastStep'",
             error.message
         )
     }
@@ -356,7 +356,7 @@ internal class FormFlowInstanceTest : BaseTest() {
             Mockito.mock(ApplicationContext::class.java)
         )
         expressionProcessorFactory.setFlowProcessBeans(mapOf("formFlowBeanTestHelper" to FormFlowBeanTestHelper()))
-        val definition = getFormFlowDefinition("key", readFileAsString("/config/form-flow/inkomens_loket.json"))
+        val definition = getFormFlowDefinition("key", readFileAsString("/config/case/profile/1.0.0/form-flow/inkomens_loket.json"))
         val instance = definition.createInstance(mutableMapOf())
 
         instance.complete(instance.currentFormFlowStepInstanceId!!, JSONObject("""{"woonplaats":{"inUtrecht":true}}"""))
@@ -379,7 +379,7 @@ internal class FormFlowInstanceTest : BaseTest() {
             Mockito.mock(ApplicationContext::class.java)
         )
         expressionProcessorFactory.setFlowProcessBeans(mapOf("formFlowBeanTestHelper" to FormFlowBeanTestHelper()))
-        val definition = getFormFlowDefinition("key", readFileAsString("/config/form-flow/inkomens_loket.json"))
+        val definition = getFormFlowDefinition("key", readFileAsString("/config/case/profile/1.0.0/form-flow/inkomens_loket.json"))
         val instance = definition.createInstance(mutableMapOf())
 
         instance.complete(instance.currentFormFlowStepInstanceId!!, JSONObject("""{"woonplaats":{"inUtrecht":true}}"""))
@@ -403,7 +403,7 @@ internal class FormFlowInstanceTest : BaseTest() {
             Mockito.mock(ApplicationContext::class.java)
         )
         expressionProcessorFactory.setFlowProcessBeans(mapOf("formFlowBeanTestHelper" to FormFlowBeanTestHelper()))
-        val definition = getFormFlowDefinition("key", readFileAsString("/config/form-flow/inkomens_loket.json"))
+        val definition = getFormFlowDefinition("key", readFileAsString("/config/case/profile/1.0.0/form-flow/inkomens_loket.json"))
         val instance = definition.createInstance(mutableMapOf())
 
         instance.complete(instance.currentFormFlowStepInstanceId!!, JSONObject("""{"woonplaats":{"inUtrecht":false}}"""))
@@ -419,7 +419,7 @@ internal class FormFlowInstanceTest : BaseTest() {
             Mockito.mock(ApplicationContext::class.java)
         )
         expressionProcessorFactory.setFlowProcessBeans(mapOf("formFlowBeanTestHelper" to FormFlowBeanTestHelper()))
-        val definition = getFormFlowDefinition("key", readFileAsString("/config/form-flow/inkomens_loket.json"))
+        val definition = getFormFlowDefinition("key", readFileAsString("/config/case/profile/1.0.0/form-flow/inkomens_loket.json"))
         val instance = definition.createInstance(mutableMapOf())
 
         instance.complete(instance.currentFormFlowStepInstanceId!!, JSONObject("""{"woonplaats":{"inUtrecht":true}}"""))

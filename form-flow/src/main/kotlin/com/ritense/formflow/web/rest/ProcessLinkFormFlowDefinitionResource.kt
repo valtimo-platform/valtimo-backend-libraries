@@ -18,10 +18,11 @@ package com.ritense.formflow.web.rest
 
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
-import com.ritense.formflow.web.rest.dto.FormFlowDefinition
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -32,22 +33,13 @@ class ProcessLinkFormFlowDefinitionResource(
     val formFlowService: FormFlowService
 ) {
 
-    @GetMapping(
-        value = [
-            "/v1/form-flow/definition",
-            "/v1/process-link/form-flow-definition" // Deprecated since 11.0.0
-        ]
-    )
-    fun getFormLinkOptions(): ResponseEntity<List<FormFlowDefinition>> {
-        val formFlowDefinitions = formFlowService.getFormFlowDefinitions()
-
-        val versionedDefinitions = formFlowDefinitions
-            .map { formFlowDefinition -> FormFlowDefinition(formFlowDefinition.id.key, formFlowDefinition.id.version) }
-
-        val latestDefinitions = formFlowDefinitions
-            .distinctBy { formFlowDefinition -> formFlowDefinition.id.key }
-            .map { formFlowDefinition -> FormFlowDefinition(formFlowDefinition.id.key) }
-
-        return ResponseEntity.ok(versionedDefinitions + latestDefinitions)
+    @GetMapping("/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form-flow-definition/process-link-option")
+    fun getFormLinkOptions(
+        @PathVariable("caseDefinitionKey") caseDefinitionKey: String,
+        @PathVariable("versionTag") versionTag: String,
+    ): ResponseEntity<List<String>> {
+        val caseDefinitionId = CaseDefinitionId(caseDefinitionKey, versionTag)
+        val formFlowDefinitions = formFlowService.getFormFlowDefinitions(caseDefinitionId)
+        return ResponseEntity.ok(formFlowDefinitions.map { it.id.key })
     }
 }

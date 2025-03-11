@@ -24,7 +24,6 @@ import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
-import org.hamcrest.Matchers.containsInAnyOrder
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -50,77 +49,23 @@ internal class ProcessLinkFormFlowDefinitionResourceTest {
     }
 
     @Test
-    fun `getFormLinkOptions returns form flow definition with latest`() {
+    fun `getFormLinkOptions returns form flow definitions`() {
         val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val step = FormFlowStep(FormFlowStepId("key2"),
             type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
         val definition = FormFlowDefinition(
             id = FormFlowDefinitionId.newId("key", caseDefinitionId), "step1", mutableSetOf(step))
-        whenever(service.getFormFlowDefinitions()).thenReturn(listOf(definition))
+        whenever(service.getFormFlowDefinitions(caseDefinitionId)).thenReturn(listOf(definition))
         mockMvc
             .perform(
                 MockMvcRequestBuilders
-                    .get("/api/v1/form-flow/definition")
+                    .get("/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form-flow-definition/process-link-option", caseDefinitionId.key, caseDefinitionId.versionTag)
                     .accept(MediaType.APPLICATION_JSON_VALUE)
             ).andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(jsonPath("$").isNotEmpty)
             .andExpect(jsonPath("$").isArray)
-            .andExpect(jsonPath("$.*", hasSize<Any>(2)))
-            .andExpect(jsonPath("$[*].name", containsInAnyOrder("key (v1)", "key (latest)")))
-            .andExpect(jsonPath("$[*].id", containsInAnyOrder("key:1", "key:latest")))
-    }
-
-    @Test
-    fun `getFormLinkOptions returns multiple versions of form flow definition with only one latest`() {
-        val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
-        val step = FormFlowStep(FormFlowStepId("key2"),
-            type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition")))
-        val formFlowDefinitionId = FormFlowDefinitionId.newId("key", caseDefinitionId)
-        val definitionVersion1 = FormFlowDefinition(
-            id = formFlowDefinitionId, "step1", mutableSetOf(step))
-
-        val definitionVersion2 = FormFlowDefinition(
-            id = FormFlowDefinitionId.nextVersion(formFlowDefinitionId) , "step1", mutableSetOf(step))
-
-        whenever(service.getFormFlowDefinitions()).thenReturn(listOf(definitionVersion1, definitionVersion2))
-        mockMvc
-            .perform(
-                MockMvcRequestBuilders
-                    .get("/api/v1/form-flow/definition")
-                    .accept(MediaType.APPLICATION_JSON_VALUE)
-            ).andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(jsonPath("$").isNotEmpty)
-            .andExpect(jsonPath("$").isArray)
-            .andExpect(jsonPath("$.*", hasSize<Any>(3)))
-            .andExpect(jsonPath("$[*].name", containsInAnyOrder("key (v1)", "key (v2)", "key (latest)")))
-            .andExpect(jsonPath("$[*].id", containsInAnyOrder("key:1", "key:2", "key:latest")))
-    }
-
-    @Test
-    fun `getFormLinkOptions returns form flow definitions with one latest per unique key`() {
-        val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
-        val step = FormFlowStep(FormFlowStepId("key2"),
-            type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition")))
-        val definitionVersion1 = FormFlowDefinition(
-            id = FormFlowDefinitionId.newId("key", caseDefinitionId), "step1", mutableSetOf(step))
-
-        val definitionVersion2 = FormFlowDefinition(
-            id = FormFlowDefinitionId.newId("another-key", caseDefinitionId) , "step1", mutableSetOf(step))
-
-        whenever(service.getFormFlowDefinitions()).thenReturn(listOf(definitionVersion1, definitionVersion2))
-        mockMvc
-            .perform(
-                MockMvcRequestBuilders
-                    .get("/api/v1/form-flow/definition")
-                    .accept(MediaType.APPLICATION_JSON_VALUE)
-            ).andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(jsonPath("$").isNotEmpty)
-            .andExpect(jsonPath("$").isArray)
-            .andExpect(jsonPath("$.*", hasSize<Any>(4)))
-            .andExpect(jsonPath("$[*].name",
-                containsInAnyOrder("key (v1)", "another-key (v1)", "key (latest)", "another-key (latest)")))
-            .andExpect(jsonPath("$[*].id",
-                containsInAnyOrder("key:1", "another-key:1", "key:latest", "another-key:latest")))
+            .andExpect(jsonPath("$.*", hasSize<Any>(1)))
+            .andExpect(jsonPath("$.[0]").value("key"))
     }
 }

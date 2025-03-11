@@ -92,7 +92,8 @@ class URLProcessLinkMapper(
 
     override fun toUpdatedProcessLink(
         processLinkToUpdate: ProcessLink,
-        updateRequestDto: ProcessLinkUpdateRequestDto
+        updateRequestDto: ProcessLinkUpdateRequestDto,
+        caseDefinitionId: CaseDefinitionId?
     ): ProcessLink {
         updateRequestDto as URLProcessLinkUpdateRequestDto
         assert(processLinkToUpdate.id == updateRequestDto.id)

@@ -61,15 +61,17 @@ internal class FormFlowDeploymentServiceIntTest : BaseIntegrationTest() {
     }
 
     @Test
-    fun `should deploy new version Form Flow`() {
+    fun `should override old version Form Flow`() {
         val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
-        var inkomensLoketJson = readFileAsString("/config/form-flow/inkomens_loket.json")
+        var inkomensLoketJson = readFileAsString("/config/case/profile/1.0.0/form-flow/inkomens_loket.json")
         inkomensLoketJson = inkomensLoketJson.replace("4*3", "5*2")
         formFlowDeploymentService.deploy("inkomens_loket", inkomensLoketJson, caseDefinitionId)
 
-        val inkomensLoket = formFlowService.findLatestDefinitionByKey("inkomens_loket", caseDefinitionId)
+        val inkomensLoket = formFlowService.findDefinition("inkomens_loket", caseDefinitionId)!!
 
-        assertThat(inkomensLoket!!.id.version).isEqualTo(2L)
+        val woonplaatsStep = inkomensLoket.steps.first { it.id.key == "woonplaats" }
+
+        assertThat(woonplaatsStep.onOpen).contains("\${5*2}")
     }
 
     @Test

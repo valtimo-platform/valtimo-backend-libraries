@@ -3,6 +3,6 @@
         "activityId": "do-something",
         "activityType": "bpmn:UserTask:start",
         "processLinkType": "form-flow",
-        "formFlowDefinitionId": "inkomens_loket:latest"
+        "formFlowDefinitionKey": "inkomens_loket"
     }
 ]

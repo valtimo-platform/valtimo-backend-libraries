@@ -27,7 +27,7 @@ import com.ritense.formflow.mapper.FormFlowProcessLinkMapper.Companion.PROCESS_L
 data class FormFlowProcessLinkExportResponseDto(
     override val activityId: String,
     override val activityType: ActivityTypeWithEventName,
-    val formFlowDefinitionId: String,
+    val formFlowDefinitionKey: String,
     val formDisplayType: FormDisplayType,
     val formSize: FormSizes,
     val subtitles: List<String>? = null

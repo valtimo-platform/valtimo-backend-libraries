@@ -66,7 +66,7 @@ class ExpressionProcessorFactoryHolderIntTest: BaseIntegrationTest() {
 
         assertThrows<ExpressionExecutionException> {
             expressionProcessor
-                .process<Any>("\${formFlowService.findLatestDefinitionByKey(\"inkomens_loket\")}")
+                .process<Any>("\${formFlowService.findByKey(\"inkomens_loket\")}")
         }
     }
 

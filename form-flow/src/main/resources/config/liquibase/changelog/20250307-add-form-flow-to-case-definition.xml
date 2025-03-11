@@ -30,6 +30,10 @@
     </changeSet>
 
     <changeSet id="3" author="Ritense">
+        <dropPrimaryKey tableName="form_flow_definition"/>
+    </changeSet>
+
+    <changeSet id="4" author="Ritense">
         <addColumn tableName="form_flow_definition">
             <column name="case_definition_key" type="VARCHAR(256)">
                 <constraints nullable="false"/>
@@ -38,9 +42,10 @@
                 <constraints nullable="false"/>
             </column>
         </addColumn>
+        <dropColumn tableName="form_flow_definition" columnName="form_flow_definition_version"/>
     </changeSet>
 
-    <changeSet id="4" author="Ritense">
+    <changeSet id="5" author="Ritense">
         <addColumn tableName="form_flow_instance">
             <column name="case_definition_key" type="VARCHAR(256)">
                 <constraints nullable="false"/>
@@ -49,9 +54,10 @@
                 <constraints nullable="false"/>
             </column>
         </addColumn>
+        <dropColumn tableName="form_flow_instance" columnName="form_flow_definition_version"/>
     </changeSet>
 
-    <changeSet id="5" author="Ritense">
+    <changeSet id="6" author="Ritense">
         <addColumn tableName="form_flow_step">
             <column name="case_definition_key" type="VARCHAR(256)">
                 <constraints nullable="false"/>
@@ -60,30 +66,27 @@
                 <constraints nullable="false"/>
             </column>
         </addColumn>
-    </changeSet>
-
-    <changeSet id="6" author="Ritense">
-        <dropPrimaryKey tableName="form_flow_definition"/>
+        <dropColumn tableName="form_flow_step" columnName="form_flow_definition_version"/>
     </changeSet>
 
     <changeSet id="7" author="Ritense">
-        <addPrimaryKey tableName="form_flow_definition" columnNames="form_flow_definition_key,form_flow_definition_version,case_definition_key,case_definition_version_tag"/>
+        <addPrimaryKey tableName="form_flow_definition" columnNames="form_flow_definition_key,case_definition_key,case_definition_version_tag"/>
     </changeSet>
 
     <changeSet id="8" author="Ritense">
         <addForeignKeyConstraint baseTableName="form_flow_instance"
-                                 baseColumnNames="form_flow_definition_key,form_flow_definition_version,case_definition_key,case_definition_version_tag"
+                                 baseColumnNames="form_flow_definition_key,case_definition_key,case_definition_version_tag"
                                  constraintName="fk_form_flow_definition_instance"
                                  referencedTableName="form_flow_definition"
-                                 referencedColumnNames="form_flow_definition_key,form_flow_definition_version,case_definition_key,case_definition_version_tag"/>
+                                 referencedColumnNames="form_flow_definition_key,case_definition_key,case_definition_version_tag"/>
     </changeSet>
 
     <changeSet id="9" author="Ritense">
         <addForeignKeyConstraint baseTableName="form_flow_step"
-                                 baseColumnNames="form_flow_definition_key,form_flow_definition_version,case_definition_key,case_definition_version_tag"
+                                 baseColumnNames="form_flow_definition_key,case_definition_key,case_definition_version_tag"
                                  constraintName="fk_form_flow_definition_step"
                                  referencedTableName="form_flow_definition"
-                                 referencedColumnNames="form_flow_definition_key,form_flow_definition_version,case_definition_key,case_definition_version_tag"/>
+                                 referencedColumnNames="form_flow_definition_key,case_definition_key,case_definition_version_tag"/>
     </changeSet>
 
 </databaseChangeLog>

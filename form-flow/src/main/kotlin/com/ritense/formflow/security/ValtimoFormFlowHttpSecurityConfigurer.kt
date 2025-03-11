@@ -1,17 +1,17 @@
 /*
- *  Copyright 2015-2024 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
- *  Licensed under EUPL, Version 1.2 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *  https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
  *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" basis,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.ritense.formflow.security
@@ -41,12 +41,12 @@ class ValtimoFormFlowHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(antMatcher(POST, "/api/v1/form-flow/instance/{formFlowId}/save")).authenticated()
                     .requestMatchers(antMatcher(POST, "/api/v1/form-flow/instance/{formFlowId}/step/instance/{stepInstanceId}/to/step/instance/{targetStepInstanceId}")).authenticated()
                     .requestMatchers(antMatcher(GET, "/api/v1/form-flow/instance/{formFlowId}/breadcrumbs")).authenticated()
-                    .requestMatchers(antMatcher(GET, "/api/v1/form-flow/definition")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(GET, "/api/management/v1/form-flow/definition")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(GET, "/api/management/v1/form-flow/definition/{key}/{version}")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(DELETE, "/api/management/v1/form-flow/definition/{key}")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(POST, "/api/management/v1/form-flow/definition")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(PUT, "/api/management/v1/form-flow/definition/{key}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form-flow-definition/process-link-option")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form-flow-definition")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form-flow-definition/{definitionKey}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form-flow-definition/{definitionKey}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form-flow-definition")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form-flow-definition/{definitionKey}")).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

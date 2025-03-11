@@ -28,7 +28,7 @@ data class FormFlowProcessLinkDeployDto(
     override val processDefinitionId: String,
     override val activityId: String,
     override val activityType: ActivityTypeWithEventName,
-    val formFlowDefinitionId: String,
+    val formFlowDefinitionKey: String,
     val formDisplayType: FormDisplayType = FormDisplayType.modal,
     val formSize: FormSizes = FormSizes.medium,
     val subtitles: List<String>?

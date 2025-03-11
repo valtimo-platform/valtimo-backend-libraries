@@ -53,24 +53,25 @@ import com.ritense.formflow.web.rest.FormFlowManagementResource
 import com.ritense.formflow.web.rest.FormFlowResource
 import com.ritense.formflow.web.rest.ProcessLinkFormFlowDefinitionResource
 import com.ritense.outbox.OutboxService
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
+import jakarta.persistence.EntityManager
+import org.camunda.bpm.engine.RuntimeService
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.core.annotation.Order
 import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import jakarta.persistence.EntityManager
-import org.camunda.bpm.engine.RuntimeService
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.core.annotation.Order
 
 @AutoConfiguration
 @EnableJpaRepositories(
@@ -177,12 +178,14 @@ class FormFlowAutoConfiguration {
     fun formFlowProcessLinkTaskProvider(
         formFlowService: FormFlowService,
         repositoryService: CamundaRepositoryService,
+        processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
         documentService: DocumentService,
         runtimeService: RuntimeService,
     ): ProcessLinkActivityHandler<FormFlowTaskOpenResultProperties> {
         return FormFlowProcessLinkActivityHandler(
             formFlowService,
             repositoryService,
+            processDefinitionCaseDefinitionService,
             documentService,
             runtimeService
         )

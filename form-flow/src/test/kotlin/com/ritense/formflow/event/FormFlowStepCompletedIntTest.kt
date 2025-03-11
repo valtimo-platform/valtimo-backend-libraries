@@ -44,7 +44,7 @@ internal class FormFlowStepCompletedIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should send outbox event when completing formflow step`() {
-        val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
+        val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val formFlowInstance = startFormFlow("loan:latest", caseDefinitionId)
 
         val formFlowStepInstance = formFlowInstance.getCurrentStep()

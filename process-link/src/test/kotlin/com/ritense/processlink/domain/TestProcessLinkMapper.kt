@@ -99,7 +99,8 @@ class TestProcessLinkMapper(
 
     override fun toUpdatedProcessLink(
         processLinkToUpdate: ProcessLink,
-        updateRequestDto: ProcessLinkUpdateRequestDto
+        updateRequestDto: ProcessLinkUpdateRequestDto,
+        caseDefinitionId: CaseDefinitionId?
     ): ProcessLink {
         updateRequestDto as TestProcessLinkUpdateRequestDto
 
@@ -112,7 +113,7 @@ class TestProcessLinkMapper(
         )
     }
 
-    override fun createRelatedExportRequests(processLink: ProcessLink): Set<ExportRequest> {
+    override fun createRelatedExportRequests(processLink: ProcessLink, caseDefinitionId: CaseDefinitionId): Set<ExportRequest> {
         return setOf(CustomProcessLinkNestedExportRequest())
     }
 

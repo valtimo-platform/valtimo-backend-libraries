@@ -35,7 +35,6 @@ data class FormFlowStepId(
     @ManyToOne(targetEntity = FormFlowDefinition::class, fetch = FetchType.LAZY)
     @JoinColumns(
         JoinColumn(name = "form_flow_definition_key", referencedColumnName = "form_flow_definition_key"),
-        JoinColumn(name = "form_flow_definition_version", referencedColumnName = "form_flow_definition_version"),
         JoinColumn(name = "case_definition_key", referencedColumnName = "case_definition_key"),
         JoinColumn(name = "case_definition_version_tag", referencedColumnName = "case_definition_version_tag")
     )

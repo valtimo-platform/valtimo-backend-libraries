@@ -77,7 +77,7 @@ class ProcessLinkImporter(
                     try {
                         val processLinkUpdateDto = processLinkService.getProcessLinkMapper(deployDto.processLinkType)
                             .toProcessLinkUpdateRequestDto(deployDto, e.existingProcessLinkId)
-                        processLinkService.updateProcessLink(processLinkUpdateDto)
+                        processLinkService.updateProcessLink(processLinkUpdateDto, request.caseDefinitionId)
                     } catch (e: IllegalStateException) {
                         throw IllegalStateException(
                             "Failed to deploy process link. For file: ${request.fileName} and activity-id: ${deployDto.activityId}",

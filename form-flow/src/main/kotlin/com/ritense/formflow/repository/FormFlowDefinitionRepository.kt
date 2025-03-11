@@ -27,13 +27,5 @@ interface FormFlowDefinitionRepository : JpaRepository<FormFlowDefinition, FormF
 
     fun findAllByIdCaseDefinitionId(caseDefinitionId: CaseDefinitionId): List<FormFlowDefinition>
 
-    /**
-     *  Find the latest definition by key
-     *
-     * @param formFlowKey The key of the form-flow
-     * @return The FormFlow definition
-     */
-    fun findFirstByIdKey_AndIdCaseDefinitionId_OrderByIdVersionDesc(formFlowKey: String, caseDefinitionId: CaseDefinitionId): FormFlowDefinition?
-
-    fun deleteAllByIdKeyAndIdCaseDefinitionId(formFlowKey: String, caseDefinitionId: CaseDefinitionId)
+    fun findAllByIdCaseDefinitionId(caseDefinitionId: CaseDefinitionId, pageable: Pageable): Page<FormFlowDefinition>
 }

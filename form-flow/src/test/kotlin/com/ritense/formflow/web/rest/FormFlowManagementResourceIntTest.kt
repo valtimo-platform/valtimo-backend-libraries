@@ -68,17 +68,15 @@ class FormFlowManagementResourceIntTest : BaseIntegrationTest() {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.content[?(@.key=='inkomens_loket')].key").value("inkomens_loket"))
             .andExpect(jsonPath("$.content[?(@.key=='inkomens_loket')].readOnly").value(true))
-            .andExpect(jsonPath("$.content[?(@.key=='inkomens_loket')].versions[0]").value(1))
     }
 
     @Test
     fun `should return form flow definition by id`() {
         mockMvc
-            .perform(get("/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form-flow-definition/{definitionKey}/version/{version}", "profile", "1.0.0", "inkomens_loket", 1))
+            .perform(get("/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form-flow-definition/{definitionKey}", "profile", "1.0.0", "inkomens_loket", 1))
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.key").value("inkomens_loket"))
-            .andExpect(jsonPath("$.version").value(1))
             .andExpect(jsonPath("$.startStep").value("woonplaats"))
             .andExpect(jsonPath("$.steps").exists())
     }
@@ -86,7 +84,7 @@ class FormFlowManagementResourceIntTest : BaseIntegrationTest() {
     @Test
     fun `should delete form flow definition by key`() {
         val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
-        formFlowService.save(FormFlowDefinition(FormFlowDefinitionId("test", 1, caseDefinitionId), "start-step", setOf()))
+        formFlowService.save(FormFlowDefinition(FormFlowDefinitionId("test", caseDefinitionId), "start-step", setOf()))
         mockMvc
             .perform(delete("/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form-flow-definition/{definitionKey}", "profile", "1.0.0", "test"))
             .andDo(print())
@@ -97,7 +95,6 @@ class FormFlowManagementResourceIntTest : BaseIntegrationTest() {
     fun `should create form flow definition`() {
         val definition = FormFlowDefinitionDto(
             key = "test",
-            version = 1,
             startStep = "start-step",
             steps = listOf()
         )
@@ -110,7 +107,6 @@ class FormFlowManagementResourceIntTest : BaseIntegrationTest() {
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.key").value("test"))
-            .andExpect(jsonPath("$.version").value(1))
             .andExpect(jsonPath("$.startStep").value("start-step"))
             .andExpect(jsonPath("$.steps").exists())
     }
@@ -118,11 +114,10 @@ class FormFlowManagementResourceIntTest : BaseIntegrationTest() {
     @Test
     fun `should update form flow definition`() {
         val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
-        formFlowService.save(FormFlowDefinition(FormFlowDefinitionId("test", 1, caseDefinitionId), "start-step", setOf()))
+        formFlowService.save(FormFlowDefinition(FormFlowDefinitionId("test", caseDefinitionId), "start-step", setOf()))
 
         val definition = FormFlowDefinitionDto(
             key = "test",
-            version = 2,
             startStep = "start-step-changed",
             steps = listOf()
         )
@@ -135,7 +130,6 @@ class FormFlowManagementResourceIntTest : BaseIntegrationTest() {
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.key").value("test"))
-            .andExpect(jsonPath("$.version").value(2))
             .andExpect(jsonPath("$.startStep").value("start-step-changed"))
             .andExpect(jsonPath("$.steps").exists())
     }

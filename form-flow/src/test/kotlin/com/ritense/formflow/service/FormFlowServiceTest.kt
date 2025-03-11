@@ -143,7 +143,7 @@ internal class FormFlowServiceTest : BaseTest() {
             type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
         val definition = FormFlowDefinition(
-            FormFlowDefinitionId("test", 1L, caseDefinitionId), "start-step", setOf(step)
+            FormFlowDefinitionId("test", caseDefinitionId), "start-step", setOf(step)
         )
         val formFlowInstance = FormFlowInstance(
             formFlowDefinition = definition

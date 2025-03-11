@@ -60,16 +60,13 @@ class FormFlowDeploymentService(
             validate(formFlowDefinitionConfig)
 
             try {
-                val existingDefinition = formFlowService.findLatestDefinitionByKey(formFlowKey, caseDefinitionId)
+                val existingDefinition = formFlowService.findDefinitionOrNull(formFlowKey, caseDefinitionId)
                 var definitionId = FormFlowDefinitionId.newId(formFlowKey, caseDefinitionId)
 
                 if (existingDefinition != null) {
                     if (formFlowDefinitionConfig.contentEquals(existingDefinition)) {
                         logger.info("Form Flow already deployed - {}", definitionId.toString())
                         return
-                    } else {
-                        definitionId = FormFlowDefinitionId.nextVersion(existingDefinition.id)
-                        logger.info("Form Flow changed. Deploying next version - {}", definitionId.toString())
                     }
                 }
 
@@ -84,8 +81,8 @@ class FormFlowDeploymentService(
     fun isAutoDeployed(formFlowDefinitionKey: String): Boolean {
         withLoggingContext("formFlowDefinitionKey" to formFlowDefinitionKey) {
             return ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
-                .getResource(FORM_FLOW_DEFINITIONS_PATH.replace("{formFlowKey}", formFlowDefinitionKey))
-                .exists()
+                .getResources(FORM_FLOW_DEFINITIONS_PATH.replace("{formFlowKey}", formFlowDefinitionKey))
+                .size > 0
         }
     }
 

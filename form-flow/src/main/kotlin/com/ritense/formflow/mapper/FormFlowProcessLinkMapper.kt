@@ -72,7 +72,7 @@ class FormFlowProcessLinkMapper(
                 processDefinitionId = processLink.processDefinitionId,
                 activityId = processLink.activityId,
                 activityType = processLink.activityType,
-                formFlowDefinitionId = processLink.formFlowDefinitionId,
+                formFlowDefinitionKey = processLink.formFlowDefinitionKey,
                 formDisplayType = processLink.formDisplayType,
                 formSize = processLink.formSize,
                 subtitles = processLink.subtitles,
@@ -88,7 +88,7 @@ class FormFlowProcessLinkMapper(
                 processDefinitionId = deployDto.processDefinitionId,
                 activityId = deployDto.activityId,
                 activityType = deployDto.activityType,
-                formFlowDefinitionId = deployDto.formFlowDefinitionId,
+                formFlowDefinitionKey = deployDto.formFlowDefinitionKey,
                 formDisplayType = deployDto.formDisplayType,
                 formSize = deployDto.formSize,
                 subtitles = deployDto.subtitles,
@@ -105,7 +105,7 @@ class FormFlowProcessLinkMapper(
 
             FormFlowProcessLinkUpdateRequestDto(
                 id = existingProcessLinkId,
-                formFlowDefinitionId = deployDto.formFlowDefinitionId,
+                formFlowDefinitionKey = deployDto.formFlowDefinitionKey,
                 formDisplayType = deployDto.formDisplayType,
                 formSize = deployDto.formSize,
                 subtitles = deployDto.subtitles,
@@ -121,7 +121,7 @@ class FormFlowProcessLinkMapper(
             FormFlowProcessLinkExportResponseDto(
                 activityId = processLink.activityId,
                 activityType = processLink.activityType,
-                formFlowDefinitionId = "${processLink.formFlowDefinitionId.substringBeforeLast(":")}:latest",
+                formFlowDefinitionKey = processLink.formFlowDefinitionKey,
                 formDisplayType = processLink.formDisplayType,
                 formSize = processLink.formSize,
                 subtitles = processLink.subtitles,
@@ -137,15 +137,15 @@ class FormFlowProcessLinkMapper(
             }
 
             createRequestDto as FormFlowProcessLinkCreateRequestDto
-            if (formFlowService.findDefinition(createRequestDto.formFlowDefinitionId, caseDefinitionId) == null) {
-                throw RuntimeException("FormFlow definition not found with id ${createRequestDto.formFlowDefinitionId}")
+            if (formFlowService.findDefinition(createRequestDto.formFlowDefinitionKey, caseDefinitionId) == null) {
+                throw RuntimeException("FormFlow definition not found with id ${createRequestDto.formFlowDefinitionKey}")
             }
             FormFlowProcessLink(
                 id = UUID.randomUUID(),
                 processDefinitionId = createRequestDto.processDefinitionId,
                 activityId = createRequestDto.activityId,
                 activityType = createRequestDto.activityType,
-                formFlowDefinitionId = createRequestDto.formFlowDefinitionId,
+                formFlowDefinitionKey = createRequestDto.formFlowDefinitionKey,
                 formDisplayType = createRequestDto.formDisplayType ?: FormDisplayType.modal,
                 formSize = createRequestDto.formSize ?: FormSizes.medium,
                 subtitles = createRequestDto.subtitles ?: emptyList(),
@@ -155,20 +155,20 @@ class FormFlowProcessLinkMapper(
 
     override fun toUpdatedProcessLink(
         processLinkToUpdate: ProcessLink,
-        updateRequestDto: ProcessLinkUpdateRequestDto
+        updateRequestDto: ProcessLinkUpdateRequestDto,
+        caseDefinitionId: CaseDefinitionId?
     ): ProcessLink {
         return withLoggingContext(ProcessLink::class, processLinkToUpdate.id) {
             updateRequestDto as FormFlowProcessLinkUpdateRequestDto
-            //TODO: get case definition somehow
-            if (formFlowService.findDefinition(updateRequestDto.formFlowDefinitionId, CaseDefinitionId("test", "1.0.0")) == null) {
-                throw RuntimeException("FormFlow definition not found with id ${updateRequestDto.formFlowDefinitionId}")
+            if (formFlowService.findDefinition(updateRequestDto.formFlowDefinitionKey, caseDefinitionId!!) == null) {
+                throw RuntimeException("FormFlow definition not found with id ${updateRequestDto.formFlowDefinitionKey}")
             }
             FormFlowProcessLink(
                 id = updateRequestDto.id,
                 processDefinitionId = processLinkToUpdate.processDefinitionId,
                 activityId = processLinkToUpdate.activityId,
                 activityType = processLinkToUpdate.activityType,
-                formFlowDefinitionId = updateRequestDto.formFlowDefinitionId,
+                formFlowDefinitionKey = updateRequestDto.formFlowDefinitionKey,
                 formDisplayType = updateRequestDto.formDisplayType ?: FormDisplayType.modal,
                 formSize = updateRequestDto.formSize ?: FormSizes.medium,
                 subtitles = updateRequestDto.subtitles ?: emptyList(),
@@ -182,7 +182,7 @@ class FormFlowProcessLinkMapper(
     ): Set<ExportRequest> {
         return withLoggingContext(ProcessLink::class, processLink.id) {
             processLink as FormFlowProcessLink
-            setOf(FormFlowDefinitionExportRequest(processLink.formFlowDefinitionId, caseDefinitionId))
+            setOf(FormFlowDefinitionExportRequest(processLink.formFlowDefinitionKey, caseDefinitionId))
         }
     }
 

@@ -17,6 +17,7 @@
 package com.ritense.formflow.domain
 
 import com.ritense.formflow.BaseIntegrationTest
+import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
@@ -46,7 +47,7 @@ internal class FormFlowInstanceIT : BaseIntegrationTest() {
     fun `create form flow instance successfully`() {
         val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val formFlowDefinition =
-            formFlowDefinitionRepository.findFirstByIdKey_AndIdCaseDefinitionId_OrderByIdVersionDesc("inkomens_loket" ,caseDefinitionId)
+            formFlowDefinitionRepository.getReferenceById(FormFlowDefinitionId("inkomens_loket" ,caseDefinitionId))
 
         val formFlowInstance = FormFlowInstance(
             formFlowDefinition = formFlowDefinition!!
@@ -62,7 +63,7 @@ internal class FormFlowInstanceIT : BaseIntegrationTest() {
     fun `update form flow instance successfully`() {
         val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val formFlowDefinition =
-            formFlowDefinitionRepository.findFirstByIdKey_AndIdCaseDefinitionId_OrderByIdVersionDesc("inkomens_loket", caseDefinitionId)
+            formFlowDefinitionRepository.getReferenceById(FormFlowDefinitionId("inkomens_loket" ,caseDefinitionId))
 
         val formFlowInstance = FormFlowInstance(
             formFlowDefinition = formFlowDefinition!!
@@ -83,7 +84,7 @@ internal class FormFlowInstanceIT : BaseIntegrationTest() {
     fun `complete goes through the entire flow`() {
         val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val formFlowDefinition =
-            formFlowDefinitionRepository.findFirstByIdKey_AndIdCaseDefinitionId_OrderByIdVersionDesc("inkomens_loket", caseDefinitionId)
+            formFlowDefinitionRepository.getReferenceById(FormFlowDefinitionId("inkomens_loket" ,caseDefinitionId))
         val submissionData = """
             {
                 "inkomen": {
@@ -121,7 +122,7 @@ internal class FormFlowInstanceIT : BaseIntegrationTest() {
     fun `complete goes through the entire flow, back and then through again`() {
         val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val formFlowDefinition =
-            formFlowDefinitionRepository.findFirstByIdKey_AndIdCaseDefinitionId_OrderByIdVersionDesc("inkomens_loket", caseDefinitionId)
+            formFlowDefinitionRepository.getReferenceById(FormFlowDefinitionId("inkomens_loket" ,caseDefinitionId))
         val submissionData = """
             {
                 "inkomen": {
@@ -174,7 +175,7 @@ internal class FormFlowInstanceIT : BaseIntegrationTest() {
     fun `navigate to next step removes previous steps`() {
         val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val formFlowDefinition =
-            formFlowDefinitionRepository.findFirstByIdKey_AndIdCaseDefinitionId_OrderByIdVersionDesc("inkomens_loket", caseDefinitionId)
+            formFlowDefinitionRepository.getReferenceById(FormFlowDefinitionId("inkomens_loket" ,caseDefinitionId))
         val submissionData = """
             {
                 "inkomen": {
@@ -359,7 +360,7 @@ internal class FormFlowInstanceIT : BaseIntegrationTest() {
     fun `should set submissionData with SpEL expression`() {
         val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val formFlowDefinition =
-            formFlowDefinitionRepository.findFirstByIdKey_AndIdCaseDefinitionId_OrderByIdVersionDesc("form-flow-with-expressions", caseDefinitionId)
+            formFlowDefinitionRepository.getReferenceById(FormFlowDefinitionId("inkomens_loket" ,caseDefinitionId))
         var formFlowInstance = FormFlowInstance(formFlowDefinition = formFlowDefinition!!)
         formFlowInstance = formFlowInstanceRepository.saveAndFlush(formFlowInstance)
 

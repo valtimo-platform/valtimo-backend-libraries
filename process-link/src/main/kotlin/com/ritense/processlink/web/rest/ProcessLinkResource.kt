@@ -111,7 +111,7 @@ class ProcessLinkResource(
         @RequestBody processLink: ProcessLinkUpdateRequestDto
     ): ResponseEntity<Unit> {
         return withLoggingContext(ProcessLink::class, processLink.id) {
-            processLinkService.updateProcessLink(processLink)
+            processLinkService.updateProcessLink(processLink, null)
             ResponseEntity.status(HttpStatus.NO_CONTENT).build()
         }
     }

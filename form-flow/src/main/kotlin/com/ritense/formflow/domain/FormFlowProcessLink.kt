@@ -42,8 +42,8 @@ class FormFlowProcessLink(
     @Column(name = "subtitles", columnDefinition = "JSON", nullable = true)
     val subtitles: List<String>? = null,
 
-    @Column(name = "form_flow_definition_id", nullable = false)
-    val formFlowDefinitionId: String,
+    @Column(name = "form_flow_definition_key", nullable = false)
+    val formFlowDefinitionKey: String,
 
     @Column(name = "form_display_type")
     @Enumerated(EnumType.STRING)
@@ -75,7 +75,7 @@ class FormFlowProcessLink(
         processDefinitionId: String = this.processDefinitionId,
         activityId: String = this.activityId,
         activityType: ActivityTypeWithEventName = this.activityType,
-        formFlowDefinitionId: String = this.formFlowDefinitionId,
+        formFlowDefinitionKey: String = this.formFlowDefinitionKey,
         formDisplayType: FormDisplayType = this.formDisplayType,
         formSize: FormSizes = this.formSize,
         subtitles: List<String>? = this.subtitles,
@@ -84,7 +84,7 @@ class FormFlowProcessLink(
         processDefinitionId = processDefinitionId,
         activityId = activityId,
         activityType = activityType,
-        formFlowDefinitionId = formFlowDefinitionId,
+        formFlowDefinitionKey = formFlowDefinitionKey,
         formDisplayType = formDisplayType,
         formSize = formSize,
         subtitles = subtitles,
@@ -97,7 +97,7 @@ class FormFlowProcessLink(
 
         other as FormFlowProcessLink
 
-        if (formFlowDefinitionId != other.formFlowDefinitionId) return false
+        if (formFlowDefinitionKey != other.formFlowDefinitionKey) return false
         if (formDisplayType != other.formDisplayType) return false
         if (formSize != other.formSize) return false
         if (subtitles != other.subtitles) return false
@@ -107,7 +107,7 @@ class FormFlowProcessLink(
 
     override fun hashCode(): Int {
         var result = super.hashCode()
-        result = 31 * result + formFlowDefinitionId.hashCode()
+        result = 31 * result + formFlowDefinitionKey.hashCode()
         result = 31 * result + formDisplayType.hashCode()
         result = 31 * result + formSize.hashCode()
         result = 31 * result + subtitles.hashCode()
