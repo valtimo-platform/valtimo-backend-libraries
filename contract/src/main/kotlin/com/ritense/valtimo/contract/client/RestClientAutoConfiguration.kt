@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Profile
 
 @AutoConfiguration
 @EnableConfigurationProperties(ValtimoHttpRestClientConfigurationProperties::class)
@@ -45,4 +46,15 @@ class RestClientAutoConfiguration {
         )
     }
 
+    @Bean
+    @ConditionalOnMissingBean(HostDockerInternalRestClientCustomizer::class)
+    @Profile("dev")
+    @ConditionalOnProperty(value = ["valtimo.docker.filter.enabled"], havingValue = "true", matchIfMissing = true)
+    fun devHostDockerInternalRestClientCustomizer(
+        @Value("\${valtimo.docker.filter.ports:8001,8002,8003,8006,8010,8011}") dockerPorts: List<String>,
+    ): HostDockerInternalRestClientCustomizer {
+        return HostDockerInternalRestClientCustomizer(
+            dockerPorts,
+        )
+    }
 }
