@@ -117,6 +117,11 @@ class ZakenApiPlugin(
             val documentId = UUID.fromString(execution.businessKey)
             val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
+            if (getZaakInformatieObject(zaakUrl, URI(documentUrl)) != null) {
+                logger.warn { "Skipping document-zaak-link creation. Link already exists between zaak '$zaakUrl' and document: '$documentUrl'." }
+                return
+            }
+
             val request = LinkDocumentRequest(
                 documentUrl,
                 zaakUrl.toString(),
@@ -146,6 +151,11 @@ class ZakenApiPlugin(
 
         val documentId = UUID.fromString(execution.businessKey)
         val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+
+        if (getZaakInformatieObject(zaakUrl, URI(documentUrl)) != null) {
+            logger.warn { "Skipping document-zaak-link creation. Link already exists between zaak '$zaakUrl' and document: '$documentUrl'." }
+            return
+        }
 
         val request = LinkDocumentRequest(
             documentUrl,
@@ -589,7 +599,7 @@ class ZakenApiPlugin(
         objectUrl: URI,
         objectTypeOverige: String,
         documentId: UUID
-        ) {
+    ) {
         withLoggingContext(
             LoggingConstants.ZAKEN_API.ZAAK to zaakUrl.toString(),
             LoggingConstants.ZAKEN_API.OBJECT to objectUrl.toString()
@@ -624,6 +634,17 @@ class ZakenApiPlugin(
             baseUrl = url,
             informatieobjectUrl = informatieobjectUrl
         )
+    }
+
+    fun getZaakInformatieObject(zaakUrl: URI, informatieobjectUrl: URI): ZaakInformatieObject? {
+        logger.debug { "Fetching zaak informatie object by '$zaakUrl' and '$informatieobjectUrl'" }
+        val results = client.getZaakInformatieObjecten(
+            authentication = authenticationPluginConfiguration,
+            baseUrl = url,
+            zaakUrl = zaakUrl,
+            informatieobjectUrl = informatieobjectUrl,
+        )
+        return results.singleOrNull()
     }
 
     fun deleteZaakInformatieobject(zaakInformatieobjectUrl: URI) {
