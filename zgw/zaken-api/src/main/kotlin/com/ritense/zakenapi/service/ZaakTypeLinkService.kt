@@ -16,13 +16,14 @@
 
 package com.ritense.zakenapi.service
 
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.zakenapi.domain.ZaakTypeLink
 import com.ritense.zakenapi.web.rest.request.CreateZaakTypeLinkRequest
 import java.util.UUID
 
 interface ZaakTypeLinkService {
 
-    fun get(documentDefinitionName: String): ZaakTypeLink?
+    fun get(caseDefinitionId: CaseDefinitionId): ZaakTypeLink?
 
     fun getByPluginConfigurationId(id: UUID): List<ZaakTypeLink>
 
@@ -30,7 +31,7 @@ interface ZaakTypeLinkService {
 
     fun createZaakTypeLink(request: CreateZaakTypeLinkRequest): ZaakTypeLink
 
-    fun deleteZaakTypeLinkBy(documentDefinitionName: String)
+    fun deleteZaakTypeLinkBy(caseDefinitionId: CaseDefinitionId)
 
     fun modify(zaakTypeLink: ZaakTypeLink)
 }

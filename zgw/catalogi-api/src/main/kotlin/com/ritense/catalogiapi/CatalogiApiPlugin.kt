@@ -90,7 +90,7 @@ class CatalogiApiPlugin(
             } else {
                 val document =
                     AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
-                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
+                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().caseDefinitionId())
                 getStatustypeByOmschrijving(zaaktypeUrl, statustype).url!!.toASCIIString()
             }
 
