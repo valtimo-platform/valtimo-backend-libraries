@@ -44,6 +44,7 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.temporaryresource.domain.StorageMetadataKeys
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zgw.domain.Vertrouwelijkheid
 import jakarta.validation.ValidationException
@@ -105,12 +106,17 @@ class DocumentenApiPlugin(
         @PluginActionProperty taal: String = DEFAULT_LANGUAGE,
         @PluginActionProperty status: DocumentStatusType = DocumentStatusType.DEFINITIEF
     ) {
-        val documentLocation = execution.getVariable(localDocumentLocation) as String?
-            ?: throw IllegalStateException("Failed to store document. No process variable '$localDocumentLocation' found.")
-        val contentAsInputStream = storageService.getResourceContentAsInputStream(documentLocation)
-        val metadata = storageService.getResourceMetadata(documentLocation)
+        val resourceId = getResourceId(execution, localDocumentLocation)
+        val documentUrl = storageService.getMetadataValueOrNull(resourceId, StorageMetadataKeys.DOCUMENT_URL)
+        if (documentUrl?.startsWith(url.toString()) == true) {
+            logger.warn { "Skipping document upload. Document already exists with url '$documentUrl'." }
+            execution.setVariable(localDocumentLocation, documentUrl)
+            return
+        }
+        val contentAsInputStream = storageService.getResourceContentAsInputStream(resourceId)
+        val metadata = storageService.getResourceMetadata(resourceId)
 
-        storeDocument(
+        val result = storeDocument(
             execution = execution,
             metadata = metadata,
             titel = title,
@@ -123,6 +129,7 @@ class DocumentenApiPlugin(
             informatieobjecttype = informatieobjecttype,
             storedDocumentKey = storedDocumentUrl
         )
+        storageService.saveMetadataValue(resourceId, StorageMetadataKeys.DOCUMENT_URL, result.url)
     }
 
     @PluginAction(
@@ -134,25 +141,24 @@ class DocumentenApiPlugin(
     fun storeUploadedDocument(
         execution: DelegateExecution
     ) {
-        val resourceId = execution.getVariable(RESOURCE_ID_PROCESS_VAR) as String?
-            ?: throw IllegalStateException("Failed to store document. No process variable '$RESOURCE_ID_PROCESS_VAR' found.")
+        val resourceId = getResourceId(execution)
+        val documentUrl = storageService.getMetadataValueOrNull(resourceId, StorageMetadataKeys.DOCUMENT_URL)
+        if (documentUrl?.startsWith(url.toString()) == true) {
+            logger.warn { "Skipping document upload. Document already exists with url '$documentUrl'." }
+            execution.setVariable(DOCUMENT_URL_PROCESS_VAR, documentUrl)
+            return
+        }
         val contentAsInputStream = storageService.getResourceContentAsInputStream(resourceId)
         val metadata = storageService.getResourceMetadata(resourceId)
 
-        storeDocument(
+        val result = storeDocument(
             execution = execution,
             metadata = metadata,
-            titel = null,
-            vertrouwelijkheidaanduiding = null,
-            status = null,
-            taal = null,
-            bestandsnaam = null,
             inhoudAsInputStream = contentAsInputStream,
-            beschrijving = null,
             informatieobjecttype = null,
             storedDocumentKey = DOCUMENT_URL_PROCESS_VAR,
         )
-
+        storageService.saveMetadataValue(resourceId, StorageMetadataKeys.DOCUMENT_URL, result.url)
     }
 
     @PluginAction(
@@ -164,17 +170,22 @@ class DocumentenApiPlugin(
     fun storeUploadedDocumentInParts(
         execution: DelegateExecution
     ) {
-        val resourceId = execution.getVariable(RESOURCE_ID_PROCESS_VAR) as String?
-            ?: throw IllegalStateException("Failed to store document. No process variable '$RESOURCE_ID_PROCESS_VAR' found.")
+        val resourceId = getResourceId(execution)
+        val documentUrl = storageService.getMetadataValueOrNull(resourceId, StorageMetadataKeys.DOCUMENT_URL)
+        if (documentUrl?.startsWith(url.toString()) == true) {
+            logger.warn { "Skipping document upload. Document already exists with url '$documentUrl'." }
+            execution.setVariable(DOCUMENT_URL_PROCESS_VAR, documentUrl)
+            return
+        }
         val contentAsInputStream = storageService.getResourceContentAsInputStream(resourceId)
         val metadata = storageService.getResourceMetadata(resourceId)
 
-        storeDocumentInParts(
+        val result = storeDocumentInParts(
             execution = execution,
             metadata = metadata,
-            bestandsnaam = metadata["filename"].toString(),
             inhoudAsInputStream = contentAsInputStream,
         )
+        storageService.saveMetadataValue(resourceId, StorageMetadataKeys.DOCUMENT_URL, result.url)
     }
 
     @PluginAction(
@@ -261,17 +272,25 @@ class DocumentenApiPlugin(
         }
     }
 
+    private fun getResourceId(
+        execution: DelegateExecution,
+        localDocumentLocation: String = RESOURCE_ID_PROCESS_VAR,
+    ): String {
+        return execution.getVariable(localDocumentLocation) as String?
+            ?: throw IllegalStateException("Failed to store document. No process variable '$localDocumentLocation' found.")
+    }
+
     private fun storeDocument(
         execution: DelegateExecution,
         metadata: Map<String, Any?>,
-        titel: String?,
-        vertrouwelijkheidaanduiding: String?,
-        status: DocumentStatusType?,
-        taal: String?,
-        bestandsnaam: String?,
-        inhoudAsInputStream: InputStream,
-        beschrijving: String?,
-        informatieobjecttype: String?,
+        titel: String? = null,
+        vertrouwelijkheidaanduiding: String? = null,
+        status: DocumentStatusType? = null,
+        taal: String? = null,
+        bestandsnaam: String? = null,
+        inhoudAsInputStream: InputStream = InputStream.nullInputStream(),
+        beschrijving: String? = null,
+        informatieobjecttype: String? = null,
         storedDocumentKey: String,
     ): CreateDocumentResult {
         val vertrouwelijkheidaanduidingEnum = Vertrouwelijkheid.fromKey(
@@ -341,20 +360,11 @@ class DocumentenApiPlugin(
     private fun storeDocumentInParts(
         execution: DelegateExecution,
         metadata: Map<String, Any>,
-        bestandsnaam: String,
         inhoudAsInputStream: InputStream,
-    ) {
+    ): CreateDocumentResult {
         val documentCreateResult = storeDocument(
             execution = execution,
             metadata = metadata,
-            titel = null,
-            vertrouwelijkheidaanduiding = null,
-            status = null,
-            taal = null,
-            bestandsnaam = bestandsnaam,
-            inhoudAsInputStream = InputStream.nullInputStream(),
-            beschrijving = null,
-            informatieobjecttype = null,
             storedDocumentKey = DOCUMENT_URL_PROCESS_VAR
         )
 
@@ -368,7 +378,6 @@ class DocumentenApiPlugin(
             url,
             bestandsdelenRequest,
             documentCreateResult,
-            bestandsnaam
         )
 
         val documentLock = DocumentLock(documentCreateResult.getLockFromBestandsdelen())
@@ -377,7 +386,7 @@ class DocumentenApiPlugin(
             URI.create(documentCreateResult.url),
             documentLock
         )
-
+        return documentCreateResult
     }
 
     private fun getDocumentenApiPluginByInformatieobjectUrl(informatieobjectUrl: URI): PluginConfiguration {
@@ -420,7 +429,7 @@ class DocumentenApiPlugin(
         const val DOCUMENT_ID_PROCESS_VAR = "documentId"
         const val DOWNLOAD_URL_PROCESS_VAR = "downloadUrl"
 
-        val BESTANDSNAAM_FIELD = listOf("bestandsnaam", "filename", MetadataType.FILE_NAME.key)
+        val BESTANDSNAAM_FIELD = listOf("bestandsnaam", MetadataType.FILE_NAME.key)
         val TITEL_FIELD = listOf("title", "titel") + BESTANDSNAAM_FIELD
         val AUTEUR_FIELD = listOf("author", "auteur", MetadataType.USER.key)
         val BESCHRIJVING_FIELD = listOf("description", "beschrijving")
