@@ -29,7 +29,7 @@ interface ZaakTypeLinkService {
 
     fun getByProcess(processDefinitionId: String): ZaakTypeLink?
 
-    fun createZaakTypeLink(request: CreateZaakTypeLinkRequest): ZaakTypeLink
+    fun createZaakTypeLink(caseDefinitionId: CaseDefinitionId, request: CreateZaakTypeLinkRequest): ZaakTypeLink
 
     fun deleteZaakTypeLinkBy(caseDefinitionId: CaseDefinitionId)
 

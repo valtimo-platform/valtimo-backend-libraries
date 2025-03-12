@@ -20,8 +20,6 @@ import java.net.URI
 import java.util.UUID
 
 data class CreateZaakTypeLinkRequest(
-    val caseDefinitionKey: String,
-    val caseDefinitionVersionTag: String,
     val zaakTypeUrl: URI,
     val zakenApiPluginConfigurationId: UUID? = null,
     val createWithDossier: Boolean? = false,

@@ -71,12 +71,14 @@ class DefaultZaakTypeLinkService(
         return null
     }
 
-    override fun createZaakTypeLink(request: CreateZaakTypeLinkRequest): ZaakTypeLink {
+    override fun createZaakTypeLink(
+        caseDefinitionId: CaseDefinitionId,
+        request: CreateZaakTypeLinkRequest
+    ): ZaakTypeLink {
         return withLoggingContext(
             "caseDefinitionId",
-            CaseDefinitionId(request.caseDefinitionKey, request.caseDefinitionVersionTag).toString()
+            caseDefinitionId.toString()
         ) {
-            val caseDefinitionId = CaseDefinitionId(request.caseDefinitionKey, request.caseDefinitionVersionTag)
             var zaakTypeLink = zaakTypeLinkRepository.findByCaseDefinitionId(caseDefinitionId)
             if (zaakTypeLink == null) {
                 zaakTypeLink = ZaakTypeLink(

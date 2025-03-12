@@ -25,6 +25,7 @@ import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.documentenapi.service.DocumentenApiVersionService
 import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
+import com.ritense.processdocument.importer.ZaakTypeLinkImporter
 import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
@@ -284,4 +285,16 @@ class ZakenApiAutoConfiguration {
         zaakDocumentService,
         pluginService
     )
+
+    @Bean
+    @ConditionalOnMissingBean(ZaakTypeLinkImporter::class)
+    fun zaakTypeLinkImporter(
+        objectMapper: ObjectMapper,
+        zaakTypeLinkService: ZaakTypeLinkService
+    ): ZaakTypeLinkImporter {
+        return ZaakTypeLinkImporter(
+            objectMapper,
+            zaakTypeLinkService
+        )
+    }
 }
