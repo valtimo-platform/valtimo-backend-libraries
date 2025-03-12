@@ -32,7 +32,6 @@ dockerCompose {
 dependencies {
     implementation project(":case")
     implementation project(":contract")
-    implementation project(":objects-api")
     implementation project(":plugin")
     implementation project(":zgw")
     implementation project(":zgw:objecten-api")

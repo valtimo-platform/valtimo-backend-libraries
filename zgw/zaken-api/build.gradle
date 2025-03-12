@@ -42,6 +42,7 @@ dependencies {
     implementation project(':zgw:documenten-api')
     implementation project(":outbox")
     implementation project(":logging")
+    implementation project(":importer")
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
