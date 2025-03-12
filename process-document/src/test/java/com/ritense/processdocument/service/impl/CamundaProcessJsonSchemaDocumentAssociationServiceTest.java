@@ -181,6 +181,28 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
     }
 
     @Test
+    public void shouldNotThrowErrorWhenAssociationAlreadyExists() {
+        final var processInstanceId = processInstanceId();
+        final var documentId = documentId();
+
+        when(processDocumentInstanceRepository.findByProcessInstanceId(any()))
+            .thenReturn(Optional.of(new CamundaProcessJsonSchemaDocumentInstance(
+                CamundaProcessJsonSchemaDocumentInstanceId.existingId(processInstanceId, documentId),
+                "process-name"
+            )));
+        when(processDocumentInstanceRepository.saveAndFlush(any()))
+            .thenReturn(mock(CamundaProcessJsonSchemaDocumentInstance.class));
+
+        var association = service.createProcessDocumentInstance(processInstanceId.toString(), documentId.getId(), "process-name");
+
+        assertThat(association).isPresent();
+        assertThat(association.get().isNew()).isFalse();
+        assertThat(association.get().processDocumentInstanceId().documentId()).isEqualTo(documentId);
+        assertThat(association.get().processDocumentInstanceId().processInstanceId()).isEqualTo(processInstanceId);
+        assertThat(association.get().processName()).isEqualTo("process-name");
+    }
+
+    @Test
     public void shouldFindProcessInstanceWithFailedResult() {
         final var id = processDocumentInstanceId();
 
