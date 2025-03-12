@@ -20,10 +20,14 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
+import com.ritense.formflow.BaseIntegrationTest
+import com.ritense.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
-import com.ritense.formflow.service.FormFlowDeploymentService
+import com.ritense.formflow.importer.FormFlowDefinitionImporter
 import com.ritense.formflow.service.FormFlowService
+import com.ritense.formflow.web.rest.FormFlowResource
+import com.ritense.formflow.web.rest.dto.FormFlowProcessLinkCreateRequestDto
 import com.ritense.processdocument.domain.ProcessInstanceId
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
@@ -36,13 +40,8 @@ import com.ritense.processlink.service.ProcessLinkActivityService
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byProcessInstanceId
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
-import com.ritense.formflow.BaseIntegrationTest
-import com.ritense.formflow.FormFlowTaskOpenResultProperties
-import com.ritense.formflow.web.rest.FormFlowResource
-import com.ritense.formflow.web.rest.dto.FormFlowProcessLinkCreateRequestDto
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.service.CamundaTaskService
-import java.util.UUID
 import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.RepositoryService
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -51,8 +50,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
-import kotlin.collections.get
-import kotlin.text.get
+import java.util.UUID
 
 @Transactional
 class ValtimoFormFlowIntTest : BaseIntegrationTest() {
@@ -79,7 +77,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     lateinit var formFlowResource: FormFlowResource
 
     @Autowired
-    lateinit var formFlowDeploymentService: FormFlowDeploymentService
+    lateinit var formFlowImporter: FormFlowDefinitionImporter
 
     @Autowired
     lateinit var historyService: HistoryService
@@ -262,7 +260,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     private fun deployFormFlow(onComplete: String) {
         val formFlowJson = readFileAsString("/template/single_step_flow.json")
             .replace("PLACEHOLDER", onComplete)
-        formFlowDeploymentService.deploy("single_step_flow", formFlowJson, CaseDefinitionId("profile", "1.0.0"))
+        formFlowImporter.deploy("single_step_flow", formFlowJson, CaseDefinitionId("profile", "1.0.0"))
     }
 
     private fun linkFormFlowToUserTask() {

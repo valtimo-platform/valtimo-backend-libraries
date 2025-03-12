@@ -99,8 +99,6 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
                     VIEW_LIST
                 ),
                 null
-            ).and(
-                JsonSchemaDocumentDefinitionSpecificationHelper.byLatestVersion()
             );
         return documentDefinitionRepository.findAll(spec, pageable);
     }

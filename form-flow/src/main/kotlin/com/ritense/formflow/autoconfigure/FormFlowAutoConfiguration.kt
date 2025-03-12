@@ -44,7 +44,6 @@ import com.ritense.formflow.repository.FormFlowStepRepository
 import com.ritense.formflow.repository.MySqlFormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.repository.PostgresFormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.security.ValtimoFormFlowHttpSecurityConfigurer
-import com.ritense.formflow.service.FormFlowDeploymentService
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.formflow.service.FormFlowSupportedProcessLinksHandler
 import com.ritense.formflow.service.FormFlowValtimoService
@@ -144,20 +143,6 @@ class FormFlowAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(FormFlowDeploymentService::class)
-    fun formFlowDeploymentService(
-        resourceLoader: ResourceLoader,
-        formFlowService: FormFlowService,
-        objectMapper: ObjectMapper,
-    ): FormFlowDeploymentService {
-        return FormFlowDeploymentService(
-            resourceLoader,
-            formFlowService,
-            objectMapper
-        )
-    }
-
-    @Bean
     @ConditionalOnMissingBean(ApplicationEventPublisherHolder::class)
     fun applicationEventPublisherHolder(
         applicationEventPublisher: ApplicationEventPublisher,
@@ -213,9 +198,9 @@ class FormFlowAutoConfiguration {
     @ConditionalOnMissingBean(FormFlowManagementResource::class)
     fun formFlowManagementResource(
         formFlowService: FormFlowService,
-        formFlowDeploymentService: FormFlowDeploymentService,
+        formFlowDefinitionImporter: FormFlowDefinitionImporter
     ): FormFlowManagementResource {
-        return FormFlowManagementResource(formFlowService, formFlowDeploymentService)
+        return FormFlowManagementResource(formFlowService, formFlowDefinitionImporter)
     }
 
     @Bean
@@ -315,10 +300,14 @@ class FormFlowAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(FormFlowDefinitionImporter::class)
     fun formFlowDefinitionImporter(
-        formFlowDeploymentService: FormFlowDeploymentService
+        resourceLoader: ResourceLoader,
+        formFlowService: FormFlowService,
+        objectMapper: ObjectMapper
     ): FormFlowDefinitionImporter {
         return FormFlowDefinitionImporter(
-            formFlowDeploymentService
+            resourceLoader,
+            formFlowService,
+            objectMapper
         )
     }
 

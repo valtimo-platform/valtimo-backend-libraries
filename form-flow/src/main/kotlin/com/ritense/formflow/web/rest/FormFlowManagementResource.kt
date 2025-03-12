@@ -17,7 +17,7 @@
 package com.ritense.formflow.web.rest
 
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
-import com.ritense.formflow.service.FormFlowDeploymentService
+import com.ritense.formflow.importer.FormFlowDefinitionImporter
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.formflow.web.rest.result.FormFlowDefinitionDto
 import com.ritense.logging.LoggableResource
@@ -44,7 +44,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/management", produces = [APPLICATION_JSON_UTF8_VALUE])
 class FormFlowManagementResource(
     private val formFlowService: FormFlowService,
-    private val formFlowDeploymentService: FormFlowDeploymentService
+    private val formFlowDefinitionImporter: FormFlowDefinitionImporter
 ) {
     @GetMapping("/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form-flow-definition")
     @Transactional
@@ -55,7 +55,7 @@ class FormFlowManagementResource(
     ): ResponseEntity<Page<FormFlowDefinitionDto>> {
         val caseDefinitionId = CaseDefinitionId(caseDefinitionKey, versionTag)
         val definitions = formFlowService.getFormFlowDefinitions(caseDefinitionId, pageable)
-            .map { FormFlowDefinitionDto.of(it, formFlowDeploymentService.isAutoDeployed(it.id.key)) }
+            .map { FormFlowDefinitionDto.of(it, formFlowDefinitionImporter.isAutoDeployed(it.id.key)) }
         return ResponseEntity.ok(definitions)
     }
 
@@ -68,7 +68,7 @@ class FormFlowManagementResource(
     ): ResponseEntity<FormFlowDefinitionDto> {
         val caseDefinitionId = CaseDefinitionId(caseDefinitionKey, versionTag)
         val definition = formFlowService.findDefinition(FormFlowDefinitionId(definitionKey, caseDefinitionId))
-        val readOnly = formFlowDeploymentService.isAutoDeployed(definition.id.key)
+        val readOnly = formFlowDefinitionImporter.isAutoDeployed(definition.id.key)
         return ResponseEntity.ok(FormFlowDefinitionDto.of(definition, readOnly))
     }
 
@@ -80,7 +80,7 @@ class FormFlowManagementResource(
         @LoggableResource("formFlowDefinitionKey") @PathVariable definitionKey: String,
     ): ResponseEntity<Unit> {
         val caseDefinitionId = CaseDefinitionId(caseDefinitionKey, versionTag)
-        if (formFlowDeploymentService.isAutoDeployed(definitionKey)) {
+        if (formFlowDefinitionImporter.isAutoDeployed(definitionKey)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
         formFlowService.deleteByKeyAndsCaseDefinition(definitionKey, caseDefinitionId)
@@ -111,7 +111,7 @@ class FormFlowManagementResource(
         @RequestBody definitionDto: FormFlowDefinitionDto
     ): ResponseEntity<FormFlowDefinitionDto> {
         val caseDefinitionId = CaseDefinitionId(caseDefinitionKey, versionTag)
-        val readOnly = formFlowDeploymentService.isAutoDeployed(definitionKey)
+        val readOnly = formFlowDefinitionImporter.isAutoDeployed(definitionKey)
         if (readOnly) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }

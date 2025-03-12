@@ -16,7 +16,9 @@
 
 package com.ritense.formflow.importer
 
-import com.ritense.formflow.service.FormFlowDeploymentService
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.formflow.domain.definition.FormFlowDefinition
+import com.ritense.formflow.service.FormFlowService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.ValtimoImportTypes.Companion.FORM
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
@@ -28,16 +30,24 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.verify
+import org.springframework.core.io.ResourceLoader
 
 @ExtendWith(MockitoExtension::class)
 class FormFlowDefinitionImporterTest(
-    @Mock private val formFlowDeploymentService: FormFlowDeploymentService
+    @Mock private val resourceLoader: ResourceLoader,
+    @Mock private val formFlowService: FormFlowService,
+    @Mock private val objectMapper: ObjectMapper
 ) {
     private lateinit var formFlowDefinitionImporter: FormFlowDefinitionImporter
 
+
     @BeforeEach
     fun before() {
-        formFlowDefinitionImporter = FormFlowDefinitionImporter(formFlowDeploymentService)
+        formFlowDefinitionImporter = FormFlowDefinitionImporter(
+            resourceLoader,
+            formFlowService,
+            objectMapper
+        )
     }
 
     @Test
@@ -62,20 +72,39 @@ class FormFlowDefinitionImporterTest(
     }
 
     @Test
-    fun `should call deploy method for import with correct parameters`() {
+    fun `should deploy method for import with correct parameters`() {
         val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
-        val jsonContent = "{}"
+        val jsonContent = """
+            {
+                "startStep": "step1",
+                "steps": [
+                    {
+                        "key": "step1",
+                        "type": {
+                            "name": "form",
+                            "properties": {
+                                "definition": "aandachtspunten-step1"
+                            }
+                        }
+                    }
+                ]
+            }
+        """.trimIndent()
         formFlowDefinitionImporter.import(ImportRequest(FILENAME, jsonContent.toByteArray(), caseDefinitionId))
 
+        val formFlowDefinitionCaptor = argumentCaptor<FormFlowDefinition>()
+
         val formFlowKeyCaptor = argumentCaptor<String>()
-        val jsonCaptor = argumentCaptor<String>()
         val caseDefinitionIdCaptor = argumentCaptor<CaseDefinitionId>()
 
-        verify(formFlowDeploymentService).deploy(formFlowKeyCaptor.capture(), jsonCaptor.capture(), caseDefinitionIdCaptor.capture())
+        verify(formFlowService).findDefinitionOrNull(formFlowKeyCaptor.capture(), caseDefinitionIdCaptor.capture())
+        verify(formFlowService).save(formFlowDefinitionCaptor.capture())
 
         assertThat(formFlowKeyCaptor.firstValue).isEqualTo("my-form")
-        assertThat(jsonCaptor.firstValue).isEqualTo(jsonContent)
         assertThat(caseDefinitionIdCaptor.firstValue).isEqualTo(caseDefinitionId)
+
+        assertThat(formFlowDefinitionCaptor.firstValue.startStep).isEqualTo("step1")
+        assertThat(formFlowDefinitionCaptor.firstValue.steps.size).isEqualTo(1)
     }
 
     private companion object {
