@@ -78,7 +78,7 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
                 processDefinitionId = processDefinition.id,
                 activityId = "do-something",
                 activityType = ActivityTypeWithEventName.USER_TASK_START,
-                formFlowDefinitionKey = "inkomens_loket"
+                formFlowDefinitionKey = "inkomens_loket_alternate"
             ),
             caseDefinitionId
         )
@@ -108,7 +108,7 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
                 processDefinitionId = processDefinition.id,
                 activityId = "do-something",
                 activityType = ActivityTypeWithEventName.USER_TASK_START,
-                formFlowDefinitionKey = "inkomens_loket"
+                formFlowDefinitionKey = "inkomens_loket_alternate"
             ),
             caseDefinitionId
         )
@@ -139,7 +139,7 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
             .processDefinitionKey("formflow-one-task-process")
             .singleResult()
 
-        val formFlowDefinition = formFlowService.findDefinition("inkomens_loket", CaseDefinitionId("profile", "1.0.0"))
+        val formFlowDefinition = formFlowService.findDefinition("inkomens_loket_alternate", CaseDefinitionId("profile", "1.0.0"))
 
         val processLink: ProcessLink = FormFlowProcessLink(
             id = processLinkId,
@@ -154,7 +154,7 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
             "some-document",
             processLink
         )
-        val dbFormFlowInstances = formFlowInstanceRepository.findAll().filter { it.formFlowDefinition.id.toString() == "inkomens_loket:1" }
+        val dbFormFlowInstances = formFlowInstanceRepository.findAll().filter { it.formFlowDefinition.id.toString() == "inkomens_loket_alternate" }
         assertEquals(1, dbFormFlowInstances.size)
         assertEquals("form-flow",result.type)
         assertEquals(dbFormFlowInstances[0].id.id,result.properties.formFlowInstanceId)

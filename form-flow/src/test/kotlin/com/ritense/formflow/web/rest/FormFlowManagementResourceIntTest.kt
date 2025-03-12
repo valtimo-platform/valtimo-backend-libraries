@@ -100,7 +100,7 @@ class FormFlowManagementResourceIntTest : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            post("/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form-flow-definition", "profile", "1.0.0", "profile", "1.0.0")
+            post("/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form-flow-definition", "profile", "1.0.0")
                 .contentType(APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(definition))
         )

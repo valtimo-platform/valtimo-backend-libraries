@@ -271,7 +271,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
                 getProcessDefinitionId(),
                 "do-something",
                 ActivityTypeWithEventName.USER_TASK_CREATE,
-                "single_step_flow:latest"
+                "single_step_flow"
             ),
             caseDefinitionId
         )
@@ -283,7 +283,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
                 getProcessDefinitionId(),
                 "start-event",
                 ActivityTypeWithEventName.START_EVENT_START,
-                "single_step_flow:latest"
+                "single_step_flow"
             ),
             caseDefinitionId
         )

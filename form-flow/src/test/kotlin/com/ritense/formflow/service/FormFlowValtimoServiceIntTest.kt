@@ -73,7 +73,7 @@ internal class FormFlowValtimoServiceIntTest: BaseIntegrationTest() {
 
     @Test
     fun `should filter illegal fields from submissionData`() {
-        linkFormFlowToUserTask("inkomens_loket:latest")
+        linkFormFlowToUserTask("inkomens_loket_alternate")
         val documentAndProcess = newDocumentAndStartProcess()
         val processInstanceId = documentAndProcess.resultingProcessInstanceId().get()
         val formFlowInstance = openTasks(processInstanceId).single()

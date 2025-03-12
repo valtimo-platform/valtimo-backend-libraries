@@ -41,7 +41,7 @@ class FormFlowDefinitionExporterIntTest @Autowired constructor(
         val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val formFlowKey = "loan"
         val result = formFlowDefinitionExporter.export(
-            FormFlowDefinitionExportRequest("${formFlowKey}:latest", caseDefinitionId)
+            FormFlowDefinitionExportRequest(formFlowKey, caseDefinitionId)
         )
 
         val exportFile = result.exportFiles.singleOrNull {

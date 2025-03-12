@@ -133,7 +133,7 @@ class FormFlowProcessLinkMapper(
         return withLoggingContext(ProcessDefinition::class, createRequestDto.processDefinitionId) {
             if (caseDefinitionId == null) {
                 //TODO: change exception type
-                throw RuntimeException("Case definition id is required for creating a new process link")
+                throw RuntimeException("Case definition id is required for creating a new process link with form flow")
             }
 
             createRequestDto as FormFlowProcessLinkCreateRequestDto

@@ -69,4 +69,8 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="8" author="Ritense">
+        <dropColumn tableName="json_schema_document_snapshot" columnName="document_definition_version"/>
+    </changeSet>
+
 </databaseChangeLog>

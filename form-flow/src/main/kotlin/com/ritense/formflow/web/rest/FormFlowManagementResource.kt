@@ -95,7 +95,7 @@ class FormFlowManagementResource(
         @RequestBody definitionDto: FormFlowDefinitionDto
     ): ResponseEntity<FormFlowDefinitionDto> {
         val caseDefinitionId = CaseDefinitionId(caseDefinitionKey, versionTag)
-        if (formFlowService.findDefinition(definitionDto.key, caseDefinitionId) != null) {
+        if (formFlowService.findDefinitionOrNull(definitionDto.key, caseDefinitionId) != null) {
             return ResponseEntity.badRequest().build()
         }
         val newDefinition = formFlowService.save(definitionDto.toEntity(caseDefinitionId))

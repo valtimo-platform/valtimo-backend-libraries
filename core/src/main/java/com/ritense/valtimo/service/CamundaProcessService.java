@@ -63,6 +63,7 @@ import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState;
+import org.camunda.bpm.engine.repository.Deployment;
 import org.camunda.bpm.engine.repository.DeploymentWithDefinitions;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
@@ -96,6 +97,7 @@ public class CamundaProcessService {
     private final ProcessPropertyService processPropertyService;
     private final ValtimoProperties valtimoProperties;
     private final AuthorizationService authorizationService;
+    private final ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker;
 
     private final CamundaExecutionRepository camundaExecutionRepository;
 
@@ -109,7 +111,8 @@ public class CamundaProcessService {
         ProcessPropertyService processPropertyService,
         ValtimoProperties valtimoProperties,
         AuthorizationService authorizationService,
-        CamundaExecutionRepository camundaExecutionRepository
+        CamundaExecutionRepository camundaExecutionRepository,
+        ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker
     ) {
         this.runtimeService = runtimeService;
         this.camundaRuntimeService = camundaRuntimeService;
@@ -121,6 +124,7 @@ public class CamundaProcessService {
         this.valtimoProperties = valtimoProperties;
         this.authorizationService = authorizationService;
         this.camundaExecutionRepository = camundaExecutionRepository;
+        this.processDefinitionCaseDefinitionLinker = processDefinitionCaseDefinitionLinker;
     }
 
     public CamundaProcessDefinition findProcessDefinitionById(String processDefinitionId) {
@@ -366,7 +370,10 @@ public class CamundaProcessService {
                 deploymentBuilder.source(CamundaDeploymentSource.SKIP_PROCESS_LINKS_COPY.toString());
             }
 
-            return deploymentBuilder.deployWithResult();
+            DeploymentWithDefinitions deployment = deploymentBuilder.deployWithResult();
+            processDefinitionCaseDefinitionLinker.link(caseDefinitionId, deployment.getDeployedProcessDefinitions().get(0).getId());
+
+            return deployment;
         } else if (fileName.endsWith(".dmn")) {
             DmnModelInstance dmnModel = Dmn.readModelFromStream(fileInput);
 
@@ -405,7 +412,11 @@ public class CamundaProcessService {
 
             setProcessesExecutable(bpmnModel);
 
-            repositoryService.createDeployment().addModelInstance(fileName, bpmnModel).deploy();
+            DeploymentWithDefinitions deployment = repositoryService.createDeployment()
+                .addModelInstance(fileName, bpmnModel)
+                .deployWithResult();
+
+            processDefinitionCaseDefinitionLinker.link(caseDefinitionId, deployment.getDeployedProcessDefinitions().get(0).getId());
         } else if (fileName.endsWith(".dmn")) {
             DmnModelInstance dmnModel = Dmn.readModelFromStream(fileInput);
 

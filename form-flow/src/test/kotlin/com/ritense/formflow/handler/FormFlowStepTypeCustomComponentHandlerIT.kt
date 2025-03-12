@@ -32,7 +32,7 @@ class FormFlowStepTypeCustomComponentHandlerIT: BaseIntegrationTest() {
     fun `should find correct properties for custom angular type step`() {
         val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val formFlowInstance = formFlowService
-            .findDefinition("custom-component-test:latest", caseDefinitionId)!!
+            .findDefinition("custom-component-test", caseDefinitionId)!!
             .createInstance(emptyMap())
 
         val stepProperties = formFlowService.getTypeProperties(formFlowInstance.getCurrentStep())

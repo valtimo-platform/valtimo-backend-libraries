@@ -42,6 +42,7 @@ class FormFlowDefinitionExporter(
         return withLoggingContext(FormFlowDefinition::class, request.formFlowDefinitionId) {
             val definition = requireNotNull(formFlowService.findDefinition(request.formFlowDefinitionId, request.caseDefinitionId))
 
+            //TODO: base this on the forms that are part of the case definition?
             val relatedRequests = definition.steps.map { step ->
                 step.type
             }.filter { type ->
@@ -53,7 +54,7 @@ class FormFlowDefinitionExporter(
 
             ExportResult(
                 ExportFile(
-                    PATH.format(definition.id.key),
+                    PATH.format(request.caseDefinitionId.key, request.caseDefinitionId.versionTag, definition.id.key),
                     objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(FormFlowDefinition.fromEntity(definition))
                 ),
                 relatedRequests
@@ -62,6 +63,6 @@ class FormFlowDefinitionExporter(
     }
 
     companion object {
-        private const val PATH = "config/form-flow/%s.json"
+        private const val PATH = "config/case/%s/%s/form-flow/%s.json"
     }
 }

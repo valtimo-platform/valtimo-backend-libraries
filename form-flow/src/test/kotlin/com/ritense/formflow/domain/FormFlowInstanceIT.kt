@@ -244,7 +244,7 @@ internal class FormFlowInstanceIT : BaseIntegrationTest() {
     @Test
     fun `should partially override current step with newly submitted previous step`() {
         val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
-        val formFlowDefinition = formFlowService.findDefinition("aandachtspunten:latest", caseDefinitionId)
+        val formFlowDefinition = formFlowService.findDefinition("aandachtspunten", caseDefinitionId)
         var formFlowInstance = FormFlowInstance(formFlowDefinition = formFlowDefinition!!)
         formFlowInstanceRepository.saveAndFlush(formFlowInstance)
 
@@ -303,7 +303,7 @@ internal class FormFlowInstanceIT : BaseIntegrationTest() {
     @Test
     fun `should not override current step with newly submitted, but unchanged, previous step`() {
         val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
-        val formFlowDefinition = formFlowService.findDefinition("aandachtspunten:latest", caseDefinitionId)
+        val formFlowDefinition = formFlowService.findDefinition("aandachtspunten", caseDefinitionId)
         var formFlowInstance = FormFlowInstance(formFlowDefinition = formFlowDefinition!!)
         formFlowInstanceRepository.saveAndFlush(formFlowInstance)
 
@@ -360,7 +360,7 @@ internal class FormFlowInstanceIT : BaseIntegrationTest() {
     fun `should set submissionData with SpEL expression`() {
         val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val formFlowDefinition =
-            formFlowDefinitionRepository.getReferenceById(FormFlowDefinitionId("inkomens_loket" ,caseDefinitionId))
+            formFlowDefinitionRepository.getReferenceById(FormFlowDefinitionId("form-flow-with-expressions" ,caseDefinitionId))
         var formFlowInstance = FormFlowInstance(formFlowDefinition = formFlowDefinition!!)
         formFlowInstance = formFlowInstanceRepository.saveAndFlush(formFlowInstance)
 
