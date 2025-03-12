@@ -349,6 +349,9 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
         }
     }
 
+    public void removeCaseTag(CaseTag caseTag) {
+        this.caseTags.remove(caseTag);
+    }
 
     @Override
     public JsonSchemaDocumentId id() {

@@ -772,6 +772,38 @@ public class JsonSchemaDocumentService implements DocumentService {
         );
     }
 
+    @Override
+    public void removeCaseTag(
+        @LoggableResource(resourceType = JsonSchemaDocument.class) Document.Id documentId,
+        @Nullable String caseTagKey
+    ) {
+        JsonSchemaDocument document = runWithoutAuthorization(
+            () -> getDocumentBy(documentId)
+        );
+
+        authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                MODIFY,
+                document
+            )
+        );
+
+        var caseTag = caseTagKey != null ? caseTagService.get(
+            document.definitionId().name(),
+            caseTagKey
+        ) : null;
+        document.removeCaseTag(caseTag);
+
+        documentRepository.save(document);
+
+        outboxService.send(() ->
+            new DocumentStatusChanged(
+                document.id().toString(),
+                objectMapper.valueToTree(document)
+            )
+        );
+    }
 
     private void publishDocumentAssigneeChangedEvent(
         @LoggableResource(resourceType = JsonSchemaDocument.class) UUID documentId,

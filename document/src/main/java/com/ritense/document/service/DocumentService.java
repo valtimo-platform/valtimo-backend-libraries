@@ -75,6 +75,8 @@ public interface DocumentService {
 
     void addCaseTag(Document.Id documentId, String caseTagKey);
 
+    void removeCaseTag(Document.Id documentId, String caseTagKey);
+
     List<NamedUser> getCandidateUsers(Document.Id documentId);
 
     List<NamedUser> getCandidateUsers(List<Document.Id> documentIds);
