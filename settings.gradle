@@ -55,7 +55,6 @@ include(
     "mail:wordpress-mail",
     "milestones",
     "notes",
-    "objects-api",
     "outbox",
     "outbox:outbox-rabbitmq",
     "plugin",
