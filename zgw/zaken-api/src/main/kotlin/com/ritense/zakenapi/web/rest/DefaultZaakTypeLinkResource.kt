@@ -31,9 +31,10 @@ class DefaultZaakTypeLinkResource(
 ) : ZaakTypeLinkResource {
 
     override fun get(
-        @LoggableResource("caseDefinitionId") caseDefinitionId: CaseDefinitionId
+        @LoggableResource("caseDefinitionKey") caseDefinitionKey: String,
+        @LoggableResource("versionTag") versionTag: String,
     ): ResponseEntity<ZaakTypeLink?> {
-        return when (val zaakTypeLink = zaakTypeLinkService.get(caseDefinitionId)) {
+        return when (val zaakTypeLink = zaakTypeLinkService.get(CaseDefinitionId(caseDefinitionKey, versionTag))) {
             null -> noContent().build()
             else -> ok(zaakTypeLink)
         }
@@ -46,16 +47,20 @@ class DefaultZaakTypeLinkResource(
     }
 
     override fun create(request: CreateZaakTypeLinkRequest): ResponseEntity<ZaakTypeLink> {
-        return withLoggingContext("caseDefinitionId", request.caseDefinitionId.toString()) {
+        return withLoggingContext(
+            "caseDefinitionId",
+            CaseDefinitionId(request.caseDefinitionKey, request.caseDefinitionVersionTag).toString()
+        ) {
             val result = zaakTypeLinkService.createZaakTypeLink(request)
             ok(result)
         }
     }
 
     override fun remove(
-        @LoggableResource("caseDefinitionId") caseDefinitionId: CaseDefinitionId
+        @LoggableResource("caseDefinitionKey") caseDefinitionKey: String,
+        @LoggableResource("versionTag") versionTag: String,
     ): ResponseEntity<Void> {
-        zaakTypeLinkService.deleteZaakTypeLinkBy(caseDefinitionId)
+        zaakTypeLinkService.deleteZaakTypeLinkBy(CaseDefinitionId(caseDefinitionKey, versionTag))
         return noContent().build()
     }
 }

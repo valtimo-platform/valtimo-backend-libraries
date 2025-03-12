@@ -44,7 +44,7 @@ class DefaultZaakTypeLinkService(
 ) : ZaakTypeLinkService {
 
     override fun get(
-        @LoggableResource("documentDefinitionName") caseDefinitionId: CaseDefinitionId
+        @LoggableResource("caseDefinitionId") caseDefinitionId: CaseDefinitionId
     ): ZaakTypeLink? {
         return zaakTypeLinkRepository.findByCaseDefinitionId(caseDefinitionId)
     }
@@ -72,12 +72,16 @@ class DefaultZaakTypeLinkService(
     }
 
     override fun createZaakTypeLink(request: CreateZaakTypeLinkRequest): ZaakTypeLink {
-        return withLoggingContext("caseDefinitionId", request.caseDefinitionId.toString()) {
-            var zaakTypeLink = zaakTypeLinkRepository.findByCaseDefinitionId(request.caseDefinitionId)
+        return withLoggingContext(
+            "caseDefinitionId",
+            CaseDefinitionId(request.caseDefinitionKey, request.caseDefinitionVersionTag).toString()
+        ) {
+            val caseDefinitionId = CaseDefinitionId(request.caseDefinitionKey, request.caseDefinitionVersionTag)
+            var zaakTypeLink = zaakTypeLinkRepository.findByCaseDefinitionId(caseDefinitionId)
             if (zaakTypeLink == null) {
                 zaakTypeLink = ZaakTypeLink(
                     ZaakTypeLinkId.newId(UUID.randomUUID()),
-                    request.caseDefinitionId,
+                    caseDefinitionId,
                     request.zaakTypeUrl,
                     request.createWithDossier ?: false,
                     request.zakenApiPluginConfigurationId,

@@ -28,11 +28,10 @@ import com.ritense.zgw.Rsin
 import com.ritense.zgw.converter.RsinAttributeConverter
 import jakarta.persistence.Column
 import jakarta.persistence.Convert
+import jakarta.persistence.Embedded
 import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
 import jakarta.persistence.Table
-import jakarta.validation.constraints.NotBlank
-import org.hibernate.validator.constraints.Length
 import org.springframework.data.domain.Persistable
 import java.net.URI
 import java.util.UUID
@@ -44,7 +43,8 @@ data class ZaakTypeLink(
     @EmbeddedId
     @JsonProperty("id")
     val zaakTypeLinkId: ZaakTypeLinkId,
-    
+
+    @Embedded
     val caseDefinitionId: CaseDefinitionId,
 
     @Convert(converter = UriAttributeConverter::class)

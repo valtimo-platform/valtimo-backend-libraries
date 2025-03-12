@@ -38,13 +38,14 @@ class OpenZaakApplicationReadyEventListener(
     }
 
     private fun connectZaakType(event: DocumentDefinitionDeployedEvent) {
-        val bezwaarCaseDefinitionId = CaseDefinitionId(BEZWAAR, "1.0.0");
-        val portalPersonCaseDefinitionId = CaseDefinitionId(PORTAL_PERSON, "1.0.0");
+        val bezwaarCaseDefinitionId = CaseDefinitionId(BEZWAAR, BEZWAAR_VERSION_TAG);
+        val portalPersonCaseDefinitionId = CaseDefinitionId(PORTAL_PERSON, PORTAL_PERSON_VERSION_TAG);
 
         if (event.documentDefinition().id().caseDefinitionId() == bezwaarCaseDefinitionId) {
             zaakTypeLinkService.createZaakTypeLink(
                 CreateZaakTypeLinkRequest(
-                    bezwaarCaseDefinitionId,
+                    BEZWAAR,
+                    BEZWAAR_VERSION_TAG,
                     URI(ZAAKTYPE_URL),
                     UUID.fromString(ZAKEN_API_PLUGIN_ID),
                     true,
@@ -55,7 +56,8 @@ class OpenZaakApplicationReadyEventListener(
         if (event.documentDefinition().id().caseDefinitionId() == portalPersonCaseDefinitionId) {
             zaakTypeLinkService.createZaakTypeLink(
                 CreateZaakTypeLinkRequest(
-                    portalPersonCaseDefinitionId,
+                    PORTAL_PERSON,
+                    PORTAL_PERSON_VERSION_TAG,
                     URI(ZAAKTYPE_URL),
                     UUID.fromString(ZAKEN_API_PLUGIN_ID),
                     true,
@@ -77,7 +79,9 @@ class OpenZaakApplicationReadyEventListener(
         private const val ZAAKTYPE_URL =
             "http://localhost:8001/catalogi/api/v1/zaaktypen/744ca059-f412-49d4-8963-5800e4afd486"
         private const val PORTAL_PERSON = "portal-person"
+        private const val PORTAL_PERSON_VERSION_TAG = "1.0.0"
         private const val BEZWAAR = "bezwaar"
+        private const val BEZWAAR_VERSION_TAG = "1.0.0"
         private const val ZAKEN_API_PLUGIN_ID = "3079d6fe-42e3-4f8f-a9db-52ce2507b7ee"
         private const val RSIN = "438605688"
     }

@@ -16,12 +16,12 @@
 
 package com.ritense.zakenapi.web.rest.request
 
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import java.net.URI
 import java.util.UUID
 
 data class CreateZaakTypeLinkRequest(
-    val caseDefinitionId: CaseDefinitionId,
+    val caseDefinitionKey: String,
+    val caseDefinitionVersionTag: String,
     val zaakTypeUrl: URI,
     val zakenApiPluginConfigurationId: UUID? = null,
     val createWithDossier: Boolean? = false,
