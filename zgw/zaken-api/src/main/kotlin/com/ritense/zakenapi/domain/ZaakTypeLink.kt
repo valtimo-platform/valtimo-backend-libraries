@@ -44,10 +44,7 @@ data class ZaakTypeLink(
     @EmbeddedId
     @JsonProperty("id")
     val zaakTypeLinkId: ZaakTypeLinkId,
-
-    @Column(name = "case_definition_id", columnDefinition = "VARCHAR(50)", nullable = false)
-    @field:Length(max = 50)
-    @field:NotBlank
+    
     val caseDefinitionId: CaseDefinitionId,
 
     @Convert(converter = UriAttributeConverter::class)

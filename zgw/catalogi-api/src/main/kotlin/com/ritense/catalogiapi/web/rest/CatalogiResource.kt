@@ -40,16 +40,18 @@ import org.springframework.web.bind.annotation.RestController
 class CatalogiResource(
     private val catalogiService: CatalogiService
 ) {
-    @GetMapping("/v1/case-definition/{caseDefinitionId}/zaaktype/documenttype")
+    @GetMapping("/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/zaaktype/documenttype")
     fun getZaakObjecttypes(
-        @LoggableResource("caseDefinitionId") @PathVariable(name = "caseDefinitionId") caseDefinitionId: CaseDefinitionId
+        @LoggableResource("caseDefinitionKey") @PathVariable(name = "caseDefinitionKey") caseDefinitionKey: String,
+        @LoggableResource("versionTag") @PathVariable(name = "versionTag") versionTag: String
     ): ResponseEntity<List<InformatieobjecttypeDto>> {
-        val zaakObjectTypes = catalogiService.getInformatieobjecttypes(caseDefinitionId).map {
-            InformatieobjecttypeDto(
-                it.url!!,
-                it.omschrijving
-            )
-        }
+        val zaakObjectTypes =
+            catalogiService.getInformatieobjecttypes(CaseDefinitionId(caseDefinitionKey, versionTag)).map {
+                InformatieobjecttypeDto(
+                    it.url!!,
+                    it.omschrijving
+                )
+            }
         return ResponseEntity.ok(zaakObjectTypes)
     }
 
