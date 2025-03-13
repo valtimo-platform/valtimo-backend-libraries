@@ -18,15 +18,12 @@ package com.ritense.case_.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.case.domain.CaseTabType
-import com.ritense.case.service.CaseDefinitionExporter
-import com.ritense.case.service.CaseDefinitionExporter.Companion
 import com.ritense.case.service.CaseTabService
 import com.ritense.exporter.ExportFile
 import com.ritense.exporter.ExportPrettyPrinter
 import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional(readOnly = true)
@@ -55,7 +52,10 @@ class CaseWidgetTabExporter(
             objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(
                 caseTabs
                     .filter { it.type == CaseTabType.WIDGETS }
-                    .map { caseWidgetTabService.getWidgetTab(it.id.caseDefinitionId, it.id.key)!! }
+                    .map {
+                        caseWidgetTabService.getWidgetTab(it.id.caseDefinitionId, it.id.key)!!
+                            .copy(caseDefinitionKey = null, caseDefinitionVersionTag = null)
+                    }
             )
         )
 
@@ -65,6 +65,6 @@ class CaseWidgetTabExporter(
     }
 
     companion object {
-        private const val PATH = "config/%s/%s/widget-tab/%s.case-widget-tab.json"
+        private const val PATH = "config/case/%s/%s/case/widget-tab/%s.case-widget-tab.json"
     }
 }

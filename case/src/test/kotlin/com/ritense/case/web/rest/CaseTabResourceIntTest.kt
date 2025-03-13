@@ -56,7 +56,11 @@ class CaseTabResourceIntTest : BaseIntegrationTest() {
     fun `should get case tabs (deprecated)`() {
         val caseDefinitionName = "some-case-type"
         mockMvc.perform(
-            get("/api/v1/case-definition/{caseDefinitionName}/tab", caseDefinitionName)
+            get(
+                "/api/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitinoVersionTag}/tab",
+                caseDefinitionName,
+                "1.2.3"
+            )
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andExpect(status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
@@ -75,7 +79,11 @@ class CaseTabResourceIntTest : BaseIntegrationTest() {
     fun `should get case tabs filtered for role (deprecated)`() {
         val caseDefinitionName = "some-case-type"
         mockMvc.perform(
-            get("/api/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/tab", caseDefinitionName, "1.2.3")
+            get(
+                "/api/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/tab",
+                caseDefinitionName,
+                "1.2.3"
+            )
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andExpect(status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)

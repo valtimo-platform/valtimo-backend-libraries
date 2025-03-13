@@ -234,6 +234,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
         }
     }
 
+    //TODO: This sometimes fails because the json schema document is not updated, which violates a constraint. To fix?
     @Test
     fun shouldReorderStatusesForExistingStatuses() {
         AuthorizationContext.runWithoutAuthorization {
@@ -322,6 +323,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
         assertEquals(postUpdateInternalCaseStatuses.size - 1, postUpdateInternalCaseStatuses[2].order)
     }
 
+    //TODO: This sometimes fails because the json schema document is not updated, which violates a constraint. To fix?
     @Test
     fun shouldNotReorderStatusesForIncorrectNumberOfStatuses() {
         AuthorizationContext.runWithoutAuthorization {

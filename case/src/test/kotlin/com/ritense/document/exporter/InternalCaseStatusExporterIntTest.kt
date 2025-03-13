@@ -45,10 +45,10 @@ class InternalCaseStatusExporterIntTest @Autowired constructor(
     fun `should export tabs for case definition`(): Unit = runWithoutAuthorization {
         val caseDefinitionName = "person"
 
-        val request = DocumentDefinitionExportRequest(caseDefinitionName, CaseDefinitionId("house", "1.0.0"))
+        val request = DocumentDefinitionExportRequest(caseDefinitionName, CaseDefinitionId("person", "1.0.0"))
         val exportResult = exporter.export(request)
 
-        val path = PATH.format(caseDefinitionName)
+        val path = PATH.format(caseDefinitionName, "1-0-0", caseDefinitionName)
         val export = exportResult.exportFiles.singleOrNull {
             it.path == path
         }
@@ -64,7 +64,7 @@ class InternalCaseStatusExporterIntTest @Autowired constructor(
         //Remove the timestamp from the changesetId, so we can compare it as usual
         (exportJson as ObjectNode).set<TextNode>(changesetIdField, TextNode(matchResult!!.groupValues[1]))
         val expectedJson = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
-            .getResource("classpath:${PATH.format(caseDefinitionName)}")
+            .getResource("classpath:${PATH.format(caseDefinitionName, "1-0-0", caseDefinitionName)}")
             .inputStream
             .use { inputStream ->
                 StreamUtils.copyToString(inputStream, Charsets.UTF_8)
@@ -79,6 +79,6 @@ class InternalCaseStatusExporterIntTest @Autowired constructor(
     }
 
     companion object {
-        private const val PATH = "config/internal-case-status/%s.internal-case-status.json"
+        private const val PATH = "config/case/%s/%s/internal-case-status/%s.internal-case-status.json"
     }
 }

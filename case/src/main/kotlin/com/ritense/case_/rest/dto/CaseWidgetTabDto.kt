@@ -16,6 +16,7 @@
 
 package com.ritense.case_.rest.dto
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.ritense.case_.domain.tab.CaseWidgetTab
 import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 import com.ritense.case_.widget.CaseWidgetMapper
@@ -24,7 +25,9 @@ import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 
 data class CaseWidgetTabDto(
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     val caseDefinitionKey: String? = null,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     val caseDefinitionVersionTag: String? = null,
     @field:NotBlank val key: String,
     @field:Valid val widgets: List<@Valid CaseWidgetTabWidgetDto> = listOf(),
