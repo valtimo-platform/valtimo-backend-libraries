@@ -33,6 +33,7 @@ import com.ritense.document.event.DocumentAssigned
 import com.ritense.document.event.DocumentCreated
 import com.ritense.document.event.DocumentDeleted
 import com.ritense.document.event.DocumentStatusChanged
+import com.ritense.document.event.DocumentTagsChanged
 import com.ritense.document.event.DocumentUnassigned
 import com.ritense.document.event.DocumentUpdated
 import com.ritense.document.event.DocumentViewed
@@ -235,7 +236,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
         verify(outboxService, atLeastOnce()).send(eventCapture.capture())
         val event = eventCapture.allValues.map { it.get() }
-            .single { it is DocumentStatusChanged }
+            .single { it is DocumentTagsChanged }
         assertThat(event.resultId).isEqualTo(document.id!!.toString())
         assertThat(event.result).isEqualTo(objectMapper.valueToTree(document))
         assertThat(event.result?.get("caseTags")!!.get(0)!!.get("title").asText()).isEqualTo("New")
@@ -285,7 +286,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
         verify(outboxService, atLeastOnce()).send(eventCapture.capture())
         val event = eventCapture.allValues.map { it.get() }
-            .filter { it is DocumentStatusChanged }.last()
+            .filter { it is DocumentTagsChanged }.last()
         assertThat(event.resultId).isEqualTo(document.id!!.toString())
         assertThat(event.result).isEqualTo(objectMapper.valueToTree(document))
         assertThat(event.result?.get("caseTags")!!.size() == 2)

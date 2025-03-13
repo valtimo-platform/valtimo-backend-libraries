@@ -54,6 +54,7 @@ import com.ritense.document.event.DocumentAssigned;
 import com.ritense.document.event.DocumentAssigneeChangedEvent;
 import com.ritense.document.event.DocumentCreated;
 import com.ritense.document.event.DocumentDeleted;
+import com.ritense.document.event.DocumentTagsChanged;
 import com.ritense.document.service.CaseTagService;
 import com.ritense.valtimo.contract.event.DocumentDeletedEvent;
 import com.ritense.document.event.DocumentStatusChanged;
@@ -765,7 +766,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         documentRepository.save(document);
 
         outboxService.send(() ->
-            new DocumentStatusChanged(
+            new DocumentTagsChanged(
                 document.id().toString(),
                 objectMapper.valueToTree(document)
             )
@@ -798,7 +799,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         documentRepository.save(document);
 
         outboxService.send(() ->
-            new DocumentStatusChanged(
+            new DocumentTagsChanged(
                 document.id().toString(),
                 objectMapper.valueToTree(document)
             )
