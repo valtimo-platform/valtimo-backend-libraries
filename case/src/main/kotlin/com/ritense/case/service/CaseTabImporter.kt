@@ -53,14 +53,14 @@ class CaseTabImporter(
             throw IllegalArgumentException("Failed to parse file content as valid case widget tabs: ${e.message}", e)
         }
 
-        val toSave = tabs.map {
+        val toSave = tabs.mapIndexed { index, tab ->
             CaseTab(
-                id = CaseTabId(caseDefinitionId, it.key),
-                name = it.name,
-                tabOrder = 0,
-                type = it.type,
-                contentKey = it.contentKey,
-                showTasks = true
+                id = CaseTabId(caseDefinitionId, tab.key),
+                name = tab.name,
+                tabOrder = index,
+                type = tab.type,
+                contentKey = tab.contentKey,
+                showTasks = true // TODO: expand import DTO to allow showTasks to be configured
             )
         }
 
