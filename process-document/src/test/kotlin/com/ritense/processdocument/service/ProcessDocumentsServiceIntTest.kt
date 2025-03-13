@@ -24,6 +24,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.BaseIntegrationTest
+import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byName
 import com.ritense.valtimo.service.CamundaProcessService
@@ -50,6 +51,9 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var processDocumentAssociationService: ProcessDocumentAssociationService
+
+    @Autowired
+    lateinit var processDocumentService: ProcessDocumentService
 
     @Autowired
     lateinit var documentService: DocumentService
@@ -79,6 +83,24 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
 
     @Test
     @Throws(JsonProcessingException::class)
+    fun `should delete processes for a document`() {
+        val request = NewDocumentAndStartProcessRequest(
+            "delete-processes",
+            NewDocumentRequest(
+                "house",
+                objectMapper.readTree(documentJson)
+            )
+        )
+
+        val result = runWithoutAuthorization {
+            processDocumentService.newDocumentAndStartProcess(request)
+        }
+
+        assertEquals(0, result.errors().size)
+    }
+
+    @Test
+    @Throws(JsonProcessingException::class)
     fun `should start process by process definition key`() {
         document = runWithoutAuthorization {
             documentService.createDocument(
@@ -102,7 +124,11 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
         assertNotNull(task)
         val startedProcessId = task.getProcessInstanceId()
         val associatedProcessDocuments =
-            processDocumentInstanceRepository.findAllByProcessDocumentInstanceIdDocumentId(JsonSchemaDocumentId.existingId(document.id().id))
+            processDocumentInstanceRepository.findAllByProcessDocumentInstanceIdDocumentId(
+                JsonSchemaDocumentId.existingId(
+                    document.id().id
+                )
+            )
         val resultProcessInstance = runWithoutAuthorization {
             camundaProcessService.findProcessInstanceById(startedProcessId).get()
         }

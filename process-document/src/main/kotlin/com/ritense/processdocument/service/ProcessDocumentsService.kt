@@ -17,12 +17,17 @@
 package com.ritense.processdocument.service
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
+import com.ritense.logging.withLoggingContext
+import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.service.CamundaProcessService
+import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.stereotype.Service
 import java.util.UUID
 
@@ -31,8 +36,33 @@ import java.util.UUID
 class ProcessDocumentsService(
     private val documentService: DocumentService,
     private val camundaProcessService: CamundaProcessService,
-    private val associationService: ProcessDocumentAssociationService
+    private val associationService: ProcessDocumentAssociationService,
+    private val processDocumentService: ProcessDocumentService,
 ) {
+
+    @RunWithoutAuthorization
+    fun deleteAllProcessInstancesForThisDocument(execution: DelegateExecution, reason: String) {
+        val thisProcessInstanceId = CamundaProcessInstanceId(execution.processInstanceId)
+        val documentId = processDocumentService.getDocumentId(thisProcessInstanceId, execution)
+        requireNotNull(documentId) {
+            "Failed to delete processes for document. Reason: current process has no association with a document."
+        }
+        withLoggingContext(JsonSchemaDocument::class, documentId.toString()) {
+            associationService.findProcessDocumentInstances(documentId)
+                .map { it.processDocumentInstanceId().processInstanceId().toString() }
+                .mapNotNull { processInstanceId ->
+                    try {
+                        camundaProcessService.deleteProcessInstanceById(processInstanceId, reason)
+                        null
+                    } catch (exception: Exception) {
+                        exception
+                    }
+                }
+                .toList()
+                .forEach { throw it }
+        }
+    }
+
     //TODO: Determine what to with this
     fun startProcessByProcessDefinitionKey(processDefinitionKey: String, businessKey: String) {
         startProcessByProcessDefinitionKey(processDefinitionKey, businessKey, null)

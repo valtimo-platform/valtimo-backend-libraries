@@ -3,6 +3,7 @@
   <bpmn:process id="child-process" name="child process" isExecutable="true">
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>Flow_0ajrtoy</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_026beom" messageRef="Message_1f2buec" />
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="Flow_0ajrtoy" sourceRef="StartEvent_1" targetRef="child-process-user-task" />
     <bpmn:userTask id="child-process-user-task" name="child process user task">
@@ -14,6 +15,7 @@
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_0c6p5vb" sourceRef="child-process-user-task" targetRef="Event_0w5nc6f" />
   </bpmn:process>
+  <bpmn:message id="Message_1f2buec" name="START_CHILD_PROCESS" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="child-process">
       <bpmndi:BPMNEdge id="Flow_0ajrtoy_di" bpmnElement="Flow_0ajrtoy">

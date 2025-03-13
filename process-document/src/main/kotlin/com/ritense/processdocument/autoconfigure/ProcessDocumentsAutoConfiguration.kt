@@ -143,12 +143,14 @@ class ProcessDocumentsAutoConfiguration {
     fun processDocumentsService(
         documentService: DocumentService,
         processDocumentAssociationService: ProcessDocumentAssociationService,
-        camundaProcessService: CamundaProcessService
+        camundaProcessService: CamundaProcessService,
+        processDocumentService: ProcessDocumentService,
     ): ProcessDocumentsService {
         return ProcessDocumentsService(
             documentService,
             camundaProcessService,
-            processDocumentAssociationService
+            processDocumentAssociationService,
+            processDocumentService,
         )
     }
 
