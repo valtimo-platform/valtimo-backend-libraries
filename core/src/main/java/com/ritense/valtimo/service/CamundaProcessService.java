@@ -160,7 +160,7 @@ public class CamundaProcessService {
 
     public void deleteProcessInstanceById(String processInstanceId, String reason) {
         denyAuthorization();
-        runtimeService.deleteProcessInstance(processInstanceId, reason);
+        runtimeService.deleteProcessInstance(processInstanceId, reason, true, true, true, false);
     }
 
     public void removeProcessVariables(String processInstanceId, Collection<String> variableNames) {
