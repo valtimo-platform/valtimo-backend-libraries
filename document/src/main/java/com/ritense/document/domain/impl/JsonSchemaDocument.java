@@ -60,6 +60,7 @@ import jakarta.persistence.Version;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -393,11 +394,14 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     }
 
     @Override
-    public Set<CaseTagResponseDto> caseTags() {
+    public List<CaseTagResponseDto> caseTags() {
         if (caseTags == null) {
-            return Collections.emptySet();
+            return Collections.emptyList();
         } else {
-            return caseTags.stream().map(CaseTagResponseDto::new).collect(Collectors.toSet());
+            return caseTags.stream()
+                .map(CaseTagResponseDto::new)
+                .sorted(Comparator.comparing(CaseTagResponseDto::getOrder))
+                .collect(Collectors.toList());
         }
     }
 

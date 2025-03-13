@@ -34,11 +34,12 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Transient;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.hibernate.annotations.Type;
 
 @Embeddable
@@ -155,13 +156,11 @@ public class HistoricDocument implements Document {
         }
     }
 
+    // TODO: discuss with product team
+    // Case tags are not supported for historic documents
     @Override
-    public Set<CaseTagResponseDto> caseTags() {
-        if (caseTags == null) {
-            return null;
-        } else {
-            return caseTags.stream().map(CaseTagResponseDto::new).collect(Collectors.toSet());
-        }
+    public List<CaseTagResponseDto> caseTags() {
+        return Collections.emptyList();
     }
 
     @Override

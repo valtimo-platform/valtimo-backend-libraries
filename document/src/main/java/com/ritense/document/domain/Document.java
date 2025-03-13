@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import com.ritense.document.domain.relation.DocumentRelation;
 import com.ritense.document.web.rest.dto.CaseTagResponseDto;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -47,7 +48,7 @@ public interface Document {
     String internalStatus();
 
     @JsonProperty
-    Set<CaseTagResponseDto> caseTags();
+    List<CaseTagResponseDto> caseTags();
 
     @JsonProperty
     String assigneeId();
