@@ -17,19 +17,16 @@
 package com.ritense.case.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.case.deployment.CaseTabDeploymentService
 import com.ritense.case.repository.CaseTabRepository
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
 import com.ritense.importer.ValtimoImportTypes.Companion.FORM
-import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.verify
 
 @ExtendWith(MockitoExtension::class)
 class CaseTabImporterTest(
@@ -60,19 +57,11 @@ class CaseTabImporterTest(
 
     @Test
     fun `should not support non-caseTab fileName`() {
-        assertThat(importer.supports("config/case-tabs/x/test.json")).isFalse()
-        assertThat(importer.supports("config/case-tabs/test-json")).isFalse()
-    }
-
-    @Test
-    fun `should call deploy method for import with correct parameters`() {
-        val jsonContent = "{}"
-
-        importer.import(ImportRequest(FILENAME, jsonContent.toByteArray()))
-
+        assertThat(importer.supports("/case/tab/x/test.json")).isFalse()
+        assertThat(importer.supports("/case/tab/test-json")).isFalse()
     }
 
     private companion object {
-        const val FILENAME = "config/case-tabs/my-doc-def.case-tabs.json"
+        const val FILENAME = "/case/tab/my-doc-def.case-tabs.json"
     }
 }

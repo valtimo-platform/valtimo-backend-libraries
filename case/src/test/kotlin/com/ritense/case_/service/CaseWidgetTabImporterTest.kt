@@ -63,18 +63,11 @@ class CaseWidgetTabImporterTest(
 
     @Test
     fun `should not support non-caseTab fileName`() {
-        assertThat(importer.supports("config/case-widget-tabs/x/test.json")).isFalse()
-        assertThat(importer.supports("config/case-widget-tabs/test-json")).isFalse()
-    }
-
-    @Test
-    fun `should call deploy method for import with correct parameters`() {
-        val jsonContent = "{}"
-
-        importer.import(ImportRequest(FILENAME, jsonContent.toByteArray()))
+        assertThat(importer.supports("/case/widget-tab/x/test.json")).isFalse()
+        assertThat(importer.supports("/case/widget-tab/test-json")).isFalse()
     }
 
     private companion object {
-        const val FILENAME = "config/case-widget-tab/my-doc-def.case-widget-tab.json"
+        const val FILENAME = "/case/widget-tab/my-doc-def.case-widget-tab.json"
     }
 }

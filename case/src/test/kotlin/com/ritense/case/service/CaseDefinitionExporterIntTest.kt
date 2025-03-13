@@ -56,7 +56,7 @@ class CaseDefinitionExporterIntTest @Autowired constructor(
             )
         )
 
-        val request = CaseDefinitionExportRequest(caseDefinitionKey, caseDefinitionVersionTag)
+        val request = CaseDefinitionExportRequest(CaseDefinitionId.of(caseDefinitionKey, caseDefinitionVersionTag))
         val exportResult = caseDefinitionExporter.export(request)
 
         val path = PATH.format(caseDefinitionKey, caseDefinitionKey)
@@ -79,6 +79,6 @@ class CaseDefinitionExporterIntTest @Autowired constructor(
     }
 
     companion object {
-        private const val PATH = "config/%s/1-2-3/case/definition/%s.json"
+        private const val PATH = "config/case/%s/1-2-3/case/definition/%s.json"
     }
 }

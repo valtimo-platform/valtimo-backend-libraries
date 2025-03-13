@@ -61,7 +61,9 @@ class InternalCaseStatusService(
     ): InternalCaseStatus {
         denyManagementOperation()
 
-        caseDefinitionService.getLatestCaseDefinition(caseDefinitionKey)
+        caseDefinitionService.getLatestCaseDefinition(caseDefinitionKey)?: throw NoSuchElementException(
+            "Case definition with key $caseDefinitionKey does not exist!"
+        )
 
         val currentInternalCaseStatuses = getInternalCaseStatuses(caseDefinitionKey)
         if (currentInternalCaseStatuses.any { status ->

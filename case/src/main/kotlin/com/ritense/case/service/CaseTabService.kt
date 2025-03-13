@@ -122,7 +122,7 @@ class CaseTabService(
         denyAuthorization()
 
         documentDefinitionService.findByCaseDefinitionId(caseDefinitionId).getOrNull()
-            ?: throw NoSuchElementException("Case definition with name $caseDefinitionId does not exist!")
+            ?: throw NoSuchElementException("Case definition with key ${caseDefinitionId.key} and version tag ${caseDefinitionId.versionTag} does not exist!")
 
         val currentTabs = getCaseTabs(caseDefinitionId)
         val tabWithKeyExists = currentTabs.any { tab ->

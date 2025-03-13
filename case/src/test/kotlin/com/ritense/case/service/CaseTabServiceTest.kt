@@ -28,6 +28,7 @@ import com.ritense.case_.service.event.CaseTabCreatedEvent
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentService
 import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -69,10 +70,11 @@ class CaseTabServiceTest(
 
     @Test
     fun `should publish create event`() {
-        val caseDefinitionName = "myCaseDefinitionName"
-        val caseTab = CaseTab(CaseTabId(caseDefinitionName, "myKey"), "myName", 0, CaseTabType.WIDGETS, "myContentKey")
+        val caseDefinitionId = CaseDefinitionId.of("myCaseDefinitionName", "1.0.0")
 
-        whenever(documentDefinitionService.findLatestByName(caseDefinitionName)).thenReturn(Optional.of(mock()))
+        val caseTab = CaseTab(CaseTabId(caseDefinitionId, "myKey"), "myName", 0, CaseTabType.WIDGETS, "myContentKey")
+
+        whenever(documentDefinitionService.findByCaseDefinitionId(caseDefinitionId)).thenReturn(Optional.of(mock()))
         val specMock = mock<AuthorizationSpecification<CaseTab>>()
         whenever(specMock.and(any())).thenReturn(specMock)
         whenever(authorizationService.getAuthorizationSpecification(any<EntityAuthorizationRequest<CaseTab>>(), anyOrNull())).thenReturn(specMock)
@@ -80,7 +82,7 @@ class CaseTabServiceTest(
         whenever(caseTabRepository.save(any<CaseTab>())).thenReturn(caseTab)
 
 
-        caseTabService.createCaseTab(caseDefinitionName, CaseTabDto.of(caseTab))
+        caseTabService.createCaseTab(caseDefinitionId, CaseTabDto.of(caseTab))
 
         verify(applicationEventPublisher).publishEvent(eq(CaseTabCreatedEvent(caseTab)))
     }

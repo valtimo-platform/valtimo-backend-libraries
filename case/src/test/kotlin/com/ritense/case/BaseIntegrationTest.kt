@@ -21,6 +21,7 @@ import com.ritense.case.service.CaseTabImporter
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
+import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
@@ -39,6 +40,9 @@ class BaseIntegrationTest {
 
     @MockBean
     lateinit var mailSender: MailSender
+
+    @MockBean
+    lateinit var processDefinitionCaseDefinitionLinker: ProcessDefinitionCaseDefinitionLinker
 
     @SpyBean
     lateinit var resourcePatternResolver: ResourcePatternResolver

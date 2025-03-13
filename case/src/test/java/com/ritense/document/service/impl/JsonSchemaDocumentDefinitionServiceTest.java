@@ -29,7 +29,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.BaseTest;
 import com.ritense.document.domain.impl.JsonSchema;
@@ -42,7 +41,6 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -64,20 +62,6 @@ class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
             mock(AuthorizationService.class)
         ));
         definition = definitionOf("person");
-    }
-
-    @Test
-    @Disabled
-        //TODO try to mock resource loading or refactor
-    void shouldDeployAll() {
-        when(jsonSchemaDocumentDefinitionRepository.findAllByIdName(anyString())).thenReturn(Collections.emptyList());
-        when(jsonSchemaDocumentDefinitionRepository.findFirstByIdNameOrderByIdCaseDefinitionIdVersionTagDesc(anyString())).thenReturn(
-            Optional.empty());
-        AuthorizationContext.runWithoutAuthorization(() -> {
-            documentDefinitionService.deployAll();
-            return null;
-        });
-        verify(documentDefinitionService, times(3)).store(any(JsonSchemaDocumentDefinition.class));
     }
 
     @Test
@@ -186,8 +170,9 @@ class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
         var definitionName = "combined-schema-additional-property-example";
         mockDefinition(definitionName);
         documentDefinitionService.validateJsonPointer(definitionName, "/address/streetName");
-        var exception = assertThrows(ValidationException.class, () ->
-            documentDefinitionService.validateJsonPointer(definitionName, "/address/nonExistent")
+        var exception = assertThrows(
+            ValidationException.class, () ->
+                documentDefinitionService.validateJsonPointer(definitionName, "/address/nonExistent")
         );
         assertEquals(
             "JsonPointer '/address/nonExistent' doesn't point to any property inside document definition 'combined-schema-additional-property-example'",
@@ -201,8 +186,9 @@ class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
         mockDefinition(definitionName);
         documentDefinitionService.validateJsonPointer(definitionName, "/address/streetName");
         documentDefinitionService.validateJsonPointer(definitionName, "/address/nonExistent");
-        var exception = assertThrows(ValidationException.class, () ->
-            documentDefinitionService.validateJsonPointer(definitionName, "/nonExistent")
+        var exception = assertThrows(
+            ValidationException.class, () ->
+                documentDefinitionService.validateJsonPointer(definitionName, "/nonExistent")
         );
         assertEquals(
             "JsonPointer '/nonExistent' doesn't point to any property inside document definition 'allows-additional-properties'",
@@ -218,18 +204,21 @@ class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
         var names = documentDefinitionService.getPropertyNames(definition);
 
         Collections.sort(names);
-        assertArrayEquals(names.toArray(), new String[]{
-            "/address/city",
-            "/address/country",
-            "/address/number",
-            "/address/province",
-            "/address/streetName"
-        });
+        assertArrayEquals(
+            names.toArray(), new String[]{
+                "/address/city",
+                "/address/country",
+                "/address/number",
+                "/address/province",
+                "/address/streetName"
+            }
+        );
     }
 
     public JsonSchemaDocumentDefinition mockDefinition(String definitionName) {
         var definition = definitionOf(definitionName);
-        when(jsonSchemaDocumentDefinitionRepository.findFirstByIdNameOrderByIdCaseDefinitionIdVersionTagDesc(definitionName))
+        when(jsonSchemaDocumentDefinitionRepository.findFirstByIdNameOrderByIdCaseDefinitionIdVersionTagDesc(
+            definitionName))
             .thenReturn(Optional.of(definition));
         return definition;
     }

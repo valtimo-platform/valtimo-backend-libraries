@@ -24,6 +24,7 @@ import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case_.rest.dto.CaseWidgetTabDto
 import com.ritense.case_.web.rest.dto.TestCaseWidgetTabWidgetDto
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.utils.TestUtil
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -56,10 +57,10 @@ class CaseWidgetTabManagementResourceIntTest @Autowired constructor(
     @Test
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should not find case widget tab`() {
-        val caseDefinitionName = "some-case-type"
+        val caseDefinitionId = CaseDefinitionId.of("some-case-type", "1.2.3")
         val tabKey = "fake-tab"
         mockMvc.perform(
-            get("/api/management/v1/case-definition/{caseDefinitionName}/widget-tab/{tabKey}", caseDefinitionName, tabKey)
+            get("/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/widget-tab/{tabKey}", caseDefinitionId.key, caseDefinitionId.versionTag.version, tabKey)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andExpect(status().isNotFound)
     }
@@ -67,30 +68,32 @@ class CaseWidgetTabManagementResourceIntTest @Autowired constructor(
     @Test
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should find case widget tab`() {
-        val caseDefinitionName = "some-case-type"
+        val caseDefinitionId = CaseDefinitionId.of("some-case-type", "1.2.3")
         val tabKey = "my-tab"
         runWithoutAuthorization {
-            tabService.createCaseTab(caseDefinitionName, CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-"))
+            tabService.createCaseTab(caseDefinitionId, CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-"))
         }
         mockMvc.perform(
-            get("/api/management/v1/case-definition/{caseDefinitionName}/widget-tab/{tabKey}", caseDefinitionName, tabKey)
+            get("/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/widget-tab/{tabKey}", caseDefinitionId.key, caseDefinitionId.versionTag.version, tabKey)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andDo(print())
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.caseDefinitionName").value(caseDefinitionName))
+            .andExpect(jsonPath("$.caseDefinitionKey").value(caseDefinitionId.key))
+            .andExpect(jsonPath("$.caseDefinitionVersionTag").value(caseDefinitionId.versionTag.version))
             .andExpect(jsonPath("$.key").value(tabKey))
     }
 
     @Test
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should update case widget tab`() {
-        val caseDefinitionName = "some-case-type"
+        val caseDefinitionId = CaseDefinitionId.of("some-case-type", "1.2.3")
         val tabKey = "my-tab"
         runWithoutAuthorization {
-            tabService.createCaseTab(caseDefinitionName, CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-"))
+            tabService.createCaseTab(caseDefinitionId, CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-"))
         }
         val caseWidgetTabDto = CaseWidgetTabDto(
-            caseDefinitionName,
+            caseDefinitionId.key,
+            caseDefinitionId.versionTag.version,
             tabKey,
             widgets = listOf(
                 TestCaseWidgetTabWidgetDto("widget-1", "Widget 1", 1, false),
@@ -99,12 +102,13 @@ class CaseWidgetTabManagementResourceIntTest @Autowired constructor(
         )
 
         mockMvc.perform(
-            post("/api/management/v1/case-definition/{caseDefinitionName}/widget-tab/{tabKey}", caseDefinitionName, tabKey)
+            post("/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/widget-tab/{tabKey}", caseDefinitionId.key, caseDefinitionId.versionTag.version, tabKey)
                 .content(TestUtil.convertObjectToJsonBytes(caseWidgetTabDto))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andDo(print())
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.caseDefinitionName").value(caseDefinitionName))
+            .andExpect(jsonPath("$.caseDefinitionKey").value(caseDefinitionId.key))
+            .andExpect(jsonPath("$.caseDefinitionVersionTag").value(caseDefinitionId.versionTag.version))
             .andExpect(jsonPath("$.key").value(tabKey))
             .andExpect(jsonPath("$.widgets.length()").value(2))
             .andExpect(jsonPath("$.widgets[0].key").value(caseWidgetTabDto.widgets[0].key))

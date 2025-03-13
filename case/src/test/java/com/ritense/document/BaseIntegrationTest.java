@@ -54,6 +54,7 @@ import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
+import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker;
 import jakarta.inject.Inject;
 import java.util.Collections;
 import java.util.List;
@@ -111,6 +112,9 @@ public abstract class BaseIntegrationTest extends BaseTest {
 
     @MockBean
     public SimpleApplicationEventMulticaster applicationEventMulticaster;
+
+    @MockBean
+    public ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker;
 
     @SpyBean
     protected OutboxService outboxService;

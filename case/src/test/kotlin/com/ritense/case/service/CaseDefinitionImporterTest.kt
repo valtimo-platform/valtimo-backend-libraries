@@ -64,6 +64,6 @@ class CaseDefinitionImporterTest(
     }
 
     private companion object {
-        const val FILENAME = "config/my-case-list/1-2-3/case/definition/my-case-list.json"
+        const val FILENAME = "/case/definition/my-case-list.json"
     }
 }

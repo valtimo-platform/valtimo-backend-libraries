@@ -16,11 +16,9 @@
 
 package com.ritense.case.service
 
-import com.ritense.case.deployment.CaseTabDeploymentService
 import com.ritense.case.deployment.CaseTaskListDeploymentService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
-import com.ritense.importer.ValtimoImportTypes.Companion.FORM
 import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach

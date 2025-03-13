@@ -29,6 +29,7 @@ import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -45,17 +46,18 @@ class CaseWidgetTabWidgetSpecificationIntTest @Autowired constructor(
     private val documentService: JsonSchemaDocumentService,
 ) : BaseIntegrationTest() {
 
-    val caseDefinitionName = "widgets"
+    val caseDefinitionId = CaseDefinitionId.of("widgets", "1.0.0")
     val tabKey = "some-tab"
 
     @BeforeEach
     fun setup() {
         runWithoutAuthorization {
-            caseTabService.createCaseTab(caseDefinitionName, CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-"))
+            caseTabService.createCaseTab(caseDefinitionId, CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-"))
 
             caseWidgetTabService.updateWidgetTab(
                 CaseWidgetTabDto(
-                    caseDefinitionName,
+                    caseDefinitionId.key,
+                    caseDefinitionId.versionTag.version,
                     tabKey,
                     widgets = listOf(
                         TestCaseWidgetTabWidgetDto("test", "Widget 1", 1, false, TestCaseWidgetProperties("test123")),
@@ -70,7 +72,7 @@ class CaseWidgetTabWidgetSpecificationIntTest @Autowired constructor(
     @Test
     @WithMockUser(authorities = ["ROLE_ALL_WIDGETS"])
     fun `should get tab with all widgets`() {
-        val tab = caseWidgetTabService.getWidgetTab(caseDefinitionName, tabKey)
+        val tab = caseWidgetTabService.getWidgetTab(caseDefinitionId, tabKey)
 
         assertEquals(2, tab?.widgets?.size)
         assertEquals("test", tab?.widgets?.get(0)?.key)
@@ -80,7 +82,7 @@ class CaseWidgetTabWidgetSpecificationIntTest @Autowired constructor(
     @Test
     @WithMockUser(authorities = ["ROLE_ONLY_TEST_WIDGETS"])
     fun `should get tab with only permitted widgets`() {
-        val tab = caseWidgetTabService.getWidgetTab(caseDefinitionName, tabKey)
+        val tab = caseWidgetTabService.getWidgetTab(caseDefinitionId, tabKey)
 
         assertEquals(1, tab?.widgets?.size)
         assertEquals("test", tab?.widgets?.get(0)?.key)
@@ -89,14 +91,14 @@ class CaseWidgetTabWidgetSpecificationIntTest @Autowired constructor(
     @Test
     @WithMockUser(authorities = ["ROLE_ONLY_TEST_WIDGETS_FOR_CONTEXT"])
     fun `should not get tab without context with only permitted widgets for context`() {
-        createDocument(caseDefinitionName, "{\"key\": \"CONTEXT\"}")
-        assertThrows<AccessDeniedException> { caseWidgetTabService.getWidgetTab(caseDefinitionName, tabKey) }
+        createDocument(caseDefinitionId, "{\"key\": \"CONTEXT\"}")
+        assertThrows<AccessDeniedException> { caseWidgetTabService.getWidgetTab(caseDefinitionId, tabKey) }
     }
 
     @Test
     @WithMockUser(authorities = ["ROLE_ONLY_TEST_WIDGETS_FOR_CONTEXT"])
     fun `should get tab with context with only permitted widgets for context`() {
-        val document = createDocument(caseDefinitionName, "{\"key\": \"CONTEXT\"}")
+        val document = createDocument(caseDefinitionId, "{\"key\": \"CONTEXT\"}")
         val tab = caseWidgetTabService.getWidgetTab(document.id(), tabKey)
 
         assertEquals(1, tab?.widgets?.size)
@@ -106,24 +108,24 @@ class CaseWidgetTabWidgetSpecificationIntTest @Autowired constructor(
     @Test
     @WithMockUser(authorities = ["ROLE_ONLY_TEST_WIDGETS_FOR_CONTEXT"])
     fun `should not get tab with only permitted widgets for the context`() {
-        val document = createDocument(caseDefinitionName)
+        val document = createDocument(caseDefinitionId)
         assertThrows<AccessDeniedException> { caseWidgetTabService.getWidgetTab(document.id(), tabKey) }
     }
 
     @Test
     @WithMockUser(authorities = ["ROLE_ONLY_TEST_WIDGETS_FOR_CONTEXT"])
     fun `should get tab without widgets for the context`() {
-        val document = createDocument(caseDefinitionName, "{\"key\": \"CONTEXTWITHOUTWIDGETS\"}")
+        val document = createDocument(caseDefinitionId, "{\"key\": \"CONTEXTWITHOUTWIDGETS\"}")
         val tab = caseWidgetTabService.getWidgetTab(document.id(), tabKey)
 
         assertEquals(0, tab?.widgets?.size)
     }
 
-    private fun createDocument(documentDefinitionName: String, content: String = "{}"): JsonSchemaDocument {
+    private fun createDocument(caseDefinitionId: CaseDefinitionId, content: String = "{}"): JsonSchemaDocument {
         return runWithoutAuthorization {
             documentService.createDocument(
                 NewDocumentRequest(
-                    documentDefinitionName,
+                    caseDefinitionId.key,
                     JsonDocumentContent(content).asJson()
                 )
             ).resultingDocument().orElseThrow()
