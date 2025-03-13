@@ -16,29 +16,34 @@
 
 package com.ritense.case_.service
 
-import com.ritense.case_.deployment.CaseWidgetTabDeployer
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.case_.domain.tab.CaseWidgetTabWidget
+import com.ritense.case_.repository.CaseWidgetTabRepository
+import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
+import com.ritense.case_.widget.CaseWidgetMapper
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_TAB
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
-import com.ritense.valtimo.changelog.service.ChangelogDeployer
+import jakarta.validation.Validator
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.verify
 
 @ExtendWith(MockitoExtension::class)
 class CaseWidgetTabImporterTest(
-    @Mock private val deployer: CaseWidgetTabDeployer,
-    @Mock private val changelogDeployer: ChangelogDeployer
+    @Mock private val objectMapper: ObjectMapper,
+    @Mock private val validator: Validator,
+    @Mock private val caseWidgetTabRepository: CaseWidgetTabRepository,
+    @Mock private val caseWidgetMappers: List<CaseWidgetMapper<CaseWidgetTabWidget, CaseWidgetTabWidgetDto>>,
 ) {
     private lateinit var importer: CaseWidgetTabImporter
 
     @BeforeEach
     fun before() {
-        importer = CaseWidgetTabImporter(deployer, changelogDeployer)
+        importer = CaseWidgetTabImporter(objectMapper, validator, caseWidgetTabRepository, caseWidgetMappers)
     }
 
     @Test
@@ -67,8 +72,6 @@ class CaseWidgetTabImporterTest(
         val jsonContent = "{}"
 
         importer.import(ImportRequest(FILENAME, jsonContent.toByteArray()))
-
-        verify(changelogDeployer).deploy(deployer, FILENAME, jsonContent)
     }
 
     private companion object {

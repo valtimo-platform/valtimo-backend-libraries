@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.service.CaseTabService
-import com.ritense.case_.deployment.CaseWidgetTabDeployer
 import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 import com.ritense.case_.repository.CaseWidgetTabRepository
 import com.ritense.case_.repository.CaseWidgetTabWidgetSpecificationFactory
@@ -41,12 +40,9 @@ import com.ritense.case_.widget.fields.FieldsCaseWidgetMapper
 import com.ritense.case_.widget.table.TableCaseWidgetDataProvider
 import com.ritense.case_.widget.table.TableCaseWidgetMapper
 import com.ritense.document.service.DocumentService
-import com.ritense.valtimo.changelog.service.ChangelogDeployer
-import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.validation.Validator
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -82,25 +78,6 @@ class CaseWidgetAutoConfiguration {
         caseWidgetDataProviders as List<CaseWidgetDataProvider<CaseWidgetTabWidget>>
     )
 
-    @Suppress("UNCHECKED_CAST")
-    @Bean
-    @ConditionalOnMissingBean(CaseWidgetTabDeployer::class)
-    fun caseWidgetTabDeployer(
-        objectMapper: ObjectMapper,
-        caseWidgetTabRepository: CaseWidgetTabRepository,
-        caseWidgetMappers: List<CaseWidgetMapper<*, *>>,
-        changelogService: ChangelogService,
-        @Value("\${valtimo.changelog.case-widget-tab.clear-tables:false}") clearTables: Boolean,
-        validator: Validator
-    ) = CaseWidgetTabDeployer(
-        objectMapper,
-        caseWidgetTabRepository,
-        caseWidgetMappers as List<CaseWidgetMapper<CaseWidgetTabWidget, CaseWidgetTabWidgetDto>>,
-        changelogService,
-        clearTables,
-        validator
-    )
-
     @ConditionalOnMissingBean(CaseWidgetTabWidgetSpecificationFactory::class)
     @Bean
     fun caseWidgetTabWidgetSpecificationFactory(
@@ -118,9 +95,16 @@ class CaseWidgetAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(CaseWidgetTabImporter::class)
     fun caseWidgetTabImporter(
-        caseWidgetTabDeployer: CaseWidgetTabDeployer,
-        changelogDeployer: ChangelogDeployer
-    ) = CaseWidgetTabImporter(caseWidgetTabDeployer, changelogDeployer)
+        objectMapper: ObjectMapper,
+        validator: Validator,
+        caseWidgetTabRepository: CaseWidgetTabRepository,
+        caseWidgetMappers: List<CaseWidgetMapper<*, *>>,
+    ) = CaseWidgetTabImporter(
+        objectMapper,
+        validator,
+        caseWidgetTabRepository,
+        caseWidgetMappers as List<CaseWidgetMapper<CaseWidgetTabWidget, CaseWidgetTabWidgetDto>>
+    )
 
     @ConditionalOnMissingBean(CaseWidgetTabResource::class)
     @Bean

@@ -18,15 +18,16 @@ package com.ritense.case_.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.case.domain.CaseTabType
+import com.ritense.case.service.CaseDefinitionExporter
+import com.ritense.case.service.CaseDefinitionExporter.Companion
 import com.ritense.case.service.CaseTabService
-import com.ritense.case_.deployment.CaseWidgetTabChangeset
 import com.ritense.exporter.ExportFile
 import com.ritense.exporter.ExportPrettyPrinter
 import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.springframework.transaction.annotation.Transactional
-import java.time.Instant
 
 @Transactional(readOnly = true)
 class CaseWidgetTabExporter(
@@ -38,22 +39,24 @@ class CaseWidgetTabExporter(
     override fun supports() = DocumentDefinitionExportRequest::class.java
 
     override fun export(request: DocumentDefinitionExportRequest): ExportResult {
-        val caseName = request.name
-        val caseTabs = caseTabService.getCaseTabs(caseName)
+        val caseTabs = caseTabService.getCaseTabs(request.caseDefinitionId)
 
         if (caseTabs.isEmpty()) {
             return ExportResult()
         }
 
-        val caseTabChangeset = CaseWidgetTabChangeset(
-            "$caseName.case-widget-tab.${Instant.now().toEpochMilli()}",
-            caseTabs
-                .filter { it.type == CaseTabType.WIDGETS }
-                .map { caseWidgetTabService.getWidgetTab(it.id.caseDefinitionName, it.id.key)!! }
-        )
+        val caseDefinitionKey = request.caseDefinitionId.key
+        val formattedCaseDefinitionVersion = request.caseDefinitionId.versionTag.let {
+            "${it.major}-${it.minor}-${it.patch}"
+        }
+
         val caseWidgetTabExport = ExportFile(
-            PATH.format(caseName),
-            objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(caseTabChangeset)
+            PATH.format(caseDefinitionKey, formattedCaseDefinitionVersion, caseDefinitionKey),
+            objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(
+                caseTabs
+                    .filter { it.type == CaseTabType.WIDGETS }
+                    .map { caseWidgetTabService.getWidgetTab(it.id.caseDefinitionId, it.id.key)!! }
+            )
         )
 
         return ExportResult(
@@ -62,6 +65,6 @@ class CaseWidgetTabExporter(
     }
 
     companion object {
-        private const val PATH = "config/case-widget-tab/%s.case-widget-tab.json"
+        private const val PATH = "config/%s/%s/widget-tab/%s.case-widget-tab.json"
     }
 }

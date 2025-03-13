@@ -16,7 +16,9 @@
 
 package com.ritense.case.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.case.deployment.CaseTabDeploymentService
+import com.ritense.case.repository.CaseTabRepository
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
 import com.ritense.importer.ValtimoImportTypes.Companion.FORM
@@ -31,14 +33,14 @@ import org.mockito.kotlin.verify
 
 @ExtendWith(MockitoExtension::class)
 class CaseTabImporterTest(
-    @Mock private val caseTabDeploymentService: CaseTabDeploymentService,
-    @Mock private val changelogDeployer: ChangelogDeployer
+    @Mock private val objectMapper: ObjectMapper,
+    @Mock private val caseTabRepository: CaseTabRepository
 ) {
     private lateinit var importer: CaseTabImporter
 
     @BeforeEach
     fun before() {
-        importer = CaseTabImporter(caseTabDeploymentService, changelogDeployer)
+        importer = CaseTabImporter(objectMapper, caseTabRepository)
     }
 
     @Test
@@ -68,7 +70,6 @@ class CaseTabImporterTest(
 
         importer.import(ImportRequest(FILENAME, jsonContent.toByteArray()))
 
-        verify(changelogDeployer).deploy(caseTabDeploymentService, FILENAME, jsonContent)
     }
 
     private companion object {

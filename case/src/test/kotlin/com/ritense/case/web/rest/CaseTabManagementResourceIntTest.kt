@@ -91,7 +91,7 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
 
         assertThat(
             caseTabRepository.findOne(
-                CaseTabSpecificationHelper.byCaseDefinitionNameAndTabKey(
+                CaseTabSpecificationHelper.byCaseDefinitionIdAndTabKey(
                     caseDefinitionName,
                     dto.key
                 )
@@ -110,7 +110,7 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
             .andExpect(jsonPath("$.contentKey").value(dto.contentKey))
 
         val createdTab = caseTabRepository.findOne(
-            CaseTabSpecificationHelper.byCaseDefinitionNameAndTabKey(caseDefinitionName, dto.key)
+            CaseTabSpecificationHelper.byCaseDefinitionIdAndTabKey(caseDefinitionName, dto.key)
         ).getOrNull()
 
         assertThat(createdTab).isNotNull()
@@ -151,7 +151,7 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
         ).andExpect(status().isConflict)
 
         val createdTab = caseTabRepository.findOne(
-            CaseTabSpecificationHelper.byCaseDefinitionNameAndTabKey(caseDefinitionName, dto.key)
+            CaseTabSpecificationHelper.byCaseDefinitionIdAndTabKey(caseDefinitionName, dto.key)
         ).getOrNull()
 
         assertThat(createdTab).isNotNull()
@@ -236,7 +236,7 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
         ).andExpect(status().isNoContent)
 
         val updatedTab = caseTabRepository.findOne(
-            CaseTabSpecificationHelper.byCaseDefinitionNameAndTabKey(caseDefinitionName, key)
+            CaseTabSpecificationHelper.byCaseDefinitionIdAndTabKey(caseDefinitionName, key)
         ).getOrNull()
 
         assertThat(updatedTab).isNotNull()
@@ -271,7 +271,7 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
 
         assertThat(
             caseTabRepository.findOne(
-                CaseTabSpecificationHelper.byCaseDefinitionNameAndTabKey(
+                CaseTabSpecificationHelper.byCaseDefinitionIdAndTabKey(
                     caseDefinitionName,
                     key
                 )

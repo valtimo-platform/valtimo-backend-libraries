@@ -34,7 +34,8 @@ data class CaseWidgetTabWidgetId(
 
     @ManyToOne(targetEntity = CaseWidgetTab::class, fetch = FetchType.LAZY)
     @JoinColumns(
-        JoinColumn(name = "case_definition_name", referencedColumnName = "case_definition_name", updatable = false, nullable = false),
+        JoinColumn(name = "case_definition_key", referencedColumnName = "case_definition_key", updatable = false, nullable = false),
+        JoinColumn(name = "case_definition_version_tag", referencedColumnName = "case_definition_version_tag", updatable = false, nullable = false),
         JoinColumn(name = "tab_key", referencedColumnName = "tab_key", updatable = false, nullable = false)
     )
     var caseWidgetTab: CaseWidgetTab? = null

@@ -36,9 +36,9 @@ class CaseTabDocumentDefinitionMapper(
     override fun mapRelated(entity: CaseTab): List<JsonSchemaDocumentDefinition> {
         return runWithoutAuthorization {
             listOf(
-                documentDefinitionService.findLatestByName(entity.id.caseDefinitionName)
+                documentDefinitionService.findByCaseDefinitionId(entity.id.caseDefinitionId)
                     .map { it as JsonSchemaDocumentDefinition }
-                    .getOrNull() ?: throw EntityNotFoundException("JsonSchemaDocumentDefinition with name ${entity.id.caseDefinitionName} not found")
+                    .getOrNull() ?: throw EntityNotFoundException("JsonSchemaDocumentDefinition with name ${entity.id.caseDefinitionId.key} and versiontag ${entity.id.caseDefinitionId.versionTag} not found")
             )
         }
     }

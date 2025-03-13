@@ -17,6 +17,7 @@
 package com.ritense.case.repository
 
 import com.ritense.case.domain.CaseTab
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.springframework.data.jpa.domain.Specification
 
 class CaseTabSpecificationHelper {
@@ -24,18 +25,18 @@ class CaseTabSpecificationHelper {
     companion object {
 
         const val ID: String = "id"
-        const val CASE_DEFINITION_NAME: String = "caseDefinitionName"
+        const val CASE_DEFINITION_ID: String = "caseDefinitionId"
         const val KEY: String = "key"
         const val TAB_ORDER: String = "tabOrder"
 
         @JvmStatic
-        fun byCaseDefinitionName(caseDefinitionName: String) = Specification<CaseTab> { root, _, cb ->
-            cb.equal(root.get<Any>(ID).get<Any>(CASE_DEFINITION_NAME), caseDefinitionName)
+        fun byCaseDefinitionId(caseDefinitionId: CaseDefinitionId) = Specification<CaseTab> { root, _, cb ->
+            cb.equal(root.get<Any>(ID).get<Any>(CASE_DEFINITION_ID), caseDefinitionId)
         }
 
         @JvmStatic
-        fun byCaseDefinitionNameAndTabKey(caseDefinitionName: String, tabKey: String) =
-            byCaseDefinitionName(caseDefinitionName).and { root, _, cb ->
+        fun byCaseDefinitionIdAndTabKey(caseDefinitionId: CaseDefinitionId, tabKey: String) =
+            byCaseDefinitionId(caseDefinitionId).and { root, _, cb ->
                 cb.equal(root.get<Any>(ID).get<Any>(KEY), tabKey)
             }
     }
