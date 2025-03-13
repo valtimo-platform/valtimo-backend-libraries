@@ -24,6 +24,8 @@ import mu.KotlinLogging
 import org.apache.commons.lang3.StringUtils
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
+import org.springframework.core.Ordered
+import org.springframework.core.annotation.Order
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
 import org.springframework.stereotype.Service
@@ -39,7 +41,7 @@ class CaseDefinitionDeploymentService(
     val valtimoImportService: ValtimoImportService,
     val caseDefinitionRepository: CaseDefinitionRepository
 ) {
-
+    @Order(Ordered.LOWEST_PRECEDENCE)
     @EventListener(ApplicationReadyEvent::class)
     fun deployOnStartup() {
         val absoluteBasePathLength = try {

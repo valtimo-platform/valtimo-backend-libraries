@@ -46,7 +46,7 @@ class ProcessLinkExporter(
         val createDtos = processLinks.map { processLink ->
             val mapper = processLinkService.getProcessLinkMapper(processLink.processLinkType)
 
-            relatedRequests.addAll(mapper.createRelatedExportRequests(processLink))
+            relatedRequests.addAll(mapper.createRelatedExportRequests(processLink, request.caseDefinitionId))
 
             mapper.toProcessLinkExportResponseDto(processLink)
         }

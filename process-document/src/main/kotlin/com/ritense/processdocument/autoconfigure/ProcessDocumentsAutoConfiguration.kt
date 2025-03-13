@@ -35,11 +35,11 @@ import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository
 import com.ritense.processdocument.service.CaseTaskListSearchService
 import com.ritense.processdocument.service.CorrelationService
 import com.ritense.processdocument.service.CorrelationServiceImpl
+import com.ritense.processdocument.service.DefaultProcessDefinitionCaseDefinitionLinker
 import com.ritense.processdocument.service.DocumentDelegateService
 import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentDeletedEventListener
-import com.ritense.processdocument.service.ProcessDocumentDeploymentService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.ProcessDocumentsService
 import com.ritense.processdocument.service.ValueResolverDelegateService
@@ -59,6 +59,7 @@ import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.persistence.EntityManager
 import org.camunda.bpm.engine.RepositoryService
@@ -325,6 +326,16 @@ class ProcessDocumentsAutoConfiguration {
         return ProcessDocumentDeletedEventListener(
             runtimeService,
             processDocumentAssociationService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessDefinitionCaseDefinitionLinker::class)
+    fun defaultProcessDefinitionCaseDefinitionLinker(
+        processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService
+    ): ProcessDefinitionCaseDefinitionLinker{
+        return DefaultProcessDefinitionCaseDefinitionLinker(
+            processDefinitionCaseDefinitionService
         )
     }
 }

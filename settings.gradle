@@ -38,7 +38,6 @@ include(
     "form",
     "form-flow",
     "form-view-model",
-    "form-flow-valtimo",
     "gradle:cve-report",
     "gradle:license-report",
     "haalcentraal",

@@ -63,6 +63,7 @@ import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState;
+import org.camunda.bpm.engine.repository.Deployment;
 import org.camunda.bpm.engine.repository.DeploymentWithDefinitions;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
@@ -84,6 +85,7 @@ public class CamundaProcessService {
 
     private static final String UNDEFINED_BUSINESS_KEY = "UNDEFINED_BUSINESS_KEY";
     private static final String SYSTEM_PROCESS_PROPERTY = "systemProcess";
+    private static final String CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX = "CD:";
     private static final Logger logger = LoggerFactory.getLogger(CamundaProcessService.class);
 
     private final RuntimeService runtimeService;
@@ -95,6 +97,7 @@ public class CamundaProcessService {
     private final ProcessPropertyService processPropertyService;
     private final ValtimoProperties valtimoProperties;
     private final AuthorizationService authorizationService;
+    private final ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker;
 
     private final CamundaExecutionRepository camundaExecutionRepository;
 
@@ -108,7 +111,8 @@ public class CamundaProcessService {
         ProcessPropertyService processPropertyService,
         ValtimoProperties valtimoProperties,
         AuthorizationService authorizationService,
-        CamundaExecutionRepository camundaExecutionRepository
+        CamundaExecutionRepository camundaExecutionRepository,
+        ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker
     ) {
         this.runtimeService = runtimeService;
         this.camundaRuntimeService = camundaRuntimeService;
@@ -120,6 +124,7 @@ public class CamundaProcessService {
         this.valtimoProperties = valtimoProperties;
         this.authorizationService = authorizationService;
         this.camundaExecutionRepository = camundaExecutionRepository;
+        this.processDefinitionCaseDefinitionLinker = processDefinitionCaseDefinitionLinker;
     }
 
     public CamundaProcessDefinition findProcessDefinitionById(String processDefinitionId) {
@@ -365,7 +370,10 @@ public class CamundaProcessService {
                 deploymentBuilder.source(CamundaDeploymentSource.SKIP_PROCESS_LINKS_COPY.toString());
             }
 
-            return deploymentBuilder.deployWithResult();
+            DeploymentWithDefinitions deployment = deploymentBuilder.deployWithResult();
+            processDefinitionCaseDefinitionLinker.link(caseDefinitionId, deployment.getDeployedProcessDefinitions().get(0).getId());
+
+            return deployment;
         } else if (fileName.endsWith(".dmn")) {
             DmnModelInstance dmnModel = Dmn.readModelFromStream(fileInput);
 
@@ -404,7 +412,11 @@ public class CamundaProcessService {
 
             setProcessesExecutable(bpmnModel);
 
-            repositoryService.createDeployment().addModelInstance(fileName, bpmnModel).deploy();
+            DeploymentWithDefinitions deployment = repositoryService.createDeployment()
+                .addModelInstance(fileName, bpmnModel)
+                .deployWithResult();
+
+            processDefinitionCaseDefinitionLinker.link(caseDefinitionId, deployment.getDeployedProcessDefinitions().get(0).getId());
         } else if (fileName.endsWith(".dmn")) {
             DmnModelInstance dmnModel = Dmn.readModelFromStream(fileInput);
 
@@ -432,7 +444,7 @@ public class CamundaProcessService {
                         var elementBinding = callActivity.getCamundaCalledElementBinding();
                         if (elementBinding == null) {
                             callActivity.setCamundaCalledElementBinding("versionTag");
-                            callActivity.setCamundaCalledElementVersionTag("CD:" + caseDefinitionId);
+                            callActivity.setCamundaCalledElementVersionTag(CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId);
                         }
                     }
                 );
@@ -442,7 +454,7 @@ public class CamundaProcessService {
                         var elementBinding = businessRuleTask.getCamundaDecisionRefBinding();
                         if (elementBinding == null) {
                             businessRuleTask.setCamundaDecisionRefBinding("versionTag");
-                            businessRuleTask.setCamundaDecisionRefVersionTag("CD:" + caseDefinitionId);
+                            businessRuleTask.setCamundaDecisionRefVersionTag(CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId);
                         }
                     }
                 );
@@ -452,7 +464,7 @@ public class CamundaProcessService {
 
     private void setDecisionsVersionTag(DmnModelInstance dmnModel, CaseDefinitionId caseDefinitionId) {
         dmnModel.getDefinitions().getChildElementsByType(Decision.class).forEach(
-            dmn -> dmn.setVersionTag(caseDefinitionId.toString())
+            dmn -> dmn.setVersionTag(CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.toString())
         );
     }
 
