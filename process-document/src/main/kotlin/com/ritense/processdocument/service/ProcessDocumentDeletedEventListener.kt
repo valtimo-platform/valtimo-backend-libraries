@@ -44,7 +44,14 @@ class ProcessDocumentDeletedEventListener(
                     .rootProcessInstances()
                     .list()
                     .forEach {
-                        runtimeService.deleteProcessInstance(it.processInstanceId, "Document deleted", false, true)
+                        runtimeService.deleteProcessInstance(
+                            it.processInstanceId,
+                            "Document deleted",
+                            true,
+                            true,
+                            true,
+                            false
+                        )
                         processDocumentAssociationService.getProcessDocumentInstanceResult(
                             CamundaProcessJsonSchemaDocumentInstanceId.existingId(CamundaProcessInstanceId(it.processInstanceId), JsonSchemaDocumentId.existingId(event.documentId))
                         )?.let { processDocumentInstance ->
