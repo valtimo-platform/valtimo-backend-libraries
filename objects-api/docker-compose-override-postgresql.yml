@@ -1,6 +1,0 @@
-services:
-    db:
-        ports:
-            - "3308:5432"
-        environment:
-            - POSTGRES_DB=objects-api-test

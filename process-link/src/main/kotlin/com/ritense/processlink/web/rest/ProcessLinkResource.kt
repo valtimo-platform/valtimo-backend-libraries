@@ -100,7 +100,8 @@ class ProcessLinkResource(
         @RequestBody processLink: ProcessLinkCreateRequestDto
     ): ResponseEntity<Unit> {
         return withLoggingContext(CamundaProcessDefinition::class.java, processLink.processDefinitionId) {
-            processLinkService.createProcessLink(processLink)
+            // To
+            processLinkService.createProcessLink(processLink, null)
             ResponseEntity.status(HttpStatus.NO_CONTENT).build()
         }
     }
@@ -110,7 +111,7 @@ class ProcessLinkResource(
         @RequestBody processLink: ProcessLinkUpdateRequestDto
     ): ResponseEntity<Unit> {
         return withLoggingContext(ProcessLink::class, processLink.id) {
-            processLinkService.updateProcessLink(processLink)
+            processLinkService.updateProcessLink(processLink, null)
             ResponseEntity.status(HttpStatus.NO_CONTENT).build()
         }
     }
@@ -262,7 +263,7 @@ class ProcessLinkResource(
         try {
             processLinks.map { originalLink ->
                 copyWithNewProcessDefinitionId(originalLink, deployedProcessDefinitionId)
-            }.forEach { runWithoutAuthorization { processLinkService.createProcessLink(it) } }
+            }.forEach { runWithoutAuthorization { processLinkService.createProcessLink(it, caseDefinitionId) } }
         } catch (e: Exception) {
             throw RuntimeException("Failed to create process links. Rolling back deployment.", e)
         }

@@ -27,6 +27,7 @@ import com.ritense.exporter.Exporter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import com.ritense.exporter.request.ExportRequest
 import com.ritense.exporter.request.FormDefinitionExportRequest
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional(readOnly = true)
@@ -56,17 +57,17 @@ class CaseTabExporter(
 
         return ExportResult(
             caseTabExport,
-            createFormDefininitionExportRequests(caseTabs)
+            createFormDefininitionExportRequests(caseTabs, request.caseDefinitionId)
         )
     }
 
-    private fun createFormDefininitionExportRequests(caseTabs: List<CaseTab>): Set<ExportRequest> {
+    private fun createFormDefininitionExportRequests(caseTabs: List<CaseTab>, caseDefinitionId: CaseDefinitionId): Set<ExportRequest> {
         return caseTabs.filter {
             it.type == CaseTabType.FORMIO
         }.distinctBy {
             it.contentKey
         }.map {
-            FormDefinitionExportRequest(it.contentKey)
+            FormDefinitionExportRequest(it.contentKey, caseDefinitionId)
         }.toSet()
     }
 

@@ -29,7 +29,11 @@ import com.ritense.formflow.handler.TypeProperties
 import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import mu.withLoggingContext
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
 import kotlin.jvm.optionals.getOrNull
 
@@ -45,37 +49,33 @@ class FormFlowService(
         return formFlowDefinitionRepository.findAll()
     }
 
+    fun getFormFlowDefinitions(caseDefinitionId: CaseDefinitionId): List<FormFlowDefinition> {
+        return formFlowDefinitionRepository.findAllByIdCaseDefinitionId(caseDefinitionId)
+    }
+
+    fun getFormFlowDefinitions(caseDefinitionId: CaseDefinitionId, pageable: Pageable): Page<FormFlowDefinition> {
+        return formFlowDefinitionRepository.findAllByIdCaseDefinitionId(caseDefinitionId, pageable)
+    }
+
     fun findDefinition(formFlowId: FormFlowDefinitionId): FormFlowDefinition {
         withLoggingContext(FormFlowDefinition::class.java.canonicalName to formFlowId.toString()) {
             return formFlowDefinitionRepository.getReferenceById(formFlowId)
         }
     }
 
-    fun findDefinition(formFlowDefinitionId: String): FormFlowDefinition? {
-        return withLoggingContext(FormFlowDefinition::class.java.canonicalName to formFlowDefinitionId) {
-            val formFlowIdAsArray = formFlowDefinitionId.split(":")
-            require(formFlowIdAsArray. size == 2) { "Invalid Format found for formFlowId '${formFlowIdAsArray. joinToString(":")}'. Form flow id must have format key:version"}
-            if (formFlowIdAsArray[1] == "latest") {
-                findLatestDefinitionByKey(formFlowIdAsArray[0])
-            } else {
-                formFlowDefinitionRepository.findById(
-                    FormFlowDefinitionId(formFlowIdAsArray[0], formFlowIdAsArray[1].toLong())
-                ).getOrNull()
-            }
+    fun findDefinition(formFlowDefinitionKey: String, caseDefinitionId: CaseDefinitionId): FormFlowDefinition {
+        return withLoggingContext(FormFlowDefinition::class.java.canonicalName to formFlowDefinitionKey) {
+            findDefinition(FormFlowDefinitionId.existingId(formFlowDefinitionKey, caseDefinitionId))
         }
     }
 
-    fun findLatestDefinitionByKey(formFlowKey: String): FormFlowDefinition? {
-        return formFlowDefinitionRepository.findFirstByIdKeyOrderByIdVersionDesc(formFlowKey)
+    fun findDefinitionOrNull(formFlowDefinitionKey: String, caseDefinitionId: CaseDefinitionId): FormFlowDefinition? {
+        return formFlowDefinitionRepository.findByIdOrNull(FormFlowDefinitionId.existingId(formFlowDefinitionKey, caseDefinitionId))
     }
 
     fun save(formFlowDefinition: FormFlowDefinition): FormFlowDefinition {
         return withLoggingContext(FormFlowDefinition::class.java.canonicalName to formFlowDefinition.id.toString()) {
-            if (formFlowDefinitionRepository.existsById(formFlowDefinition.id)) {
-                throw UnsupportedOperationException("Failed to save From Flow. Form Flow already exists: ${formFlowDefinition.id}")
-            } else {
-                formFlowDefinitionRepository.save(formFlowDefinition)
-            }
+            formFlowDefinitionRepository.save(formFlowDefinition)
         }
     }
 
@@ -112,8 +112,8 @@ class FormFlowService(
         }
     }
 
-    fun deleteByKey(definitionKey: String) {
-        formFlowDefinitionRepository.deleteAllByIdKey(definitionKey)
+    fun deleteByKeyAndsCaseDefinition(definitionKey: String, caseDefinitionId: CaseDefinitionId) {
+        formFlowDefinitionRepository.deleteById(FormFlowDefinitionId.existingId(definitionKey, caseDefinitionId))
     }
 
     fun getBreadcrumbs(instance: FormFlowInstance): List<FormFlowBreadcrumb> {

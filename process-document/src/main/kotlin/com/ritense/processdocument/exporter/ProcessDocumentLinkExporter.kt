@@ -57,7 +57,7 @@ class ProcessDocumentLinkExporter(
         val relatedRequests = processDefinitions.asSequence()
             .map { it.second }
             .map { processDefinition ->
-                ProcessDefinitionExportRequest(processDefinition.id)
+                ProcessDefinitionExportRequest(processDefinition.id, request.caseDefinitionId)
             }.toSet()
 
         return ExportResult(

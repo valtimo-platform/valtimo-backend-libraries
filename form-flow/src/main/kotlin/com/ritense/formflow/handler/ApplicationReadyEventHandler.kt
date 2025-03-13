@@ -18,13 +18,17 @@ package com.ritense.formflow.handler
 
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
 import com.ritense.formflow.expression.spel.SpelExpressionProcessorFactory
+import org.springframework.boot.autoconfigure.AutoConfigureBefore
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.ApplicationContext
 import org.springframework.context.event.EventListener
+import org.springframework.core.Ordered
+import org.springframework.core.annotation.Order
 
 class ApplicationReadyEventHandler(
     private val applicationContext:ApplicationContext
 ) {
+    @Order(Ordered.HIGHEST_PRECEDENCE)
     @EventListener(ApplicationReadyEvent::class)
     fun onApplicationReady() {
         val expressionProcessorFactory = SpelExpressionProcessorFactory()

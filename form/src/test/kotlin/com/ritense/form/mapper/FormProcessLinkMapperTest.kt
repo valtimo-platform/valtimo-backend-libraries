@@ -131,7 +131,7 @@ internal class FormProcessLinkMapperTest {
         )
         whenever(formDefinitionService.formDefinitionExistsById(updateRequestDto.formDefinitionId)).thenReturn(true)
 
-        val formProcessLink = formProcessLinkMapper.toUpdatedProcessLink(processLinkToUpdate, updateRequestDto)
+        val formProcessLink = formProcessLinkMapper.toUpdatedProcessLink(processLinkToUpdate, updateRequestDto,)
 
         assertTrue(formProcessLink is FormProcessLink)
         assertEquals(processLinkToUpdate.processDefinitionId, formProcessLink.processDefinitionId)
@@ -178,7 +178,7 @@ internal class FormProcessLinkMapperTest {
         )
 
         val exception = assertThrows<RuntimeException> {
-            formProcessLinkMapper.toUpdatedProcessLink(processLinkToUpdate, updateRequestDto)
+            formProcessLinkMapper.toUpdatedProcessLink(processLinkToUpdate, updateRequestDto,)
         }
 
         assertEquals("Form definition not found with id ${updateRequestDto.formDefinitionId}", exception.message)
