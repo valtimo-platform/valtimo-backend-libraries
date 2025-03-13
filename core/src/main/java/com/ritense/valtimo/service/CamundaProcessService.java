@@ -146,6 +146,14 @@ public class CamundaProcessService {
             .singleResult());
     }
 
+    public List<ProcessInstance> findProcessInstancesByIds(Set<String> processInstanceIds) {
+        denyAuthorization();
+        return runtimeService
+            .createProcessInstanceQuery()
+            .processInstanceIds(processInstanceIds)
+            .list();
+    }
+
     @Nullable
     public CamundaExecution findExecutionByProcessInstanceId(String processInstanceId) {
         denyAuthorization();

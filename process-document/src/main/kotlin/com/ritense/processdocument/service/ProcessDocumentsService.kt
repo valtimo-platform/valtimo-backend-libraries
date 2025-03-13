@@ -30,6 +30,7 @@ import com.ritense.valtimo.service.CamundaProcessService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.stereotype.Service
 import java.util.UUID
+import kotlin.jvm.optionals.getOrNull
 
 @Service
 @SkipComponentScan
@@ -48,11 +49,13 @@ class ProcessDocumentsService(
             "Failed to delete processes for document. Reason: current process has no association with a document."
         }
         withLoggingContext(JsonSchemaDocument::class, documentId.toString()) {
-            associationService.findProcessDocumentInstances(documentId)
+            val processInstanceIds = associationService.findProcessDocumentInstances(documentId)
                 .map { it.processDocumentInstanceId().processInstanceId().toString() }
-                .mapNotNull { processInstanceId ->
+            camundaProcessService.findProcessInstancesByIds(processInstanceIds.toSet())
+                .filter { it.rootProcessInstanceId == null || it.rootProcessInstanceId == it.processInstanceId }
+                .mapNotNull { processInstance ->
                     try {
-                        camundaProcessService.deleteProcessInstanceById(processInstanceId, reason)
+                        camundaProcessService.deleteProcessInstanceById(processInstance.id, reason)
                         null
                     } catch (exception: Exception) {
                         exception
