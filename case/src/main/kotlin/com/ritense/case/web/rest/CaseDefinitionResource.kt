@@ -183,7 +183,7 @@ class CaseDefinitionResource(
         @LoggableResource("caseDefinitionVersionTag") @PathVariable caseDefinitionVersionTag: String,
     ): ResponseEntity<ByteArray> {
         val baos = exportService
-            .export(CaseDefinitionExportRequest(caseDefinitionKey, caseDefinitionVersionTag))
+            .export(CaseDefinitionExportRequest(CaseDefinitionId(caseDefinitionKey, caseDefinitionVersionTag)))
         val timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm"))
         val fileName = "${caseDefinitionKey}_${caseDefinitionVersionTag}_$timestamp.valtimo.zip"
         return ResponseEntity

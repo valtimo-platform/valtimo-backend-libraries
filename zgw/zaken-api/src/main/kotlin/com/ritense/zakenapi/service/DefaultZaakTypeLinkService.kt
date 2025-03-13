@@ -24,6 +24,7 @@ import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.processdocument.domain.ProcessDefinitionId
 import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.zakenapi.domain.ZaakTypeLink
 import com.ritense.zakenapi.domain.ZaakTypeLinkId
 import com.ritense.zakenapi.repository.ZaakTypeLinkRepository
@@ -43,9 +44,9 @@ class DefaultZaakTypeLinkService(
 ) : ZaakTypeLinkService {
 
     override fun get(
-        @LoggableResource("documentDefinitionName") documentDefinitionName: String
+        @LoggableResource("caseDefinitionId") caseDefinitionId: CaseDefinitionId
     ): ZaakTypeLink? {
-        return zaakTypeLinkRepository.findByDocumentDefinitionName(documentDefinitionName)
+        return zaakTypeLinkRepository.findByCaseDefinitionId(caseDefinitionId)
     }
 
     override fun getByPluginConfigurationId(
@@ -61,21 +62,28 @@ class DefaultZaakTypeLinkService(
             processDefinitionCaseDefinitionService.findByProcessDefinitionId(ProcessDefinitionId(processDefinitionId))
         }
         if (processDocumentDefinitions != null) {
-            val documentDefinitionOptional = documentDefinitionService.findByCaseDefinitionId(processDocumentDefinitions.id.caseDefinitionId)
+            val documentDefinitionOptional =
+                documentDefinitionService.findByCaseDefinitionId(processDocumentDefinitions.id.caseDefinitionId)
             return documentDefinitionOptional.map {
-                it.id?.let { id -> zaakTypeLinkRepository.findByDocumentDefinitionName(id.name()) }
+                it.id?.let { id -> zaakTypeLinkRepository.findByCaseDefinitionId(id.caseDefinitionId()) }
             }.orElse(null)
         }
         return null
     }
 
-    override fun createZaakTypeLink(request: CreateZaakTypeLinkRequest): ZaakTypeLink {
-        return withLoggingContext("documentDefinitionName", request.documentDefinitionName) {
-            var zaakTypeLink = zaakTypeLinkRepository.findByDocumentDefinitionName(request.documentDefinitionName)
+    override fun createZaakTypeLink(
+        caseDefinitionId: CaseDefinitionId,
+        request: CreateZaakTypeLinkRequest
+    ): ZaakTypeLink {
+        return withLoggingContext(
+            "caseDefinitionId",
+            caseDefinitionId.toString()
+        ) {
+            var zaakTypeLink = zaakTypeLinkRepository.findByCaseDefinitionId(caseDefinitionId)
             if (zaakTypeLink == null) {
                 zaakTypeLink = ZaakTypeLink(
                     ZaakTypeLinkId.newId(UUID.randomUUID()),
-                    request.documentDefinitionName,
+                    caseDefinitionId,
                     request.zaakTypeUrl,
                     request.createWithDossier ?: false,
                     request.zakenApiPluginConfigurationId,
@@ -90,9 +98,9 @@ class DefaultZaakTypeLinkService(
     }
 
     override fun deleteZaakTypeLinkBy(
-        @LoggableResource("documentDefinitionName") documentDefinitionName: String
+        @LoggableResource("caseDefinitionId") caseDefinitionId: CaseDefinitionId
     ) {
-        zaakTypeLinkRepository.deleteByDocumentDefinitionName(documentDefinitionName)
+        zaakTypeLinkRepository.deleteByCaseDefinitionId(caseDefinitionId)
     }
 
     override fun modify(zaakTypeLink: ZaakTypeLink) {

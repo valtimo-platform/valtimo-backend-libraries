@@ -27,7 +27,8 @@ class ProcessLinkServiceIntTest @Autowired constructor(
             AnotherTestProcessLinkUpdateRequestDto(
                 processLink.id,
                 "success!"
-            )
+            ),
+            null
         )
 
         val updatedProcessLink = processLinkService.getProcessLink(processLink.id, AnotherTestProcessLink::class.java)

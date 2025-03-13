@@ -88,7 +88,7 @@ class UIComponentProcessLinkMapperTest {
             id = processLink.id,
             componentKey = "updatedComponentKey",
         )
-        val dto = mapper.toUpdatedProcessLink(processLink, updateRequestDto) as? UIComponentProcessLink
+        val dto = mapper.toUpdatedProcessLink(processLink, updateRequestDto,) as? UIComponentProcessLink
 
         assertThat(dto).isNotNull
         assertThat(dto!!.processLinkType).isEqualTo(TYPE_UI_COMPONENT)
