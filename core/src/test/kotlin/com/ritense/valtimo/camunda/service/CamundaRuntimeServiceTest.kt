@@ -21,6 +21,7 @@ import com.ritense.authorization.AuthorizationService
 import com.ritense.valtimo.camunda.domain.CamundaVariableInstance
 import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkRepository
 import com.ritense.valtimo.camunda.repository.CamundaVariableInstanceRepository
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.camunda.bpm.engine.RuntimeService
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -42,7 +43,8 @@ class CamundaRuntimeServiceTest {
             runtimeService,
             camundaVariableInstanceRepository,
             camundaIdentityLinkRepository,
-            authorizationService
+            authorizationService,
+            MapperSingleton.get(),
         )
         val variableInstances = listOf(
             createMockedVariableInstance("val1", "nothing"),
@@ -63,7 +65,8 @@ class CamundaRuntimeServiceTest {
             runtimeService,
             camundaVariableInstanceRepository,
             camundaIdentityLinkRepository,
-            authorizationService
+            authorizationService,
+            MapperSingleton.get(),
         )
         val variableInstances = listOf(
             createMockedVariableInstance("val1", null),

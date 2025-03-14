@@ -40,6 +40,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -191,12 +192,27 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
 
     public FormDefinition preFillWith(final String prefix, final Map<String, Object> variableMap) {
         final ObjectNode rootNode = JsonNodeFactory.instance.objectNode();
-        final ObjectNode objectNode = JsonNodeFactory.instance.objectNode();
-        variableMap.forEach((fieldName, value) -> objectNode.set(
-            fieldName,
-            MapperSingleton.INSTANCE.get().valueToTree(value)
-        ));
-        rootNode.set(prefix, objectNode);
+        variableMap.forEach((fieldJsonPointer, value) -> {
+            ObjectNode node = rootNode;
+            String[] path = (prefix + "/" + fieldJsonPointer).split("/");
+            for (int i = 0; i < path.length - 1; i++) {
+                String fieldName = path[i];
+                if (!fieldName.isEmpty()) {
+                    ObjectNode nextNode;
+                    if (node.get(fieldName) instanceof ObjectNode objectNode) {
+                        nextNode = objectNode;
+                    } else {
+                        nextNode = JsonNodeFactory.instance.objectNode();
+                        node.set(fieldName, nextNode);
+                    }
+                    node = nextNode;
+                }
+            }
+            node.set(
+                path[path.length - 1],
+                MapperSingleton.INSTANCE.get().valueToTree(value)
+            );
+        });
         return preFill(rootNode);
     }
 
@@ -360,9 +376,9 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         if (sourceKey.isPresent()) {
             return sourceKey;
         }
-        final var processVariableName = getProcessVar(field);
-        if (processVariableName.isPresent()) {
-            return processVariableName.map(it -> PROCESS_VAR_PREFIX + ":" + it.getName());
+        final var fieldKey = getFieldKey(field);
+        if (fieldKey.startsWith(PROCESS_VAR_PREFIX)) {
+            return Optional.of(fieldKey.replaceFirst("\\.", ":"));
         }
         final var documentJsonPointer = getDocumentContentVarStatic(field);
         if (documentJsonPointer.isPresent()) {
@@ -435,12 +451,11 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
 
     private static Optional<ContentItem> getProcessVar(JsonNode field) {
         if (isProcessVar(field)) {
-            String jsonPointerExpr = getFieldKey(field).replace(".", "/");
-            String processVarName = jsonPointerExpr.substring(
-                PROCESS_VAR_PREFIX.length() + 1); //example pv.varName -> gets varName
-            jsonPointerExpr = JSON_POINTER_DELIMITER + jsonPointerExpr;
-            return buildJsonPointer(jsonPointerExpr).flatMap(
-                jsonPointer -> Optional.of(new ContentItem(processVarName, jsonPointer)));
+            String key = getFieldKey(field);
+            String jsonPointerExpr = JSON_POINTER_DELIMITER + key.replace(".", "/");
+            String processVarName = key.substring(PROCESS_VAR_PREFIX.length() + 1);
+            return buildJsonPointer(jsonPointerExpr).map(
+                jsonPointer -> new ContentItem(processVarName, jsonPointer));
         }
         return Optional.empty();
     }

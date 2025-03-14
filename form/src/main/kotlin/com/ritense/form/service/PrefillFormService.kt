@@ -164,16 +164,24 @@ class PrefillFormService(
     }
 
     private fun prefillProcessVariables(formDefinition: FormIoFormDefinition, document: Document) {
-        val processVarsNames = formDefinition.extractProcessVarNames()
+        val processVarPointers = formDefinition.extractProcessVarNames().map { toJsonPointer(it) }
         val processInstanceVariables = runWithoutAuthorization {
             processDocumentAssociationService.findProcessDocumentInstances(document.id())
                 .map { it.processDocumentInstanceId().processInstanceId().toString() }
-                .flatMap { camundaProcessService.getProcessInstanceVariables(it, processVarsNames).entries }
+                .flatMap { camundaProcessService.getProcessInstanceVariablesByJsonPointers(it, processVarPointers).entries }
                 .associate { it.key to it.value }
         }
         if (processInstanceVariables.isNotEmpty()) {
             formDefinition.preFillWith(FormIoFormDefinition.PROCESS_VAR_PREFIX, processInstanceVariables)
         }
+    }
+
+    private fun toJsonPointer(path: String): JsonPointer {
+        var newPath: String = path
+        if (!path.startsWith('/')) {
+            newPath = "/${path}"
+        }
+        return JsonPointer.valueOf(newPath.replace('.', '/'))
     }
 
     private fun prefillDataResolverFields(
