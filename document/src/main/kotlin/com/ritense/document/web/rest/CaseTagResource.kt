@@ -17,6 +17,7 @@
 package com.ritense.document.web.rest
 
 import com.ritense.authorization.annotation.RunWithoutAuthorization
+import com.ritense.document.exception.CaseTagInUseException
 import com.ritense.document.service.CaseTagService
 import com.ritense.document.web.rest.dto.CaseTagCreateRequestDto
 import com.ritense.document.web.rest.dto.CaseTagResponseDto
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @SkipComponentScan
@@ -68,13 +70,14 @@ class CaseTagResource(
     ): ResponseEntity<CaseTagResponseDto> {
         return try {
             ResponseEntity.ok(
-                    CaseTagResponseDto(caseTagService.create(
+                CaseTagResponseDto(
+                    caseTagService.create(
                         caseDefinitionName,
                         caseTagCreateRequestDto
                     )
                 )
             )
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             ResponseEntity.status(HttpStatus.CONFLICT).build()
         }
     }
@@ -106,6 +109,13 @@ class CaseTagResource(
         @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
         @PathVariable caseTagKey: String,
     ) {
-        caseTagService.delete(caseDefinitionName, caseTagKey)
+        try {
+            caseTagService.delete(caseDefinitionName, caseTagKey)
+        } catch (ex: CaseTagInUseException) {
+            throw ResponseStatusException(
+                HttpStatus.CONFLICT,
+                ex.message
+            )
+        }
     }
 }

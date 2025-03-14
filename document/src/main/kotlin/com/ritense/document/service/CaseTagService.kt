@@ -6,6 +6,7 @@ import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.document.domain.CaseTag
 import com.ritense.document.domain.CaseTagId
 import com.ritense.document.exception.CaseTagAlreadyExistsException
+import com.ritense.document.exception.CaseTagInUseException
 import com.ritense.document.exception.CaseTagNotFoundException
 import com.ritense.document.repository.CaseTagRepository
 import com.ritense.document.web.rest.dto.CaseTagCreateRequestDto
@@ -68,6 +69,7 @@ class CaseTagService(
         )
     }
 
+
     fun update(
         caseDefinitionName: String,
         caseTagKey: String,
@@ -116,7 +118,6 @@ class CaseTagService(
         return caseTagRepository.saveAll(updatedCaseTags)
     }
 
-    // TODO discuss with product team how to handle deletions
     fun delete(caseDefinitionName: String, caseTagKey: String) {
         denyManagementOperation()
 
@@ -124,6 +125,10 @@ class CaseTagService(
             caseTagRepository.findDistinctByIdCaseDefinitionNameAndIdKey(
                 caseDefinitionName, caseTagKey
             ) ?: throw CaseTagNotFoundException(caseTagKey, caseDefinitionName)
+
+        if (caseTagRepository.isCaseTagInUse(caseTagKey, caseDefinitionName)) {
+            throw CaseTagInUseException(caseTagKey, caseDefinitionName)
+        }
 
         caseTagRepository.delete(caseTag)
         reorder(caseDefinitionName)

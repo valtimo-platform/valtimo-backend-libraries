@@ -19,9 +19,24 @@ package com.ritense.document.repository
 import com.ritense.document.domain.CaseTag
 import com.ritense.document.domain.CaseTagId
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 
 interface CaseTagRepository : JpaRepository<CaseTag, CaseTagId> {
     fun findByIdCaseDefinitionNameOrderByOrder(caseDefinitionName: String): List<CaseTag>
     fun findDistinctByIdCaseDefinitionNameAndIdKey(caseDefinitionName: String, key: String): CaseTag?
     fun existsByIdCaseDefinitionNameAndIdKey(caseDefinitionName: String, key: String): Boolean
+    @Query(
+        value = """
+        SELECT EXISTS (
+            SELECT 1 FROM case_tag_link
+            WHERE case_tag_key = :caseTagKey
+            AND case_definition_name = :caseDefinitionName
+        )
+        """, nativeQuery = true
+    )
+    fun isCaseTagInUse(
+        @Param("caseTagKey") caseTagKey: String,
+        @Param("caseDefinitionName") caseDefinitionName: String
+    ): Boolean
 }
