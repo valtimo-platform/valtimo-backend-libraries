@@ -94,11 +94,6 @@ public class AdvancedSearchRequest {
         this.caseTagsFilter = caseTagsFilter != null ? caseTagsFilter : new HashSet<>();
     }
 
-    public AdvancedSearchRequest addCaseTagToFilter(String tag) {
-        this.caseTagsFilter.add(tag);
-        return this;
-    }
-
     public static class OtherFilter {
 
         private String path;
