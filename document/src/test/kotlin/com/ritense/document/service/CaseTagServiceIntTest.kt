@@ -36,8 +36,7 @@ class CaseTagServiceIntTest @Autowired constructor(
         val request = CaseTagCreateRequestDto(
             key = "some-tag",
             title = "Some Tag",
-            color = CaseTagColor.COOLGRAY,
-            visibleInCaseListByDefault = true
+            color = CaseTagColor.COOLGRAY
         )
 
         AuthorizationContext.runWithoutAuthorization {
@@ -66,8 +65,7 @@ class CaseTagServiceIntTest @Autowired constructor(
                     CaseTagCreateRequestDto(
                         key = "<this-is-not-a-valid-tag#>",
                         title = "Some Tag",
-                        color = CaseTagColor.COOLGRAY,
-                        visibleInCaseListByDefault = true
+                        color = CaseTagColor.COOLGRAY
                     )
                 )
             }
@@ -83,8 +81,7 @@ class CaseTagServiceIntTest @Autowired constructor(
                 CaseTagCreateRequestDto(
                     key = "some-tag",
                     title = "Some Tag",
-                    color = CaseTagColor.COOLGRAY,
-                    visibleInCaseListByDefault = true
+                    color = CaseTagColor.COOLGRAY
                 )
             )
         }
@@ -99,8 +96,7 @@ class CaseTagServiceIntTest @Autowired constructor(
                     CaseTagCreateRequestDto(
                         key = "some-tag",
                         title = "Some Tag",
-                        color = CaseTagColor.COOLGRAY,
-                        visibleInCaseListByDefault = true
+                        color = CaseTagColor.COOLGRAY
                     )
                 )
             }
@@ -115,8 +111,7 @@ class CaseTagServiceIntTest @Autowired constructor(
                 CaseTagCreateRequestDto(
                     key = "some-tag",
                     title = "Some Tag",
-                    color = CaseTagColor.COOLGRAY,
-                    visibleInCaseListByDefault = true
+                    color = CaseTagColor.COOLGRAY
                 )
             )
 
@@ -126,8 +121,7 @@ class CaseTagServiceIntTest @Autowired constructor(
                     CaseTagCreateRequestDto(
                         key = "some-tag",
                         title = "Some Tag",
-                        color = CaseTagColor.COOLGRAY,
-                        visibleInCaseListByDefault = true
+                        color = CaseTagColor.COOLGRAY
                     )
                 )
             }
@@ -142,8 +136,7 @@ class CaseTagServiceIntTest @Autowired constructor(
                 CaseTagCreateRequestDto(
                     key = "some-tag",
                     title = "Some Tag",
-                    color = CaseTagColor.COOLGRAY,
-                    visibleInCaseListByDefault = true
+                    color = CaseTagColor.COOLGRAY
                 )
             )
 
@@ -153,8 +146,7 @@ class CaseTagServiceIntTest @Autowired constructor(
                 CaseTagUpdateRequestDto(
                     key = "some-tag",
                     title = "New Title",
-                    color = CaseTagColor.BLUE,
-                    visibleInCaseListByDefault = true
+                    color = CaseTagColor.BLUE
                 )
             )
 
@@ -182,8 +174,7 @@ class CaseTagServiceIntTest @Autowired constructor(
                     CaseTagUpdateRequestDto(
                         key = "some-tag",
                         title = "New Title",
-                        color = CaseTagColor.BLUE,
-                        visibleInCaseListByDefault = true
+                        color = CaseTagColor.BLUE
                     )
                 )
             }
@@ -199,8 +190,7 @@ class CaseTagServiceIntTest @Autowired constructor(
                 CaseTagUpdateRequestDto(
                     key = "some-tag",
                     title = "New Title",
-                    color = CaseTagColor.BLUE,
-                    visibleInCaseListByDefault = true
+                    color = CaseTagColor.BLUE
                 )
             )
         }
@@ -216,8 +206,7 @@ class CaseTagServiceIntTest @Autowired constructor(
                 CaseTagCreateRequestDto(
                     "some-tag",
                     "Some Tag",
-                    CaseTagColor.MAGENTA,
-                    visibleInCaseListByDefault = true
+                    CaseTagColor.MAGENTA
                 )
             )
         }
@@ -251,8 +240,7 @@ class CaseTagServiceIntTest @Autowired constructor(
                 CaseTagCreateRequestDto(
                     key = "some-tag-1",
                     title = "Some Tag 1",
-                    color = CaseTagColor.COOLGRAY,
-                    visibleInCaseListByDefault = true
+                    color = CaseTagColor.COOLGRAY
                 )
             )
 
@@ -261,8 +249,7 @@ class CaseTagServiceIntTest @Autowired constructor(
                 CaseTagCreateRequestDto(
                     key = "some-tag-2",
                     title = "Some Tag 2",
-                    color = CaseTagColor.COOLGRAY,
-                    visibleInCaseListByDefault = true
+                    color = CaseTagColor.COOLGRAY
                 )
             )
 
@@ -271,8 +258,7 @@ class CaseTagServiceIntTest @Autowired constructor(
                 CaseTagCreateRequestDto(
                     key = "some-tag-3",
                     title = "Some Tag 3",
-                    color = CaseTagColor.COOLGRAY,
-                    visibleInCaseListByDefault = true
+                    color = CaseTagColor.COOLGRAY
                 )
             )
         }
@@ -295,20 +281,17 @@ class CaseTagServiceIntTest @Autowired constructor(
                     CaseTagUpdateRequestDto(
                         key = "some-tag-1",
                         title = "New Title 1",
-                        color = CaseTagColor.BLUE,
-                        visibleInCaseListByDefault = true
+                        color = CaseTagColor.BLUE
                     ),
                     CaseTagUpdateRequestDto(
                         key = "some-tag-3",
                         title = "New Title 3",
-                        color = CaseTagColor.BLUE,
-                        visibleInCaseListByDefault = true
+                        color = CaseTagColor.BLUE
                     ),
                     CaseTagUpdateRequestDto(
                         key = "some-tag-2",
                         title = "New Title 2",
-                        color = CaseTagColor.BLUE,
-                        visibleInCaseListByDefault = true
+                        color = CaseTagColor.BLUE
                     ),
                 )
             )
@@ -336,8 +319,7 @@ class CaseTagServiceIntTest @Autowired constructor(
                 CaseTagCreateRequestDto(
                     key = "some-tag-1",
                     title = "Some Tag 1",
-                    color = CaseTagColor.COOLGRAY,
-                    visibleInCaseListByDefault = true
+                    color = CaseTagColor.COOLGRAY
                 )
             )
 
@@ -346,8 +328,7 @@ class CaseTagServiceIntTest @Autowired constructor(
                 CaseTagCreateRequestDto(
                     key = "some-tag-2",
                     title = "Some Tag 2",
-                    color = CaseTagColor.COOLGRAY,
-                    visibleInCaseListByDefault = true
+                    color = CaseTagColor.COOLGRAY
                 )
             )
 
@@ -356,8 +337,7 @@ class CaseTagServiceIntTest @Autowired constructor(
                 CaseTagCreateRequestDto(
                     key = "some-tag-3",
                     title = "Some Tag 3",
-                    color = CaseTagColor.COOLGRAY,
-                    visibleInCaseListByDefault = true
+                    color = CaseTagColor.COOLGRAY
                 )
             )
         }
@@ -370,8 +350,7 @@ class CaseTagServiceIntTest @Autowired constructor(
                         CaseTagUpdateRequestDto(
                             key = "some-tag-1",
                             title = "New Title 1",
-                            color = CaseTagColor.GREEN,
-                            visibleInCaseListByDefault = true
+                            color = CaseTagColor.GREEN
                         )
                     )
                 )
@@ -387,8 +366,7 @@ class CaseTagServiceIntTest @Autowired constructor(
                 CaseTagCreateRequestDto(
                     key = "some-tag-1",
                     title = "Some Tag 1",
-                    color = CaseTagColor.COOLGRAY,
-                    visibleInCaseListByDefault = true
+                    color = CaseTagColor.COOLGRAY
                 )
             )
         }

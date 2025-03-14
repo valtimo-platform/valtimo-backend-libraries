@@ -6,16 +6,14 @@
             "caseDefinitionName": "person",
             "title": "Important",
             "order": 0,
-            "color": "BLUE",
-            "visibleInCaseListByDefault": true
+            "color": "BLUE"
         },
         {
             "key": "needs-attention",
             "caseDefinitionName": "person",
             "title": "Needs attention!",
             "order": 1,
-            "color": "PURPLE",
-            "visibleInCaseListByDefault": true
+            "color": "PURPLE"
         }
     ]
 }

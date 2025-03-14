@@ -21,8 +21,7 @@ class CaseTagRepositoryIntTest @Autowired constructor(
             id = CaseTagId("bezwaar", "test"),
             title = "Some Tag",
             color = CaseTagColor.COOLGRAY,
-            order = 1,
-            visibleInCaseListByDefault = true
+            order = 1
         )
 
         repository.save(tag)

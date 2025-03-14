@@ -65,8 +65,7 @@ class CaseTagDeployer(
                         CaseTagCreateRequestDto(
                             it.key,
                             it.title,
-                            it.color,
-                            it.visibleInCaseListByDefault
+                            it.color
                         )
                     )
                 } else {
@@ -76,8 +75,7 @@ class CaseTagDeployer(
                         CaseTagUpdateRequestDto(
                             it.key,
                             it.title,
-                            it.color,
-                            it.visibleInCaseListByDefault
+                            it.color
                         )
                     )
                 }

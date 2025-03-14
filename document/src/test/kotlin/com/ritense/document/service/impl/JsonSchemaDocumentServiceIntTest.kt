@@ -210,16 +210,14 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
             CaseTagId("house", "new"),
             "New",
             CaseTagColor.GREEN,
-            order = 0,
-            visibleInCaseListByDefault = true
+            order = 0
 
         )
         val tag2 = CaseTag(
             CaseTagId("house", "priority-request"),
             "Priority request",
             CaseTagColor.MAGENTA,
-            order = 1,
-            visibleInCaseListByDefault = true
+            order = 1
         )
         caseTagRepository.save(tag1)
         caseTagRepository.save(tag2)
@@ -256,16 +254,14 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
             CaseTagId("house", caseTagKey1),
             "New",
             CaseTagColor.GREEN,
-            order = 0,
-            visibleInCaseListByDefault = true
+            order = 0
         )
         val caseTagKey2 = "priority-request"
         val tag2 = CaseTag(
             CaseTagId("house", caseTagKey2),
             "Priority request",
             CaseTagColor.MAGENTA,
-            1,
-            visibleInCaseListByDefault = true
+            1
         )
         caseTagRepository.save(tag1)
         caseTagRepository.save(tag2)

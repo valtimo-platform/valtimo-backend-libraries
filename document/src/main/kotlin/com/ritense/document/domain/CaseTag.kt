@@ -35,10 +35,7 @@ data class CaseTag(
     @Enumerated(EnumType.STRING)
     val color: CaseTagColor,
     @Column(name = "case_tag_order")
-    val order: Int,
-    // TODO remove when the frontend is ready to work without this property
-    @Column(name = "visible_in_case_list_by_default")
-    val visibleInCaseListByDefault: Boolean
+    val order: Int
 ) {
     init {
         require(title.isNotBlank()) { "title was blank!" }

@@ -6,16 +6,14 @@
             "caseDefinitionName": "house",
             "title": "Important",
             "order": 0,
-            "color": "BLUE",
-            "visibleInCaseListByDefault": true
+            "color": "BLUE"
         },
         {
             "key": "needs-attention",
             "caseDefinitionName": "house",
             "title": "Needs attention!",
             "order": 1,
-            "color": "RED",
-            "visibleInCaseListByDefault": true
+            "color": "RED"
         }
     ]
 }
