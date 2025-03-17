@@ -18,7 +18,6 @@ package com.ritense.form.service.impl
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
@@ -63,7 +62,6 @@ import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
-import com.ritense.valtimo.contract.json.JsonMerger
 import com.ritense.valtimo.contract.json.patch.JsonPatch
 import com.ritense.valtimo.contract.result.OperationError
 import com.ritense.valtimo.contract.result.OperationError.FromException
@@ -119,17 +117,11 @@ class DefaultFormSubmissionService(
             val processVariables = getProcessVariables(taskInstanceId)
             val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId).orElseThrow()
 
-            val categorizedKeyValues = getCategorizedSubmitValues(formDefinition, formData, document)
             val formFields = getFormFields(formDefinition, formData)
-            // Merge the document results from 'legacy' mapping and value-resolvers.
-            val submittedDocumentContent = JsonMerger.merge(
-                getSubmittedDocumentContent(formFields, document),
-                categorizedKeyValues.documentValues
-            )
-
-            // Merge the process-variable results from 'legacy' mapping and value-resolvers.
-            val formDefinedProcessVariables = formDefinition.extractProcessVars(formData) +
-                categorizedKeyValues.processVariables
+            preProcessFormFields(formFields, document)
+            val categorizedKeyValues = getCategorizedSubmitValues(formDefinition, formData, document)
+            val submittedDocumentContent = categorizedKeyValues.documentValues
+            val formDefinedProcessVariables = categorizedKeyValues.processVariables
 
             val preJsonPatch = getPreJsonPatch(formDefinition, submittedDocumentContent, processVariables, document)
             val request = getRequest(
@@ -243,16 +235,15 @@ class DefaultFormSubmissionService(
         field: ObjectNode,
         formData: JsonNode
     ): Pair<String, Any>? {
-        return FormIoFormDefinition.getTargetKey(field).getOrNull()?.let { targetKey ->
+        return FormIoFormDefinition.resolveTargetKey(field).getOrNull()?.let { targetKey ->
             getFormValue(field, formData)?.let { value -> Pair(targetKey, value) }
-        } ?: FormIoFormDefinition.getSourceKey(field).getOrNull()?.let { sourceKey ->
-            getFormValue(field, formData)?.let { value -> Pair(sourceKey, value) }
         }
     }
 
     private fun getFormValue(field: ObjectNode, formData: JsonNode): Any? {
         return FormIoFormDefinition.getKey(field).getOrNull()?.let { inputKey ->
-            convertNodeValue(formData.at("/$inputKey"))
+            val jsonPointer = "/${inputKey.replace('.', '/')}"
+            convertNodeValue(formData.at(jsonPointer))
         }
     }
 
@@ -301,19 +292,15 @@ class DefaultFormSubmissionService(
         formDefinition: FormIoFormDefinition,
         formData: JsonNode
     ): List<FormField> {
-        return formDefinition.getDocumentMappedFieldsFiltered(
-            FormIoFormDefinition.NOT_IGNORED
-                .and { t -> FormIoFormDefinition.getTargetKey(t).isEmpty && FormIoFormDefinition.getSourceKey(t).isEmpty }
-        ).mapNotNull { objectNode -> FormField.getFormField(formData, objectNode, applicationEventPublisher) }
+        return formDefinition.inputFields
+            .filter { FormIoFormDefinition.NOT_IGNORED.test(it) }
+            .mapNotNull { field -> FormField.getFormField(formData, field, applicationEventPublisher) }
     }
 
-    private fun getSubmittedDocumentContent(formFields: List<FormField>, document: Document?): ObjectNode {
-        val submittedDocumentContent = JsonNodeFactory.instance.objectNode()
+    private fun preProcessFormFields(formFields: List<FormField>, document: Document?) {
         formFields.forEach {
             it.preProcess(document)
-            it.appendValueToDocument(submittedDocumentContent)
         }
-        return submittedDocumentContent
     }
 
     private fun getPreJsonPatch(
