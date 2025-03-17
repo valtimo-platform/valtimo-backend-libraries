@@ -35,7 +35,8 @@ import java.net.URI
 @Component
 @SkipComponentScan
 class HostDockerInternalRestClientCustomizer(
-    private val dockerPorts: List<String>
+    private val dockerPorts: List<String>,
+    private val rewriteRequestHost: Boolean,
 ) : RestClientCustomizer, RestTemplateCustomizer, ClientHttpRequestInterceptor {
 
     override fun customize(restClientBuilder: RestClient.Builder) {
@@ -119,10 +120,10 @@ class HostDockerInternalRestClientCustomizer(
         }
     }
 
-    private fun replaceLocalhost(stringContainingLocalhost: String, dontReplacePort: String): String {
+    private fun replaceLocalhost(stringContainingLocalhost: String, requestPort: String): String {
         return stringContainingLocalhost.replace(Regex("""http://localhost:([0-9]{4,5})""")) { match ->
             val port = match.groupValues[1]
-            if (port != dontReplacePort && dockerPorts.contains(port)) {
+            if ((rewriteRequestHost || port != requestPort) && dockerPorts.contains(port)) {
                 "$HTTP_HOST_DOCKER_INTERNAL:$port"
             } else {
                 match.value

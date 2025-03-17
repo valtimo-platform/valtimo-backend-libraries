@@ -40,9 +40,11 @@ class RestClientAutoConfiguration {
     @ConditionalOnProperty(value = ["valtimo.docker.filter.enabled"], havingValue = "true", matchIfMissing = false)
     fun hostDockerInternalRestClientCustomizer(
         @Value("\${valtimo.docker.filter.ports:8001,8002,8003,8006,8010,8011}") dockerPorts: List<String>,
+        @Value("\${valtimo.docker.filter.rewriteRequestHost:false}") rewriteRequestHost: Boolean,
     ): HostDockerInternalRestClientCustomizer {
         return HostDockerInternalRestClientCustomizer(
             dockerPorts,
+            rewriteRequestHost,
         )
     }
 
@@ -52,9 +54,11 @@ class RestClientAutoConfiguration {
     @ConditionalOnProperty(value = ["valtimo.docker.filter.enabled"], havingValue = "true", matchIfMissing = true)
     fun devHostDockerInternalRestClientCustomizer(
         @Value("\${valtimo.docker.filter.ports:8001,8002,8003,8006,8010,8011}") dockerPorts: List<String>,
+        @Value("\${valtimo.docker.filter.rewriteRequestHost:false}") rewriteRequestHost: Boolean,
     ): HostDockerInternalRestClientCustomizer {
         return HostDockerInternalRestClientCustomizer(
             dockerPorts,
+            rewriteRequestHost,
         )
     }
 }
