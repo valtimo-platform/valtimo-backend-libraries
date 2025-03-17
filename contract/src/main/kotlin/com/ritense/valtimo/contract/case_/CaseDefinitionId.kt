@@ -53,7 +53,7 @@ data class CaseDefinitionId(
 
 
     override fun toString(): String {
-        return "${key}-${versionTag}"
+        return "${key}:${versionTag}"
     }
 
     companion object {

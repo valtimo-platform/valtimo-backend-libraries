@@ -26,6 +26,7 @@ import com.ritense.case_.service.CaseWidgetTabService
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -63,8 +64,14 @@ class CustomWidgetIntTest @Autowired constructor(
         val tabKey = "my-tab"
         val widgetKey = "my-widget"
         val documentId = runWithoutAuthorization {
-            createCaseWidgetTab(caseDefinitionName, tabKey, widgetKey)
-            documentService.createDocument(NewDocumentRequest(caseDefinitionName, MapperSingleton.get().createObjectNode())).resultingDocument().get().id()
+            val document = documentService.createDocument(
+                NewDocumentRequest(
+                    caseDefinitionName,
+                    MapperSingleton.get().createObjectNode()
+                )
+            ).resultingDocument().get()
+            createCaseWidgetTab(document.definitionId().caseDefinitionId(), tabKey, widgetKey)
+            document.id
         }
         mockMvc.perform(
             get("/api/v1/document/{documentId}/widget-tab/{tabKey}", documentId, tabKey)
@@ -79,14 +86,18 @@ class CustomWidgetIntTest @Autowired constructor(
     }
 
     private fun createCaseWidgetTab(
-        caseDefinitionName: String,
+        caseDefinitionId: CaseDefinitionId,
         tabKey: String,
         widgetKey: String
     ): CaseWidgetTabDto {
-        tabService.createCaseTab(caseDefinitionName, CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-"))
+        tabService.createCaseTab(
+            caseDefinitionId,
+            CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-")
+        )
         return widgetTabService.updateWidgetTab(
             CaseWidgetTabDto(
-                caseDefinitionName = caseDefinitionName,
+                caseDefinitionKey = caseDefinitionId.key,
+                caseDefinitionVersionTag = caseDefinitionId.versionTag.version,
                 key = tabKey,
                 widgets = listOf(
                     CustomCaseWidgetDto(

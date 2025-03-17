@@ -64,8 +64,8 @@ class SearchFieldImporterTest(
 
     @Test
     fun `should not support invalid document definition fileName`() {
-        assertThat(importer.supports("config/search/not/person.json")).isFalse()
-        assertThat(importer.supports("config/search/person.xml")).isFalse()
+        assertThat(importer.supports("/search/not/person.json")).isFalse()
+        assertThat(importer.supports("/search/person.xml")).isFalse()
     }
 
     @Test
@@ -82,6 +82,6 @@ class SearchFieldImporterTest(
     }
 
     private companion object {
-        const val FILENAME = "config/search/person.json"
+        const val FILENAME = "/search/person.json"
     }
 }

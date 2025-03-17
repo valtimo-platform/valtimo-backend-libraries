@@ -23,4 +23,58 @@
         <renameColumn tableName="case_list_column" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
     </changeSet>
 
+    <changeSet id="2" author="Ritense">
+        <dropForeignKeyConstraint baseTableName="case_widget_tab" constraintName="fk_case_widget_tab_case_tab"/>
+        <dropForeignKeyConstraint baseTableName="case_widget_tab_widget" constraintName="fk_case_widget_tab_name_key"/>
+    </changeSet>
+
+    <changeSet id="3" author="Ritense">
+        <renameColumn tableName="case_tab" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+        <addColumn tableName="case_tab">
+            <column name="case_definition_version_tag" type="VARCHAR(256)" defaultValue="1.0.0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <dropPrimaryKey tableName="case_tab"/>
+
+        <renameColumn tableName="case_widget_tab" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+        <addColumn tableName="case_widget_tab">
+            <column name="case_definition_version_tag" type="VARCHAR(256)" defaultValue="1.0.0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <dropPrimaryKey tableName="case_widget_tab"/>
+
+        <renameColumn tableName="case_widget_tab_widget" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+        <addColumn tableName="case_widget_tab_widget">
+            <column name="case_definition_version_tag" type="VARCHAR(256)" defaultValue="1.0.0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <dropPrimaryKey tableName="case_widget_tab_widget"/>
+    </changeSet>
+
+    <changeSet id="4" author="Ritense">
+        <addPrimaryKey tableName="case_tab" columnNames="case_definition_key, case_definition_version_tag, tab_key"/>
+        <addPrimaryKey tableName="case_widget_tab" columnNames="case_definition_key, case_definition_version_tag, tab_key"/>
+        <addPrimaryKey tableName="case_widget_tab_widget" columnNames="case_definition_key, case_definition_version_tag, key, tab_key"/>
+    </changeSet>
+
+    <changeSet id="6" author="Ritense">
+        <addForeignKeyConstraint
+            baseTableName="case_widget_tab"
+            baseColumnNames="case_definition_key, case_definition_version_tag, tab_key"
+            constraintName="fk_case_widget_tab_case_tab"
+            referencedTableName="case_tab"
+            referencedColumnNames="case_definition_key, case_definition_version_tag, tab_key"
+            onDelete="CASCADE"/>
+        <addForeignKeyConstraint
+            baseTableName="case_widget_tab_widget"
+            baseColumnNames="case_definition_key, case_definition_version_tag, tab_key"
+            constraintName="fk_case_widget_tab_name_key"
+            referencedTableName="case_widget_tab"
+            referencedColumnNames="case_definition_key, case_definition_version_tag, tab_key"
+            onDelete="CASCADE"/>
+    </changeSet>
+
 </databaseChangeLog>

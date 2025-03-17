@@ -16,24 +16,15 @@
 
 package com.ritense.form.web.rest
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.form.domain.FormDefinition
 import com.ritense.form.domain.request.CreateFormDefinitionRequest
 import com.ritense.form.domain.request.ModifyFormDefinitionRequest
 import com.ritense.form.service.FormDefinitionService
-import com.ritense.form.service.FormSubmissionService
-import com.ritense.form.service.PrefillFormService
-import com.ritense.form.web.rest.dto.FormSubmissionResult
-import com.ritense.logging.LoggableResource
-import com.ritense.processlink.domain.ProcessLink
-import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -87,7 +78,7 @@ class FormManagementResource(
         @PathVariable("caseDefinitionKey") caseDefinitionKey: String,
         @PathVariable("versionTag") versionTag: String,
         @RequestBody formDefinition: ModifyFormDefinitionRequest,
-        ): ResponseEntity<FormDefinition> {
+    ): ResponseEntity<FormDefinition> {
         return ResponseEntity.ok(
             formDefinitionService.modifyFormDefinition(
                 CaseDefinitionId.of(caseDefinitionKey, versionTag),

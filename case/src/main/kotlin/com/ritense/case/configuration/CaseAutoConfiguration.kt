@@ -19,7 +19,6 @@ package com.ritense.case.configuration
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.ritense.authorization.AuthorizationService
-import com.ritense.case.deployment.CaseTabDeploymentService
 import com.ritense.case.deployment.CaseTaskListDeploymentService
 import com.ritense.case.domain.BooleanDisplayTypeParameter
 import com.ritense.case.domain.DateFormatDisplayTypeParameter
@@ -255,23 +254,6 @@ class CaseAutoConfiguration {
     }
 
     @Bean
-    fun caseTabDeployer(
-        objectMapper: ObjectMapper,
-        caseTabRepository: CaseTabRepository,
-        changelogService: ChangelogService,
-        caseTabService: CaseTabService,
-        @Value("\${valtimo.changelog.case-tabs.clear-tables:false}") clearTables: Boolean
-    ): CaseTabDeploymentService {
-        return CaseTabDeploymentService(
-            objectMapper,
-            caseTabRepository,
-            changelogService,
-            caseTabService,
-            clearTables
-        )
-    }
-
-    @Bean
     fun TaskListDeployer(
         objectMapper: ObjectMapper,
         taskListColumnRepository: TaskListColumnRepository,
@@ -331,9 +313,9 @@ class CaseAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(CaseTabImporter::class)
     fun caseTabImporter(
-        caseTabDeploymentService: CaseTabDeploymentService,
-        changelogDeployer: ChangelogDeployer
-    ) = CaseTabImporter(caseTabDeploymentService, changelogDeployer)
+        objectMapper: ObjectMapper,
+        caseTabRepository: CaseTabRepository
+    ) = CaseTabImporter(objectMapper, caseTabRepository)
 
     @Bean
     @ConditionalOnMissingBean(CaseTaskListExporter::class)

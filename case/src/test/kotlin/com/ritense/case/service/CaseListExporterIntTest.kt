@@ -44,7 +44,7 @@ class CaseListExporterIntTest @Autowired constructor(
         val request = DocumentDefinitionExportRequest(caseDefinitionName, CaseDefinitionId("house", "1.0.0"))
         val exportFiles = caseListExporter.export(request).exportFiles
 
-        val path = PATH.format(caseDefinitionName)
+        val path = PATH.format(request.caseDefinitionId.key, "1-0-0", caseDefinitionName)
         val caseTabsExport = exportFiles.singleOrNull {
             it.path == path
         }
@@ -67,6 +67,6 @@ class CaseListExporterIntTest @Autowired constructor(
     }
 
     companion object {
-        private const val PATH = "config/case/list/%s.json"
+        private const val PATH = "config/case/%s/%s/case/list/%s.json"
     }
 }

@@ -73,6 +73,8 @@ class InternalCaseStatusImporter(
         }
     }
 
+
+    // TODO: Change to /case/internal-status/...
     private companion object {
         val FILENAME_REGEX = """/internal-case-status/([^/]+)\.internal-case-status\.json""".toRegex()
     }

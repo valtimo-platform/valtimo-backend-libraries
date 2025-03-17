@@ -123,7 +123,7 @@ open class ValtimoImportService(
                 it[it.keys.first()]
             }
         val caseDefinitionMap: Map<String, Any> = jacksonObjectMapper()
-            .readValue(caseDefinitionEntries?.first()?.content!!)
+            .readValue(caseDefinitionEntries?.first()?.content!!) // TODO: Throw proper error message
         caseDefinitionId = CaseDefinitionId(
             caseDefinitionMap["key"] as String,
             caseDefinitionMap["versionTag"] as String

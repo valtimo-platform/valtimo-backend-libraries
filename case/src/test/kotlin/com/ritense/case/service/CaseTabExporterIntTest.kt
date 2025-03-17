@@ -45,10 +45,12 @@ class CaseTabExporterIntTest @Autowired constructor(
     fun `should export tabs for case definition`(): Unit = runWithoutAuthorization {
         val caseDefinitionName = "some-case-type"
 
-        val request = DocumentDefinitionExportRequest(caseDefinitionName, CaseDefinitionId("house", "1.0.0"))
+        val caseDefinitionId = CaseDefinitionId("house", "1.0.0")
+
+        val request = DocumentDefinitionExportRequest(caseDefinitionName, caseDefinitionId)
         val exportResult = caseTabExportService.export(request)
 
-        val path = PATH.format(caseDefinitionName)
+        val path = PATH.format(caseDefinitionId.key, "1-0-0", caseDefinitionName)
         val caseTabsExport = exportResult.exportFiles.singleOrNull {
             it.path == path
         }
@@ -76,11 +78,11 @@ class CaseTabExporterIntTest @Autowired constructor(
         )
 
         assertThat(exportResult.relatedRequests).contains(
-            FormDefinitionExportRequest("test-form")
+            FormDefinitionExportRequest("test-form", CaseDefinitionId("house", "1.0.0"))
         )
     }
 
     companion object {
-        private const val PATH = "config/case-tabs/%s.case-tabs.json"
+        private const val PATH = "config/case/%s/%s/case/tab/%s.case-tabs.json"
     }
 }
