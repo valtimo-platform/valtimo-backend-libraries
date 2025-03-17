@@ -35,12 +35,7 @@ data class CaseTagId(
 
     companion object {
         @JvmStatic
-        fun of(caseDefinitionName: String, key: String?): CaseTagId? {
-            return if (key == null) {
-                null
-            } else {
-                CaseTagId(caseDefinitionName, key)
-            }
-        }
+        fun of(caseDefinitionName: String, key: String): CaseTagId =
+            CaseTagId(caseDefinitionName, key)
     }
 }
