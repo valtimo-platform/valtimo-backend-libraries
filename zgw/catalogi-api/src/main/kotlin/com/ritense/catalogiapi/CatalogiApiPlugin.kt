@@ -35,6 +35,8 @@ import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.domain.Zaaktype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
+import com.ritense.catalogiapi.exception.BesluittypeNotFoundException
+import com.ritense.catalogiapi.exception.EigenschapNotFoundException
 import com.ritense.catalogiapi.exception.ResultaattypeNotFoundException
 import com.ritense.catalogiapi.exception.StatustypeNotFoundException
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
@@ -157,6 +159,37 @@ class CatalogiApiPlugin(
 
             logger.info { "Setting process variable $processVariable with (retrieved) besluittype URL: $besluittypeUrl" }
             execution.setVariable(processVariable, besluittypeUrl)
+        }
+    }
+
+    @PluginAction(
+        key = "get-eigenschap",
+        title = "Get Eigenschap",
+        description = "Retrieve the eigenschap URL and store it in process variable",
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START, ActivityTypeWithEventName.CALL_ACTIVITY_START]
+    )
+    fun getEigenschap(
+        execution: DelegateExecution,
+        @PluginActionProperty eigenschap: String,
+        @PluginActionProperty processVariable: String,
+    ) {
+        withLoggingContext(
+            CATALOGI_API.EIGENSCHAP to eigenschap
+        ) {
+            logger.debug { "Retrieving eigenschap by $eigenschap and storing it in process variable: $processVariable" }
+            val eigenschapUrl = if (eigenschap.matches(HTTPS_REGEX)) {
+                eigenschap
+            } else {
+                val document =
+                    AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
+                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
+
+                getEigenschapByName(zaaktypeUrl, eigenschap).url!!.toASCIIString()
+            }
+
+            logger.info { "Setting process variable '$processVariable' with (retrieved) eigenschap URL :$eigenschapUrl" }
+
+            execution.setVariable(processVariable, eigenschapUrl)
         }
     }
 
@@ -348,6 +381,17 @@ class CatalogiApiPlugin(
         }
     }
 
+  fun getEigenschapByName(zaaktypeUrl: URI, eigenschapnaam: String): Eigenschap {
+        withLoggingContext(
+            CATALOGI_API.EIGENSCHAP to zaaktypeUrl.toString()
+        ) {
+            logger.debug { "Retrieving eigenschap by name '$eigenschapnaam' for zaaktype: $zaaktypeUrl" }
+            return getEigenschappen(zaaktypeUrl)
+                .singleOrNull { it.naam.equals(eigenschapnaam, ignoreCase = true) }
+                ?: throw EigenschapNotFoundException("with eigenschapnaam: $eigenschapnaam")
+        }
+    }
+
     fun getEigenschappen(zaakTypeUrl: URI): List<Eigenschap> {
         withLoggingContext(CATALOGI_API.EIGENSCHAP to zaakTypeUrl.toString()) {
             return Page.getAll { page ->
@@ -370,7 +414,7 @@ class CatalogiApiPlugin(
             return getBesluittypen(zaakTypeUrl)
                 .filter { it.eindeGeldigheid == null || it.eindeGeldigheid.isAfter(LocalDate.now()) }
                 .singleOrNull { it.omschrijving.equals(omschrijving, ignoreCase = true) }
-                ?: throw IllegalStateException("Besluittype with 'omschrijving': '$omschrijving' is not found")
+                ?: throw BesluittypeNotFoundException("with 'omschrijving': $omschrijving")
         }
     }
 
