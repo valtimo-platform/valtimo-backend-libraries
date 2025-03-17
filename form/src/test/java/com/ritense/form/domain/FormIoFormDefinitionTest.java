@@ -203,6 +203,111 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
+    public void shouldExtractProcessVarsArrayObject() throws IOException {
+        final var formDefinition = formDefinitionOf("process-variables-upload-example");
+
+        final var formData = MapperSingleton.get().readValue("""
+          {
+            "targetKeyTest":[
+              {
+                "id":"6214978307672477498-5693450211180459617",
+                "filename":"test1.jpg",
+                "sizeInBytes":1
+               }
+            ],
+            "pv":{
+              "keyTest":[
+                {
+                  "id":"15425449104824408296-2175695974634130529",
+                  "filename":"test2.jpg",
+                  "sizeInBytes":2
+                }
+              ]
+            },
+            "submit":true
+          }
+        """, JsonNode.class);
+
+        final Map<String, Object> processVars = formDefinition.extractProcessVars(formData);
+
+        assertThat(processVars.size()).isOne();
+        final var values = (List<Map<String, String>>) processVars.get("keyTest");
+        assertThat(values.size()).isOne();
+        assertThat(values.get(0).get("filename")).isEqualTo("test2.jpg");
+    }
+
+    @Test
+    public void shouldResolveTargetKeyFromKeyPvProperty() throws IOException {
+        final var formData = MapperSingleton.get().readValue("""
+          {
+              "key": "pv.uploadReceipt",
+              "type": "documenten-api-file",
+              "input": true,
+              "label": "Upload receipt"
+          }
+        """, JsonNode.class);
+
+        var targetKey = FormIoFormDefinition.resolveTargetKey(formData).orElseThrow();
+
+        assertEquals("pv:uploadReceipt", targetKey);
+    }
+
+    @Test
+    public void shouldResolveTargetKeyFromKeyDocProperty() throws IOException {
+        final var formData = MapperSingleton.get().readValue("""
+          {
+              "key": "archive.uploadReceipt",
+              "type": "documenten-api-file",
+              "input": true,
+              "label": "Upload receipt"
+          }
+        """, JsonNode.class);
+
+        var targetKey = FormIoFormDefinition.resolveTargetKey(formData).orElseThrow();
+
+        assertEquals("doc:/archive/uploadReceipt", targetKey);
+    }
+
+    @Test
+    public void shouldResolveTargetKeyFromSourceKeyProperty() throws IOException {
+        final var formData = MapperSingleton.get().readValue("""
+          {
+              "key": "key",
+              "type": "documenten-api-file",
+              "input": true,
+              "label": "Upload receipt",
+              "properties": {
+                  "sourceKey": "pv:uploadReceipt"
+              }
+          }
+        """, JsonNode.class);
+
+        var targetKey = FormIoFormDefinition.resolveTargetKey(formData).orElseThrow();
+
+        assertEquals("pv:uploadReceipt", targetKey);
+    }
+
+    @Test
+    public void shouldResolveTargetKeyFromTargetKeyProperty() throws IOException {
+        final var formData = MapperSingleton.get().readValue("""
+          {
+              "key": "pv.key",
+              "type": "documenten-api-file",
+              "input": true,
+              "label": "Upload receipt",
+              "properties": {
+                  "sourceKey": "pv:sourceKey",
+                  "targetKey": "pv:uploadReceipt"
+              }
+          }
+        """, JsonNode.class);
+
+        var targetKey = FormIoFormDefinition.resolveTargetKey(formData).orElseThrow();
+
+        assertEquals("pv:uploadReceipt", targetKey);
+    }
+
+    @Test
     public void shouldGetInputFieldsOnly() throws IOException {
         final var formDefinition = formDefinitionOf("form-example-nested-components");
 
