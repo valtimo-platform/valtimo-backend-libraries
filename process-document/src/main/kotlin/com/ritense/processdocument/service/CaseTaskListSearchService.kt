@@ -377,17 +377,26 @@ class CaseTaskListSearchService(
         searchCriteria: AdvancedSearchRequest.OtherFilter
     ): Predicate? {
         return if (searchCriteria.path == TASK_PREFIX + "hideInaccessibleTasks") {
-            val values = searchCriteria.getValues<Boolean>()
-
-            if (values.size == 1 && values[0] == true) {
-                getAuthorizationSpecification(CamundaTaskActionProvider.VIEW).toPredicate(taskRoot, query, cb)
-            } else {
-                // Returning a no-op/always true value so that
-                // the code doesn't continue and try to find `hideInaccessibleTasks` in the task table.
-                cb.conjunction()
-            }
+            handleHideInaccessibleTasksFilter(searchCriteria, taskRoot, query, cb)
         } else {
             null
+        }
+    }
+
+    private fun handleHideInaccessibleTasksFilter(
+        searchCriteria: AdvancedSearchRequest.OtherFilter,
+        taskRoot: Root<CamundaTask>,
+        query: CriteriaQuery<*>,
+        cb: CriteriaBuilder
+    ): Predicate? {
+        val values = searchCriteria.getValues<Boolean>()
+
+        return if (values.size == 1 && values[0] == true) {
+            getAuthorizationSpecification(CamundaTaskActionProvider.VIEW).toPredicate(taskRoot, query, cb)
+        } else {
+            // Returning a no-op/always true value so that
+            // the code doesn't continue and try to find `hideInaccessibleTasks` in the task table.
+            cb.conjunction()
         }
     }
 
