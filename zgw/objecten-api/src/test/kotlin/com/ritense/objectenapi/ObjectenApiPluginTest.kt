@@ -16,6 +16,7 @@
 
 package com.ritense.objectenapi
 
+import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectRequest
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.client.ObjectenApiClient
@@ -52,6 +53,19 @@ internal class ObjectenApiPluginTest{
 
         assertEquals(objectMock, result)
         verify(client).getObject(any(), any())
+    }
+
+    @Test
+    fun `should call client on getObjectAtIndex`() {
+        val recordUrl = URI("http://example.com/1")
+        val version = 0
+        val recordMock = mock<ObjectRecord>()
+        whenever(client.getObjectRecord(plugin.authenticationPluginConfiguration, URI("$recordUrl/$version"))).thenReturn(recordMock)
+
+        val result = plugin.getObjectAtIndex(recordUrl, 0)
+
+        assertEquals(recordMock, result)
+        verify(client).getObjectRecord(any(), any())
     }
 
     @Test
