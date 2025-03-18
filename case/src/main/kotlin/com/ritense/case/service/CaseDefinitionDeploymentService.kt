@@ -19,6 +19,7 @@ package com.ritense.case.service
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.importer.ValtimoImportService
+import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import mu.KotlinLogging
 import org.apache.commons.lang3.StringUtils
@@ -39,7 +40,8 @@ import java.io.FileNotFoundException
 class CaseDefinitionDeploymentService(
     val resourceLoader: ResourceLoader,
     val valtimoImportService: ValtimoImportService,
-    val caseDefinitionRepository: CaseDefinitionRepository
+    val caseDefinitionRepository: CaseDefinitionRepository,
+    val changelogDeployer: ChangelogDeployer,
 ) {
     @Order(Ordered.LOWEST_PRECEDENCE)
     @EventListener(ApplicationReadyEvent::class)
@@ -83,6 +85,8 @@ class CaseDefinitionDeploymentService(
         // Import for each list of resources in the list
         // If one fails, everything fails.
         // TODO Implement triggering of imports
+
+        changelogDeployer.deployAll()
     }
 
     //private fun getRelativeMap
