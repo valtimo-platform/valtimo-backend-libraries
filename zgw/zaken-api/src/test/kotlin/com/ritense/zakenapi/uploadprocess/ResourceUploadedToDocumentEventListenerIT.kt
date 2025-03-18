@@ -105,7 +105,9 @@ class ResourceUploadedToDocumentEventListenerIT @Autowired constructor(
             mapOf(MetadataType.DOCUMENT_ID.key to documentId)
         )
 
-        applicationEventPublisher.publishEvent(TemporaryResourceUploadedEvent(resourceId))
+        runWithoutAuthorization {
+            applicationEventPublisher.publishEvent(TemporaryResourceUploadedEvent(resourceId))
+        }
 
         val documentUploadProcess = getHistoricProcessInstance(UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY, documentId)
         val retrievedResourceId =
