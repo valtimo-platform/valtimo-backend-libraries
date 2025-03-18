@@ -201,12 +201,14 @@ class CaseAutoConfiguration {
     fun caseDefinitionDeploymentService(
         resourceLoader: ResourceLoader,
         valtimoImportService: ValtimoImportService,
-        caseDefinitionRepository: CaseDefinitionRepository
+        caseDefinitionRepository: CaseDefinitionRepository,
+        deployer: ChangelogDeployer
     ): CaseDefinitionDeploymentService {
         return CaseDefinitionDeploymentService(
             resourceLoader,
             valtimoImportService,
-            caseDefinitionRepository
+            caseDefinitionRepository,
+            deployer,
         )
     }
 

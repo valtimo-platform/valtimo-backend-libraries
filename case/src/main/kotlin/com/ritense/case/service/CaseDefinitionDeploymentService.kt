@@ -19,6 +19,7 @@ package com.ritense.case.service
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.importer.ValtimoImportService
+import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import mu.KotlinLogging
 import org.apache.commons.lang3.StringUtils
@@ -39,7 +40,8 @@ import java.io.FileNotFoundException
 class CaseDefinitionDeploymentService(
     val resourceLoader: ResourceLoader,
     val valtimoImportService: ValtimoImportService,
-    val caseDefinitionRepository: CaseDefinitionRepository
+    val caseDefinitionRepository: CaseDefinitionRepository,
+    val changelogDeployer: ChangelogDeployer
 ) {
     @Order(Ordered.LOWEST_PRECEDENCE)
     @EventListener(ApplicationReadyEvent::class)
@@ -77,6 +79,8 @@ class CaseDefinitionDeploymentService(
                 valtimoImportService.importCaseDefinition(files, caseDefinitionRepository.findAll().map { it.id })
             }
         }
+
+        changelogDeployer.deployAll()
 
         // Group by 1st * and 2nd *
         // Turn back into list of list resources
