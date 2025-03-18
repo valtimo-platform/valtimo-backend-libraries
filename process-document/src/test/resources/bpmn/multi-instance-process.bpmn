@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.32.0">
+  <bpmn:collaboration id="Collaboration_0x7mtlw" isClosed="false">
+    <bpmn:participant id="MultiinstanceProcessParticipant" name="Multi-instance process" processRef="multi-instance-process" />
+  </bpmn:collaboration>
+  <bpmn:process id="multi-instance-process" name="Multi-instance process" processType="None" isClosed="false" isExecutable="true">
+    <bpmn:parallelGateway id="Gateway_1ns545z">
+      <bpmn:incoming>Flow_0p4rdm0</bpmn:incoming>
+      <bpmn:outgoing>Flow_0g9omlg</bpmn:outgoing>
+      <bpmn:outgoing>Flow_107gzf4</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1x5os66</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:startEvent id="StartStartEvent" name="Start">
+      <bpmn:outgoing>Flow_0p4rdm0</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0j6mw8s" sourceRef="InkomenVaststellenCallActivity" targetRef="Event_1h1y6r2" />
+    <bpmn:sequenceFlow id="Flow_0cwf2w2" sourceRef="AdresVaststellenCallActivity" targetRef="Event_0u5faqz" />
+    <bpmn:sequenceFlow id="Flow_107gzf4" sourceRef="Gateway_1ns545z" targetRef="InkomenVaststellenCallActivity" />
+    <bpmn:sequenceFlow id="Flow_0g9omlg" sourceRef="Gateway_1ns545z" targetRef="AdresVaststellenCallActivity" />
+    <bpmn:sequenceFlow id="Flow_0p4rdm0" sourceRef="StartStartEvent" targetRef="Gateway_1ns545z" />
+    <bpmn:sequenceFlow id="Flow_1x5os66" sourceRef="Gateway_1ns545z" targetRef="ServiceTaskTask" />
+    <bpmn:sequenceFlow id="Flow_1vi2d9m" sourceRef="GetActiveProcessInstancesTask" targetRef="Event_12qt73x" />
+    <bpmn:sequenceFlow id="Flow_09nfoqm" sourceRef="ServiceTaskTask" targetRef="GetActiveProcessInstancesTask" />
+    <bpmn:callActivity id="AdresVaststellenCallActivity" name="Adres vaststellen" camunda:asyncBefore="true" camunda:asyncAfter="true" calledElement="adres-vaststellen">
+      <bpmn:extensionElements>
+        <camunda:in businessKey="#{execution.processBusinessKey}" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0g9omlg</bpmn:incoming>
+      <bpmn:outgoing>Flow_0cwf2w2</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:callActivity id="InkomenVaststellenCallActivity" name="Inkomen vaststellen" camunda:asyncBefore="true" camunda:asyncAfter="true" calledElement="inkomen-vaststellen">
+      <bpmn:extensionElements>
+        <camunda:in businessKey="#{execution.processBusinessKey}" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_107gzf4</bpmn:incoming>
+      <bpmn:outgoing>Flow_0j6mw8s</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:serviceTask id="ServiceTaskTask" name="Service task" camunda:asyncAfter="true" implementation="##WebService" camunda:expression="${true}">
+      <bpmn:incoming>Flow_1x5os66</bpmn:incoming>
+      <bpmn:outgoing>Flow_09nfoqm</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="Event_1h1y6r2">
+      <bpmn:incoming>Flow_0j6mw8s</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="Event_0u5faqz">
+      <bpmn:incoming>Flow_0cwf2w2</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="Event_12qt73x">
+      <bpmn:incoming>Flow_1vi2d9m</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="GetActiveProcessInstancesTask" name="Get active process instances" camunda:asyncAfter="true" implementation="##WebService" camunda:expression="${processService.getActiveProcessInstancesName(execution)}">
+      <bpmn:incoming>Flow_09nfoqm</bpmn:incoming>
+      <bpmn:outgoing>Flow_1vi2d9m</bpmn:outgoing>
+    </bpmn:serviceTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0x7mtlw">
+      <bpmndi:BPMNShape id="Participant_1yi9y4b_di" bpmnElement="MultiinstanceProcessParticipant" isHorizontal="true">
+        <dc:Bounds x="130" y="102" width="740" height="508" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1trnr0t_di" bpmnElement="Gateway_1ns545z">
+        <dc:Bounds x="305" y="205" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartStartEvent">
+        <dc:Bounds x="202" y="212" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="208" y="255" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_125xdrj_di" bpmnElement="AdresVaststellenCallActivity">
+        <dc:Bounds x="450" y="190" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1shli3p_di" bpmnElement="InkomenVaststellenCallActivity">
+        <dc:Bounds x="450" y="320" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_131then_di" bpmnElement="ServiceTaskTask">
+        <dc:Bounds x="450" y="460" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1h1y6r2_di" bpmnElement="Event_1h1y6r2">
+        <dc:Bounds x="612" y="342" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0u5faqz_di" bpmnElement="Event_0u5faqz">
+        <dc:Bounds x="612" y="212" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_12qt73x_di" bpmnElement="Event_12qt73x">
+        <dc:Bounds x="752" y="482" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1144xe1_di" bpmnElement="GetActiveProcessInstancesTask">
+        <dc:Bounds x="610" y="460" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0j6mw8s_di" bpmnElement="Flow_0j6mw8s">
+        <di:waypoint x="550" y="360" />
+        <di:waypoint x="612" y="360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0cwf2w2_di" bpmnElement="Flow_0cwf2w2">
+        <di:waypoint x="550" y="230" />
+        <di:waypoint x="612" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_107gzf4_di" bpmnElement="Flow_107gzf4">
+        <di:waypoint x="330" y="255" />
+        <di:waypoint x="330" y="360" />
+        <di:waypoint x="450" y="360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0g9omlg_di" bpmnElement="Flow_0g9omlg">
+        <di:waypoint x="355" y="230" />
+        <di:waypoint x="450" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0p4rdm0_di" bpmnElement="Flow_0p4rdm0">
+        <di:waypoint x="238" y="230" />
+        <di:waypoint x="305" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1x5os66_di" bpmnElement="Flow_1x5os66">
+        <di:waypoint x="330" y="255" />
+        <di:waypoint x="330" y="500" />
+        <di:waypoint x="450" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1vi2d9m_di" bpmnElement="Flow_1vi2d9m">
+        <di:waypoint x="710" y="500" />
+        <di:waypoint x="752" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_09nfoqm_di" bpmnElement="Flow_09nfoqm">
+        <di:waypoint x="550" y="500" />
+        <di:waypoint x="610" y="500" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

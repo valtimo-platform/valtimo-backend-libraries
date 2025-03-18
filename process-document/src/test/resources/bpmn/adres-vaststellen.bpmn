@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.32.0">
+  <bpmn:collaboration id="Collaboration_1a0fkw3" isClosed="false">
+    <bpmn:participant id="AdresVaststellenParticipant" name="Adres vaststellen" processRef="adres-vaststellen" />
+  </bpmn:collaboration>
+  <bpmn:process id="adres-vaststellen" name="Adres vaststellen" processType="None" isClosed="false" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_1ghf2fs</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="Event_04k2ohb">
+      <bpmn:incoming>Flow_00ltyhc</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="AdresTask" name="Adres" camunda:asyncAfter="true" implementation="##unspecified" camunda:candidateGroups="ROLE_ADMIN">
+      <bpmn:incoming>Flow_0ymtmws</bpmn:incoming>
+      <bpmn:outgoing>Flow_00ltyhc</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="ServiceTask" name="Service" camunda:asyncAfter="true" implementation="##WebService" camunda:expression="${true}">
+      <bpmn:incoming>Flow_1ghf2fs</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ymtmws</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1ghf2fs" sourceRef="StartEvent_1" targetRef="ServiceTask" />
+    <bpmn:sequenceFlow id="Flow_00ltyhc" sourceRef="AdresTask" targetRef="Event_04k2ohb" />
+    <bpmn:sequenceFlow id="Flow_0ymtmws" sourceRef="ServiceTask" targetRef="AdresTask" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1a0fkw3">
+      <bpmndi:BPMNShape id="Participant_1n5wg0e_di" bpmnElement="AdresVaststellenParticipant" isHorizontal="true">
+        <dc:Bounds x="158" y="80" width="582" height="210" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="222" y="162" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_04k2ohb_di" bpmnElement="Event_04k2ohb">
+        <dc:Bounds x="642" y="162" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1ylwpug_di" bpmnElement="AdresTask">
+        <dc:Bounds x="480" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1td0uyk_di" bpmnElement="ServiceTask">
+        <dc:Bounds x="320" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1ghf2fs_di" bpmnElement="Flow_1ghf2fs">
+        <di:waypoint x="258" y="180" />
+        <di:waypoint x="320" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_00ltyhc_di" bpmnElement="Flow_00ltyhc">
+        <di:waypoint x="580" y="180" />
+        <di:waypoint x="642" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ymtmws_di" bpmnElement="Flow_0ymtmws">
+        <di:waypoint x="420" y="180" />
+        <di:waypoint x="480" y="180" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

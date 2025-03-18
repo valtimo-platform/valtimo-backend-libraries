@@ -21,8 +21,11 @@ import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
+import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.service.CamundaProcessService
+import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.stereotype.Service
 import java.util.UUID
 
@@ -31,7 +34,9 @@ import java.util.UUID
 class ProcessDocumentsService(
     private val documentService: DocumentService,
     private val camundaProcessService: CamundaProcessService,
-    private val associationService: ProcessDocumentAssociationService
+    private val associationService: ProcessDocumentAssociationService,
+    private val documentAssociationService: CamundaProcessJsonSchemaDocumentAssociationService,
+    private val processDocumentService: ProcessDocumentService,
 ) {
     //TODO: Determine what to with this
     fun startProcessByProcessDefinitionKey(processDefinitionKey: String, businessKey: String) {
@@ -55,6 +60,20 @@ class ProcessDocumentsService(
             processInstance.processDefinition.name!!,
             businessKey
         )
+    }
+
+    fun getActiveProcessInstancesName(execution: DelegateExecution): List<String> {
+        val processInstanceId = CamundaProcessInstanceId(execution.processInstanceId)
+        val documentId = processDocumentService.getDocumentId(processInstanceId, execution)
+        requireNotNull(documentId) {
+            "No associated document found for process instance ID: ${execution.processInstanceId}"
+        }
+        return documentAssociationService.findProcessDocumentInstances(documentId)
+            .asSequence()
+            .filter { it.isActive() }
+            .mapNotNull { it.processName() }
+            .distinct()
+            .toList()
     }
 
     private fun associateDocumentToProcess(

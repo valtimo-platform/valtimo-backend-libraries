@@ -40,6 +40,7 @@ import com.ritense.processdocument.service.ProcessDocumentDeploymentService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.ProcessDocumentsService
 import com.ritense.processdocument.service.ValueResolverDelegateService
+import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService
 import com.ritense.processdocument.tasksearch.TaskListSearchFieldV2Mapper
 import com.ritense.processdocument.tasksearch.TaskSearchFieldDeployer
 import com.ritense.processdocument.tasksearch.TaskSearchFieldExporter
@@ -142,13 +143,17 @@ class ProcessDocumentsAutoConfiguration {
     @ConditionalOnMissingBean(ProcessDocumentsService::class)
     fun processDocumentsService(
         documentService: DocumentService,
-        processDocumentAssociationService: ProcessDocumentAssociationService,
-        camundaProcessService: CamundaProcessService
+        camundaProcessService: CamundaProcessService,
+        associationService: ProcessDocumentAssociationService,
+        documentAssociationService: CamundaProcessJsonSchemaDocumentAssociationService,
+        processDocumentService: ProcessDocumentService
     ): ProcessDocumentsService {
         return ProcessDocumentsService(
             documentService,
             camundaProcessService,
-            processDocumentAssociationService
+            associationService,
+            documentAssociationService,
+            processDocumentService
         )
     }
 
