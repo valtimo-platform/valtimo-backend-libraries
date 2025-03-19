@@ -21,8 +21,9 @@ import com.ritense.case.domain.CaseDefinitionSettings
 data class CaseSettingsDto(
     val canHaveAssignee: Boolean? = null,
     val autoAssignTasks: Boolean? = null,
-    val hasExternalStartCaseForm: Boolean? = null,
-    val externalStartCaseFormUrl: String? = null,
+    val hasExternalStartForm: Boolean? = null,
+    val externalStartFormUrl: String? = null,
+    val externalStartFormDescription: String? = null,
 ) {
     fun update(currentSettings: CaseDefinitionSettings): CaseDefinitionSettings {
         return CaseDefinitionSettings(
@@ -32,10 +33,20 @@ data class CaseSettingsDto(
                 false -> false
                 else -> getSettingForUpdate(currentSettings.autoAssignTasks, this.autoAssignTasks) ?: false
             },
-            hasExternalStartCaseForm = getSettingForUpdate(currentSettings.hasExternalStartCaseForm, this.hasExternalStartCaseForm) ?: false,
-            externalStartCaseFormUrl = when (this.hasExternalStartCaseForm) {
+            hasExternalStartForm = getSettingForUpdate(
+                currentSettings.hasExternalStartForm,
+                this.hasExternalStartForm
+            ) ?: false,
+            externalStartFormUrl = when (this.hasExternalStartForm) {
                 false -> null
-                else -> getSettingForUpdate(currentSettings.externalStartCaseFormUrl, this.externalStartCaseFormUrl)
+                else -> getSettingForUpdate(currentSettings.externalStartFormUrl, this.externalStartFormUrl)
+            },
+            externalStartFormDescription = when (this.hasExternalStartForm) {
+                false -> null
+                else -> getSettingForUpdate(
+                    currentSettings.externalStartFormUrl,
+                    this.externalStartFormDescription
+                )
             }
         )
     }
@@ -49,8 +60,9 @@ data class CaseSettingsDto(
         fun from(settings: CaseDefinitionSettings) = CaseSettingsDto(
             canHaveAssignee = settings.canHaveAssignee,
             autoAssignTasks = settings.autoAssignTasks,
-            hasExternalStartCaseForm = settings.hasExternalStartCaseForm,
-            externalStartCaseFormUrl = settings.externalStartCaseFormUrl
+            hasExternalStartForm = settings.hasExternalStartForm,
+            externalStartFormUrl = settings.externalStartFormUrl,
+            externalStartFormDescription = settings.externalStartFormDescription,
         )
     }
 }

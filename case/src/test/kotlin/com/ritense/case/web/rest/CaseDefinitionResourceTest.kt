@@ -46,8 +46,8 @@ class CaseDefinitionResourceTest {
             name = caseDefinitionName(),
             canHaveAssignee = true,
             autoAssignTasks = false,
-            hasExternalStartCaseForm = false,
-            externalStartCaseFormUrl = null
+            hasExternalStartForm = false,
+            externalStartFormUrl = null
         )
 
         whenever(service.getCaseSettings(caseDefinitionName()))
@@ -68,8 +68,8 @@ class CaseDefinitionResourceTest {
             .andExpect(jsonPath(NAME).value(caseDefinitionName()))
             .andExpect(jsonPath("$.canHaveAssignee").value(true))
             .andExpect(jsonPath(AUTO_ASSIGN_TASKS).value(false))
-            .andExpect(jsonPath(HAS_EXTERNAL_CREATE_CASE_FORM).value(false))
-            .andExpect(jsonPath(EXTERNAL_START_CASE_FORM_URL, nullValue()))
+            .andExpect(jsonPath(HAS_EXTERNAL_CREATE_FORM).value(false))
+            .andExpect(jsonPath(EXTERNAL_START_FORM_URL, nullValue()))
 
         verify(service).getCaseSettings(caseDefinitionName())
     }
@@ -105,8 +105,8 @@ class CaseDefinitionResourceTest {
             .andExpect(jsonPath(NAME).value(caseDefinitionName()))
             .andExpect(jsonPath(CAN_HAVE_ASSIGNEE).value(true))
             .andExpect(jsonPath(AUTO_ASSIGN_TASKS).value(false))
-            .andExpect(jsonPath(HAS_EXTERNAL_CREATE_CASE_FORM).value(false))
-            .andExpect(jsonPath(EXTERNAL_START_CASE_FORM_URL, nullValue()))
+            .andExpect(jsonPath(HAS_EXTERNAL_CREATE_FORM).value(false))
+            .andExpect(jsonPath(EXTERNAL_START_FORM_URL, nullValue()))
 
         verify(service).updateCaseSettings(caseDefinitionName(), caseSettingsDto)
     }
@@ -116,12 +116,12 @@ class CaseDefinitionResourceTest {
         val externalFormUrl = "https://www.example.com/start-case-form"
         val caseDefinitionSettings = CaseDefinitionSettings(
             name = caseDefinitionName(),
-            hasExternalStartCaseForm = true,
-            externalStartCaseFormUrl = externalFormUrl
+            hasExternalStartForm = true,
+            externalStartFormUrl = externalFormUrl
         )
         val caseSettingsDto = CaseSettingsDto(
-            hasExternalStartCaseForm = true,
-            externalStartCaseFormUrl = externalFormUrl
+            hasExternalStartForm = true,
+            externalStartFormUrl = externalFormUrl
         )
 
         whenever(service.updateCaseSettings(caseDefinitionName(), caseSettingsDto))
@@ -143,8 +143,8 @@ class CaseDefinitionResourceTest {
             .andExpect(jsonPath(NAME).value(caseDefinitionName()))
             .andExpect(jsonPath(CAN_HAVE_ASSIGNEE).value(false))
             .andExpect(jsonPath(AUTO_ASSIGN_TASKS).value(false))
-            .andExpect(jsonPath(HAS_EXTERNAL_CREATE_CASE_FORM).value(true))
-            .andExpect(jsonPath(EXTERNAL_START_CASE_FORM_URL).value(externalFormUrl))
+            .andExpect(jsonPath(HAS_EXTERNAL_CREATE_FORM).value(true))
+            .andExpect(jsonPath(EXTERNAL_START_FORM_URL).value(externalFormUrl))
 
         verify(service).updateCaseSettings(caseDefinitionName(), caseSettingsDto)
     }
@@ -185,7 +185,7 @@ class CaseDefinitionResourceTest {
         private const val NAME = "$.name"
         private const val CAN_HAVE_ASSIGNEE = "$.canHaveAssignee"
         private const val AUTO_ASSIGN_TASKS = "$.autoAssignTasks"
-        private const val HAS_EXTERNAL_CREATE_CASE_FORM = "$.hasExternalStartCaseForm"
-        private const val EXTERNAL_START_CASE_FORM_URL = "$.externalStartCaseFormUrl"
+        private const val HAS_EXTERNAL_CREATE_FORM = "$.hasExternalStartForm"
+        private const val EXTERNAL_START_FORM_URL = "$.externalStartFormUrl"
     }
 }

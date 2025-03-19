@@ -91,8 +91,8 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             .andExpect(jsonPath(NAME).value(caseDefinitionName))
             .andExpect(jsonPath(CAN_HAVE_ASSIGNEE).value(false))
             .andExpect(jsonPath(AUTO_ASSIGN_TASKS).value(false))
-            .andExpect(jsonPath(HAS_EXTERNAL_START_CASE_FORM).value(false))
-            .andExpect(jsonPath(EXTERNAL_START_CASE_FORM_URL, nullValue()))
+            .andExpect(jsonPath(HAS_EXTERNAL_START_FORM).value(false))
+            .andExpect(jsonPath(EXTERNAL_START_FORM_URL, nullValue()))
     }
 
     @Test
@@ -112,8 +112,8 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             .andExpect(jsonPath(NAME).value(caseDefinitionName))
             .andExpect(jsonPath(CAN_HAVE_ASSIGNEE).value(false))
             .andExpect(jsonPath(AUTO_ASSIGN_TASKS).value(false))
-            .andExpect(jsonPath(HAS_EXTERNAL_START_CASE_FORM).value(false))
-            .andExpect(jsonPath(EXTERNAL_START_CASE_FORM_URL, nullValue()))
+            .andExpect(jsonPath(HAS_EXTERNAL_START_FORM).value(false))
+            .andExpect(jsonPath(EXTERNAL_START_FORM_URL, nullValue()))
     }
 
     @Deprecated("Since 11.0.0")
@@ -133,8 +133,8 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             .andExpect(jsonPath(ROOT).isNotEmpty)
             .andExpect(jsonPath(NAME).value(caseDefinitionName))
             .andExpect(jsonPath(CAN_HAVE_ASSIGNEE).value(true))
-            .andExpect(jsonPath(HAS_EXTERNAL_START_CASE_FORM).value(false))
-            .andExpect(jsonPath(EXTERNAL_START_CASE_FORM_URL, nullValue()))
+            .andExpect(jsonPath(HAS_EXTERNAL_START_FORM).value(false))
+            .andExpect(jsonPath(EXTERNAL_START_FORM_URL, nullValue()))
         val settingsInDatabase = caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)
         assertEquals(caseDefinitionName, settingsInDatabase.name)
         assertEquals(true, settingsInDatabase.canHaveAssignee)
@@ -157,8 +157,8 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             .andExpect(jsonPath(ROOT).isNotEmpty)
             .andExpect(jsonPath(NAME).value(caseDefinitionName))
             .andExpect(jsonPath(CAN_HAVE_ASSIGNEE).value(true))
-            .andExpect(jsonPath(HAS_EXTERNAL_START_CASE_FORM).value(false))
-            .andExpect(jsonPath(EXTERNAL_START_CASE_FORM_URL, nullValue()))
+            .andExpect(jsonPath(HAS_EXTERNAL_START_FORM).value(false))
+            .andExpect(jsonPath(EXTERNAL_START_FORM_URL, nullValue()))
         val settingsInDatabase = caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)
         assertEquals(caseDefinitionName, settingsInDatabase.name)
         assertEquals(true, settingsInDatabase.canHaveAssignee)
@@ -188,8 +188,8 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             .andExpect(jsonPath(NAME).value(caseDefinitionName))
             .andExpect(jsonPath(CAN_HAVE_ASSIGNEE).value(true))
             .andExpect(jsonPath(AUTO_ASSIGN_TASKS).value(true))
-            .andExpect(jsonPath(HAS_EXTERNAL_START_CASE_FORM).value(false))
-            .andExpect(jsonPath(EXTERNAL_START_CASE_FORM_URL, nullValue()))
+            .andExpect(jsonPath(HAS_EXTERNAL_START_FORM).value(false))
+            .andExpect(jsonPath(EXTERNAL_START_FORM_URL, nullValue()))
         val settingsInDatabase = caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)
         assertEquals(caseDefinitionName, settingsInDatabase.name)
         assertEquals(true, settingsInDatabase.canHaveAssignee)
@@ -207,8 +207,8 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             caseDefinitionName,
             canHaveAssignee = true,
             autoAssignTasks = true,
-            hasExternalStartCaseForm = true,
-            externalStartCaseFormUrl = externalFormUrl
+            hasExternalStartForm = true,
+            externalStartFormUrl = externalFormUrl
         )
         caseDefinitionSettingsRepository.save(settings)
         mockMvc
@@ -222,8 +222,8 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             .andExpect(jsonPath(NAME).value(caseDefinitionName))
             .andExpect(jsonPath(CAN_HAVE_ASSIGNEE).value(true))
             .andExpect(jsonPath(AUTO_ASSIGN_TASKS).value(true))
-            .andExpect(jsonPath(HAS_EXTERNAL_START_CASE_FORM).value(true))
-            .andExpect(jsonPath(EXTERNAL_START_CASE_FORM_URL).value(externalFormUrl))
+            .andExpect(jsonPath(HAS_EXTERNAL_START_FORM).value(true))
+            .andExpect(jsonPath(EXTERNAL_START_FORM_URL).value(externalFormUrl))
         val settingsInDatabase = caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)
         assertEquals(caseDefinitionName, settingsInDatabase.name)
         assertEquals(true, settingsInDatabase.canHaveAssignee)
@@ -244,8 +244,8 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                     .content(
                         """
                         {
-                            "hasExternalStartCaseForm": true,
-                            "externalStartCaseFormUrl": "$externalFormUrl"
+                            "hasExternalStartForm": true,
+                            "externalStartFormUrl": "$externalFormUrl"
                         }
                         """.trimIndent()
                     )
@@ -253,12 +253,12 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             .andExpect(status().isOk)
             .andExpect(jsonPath(ROOT).isNotEmpty)
             .andExpect(jsonPath(NAME).value(caseDefinitionName))
-            .andExpect(jsonPath(HAS_EXTERNAL_START_CASE_FORM).value(true))
-            .andExpect(jsonPath(EXTERNAL_START_CASE_FORM_URL).value(externalFormUrl))
+            .andExpect(jsonPath(HAS_EXTERNAL_START_FORM).value(true))
+            .andExpect(jsonPath(EXTERNAL_START_FORM_URL).value(externalFormUrl))
         val settingsInDatabase = caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)
         assertEquals(caseDefinitionName, settingsInDatabase.name)
-        assertEquals(true, settingsInDatabase.hasExternalStartCaseForm)
-        assertEquals(externalFormUrl, settingsInDatabase.externalStartCaseFormUrl)
+        assertEquals(true, settingsInDatabase.hasExternalStartForm)
+        assertEquals(externalFormUrl, settingsInDatabase.externalStartFormUrl)
     }
 
     @Test
@@ -275,8 +275,8 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                     .content(
                         """
                         {
-                            "hasExternalStartCaseForm": true,
-                            "externalStartCaseFormUrl": "   "
+                            "hasExternalStartForm": true,
+                            "externalStartFormUrl": "   "
                         }
                         """.trimIndent()
                     )
@@ -298,8 +298,8 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                     .content(
                         """
                         {
-                            "hasExternalStartCaseForm": true,
-                            "externalStartCaseFormUrl": "this is not a valid url"
+                            "hasExternalStartForm": true,
+                            "externalStartFormUrl": "this is not a valid url"
                         }
                         """.trimIndent()
                     )
@@ -447,7 +447,8 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
         mockMvc.perform(
             MockMvcRequestBuilders.post("/api/v1/case/{caseDefinitionName}/list-column", caseDefinitionName)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content("""
+                .content(
+                    """
                     {
                       "title": "First name",
                       "key": "first-name",
@@ -461,7 +462,8 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                       "sortable": true,
                       "defaultSort": "ASC"
                     }
-                """.trimIndent())
+                """.trimIndent()
+                )
         ).andDo { result -> print(result.response.contentAsString) }
             .andExpect(status().isBadRequest)
     }
@@ -920,7 +922,11 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                 """.trimIndent(), status().isOk
         )
         mockMvc.perform(
-            MockMvcRequestBuilders.delete("/api/management/v1/case/{caseDefinitionName}/list-column/{columnKey}", caseDefinitionName, columnKey)
+            MockMvcRequestBuilders.delete(
+                "/api/management/v1/case/{caseDefinitionName}/list-column/{columnKey}",
+                caseDefinitionName,
+                columnKey
+            )
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andExpect(status().isNoContent)
     }
@@ -982,7 +988,11 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
         }
         val columnKey = "first-name"
         mockMvc.perform(
-            MockMvcRequestBuilders.delete("/api/management/v1/case/{caseDefinitionName}/list-column/{columnKey}", caseDefinitionName, columnKey)
+            MockMvcRequestBuilders.delete(
+                "/api/management/v1/case/{caseDefinitionName}/list-column/{columnKey}",
+                caseDefinitionName,
+                columnKey
+            )
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andExpect(status().isNoContent)
     }
@@ -1004,7 +1014,11 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
         val caseDefinitionName = "listColumnDocumentDefinition"
         val columnKey = "first-name"
         mockMvc.perform(
-            MockMvcRequestBuilders.delete("/api/management/v1/case/{caseDefinitionName}/list-column/{columnKey}", caseDefinitionName, columnKey)
+            MockMvcRequestBuilders.delete(
+                "/api/management/v1/case/{caseDefinitionName}/list-column/{columnKey}",
+                caseDefinitionName,
+                columnKey
+            )
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andExpect(status().isBadRequest)
     }
@@ -1308,7 +1322,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
         private const val NAME = "$.name"
         private const val CAN_HAVE_ASSIGNEE = "$.canHaveAssignee"
         private const val AUTO_ASSIGN_TASKS = "$.autoAssignTasks"
-        private const val HAS_EXTERNAL_START_CASE_FORM = "$.hasExternalStartCaseForm"
-        private const val EXTERNAL_START_CASE_FORM_URL = "$.externalStartCaseFormUrl"
+        private const val HAS_EXTERNAL_START_FORM = "$.hasExternalStartForm"
+        private const val EXTERNAL_START_FORM_URL = "$.externalStartFormUrl"
     }
 }

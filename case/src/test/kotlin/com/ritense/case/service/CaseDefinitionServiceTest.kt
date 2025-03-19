@@ -76,8 +76,8 @@ class CaseDefinitionServiceTest {
         val caseDefinitionSettings = CaseDefinitionSettings(
             name = caseDefinitionName,
             canHaveAssignee = true,
-            hasExternalStartCaseForm = true,
-            externalStartCaseFormUrl = externalFormUrl
+            hasExternalStartForm = true,
+            externalStartFormUrl = externalFormUrl
         )
 
         whenever(documentDefinitionService.findLatestByName(caseDefinitionName))
@@ -90,8 +90,8 @@ class CaseDefinitionServiceTest {
         verify(caseDefinitionSettingsRepository).getReferenceById(caseDefinitionName)
         assertEquals(caseDefinitionName, foundCaseDefinitionSettings.name)
         assertTrue(foundCaseDefinitionSettings.canHaveAssignee)
-        assertTrue(foundCaseDefinitionSettings.hasExternalStartCaseForm)
-        assertEquals(externalFormUrl, foundCaseDefinitionSettings.externalStartCaseFormUrl)
+        assertTrue(foundCaseDefinitionSettings.hasExternalStartForm)
+        assertEquals(externalFormUrl, foundCaseDefinitionSettings.externalStartFormUrl)
     }
 
     @Test
@@ -121,8 +121,8 @@ class CaseDefinitionServiceTest {
             .thenReturn(currentCaseDefinitionSettings)
         whenever(caseDefinitionSettingsRepository.save(updatedCaseDefinitionSettings))
             .thenReturn(
-            updatedCaseDefinitionSettings
-        )
+                updatedCaseDefinitionSettings
+            )
         whenever(caseSettingsDto.update(currentCaseDefinitionSettings))
             .thenReturn(updatedCaseDefinitionSettings)
 
@@ -137,12 +137,12 @@ class CaseDefinitionServiceTest {
         val caseDefinitionName = "name"
         val currentCaseDefinitionSettings = CaseDefinitionSettings(
             name = caseDefinitionName,
-            hasExternalStartCaseForm = false
+            hasExternalStartForm = false
         )
         val updatedCaseDefinitionSettings = CaseDefinitionSettings(
             name = caseDefinitionName,
-            hasExternalStartCaseForm = true,
-            externalStartCaseFormUrl = "https://www.example.com/external-form"
+            hasExternalStartForm = true,
+            externalStartFormUrl = "https://www.example.com/external-form"
         )
         val caseSettingsDto: CaseSettingsDto = mock()
         whenever(documentDefinitionService.findLatestByName(caseDefinitionName))
@@ -151,8 +151,8 @@ class CaseDefinitionServiceTest {
             .thenReturn(currentCaseDefinitionSettings)
         whenever(caseDefinitionSettingsRepository.save(updatedCaseDefinitionSettings))
             .thenReturn(
-            updatedCaseDefinitionSettings
-        )
+                updatedCaseDefinitionSettings
+            )
         whenever(caseSettingsDto.update(currentCaseDefinitionSettings))
             .thenReturn(updatedCaseDefinitionSettings)
 
@@ -261,8 +261,8 @@ class CaseDefinitionServiceTest {
         doAnswer {
             throw ValueResolverValidationException(
                 "JsonPath '"
-                        + listColumnDto.path +
-                        "' doesn't point to any property inside document definition '" + caseDefinitionName + "'"
+                    + listColumnDto.path +
+                    "' doesn't point to any property inside document definition '" + caseDefinitionName + "'"
             )
         }
             .whenever(valueResolverService).validateValues(caseDefinitionName, listOf(listColumnDto.path))
@@ -276,8 +276,8 @@ class CaseDefinitionServiceTest {
         verify(valueResolverService).validateValues(caseDefinitionName, listOf(listColumnDto.path))
         assertEquals(
             "JsonPath '"
-                    + listColumnDto.path +
-                    "' doesn't point to any property inside document definition '" + caseDefinitionName + "'",
+                + listColumnDto.path +
+                "' doesn't point to any property inside document definition '" + caseDefinitionName + "'",
             exception.message
         )
 
@@ -387,8 +387,8 @@ class CaseDefinitionServiceTest {
         doAnswer {
             throw ValueResolverValidationException(
                 "JsonPath '"
-                        + listColumnDtoFirstName.path +
-                        "' doesn't point to any property inside document definition '" + caseDefinitionName + "'"
+                    + listColumnDtoFirstName.path +
+                    "' doesn't point to any property inside document definition '" + caseDefinitionName + "'"
             )
         }
             .whenever(valueResolverService).validateValues(caseDefinitionName, listOf(listColumnDtoFirstName.path))
@@ -402,8 +402,8 @@ class CaseDefinitionServiceTest {
         verify(valueResolverService).validateValues(caseDefinitionName, listOf(listColumnDtoFirstName.path))
         assertEquals(
             "JsonPath '"
-                    + listColumnDtoFirstName.path +
-                    "' doesn't point to any property inside document definition '" + caseDefinitionName + "'",
+                + listColumnDtoFirstName.path +
+                "' doesn't point to any property inside document definition '" + caseDefinitionName + "'",
             exception.message
         )
     }

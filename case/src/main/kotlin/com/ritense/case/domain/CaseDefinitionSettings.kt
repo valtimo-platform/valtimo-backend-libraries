@@ -32,10 +32,12 @@ class CaseDefinitionSettings(
     val canHaveAssignee: Boolean = false,
     @Column(name = "auto_assign_tasks", nullable = false)
     val autoAssignTasks: Boolean = false,
-    @Column(name = "has_external_start_case_form", nullable = false)
-    val hasExternalStartCaseForm: Boolean = false,
-    @Column(name = "external_start_case_form_url", nullable = true, length = 512)
-    val externalStartCaseFormUrl: String? = null,
+    @Column(name = "has_external_start_form", nullable = false)
+    val hasExternalStartForm: Boolean = false,
+    @Column(name = "external_start_form_url", nullable = true, length = 512)
+    val externalStartFormUrl: String? = null,
+    @Column(name = "external_start_form_description", nullable = true, length = 512)
+    val externalStartFormDescription: String? = null,
 ) {
     init {
         require(
@@ -45,28 +47,36 @@ class CaseDefinitionSettings(
             }
         ) { "Case property [autoAssignTasks] can only be true when [canHaveAssignee] is true." }
         require(
-            when (hasExternalStartCaseForm) {
-                true -> !externalStartCaseFormUrl.isNullOrBlank()
+            when (hasExternalStartForm) {
+                true -> !externalStartFormUrl.isNullOrBlank()
                 else -> true
             }
         ) {
-            "Case property [hasExternalStartCaseForm] can only be true when [externalStartCaseFormUrl] is not null or blank."
+            "Case property [hasExternalStartForm] can only be true when [externalStartFormUrl] is not null or blank."
         }
         require(
-            when (hasExternalStartCaseForm) {
-                true -> UrlValidator(arrayOf("http", "https")).isValid(externalStartCaseFormUrl)
+            when (hasExternalStartForm) {
+                true -> UrlValidator(arrayOf("http", "https")).isValid(externalStartFormUrl)
                 else -> true
             }
         ) {
-            "Case property [externalStartCaseFormUrl] is not a valid URL."
+            "Case property [externalStartFormUrl] is not a valid URL."
         }
         require(
-            when (hasExternalStartCaseForm && !externalStartCaseFormUrl.isNullOrBlank()) {
-                true -> externalStartCaseFormUrl.length <= 512
+            when (hasExternalStartForm && !externalStartFormUrl.isNullOrBlank()) {
+                true -> externalStartFormUrl.length <= 512
                 else -> true
             }
         ) {
-            "Case property [externalStartCaseFormUrl] exceeds the maximum length of 512 characters."
+            "Case property [externalStartFormUrl] exceeds the maximum length of 512 characters."
+        }
+        require(
+            when (hasExternalStartForm && !externalStartFormDescription.isNullOrBlank()) {
+                true -> externalStartFormDescription.length <= 512
+                else -> true
+            }
+        ) {
+            "Case property [externalStartFormDescription] exceeds the maximum length of 512 characters."
         }
     }
 }

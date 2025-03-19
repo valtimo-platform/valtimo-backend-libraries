@@ -24,8 +24,11 @@
 
     <changeSet id="20250122-columns-for-external-start-case-form-case_definition" author="Ritense">
         <addColumn tableName="case_definition">
-            <column name="has_external_start_case_form" type="BOOLEAN" defaultValueBoolean="${booleanFalseValue}"/>
-            <column name="external_start_case_form_url" type="VARCHAR(512)">
+            <column name="has_external_start_form" type="BOOLEAN" defaultValueBoolean="${booleanFalseValue}"/>
+            <column name="external_start_form_url" type="VARCHAR(512)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="external_start_form_description" type="VARCHAR(512)">
                 <constraints nullable="true"/>
             </column>
         </addColumn>
