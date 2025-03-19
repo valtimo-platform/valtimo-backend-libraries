@@ -78,11 +78,16 @@ class CamundaRuntimeService(
     fun getVariablesByJsonPointers(processInstanceId: String, variablePointers: List<JsonPointer>): Map<String, Any?> {
         denyAuthorization()
 
-        val variableNameMap = variablePointers.associateBy { it.matchingProperty }
-        return getVariables(processInstanceId, variableNameMap.keys.toList())
-            .map { (key, value) ->
-                val jsonPointer = variableNameMap[key]!!
-                jsonPointer.toString() to getValue(objectMapper.valueToTree<JsonNode>(value).at(jsonPointer.tail()))
+        val variableNames = variablePointers
+            .map { it.matchingProperty }
+            .distinct()
+
+        return getVariables(processInstanceId, variableNames)
+            .flatMap { (variableName, variableValue) ->
+                variablePointers
+                    .filter { it.matchingProperty == variableName }
+                    .map { it to objectMapper.valueToTree<JsonNode>(variableValue).at(it.tail()) }
+                    .map { it.first.toString() to getValue(it.second) }
             }.toMap()
     }
 

@@ -203,13 +203,72 @@ internal class ProcessVariableValueResolverTest {
 
     @Test
     fun `should handle value from process variables`() {
-        val variableScope = DelegateTaskFake()
+        val variableScope = mock<DelegateTaskFake>()
         val processInstanceId = UUID.randomUUID().toString()
 
         processVariableValueResolver.handleValues(
             processInstanceId, variableScope, mapOf("firstName" to "John")
         )
 
+        verify(variableScope).setVariables(mapOf("firstName" to "John"))
+    }
+
+    @Test
+    fun `should handle value from process variables from runtimeService`() {
+        val processInstanceId = UUID.randomUUID().toString()
+
+        processVariableValueResolver.handleValues(
+            processInstanceId, null, mapOf("firstName" to "John")
+        )
+
         verify(runtimeService).setVariables(processInstanceId, mapOf("firstName" to "John"))
+    }
+
+    @Test
+    fun `should handle json values from process variables`() {
+        val processInstanceId = UUID.randomUUID().toString()
+
+        processVariableValueResolver.handleValues(
+            processInstanceId, null, mapOf("person.firstName" to "John")
+        )
+
+        verify(runtimeService).setVariables(processInstanceId, mapOf("person" to mapOf("firstName" to "John")))
+    }
+
+    @Test
+    fun `should handle json values and merge them with existing process variables`() {
+        val processInstanceId = UUID.randomUUID().toString()
+        whenever(runtimeService.getVariables(processInstanceId, listOf("person")))
+            .thenReturn(mapOf("person" to mapOf("firstName" to "John", "lastName" to "Doe")))
+
+        processVariableValueResolver.handleValues(
+            processInstanceId, null, mapOf("person.firstName" to "Hans")
+        )
+
+        verify(runtimeService).setVariables(
+            processInstanceId,
+            mapOf("person" to mapOf("firstName" to "Hans", "lastName" to "Doe"))
+        )
+    }
+
+    @Test
+    fun `should handle json arrays and merge them with existing process variables`() {
+        val processInstanceId = UUID.randomUUID().toString()
+        whenever(runtimeService.getVariables(processInstanceId, listOf("employees")))
+            .thenReturn(mapOf("employees" to listOf(mapOf("firstName" to "John", "lastName" to "Doe"))))
+
+        processVariableValueResolver.handleValues(
+            processInstanceId, null, mapOf("employees.0.firstName" to "Hans", "employees.-.firstName" to "Peter")
+        )
+
+        verify(runtimeService).setVariables(
+            processInstanceId,
+            mapOf(
+                "employees" to listOf(
+                    mapOf("firstName" to "Hans", "lastName" to "Doe"),
+                    mapOf("firstName" to "Peter")
+                )
+            )
+        )
     }
 }

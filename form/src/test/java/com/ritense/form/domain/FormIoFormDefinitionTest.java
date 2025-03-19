@@ -120,6 +120,21 @@ class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
+    void shouldPrefillWithSupportForJsonPointers() throws IOException {
+        final var formDefinition = formDefinitionOf("process-variables-with-json-pointers");
+        Map<String, Object> content = Map.of(
+            "person", Map.of("firstName", "John"),
+            "incidents", List.of(Map.of("name", "Err 123"))
+        );
+
+        final var formDefinitionPreFilled = formDefinition.preFillWith("pv", content);
+
+        final var components = formDefinitionPreFilled.getFormDefinition().get("components");
+        assertThat(components.get(0).get("defaultValue").asText()).isEqualTo("John");
+        assertThat(components.get(1).get("defaultValue").asText()).isEqualTo("Err 123");
+    }
+
+    @Test
     void shouldNotEscapeHtmlAtPreFill() throws IOException {
         final var formDefinition = formDefinitionOf("process-variables-form-example");
 
@@ -321,6 +336,26 @@ class FormIoFormDefinitionTest extends BaseTest {
         var targetKey = FormIoFormDefinition.resolveTargetKey(formData).orElseThrow();
 
         assertEquals("pv:uploadReceipt", targetKey);
+    }
+
+    @Test
+    void shouldResolveSourceKeyFromTargetKeyProperty() throws IOException {
+        final var formData = MapperSingleton.get().readValue("""
+          {
+              "key": "pv.key",
+              "type": "documenten-api-file",
+              "input": true,
+              "label": "Upload receipt",
+              "properties": {
+                  "sourceKey": "pv:sourceKey",
+                  "targetKey": "pv:uploadReceipt"
+              }
+          }
+        """, JsonNode.class);
+
+        var sourceKey = FormIoFormDefinition.resolveSourceKey(formData).orElseThrow();
+
+        assertEquals("pv:sourceKey", sourceKey);
     }
 
     @Test

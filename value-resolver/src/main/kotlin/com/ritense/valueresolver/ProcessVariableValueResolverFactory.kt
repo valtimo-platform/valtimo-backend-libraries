@@ -19,11 +19,8 @@ package com.ritense.valueresolver
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.JsonNodeFactory
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.flipkart.zjsonpatch.JsonPatch
-import com.ritense.valtimo.contract.json.MapperSingleton.get
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.VariableScope
@@ -88,46 +85,39 @@ class ProcessVariableValueResolverFactory(
         }
     }
 
-    private fun getValue(valueNode: JsonNode): Any? {
-        return if (valueNode.isMissingNode) {
-            null
-        } else {
-            objectMapper.treeToValue(valueNode)
-        }
-    }
-
     override fun handleValues(
         processInstanceId: String,
         variableScope: VariableScope?,
         values: Map<String, Any?>
     ) {
-        val rootNode = JsonNodeFactory.instance.objectNode()
-        values.forEach { (path, value) ->
-            var node = rootNode
-            val pathParts = path.split('.', '/').filter { it.isNotBlank() }
-                (prefix + "/" + fieldJsonPointer).split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-            for (i in 0..<path.size - 1) {
-                val fieldName = path[i]
-                if (!fieldName.isEmpty()) {
-                    val nextNode: ObjectNode
-                    if (node[fieldName] is ObjectNode) {
-                        nextNode = objectNode
-                    } else {
-                        nextNode = JsonNodeFactory.instance.objectNode()
-                        node.set<JsonNode>(fieldName, nextNode)
-                    }
-                    node = nextNode
-                }
-            }
-            node.set<JsonNode>(
-                path[path.size - 1],
-                get().valueToTree<JsonNode>(value)
-            )
+        val variableNames = values.keys
+            .map { variablePath -> toJsonPointer(variablePath).matchingProperty }
+            .distinct()
+        val existingValues = if (variableScope == null) {
+            runtimeService.getVariables(processInstanceId, variableNames)
+        } else {
+            variableNames
+                .associateWith { variableName -> variableScope.getVariable(variableName) }
+        }
+
+        val root = objectMapper.valueToTree<JsonNode>(existingValues)
+        buildJsonPatch(root, values)
+        val newValues = objectMapper.treeToValue<Map<String, Any?>>(root)
+
+        if (variableScope == null) {
+            runtimeService.setVariables(processInstanceId, newValues)
+        } else {
+            variableScope.variables = newValues
         }
     }
 
     override fun preProcessValuesForNewCase(values: Map<String, Any?>): Map<String, Any> {
         val jsonNode = objectMapper.createObjectNode()
+        buildJsonPatch(jsonNode, values)
+        return objectMapper.treeToValue(jsonNode)
+    }
+
+    private fun buildJsonPatch(jsonNode: JsonNode, values: Map<String, Any?>) {
         val jsonPatchBuilder = JsonPatchBuilder()
 
         values.forEach {
@@ -137,7 +127,14 @@ class ProcessVariableValueResolverFactory(
         }
 
         JsonPatch.applyInPlace(jsonPatchBuilder.build().toJson(), jsonNode)
-        return objectMapper.treeToValue(jsonNode)
+    }
+
+    private fun getValue(valueNode: JsonNode): Any? {
+        return if (valueNode.isMissingNode) {
+            null
+        } else {
+            objectMapper.treeToValue(valueNode)
+        }
     }
 
     private fun toJsonPointer(path: String): JsonPointer {
@@ -147,6 +144,7 @@ class ProcessVariableValueResolverFactory(
         }
         return JsonPointer.valueOf(newPath.replace('.', '/'))
     }
+
     private fun isPath(path: String): Boolean {
         return path.contains('.') || path.contains('/')
     }

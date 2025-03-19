@@ -129,7 +129,7 @@ internal class ValueResolverFactoryServiceImplTest {
     @Test
     fun `Should handle list of values`() {
         val processInstanceId = UUID.randomUUID().toString()
-        val variableScope = DelegateTaskFake()
+        val variableScope = mock<DelegateTaskFake>()
 
         resolverService.handleValues(
             processInstanceId, variableScope, mapOf(
@@ -139,7 +139,7 @@ internal class ValueResolverFactoryServiceImplTest {
             )
         )
 
-        verify(runtimeService).setVariables(processInstanceId, mapOf(
+        verify(variableScope).setVariables(mapOf(
             "firstName" to "John",
             "lastName" to "Doe",
             "active" to true,

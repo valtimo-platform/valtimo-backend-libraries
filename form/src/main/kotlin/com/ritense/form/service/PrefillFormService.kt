@@ -133,7 +133,7 @@ class PrefillFormService(
             .filter { FormIoFormDefinition.HAS_PREFILL_ENABLED.test(it) }
             .mapNotNull {
                 val inputKey = FormIoFormDefinition.getKey(it)
-                val sourceKey = FormIoFormDefinition.getSourceKey(it)
+                val sourceKey = FormIoFormDefinition.resolveSourceKey(it)
                 if (inputKey.isPresent && sourceKey.isPresent) {
                     Pair(inputKey.get(), sourceKey.get())
                 } else {
@@ -164,7 +164,7 @@ class PrefillFormService(
     }
 
     private fun prefillProcessVariables(formDefinition: FormIoFormDefinition, document: Document) {
-        val processVarPointers = formDefinition.extractProcessVarNames().map { toJsonPointer(it) }
+        val processVarPointers = formDefinition.extractProcessVarJsonPointers()
         val processInstanceVariables = runWithoutAuthorization {
             processDocumentAssociationService.findProcessDocumentInstances(document.id())
                 .map { it.processDocumentInstanceId().processInstanceId().toString() }
@@ -174,14 +174,6 @@ class PrefillFormService(
         if (processInstanceVariables.isNotEmpty()) {
             formDefinition.preFillWith(FormIoFormDefinition.PROCESS_VAR_PREFIX, processInstanceVariables)
         }
-    }
-
-    private fun toJsonPointer(path: String): JsonPointer {
-        var newPath: String = path
-        if (!path.startsWith('/')) {
-            newPath = "/${path}"
-        }
-        return JsonPointer.valueOf(newPath.replace('.', '/'))
     }
 
     private fun prefillDataResolverFields(
