@@ -319,7 +319,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         return getDocumentContentVarStatic(field);
     }
 
-    public static Optional<ContentItem> getDocumentContentVarStatic(JsonNode field) {
+    private static Optional<ContentItem> getDocumentContentVarStatic(JsonNode field) {
         if (isDocumentContentVar(field)) {
             String key = getFieldKey(field);
             if (!key.isEmpty() && !key.startsWith(PROCESS_VAR_PREFIX)) {
