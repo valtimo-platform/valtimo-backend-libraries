@@ -21,9 +21,25 @@ import com.ritense.processdocument.domain.ProcessDefinitionCaseDefinitionId
 import com.ritense.processdocument.domain.ProcessDefinitionId
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
+import org.springframework.lang.Nullable
 
 interface ProcessDefinitionCaseDefinitionRepository:
     JpaRepository<ProcessDefinitionCaseDefinition, ProcessDefinitionCaseDefinitionId> {
     fun findByIdCaseDefinitionId(caseDefinitionId: CaseDefinitionId): List<ProcessDefinitionCaseDefinition>
     fun findByIdProcessDefinitionId(processDefinitionId: ProcessDefinitionId): ProcessDefinitionCaseDefinition
+
+    @Query(
+        ("SELECT  pdcd " +
+            "FROM    ProcessDefinitionCaseDefinition pdcd " +
+            "WHERE   pdcd.id.caseDefinitionId = :caseDefinitionId " +
+            "AND (:startableByUser IS NULL OR pdcd.startableByUser = :startableByUser)" +
+            "AND (:canInitializeDocument IS NULL OR pdcd.canInitializeDocument = :canInitializeDocument)")
+    )
+    fun findAll(
+        @Param("caseDefinitionId") caseDefinitionId: CaseDefinitionId,
+        @Nullable @Param("startableByUser") startableByUser: Boolean?,
+        @Nullable @Param("canInitializeDocument") canInitializeDocument: Boolean?
+    ): List<ProcessDefinitionCaseDefinition>
 }

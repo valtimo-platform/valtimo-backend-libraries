@@ -20,32 +20,35 @@ import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_J
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.ritense.authorization.AuthorizationContext;
+import com.ritense.case_.service.ActiveCaseDefinitionService;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
-import com.ritense.processdocument.domain.ProcessDocumentDefinition;
+import com.ritense.processdocument.domain.ProcessDefinitionCaseDefinition;
 import com.ritense.processdocument.domain.ProcessDocumentInstance;
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest;
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndStartProcessRequest;
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest;
-import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService;
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
 import com.ritense.processdocument.service.result.ModifyDocumentAndCompleteTaskResult;
 import com.ritense.processdocument.service.result.ModifyDocumentAndStartProcessResult;
 import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult;
 import com.ritense.valtimo.contract.annotation.SkipComponentScan;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -55,16 +58,48 @@ public class ProcessDocumentResource {
 
     private final ProcessDocumentService processDocumentService;
     private final ProcessDocumentAssociationService processDocumentAssociationService;
-    private final DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService;
+    private final ProcessDefinitionCaseDefinitionService processDefinitionCaseDefinitionService;
+    private final ActiveCaseDefinitionService activeCaseDefinitionService;
 
     public ProcessDocumentResource(
         ProcessDocumentService processDocumentService,
         ProcessDocumentAssociationService processDocumentAssociationService,
-        DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService
+        ProcessDefinitionCaseDefinitionService processDefinitionCaseDefinitionService,
+        ActiveCaseDefinitionService activeCaseDefinitionService
     ) {
         this.processDocumentService = processDocumentService;
         this.processDocumentAssociationService = processDocumentAssociationService;
-        this.documentDefinitionProcessLinkService = documentDefinitionProcessLinkService;
+        this.processDefinitionCaseDefinitionService = processDefinitionCaseDefinitionService;
+        this.activeCaseDefinitionService = activeCaseDefinitionService;
+    }
+
+    @GetMapping("/v1/case-definition/{caseDefinitionKey}/process-definition/settings")
+    public ResponseEntity<List<ProcessDefinitionCaseDefinition>> findProcessDocumentDefinitions(
+        @PathVariable(name = "caseDefinitionKey") String caseDefinitionKey,
+        @RequestParam(value = "startableByUser", required = false) @Nullable Boolean startableByUser,
+        @RequestParam(value = "canInitializeDocument", required = false) @Nullable Boolean canInitializeDocument
+    ) {
+        CaseDefinitionId caseDefinitionId = activeCaseDefinitionService.getActiveCaseDefinition(caseDefinitionKey).getId();
+        List<ProcessDefinitionCaseDefinition> processDocumentDefinitions = processDefinitionCaseDefinitionService.findProcessDocumentDefinitions(
+            caseDefinitionId,
+            startableByUser,
+            canInitializeDocument
+        );
+
+        return ResponseEntity.ok(processDocumentDefinitions);
+    }
+
+    @GetMapping("/v1/document/{documentId}/process-definition/settings")
+    public ResponseEntity<List<ProcessDefinitionCaseDefinition>> findProcessDocumentDefinitions(
+        @PathVariable(name = "documentId") UUID documentId,
+        @RequestParam(value = "startableByUser", required = false) @Nullable Boolean startableByUser,
+        @RequestParam(value = "canInitializeDocument", required = false) @Nullable Boolean canInitializeDocument
+    ) {
+        return ResponseEntity.ok(processDefinitionCaseDefinitionService.findProcessDocumentDefinitions(
+            documentId,
+            startableByUser,
+            canInitializeDocument
+        ));
     }
 
 /*    @PostMapping(value = "/v1/process-document/definition", consumes = APPLICATION_JSON_VALUE)

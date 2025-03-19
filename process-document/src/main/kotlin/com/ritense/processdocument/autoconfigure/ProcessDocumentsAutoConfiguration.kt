@@ -308,11 +308,13 @@ class ProcessDocumentsAutoConfiguration {
     @ConditionalOnMissingBean(ProcessDefinitionCaseDefinitionService::class)
     fun processDefinitionCaseDefinitionService(
         authorizationService: AuthorizationService,
-        processDefinitionCaseDefinitionRepository: ProcessDefinitionCaseDefinitionRepository
+        processDefinitionCaseDefinitionRepository: ProcessDefinitionCaseDefinitionRepository,
+        documentService: JsonSchemaDocumentService
     ): ProcessDefinitionCaseDefinitionService {
         return ProcessDefinitionCaseDefinitionService(
             authorizationService,
-            processDefinitionCaseDefinitionRepository
+            processDefinitionCaseDefinitionRepository,
+            documentService
         )
     }
 

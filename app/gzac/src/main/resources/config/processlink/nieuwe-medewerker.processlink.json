@@ -1,8 +1,0 @@
-[
-  {
-    "activityId": "start-event-new-medewerker",
-    "activityType": "bpmn:StartEvent:start",
-    "processLinkType": "form",
-    "formDefinitionName": "start-form-nieuwe-medewerker"
-  }
-]

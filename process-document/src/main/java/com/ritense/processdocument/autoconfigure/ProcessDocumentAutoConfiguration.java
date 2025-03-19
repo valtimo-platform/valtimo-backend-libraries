@@ -18,6 +18,7 @@ package com.ritense.processdocument.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.case_.service.ActiveCaseDefinitionService;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
@@ -163,9 +164,15 @@ public class ProcessDocumentAutoConfiguration {
     public ProcessDocumentResource processDocumentResource(
         ProcessDocumentService processDocumentService,
         ProcessDocumentAssociationService processDocumentAssociationService,
-        DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService
+        ProcessDefinitionCaseDefinitionService processDefinitionCaseDefinitionService,
+        ActiveCaseDefinitionService activeCaseDefinitionService
     ) {
-        return new ProcessDocumentResource(processDocumentService, processDocumentAssociationService, documentDefinitionProcessLinkService);
+        return new ProcessDocumentResource(
+            processDocumentService,
+            processDocumentAssociationService,
+            processDefinitionCaseDefinitionService,
+            activeCaseDefinitionService
+        );
     }
 
     @Bean
