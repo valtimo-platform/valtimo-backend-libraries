@@ -313,7 +313,7 @@ class CatalogiApiPlugin(
             logger.debug { "Getting Statustype by omschrijving: $omschrijving for zaaktype $zaakTypeUrl" }
             return getStatustypen(zaakTypeUrl)
                 .singleOrNull { it.omschrijving.equals(omschrijving, ignoreCase = true) }
-                ?: throw StatustypeNotFoundException("With 'omschrijving': '$omschrijving'")
+                ?: throw StatustypeNotFoundException("with 'omschrijving': '$omschrijving'")
         }
     }
 
@@ -354,7 +354,7 @@ class CatalogiApiPlugin(
             logger.debug { "Getting Resultaattype by omschrijving: $omschrijving for zaaktype $zaakTypeUrl" }
             return getResultaattypen(zaakTypeUrl)
                 .singleOrNull { it.omschrijving.equals(omschrijving, ignoreCase = true) }
-                ?: throw ResultaattypeNotFoundException("With 'omschrijving': '$omschrijving'")
+                ?: throw ResultaattypeNotFoundException("with 'omschrijving': '$omschrijving'")
         }
     }
 
@@ -388,7 +388,7 @@ class CatalogiApiPlugin(
             logger.debug { "Retrieving eigenschap by name '$eigenschapnaam' for zaaktype: $zaaktypeUrl" }
             return getEigenschappen(zaaktypeUrl)
                 .singleOrNull { it.naam.equals(eigenschapnaam, ignoreCase = true) }
-                ?: throw EigenschapNotFoundException("with eigenschapnaam: $eigenschapnaam")
+                ?: throw EigenschapNotFoundException("with eigenschapnaam: '$eigenschapnaam'")
         }
     }
 
@@ -414,7 +414,7 @@ class CatalogiApiPlugin(
             return getBesluittypen(zaakTypeUrl)
                 .filter { it.eindeGeldigheid == null || it.eindeGeldigheid.isAfter(LocalDate.now()) }
                 .singleOrNull { it.omschrijving.equals(omschrijving, ignoreCase = true) }
-                ?: throw BesluittypeNotFoundException("with 'omschrijving': $omschrijving")
+                ?: throw BesluittypeNotFoundException("with 'omschrijving': '$omschrijving'")
         }
     }
 
