@@ -102,7 +102,7 @@ internal class ObjectManagementFacadeTest {
         whenever(objectenApiPlugin.url).thenReturn(URI.create("www.ritense.com/"))
         val objectUrl = URI.create("www.ritense.com/objects/$objectUuid")
         val expectedResult = createObjectRecord(objectUrl, objectUuid)
-        whenever(objectenApiPlugin.getObjectAtIndex(objectUrl, objectIndex)).thenReturn(expectedResult)
+        whenever(objectenApiPlugin.getObjectRecord(objectUrl, objectIndex)).thenReturn(expectedResult)
         whenever(objectenApiPlugin.getObjectUrl(any())).thenCallRealMethod()
 
         val result = objectManagementFacade.getObjectByUuidAndIndex(objectName, objectUuid, objectIndex)
@@ -112,7 +112,7 @@ internal class ObjectManagementFacadeTest {
         verify(pluginService).createInstance<ObjecttypenApiPlugin>(objecttypenApiPluginConfigurationId)
         verifyNoMoreInteractions(objectManagementRepository, pluginService)
 
-        verify(objectenApiPlugin).getObjectAtIndex(objectUrl, objectIndex)
+        verify(objectenApiPlugin).getObjectRecord(objectUrl, objectIndex)
         assertThat(result).isEqualTo(expectedResult)
     }
 

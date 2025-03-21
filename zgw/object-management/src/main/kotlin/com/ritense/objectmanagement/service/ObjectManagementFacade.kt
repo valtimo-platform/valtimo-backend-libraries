@@ -239,7 +239,7 @@ class ObjectManagementFacade(
         val objectUrl = accessObject.objectenApiPlugin.getObjectUrl(uuid)
 
         logger.trace { "Getting object $objectUrl" }
-        return accessObject.objectenApiPlugin.getObjectAtIndex(objectUrl, index)
+        return accessObject.objectenApiPlugin.getObjectRecord(objectUrl, index)
     }
 
     private fun findObjectByUri(accessObject: ObjectManagementAccessObject, objectUrl: URI): ObjectWrapper {

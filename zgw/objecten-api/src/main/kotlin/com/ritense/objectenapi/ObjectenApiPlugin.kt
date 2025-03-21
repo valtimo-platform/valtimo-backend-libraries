@@ -78,17 +78,10 @@ class ObjectenApiPlugin(
         }
     }
 
-    fun getObjectAtIndex(objectUrl: URI, index: Int): ObjectRecord {
+    fun getObjectRecord(objectUrl: URI, index: Int): ObjectRecord {
         withLoggingContext("objectUrl" to objectUrl.toString()) {
             logger.debug { "Getting Objecten API object with url '$objectUrl' and index '$index'" }
-
-            val objectUrlWithIndex = UriComponentsBuilder
-                .fromUri(objectUrl)
-                .pathSegment(index.toString())
-                .build()
-                .toUri()
-
-            return objectenApiClient.getObjectRecord(authenticationPluginConfiguration, objectUrlWithIndex)
+            return objectenApiClient.getObjectRecord(authenticationPluginConfiguration, objectUrl, index)
         }
     }
 

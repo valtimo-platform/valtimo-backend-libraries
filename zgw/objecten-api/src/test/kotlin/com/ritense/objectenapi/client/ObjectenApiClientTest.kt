@@ -188,11 +188,13 @@ internal class ObjectenApiClientTest {
 
         mockApi.enqueue(mockResponse(responseBody))
 
-        val objectUrl = mockApi.url("/some-object/0").toString()
+
+        val objectUrl = mockApi.url("/some-object/1").toString()
 
         val result = client.getObjectRecord(
             TestAuthentication(),
-            URI(objectUrl)
+            URI(objectUrl),
+            2
         )
 
         val recordedRequest = mockApi.takeRequest()
@@ -200,7 +202,7 @@ internal class ObjectenApiClientTest {
 
         assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
 
-        assertEquals(objectUrl, requestedUrl.toString())
+        assertEquals("$objectUrl/2", requestedUrl.toString())
 
         assertEquals(0, result.index)
         assertEquals(32767, result.typeVersion)

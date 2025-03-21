@@ -66,11 +66,18 @@ class ObjectenApiClient(
 
     fun getObjectRecord(
         authentication: ObjectenApiAuthentication,
-        objectUrl: URI
+        objectUrl: URI,
+        index: Int
     ): ObjectRecord {
+        val recordUrl = UriComponentsBuilder
+            .fromUri(objectUrl)
+            .pathSegment(index.toString())
+            .build()
+            .toUri()
+
         val result = buildRestClient(authentication)
             .get()
-            .uri(objectUrl)
+            .uri(recordUrl)
             .retrieve()
             .body<ObjectRecord>()!!
 
