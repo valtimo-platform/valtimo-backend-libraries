@@ -143,7 +143,6 @@ spring:
 
 logging:
     level:
-        root: INFO
         org.springframework.beans: DEBUG
         reactor.netty.http.client.HttpClient: DEBUG
         org.jboss.resteasy: INFO
