@@ -1,17 +1,193 @@
 {
     "display": "wizard",
-    "settings": {
-        "pdf": {
-            "id": "1ec0f8ee-6685-5d98-a847-26f67b67d6f0",
-            "src": "https://files.form.io/pdf/5692b91fd1028f01000407e3/file/1ec0f8ee-6685-5d98-a847-26f67b67d6f0"
-        }
-    },
     "components": [
         {
-            "key": "page1",
+            "key": "validationPage",
             "type": "panel",
             "input": false,
-            "label": "Page 1",
+            "label": "Validation",
+            "title": "Validation",
+            "tableView": false,
+            "components": [
+                {
+                    "key": "panel",
+                    "type": "panel",
+                    "input": false,
+                    "label": "Panel",
+                    "title": "Panel",
+                    "tableView": false,
+                    "collapsible": true,
+                    "components": [
+                        {
+                            "key": "enableUpdateValidation",
+                            "type": "checkbox",
+                            "input": true,
+                            "label": "Enable update validation",
+                            "tableView": false,
+                            "defaultValue": false,
+                            "validateWhenHidden": false
+                        },
+                        {
+                            "key": "enableSubmissionValidation",
+                            "type": "checkbox",
+                            "input": true,
+                            "label": "Enable submission validation",
+                            "tableView": false,
+                            "defaultValue": false,
+                            "validateWhenHidden": false
+                        },
+                        {
+                            "key": "showBusinessError",
+                            "type": "checkbox",
+                            "input": true,
+                            "label": "Show business error",
+                            "tableView": false,
+                            "defaultValue": false,
+                            "validateWhenHidden": false
+                        },
+                        {
+                            "label": "Container",
+                            "tableView": false,
+                            "validateWhenHidden": false,
+                            "key": "container",
+                            "type": "container",
+                            "input": true,
+                            "components": [
+                                {
+                                    "key": "positiveNumber",
+                                    "mask": false,
+                                    "type": "number",
+                                    "input": true,
+                                    "label": "Positive number",
+                                    "delimiter": false,
+                                    "tableView": false,
+                                    "attributes": {
+                                        "data-testid": "testform-number1"
+                                    },
+                                    "applyMaskOn": "change",
+                                    "inputFormat": "plain",
+                                    "placeholder": "1",
+                                    "defaultValue": 1,
+                                    "requireDecimal": false,
+                                    "validateWhenHidden": false,
+                                    "truncateMultipleSpaces": false
+                                },
+                                {
+                                    "key": "futureDateTime",
+                                    "label": "Future date",
+                                    "format": "yyyy-MM-dd",
+                                    "tableView": false,
+                                    "datePicker": {
+                                        "disableWeekends": false,
+                                        "disableWeekdays": false
+                                    },
+                                    "enableTime": false,
+                                    "enableMinDateInput": false,
+                                    "enableMaxDateInput": false,
+                                    "type": "datetime",
+                                    "input": true,
+                                    "widget": {
+                                        "type": "calendar",
+                                        "displayInTimezone": "viewer",
+                                        "locale": "en",
+                                        "useLocaleSettings": false,
+                                        "allowInput": true,
+                                        "mode": "single",
+                                        "enableTime": false,
+                                        "noCalendar": false,
+                                        "format": "yyyy-MM-dd",
+                                        "hourIncrement": 1,
+                                        "minuteIncrement": 1,
+                                        "time_24hr": false,
+                                        "minDate": null,
+                                        "disableWeekends": false,
+                                        "disableWeekdays": false,
+                                        "maxDate": null
+                                    },
+                                    "validateWhenHidden": false
+                                },
+                                {
+                                    "key": "maxLengthString",
+                                    "type": "textfield",
+                                    "input": true,
+                                    "label": "Max 10 characters",
+                                    "tableView": true,
+                                    "applyMaskOn": "change",
+                                    "placeholder": "0123456789",
+                                    "defaultValue": "0123456789",
+                                    "validateWhenHidden": false
+                                },
+                                {
+                                    "key": "selectedValue",
+                                    "label": "Select one",
+                                    "widget": "choicesjs",
+                                    "tableView": true,
+                                    "dataSrc": "custom",
+                                    "data": {
+                                        "custom": "values = data.container.selectOptions;"
+                                    },
+                                    "valueProperty": "value",
+                                    "template": "<span>{{ item.label }}</span>",
+                                    "validateWhenHidden": false,
+                                    "type": "select",
+                                    "input": true
+                                },
+                                {
+                                    "label": "Datagrid",
+                                    "hideLabel": true,
+                                    "reorder": false,
+                                    "addAnotherPosition": "bottom",
+                                    "layoutFixed": false,
+                                    "enableRowGroups": false,
+                                    "initEmpty": false,
+                                    "tableView": false,
+                                    "validateWhenHidden": false,
+                                    "key": "grid",
+                                    "type": "datagrid",
+                                    "addAnother": "Add",
+                                    "input": true,
+                                    "components": [
+                                        {
+                                            "key": "textInput",
+                                            "type": "textfield",
+                                            "input": true,
+                                            "label": "Text",
+                                            "tableView": true,
+                                            "applyMaskOn": "change",
+                                            "validateWhenHidden": false
+                                        },
+                                        {
+                                            "key": "showError",
+                                            "type": "checkbox",
+                                            "input": true,
+                                            "label": "Show error",
+                                            "tableView": false,
+                                            "defaultValue": false,
+                                            "validateWhenHidden": false
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "collapsible": false,
+            "saveOnEnter": false,
+            "scrollToTop": false,
+            "buttonSettings": {
+                "next": true,
+                "cancel": true,
+                "previous": true
+            },
+            "navigateOnEnter": false,
+            "breadcrumbClickable": true
+        },
+        {
+            "key": "tablePage",
+            "type": "panel",
+            "input": false,
+            "label": "Table",
             "title": "Table",
             "tableView": false,
             "components": [
@@ -530,14 +706,6 @@
                             "numRows": 7,
                             "tableView": false,
                             "cellAlignment": "left"
-                        },
-                        {
-                            "key": "submit",
-                            "type": "button",
-                            "input": true,
-                            "label": "Submit",
-                            "tableView": false,
-                            "showValidations": false
                         }
                     ],
                     "collapsible": false
@@ -555,10 +723,10 @@
             "breadcrumbClickable": true
         },
         {
-            "key": "page2",
+            "key": "datagridPage",
             "type": "panel",
             "input": false,
-            "label": "Page 2",
+            "label": "Datagrid",
             "title": "Datagrid",
             "tableView": false,
             "components": [
@@ -742,10 +910,10 @@
             "breadcrumbClickable": true
         },
         {
-            "key": "page3",
+            "key": "tabPage",
             "type": "panel",
             "input": false,
-            "label": "Page 3",
+            "label": "Tab",
             "title": "Tab",
             "tableView": false,
             "components": [
@@ -887,14 +1055,6 @@
                                     "defaultValue": "one",
                                     "validateWhenHidden": false,
                                     "optionsLabelPosition": "right"
-                                },
-                                {
-                                    "key": "submit1",
-                                    "type": "button",
-                                    "input": true,
-                                    "label": "Submit",
-                                    "tableView": false,
-                                    "showValidations": false
                                 }
                             ]
                         }
