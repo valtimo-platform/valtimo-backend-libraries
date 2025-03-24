@@ -85,8 +85,8 @@ data class ExampleViewModel(
                 errors.add(ComponentError("futureDateTime", "must be in the future"))
             }
 
-            if (maxLengthString != null && maxLengthString.length > 20) {
-                errors.add(ComponentError("maxLengthString", "length cannot be greater than 20"))
+            if (maxLengthString != null && maxLengthString.length > 10) {
+                errors.add(ComponentError("maxLengthString", "length cannot be greater than 10"))
             }
 
             if (selectedValue != null && (selectedValue < 0 || selectOptions.none { it.value == selectedValue })) {
