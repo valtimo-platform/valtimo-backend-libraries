@@ -16,15 +16,14 @@
 
 package com.ritense.processdocument.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstance
 import com.ritense.processdocument.dto.ProcessInstanceSimpleDto
-import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.service.CamundaProcessService
 import org.camunda.bpm.engine.delegate.DelegateExecution
@@ -37,7 +36,6 @@ class ProcessDocumentsService(
     private val documentService: DocumentService,
     private val camundaProcessService: CamundaProcessService,
     private val associationService: ProcessDocumentAssociationService,
-    private val documentAssociationService: CamundaProcessJsonSchemaDocumentAssociationService,
     private val processDocumentService: ProcessDocumentService,
 ) {
     //TODO: Determine what to with this
@@ -70,16 +68,29 @@ class ProcessDocumentsService(
         requireNotNull(documentId) {
             "No associated document found for process instance ID: ${execution.processInstanceId}"
         }
-        return documentAssociationService.findProcessDocumentInstances(documentId)
+        return associationService.findProcessDocumentInstances(documentId)
+            .filterIsInstance<CamundaProcessJsonSchemaDocumentInstance>()
             .asSequence()
             .filter { it.isActive() }
-            .mapNotNull { ProcessInstanceSimpleDto(
-                it.processName(),
-                it.processDocumentInstanceId()
-                    .processInstanceId()
-                    .toString())
+            .map {
+                ProcessInstanceSimpleDto(
+                    it.processName(),
+                    it.processDocumentInstanceId()
+                        .processInstanceId()
+                        .toString()
+                )
             }
             .toList()
+    }
+
+    fun getActiveProcessInstanceIds(execution: DelegateExecution): List<String> {
+        return getActiveProcessInstances(execution).map { it.processInstanceId }
+    }
+
+    fun getActiveProcessInstanceNames(execution: DelegateExecution): List<String> {
+        return getActiveProcessInstances(execution)
+            .map { it.processName }
+            .distinct()
     }
 
     private fun associateDocumentToProcess(

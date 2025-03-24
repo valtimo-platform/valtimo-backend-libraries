@@ -10,11 +10,11 @@
     <bpmn:endEvent id="Event_04k2ohb">
       <bpmn:incoming>Flow_00ltyhc</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:userTask id="AdresTask" name="Adres" camunda:asyncAfter="true" implementation="##unspecified" camunda:candidateGroups="ROLE_ADMIN">
+    <bpmn:userTask id="AdresTask" name="Adres" camunda:asyncBefore="true" camunda:asyncAfter="true" implementation="##unspecified" camunda:candidateGroups="ROLE_ADMIN">
       <bpmn:incoming>Flow_0ymtmws</bpmn:incoming>
       <bpmn:outgoing>Flow_00ltyhc</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:serviceTask id="ServiceTask" name="Service" camunda:asyncAfter="true" implementation="##WebService" camunda:expression="${true}">
+    <bpmn:serviceTask id="ServiceTask" name="Service" camunda:asyncBefore="true" implementation="##WebService" camunda:expression="${true}">
       <bpmn:incoming>Flow_1ghf2fs</bpmn:incoming>
       <bpmn:outgoing>Flow_0ymtmws</bpmn:outgoing>
     </bpmn:serviceTask>

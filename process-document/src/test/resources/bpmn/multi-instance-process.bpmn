@@ -21,21 +21,21 @@
     <bpmn:sequenceFlow id="Flow_1x5os66" sourceRef="Gateway_1ns545z" targetRef="ServiceTaskTask" />
     <bpmn:sequenceFlow id="Flow_1vi2d9m" sourceRef="GetActiveProcessInstancesTask" targetRef="Event_12qt73x" />
     <bpmn:sequenceFlow id="Flow_09nfoqm" sourceRef="ServiceTaskTask" targetRef="GetActiveProcessInstancesTask" />
-    <bpmn:callActivity id="AdresVaststellenCallActivity" name="Adres vaststellen" camunda:asyncBefore="true" camunda:asyncAfter="true" calledElement="adres-vaststellen">
+    <bpmn:callActivity id="AdresVaststellenCallActivity" name="Adres vaststellen" camunda:asyncBefore="true" calledElement="adres-vaststellen">
       <bpmn:extensionElements>
         <camunda:in businessKey="#{execution.processBusinessKey}" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0g9omlg</bpmn:incoming>
       <bpmn:outgoing>Flow_0cwf2w2</bpmn:outgoing>
     </bpmn:callActivity>
-    <bpmn:callActivity id="InkomenVaststellenCallActivity" name="Inkomen vaststellen" camunda:asyncBefore="true" camunda:asyncAfter="true" calledElement="inkomen-vaststellen">
+    <bpmn:callActivity id="InkomenVaststellenCallActivity" name="Inkomen vaststellen" camunda:asyncBefore="true" calledElement="inkomen-vaststellen">
       <bpmn:extensionElements>
         <camunda:in businessKey="#{execution.processBusinessKey}" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_107gzf4</bpmn:incoming>
       <bpmn:outgoing>Flow_0j6mw8s</bpmn:outgoing>
     </bpmn:callActivity>
-    <bpmn:serviceTask id="ServiceTaskTask" name="Service task" camunda:asyncAfter="true" implementation="##WebService" camunda:expression="${true}">
+    <bpmn:serviceTask id="ServiceTaskTask" name="Service task" camunda:asyncBefore="true" implementation="##WebService" camunda:expression="${true}">
       <bpmn:incoming>Flow_1x5os66</bpmn:incoming>
       <bpmn:outgoing>Flow_09nfoqm</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -48,7 +48,7 @@
     <bpmn:endEvent id="Event_12qt73x">
       <bpmn:incoming>Flow_1vi2d9m</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:serviceTask id="GetActiveProcessInstancesTask" name="Get active process instances" camunda:asyncAfter="true" implementation="##WebService" camunda:expression="${processService.getActiveProcessInstancesName(execution)}">
+    <bpmn:serviceTask id="GetActiveProcessInstancesTask" name="Get active process instances" camunda:asyncBefore="true" implementation="##WebService" camunda:expression="${processService.getActiveProcessInstanceNames(execution)}">
       <bpmn:incoming>Flow_09nfoqm</bpmn:incoming>
       <bpmn:outgoing>Flow_1vi2d9m</bpmn:outgoing>
     </bpmn:serviceTask>

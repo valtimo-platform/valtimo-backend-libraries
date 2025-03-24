@@ -9,7 +9,7 @@
       <bpmn:incoming>Flow_0ci3rae</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_0ci3rae" sourceRef="InkomenTask" targetRef="Event_0t9y3tu" />
-    <bpmn:userTask id="InkomenTask" name="Inkomen" camunda:asyncAfter="true" implementation="##unspecified" camunda:candidateGroups="ROLE_ADMIN">
+    <bpmn:userTask id="InkomenTask" name="Inkomen" camunda:asyncBefore="true" implementation="##unspecified" camunda:candidateGroups="ROLE_ADMIN">
       <bpmn:incoming>Flow_1semmop</bpmn:incoming>
       <bpmn:outgoing>Flow_0ci3rae</bpmn:outgoing>
     </bpmn:userTask>
