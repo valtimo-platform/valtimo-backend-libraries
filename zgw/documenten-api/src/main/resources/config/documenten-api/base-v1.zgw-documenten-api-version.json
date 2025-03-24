@@ -1,23 +1,28 @@
 [
     {
         "version": "1.5.0",
-        "supportsTrefwoorden": true
+        "supportsTrefwoorden": true,
+        "supportsUpdatingDefinitiveDocument": true
     },
     {
         "version": "1.4.3",
-        "supportsTrefwoorden": true
+        "supportsTrefwoorden": true,
+        "supportsUpdatingDefinitiveDocument": true
     },
     {
         "version": "1.4.2",
-        "supportsTrefwoorden": true
+        "supportsTrefwoorden": true,
+        "supportsUpdatingDefinitiveDocument": true
     },
     {
         "version": "1.4.1",
-        "supportsTrefwoorden": true
+        "supportsTrefwoorden": true,
+        "supportsUpdatingDefinitiveDocument": true
     },
     {
         "version": "1.4.0",
-        "supportsTrefwoorden": true
+        "supportsTrefwoorden": true,
+        "supportsUpdatingDefinitiveDocument": true
     },
     {
         "version": "1.3.0"

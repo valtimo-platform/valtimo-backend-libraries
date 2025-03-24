@@ -346,12 +346,6 @@ class DocumentenApiClient(
             )
         }
 
-        runWithoutAuthorization {
-            check(getInformatieObject(authentication, documentUrl).status != DocumentStatusType.DEFINITIEF) {
-                "InformatieObject ${documentUrl.path.substringAfterLast("/")} with status 'definitief' cannot be updated!"
-            }
-        }
-
         val result = restClient(authentication)
             .patch()
             .uri(documentUrl)
