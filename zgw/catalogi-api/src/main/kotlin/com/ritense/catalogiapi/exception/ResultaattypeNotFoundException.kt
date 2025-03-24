@@ -16,4 +16,4 @@
 
 package com.ritense.catalogiapi.exception
 
-class ResultaattypeNotFoundException(message: String) : RuntimeException("No resultaattype was found. $message")
+class ResultaattypeNotFoundException(message: String) : RuntimeException("No resultaattype was found $message")
