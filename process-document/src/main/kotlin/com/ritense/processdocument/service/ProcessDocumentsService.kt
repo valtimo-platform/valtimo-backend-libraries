@@ -16,12 +16,14 @@
 
 package com.ritense.processdocument.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.processdocument.dto.ProcessInstanceSimpleDto
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.service.CamundaProcessService
@@ -62,7 +64,7 @@ class ProcessDocumentsService(
         )
     }
 
-    fun getActiveProcessInstancesName(execution: DelegateExecution): List<String> {
+    fun getActiveProcessInstances(execution: DelegateExecution): List<ProcessInstanceSimpleDto> {
         val processInstanceId = CamundaProcessInstanceId(execution.processInstanceId)
         val documentId = processDocumentService.getDocumentId(processInstanceId, execution)
         requireNotNull(documentId) {
@@ -71,8 +73,12 @@ class ProcessDocumentsService(
         return documentAssociationService.findProcessDocumentInstances(documentId)
             .asSequence()
             .filter { it.isActive() }
-            .mapNotNull { it.processName() }
-            .distinct()
+            .mapNotNull { ProcessInstanceSimpleDto(
+                it.processName(),
+                it.processDocumentInstanceId()
+                    .processInstanceId()
+                    .toString())
+            }
             .toList()
     }
 
