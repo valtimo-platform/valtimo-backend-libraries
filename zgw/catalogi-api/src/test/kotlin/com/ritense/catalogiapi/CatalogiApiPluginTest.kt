@@ -19,11 +19,15 @@ package com.ritense.catalogiapi
 import com.ritense.catalogiapi.client.CatalogiApiClient
 import com.ritense.catalogiapi.client.ZaaktypeInformatieobjecttypeRequest
 import com.ritense.catalogiapi.domain.Besluittype
+import com.ritense.catalogiapi.domain.Eigenschap
 import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.catalogiapi.domain.Resultaattype
+import com.ritense.catalogiapi.domain.Specificatie
 import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.domain.Zaaktype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
+import com.ritense.catalogiapi.exception.BesluittypeNotFoundException
+import com.ritense.catalogiapi.exception.EigenschapNotFoundException
 import com.ritense.catalogiapi.exception.ResultaattypeNotFoundException
 import com.ritense.catalogiapi.exception.StatustypeNotFoundException
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
@@ -43,6 +47,7 @@ import java.net.URI
 import java.time.LocalDate
 import java.util.*
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 internal class CatalogiApiPluginTest : BaseTest() {
 
@@ -425,7 +430,7 @@ internal class CatalogiApiPluginTest : BaseTest() {
             )
         }
 
-        assertEquals("No statustype was found. With 'omschrijving': 'Registered'", exception.message)
+        assertEquals("No statustype was found with 'omschrijving': 'Registered'", exception.message)
     }
 
     @Test
@@ -495,7 +500,7 @@ internal class CatalogiApiPluginTest : BaseTest() {
             )
         }
 
-        assertEquals("No resultaattype was found. With 'omschrijving': '$resultaattype'", exception.message)
+        assertEquals("No resultaattype was found with 'omschrijving': '$resultaattype'", exception.message)
     }
 
     @Test
@@ -586,14 +591,44 @@ internal class CatalogiApiPluginTest : BaseTest() {
     }
 
     @Test
+    fun `should throw BesluitypeNotFound exception when get besluit type doesn't exist`() {
+        val documentId = UUID.randomUUID().toString()
+        val document = mock<Document>()
+        val besluittype = "Allocated"
+        val zaaktypeUrl = "https://example.com/zaaktype/123"
+        val execution = DelegateExecutionFake().withBusinessKey(documentId)
+
+        whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.newId("myDocDef"))
+        whenever(documentService.get(documentId)).thenReturn(document)
+        whenever(zaaktypeUrlProvider.getZaaktypeUrl("myDocDef")).thenReturn(URI(zaaktypeUrl))
+        whenever(client.getBesluittypen(any(), any(), any())).thenReturn(
+            Page(count = 0, results = listOf())
+        )
+
+        val exception = assertThrows<BesluittypeNotFoundException> {
+            plugin.getBesluittype(execution, besluittype, "myProcessVar")
+        }
+
+        assertEquals("No besluittype was found with 'omschrijving': 'Allocated'", exception.message)
+    }
+
+    @Test
     fun `should get zaaktypen`() {
         whenever(client.getZaaktypen(any(), any(), any()))
-            .thenReturn(Page(1, URI(""), null, listOf(
-                newZaaktype(URI("zaak:1"), "Zaak 1", "zaak 1")
-            )))
-            .thenReturn(Page(1, null, URI(""), listOf(
-                newZaaktype(URI("zaak:2"), "Zaak 2", "zaak 2")
-            )))
+            .thenReturn(
+                Page(
+                    1, URI(""), null, listOf(
+                        newZaaktype(URI("zaak:1"), "Zaak 1", "zaak 1")
+                    )
+                )
+            )
+            .thenReturn(
+                Page(
+                    1, null, URI(""), listOf(
+                        newZaaktype(URI("zaak:2"), "Zaak 2", "zaak 2")
+                    )
+                )
+            )
 
         val zaaktypen = plugin.getZaaktypen()
 
@@ -606,4 +641,73 @@ internal class CatalogiApiPluginTest : BaseTest() {
         }
     }
 
+    @Test
+    fun `should get eigenschap`() {
+        val documentId = UUID.randomUUID().toString()
+        val document = mock<Document>()
+        val eigenschapNaam = "Einddatum"
+        val eigenschapUrl = "https://example.com/eigenschap/456"
+        val zaaktypeUrl = "https://example.com/zaaktype/123"
+        val execution = DelegateExecutionFake().withBusinessKey(documentId)
+
+        whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.newId("myDocDef"))
+        whenever(documentService.get(documentId)).thenReturn(document)
+        whenever(zaaktypeUrlProvider.getZaaktypeUrl("myDocDef")).thenReturn(URI(zaaktypeUrl))
+        whenever(client.getEigenschappen(any(), any(), any())).thenReturn(
+            Page(
+                count = 3,
+                results = listOf(
+                    Eigenschap(
+                        URI(eigenschapUrl),
+                        eigenschapNaam,
+                        "Einddatum",
+                        Specificatie(null, "tekst", "lengte", "1:N", null),
+                        null,
+                        URI(zaaktypeUrl)
+                    ),
+                    Eigenschap(
+                        URI("example.com/1"),
+                        "startdatum",
+                        "startdatum",
+                        Specificatie(null, "tekst", "lengte", "1:N", null),
+                        null,
+                        URI(zaaktypeUrl)
+                    ),
+                    Eigenschap(
+                        URI("example.com/2"),
+                        "status",
+                        "status",
+                        Specificatie(null, "tekst", "lengte", "1:N", null),
+                        null,
+                        URI(zaaktypeUrl)
+                    )
+                )
+            )
+        )
+        plugin.getEigenschap(execution, eigenschapNaam, "eigenschapUrlPv")
+
+        assertEquals(eigenschapUrl, execution.getVariable("eigenschapUrlPv"))
+    }
+
+    @Test
+    fun `should throw EigenschapNotFound exception when get eigenschap doesn't exist`() {
+        val documentId = UUID.randomUUID().toString()
+        val document = mock<Document>()
+        val eigenschapNaam = "Einddatum"
+        val zaaktypeUrl = "https://example.com/zaaktype/123"
+        val execution = DelegateExecutionFake().withBusinessKey(documentId)
+
+        whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.newId("myDocDef"))
+        whenever(documentService.get(documentId)).thenReturn(document)
+        whenever(zaaktypeUrlProvider.getZaaktypeUrl("myDocDef")).thenReturn(URI(zaaktypeUrl))
+        whenever(client.getEigenschappen(any(), any(), any())).thenReturn(
+            Page(count = 0, results = listOf())
+        )
+
+        val exception = assertThrows<EigenschapNotFoundException> {
+            plugin.getEigenschap(execution, eigenschapNaam, "eigenschapUrlPv")
+        }
+
+        assertEquals("No eigenschap was found with eigenschapnaam: 'Einddatum'", exception.message)
+    }
 }
