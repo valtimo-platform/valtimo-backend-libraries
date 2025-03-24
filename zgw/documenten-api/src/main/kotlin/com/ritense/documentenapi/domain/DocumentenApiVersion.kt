@@ -18,25 +18,28 @@ package com.ritense.documentenapi.domain
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.ritense.valtimo.contract.annotation.AllOpen
 
-open class DocumentenApiVersion(
+@AllOpen
+class DocumentenApiVersion(
     open val version: String,
     open val filterableColumns: List<String> = emptyList(),
     open val sortableColumns: List<String> = emptyList(),
     open val supportsTrefwoorden: Boolean = false,
+    open val supportsUpdatingDefinitiveDocument: Boolean = false,
 
     @JsonAnySetter
     @get:JsonAnyGetter
     open val unmappedFields: Map<String, Any?> = mapOf(),
 ) : Comparable<DocumentenApiVersion> {
 
-    open fun supportsFilterableColumns(): Boolean = filterableColumns.isNotEmpty()
-    open fun supportsSortableColumns(): Boolean = sortableColumns.isNotEmpty()
+    fun supportsFilterableColumns(): Boolean = filterableColumns.isNotEmpty()
+    fun supportsSortableColumns(): Boolean = sortableColumns.isNotEmpty()
 
-    open fun isColumnFilterable(columnKey: DocumentenApiColumnKey) =
+    fun isColumnFilterable(columnKey: DocumentenApiColumnKey) =
         filterableColumns.contains(columnKey.property)
 
-    open fun isColumnSortable(columnKey: DocumentenApiColumnKey) = sortableColumns.contains(columnKey.property)
+    fun isColumnSortable(columnKey: DocumentenApiColumnKey) = sortableColumns.contains(columnKey.property)
 
     override fun compareTo(other: DocumentenApiVersion) = version.compareTo(other.version)
 
