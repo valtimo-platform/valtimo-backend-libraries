@@ -164,7 +164,7 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
 
     @Test
     @Throws(JsonProcessingException::class)
-    fun `should retrieve active process instances name`() {
+    fun `should retrieve active process instances`() {
         val request = NewDocumentAndStartProcessRequest(
             "multi-instance-process",
             NewDocumentRequest(
