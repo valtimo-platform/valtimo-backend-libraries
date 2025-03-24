@@ -78,9 +78,7 @@ public abstract class BaseTest {
     }
 
     protected JsonSchemaDocumentDefinition definition() {
-        final JsonSchemaDocumentDefinitionId jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.newId("house");
-        final JsonSchema jsonSchema = JsonSchema.fromResourceUri(path(jsonSchemaDocumentDefinitionId.name()));
-        return new JsonSchemaDocumentDefinition(jsonSchemaDocumentDefinitionId, jsonSchema);
+        return definition("house");
     }
 
     protected JsonSchemaDocumentDefinition definition(String name) {
