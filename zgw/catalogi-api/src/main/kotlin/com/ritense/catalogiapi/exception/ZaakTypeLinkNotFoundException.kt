@@ -16,4 +16,4 @@
 
 package com.ritense.catalogiapi.exception
 
-class ZaakTypeLinkNotFoundException(message: String) : RuntimeException("No zaak type was found. $message")
+class ZaakTypeLinkNotFoundException(message: String) : RuntimeException("No zaak type was found $message")
