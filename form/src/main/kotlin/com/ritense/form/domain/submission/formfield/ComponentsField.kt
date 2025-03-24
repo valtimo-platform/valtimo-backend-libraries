@@ -19,6 +19,7 @@ package com.ritense.form.domain.submission.formfield
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.ContainerNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.document.domain.Document
 import mu.KotlinLogging
@@ -45,7 +46,11 @@ data class ComponentsField(
 
     private fun createChildFormFields(): List<FormField> {
         val childComponents = objectNode["components"] as ArrayNode
-        val childValues = value as ArrayNode
+        val childValues = if (value is ArrayNode) {
+            value
+        } else {
+            listOf(value)
+        }
         return childValues.flatMap { childValue ->
             childComponents.mapNotNull { childComponent ->
                 if (childComponent is ObjectNode) {
