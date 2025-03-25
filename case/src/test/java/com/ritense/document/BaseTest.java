@@ -36,8 +36,10 @@ public abstract class BaseTest {
 
     protected static final String USERNAME = "test@test.com";
     protected DocumentSequenceGeneratorService documentSequenceGeneratorService;
+    protected TestHelper testHelper;
 
     public BaseTest() {
+        testHelper = new TestHelper();
         documentSequenceGeneratorService = mock(DocumentSequenceGeneratorService.class);
         when(documentSequenceGeneratorService.next(any())).thenReturn(1L);
     }
@@ -55,6 +57,14 @@ public abstract class BaseTest {
         final var documentDefinitionName = JsonSchemaDocumentDefinitionId.of(name, caseDefinitionId());
         final var schema = JsonSchema.fromResourceUri(path(
             documentDefinitionName.caseDefinitionId(),
+            documentDefinitionName.name()
+        ));
+        return new JsonSchemaDocumentDefinition(documentDefinitionName, schema);
+    }
+
+    protected JsonSchemaDocumentDefinition definitionOfForUnitTests(String name) {
+        final var documentDefinitionName = JsonSchemaDocumentDefinitionId.of(name, caseDefinitionId());
+        final var schema = JsonSchema.fromResourceUri(testHelper.path(
             documentDefinitionName.name()
         ));
         return new JsonSchemaDocumentDefinition(documentDefinitionName, schema);

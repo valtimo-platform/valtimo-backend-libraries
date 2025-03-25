@@ -49,6 +49,7 @@ import com.ritense.document.event.DocumentsListed;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.outbox.domain.BaseEvent;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import jakarta.validation.ValidationException;
 import java.time.LocalDate;
@@ -115,15 +116,6 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
             documentService.setInternalStatus(result.resultingDocument().orElseThrow().id(), "suspended");
             return result;
         });
-
-        JsonSchemaDocumentDefinition definitionHouseV2 = definitionOf("house", 2, "noautodeploy/house_v2.schema.json");
-        documentDefinitionService.store(definitionHouseV2);
-        documentService.createDocument(
-            new NewDocumentRequest(
-                definitionHouseV2.id().name(),
-                new JsonDocumentContent("{\"street\": \"Kalverstraat\",\"place\": \"Amsterdam\"}").asJson()
-            )
-        );
 
         var user = new ValtimoUserBuilder().username(USERNAME).email(USERNAME).id(USER_ID).build();
         when(userManagementService.findByUserIdentifier(USER_ID)).thenReturn(user);

@@ -413,9 +413,9 @@ class DocumentMigrationServiceTest {
 
     private fun loadSchema(definitionName: String): JsonSchema {
         return try {
-            JsonSchema.fromResourceUri(URI.create("config/document/definition/$definitionName.schema.json"))
+            JsonSchema.fromResourceUri(URI.create("config/unit-test/document/definition/$definitionName.schema.json"))
         } catch (_: Exception) {
-            JsonSchema.fromResourceUri(URI.create("config/document/definition/noautodeploy/$definitionName.schema.json"))
+            JsonSchema.fromResourceUri(URI.create("config/unit-test/document/definition/noautodeploy/$definitionName.schema.json"))
         }
     }
 }

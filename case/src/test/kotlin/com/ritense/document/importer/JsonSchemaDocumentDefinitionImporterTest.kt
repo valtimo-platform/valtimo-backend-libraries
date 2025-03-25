@@ -16,10 +16,12 @@
 
 package com.ritense.document.importer
 
+import com.ritense.document.domain.impl.JsonSchema
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.valtimo.contract.json.MapperSingleton.get
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -68,10 +70,10 @@ class JsonSchemaDocumentDefinitionImporterTest(
         val caseDefinitionId = CaseDefinitionId.of("my-definition", "1.0.0")
         importer.import(ImportRequest(FILENAME, jsonContent.toByteArray(), caseDefinitionId))
 
-        val jsonCaptor = argumentCaptor<String>()
+        val jsonCaptor = argumentCaptor<JsonSchema>()
         verify(documentDefinitionService).deploy(jsonCaptor.capture(), eq(caseDefinitionId))
 
-        assertThat(jsonCaptor.firstValue).isEqualTo(jsonContent)
+        assertThat(jsonCaptor.firstValue.asJson()).isEqualTo(get().readTree(jsonContent))
     }
 
     private companion object {
