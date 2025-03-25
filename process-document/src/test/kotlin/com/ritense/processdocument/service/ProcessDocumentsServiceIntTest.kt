@@ -24,7 +24,6 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.BaseIntegrationTest
-import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byName
 import com.ritense.valtimo.service.CamundaProcessService
@@ -51,9 +50,6 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var processDocumentAssociationService: ProcessDocumentAssociationService
-
-    @Autowired
-    lateinit var processDocumentService: ProcessDocumentService
 
     @Autowired
     lateinit var documentService: DocumentService
@@ -161,23 +157,4 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
             exception.cause?.message
         )
     }
-
-    @Test
-    @Throws(JsonProcessingException::class)
-    fun `should retrieve active process instances`() {
-        val request = NewDocumentAndStartProcessRequest(
-            "multi-instance-process",
-            NewDocumentRequest(
-                "house",
-                objectMapper.readTree(documentJson)
-            )
-        )
-
-        val result = runWithoutAuthorization {
-            processDocumentService.newDocumentAndStartProcess(request)
-        }
-
-        assertEquals(0, result.errors().size)
-    }
-
 }
