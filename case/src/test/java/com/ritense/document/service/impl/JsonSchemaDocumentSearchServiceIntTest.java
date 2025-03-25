@@ -38,8 +38,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
+import com.ritense.document.domain.impl.JsonSchema;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.search.AdvancedSearchRequest;
 import com.ritense.document.domain.search.AssigneeFilter;
@@ -52,6 +54,7 @@ import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import jakarta.validation.ValidationException;
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -115,6 +118,27 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
             );
             documentService.setInternalStatus(result.resultingDocument().orElseThrow().id(), "suspended");
             return result;
+        });
+
+        runWithoutAuthorization(() -> {
+            final var schema = JsonSchema.fromResourceUri(
+                URI.create(String.format("config/unit-test/document/definition/noautodeploy/house_v2.schema.json")));
+            documentDefinitionService.store(
+                new JsonSchemaDocumentDefinition(
+                    JsonSchemaDocumentDefinitionId.of(
+                        "house",
+                        CaseDefinitionId.of("house", "1.0.0")
+                    ), schema
+                )
+            );
+
+            documentService.createDocument(
+                new NewDocumentRequest(
+                    definition.id().name(),
+                    new JsonDocumentContent("{\"street\": \"Kalverstraat\",\"place\": \"Amsterdam\"}").asJson()
+                )
+            );
+            return null;
         });
 
         var user = new ValtimoUserBuilder().username(USERNAME).email(USERNAME).id(USER_ID).build();
@@ -392,8 +416,10 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         assertThat(page.getSize()).isEqualTo(2);
         assertThat(page.getTotalElements()).isEqualTo(4);
         assertThat(page.getTotalPages()).isEqualTo(2);
-        assertThat(page.getContent().get(0).content().asJson().findPath("street").asText()).isEqualTo("Czaar Peterstraat 3");
-        assertThat(page.getContent().get(1).content().asJson().findPath("street").asText()).isEqualTo("Czaar Peterstraat 4");
+        assertThat(page.getContent().get(0).content().asJson().findPath("street").asText()).isEqualTo(
+            "Czaar Peterstraat 3");
+        assertThat(page.getContent().get(1).content().asJson().findPath("street").asText()).isEqualTo(
+            "Czaar Peterstraat 4");
     }
 
     @Test
@@ -506,8 +532,12 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         );
         assertThat(page).isNotNull();
         assertThat(page.getTotalElements()).isEqualTo(2);
-        assertThat(page.getContent().get(0).sequence()).isEqualTo(documentTwo.resultingDocument().orElseThrow().sequence());
-        assertThat(page.getContent().get(1).sequence()).isEqualTo(documentOne.resultingDocument().orElseThrow().sequence());
+        assertThat(page.getContent().get(0).sequence()).isEqualTo(documentTwo.resultingDocument()
+            .orElseThrow()
+            .sequence());
+        assertThat(page.getContent().get(1).sequence()).isEqualTo(documentOne.resultingDocument()
+            .orElseThrow()
+            .sequence());
     }
 
     @Test
@@ -746,11 +776,13 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
                 .searchType(GREATER_THAN_OR_EQUAL_TO)
                 .path("doc:housenumber"));
 
-        assertThrows(ValidationException.class, () -> documentSearchService.search(
-            definition.id().name(),
-            searchRequest,
-            PageRequest.of(0, 10)
-        ));
+        assertThrows(
+            ValidationException.class, () -> documentSearchService.search(
+                definition.id().name(),
+                searchRequest,
+                PageRequest.of(0, 10)
+            )
+        );
     }
 
     @Test
@@ -781,8 +813,14 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var content = result.getContent();
         assertTrue(content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAtDate")).isPresent());
         assertTrue(content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAtDate")).isPresent());
-        assertEquals("2022-01-01", content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAtDate")).get().asText());
-        assertEquals("2022-02-01", content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAtDate")).get().asText());
+        assertEquals(
+            "2022-01-01",
+            content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAtDate")).get().asText()
+        );
+        assertEquals(
+            "2022-02-01",
+            content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAtDate")).get().asText()
+        );
     }
 
     @Test
@@ -917,7 +955,12 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(1);
-        assertThat(result.toList().get(0).content().getValueBy(JsonPointer.valueOf("/loan-approved")).get().booleanValue())
+        assertThat(result.toList()
+            .get(0)
+            .content()
+            .getValueBy(JsonPointer.valueOf("/loan-approved"))
+            .get()
+            .booleanValue())
             .isTrue();
     }
 
@@ -943,7 +986,12 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(1);
-        assertThat(result.toList().get(0).content().getValueBy(JsonPointer.valueOf("/loan-approved")).orElseThrow().booleanValue())
+        assertThat(result.toList()
+            .get(0)
+            .content()
+            .getValueBy(JsonPointer.valueOf("/loan-approved"))
+            .orElseThrow()
+            .booleanValue())
             .isFalse();
     }
 
@@ -976,9 +1024,12 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestWithMultipleFieldsUsingAnd() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"1999-10-23\"}").resultingDocument().orElseThrow();
-        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().orElseThrow();
-        createDocument("{\"street\": \"Czaar Peterstraat\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().orElseThrow();
+        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"1999-10-23\"}").resultingDocument()
+            .orElseThrow();
+        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"2017-06-01\"}").resultingDocument()
+            .orElseThrow();
+        createDocument("{\"street\": \"Czaar Peterstraat\", \"registrationDate\": \"2017-06-01\"}").resultingDocument()
+            .orElseThrow();
 
         // relying on default SearchOperator being AND
         var searchRequest = new AdvancedSearchRequest()
@@ -1006,9 +1057,12 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestWithMultipleFieldsUsingOr() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"1999-10-23\"}").resultingDocument().orElseThrow();
-        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().orElseThrow();
-        createDocument("{\"street\": \"Czaar Peterstraat\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().orElseThrow();
+        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"1999-10-23\"}").resultingDocument()
+            .orElseThrow();
+        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"2017-06-01\"}").resultingDocument()
+            .orElseThrow();
+        createDocument("{\"street\": \"Czaar Peterstraat\", \"registrationDate\": \"2017-06-01\"}").resultingDocument()
+            .orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .searchOperator(SearchOperator.OR)
