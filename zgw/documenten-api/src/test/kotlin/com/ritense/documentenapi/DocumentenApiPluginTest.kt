@@ -102,7 +102,8 @@ internal class DocumentenApiPluginTest {
             "returnedFileName",
             1L,
             LocalDateTime.of(2020, 1, 1, 1, 1, 1),
-            listOf()
+            listOf(),
+            null
         )
 
         whenever(executionMock.getVariable("localDocumentVariableName"))
@@ -193,7 +194,8 @@ internal class DocumentenApiPluginTest {
             "returnedFileName",
             1L,
             LocalDateTime.now(),
-            listOf()
+            listOf(),
+            null
         )
 
         whenever(executionMock.getVariable(RESOURCE_ID_PROCESS_VAR))
@@ -284,7 +286,8 @@ internal class DocumentenApiPluginTest {
             "returnedFileName",
             1L,
             LocalDateTime.now(),
-            listOf()
+            listOf(),
+            null
         )
 
         whenever(executionMock.getVariable(RESOURCE_ID_PROCESS_VAR))
