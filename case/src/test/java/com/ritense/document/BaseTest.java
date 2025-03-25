@@ -62,6 +62,14 @@ public abstract class BaseTest {
         return new JsonSchemaDocumentDefinition(documentDefinitionName, schema);
     }
 
+    protected JsonSchemaDocumentDefinition definitionOf(JsonSchemaDocumentDefinitionId documentDefinitionId) {
+        final var schema = JsonSchema.fromResourceUri(path(
+            documentDefinitionId.caseDefinitionId(),
+            documentDefinitionId.name()
+        ));
+        return new JsonSchemaDocumentDefinition(documentDefinitionId, schema);
+    }
+
     protected JsonSchemaDocumentDefinition definitionOfForUnitTests(String name) {
         final var documentDefinitionName = JsonSchemaDocumentDefinitionId.of(name, caseDefinitionId());
         final var schema = JsonSchema.fromResourceUri(testHelper.path(
@@ -72,12 +80,6 @@ public abstract class BaseTest {
 
     protected CaseDefinitionId caseDefinitionId() {
         return CaseDefinitionId.of("house", "1.0.0");
-    }
-
-    protected JsonSchemaDocumentDefinition definitionOf(String name, long version, String schemaPath) {
-        final var documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId(name, caseDefinitionId());
-        final var schema = JsonSchema.fromResourceUri(URI.create("config/document/definition/" + schemaPath));
-        return new JsonSchemaDocumentDefinition(documentDefinitionId, schema);
     }
 
     protected JsonSchemaDocument createDocument() {

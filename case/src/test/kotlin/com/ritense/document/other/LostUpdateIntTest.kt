@@ -20,11 +20,13 @@ import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthor
 import com.ritense.document.BaseIntegrationTest
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -90,7 +92,12 @@ internal class LostUpdateIntTest : BaseIntegrationTest() {
         return runWithoutAuthorization {
             documentService.createDocument(
                 NewDocumentRequest(
-                    definitionOf("allows-all").id().name(),
+                    definitionOf(
+                        JsonSchemaDocumentDefinitionId.of(
+                            "allows-all",
+                            CaseDefinitionId.of("allows-all", "1.0.0")
+                        )
+                    ).id().name(),
                     JsonDocumentContent(content).asJson()
                 )
             )
