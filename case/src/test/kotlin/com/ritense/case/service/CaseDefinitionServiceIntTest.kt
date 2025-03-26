@@ -58,7 +58,7 @@ class CaseDefinitionServiceIntTest @Autowired constructor(
         caseDefinitionRepository.save(caseDefinition1)
         caseDefinitionRepository.save(caseDefinition2)
 
-        val foundDefinition = caseDefinitionService.getLatestCaseDefinition("key")
+        val foundDefinition = caseDefinitionService.getActiveCaseDefinition("key")
 
         assertEquals(caseDefinition2, foundDefinition)
     }

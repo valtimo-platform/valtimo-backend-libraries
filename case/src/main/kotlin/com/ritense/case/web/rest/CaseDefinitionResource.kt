@@ -64,7 +64,7 @@ class CaseDefinitionResource(
 
     @GetMapping("/management/v1/case-definition")
     fun getCaseDefinitions(
-        @PageableDefault(sort = ["case_definition_key"], direction = Sort.Direction.ASC) pageable: Pageable
+        @PageableDefault(sort = ["name"], direction = Sort.Direction.ASC) pageable: Pageable
     ): ResponseEntity<Page<CaseDefinitionResponseDto>> {
         return ResponseEntity.ok(
             runWithoutAuthorization {
@@ -123,6 +123,33 @@ class CaseDefinitionResource(
                         CaseDefinitionId.of(caseDefinitionKey, caseDefinitionVersionTag),
                         caseSettingsDto
                     )
+                )
+            )
+        } catch (exception: UnknownCaseDefinitionException) {
+            ResponseEntity.notFound().build()
+        }
+    }
+
+    @GetMapping("/management/v1/case-definition/{caseDefinitionKey}")
+    @RunWithoutAuthorization
+    fun getActive(
+        @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
+    ): ResponseEntity<CaseDefinitionResponseDto> {
+        val caseDefinition = service.getActiveCaseDefinition(caseDefinitionKey)
+            ?: return ResponseEntity.notFound().build()
+        return ResponseEntity.ok(CaseDefinitionResponseDto.of(caseDefinition))
+    }
+
+    @PostMapping("/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/active")
+    @RunWithoutAuthorization
+    fun setActive(
+        @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
+        @LoggableResource("caseDefinitionVersionTag") @PathVariable caseDefinitionVersionTag: String,
+    ): ResponseEntity<CaseDefinitionResponseDto> {
+        return try {
+            ResponseEntity.ok(
+                CaseDefinitionResponseDto.of(
+                    service.setActiveCaseDefinition(CaseDefinitionId.of(caseDefinitionKey, caseDefinitionVersionTag))
                 )
             )
         } catch (exception: UnknownCaseDefinitionException) {

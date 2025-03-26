@@ -63,6 +63,7 @@ class CaseDefinitionResourceTest {
                 .value(caseDefinitionId.versionTag.version))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
             .andExpect(MockMvcResultMatchers.jsonPath("$.autoAssignTasks").value(false))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.active").value(false))
 
         verify(service).updateCaseSettings(caseDefinitionId, caseSettingsDto)
     }
@@ -93,6 +94,7 @@ class CaseDefinitionResourceTest {
                 .value(caseDefinitionId.versionTag.version))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
             .andExpect(MockMvcResultMatchers.jsonPath("$.autoAssignTasks").value(false))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.active").value(false))
 
         verify(service).updateCaseSettings(caseDefinitionId, caseSettingsDto)
     }

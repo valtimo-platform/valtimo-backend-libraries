@@ -26,9 +26,11 @@ class CaseDefinitionDeploymentServiceIntTest @Autowired constructor(
         assertEquals(deployedCaseDefinition1.name, "Some case type")
         assertEquals(deployedCaseDefinition1.canHaveAssignee, true)
         assertEquals(deployedCaseDefinition1.autoAssignTasks, true)
+        assertEquals(deployedCaseDefinition1.active, false)
         assertNotNull(deployedCaseDefinition2)
         assertEquals(deployedCaseDefinition2.name, "Some other case type")
         assertEquals(deployedCaseDefinition2.canHaveAssignee, true)
         assertEquals(deployedCaseDefinition2.autoAssignTasks, true)
+        assertEquals(deployedCaseDefinition2.active, false)
     }
 }

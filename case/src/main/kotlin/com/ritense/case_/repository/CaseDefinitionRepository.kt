@@ -24,6 +24,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 
 interface CaseDefinitionRepository
     : JpaRepository<CaseDefinition, CaseDefinitionId>, JpaSpecificationExecutor<CaseDefinition> {
@@ -46,10 +47,14 @@ interface CaseDefinitionRepository
         nativeQuery = true)
     fun findAllLatestCaseDefinitions(pageable: Pageable): Page<CaseDefinition>
 
+    fun findAllByActiveIsTrue(pageable: Pageable): Page<CaseDefinition>
+
     @Query(value = "" +
         "SELECT c.id.versionTag " +
         "FROM CaseDefinition c " +
         "WHERE c.id.key = :key " +
         "ORDER BY c.id.versionTag DESC")
     fun findVersionsForCaseDefinitionKey(key: String): List<Semver>
+
+    fun findByActiveIsTrueAndIdKey(@Param("caseDefinitionKey") caseDefinitionKey: String): CaseDefinition?
 }

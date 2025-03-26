@@ -61,7 +61,7 @@ class InternalCaseStatusService(
     ): InternalCaseStatus {
         denyManagementOperation()
 
-        caseDefinitionService.getLatestCaseDefinition(caseDefinitionKey)?: throw NoSuchElementException(
+        caseDefinitionService.getActiveCaseDefinition(caseDefinitionKey)?: throw NoSuchElementException(
             "Case definition with key $caseDefinitionKey does not exist!"
         )
 

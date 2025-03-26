@@ -53,7 +53,11 @@ class CaseDefinitionImporter(
         val existingCaseDefinition = caseDefinitionRepository.findByIdOrNull(caseDefinition.id)
 
         if (existingCaseDefinition == null || forceDeploy) { // TODO: revisit forceDeploy this when doing drafts
-            caseDefinitionRepository.save(caseDefinition)
+            if (caseDefinitionRepository.findByActiveIsTrueAndIdKey(caseDefinition.id.key) == null) {
+                caseDefinitionRepository.save(caseDefinition.copy(active = true))
+            } else {
+                caseDefinitionRepository.save(caseDefinition)
+            }
             logger.debug { "Case definition with id '${caseDefinition.id}' was saved" }
         } else {
             logger.debug { "Not deploying case definition with '${caseDefinition.id}', it already exists" }
