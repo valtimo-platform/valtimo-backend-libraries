@@ -54,7 +54,7 @@ class CaseListExporterIntTest @Autowired constructor(
         (jsonTree.at("/1") as ObjectNode).remove("order")
 
         val expectedJson = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
-            .getResource("classpath:config/case/list/$caseDefinitionName.json")
+            .getResource("classpath:config/case/$caseDefinitionName/1-0-0/case/list/$caseDefinitionName.json")
             .inputStream
             .use { inputStream ->
                 StreamUtils.copyToString(inputStream, Charsets.UTF_8)

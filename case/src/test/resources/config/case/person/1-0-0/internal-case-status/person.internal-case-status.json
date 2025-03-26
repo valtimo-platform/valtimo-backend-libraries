@@ -1,19 +1,14 @@
-{
-    "changesetId": "person.internal-case-status",
-    "internalCaseStatuses": [
-        {
-            "key": "closed",
-            "caseDefinitionName": "person",
-            "title": "Closed",
-            "visibleInCaseListByDefault": false,
-            "color": "GRAY"
-        },
-        {
-            "key": "started",
-            "caseDefinitionName": "person",
-            "title": "Started",
-            "visibleInCaseListByDefault": true,
-            "color": "GRAY"
-        }
-    ]
-}
+[
+    {
+        "key": "closed",
+        "title": "Closed",
+        "visibleInCaseListByDefault": false,
+        "color": "GRAY"
+    },
+    {
+        "key": "started",
+        "title": "Started",
+        "visibleInCaseListByDefault": true,
+        "color": "GRAY"
+    }
+]

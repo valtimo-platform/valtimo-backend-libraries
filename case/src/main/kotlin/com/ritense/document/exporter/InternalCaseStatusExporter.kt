@@ -42,18 +42,19 @@ class InternalCaseStatusExporter(
             return ExportResult()
         }
 
-        val caseTabChangeset = InternalCaseStatusDeploymentDto(
-            statuses.map(InternalCaseStatusDto::of)
-        )
+        val formattedCaseDefinitionVersion = request.caseDefinitionId.versionTag.let {
+            "${it.major}-${it.minor}-${it.patch}"
+        }
+
         val internalCaseStatusExport = ExportFile(
-            PATH.format(request.name),
-            objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(caseTabChangeset)
+            PATH.format(request.caseDefinitionId.key, formattedCaseDefinitionVersion, request.name),
+            objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(statuses.map(InternalCaseStatusDto::of))
         )
 
         return ExportResult(internalCaseStatusExport)
     }
 
     companion object {
-        private const val PATH = "config/internal-case-status/%s.internal-case-status.json"
+        private const val PATH = "config/case/%s/%s/internal-case-status/%s.internal-case-status.json"
     }
 }

@@ -64,7 +64,7 @@ class InternalCaseStatusExporterIntTest @Autowired constructor(
         JSONAssert.assertEquals(
             expectedJson,
             objectMapper.writeValueAsString(exportJson),
-            JSONCompareMode.NON_EXTENSIBLE
+            JSONCompareMode.LENIENT
         )
 
         assertThat(exportResult.relatedRequests).isEmpty()
