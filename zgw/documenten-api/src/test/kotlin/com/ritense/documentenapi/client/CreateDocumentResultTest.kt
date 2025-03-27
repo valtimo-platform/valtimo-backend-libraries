@@ -30,7 +30,8 @@ internal class CreateDocumentResultTest {
             "",
             0L,
             LocalDateTime.now(),
-            listOf()
+            listOf(),
+            null
         )
 
         assertEquals("847789d3-a8b3-469a-ae01-a49a6bd21783", result.getDocumentUUIDFromUrl())
@@ -43,7 +44,7 @@ internal class CreateDocumentResultTest {
             0,
             0,
             true,
-            "847789d3-a8b3-469a-ae01-a49a6bd21783"
+            "a894d4fc-593a-444f-821e-e2af32259e45"
         )
         val result = CreateDocumentResult(
             "",
@@ -51,10 +52,11 @@ internal class CreateDocumentResultTest {
             "",
             0L,
             LocalDateTime.now(),
-            listOf(bestandsdeel)
+            listOf(bestandsdeel),
+            "847789d3-a8b3-469a-ae01-a49a6bd21783"
         )
 
-        assertEquals("847789d3-a8b3-469a-ae01-a49a6bd21783", result.getLockFromBestandsdelen())
+        assertEquals("847789d3-a8b3-469a-ae01-a49a6bd21783", result.getLockOrEmpty())
     }
 
     @Test
@@ -65,10 +67,11 @@ internal class CreateDocumentResultTest {
             "",
             0L,
             LocalDateTime.now(),
-            listOf()
+            listOf(),
+            null
         )
 
-        assertEquals("", result.getLockFromBestandsdelen())
+        assertEquals("", result.getLockOrEmpty())
     }
 
 }
