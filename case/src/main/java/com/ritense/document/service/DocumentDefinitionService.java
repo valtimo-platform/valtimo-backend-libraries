@@ -21,6 +21,7 @@ import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.service.result.DeployDocumentDefinitionResult;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import jakarta.validation.ValidationException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,23 +44,20 @@ public interface DocumentDefinitionService {
 
     void requirePermission(String documentDefinitionName, Action action);
 
-    Optional<? extends DocumentDefinition> findByNameAndVersion(String documentDefinitionName, long version);
+    Optional<? extends DocumentDefinition> findByCaseDefinitionId(
+        CaseDefinitionId caseDefinitionId
+    );
+
+    Optional<? extends DocumentDefinition> findByNameAndCaseDefinitionId(
+        String documentDefinitionName,
+        CaseDefinitionId caseDefinitionId
+    );
 
     List<String> getPropertyNames(DocumentDefinition definition);
 
-    List<Long> findVersionsByName(String documentDefinitionName);
+    List<CaseDefinitionId> findVersionsByName(String documentDefinitionName);
 
-    void deployAll();
-
-    DeployDocumentDefinitionResult deploy(String schema);
-
-    void deploy(InputStream inputStream) throws IOException;
-
-    void deployAll(boolean readOnly, boolean force);
-
-    DeployDocumentDefinitionResult deploy(String schema, boolean readOnly, boolean force);
-
-    void deploy(InputStream inputStream, boolean readOnly, boolean force) throws IOException;
+    DeployDocumentDefinitionResult deploy(String schema, CaseDefinitionId caseDefinitionId);
 
     void store(JsonSchemaDocumentDefinition documentDefinition);
 

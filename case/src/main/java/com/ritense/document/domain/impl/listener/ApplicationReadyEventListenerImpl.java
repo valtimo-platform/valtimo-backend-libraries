@@ -36,9 +36,10 @@ public class ApplicationReadyEventListenerImpl {
     @EventListener(ApplicationReadyEvent.class)
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public void handle() {
-        AuthorizationContext.runWithoutAuthorization(() -> {
+        //TODO: remove class. should be covered by import
+/*        AuthorizationContext.runWithoutAuthorization(() -> {
             documentDefinitionService.deployAll(true, true);
             return null;
-        });
+        });*/
     }
 }

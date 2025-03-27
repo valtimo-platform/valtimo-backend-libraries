@@ -16,12 +16,18 @@
 
 package com.ritense.case.service
 
+import CaseDefinitionDto
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
+import mu.KotlinLogging
+import org.springframework.data.repository.findByIdOrNull
 
 class CaseDefinitionImporter(
-    private val deploymentService: CaseDefinitionDeploymentService
+    private val objectMapper: ObjectMapper,
+    private val caseDefinitionRepository: CaseDefinitionRepository
 ) : Importer {
     override fun type() = CASE_DEFINITION
 
@@ -30,10 +36,32 @@ class CaseDefinitionImporter(
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
-        deploymentService.deploy(request.content.toString(Charsets.UTF_8), true)
+        deploy(request.content.toString(Charsets.UTF_8), true)
+    }
+
+    private fun deploy(fileContent: String, forceDeploy: Boolean = false) {
+        val caseDefinitionDto = try {
+            objectMapper.readValue(fileContent, CaseDefinitionDto::class.java)
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Failed to parse file content as a valid case definition: ${e.message}", e)
+        }
+
+        val caseDefinition = caseDefinitionDto.toEntity()
+
+        logger.debug { "Deploying case definition with id '${caseDefinition.id}'" }
+
+        val existingCaseDefinition = caseDefinitionRepository.findByIdOrNull(caseDefinition.id)
+
+        if (existingCaseDefinition == null || forceDeploy) { // TODO: revisit forceDeploy this when doing drafts
+            caseDefinitionRepository.save(caseDefinition)
+            logger.debug { "Case definition with id '${caseDefinition.id}' was saved" }
+        } else {
+            logger.debug { "Not deploying case definition with '${caseDefinition.id}', it already exists" }
+        }
     }
 
     private companion object {
-        val FILENAME_REGEX = """config(/[^/]+){2}/case/definition/([^/]+)\.json""".toRegex()
+        val logger = KotlinLogging.logger {}
+        val FILENAME_REGEX = """/case/definition/([^/]+)\.json""".toRegex()
     }
 }

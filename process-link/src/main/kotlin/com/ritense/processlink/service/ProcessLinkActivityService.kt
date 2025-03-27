@@ -61,10 +61,15 @@ class ProcessLinkActivityService(
     fun openTask(
         @LoggableResource(resourceType = CamundaTask::class) taskId: UUID
     ): ProcessLinkActivityResult<*> {
-        val task = taskService.findTaskOrThrow(
-            byId(taskId.toString())
-                .and(byActive())
-        )
+        val task = try {
+            taskService.findTaskOrThrow(
+                byId(taskId.toString())
+                    .and(byActive())
+            )
+        } catch (exception: Exception) {
+            logger.warn("For task with id '$taskId'.", exception)
+            throw ProcessLinkNotFoundException("For task with id '$taskId'.")
+        }
 
         return processLinkService.getProcessLinks(task.getProcessDefinitionId(), task.taskDefinitionKey!!)
             .firstNotNullOfOrNull { processLink ->

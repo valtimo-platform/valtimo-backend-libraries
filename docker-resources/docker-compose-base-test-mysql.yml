@@ -69,4 +69,5 @@ services:
 #   url: jdbc:mysql://localhost:3354/keycloak-iam-test
 #   url: jdbc:mysql://localhost:3355/logging-test
 #   url: jdbc:mysql://localhost:3356/process-link-url-test
-#   url: localhost:55672 <--rabbitmq
+#   url: localhost:55672 <--outbox rabbitmq
+#   url: localhost:55673 <--inbox rabbitmq

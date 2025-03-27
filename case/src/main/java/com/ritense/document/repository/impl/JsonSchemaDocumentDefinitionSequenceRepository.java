@@ -30,7 +30,7 @@ public interface JsonSchemaDocumentDefinitionSequenceRepository extends Document
     @Query("" +
         "   SELECT  ddsr " +
         "   FROM    JsonSchemaDocumentDefinitionSequenceRecord ddsr " +
-        "   WHERE   ddsr.id.name = :documentDefinitionName ")
+        "   WHERE   ddsr.name = :documentDefinitionName ")
     Optional<JsonSchemaDocumentDefinitionSequenceRecord> findByDefinitionName(
         @Param("documentDefinitionName") String documentDefinitionName
     );
@@ -39,7 +39,7 @@ public interface JsonSchemaDocumentDefinitionSequenceRepository extends Document
     @Query("" +
         "   DELETE " +
         "   FROM    JsonSchemaDocumentDefinitionSequenceRecord ddsr " +
-        "   WHERE   ddsr.id.name = :documentDefinitionName ")
+        "   WHERE   ddsr.name = :documentDefinitionName ")
     void deleteByDocumentDefinitionName(
         @Param("documentDefinitionName") String documentDefinitionName
     );

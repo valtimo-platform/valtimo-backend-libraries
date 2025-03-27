@@ -73,10 +73,10 @@ public interface DocumentDefinitionResource {
         @LoggableResource("documentDefinitionName") @PathVariable String name
     );
 
-    @GetMapping("/management/v1/document-definition/{name}/version/{version}")
+    @GetMapping("/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/document-definition")
     ResponseEntity<? extends DocumentDefinition> getDocumentDefinitionVersion(
-        @LoggableResource("documentDefinitionName") @PathVariable String name,
-        @PathVariable long version
+        @LoggableResource("caseDefinitionKey") @PathVariable String caseDefinitionKey,
+        @LoggableResource("caseDefinitionVersionTag") @PathVariable String versionTag
     );
 
     @GetMapping("/management/v1/document-definition/{name}/version")

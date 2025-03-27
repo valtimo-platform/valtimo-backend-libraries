@@ -626,7 +626,8 @@ class PluginService(
         }.associateWith { method -> method.getAnnotation(PluginAction::class.java) }
             .filter { (_, annotation) -> annotation.key == processLink.pluginActionDefinitionKey }
             .map { entry -> entry.key }
-            .first()
+            .firstOrNull()
+            ?: throw IllegalStateException("Plugin configuration '${processLink.pluginConfigurationId}', doesn't have any action named '${processLink.pluginActionDefinitionKey}'")
         return method
     }
 

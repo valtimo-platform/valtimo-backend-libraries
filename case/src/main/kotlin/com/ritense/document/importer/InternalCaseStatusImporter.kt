@@ -16,30 +16,66 @@
 
 package com.ritense.document.importer
 
-import com.ritense.document.deployment.InternalCaseStatusDeployer
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.authorization.AuthorizationContext
+import com.ritense.document.service.InternalCaseStatusService
+import com.ritense.document.web.rest.dto.InternalCaseStatusCreateRequestDto
+import com.ritense.document.web.rest.dto.InternalCaseStatusUpdateRequestDto
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
-import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
+import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
 import com.ritense.importer.ValtimoImportTypes.Companion.INTERNAL_CASE_STATUS
-import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 class InternalCaseStatusImporter(
-    private val internalCaseStatusDeployer: InternalCaseStatusDeployer,
-    private val changelogDeployer: ChangelogDeployer
+    private val objectMapper: ObjectMapper,
+    private val internalCaseStatusService: InternalCaseStatusService,
 ) : Importer {
     override fun type() = INTERNAL_CASE_STATUS
 
-    override fun dependsOn() = setOf(DOCUMENT_DEFINITION)
+    override fun dependsOn() = setOf(CASE_DEFINITION)
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
-        changelogDeployer.deploy(internalCaseStatusDeployer, request.fileName, request.content.toString(Charsets.UTF_8))
+        val internalCaseStatuses = objectMapper.readValue<List<InternalCaseStatusDto>>(request.content)
+        deploy(request.caseDefinitionId!!.key, internalCaseStatuses)
     }
 
+    private fun deploy(caseDefinitionKey: String, internalCaseStatuses: List<InternalCaseStatusDto>) {
+        AuthorizationContext.runWithoutAuthorization {
+            internalCaseStatuses.forEach {
+                if (!internalCaseStatusService.exists(caseDefinitionKey, it.key)) {
+                    internalCaseStatusService.create(
+                        caseDefinitionKey,
+                        InternalCaseStatusCreateRequestDto(
+                            it.key,
+                            it.title,
+                            it.visibleInCaseListByDefault,
+                            it.color
+                        )
+                    )
+                } else {
+                    internalCaseStatusService.update(
+                        caseDefinitionKey,
+                        it.key,
+                        InternalCaseStatusUpdateRequestDto(
+                            it.key,
+                            it.title,
+                            it.visibleInCaseListByDefault,
+                            it.color
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+
+    // TODO: Change to /case/internal-status/...
     private companion object {
-        val FILENAME_REGEX = """config/internal-case-status/([^/]+)\.internal-case-status\.json""".toRegex()
+        val FILENAME_REGEX = """/internal-case-status/([^/]+)\.internal-case-status\.json""".toRegex()
     }
 }

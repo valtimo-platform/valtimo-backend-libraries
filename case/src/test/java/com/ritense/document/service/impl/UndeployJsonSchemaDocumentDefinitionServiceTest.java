@@ -68,7 +68,6 @@ class UndeployJsonSchemaDocumentDefinitionServiceTest extends BaseTest {
     @Test
     void undeploySuccess() {
         when(documentDefinitionService.findLatestByName(eq(documentDefinitionName))).thenReturn(Optional.of(documentDefinition));
-        when(documentDefinition.isReadOnly()).thenReturn(false);
 
         UndeployDocumentDefinitionResult result = undeployJsonSchemaDocumentDefinitionService.undeploy(documentDefinitionName);
 
@@ -82,7 +81,6 @@ class UndeployJsonSchemaDocumentDefinitionServiceTest extends BaseTest {
     @Test
     void undeployResultFailedDueToThrownException() {
         when(documentDefinitionService.findLatestByName(eq(documentDefinitionName))).thenReturn(Optional.of(documentDefinition));
-        when(documentDefinition.isReadOnly()).thenReturn(false);
 
         doThrow(IllegalArgumentException.class).when(documentDefinitionService).removeDocumentDefinition(eq(documentDefinitionName));
 
@@ -90,20 +88,6 @@ class UndeployJsonSchemaDocumentDefinitionServiceTest extends BaseTest {
 
         verify(documentService, times(1)).removeDocuments(eq(documentDefinitionName));
         verify(documentDefinitionService, times(1)).removeDocumentDefinition(eq(documentDefinitionName));
-        verify(applicationEventPublisher, times(0)).publishEvent(eq(undeployDocumentDefinitionEvent));
-
-        assertThat(result).isInstanceOf(UndeployDocumentDefinitionResultFailed.class);
-    }
-
-    @Test
-    void undeployFailedDueToReadOnly() {
-        when(documentDefinitionService.findLatestByName(eq(documentDefinitionName))).thenReturn(Optional.of(documentDefinition));
-        when(documentDefinition.isReadOnly()).thenReturn(true);
-
-        UndeployDocumentDefinitionResult result = undeployJsonSchemaDocumentDefinitionService.undeploy(documentDefinitionName);
-
-        verify(documentService, times(0)).removeDocuments(eq(documentDefinitionName));
-        verify(documentDefinitionService, times(0)).removeDocumentDefinition(eq(documentDefinitionName));
         verify(applicationEventPublisher, times(0)).publishEvent(eq(undeployDocumentDefinitionEvent));
 
         assertThat(result).isInstanceOf(UndeployDocumentDefinitionResultFailed.class);

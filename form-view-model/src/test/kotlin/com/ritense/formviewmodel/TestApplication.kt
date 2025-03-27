@@ -16,14 +16,17 @@
 
 package com.ritense.formviewmodel
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.commandhandling.CommandDispatcher
+import com.ritense.form.service.FormDefinitionService
 import com.ritense.formviewmodel.autoconfigure.FormViewModelAutoConfiguration
 import com.ritense.formviewmodel.submission.TestStartFormSubmissionHandler
+import com.ritense.formviewmodel.submission.TestStartFormUIComponentSubmissionHandler
 import com.ritense.formviewmodel.submission.TestUserTaskSubmissionHandler
-import com.ritense.formviewmodel.viewmodel.TestViewModelLoader
-import com.ritense.valtimo.contract.json.MapperSingleton
+import com.ritense.formviewmodel.submission.TestUserTaskUIComponentSubmissionHandler
+import com.ritense.formviewmodel.viewmodel.TestFormViewModelLoader
+import com.ritense.formviewmodel.viewmodel.TestUIComponentViewModelLoader
+import org.mockito.kotlin.spy
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.runApplication
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
@@ -40,19 +43,46 @@ class TestApplication {
     @TestConfiguration
     class TestConfig {
 
-        @Bean
-        @ConditionalOnMissingBean(ObjectMapper::class)
-        fun objectMapper(): ObjectMapper {
-            return MapperSingleton.get()
-        }
+//        @Bean
+//        @ConditionalOnMissingBean(ObjectMapper::class)
+//        fun objectMapper(): ObjectMapper {
+//            return MapperSingleton.get()
+//        }
 
         @Bean
-        fun testViewModelLoader() = TestViewModelLoader()
+        fun testViewModelLoader(formDefinitionService: FormDefinitionService) = TestFormViewModelLoader(
+            formName = "fvm-user-task"
+        )
 
         @Bean
-        fun testStartFormSubmissionHandler() = TestStartFormSubmissionHandler()
+        fun testStartFormSubmissionHandler(commandDispatcher: CommandDispatcher?, formDefinitionService: FormDefinitionService) = spy(
+            TestStartFormSubmissionHandler(
+                userTaskFormName = "fvm-user-task",
+                startFormName = "fvm-start-event",
+                formDefinitionService = formDefinitionService,
+            )
+        )
 
         @Bean
-        fun testUserTaskSubmissionHandler() = TestUserTaskSubmissionHandler()
+        fun testUserTaskSubmissionHandler(commandDispatcher: CommandDispatcher?) = spy(
+            TestUserTaskSubmissionHandler(formName = "fvm-user-task",)
+        )
+
+        @Bean
+        fun testUIComponentViewModelLoader(formDefinitionService: FormDefinitionService) = TestUIComponentViewModelLoader(
+            componentKey = "my-component"
+        )
+
+        @Bean
+        fun testStartFormUIComponentSubmissionHandler(commandDispatcher: CommandDispatcher?) = spy(
+            TestStartFormUIComponentSubmissionHandler(componentKey = "my-component")
+        )
+
+        @Bean
+        fun testUserTaskUIComponentSubmissionHandler(commandDispatcher: CommandDispatcher?) = spy(
+            TestUserTaskUIComponentSubmissionHandler(componentKey = "my-component")
+        )
+
+
     }
 }

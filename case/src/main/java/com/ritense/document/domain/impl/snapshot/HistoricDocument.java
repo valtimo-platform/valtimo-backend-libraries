@@ -27,6 +27,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.relation.DocumentRelation;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
@@ -54,6 +55,7 @@ public class HistoricDocument implements Document {
     private DocumentDefinition documentDefinition;
 
     @Embedded
+    @AttributeOverride(name = "caseDefinitionKey", column = @Column(name = "ics_case_definition_key"))
     private InternalCaseStatusId internalStatus;
 
     @Transient

@@ -22,8 +22,8 @@ import jakarta.persistence.Embeddable
 
 @Embeddable
 data class CaseListColumnId(
-    @Column(name = "case_definition_name")
-    val caseDefinitionName: String,
+    @Column(name = "case_definition_key")
+    val caseDefinitionKey: String,
     @Column(name = "column_key")
     val key: String
 ) : AbstractId<CaseListColumnId>()

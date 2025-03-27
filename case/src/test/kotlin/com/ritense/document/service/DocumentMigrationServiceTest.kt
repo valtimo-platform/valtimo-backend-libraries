@@ -27,6 +27,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -79,9 +80,9 @@ class DocumentMigrationServiceTest {
             documentMigrationService.migrateDocuments(
                 DocumentMigrationRequest(
                     documentDefinitionNameSource = "referenced",
-                    documentDefinitionVersionSource = 1,
+                    caseDefinitionIdSource = CaseDefinitionId.of("referenced", "1.0.0"),
                     documentDefinitionNameTarget = "allows-all",
-                    documentDefinitionVersionTarget = 1,
+                    caseDefinitionIdTarget = CaseDefinitionId.of("allows-all", "1.0.0"),
                     patches = listOf(
                         DocumentMigrationPatch(source = "/address/streetName", target = "/address"),
                     )
@@ -109,9 +110,9 @@ class DocumentMigrationServiceTest {
             documentMigrationService.migrateDocuments(
                 DocumentMigrationRequest(
                     documentDefinitionNameSource = sourceDefinition,
-                    documentDefinitionVersionSource = 1,
+                    caseDefinitionIdSource = CaseDefinitionId.of(sourceDefinition, "1.0.0"),
                     documentDefinitionNameTarget = targetDefinition,
-                    documentDefinitionVersionTarget = 1,
+                    caseDefinitionIdTarget = CaseDefinitionId.of(targetDefinition, "1.0.0"),
                     patches = listOf(
                         DocumentMigrationPatch(source = "/address", target = "/address/streetName"),
                     )
@@ -138,9 +139,9 @@ class DocumentMigrationServiceTest {
             documentMigrationService.migrateDocuments(
                 DocumentMigrationRequest(
                     documentDefinitionNameSource = sourceDefinition,
-                    documentDefinitionVersionSource = 1,
+                    caseDefinitionIdSource = CaseDefinitionId.of(sourceDefinition, "1.0.0"),
                     documentDefinitionNameTarget = targetDefinition,
-                    documentDefinitionVersionTarget = 1,
+                    caseDefinitionIdTarget = CaseDefinitionId.of(targetDefinition, "1.0.0"),
                     patches = listOf(
                         DocumentMigrationPatch(source = "/files/0/id", target = "/firstFileId"),
                         DocumentMigrationPatch(source = "/files/1/id", target = "/secondFileId"),
@@ -169,9 +170,9 @@ class DocumentMigrationServiceTest {
             documentMigrationService.migrateDocuments(
                 DocumentMigrationRequest(
                     documentDefinitionNameSource = sourceDefinition,
-                    documentDefinitionVersionSource = 1,
+                    caseDefinitionIdSource = CaseDefinitionId.of(sourceDefinition, "1.0.0"),
                     documentDefinitionNameTarget = targetDefinition,
-                    documentDefinitionVersionTarget = 1,
+                    caseDefinitionIdTarget = CaseDefinitionId.of(targetDefinition, "1.0.0"),
                     patches = listOf(
                         DocumentMigrationPatch(source = "/firstFileId", target = "/files/0/id"),
                         DocumentMigrationPatch(source = "/secondFileId", target = "/files/1/id"),
@@ -200,9 +201,9 @@ class DocumentMigrationServiceTest {
             documentMigrationService.migrateDocuments(
                 DocumentMigrationRequest(
                     documentDefinitionNameSource = sourceDefinition,
-                    documentDefinitionVersionSource = 1,
+                    caseDefinitionIdSource = CaseDefinitionId.of(sourceDefinition, "1.0.0"),
                     documentDefinitionNameTarget = targetDefinition,
-                    documentDefinitionVersionTarget = 1,
+                    caseDefinitionIdTarget = CaseDefinitionId.of(targetDefinition, "1.0.0"),
                     patches = listOf(
                         DocumentMigrationPatch(source = "Text", target = "/string"),
                         DocumentMigrationPatch(source = "", target = "/emptyString"),
@@ -238,9 +239,9 @@ class DocumentMigrationServiceTest {
             documentMigrationService.migrateDocuments(
                 DocumentMigrationRequest(
                     documentDefinitionNameSource = sourceDefinition,
-                    documentDefinitionVersionSource = 1,
+                    caseDefinitionIdSource = CaseDefinitionId.of(sourceDefinition, "1.0.0"),
                     documentDefinitionNameTarget = targetDefinition,
-                    documentDefinitionVersionTarget = 1,
+                    caseDefinitionIdTarget = CaseDefinitionId.of(targetDefinition, "1.0.0"),
                     patches = listOf(
                         DocumentMigrationPatch(source = "Text", target = "/string"),
                         DocumentMigrationPatch(source = "null", target = "/null"),
@@ -276,9 +277,9 @@ class DocumentMigrationServiceTest {
             documentMigrationService.migrateDocuments(
                 DocumentMigrationRequest(
                     documentDefinitionNameSource = sourceDefinition,
-                    documentDefinitionVersionSource = 1,
+                    caseDefinitionIdSource = CaseDefinitionId.of(sourceDefinition, "1.0.0"),
                     documentDefinitionNameTarget = targetDefinition,
-                    documentDefinitionVersionTarget = 1,
+                    caseDefinitionIdTarget = CaseDefinitionId.of(targetDefinition, "1.0.0"),
                     patches = listOf(
                         DocumentMigrationPatch(source = "\${'null'}", target = "/string"),
                         DocumentMigrationPatch(source = "\${'null'}", target = "/null"),
@@ -308,9 +309,9 @@ class DocumentMigrationServiceTest {
             documentMigrationService.migrateDocuments(
                 DocumentMigrationRequest(
                     documentDefinitionNameSource = sourceDefinition,
-                    documentDefinitionVersionSource = 1,
+                    caseDefinitionIdSource = CaseDefinitionId.of(sourceDefinition, "1.0.0"),
                     documentDefinitionNameTarget = targetDefinition,
-                    documentDefinitionVersionTarget = 1,
+                    caseDefinitionIdTarget = CaseDefinitionId.of(targetDefinition, "1.0.0"),
                     patches = listOf(
                         DocumentMigrationPatch(source = "/customer/addresses", target = "/addresses"),
                         DocumentMigrationPatch(source = "/customer", target = ""),
@@ -338,9 +339,9 @@ class DocumentMigrationServiceTest {
             documentMigrationService.migrateDocuments(
                 DocumentMigrationRequest(
                     documentDefinitionNameSource = sourceDefinition,
-                    documentDefinitionVersionSource = 1,
+                    caseDefinitionIdSource = CaseDefinitionId.of(sourceDefinition, "1.0.0"),
                     documentDefinitionNameTarget = targetDefinition,
-                    documentDefinitionVersionTarget = 1,
+                    caseDefinitionIdTarget = CaseDefinitionId.of(targetDefinition, "1.0.0"),
                     patches = listOf(
                         DocumentMigrationPatch(source = "/firstName", target = "/personalInformation/firstName"),
                     )
@@ -367,9 +368,9 @@ class DocumentMigrationServiceTest {
             documentMigrationService.migrateDocuments(
                 DocumentMigrationRequest(
                     documentDefinitionNameSource = sourceDefinition,
-                    documentDefinitionVersionSource = 1,
+                    caseDefinitionIdSource = CaseDefinitionId.of(sourceDefinition, "1.0.0"),
                     documentDefinitionNameTarget = targetDefinition,
-                    documentDefinitionVersionTarget = 1,
+                    caseDefinitionIdTarget = CaseDefinitionId.of(targetDefinition, "1.0.0"),
                     patches = listOf(
                         DocumentMigrationPatch(source = "/firstName", target = ""),
                         DocumentMigrationPatch(source = "/lastName", target = ""),
@@ -392,7 +393,10 @@ class DocumentMigrationServiceTest {
     }
 
     fun newDocument(definitionName: String, documentContent: String) {
-        val definitionId = JsonSchemaDocumentDefinitionId.newId(definitionName)
+        val definitionId = JsonSchemaDocumentDefinitionId.existingId(
+            definitionName,
+            CaseDefinitionId(definitionName, "1.0.0")
+        )
         val definitionSchema = loadSchema(definitionName)
         val definition = JsonSchemaDocumentDefinition(definitionId, definitionSchema)
         val sequenceGenerator: DocumentSequenceGeneratorService = mock()
@@ -409,9 +413,9 @@ class DocumentMigrationServiceTest {
 
     private fun loadSchema(definitionName: String): JsonSchema {
         return try {
-            JsonSchema.fromResourceUri(URI.create("config/document/definition/$definitionName.schema.json"))
+            JsonSchema.fromResourceUri(URI.create("config/unit-test/document/definition/$definitionName.schema.json"))
         } catch (_: Exception) {
-            JsonSchema.fromResourceUri(URI.create("config/document/definition/noautodeploy/$definitionName.schema.json"))
+            JsonSchema.fromResourceUri(URI.create("config/unit-test/document/definition/noautodeploy/$definitionName.schema.json"))
         }
     }
 }

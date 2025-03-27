@@ -31,13 +31,31 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="2" author="Ritense">
-        <addForeignKeyConstraint
+    <changeSet id="2" author="Ritense" runOnChange="true">
+        <empty/>
+        <!-- changeset is empty after valtimo 13 changes -->
+<!--        <addForeignKeyConstraint
             baseTableName="zgw_document_trefwoord"
             baseColumnNames="case_definition_name"
             constraintName="zgw_document_trefwoord_case_definition_name_fk"
             referencedTableName="case_definition"
-            referencedColumnNames="case_definition_name" />
+            referencedColumnNames="case_definition_name" />-->
     </changeSet>
+
+<!--    <changeSet id="3" author="Ritense" runOnChange="true">
+        <renameColumn tableName="zgw_document_trefwoord" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+    </changeSet>-->
+
+
+<!--
+    <changeSet id="4" author="Ritense" runOnChange="true">
+        <addForeignKeyConstraint
+            baseTableName="zgw_document_trefwoord"
+            baseColumnNames="case_definition_key"
+            constraintName="zgw_document_trefwoord_case_definition_key_fk"
+            referencedTableName="case_definition"
+            referencedColumnNames="case_definition_key" />
+    </changeSet>
+-->
 
 </databaseChangeLog>

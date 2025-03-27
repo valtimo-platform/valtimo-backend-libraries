@@ -23,7 +23,6 @@ import com.ritense.exporter.ExportPrettyPrinter
 import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
 import com.ritense.exporter.request.CaseDefinitionExportRequest
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional(readOnly = true)
@@ -35,8 +34,8 @@ class CaseDefinitionExporter(
     override fun supports() = CaseDefinitionExportRequest::class.java
 
     override fun export(request: CaseDefinitionExportRequest): ExportResult {
-        val caseDefinitionKey = request.key
-        val caseDefinition = caseDefinitionService.getCaseDefinition(CaseDefinitionId(request.key, request.versionTag))
+        val caseDefinitionKey = request.caseDefinitionId.key
+        val caseDefinition = caseDefinitionService.getCaseDefinition(request.caseDefinitionId)
         val formattedCaseDefinitionVersion = caseDefinition.id.versionTag.let {
             "${it.major}-${it.minor}-${it.patch}"
         }
@@ -60,6 +59,6 @@ class CaseDefinitionExporter(
     }
 
     companion object {
-        private const val PATH = "config/%s/%s/case/definition/%s.json"
+        private const val PATH = "config/case/%s/%s/case/definition/%s.json"
     }
 }

@@ -105,22 +105,21 @@ spring:
         exclude:
             - org.springframework.boot.actuate.autoconfigure.metrics.web.tomcat.TomcatMetricsAutoConfiguration
     cloud:
+        function:
+            definition: kotlinInboxCloudEventConsumer
         stream:
-            function:
-                definition: createExternalCaseConsumer;completeTaskConsumer;updatedExternalIdConsumer;externalDomainMessageSupplier
             bindings:
-                createExternalCaseConsumer-in-0:
-                    destination: create-external-case
+                kotlinInboxCloudEventConsumer-in-0:
+                    destination: valtimo-events
+                    group: valtimo-inbox
                     binder: rabbit
-                    group: Q1
-                completeTaskConsumer-in-0:
-                    destination: complete-task
-                    binder: rabbit
-                    group: Q2
-                updatedExternalIdConsumer-in-0:
-                    destination: external-id-portal-case-updated
-                    binder: rabbit
-                    group: Q3
+            rabbit:
+                bindings:
+                    kotlinInboxCloudEventConsumer-in-0:
+                        consumer:
+                            bindQueue: false
+                            declareExchange: false
+                            queueNameGroupOnly: true
             binders:
                 rabbit:
                     type: rabbit
@@ -132,7 +131,6 @@ spring:
                                 username: guest
                                 password: guest
                                 virtual-host: /
-            source: externalDomainMessageSupplier
     rabbitmq:
         host: localhost
         port: 5672
@@ -241,9 +239,9 @@ valtimo:
         publisher:
             cloudevent-source: "com.ritense.gzac"
             rabbitmq:
-                routing-key: valtimo-audit
+                exchange: valtimo-events
                 delivery-timeout: "PT0.5S"
-            polling.rate: "PT1M"
+            polling.rate: "PT1S"
 
     authorization:
         dashboard:

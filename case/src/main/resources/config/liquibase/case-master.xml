@@ -45,4 +45,5 @@
     <include file="changelog/20240617-add-showtasks-to-case-tabs.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20241220-add-case-widget-actions.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20241205-update-case-definition.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20250214-case-major13-upgrade.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

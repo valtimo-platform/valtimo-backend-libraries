@@ -38,6 +38,8 @@ import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valueresolver.ValueResolverService
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -66,13 +68,19 @@ class CaseDefinitionService(
         )
     )
 
+    fun getCaseDefinitions(pageable: Pageable): Page<CaseDefinition> {
+        return caseDefinitionRepository.findAllLatestCaseDefinitions(pageable)
+    }
+
     fun getCaseDefinition(caseDefinitionId: CaseDefinitionId): CaseDefinition {
         return caseDefinitionRepository.findByIdOrNull(caseDefinitionId)
             ?: throw UnknownCaseDefinitionException(caseDefinitionId)
     }
 
-    fun getLatestCaseDefinition(caseDefinitionKey: String): CaseDefinition? {
-        return caseDefinitionRepository.findFirstByIdKeyOrderByIdVersionTagDesc(caseDefinitionKey)
+    fun getCaseDefinitionVersions(caseDefinitionKey: String): List<String> {
+        return caseDefinitionRepository.findVersionsForCaseDefinitionKey(caseDefinitionKey).map {
+            it.toString()
+        }
     }
 
     @Throws(UnknownDocumentDefinitionException::class)
@@ -88,17 +96,17 @@ class CaseDefinitionService(
 
     @Throws(InvalidListColumnException::class)
     fun createListColumn(
-        caseDefinitionName: String,
+        caseDefinitionKey: String,
         caseListColumnDto: CaseListColumnDto
     ) {
         denyManagementOperation()
 
         runWithoutAuthorization {
-            validators[Operation.CREATE]!!.validate(caseDefinitionName, caseListColumnDto)
+            validators[Operation.CREATE]!!.validate(caseDefinitionKey, caseListColumnDto)
         }
-        caseListColumnDto.order = caseDefinitionListColumnRepository.countByIdCaseDefinitionName(caseDefinitionName)
+        caseListColumnDto.order = caseDefinitionListColumnRepository.countByIdCaseDefinitionKey(caseDefinitionKey)
         caseDefinitionListColumnRepository
-            .save(CaseListColumnMapper.toEntity(caseDefinitionName, caseListColumnDto))
+            .save(CaseListColumnMapper.toEntity(caseDefinitionKey, caseListColumnDto))
     }
 
     fun updateListColumns(
@@ -120,30 +128,30 @@ class CaseDefinitionService(
 
 
     @Throws(UnknownDocumentDefinitionException::class)
-    fun getListColumns(caseDefinitionName: String): List<CaseListColumnDto> {
+    fun getListColumns(caseDefinitionKey: String): List<CaseListColumnDto> {
         // TODO: Implement PBAC:
         // It currently relies on the VIEW check in findLatestByName via assertDocumentDefinitionExists.
         // Doing a check here forces this class to be a JsonSchemaDocument implementation, which is undesirable.
-        assertDocumentDefinitionExists(caseDefinitionName)
+        assertDocumentDefinitionExists(caseDefinitionKey)
 
         return CaseListColumnMapper
             .toDtoList(
-                caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAsc(
-                    caseDefinitionName
+                caseDefinitionListColumnRepository.findByIdCaseDefinitionKeyOrderByOrderAsc(
+                    caseDefinitionKey
                 )
             )
     }
 
     @Throws(UnknownDocumentDefinitionException::class)
-    fun deleteCaseListColumn(caseDefinitionName: String, columnKey: String) {
+    fun deleteCaseListColumn(caseDefinitionKey: String, columnKey: String) {
         denyManagementOperation()
 
-        runWithoutAuthorization { assertDocumentDefinitionExists(caseDefinitionName) }
+        runWithoutAuthorization { assertDocumentDefinitionExists(caseDefinitionKey) }
 
         if (caseDefinitionListColumnRepository
-                .existsByIdCaseDefinitionNameAndIdKey(caseDefinitionName, columnKey)
+                .existsByIdCaseDefinitionKeyAndIdKey(caseDefinitionKey, columnKey)
         ) {
-            caseDefinitionListColumnRepository.deleteByIdCaseDefinitionNameAndIdKey(caseDefinitionName, columnKey)
+            caseDefinitionListColumnRepository.deleteByIdCaseDefinitionKeyAndIdKey(caseDefinitionKey, columnKey)
         }
     }
 
@@ -156,9 +164,13 @@ class CaseDefinitionService(
         )
     }
 
+    internal fun getLatestCaseDefinition(caseDefinitionKey: String): CaseDefinition? {
+        return caseDefinitionRepository.findFirstByIdKeyOrderByIdVersionTagDesc(caseDefinitionKey)
+    }
+
     @Throws(UnknownDocumentDefinitionException::class)
-    private fun assertDocumentDefinitionExists(caseDefinitionName: String): DocumentDefinition {
-        return documentDefinitionService.findLatestByName(caseDefinitionName)
-            .getOrNull() ?: throw UnknownCaseDefinitionException(caseDefinitionName)
+    private fun assertDocumentDefinitionExists(caseDefinitionKey: String): DocumentDefinition {
+        return documentDefinitionService.findLatestByName(caseDefinitionKey)
+            .getOrNull() ?: throw UnknownCaseDefinitionException(caseDefinitionKey)
     }
 }

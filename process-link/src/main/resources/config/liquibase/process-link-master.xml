@@ -25,5 +25,6 @@
 
     <include file="changelog/20230327-create-process-link-table.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20230602-fix-actiity-type-call-activity-start.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20250107-add-ui-component-process-link.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

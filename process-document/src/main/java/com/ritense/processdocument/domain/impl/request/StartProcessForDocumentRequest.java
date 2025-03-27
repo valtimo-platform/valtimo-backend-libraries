@@ -16,17 +16,27 @@
 
 package com.ritense.processdocument.domain.impl.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ritense.document.domain.Document;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.processdocument.domain.request.Request;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class StartProcessForDocumentRequest implements Request {
     private final Document.Id documentId;
     private final String processDefinitionKey;
     private final Map<String, Object> processVars;
 
-    public StartProcessForDocumentRequest(Document.Id documentId, String processDefinitionKey, Map<String, Object> processVars) {
+    @JsonIgnore
+    private Consumer<? super JsonSchemaDocument> additionalModifications;
+
+    public StartProcessForDocumentRequest(
+        Document.Id documentId,
+        String processDefinitionKey,
+        Map<String, Object> processVars
+    ) {
         this.documentId = documentId;
         this.processDefinitionKey = processDefinitionKey;
         this.processVars = processVars;
@@ -42,6 +52,18 @@ public class StartProcessForDocumentRequest implements Request {
 
     public Map<String, Object> getProcessVars() {
         return this.processVars;
+    }
+
+    @Override
+    public Request withAdditionalModifications(Consumer<? super JsonSchemaDocument> function) {
+        this.additionalModifications = function;
+        return this;
+    }
+
+    public void doAdditionalModifications(JsonSchemaDocument document) {
+        if (this.additionalModifications != null) {
+            this.additionalModifications.accept(document);
+        }
     }
 
     @Override

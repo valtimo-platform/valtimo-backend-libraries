@@ -18,9 +18,11 @@ package com.ritense.document.domain.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 import com.ritense.document.TestHelper;
 import java.net.URI;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import org.everit.json.schema.ValidationException;
 import org.junit.jupiter.api.Test;
 
@@ -28,30 +30,17 @@ public class JsonSchemaDocumentDefinitionTest extends TestHelper {
 
     @Test
     public void shouldNotCreateDocumentDefinitionWithInvalidJsonSchema() {
-        final JsonSchemaDocumentDefinitionId jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.newId("invalidperson");
+        final JsonSchemaDocumentDefinitionId jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.of("invalidperson", mock());
         assertThrows(ValidationException.class, () -> JsonSchema.fromResourceUri(URI.create("config/data/invalidperson.schema.json")));
     }
 
     @Test
     public void shouldCreateDocumentDefinition() {
-        final JsonSchemaDocumentDefinitionId jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.newId("person");
+        final JsonSchemaDocumentDefinitionId jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.of("person", mock());
         final JsonSchema jsonSchema = JsonSchema.fromResourceUri(path(jsonSchemaDocumentDefinitionId.name()));
         final var jsonSchemaDocumentDefinition = new JsonSchemaDocumentDefinition(jsonSchemaDocumentDefinitionId, jsonSchema);
 
         assertThat(jsonSchemaDocumentDefinition.id()).isEqualTo(jsonSchemaDocumentDefinitionId);
         assertThat(jsonSchemaDocumentDefinition.schema().toString()).isEqualTo(jsonSchema.asJson().toString());
-        assertThat(jsonSchemaDocumentDefinition.isReadOnly()).isFalse();
     }
-
-    @Test
-    public void shouldMarkReadOnly() {
-        final JsonSchemaDocumentDefinitionId jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.newId("person");
-        final JsonSchema jsonSchema = JsonSchema.fromResourceUri(path(jsonSchemaDocumentDefinitionId.name()));
-        final var jsonSchemaDocumentDefinition = new JsonSchemaDocumentDefinition(jsonSchemaDocumentDefinitionId, jsonSchema);
-
-        jsonSchemaDocumentDefinition.markReadOnly();
-
-        assertThat(jsonSchemaDocumentDefinition.isReadOnly()).isTrue();
-    }
-
 }

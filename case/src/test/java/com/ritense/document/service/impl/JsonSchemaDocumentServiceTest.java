@@ -103,7 +103,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         ));
 
         var content = new JsonDocumentContent("{\"firstname\": \"aName\"}");
-        jsonSchemaDocument = createDocument(definitionOf("person"), content).resultingDocument().orElseThrow();
+        jsonSchemaDocument = createDocument(definitionOfForUnitTests("person"), content).resultingDocument().orElseThrow();
     }
 
     @Test
@@ -114,7 +114,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
             content.asJson()
         );
 
-        JsonSchemaDocumentDefinition definition = definitionOf("referenced-array");
+        JsonSchemaDocumentDefinition definition = definitionOfForUnitTests("referenced-array");
         when(documentDefinitionService.findLatestByName(eq("document-definition"))).thenReturn(Optional.of(definition));
         when(documentSequenceGeneratorService.next(definition.id())).thenReturn(123L);
 
@@ -150,7 +150,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         );
         documentRequest.withResources(Set.of(resource));
 
-        JsonSchemaDocumentDefinition definition = definitionOf("referenced-array");
+        JsonSchemaDocumentDefinition definition = definitionOfForUnitTests("referenced-array");
         when(documentDefinitionService.findLatestByName(eq("document-definition"))).thenReturn(Optional.of(definition));
         when(documentSequenceGeneratorService.next(definition.id())).thenReturn(123L);
 

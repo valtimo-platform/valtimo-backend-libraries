@@ -23,12 +23,12 @@ import com.ritense.case.domain.DisplayType
 import com.ritense.case.domain.EmptyDisplayTypeParameter
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case_.domain.definition.CaseDefinition
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.search.SearchWithConfigRequest
 import com.ritense.document.service.DocumentSearchService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valueresolver.ValueResolverService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -67,11 +67,16 @@ class CaseInstanceServiceTest {
         )
 
         whenever(DOCUMENT.id()).thenReturn(JsonSchemaDocumentId.newId(UUID.randomUUID()))
-        whenever(caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAsc(CASE_DEFINITION_NAME))
+        whenever(caseDefinitionListColumnRepository.findByIdCaseDefinitionKeyOrderByOrderAsc(CASE_DEFINITION_NAME))
             .thenReturn(listOf(FIRST_NAME_CASE_LIST_COLUMN))
         whenever(valueResolverService.resolveValues(DOCUMENT.id().id.toString(), listOf("doc:firstName")))
             .thenReturn(mapOf("doc:firstName" to "John"))
-        whenever(DOCUMENT.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.newId(CASE_DEFINITION_NAME))
+        whenever(DOCUMENT.definitionId()).thenReturn(
+            JsonSchemaDocumentDefinitionId.existingId(
+                CASE_DEFINITION_NAME,
+                CaseDefinitionId.of("bName", "1.0.2")
+            )
+        )
     }
 
     @Test
@@ -82,7 +87,8 @@ class CaseInstanceServiceTest {
             .thenReturn(PageImpl(listOf(DOCUMENT)))
         whenever(caseDefinitionService.getLatestCaseDefinition(CASE_DEFINITION_NAME))
             .thenReturn(
-                CaseDefinition(CaseDefinitionId.of(CASE_DEFINITION_NAME, "1.0.0"),
+                CaseDefinition(
+                    CaseDefinitionId.of(CASE_DEFINITION_NAME, "1.0.0"),
                     CASE_DEFINITION_NAME,
                     false
                 )
@@ -104,7 +110,8 @@ class CaseInstanceServiceTest {
             .thenReturn(PageImpl(listOf(DOCUMENT)))
         whenever(caseDefinitionService.getLatestCaseDefinition(CASE_DEFINITION_NAME))
             .thenReturn(
-                CaseDefinition(CaseDefinitionId.of(CASE_DEFINITION_NAME, "1.0.0"),
+                CaseDefinition(
+                    CaseDefinitionId.of(CASE_DEFINITION_NAME, "1.0.0"),
                     CASE_DEFINITION_NAME,
                     false
                 )

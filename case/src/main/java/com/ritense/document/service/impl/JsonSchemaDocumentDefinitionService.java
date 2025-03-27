@@ -44,7 +44,6 @@ import com.ritense.document.domain.EveritSchemaAllowsPropertyKt;
 import com.ritense.document.domain.impl.JsonSchema;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
-import com.ritense.document.exception.DocumentDefinitionDeploymentException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.DocumentDefinitionRepository;
 import com.ritense.document.repository.impl.specification.JsonSchemaDocumentDefinitionSpecificationHelper;
@@ -54,11 +53,10 @@ import com.ritense.document.service.result.DeployDocumentDefinitionResultFailed;
 import com.ritense.document.service.result.DeployDocumentDefinitionResultSucceeded;
 import com.ritense.document.service.result.error.DocumentDefinitionError;
 import com.ritense.logging.LoggableResource;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import jakarta.validation.ValidationException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -71,7 +69,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StreamUtils;
 
 @Transactional
 public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionService {
@@ -102,8 +99,6 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
                     VIEW_LIST
                 ),
                 null
-            ).and(
-                JsonSchemaDocumentDefinitionSpecificationHelper.byLatestVersion()
             );
         return documentDefinitionRepository.findAll(spec, pageable);
     }
@@ -152,7 +147,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     public Optional<JsonSchemaDocumentDefinition> findLatestByName(
         @LoggableResource("documentDefinitionName") String documentDefinitionName
     ) {
-        final var definition = documentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(
+        final var definition = documentDefinitionRepository.findFirstByIdNameOrderByIdCaseDefinitionIdVersionTagDesc(
             documentDefinitionName
         ).orElse(null);
 
@@ -185,11 +180,29 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     }
 
     @Override
-    public Optional<JsonSchemaDocumentDefinition> findByNameAndVersion(
-        @LoggableResource("documentDefinitionName") String documentDefinitionName,
-        long version
+    public Optional<JsonSchemaDocumentDefinition> findByCaseDefinitionId(
+        CaseDefinitionId caseDefinitionId
     ) {
-        final var documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId(documentDefinitionName, version);
+        final var optionalDefinition = documentDefinitionRepository.findByIdCaseDefinitionId(caseDefinitionId);
+
+        optionalDefinition.ifPresent(definition -> authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocumentDefinition.class,
+                VIEW,
+                definition
+            )
+        ));
+
+        return optionalDefinition;
+    }
+
+    @Override
+    public Optional<JsonSchemaDocumentDefinition> findByNameAndCaseDefinitionId(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName,
+        CaseDefinitionId caseDefinitionId
+    ) {
+        final var documentDefinitionId = JsonSchemaDocumentDefinitionId
+            .existingId(documentDefinitionName, caseDefinitionId);
         final var optionalDefinition = documentDefinitionRepository.findById(documentDefinitionId);
 
         optionalDefinition.ifPresent(definition -> authorizationService.requirePermission(
@@ -215,10 +228,10 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     }
 
     @Override
-    public List<Long> findVersionsByName(
+    public List<CaseDefinitionId> findVersionsByName(
         @LoggableResource("documentDefinitionName") String documentDefinitionName
     ) {
-        final var optionalDefinition = documentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(
+        final var optionalDefinition = documentDefinitionRepository.findFirstByIdNameOrderByIdCaseDefinitionIdVersionTagDesc(
             documentDefinitionName
         );
 
@@ -234,105 +247,27 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     }
 
     @Override
-    public void deployAll() {
+    public DeployDocumentDefinitionResult deploy(String schema, CaseDefinitionId caseDefinitionId) {
         //Authorization check is delegated to the store() method
-        deployAll(true, false);
+        var jsonSchema = JsonSchema.fromString(schema);
+        return deploy(jsonSchema, caseDefinitionId);
     }
 
-    @Override
-    public void deploy(InputStream inputStream) throws IOException {
-        //Authorization check is delegated to the store() method
-        deploy(inputStream, true, false);
-    }
-
-    @Override
-    public DeployDocumentDefinitionResult deploy(String schema) {
-        //Authorization check is delegated to the store() method
-        return deploy(schema, false, false);
-    }
-
-    @Override
-    public void deployAll(boolean readOnly, boolean force) {
-        //Authorization check is delegated to the store() method
-        logger.info("Deploy all schema's");
-        try {
-            for (var resource : loadResources()) {
-                if (resource.getFilename() != null) {
-                    try (InputStream is = resource.getInputStream()) {
-                        deploy(is, readOnly, force);
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            throw new DocumentDefinitionDeploymentException("Error deploying document schema's", ex);
-        }
-    }
-
-    @Override
-    public void deploy(InputStream inputStream, boolean readOnly, boolean force) throws IOException {
-        //Authorization check is delegated to the store() method
-        var jsonSchema = JsonSchema.fromString(StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8));
-        deploy(jsonSchema, readOnly, force);
-    }
-
-    @Override
-    public DeployDocumentDefinitionResult deploy(String schema, boolean readOnly, boolean force) {
-        //Authorization check is delegated to the store() method
-        try {
-            var jsonSchema = JsonSchema.fromString(schema);
-            return deploy(jsonSchema, readOnly, force);
-        } catch (AccessDeniedException accessDeniedException) {
-            throw accessDeniedException;
-        } catch (Exception ex) {
-            DocumentDefinitionError error = ex::getMessage;
-            return new DeployDocumentDefinitionResultFailed(List.of(error));
-        }
-    }
-
-    private DeployDocumentDefinitionResult deploy(JsonSchema jsonSchema, boolean readOnly, boolean force) {
+    public DeployDocumentDefinitionResult deploy(JsonSchema jsonSchema, CaseDefinitionId caseDefinitionId) {
         //Authorization check is delegated to the store() method
         try {
             final var documentDefinitionName = jsonSchema.getSchema().getId().replace(".schema", "");
             return withLoggingContext("documentDefinitionName", documentDefinitionName, () -> {
-                final var existingDefinition = findLatestByName(documentDefinitionName);
 
-                final JsonSchemaDocumentDefinitionId documentDefinitionId;
-                if (existingDefinition.isPresent()) {
-                    var existingDocumentDefinition = existingDefinition.get();
+                final JsonSchemaDocumentDefinitionId documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId(
+                    documentDefinitionName,
+                    caseDefinitionId
+                );
 
-                    // Check read-only of previous definition
-                    if (existingDocumentDefinition.isReadOnly() && !force) {
-                        DocumentDefinitionError error = () -> "This schema cannot be updated, because its readonly in previous versions";
-                        return new DeployDocumentDefinitionResultFailed(List.of(error));
-                    }
-
-                    if (existingDocumentDefinition.getSchema().asJson().equals(jsonSchema.asJson())) {
-                        logger.info(
-                            "Schema already deployed - {} - {} ", existingDocumentDefinition.getId(),
-                            jsonSchema.getSchema().getId()
-                        );
-                        DocumentDefinitionError error = () -> "This exact schema is already deployed";
-                        return new DeployDocumentDefinitionResultFailed(List.of(error));
-                    } else {
-                        // Definition changed increase version
-                        documentDefinitionId = JsonSchemaDocumentDefinitionId.nextVersion(existingDocumentDefinition.id());
-                        logger.info(
-                            "Schema changed. Deploying next version - {} - {} ", documentDefinitionId,
-                            jsonSchema.getSchema().getId()
-                        );
-                    }
-                } else {
-                    documentDefinitionId = JsonSchemaDocumentDefinitionId.newId(documentDefinitionName);
-                }
+                logger.info("Deploying schema {} for case definition {}", jsonSchema.getSchema().getId(), caseDefinitionId);
 
                 var documentDefinition = new JsonSchemaDocumentDefinition(documentDefinitionId, jsonSchema);
-
-                if (readOnly) {
-                    documentDefinition.markReadOnly();
-                }
-
                 store(documentDefinition);
-                logger.info("Deployed schema - {} - {} ", documentDefinitionId, jsonSchema.getSchema().getId());
                 return new DeployDocumentDefinitionResultSucceeded(documentDefinition);
             });
         } catch (AccessDeniedException accessDeniedException) {
@@ -349,26 +284,18 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         withLoggingContext(JsonSchemaDocumentDefinition.class, documentDefinition.id().toString(), () -> {
             assertArgumentNotNull(documentDefinition, "documentDefinition is required");
 
-            final var existingDocumentDefinition = documentDefinitionRepository.findById(documentDefinition.id()).orElse(
-                    null);
-            if (existingDocumentDefinition != null) {
-                if (!existingDocumentDefinition.equals(documentDefinition)) {
-                    throw new UnsupportedOperationException("Schema already deployed, will cannot redeploy");
-                }
-            } else {
-                JsonSchemaDocumentDefinitionId latestDefinitionId = documentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(
-                    documentDefinition.id().name()).map(JsonSchemaDocumentDefinition::getId).orElse(null);
+            JsonSchemaDocumentDefinitionId latestDefinitionId = documentDefinitionRepository.findFirstByIdNameOrderByIdCaseDefinitionIdVersionTagDesc(
+                documentDefinition.id().name()).map(JsonSchemaDocumentDefinition::getId).orElse(null);
 
-                authorizationService.requirePermission(
-                    new EntityAuthorizationRequest<>(
-                        JsonSchemaDocumentDefinition.class,
-                        latestDefinitionId == null ? CREATE : MODIFY,
-                        documentDefinition
-                    )
-                );
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocumentDefinition.class,
+                    latestDefinitionId == null ? CREATE : MODIFY,
+                    documentDefinition
+                )
+            );
 
-                documentDefinitionRepository.saveAndFlush(documentDefinition);
-            }
+            documentDefinitionRepository.saveAndFlush(documentDefinition);
         });
     }
 

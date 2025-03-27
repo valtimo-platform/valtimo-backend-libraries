@@ -16,8 +16,11 @@
 
 package com.ritense.exporter.request
 
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
+
 abstract class ExportRequest(
-    open val required: Boolean = true
+    open val required: Boolean = true,
+    open val caseDefinitionId: CaseDefinitionId? = null
 ) {
     abstract override fun equals(other: Any?): Boolean
 

@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.formviewmodel.service.FormViewModelService
 import com.ritense.formviewmodel.service.FormViewModelSubmissionService
 import com.ritense.formviewmodel.viewmodel.ViewModel
+import com.ritense.formviewmodel.web.rest.dto.StartFormSubmissionResult
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
 @SkipComponentScan
@@ -42,12 +44,12 @@ class FormViewModelResource(
 
     @GetMapping("/start-form")
     fun getStartFormViewModel(
-        @RequestParam formName: String,
-        @RequestParam processDefinitionKey: String
+        @RequestParam processDefinitionKey: String,
+        @RequestParam(required = false) documentId: UUID?
     ): ResponseEntity<ViewModel?> {
         val viewModel = formViewModelService.getStartFormViewModel(
-            formName = formName,
-            processDefinitionKey = processDefinitionKey
+            processDefinitionKey = processDefinitionKey,
+            documentId = documentId
         )
         return if (viewModel != null) {
             ResponseEntity.ok(viewModel)
@@ -58,12 +60,10 @@ class FormViewModelResource(
 
     @GetMapping("/user-task")
     fun getUserTaskFormViewModel(
-        @RequestParam formName: String,
         @RequestParam taskInstanceId: String
     ): ResponseEntity<ViewModel?> {
         return formViewModelService.getUserTaskFormViewModel(
-            formName = formName,
-            taskInstanceId = taskInstanceId
+            taskInstanceId = taskInstanceId,
         )?.let {
             ResponseEntity.ok(it)
         } ?: ResponseEntity.notFound().build()
@@ -71,18 +71,16 @@ class FormViewModelResource(
 
     @PostMapping("/start-form")
     fun updateStartFormViewModel(
-        @RequestParam formName: String,
         @RequestParam processDefinitionKey: String,
-        @RequestParam page: Int? = null,
-        @RequestParam isWizard: Boolean? = null,
+        @RequestParam(required = false) page: Int? = null,
+        @RequestParam(required = false) documentId: UUID? = null,
         @RequestBody submission: ObjectNode
     ): ResponseEntity<ViewModel> {
         return formViewModelService.updateStartFormViewModel(
-            formName = formName,
             processDefinitionKey = processDefinitionKey,
+            submission = submission,
             page = page,
-            isWizard = isWizard,
-            submission = submission
+            documentId = documentId,
         )?.let {
             ResponseEntity.ok(it)
         } ?: ResponseEntity.notFound().build()
@@ -90,17 +88,13 @@ class FormViewModelResource(
 
     @PostMapping("/user-task")
     fun updateUserTaskFormViewModel(
-        @RequestParam formName: String,
         @RequestParam taskInstanceId: String,
-        @RequestParam page: Int? = null,
-        @RequestParam isWizard: Boolean? = null,
-        @RequestBody submission: ObjectNode
+        @RequestParam(required = false) page: Int? = null,
+        @RequestBody submission: ObjectNode,
     ): ResponseEntity<ViewModel> {
         return formViewModelService.updateUserTaskFormViewModel(
-            formName = formName,
             taskInstanceId = taskInstanceId,
             page = page,
-            isWizard = isWizard,
             submission = submission
         )?.let {
             ResponseEntity.ok(it)
@@ -109,12 +103,10 @@ class FormViewModelResource(
 
     @PostMapping("/submit/user-task")
     fun submitTask(
-        @RequestParam formName: String,
         @RequestParam taskInstanceId: String,
         @RequestBody submission: ObjectNode
     ): ResponseEntity<Void> {
         formViewModelSubmissionService.handleUserTaskSubmission(
-            formName = formName,
             taskInstanceId = taskInstanceId,
             submission = submission
         )
@@ -123,18 +115,18 @@ class FormViewModelResource(
 
     @PostMapping("/submit/start-form")
     fun submitStartForm(
-        @RequestParam formName: String,
         @RequestParam processDefinitionKey: String,
         @RequestParam documentDefinitionName: String,
+        @RequestParam(required = false) documentId: UUID?,
         @RequestBody submission: ObjectNode
-    ): ResponseEntity<Void> {
-        formViewModelSubmissionService.handleStartFormSubmission(
-            formName = formName,
+    ): ResponseEntity<StartFormSubmissionResult> {
+        val result = formViewModelSubmissionService.handleStartFormSubmission(
             processDefinitionKey = processDefinitionKey,
             documentDefinitionName = documentDefinitionName,
             submission = submission,
+            documentId = documentId,
         )
-        return ResponseEntity.noContent().build()
+        return ResponseEntity.ok(result)
     }
 
 }

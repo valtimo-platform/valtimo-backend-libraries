@@ -25,5 +25,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 data class CurrencyFieldDisplayProperties(
     val currencyCode: String? = null,
     val display: String? = null,
-    val digitsInfo: String? = null
+    val digitsInfo: String? = null,
+    override val hideWhenEmpty: Boolean? = false
 ) : FieldDisplayProperties

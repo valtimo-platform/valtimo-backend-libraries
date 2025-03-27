@@ -61,3 +61,4 @@ services:
 #   url: jdbc:postgresql://localhost:3354/keycloak-iam-test
 #   url: jdbc:postgresql://localhost:3355/logging-test
 #   url: localhost:55672 <--rabbitmq
+#   url: localhost:55673 <--rabbitmq

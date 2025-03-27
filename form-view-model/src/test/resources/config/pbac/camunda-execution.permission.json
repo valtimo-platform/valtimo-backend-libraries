@@ -1,0 +1,60 @@
+{
+    "changesetId": "processinstance-fvm-v1",
+    "permissions": [
+        {
+            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaExecution",
+            "action": "create",
+            "roleKey": "ROLE_ADMIN",
+            "conditions": [
+                {
+                    "type": "container",
+                    "resourceType": "com.ritense.valtimo.camunda.domain.CamundaProcessDefinition",
+                    "conditions": [
+                        {
+                            "type": "field",
+                            "field": "key",
+                            "operator": "==",
+                            "value": "fvm-uicomponent-task-process"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaExecution",
+            "action": "create",
+            "roleKey": "ROLE_ADMIN",
+            "conditions": [
+                {
+                    "type": "container",
+                    "resourceType": "com.ritense.valtimo.camunda.domain.CamundaProcessDefinition",
+                    "conditions": [
+                        {
+                            "type": "field",
+                            "field": "key",
+                            "operator": "==",
+                            "value": "fvm-form-task-process"
+                        }
+                    ]
+                }
+            ],
+            "contextResourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "contextConditions": [
+                {
+                    "type": "field",
+                    "field": "documentDefinitionId.name",
+                    "operator": "==",
+                    "value": "fvm"
+                },
+                {
+                    "type": "expression",
+                    "field": "content.content",
+                    "path": "$.allow",
+                    "operator": "==",
+                    "value": true,
+                    "clazz": "java.lang.Boolean"
+                }
+            ]
+        }
+    ]
+}

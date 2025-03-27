@@ -41,6 +41,7 @@ import com.ritense.valtimo.web.rest.error.CamundaExceptionTranslator;
 import org.camunda.bpm.application.impl.event.ProcessApplicationEventListenerPlugin;
 import org.camunda.bpm.spring.boot.starter.CamundaBpmAutoConfiguration;
 import org.camunda.bpm.spring.boot.starter.configuration.Ordering;
+import org.camunda.bpm.spring.boot.starter.property.CamundaBpmProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -84,8 +85,10 @@ public class CamundaAutoConfiguration {
     public CamundaConfiguration camundaConfiguration(
         final ValtimoSchemaOperationsCommand valtimoSchemaOperationsCommand,
         final CustomRepositoryServiceImpl repositoryService,
-        final ProcessDefinitionDeployedEventPublisher processDefinitionDeployedEventPublisher
+        final ProcessDefinitionDeployedEventPublisher processDefinitionDeployedEventPublisher,
+        final CamundaBpmProperties camundaBpmProperties
     ) {
+        camundaBpmProperties.setAutoDeploymentEnabled(false); // TODO: Deployment for BPMNs and DMNs. What to do with BPMN and DMN files located outside a case folder?
         return new CamundaConfiguration(valtimoSchemaOperationsCommand, repositoryService, processDefinitionDeployedEventPublisher);
     }
 

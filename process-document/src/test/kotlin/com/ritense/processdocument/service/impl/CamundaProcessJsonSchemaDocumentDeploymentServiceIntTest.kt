@@ -18,7 +18,7 @@ package com.ritense.processdocument.service.impl
 
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.processdocument.BaseIntegrationTest
-import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey
+import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionId
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentDeploymentService
 import org.junit.jupiter.api.Test
@@ -42,7 +42,7 @@ internal class CamundaProcessJsonSchemaDocumentDeploymentServiceIntTest : BaseIn
         val link = AuthorizationContext.runWithoutAuthorization {
             processDocumentDeploymentService.deploy("house", linkJson)
             processDocumentAssociationService.findProcessDocumentDefinition(
-                CamundaProcessDefinitionKey("loan-process-demo")
+                CamundaProcessDefinitionId("loan-process-demo")
             ).get()
         }
         assertEquals("house", link.processDocumentDefinitionId().documentDefinitionId().name())

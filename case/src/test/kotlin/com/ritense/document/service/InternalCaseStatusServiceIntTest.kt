@@ -45,7 +45,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
     @Test
     fun `should have imported two person internal case statuses`() {
         val internalCaseStatuses =
-            internalCaseStatusRepository.findByIdCaseDefinitionNameOrderByOrder("person")
+            internalCaseStatusRepository.findByIdCaseDefinitionKeyOrderByOrder("person")
 
         assertEquals(2, internalCaseStatuses.size)
         assertEquals("closed", internalCaseStatuses[0].id.key)
@@ -70,13 +70,13 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
         }
 
         val internalCaseStatus = internalCaseStatusRepository
-            .findDistinctByIdCaseDefinitionNameAndIdKey("house", "house123")
+            .findDistinctByIdCaseDefinitionKeyAndIdKey("house", "house123")
 
         val internalCaseCount = internalCaseStatusRepository
-            .findByIdCaseDefinitionNameOrderByOrder("house").size
+            .findByIdCaseDefinitionKeyOrderByOrder("house").size
 
         assertNotNull(internalCaseStatus)
-        assertEquals("house", internalCaseStatus.id.caseDefinitionName)
+        assertEquals("house", internalCaseStatus.id.caseDefinitionKey)
         assertEquals("house123", internalCaseStatus.id.key)
         assertEquals("456", internalCaseStatus.title)
         assertTrue(internalCaseStatus.visibleInCaseListByDefault)
@@ -186,13 +186,13 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
         }
 
         val internalCaseStatus = internalCaseStatusRepository
-            .findDistinctByIdCaseDefinitionNameAndIdKey("house", "house123")
+            .findDistinctByIdCaseDefinitionKeyAndIdKey("house", "house123")
 
         val internalCaseCount = internalCaseStatusRepository
-            .findByIdCaseDefinitionNameOrderByOrder("house").size
+            .findByIdCaseDefinitionKeyOrderByOrder("house").size
 
         assertNotNull(internalCaseStatus)
-        assertEquals("house", internalCaseStatus.id.caseDefinitionName)
+        assertEquals("house", internalCaseStatus.id.caseDefinitionKey)
         assertEquals("house123", internalCaseStatus.id.key)
         assertEquals("789", internalCaseStatus.title)
         assertFalse(internalCaseStatus.visibleInCaseListByDefault)
@@ -271,7 +271,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
         }
 
         val initialInternalCaseStatuses = internalCaseStatusRepository
-            .findByIdCaseDefinitionNameOrderByOrder("house")
+            .findByIdCaseDefinitionKeyOrderByOrder("house")
 
         assertEquals(3, initialInternalCaseStatuses.size)
         assertEquals("house123", initialInternalCaseStatuses[0].id.key)
@@ -308,7 +308,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
         }
 
         val postUpdateInternalCaseStatuses = internalCaseStatusRepository
-            .findByIdCaseDefinitionNameOrderByOrder("house")
+            .findByIdCaseDefinitionKeyOrderByOrder("house")
 
         assertEquals(3, postUpdateInternalCaseStatuses.size)
         assertEquals("house123", postUpdateInternalCaseStatuses[0].id.key)
@@ -359,7 +359,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
         }
 
         val initialInternalCaseStatuses = internalCaseStatusRepository
-            .findByIdCaseDefinitionNameOrderByOrder("house")
+            .findByIdCaseDefinitionKeyOrderByOrder("house")
 
         assertEquals(3, initialInternalCaseStatuses.size)
         assertEquals("house123", initialInternalCaseStatuses[0].id.key)
@@ -418,7 +418,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
         }
 
         val initialInternalCaseStatus = internalCaseStatusRepository
-            .findDistinctByIdCaseDefinitionNameAndIdKey("house", "house123")
+            .findDistinctByIdCaseDefinitionKeyAndIdKey("house", "house123")
 
         assertNotNull(initialInternalCaseStatus)
 
@@ -427,7 +427,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
         }
 
         val postDeleteInternalCaseStatus = internalCaseStatusRepository
-            .findDistinctByIdCaseDefinitionNameAndIdKey("house", "house123")
+            .findDistinctByIdCaseDefinitionKeyAndIdKey("house", "house123")
 
         assertNull(postDeleteInternalCaseStatus)
 

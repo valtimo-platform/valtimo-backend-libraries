@@ -33,7 +33,7 @@ import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.processdocument.BaseIntegrationTest;
-import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
+import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionId;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinition;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinitionId;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstance;
@@ -211,7 +211,7 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
         // can't delete and select in the same transaction with JPA so we check the call instead
         verify(processDocumentDefinitionRepository).deleteById(
             CamundaProcessJsonSchemaDocumentDefinitionId.existingId(
-                new CamundaProcessDefinitionKey("embedded-subprocess-example"),
+                new CamundaProcessDefinitionId("embedded-subprocess-example"),
                 JsonSchemaDocumentDefinitionId.existingId(
                     "some-test",
                     1
@@ -284,7 +284,7 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
         // can't delete and select in the same transaction with JPA so we check the call instead
         verify(processDocumentDefinitionRepository).deleteById(
             CamundaProcessJsonSchemaDocumentDefinitionId.existingId(
-                new CamundaProcessDefinitionKey("embedded-subprocess-example"),
+                new CamundaProcessDefinitionId("embedded-subprocess-example"),
                 JsonSchemaDocumentDefinitionId.existingId(
                     "some-test",
                     2

@@ -23,23 +23,23 @@ import jakarta.persistence.Embeddable
 
 @Embeddable
 data class InternalCaseStatusId(
-    @Column(name = "case_definition_name", length = 50, columnDefinition = "VARCHAR(255)")
-    val caseDefinitionName: String,
+    @Column(name = "case_definition_key", length = 50, columnDefinition = "VARCHAR(255)")
+    val caseDefinitionKey: String,
     @Column(name = "internal_case_status_key")
     val key: String
 ) : AbstractId<InternalCaseStatusId>() {
     init {
-        require(caseDefinitionName.isNotBlank()) { "caseDefinitionName was blank!" }
+        require(caseDefinitionKey.isNotBlank()) { "caseDefinitionName was blank!" }
         require(key.isNotBlank()) { "key was blank!" }
     }
 
     companion object {
         @JvmStatic
-        fun of(caseDefinitionName: String, key: String?): InternalCaseStatusId? {
+        fun of(caseDefinitionKey: String, key: String?): InternalCaseStatusId? {
             return if (key == null) {
                 null
             } else {
-                InternalCaseStatusId(caseDefinitionName, key)
+                InternalCaseStatusId(caseDefinitionKey, key)
             }
         }
     }

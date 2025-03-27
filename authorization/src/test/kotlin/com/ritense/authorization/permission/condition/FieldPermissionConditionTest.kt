@@ -26,7 +26,7 @@ import com.ritense.authorization.permission.condition.PermissionConditionOperato
 import com.ritense.authorization.testimpl.TestChildEntity
 import com.ritense.authorization.testimpl.TestEntity
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import com.ritense.valtimo.contract.authorization.UserManagementServiceHolder
+import com.ritense.authorization.UserManagementServiceHolder
 import com.ritense.valtimo.contract.json.MapperSingleton
 import org.hamcrest.MatcherAssert
 import org.hamcrest.Matchers

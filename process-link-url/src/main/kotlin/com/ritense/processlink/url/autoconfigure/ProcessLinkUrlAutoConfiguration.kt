@@ -60,6 +60,7 @@ class ProcessLinkUrlAutoConfiguration {
     )
 
     @Bean
+    @Order(40)
     @ConditionalOnMissingBean(URLSupportedProcessLinksHandler::class)
     fun urlSupportedProcessLinksHandler() = URLSupportedProcessLinksHandler()
 

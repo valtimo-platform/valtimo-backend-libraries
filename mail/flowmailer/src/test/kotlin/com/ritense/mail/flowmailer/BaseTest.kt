@@ -92,7 +92,7 @@ abstract class BaseTest {
     }
 
     fun definition(): JsonSchemaDocumentDefinition {
-        val jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.newId("house")
+        val jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.of("house")
         val jsonSchema = JsonSchema.fromResourceUri(path(jsonSchemaDocumentDefinitionId.name()))
         return JsonSchemaDocumentDefinition(jsonSchemaDocumentDefinitionId, jsonSchema)
     }

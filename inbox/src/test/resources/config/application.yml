@@ -1,0 +1,33 @@
+
+spring:
+    cloud:
+        function:
+            definition: messageSupplier|kotlinInboxCloudEventConsumer
+        stream:
+            bindings:
+                messageSupplier-out-0:
+                    destination: valtimo-events
+                    group: valtimo-inbox
+                    binder: rabbit
+                kotlinInboxCloudEventConsumer-in-0:
+                    destination: valtimo-events
+                    group: valtimo-inbox
+                    binder: rabbit
+            rabbit:
+                bindings:
+                    kotlinInboxCloudEventConsumer-in-0:
+                        consumer:
+                            bindQueue: false
+                            declareExchange: false
+                            queueNameGroupOnly: true
+            binders:
+                rabbit:
+                    type: rabbit
+                    environment:
+                        spring:
+                            rabbitmq:
+                                host: localhost
+                                port: 55673
+                                username: guest
+                                password: guest
+                                virtual-host: /

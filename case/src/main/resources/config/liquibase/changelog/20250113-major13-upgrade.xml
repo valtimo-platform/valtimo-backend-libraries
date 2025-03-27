@@ -1,0 +1,76 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright 2015-2024 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+<!--    <changeSet id="1" author="Ritense">-->
+<!--        <preConditions>-->
+<!--            <foreignKeyConstraintExists foreignKeyName="zgw_document_trefwoord_case_definition_name_fk"/>-->
+<!--        </preConditions>-->
+<!--        <dropForeignKeyConstraint baseTableName="zgw_document_trefwoord" constraintName="zgw_document_trefwoord_case_definition_name_fk"/>-->
+<!--    </changeSet>-->
+
+<!--    <changeSet id="2" author="Ritense">-->
+<!--        <preConditions>-->
+<!--            <foreignKeyConstraintExists foreignKeyName="zgw_document_upload_field_case_definition_name_fk"/>-->
+<!--        </preConditions>-->
+<!--        <dropForeignKeyConstraint baseTableName="zgw_document_upload_field" constraintName="zgw_document_upload_field_case_definition_name_fk"/>-->
+<!--    </changeSet>-->
+    <changeSet id="3" author="Ritense">
+        <renameColumn tableName="search_field" oldColumnName="document_definition_name" newColumnName="case_definition_key"/>
+    </changeSet>
+
+    <changeSet id="4" author="Ritense">
+        <renameColumn tableName="internal_case_status" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+    </changeSet>
+
+    <changeSet id="5" author="Ritense">
+        <renameColumn tableName="json_schema_document_snapshot" oldColumnName="case_definition_name"
+                      newColumnName="ics_case_definition_key"/>
+    </changeSet>
+
+    <changeSet id="6" author="Ritense">
+        <renameColumn tableName="json_schema_document" oldColumnName="case_definition_name"
+                      newColumnName="case_definition_key"/>
+        <addColumn tableName="json_schema_document">
+            <column name="case_definition_version_tag" type="VARCHAR(256)" defaultValue="1.0.0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addColumn tableName="json_schema_document">
+            <column name="ics_case_definition_key" type="VARCHAR(256)">
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="7" author="Ritense">
+        <addColumn tableName="json_schema_document_snapshot">
+            <column name="case_definition_key" type="VARCHAR(256)"/>
+        </addColumn>
+        <addColumn tableName="json_schema_document_snapshot">
+            <column name="case_definition_version_tag" type="VARCHAR(256)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="8" author="Ritense">
+        <dropColumn tableName="json_schema_document_snapshot" columnName="document_definition_version"/>
+    </changeSet>
+
+</databaseChangeLog>

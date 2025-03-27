@@ -28,12 +28,12 @@ public class SearchFieldId extends AbstractId<SearchFieldId> {
     @Column(name = "search_field_id", columnDefinition = "VARCHAR(50)", nullable = false, updatable = false)
     private UUID id;
 
-    @Column(name = "document_definition_name", columnDefinition = "VARCHAR(50)", nullable = false, updatable = false)
-    private String documentDefinitionName;
+    @Column(name = "case_definition_key", columnDefinition = "VARCHAR(50)", nullable = false, updatable = false)
+    private String caseDefinitionKey;
 
-    private SearchFieldId(UUID id, String documentDefinitionName) {
+    private SearchFieldId(UUID id, String caseDefinitionKey) {
         this.id = id;
-        this.documentDefinitionName = documentDefinitionName;
+        this.caseDefinitionKey = caseDefinitionKey;
     }
 
     public SearchFieldId() {
@@ -47,8 +47,8 @@ public class SearchFieldId extends AbstractId<SearchFieldId> {
         return new SearchFieldId(UUID.randomUUID(), documentDefinitionName);
     }
 
-    public String getDocumentDefinitionName() {
-        return this.documentDefinitionName;
+    public String getCaseDefinitionKey() {
+        return this.caseDefinitionKey;
     }
 
     public UUID getId() {
@@ -63,11 +63,11 @@ public class SearchFieldId extends AbstractId<SearchFieldId> {
         if (!(o instanceof SearchFieldId that)) {
             return false;
         }
-        return Objects.equals(id, that.id) && Objects.equals(documentDefinitionName, that.documentDefinitionName);
+        return Objects.equals(id, that.id) && Objects.equals(caseDefinitionKey, that.caseDefinitionKey);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, documentDefinitionName);
+        return Objects.hash(id, caseDefinitionKey);
     }
 }

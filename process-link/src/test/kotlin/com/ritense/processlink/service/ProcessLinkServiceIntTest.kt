@@ -2,10 +2,12 @@ package com.ritense.processlink.service
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.processlink.BaseIntegrationTest
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.AnotherTestProcessLink
-import com.ritense.processlink.domain.AnotherTestProcessLink.Companion.PROCESS_LINK_TYPE
 import com.ritense.processlink.domain.AnotherTestProcessLinkUpdateRequestDto
+import com.ritense.processlink.domain.ProcessLinkType
 import com.ritense.processlink.domain.TestProcessLink
+import com.ritense.processlink.uicomponent.domain.UIComponentProcessLink
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,12 +27,23 @@ class ProcessLinkServiceIntTest @Autowired constructor(
             AnotherTestProcessLinkUpdateRequestDto(
                 processLink.id,
                 "success!"
-            )
+            ),
+            null
         )
 
         val updatedProcessLink = processLinkService.getProcessLink(processLink.id, AnotherTestProcessLink::class.java)
-        assertThat(updatedProcessLink.processLinkType).isEqualTo(PROCESS_LINK_TYPE)
+        assertThat(updatedProcessLink.processLinkType).isEqualTo(AnotherTestProcessLink.PROCESS_LINK_TYPE)
         assertThat(updatedProcessLink.anotherValue).isNotEqualTo(processLink.someValue)
         assertThat(updatedProcessLink.anotherValue).isEqualTo("success!")
+    }
+
+    @Test
+    fun `should get ordered list of supported process link types`() {
+        val processLinkTypes = processLinkService.getSupportedProcessLinkTypes(ActivityTypeWithEventName.USER_TASK_CREATE.value)
+        assertThat(processLinkTypes).containsExactly(
+            ProcessLinkType(TestProcessLink.PROCESS_LINK_TYPE_TEST, true),
+            ProcessLinkType(UIComponentProcessLink.TYPE_UI_COMPONENT, true),
+            ProcessLinkType(AnotherTestProcessLink.PROCESS_LINK_TYPE, true),
+        )
     }
 }

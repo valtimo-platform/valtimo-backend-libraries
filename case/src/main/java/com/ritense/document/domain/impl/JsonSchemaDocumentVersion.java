@@ -102,9 +102,8 @@ public class JsonSchemaDocumentVersion implements DocumentVersion {
         var digest = new DigestUtils(MessageDigestAlgorithms.SHA_256).getMessageDigest();
         digest.update(String.valueOf(documentContent.asJson().hashCode()).getBytes());
         digest.update(documentDefinitionId.name().getBytes());
-        if (documentDefinitionId.version() > 1) {
-            digest.update(Long.toString(documentDefinitionId.version()).getBytes());
-        }
+        digest.update(documentDefinitionId.caseDefinitionId().getKey().getBytes());
+        digest.update(documentDefinitionId.caseDefinitionId().getVersionTag().getVersion().getBytes());
         var digestedBytes = digest.digest();
         return Hex.encodeHexString(digestedBytes);
     }

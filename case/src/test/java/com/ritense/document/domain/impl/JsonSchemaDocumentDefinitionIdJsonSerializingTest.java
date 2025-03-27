@@ -17,8 +17,10 @@
 package com.ritense.document.domain.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import com.ritense.valtimo.contract.json.MapperSingleton;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +35,7 @@ class JsonSchemaDocumentDefinitionIdJsonSerializingTest {
 
     private static final String DEFINITION_STRING = "aDefinition";
     private JacksonTester<JsonSchemaDocumentDefinitionId> jacksonTester;
-    private static final String JSON_STRING_VALUE = "{\"name\":\"aDefinition\",\"version\":1}";
+    private static final String JSON_STRING_VALUE = "{\"name\":\"aDefinition\",\"caseDefinitionId\":{\"key\":\"key\", \"versionTag\":\"1.0.0\"}}";
 
     @BeforeEach
     void setUp() {
@@ -43,14 +45,14 @@ class JsonSchemaDocumentDefinitionIdJsonSerializingTest {
 
     @Test
     void shouldParseJson() throws IOException {
-        final JsonSchemaDocumentDefinitionId definitionId = JsonSchemaDocumentDefinitionId.newId(DEFINITION_STRING);
+        final JsonSchemaDocumentDefinitionId definitionId = JsonSchemaDocumentDefinitionId.of(DEFINITION_STRING, CaseDefinitionId.of("key", "1.0.0"));
         ObjectContent<JsonSchemaDocumentDefinitionId> jsonSchemaDocumentDefinitionIdObjectContent = this.jacksonTester.parse(JSON_STRING_VALUE);
         assertThat(jsonSchemaDocumentDefinitionIdObjectContent.getObject()).isEqualTo(definitionId);
     }
 
     @Test
     void shouldMarshalObjectToJson() throws IOException {
-        final JsonSchemaDocumentDefinitionId definitionId = JsonSchemaDocumentDefinitionId.newId(DEFINITION_STRING);
+        final JsonSchemaDocumentDefinitionId definitionId = JsonSchemaDocumentDefinitionId.of(DEFINITION_STRING, CaseDefinitionId.of("key", "1.0.0"));
         JsonContent<JsonSchemaDocumentDefinitionId> jsonSchemaDocumentDefinitionIdJsonContent = this.jacksonTester.write(definitionId);
         JSONAssert.assertEquals(jsonSchemaDocumentDefinitionIdJsonContent.getJson(), JSON_STRING_VALUE, JSONCompareMode.STRICT);
     }

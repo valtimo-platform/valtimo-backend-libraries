@@ -35,7 +35,7 @@ class CamundaDecisionDefinitionImporter(
     override fun import(request: ImportRequest) {
         val fileName = request.fileName.substringAfterLast("/")
         request.content.inputStream().use {
-            camundaProcessService.deploy(fileName, it)
+            camundaProcessService.deploy(request.caseDefinitionId, fileName, it)
         }
     }
 

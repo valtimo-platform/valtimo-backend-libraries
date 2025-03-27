@@ -33,6 +33,7 @@ import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificat
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersion
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import mu.KotlinLogging
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -93,10 +94,10 @@ class ProcessLinkService(
 
     @Transactional(noRollbackFor = [ProcessLinkExistsException::class])
     @Throws(ProcessLinkExistsException::class)
-    fun createProcessLink(createRequest: ProcessLinkCreateRequestDto): ProcessLink {
+    fun createProcessLink(createRequest: ProcessLinkCreateRequestDto, caseDefinitionId: CaseDefinitionId?): ProcessLink {
         return withLoggingContext(CamundaProcessDefinition::class, createRequest.processDefinitionId) {
             val mapper = getProcessLinkMapper(createRequest.processLinkType)
-            val newProcessLink = mapper.toNewProcessLink(createRequest)
+            val newProcessLink = mapper.toNewProcessLink(createRequest, caseDefinitionId)
 
             val currentProcessLinks = getProcessLinks(createRequest.processDefinitionId, createRequest.activityId)
             if (currentProcessLinks.isNotEmpty()) {
@@ -111,17 +112,17 @@ class ProcessLinkService(
                 )
             }
 
-            processLinkRepository.save(mapper.toNewProcessLink(createRequest))
+            processLinkRepository.save(mapper.toNewProcessLink(createRequest, caseDefinitionId))
         }
     }
 
     @Transactional
-    fun updateProcessLink(updateRequest: ProcessLinkUpdateRequestDto): ProcessLink {
+    fun updateProcessLink(updateRequest: ProcessLinkUpdateRequestDto, caseDefinitionId: CaseDefinitionId?): ProcessLink {
         return withLoggingContext(ProcessLink::class, updateRequest.id) {
             val processLinkToUpdate = processLinkRepository.findById(updateRequest.id)
                 .getOrElse { throw IllegalStateException("No ProcessLink found with id ${updateRequest.id}") }
             val mapper = getProcessLinkMapper(updateRequest.processLinkType)
-            val processLinkUpdated = mapper.toUpdatedProcessLink(processLinkToUpdate, updateRequest)
+            val processLinkUpdated = mapper.toUpdatedProcessLink(processLinkToUpdate, updateRequest, caseDefinitionId)
             if (processLinkToUpdate::class != processLinkUpdated::class) {
                 // Hibernate does not allow 2 different objects with the same identifier in the session, so do delete + insert instead
                 processLinkRepository.delete(processLinkToUpdate)
@@ -135,6 +136,10 @@ class ProcessLinkService(
         @LoggableResource(resourceType = ProcessLink::class) id: UUID
     ) {
         processLinkRepository.deleteById(id)
+    }
+
+    fun deleteProcessLinksForProcessDefinition(processDefinitionId: String) {
+        processLinkRepository.deleteAllByProcessDefinitionId(processDefinitionId)
     }
 
     fun getProcessLinkMapper(processLinkType: String): ProcessLinkMapper {

@@ -1,0 +1,57 @@
+{
+    "display": "form",
+    "settings": {
+        "pdf": {
+            "id": "1ec0f8ee-6685-5d98-a847-26f67b67d6f0",
+            "src": "https://files.form.io/pdf/5692b91fd1028f01000407e3/file/1ec0f8ee-6685-5d98-a847-26f67b67d6f0"
+        }
+    },
+    "components": [
+        {
+            "label": "test",
+            "key": "test",
+            "type": "textfield",
+            "input": true,
+            "validate": {
+                "maxLength": 10,
+                "unique": false,
+                "multiple": false
+            }
+        },
+        {
+            "label": "age",
+            "key": "age",
+            "type": "textfield",
+            "input": true,
+            "validate": {
+                "maxLength": 10,
+                "unique": false,
+                "multiple": false
+            }
+        },
+        {
+            "label": "Container",
+            "tableView": false,
+            "key": "dataContainer",
+            "type": "container",
+            "input": true,
+            "components": [
+                {
+                    "label": "Text Field",
+                    "applyMaskOn": "change",
+                    "tableView": true,
+                    "key": "nestedData",
+                    "type": "textfield",
+                    "input": true
+                }
+            ]
+        },
+        {
+            "type": "button",
+            "label": "Submit",
+            "key": "submit",
+            "disableOnInvalid": true,
+            "input": true
+        }
+    ]
+}

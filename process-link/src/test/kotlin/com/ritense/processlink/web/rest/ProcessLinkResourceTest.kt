@@ -41,8 +41,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.camunda.bpm.engine.RepositoryService
 import java.nio.charset.StandardCharsets
 import java.util.UUID
 
@@ -54,14 +56,24 @@ internal class ProcessLinkResourceTest {
     lateinit var processLinkResource: ProcessLinkResource
     lateinit var objectMapper: ObjectMapper
     lateinit var camdunaProcessService: CamundaProcessService
+    lateinit var processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService
+    lateinit var repositoryService: RepositoryService
 
     @BeforeEach
     fun init() {
         objectMapper = MapperSingleton.get()
         processLinkService = mock()
         camdunaProcessService = mock()
+        processDefinitionCaseDefinitionService = mock()
+        repositoryService = mock()
         processLinkMappers = listOf(TestProcessLinkMapper(objectMapper))
-        processLinkResource = ProcessLinkResource(processLinkService, processLinkMappers, camdunaProcessService)
+        processLinkResource = ProcessLinkResource(
+            processLinkService,
+            processLinkMappers,
+            camdunaProcessService,
+            processDefinitionCaseDefinitionService,
+            repositoryService
+        )
 
         val mappingJackson2HttpMessageConverter = MappingJackson2HttpMessageConverter()
         mappingJackson2HttpMessageConverter.objectMapper = objectMapper

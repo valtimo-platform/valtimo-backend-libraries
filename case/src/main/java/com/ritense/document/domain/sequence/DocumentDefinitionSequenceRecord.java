@@ -20,8 +20,6 @@ import com.ritense.document.domain.DocumentDefinition;
 
 public interface DocumentDefinitionSequenceRecord {
 
-    DocumentDefinition.Id definitionId();
-
     long sequence();
 
     void increment();

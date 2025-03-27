@@ -40,13 +40,13 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="2" author="Ritense">
+<!--    <changeSet id="2" author="Ritense">
         <addForeignKeyConstraint
             baseTableName="zgw_document_upload_field"
             baseColumnNames="case_definition_name"
             constraintName="zgw_document_upload_field_case_definition_name_fk"
             referencedTableName="case_definition"
             referencedColumnNames="case_definition_name"/>
-    </changeSet>
+    </changeSet>-->
 
 </databaseChangeLog>

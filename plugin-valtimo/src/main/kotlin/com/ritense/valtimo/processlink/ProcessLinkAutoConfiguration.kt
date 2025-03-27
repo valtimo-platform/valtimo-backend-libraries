@@ -27,6 +27,7 @@ import com.ritense.valtimo.processlink.service.PluginSupportedProcessLinksHandle
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
+import org.springframework.core.annotation.Order
 
 @AutoConfiguration
 class ProcessLinkAutoConfiguration {
@@ -75,6 +76,7 @@ class ProcessLinkAutoConfiguration {
     }
 
     @Bean
+    @Order(30)
     @ConditionalOnMissingBean(PluginSupportedProcessLinksHandler::class)
     fun pluginSupportedProcessLinksHandler(pluginService: PluginService): PluginSupportedProcessLinksHandler {
         return PluginSupportedProcessLinksHandler(pluginService)

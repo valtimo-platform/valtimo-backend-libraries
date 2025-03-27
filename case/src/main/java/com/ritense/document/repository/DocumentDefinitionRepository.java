@@ -18,8 +18,10 @@ package com.ritense.document.repository;
 
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import java.util.List;
 import java.util.Optional;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,11 +33,13 @@ public interface DocumentDefinitionRepository<T extends DocumentDefinition> exte
     JpaRepository<T, DocumentDefinition.Id>,
     JpaSpecificationExecutor<T> {
 
-    Optional<T> findFirstByIdNameOrderByIdVersionDesc(String documentDefinitionName);
+    Optional<T> findFirstByIdNameOrderByIdCaseDefinitionIdVersionTagDesc(String documentDefinitionName);
+
+    Optional<T> findByIdCaseDefinitionId(CaseDefinitionId caseDefinitionId);
 
     List<T> findAllByIdName(String documentDefinitionName);
 
-    List<Long> findVersionsByName(String documentDefinitionName);
+    List<CaseDefinitionId> findVersionsByName(String documentDefinitionName);
 
     Page<T> findAll(Pageable pageable);
 

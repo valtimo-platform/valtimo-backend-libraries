@@ -24,7 +24,6 @@ import com.ritense.document.repository.DocumentRepository;
 import com.ritense.document.repository.SearchFieldRepository;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentStatisticService;
-import com.ritense.document.service.SearchConfigurationDeploymentService;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.web.rest.impl.SearchFieldResource;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -55,9 +54,11 @@ public class SearchFieldAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(SearchFieldImporter.class)
     public SearchFieldImporter searchFieldImporter(
-        final  SearchConfigurationDeploymentService searchConfigurationDeploymentService
+        ResourceLoader resourceLoader,
+        SearchFieldService searchFieldService,
+        ObjectMapper objectMapper
     ) {
-        return new SearchFieldImporter(searchConfigurationDeploymentService);
+        return new SearchFieldImporter(resourceLoader, searchFieldService, objectMapper);
     }
 
     @Bean
@@ -68,16 +69,6 @@ public class SearchFieldAutoConfiguration {
         AuthorizationService authorizationService
     ) {
         return new SearchFieldService(searchFieldRepository, documentDefinitionService, authorizationService);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(SearchConfigurationDeploymentService.class)
-    public SearchConfigurationDeploymentService searchConfigurationDeploymentService(
-        ResourceLoader resourceLoader,
-        SearchFieldService searchFieldService,
-        ObjectMapper objectMapper
-    ) {
-        return new SearchConfigurationDeploymentService(resourceLoader, searchFieldService, objectMapper);
     }
 
     @Bean

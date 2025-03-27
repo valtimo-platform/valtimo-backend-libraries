@@ -70,18 +70,13 @@ public class UndeployJsonSchemaDocumentDefinitionService implements UndeployDocu
                     definition
                 ));
 
-                if (definition.isReadOnly()) {
-                    return new UndeployDocumentDefinitionResultFailed(List.of(
-                        () -> "The document definition is marked read-only and therefore not deletable")
-                    );
-                }
                 runWithoutAuthorization(() -> {
                     documentService.removeDocuments(documentDefinitionName);
                     return null;
                 });
                 documentDefinitionService.removeDocumentDefinition(documentDefinitionName);
                 applicationEventPublisher.publishEvent(new UndeployDocumentDefinitionEvent(documentDefinitionName));
-                return new UndeployDocumentDefinitionResultSucceeded(documentDefinitionName);
+                return (UndeployDocumentDefinitionResult) (new UndeployDocumentDefinitionResultSucceeded(documentDefinitionName));
             }).orElseGet(() -> new UndeployDocumentDefinitionResultFailed(List.of(
                 () -> "The document definition was not found")
             ));

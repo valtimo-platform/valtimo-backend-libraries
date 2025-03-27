@@ -26,6 +26,7 @@ import com.ritense.form.web.rest.dto.FormProcessLinkCreateRequestDto
 import com.ritense.form.web.rest.dto.FormProcessLinkResponseDto
 import com.ritense.form.web.rest.dto.FormProcessLinkUpdateRequestDto
 import com.ritense.processlink.domain.ActivityTypeWithEventName.USER_TASK_CREATE
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.json.MapperSingleton
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -130,7 +131,7 @@ internal class FormProcessLinkMapperTest {
         )
         whenever(formDefinitionService.formDefinitionExistsById(updateRequestDto.formDefinitionId)).thenReturn(true)
 
-        val formProcessLink = formProcessLinkMapper.toUpdatedProcessLink(processLinkToUpdate, updateRequestDto)
+        val formProcessLink = formProcessLinkMapper.toUpdatedProcessLink(processLinkToUpdate, updateRequestDto,)
 
         assertTrue(formProcessLink is FormProcessLink)
         assertEquals(processLinkToUpdate.processDefinitionId, formProcessLink.processDefinitionId)
@@ -177,7 +178,7 @@ internal class FormProcessLinkMapperTest {
         )
 
         val exception = assertThrows<RuntimeException> {
-            formProcessLinkMapper.toUpdatedProcessLink(processLinkToUpdate, updateRequestDto)
+            formProcessLinkMapper.toUpdatedProcessLink(processLinkToUpdate, updateRequestDto,)
         }
 
         assertEquals("Form definition not found with id ${updateRequestDto.formDefinitionId}", exception.message)
@@ -189,6 +190,7 @@ internal class FormProcessLinkMapperTest {
             UUID.randomUUID(),
             "testing",
             "{}",
+            CaseDefinitionId.of("house", "1.0.0"),
             true
         )
         val formProcessLink = FormProcessLink(

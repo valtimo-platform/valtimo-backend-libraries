@@ -17,7 +17,6 @@
 package com.ritense.formviewmodel
 
 import com.ritense.formviewmodel.validation.OnStartUpViewModelValidator
-import com.ritense.valtimo.service.CamundaTaskService
 import com.valtimo.keycloak.service.KeycloakService
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
@@ -34,8 +33,8 @@ class BaseIntegrationTest : BaseTest() {
     @MockBean
     lateinit var validator: OnStartUpViewModelValidator
 
-    @MockBean
-    lateinit var camundaTaskService: CamundaTaskService
+//    @MockBean
+//    lateinit var camundaTaskService: CamundaTaskService
 
     @MockBean
     lateinit var keycloakService: KeycloakService

@@ -17,9 +17,10 @@
 package com.ritense.processdocument.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 
 public interface ProcessDocumentDeploymentService {
 
-    void deploy(String documentDefinitionName, String content) throws JsonProcessingException;
+    void deploy(CaseDefinitionId caseDefinitionId, String documentDefinitionName, String content) throws JsonProcessingException;
 
 }

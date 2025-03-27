@@ -64,9 +64,10 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
     }
 
     @Throws(IOException::class)
-    private fun loadResources(): Array<Resource> {
+    private fun loadResources(): List<Resource> {
         return ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
             .getResources(PATH)
+            .filter { it?.url?.toString()?.contains("/config/case") ?: false }
     }
 
     private fun resolveProperties(array: ArrayNode?): ArrayNode {

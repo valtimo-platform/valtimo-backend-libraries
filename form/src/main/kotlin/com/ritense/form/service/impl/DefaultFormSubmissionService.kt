@@ -31,6 +31,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.exception.DocumentNotFoundException
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.domain.FormProcessLink
@@ -42,14 +43,16 @@ import com.ritense.form.web.rest.dto.FormSubmissionResultFailed
 import com.ritense.form.web.rest.dto.FormSubmissionResultSucceeded
 import com.ritense.logging.LoggableResource
 import com.ritense.logging.withLoggingContext
-import com.ritense.processdocument.domain.ProcessDocumentDefinition
-import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey
+import com.ritense.processdocument.domain.ProcessDefinitionCaseDefinition
+import com.ritense.processdocument.domain.ProcessDefinitionCaseDefinitionId
+import com.ritense.processdocument.domain.ProcessDefinitionId
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndStartProcessRequest
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.domain.request.Request
 import com.ritense.processdocument.exception.ProcessDocumentDefinitionNotFoundException
-import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.processdocument.resolver.DocumentJsonValueResolverFactory.Companion.PREFIX as DOC_PREFIX
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.domain.ActivityTypeWithEventName.START_EVENT_START
 import com.ritense.processlink.domain.ActivityTypeWithEventName.USER_TASK_CREATE
@@ -68,6 +71,7 @@ import com.ritense.valtimo.contract.json.patch.JsonPatch
 import com.ritense.valtimo.contract.result.OperationError
 import com.ritense.valtimo.contract.result.OperationError.FromException
 import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valueresolver.ProcessVariableValueResolverFactory.Companion.PREFIX as PV_PREFIX
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.valueresolver.ValueResolverServiceImpl
 import mu.KotlinLogging
@@ -76,8 +80,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
-import com.ritense.processdocument.resolver.DocumentJsonValueResolverFactory.Companion.PREFIX as DOC_PREFIX
-import com.ritense.valueresolver.ProcessVariableValueResolverFactory.Companion.PREFIX as PV_PREFIX
 
 @Service
 @SkipComponentScan
@@ -85,7 +87,8 @@ class DefaultFormSubmissionService(
     private val processLinkService: ProcessLinkService,
     private val formDefinitionService: FormIoFormDefinitionService,
     private val documentService: JsonSchemaDocumentService,
-    private val processDocumentAssociationService: ProcessDocumentAssociationService,
+    private val documentDefinitionService: JsonSchemaDocumentDefinitionService,
+    private val processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
     private val processDocumentService: ProcessDocumentService,
     private val camundaTaskService: CamundaTaskService,
     private val repositoryService: CamundaRepositoryService,
@@ -114,8 +117,10 @@ class DefaultFormSubmissionService(
             val processDefinition = getProcessDefinition(processLink)
             val documentDefinitionNameToUse = document?.definitionId()?.name()
                 ?: documentDefinitionName
-                ?: getProcessDocumentDefinition(processDefinition, document).processDocumentDefinitionId()
-                    .documentDefinitionId().name()
+                ?: getProcessDocumentDefinition(processDefinition, document).run {
+                    documentDefinitionService.findByCaseDefinitionId(this.id.caseDefinitionId).orElseThrow().id?.name()
+                        ?: throw ProcessDocumentDefinitionNotFoundException("DocumentDefinition not found for processDefinitionId: ${processDefinition.id}")
+                }
             val processVariables = getProcessVariables(taskInstanceId)
             val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId).orElseThrow()
 
@@ -176,19 +181,23 @@ class DefaultFormSubmissionService(
                     task
                 )
             )
-        } else if (document != null) {
-            authorizationService.hasPermission<CamundaExecution>(
-                RelatedEntityAuthorizationRequest<CamundaExecution>(
+        } else {
+            authorizationService.requirePermission(
+                RelatedEntityAuthorizationRequest(
                     CamundaExecution::class.java,
                     CamundaExecutionActionProvider.CREATE,
                     CamundaProcessDefinition::class.java,
                     processDefinitionId
-                ).withContext(
-                    AuthorizationResourceContext(
-                        JsonSchemaDocument::class.java,
-                        document
-                    )
-                )
+                ).apply {
+                    if (document != null) {
+                        withContext(
+                            AuthorizationResourceContext(
+                                JsonSchemaDocument::class.java,
+                                document
+                            )
+                        )
+                    }
+                }
             )
         }
     }
@@ -221,7 +230,7 @@ class DefaultFormSubmissionService(
 
         // After pre-processing process-variables we have a key-value map where the prefix is stripped from the keys.
         val processVariables = categorizedMap[PV_PREFIX]
-            ?.let { valueResolverService.preProcessValuesForNewCase(it)[PV_PREFIX] as? Map<String, Any>}
+            ?.let { valueResolverService.preProcessValuesForNewCase(it)[PV_PREFIX] as? Map<String, Any> }
             ?: mapOf()
 
         // Do not process/handle other values yet.
@@ -271,17 +280,26 @@ class DefaultFormSubmissionService(
     private fun getProcessDocumentDefinition(
         processDefinition: CamundaProcessDefinition,
         document: Document?
-    ): ProcessDocumentDefinition {
-        val processDefinitionKey = CamundaProcessDefinitionKey(processDefinition.key)
+    ): ProcessDefinitionCaseDefinition {
+        val processDefinitionId =
+            ProcessDefinitionId(processDefinition.id)
         return runWithoutAuthorization {
             if (document == null) {
-                processDocumentAssociationService.getProcessDocumentDefinition(processDefinitionKey)
+                processDefinitionCaseDefinitionService.findByProcessDefinitionId(processDefinitionId)
             } else {
-                processDocumentAssociationService.getProcessDocumentDefinition(
-                    processDefinitionKey,
-                    document.definitionId().version()
-                )
+                processDefinitionCaseDefinitionService.findById(
+                    ProcessDefinitionCaseDefinitionId(
+                        processDefinitionId,
+                        document.definitionId().caseDefinitionId()
+                    )
+                )!!
             }
+        }
+    }
+
+    private fun getDocumentDefinition(documentId: String): Document {
+        return runWithoutAuthorization {
+            documentService.get(documentId)
         }
     }
 
@@ -445,15 +463,20 @@ class DefaultFormSubmissionService(
         remainingValueResolverValues: Map<String, Any>,
     ): FormSubmissionResult {
         return try {
-            val result = processDocumentService.dispatch(request)
+            val result = processDocumentService.dispatch(
+                request.withAdditionalModifications { document: JsonSchemaDocument ->
+                    withLoggingContext(JsonSchemaDocument::class, document.id()) {
+                        formFields.forEach { it.postProcess(document) }
+                        publishExternalDataSubmittedEvent(externalFormData, documentDefinitionName, document)
+                        valueResolverService.handleValues(document.id.id, remainingValueResolverValues)
+                    }
+                }
+            )
             return if (result.errors().isNotEmpty()) {
                 FormSubmissionResultFailed(result.errors())
             } else {
                 val submittedDocument = result.resultingDocument().orElseThrow()
                 withLoggingContext(JsonSchemaDocument::class, submittedDocument.id()) {
-                    formFields.forEach { it.postProcess(submittedDocument) }
-                    publishExternalDataSubmittedEvent(externalFormData, documentDefinitionName, submittedDocument)
-                    valueResolverService.handleValues(submittedDocument.id.id, remainingValueResolverValues)
                     FormSubmissionResultSucceeded(submittedDocument.id().toString())
                 }
             }

@@ -28,7 +28,7 @@ public class JsonSchemaDocumentReferenceTest extends BaseTest {
 
     @BeforeEach
     public void setUp() {
-        definition = definitionOf("referenced");
+        definition = definitionOfForUnitTests("referenced");
     }
 
     @Test

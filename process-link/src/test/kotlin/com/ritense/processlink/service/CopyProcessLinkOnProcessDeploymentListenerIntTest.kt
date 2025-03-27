@@ -24,6 +24,7 @@ import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersion
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.service.CamundaProcessService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -59,7 +60,7 @@ internal class CopyProcessLinkOnProcessDeploymentListenerIntTest : BaseIntegrati
 
         // when
         runWithoutAuthorization {
-            camundaProcessService.deploy("service-task-process.bpmn", changedProcessBpmn.byteInputStream())
+            camundaProcessService.deploy(CaseDefinitionId("test", "1.0.0"), "service-task-process.bpmn", changedProcessBpmn.byteInputStream())
         }
 
         // then
@@ -76,7 +77,7 @@ internal class CopyProcessLinkOnProcessDeploymentListenerIntTest : BaseIntegrati
         val changedProcessBpmn = readFileAsString("/bpmn/service-task-process.bpmn")
             .replace("My service task", "My service task changed")
         runWithoutAuthorization {
-            camundaProcessService.deploy("service-task-process.bpmn", changedProcessBpmn.byteInputStream())
+            camundaProcessService.deploy(CaseDefinitionId("test", "1.0.0"), "service-task-process.bpmn", changedProcessBpmn.byteInputStream())
         }
         createProcessLink(processDefinition)
         val changedAgainProcessBpmn = readFileAsString("/bpmn/service-task-process.bpmn")
@@ -84,7 +85,7 @@ internal class CopyProcessLinkOnProcessDeploymentListenerIntTest : BaseIntegrati
 
         // when
         runWithoutAuthorization {
-            camundaProcessService.deploy("service-task-process.bpmn", changedAgainProcessBpmn.byteInputStream())
+            camundaProcessService.deploy(CaseDefinitionId("test", "1.0.0"), "service-task-process.bpmn", changedAgainProcessBpmn.byteInputStream())
         }
 
         // then

@@ -16,6 +16,8 @@
 
 package com.ritense.case.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
@@ -30,13 +32,14 @@ import org.mockito.kotlin.verify
 
 @ExtendWith(MockitoExtension::class)
 class CaseDefinitionImporterTest(
-    @Mock private val deploymentService: CaseDefinitionDeploymentService
+    @Mock private val objectMapper: ObjectMapper = ObjectMapper(),
+    @Mock private val caseDefinitionRepository: CaseDefinitionRepository
 ) {
     private lateinit var importer: CaseDefinitionImporter
 
     @BeforeEach
     fun before() {
-        importer = CaseDefinitionImporter(deploymentService)
+        importer = CaseDefinitionImporter(objectMapper, caseDefinitionRepository)
     }
 
     @Test
@@ -60,21 +63,7 @@ class CaseDefinitionImporterTest(
         assertThat(importer.supports("config/case/definition/test-json")).isFalse()
     }
 
-    @Test
-    fun `should call deploy method for import with correct parameters`() {
-        val jsonContent = "{}"
-        importer.import(ImportRequest(FILENAME, jsonContent.toByteArray()))
-
-        val jsonCaptor = argumentCaptor<String>()
-        val booleanCaptor = argumentCaptor<Boolean>()
-
-        verify(deploymentService).deploy(jsonCaptor.capture(), booleanCaptor.capture())
-
-        assertThat(jsonCaptor.firstValue).isEqualTo(jsonContent)
-        assertThat(booleanCaptor.firstValue).isEqualTo(true)
-    }
-
     private companion object {
-        const val FILENAME = "config/my-case-list/1-2-3/case/definition/my-case-list.json"
+        const val FILENAME = "/case/definition/my-case-list.json"
     }
 }

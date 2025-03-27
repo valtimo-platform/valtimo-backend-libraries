@@ -30,7 +30,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 public class ProcessDocumentHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
     private static final String DEFINITION_URL = "/api/v1/process-document/definition";
-    private static final String PROCESS_URL = "/api/v1/process-document/demo/{documentDefinitionName}/process";
 
     @Override
     public void configure(HttpSecurity http) {
@@ -43,10 +42,10 @@ public class ProcessDocumentHttpSecurityConfigurer implements HttpSecurityConfig
                 .requestMatchers(antMatcher(DELETE, DEFINITION_URL))
                 .hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(
-                    GET, DEFINITION_URL + "/document/{document-definition-name}"))
+                    GET, "/api/v1/case-definition/{caseDefinitionKey}/process-definition/settings"))
                 .authenticated()
                 .requestMatchers(antMatcher(
-                    GET, "/api/v2/process-document/definition/document/{document-definition-name}"))
+                    GET, "/api/v1/document/{documentId}/process-definition/settings"))
                 .authenticated()
                 .requestMatchers(antMatcher(
                     GET, "/api/management/v1/process-document/definition/document/{document-definition-name}"))
@@ -77,15 +76,6 @@ public class ProcessDocumentHttpSecurityConfigurer implements HttpSecurityConfig
                 .requestMatchers(antMatcher(
                     POST, "/api/v1/process-document/operation/modify-document-and-start-process"))
                 .authenticated()
-                .requestMatchers(antMatcher(
-                    GET, PROCESS_URL))
-                .hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(
-                    PUT, PROCESS_URL))
-                .hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(
-                    DELETE, PROCESS_URL))
-                .hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(
                     POST, "/api/v3/task"))
                 .authenticated()

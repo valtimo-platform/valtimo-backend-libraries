@@ -16,13 +16,14 @@
 
 package com.ritense.document.service.result;
 
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import java.util.List;
 
 public class DocumentVersionsResult {
     private String name;
-    private List<Long> versions;
+    private List<CaseDefinitionId> versions;
 
-    public DocumentVersionsResult(String name, List<Long> versions) {
+    public DocumentVersionsResult(String name, List<CaseDefinitionId> versions) {
         this.name = name;
         this.versions = versions;
     }
@@ -31,7 +32,7 @@ public class DocumentVersionsResult {
         return name;
     }
 
-    public List<Long> getVersions() {
+    public List<CaseDefinitionId> getVersions() {
         return versions;
     }
 }

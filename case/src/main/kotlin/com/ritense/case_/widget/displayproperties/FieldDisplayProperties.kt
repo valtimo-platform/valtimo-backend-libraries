@@ -21,4 +21,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 
 @JsonInclude(Include.NON_NULL)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-interface FieldDisplayProperties
+interface FieldDisplayProperties {
+    val hideWhenEmpty: Boolean?
+}

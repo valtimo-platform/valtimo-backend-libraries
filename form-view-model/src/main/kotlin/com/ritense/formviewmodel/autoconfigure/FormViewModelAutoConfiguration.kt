@@ -18,6 +18,8 @@ package com.ritense.formviewmodel.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
+import com.ritense.document.service.impl.JsonSchemaDocumentService
+import com.ritense.form.service.FormDefinitionService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formviewmodel.commandhandling.handler.CompleteTaskCommandHandler
 import com.ritense.formviewmodel.commandhandling.handler.StartProcessCommandHandler
@@ -36,6 +38,7 @@ import com.ritense.formviewmodel.viewmodel.ViewModelLoaderFactory
 import com.ritense.formviewmodel.web.rest.FormViewModelResource
 import com.ritense.formviewmodel.web.rest.error.FormViewModelModuleExceptionTranslator
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
@@ -58,27 +61,36 @@ class FormViewModelAutoConfiguration {
         viewModelLoaderFactory: ViewModelLoaderFactory,
         camundaTaskService: CamundaTaskService,
         authorizationService: AuthorizationService,
-        processAuthorizationService: ProcessAuthorizationService
+        processAuthorizationService: ProcessAuthorizationService,
+        processService: CamundaProcessService,
+        processLinkService: ProcessLinkService,
+        documentService: JsonSchemaDocumentService
     ) = FormViewModelService(
-        objectMapper,
-        viewModelLoaderFactory,
-        camundaTaskService,
-        authorizationService,
-        processAuthorizationService
+        objectMapper = objectMapper,
+        viewModelLoaderFactory = viewModelLoaderFactory,
+        camundaTaskService = camundaTaskService,
+        authorizationService = authorizationService,
+        processAuthorizationService = processAuthorizationService,
+        processLinkService = processLinkService,
+        documentService = documentService
     )
 
     @Bean
     fun formViewModelStartFormSubmissionHandlerFactory(
-        formViewModelStartFormSubmissionHandlers: List<FormViewModelStartFormSubmissionHandler<*>>
+        formViewModelStartFormSubmissionHandlers: List<FormViewModelStartFormSubmissionHandler<*>>,
+        formDefinitionService: FormDefinitionService
     ) = FormViewModelStartFormSubmissionHandlerFactory(
-        formViewModelStartFormSubmissionHandlers
+        handlers = formViewModelStartFormSubmissionHandlers,
+        formDefinitionService = formDefinitionService
     )
 
     @Bean
     fun formViewModelUserTaskSubmissionHandlerFactory(
-        formViewModelUserTaskSubmissionHandlers: List<FormViewModelUserTaskSubmissionHandler<*>>
+        formViewModelUserTaskSubmissionHandlers: List<FormViewModelUserTaskSubmissionHandler<*>>,
+        formDefinitionService: FormDefinitionService
     ) = FormViewModelUserTaskSubmissionHandlerFactory(
-        formViewModelUserTaskSubmissionHandlers
+        handlers = formViewModelUserTaskSubmissionHandlers,
+        formDefinitionService = formDefinitionService
     )
 
     @Bean
@@ -88,14 +100,18 @@ class FormViewModelAutoConfiguration {
         authorizationService: AuthorizationService,
         camundaTaskService: CamundaTaskService,
         objectMapper: ObjectMapper,
-        processAuthorizationService: ProcessAuthorizationService
+        processAuthorizationService: ProcessAuthorizationService,
+        processLinkService: ProcessLinkService,
+        documentService: JsonSchemaDocumentService
     ) = FormViewModelSubmissionService(
         formViewModelStartFormSubmissionHandlerFactory = formViewModelStartFormSubmissionHandlerFactory,
         formViewModelUserTaskSubmissionHandlerFactory = formViewModelUserTaskSubmissionHandlerFactory,
         authorizationService = authorizationService,
         camundaTaskService = camundaTaskService,
         objectMapper = objectMapper,
-        processAuthorizationService = processAuthorizationService
+        processAuthorizationService = processAuthorizationService,
+        processLinkService = processLinkService,
+        documentService = documentService
     )
 
     @Order(390)
@@ -107,22 +123,24 @@ class FormViewModelAutoConfiguration {
         formViewModelService: FormViewModelService,
         formViewModelSubmissionService: FormViewModelSubmissionService
     ) = FormViewModelResource(
-        formViewModelService,
-        formViewModelSubmissionService
+        formViewModelService = formViewModelService,
+        formViewModelSubmissionService = formViewModelSubmissionService
     )
 
     @Bean
     fun formViewModelProcessLinkTaskProvider(
         formDefinitionService: FormIoFormDefinitionService
-    ): FormViewModelProcessLinkActivityHandler {
-        return FormViewModelProcessLinkActivityHandler(formDefinitionService)
-    }
+    ) = FormViewModelProcessLinkActivityHandler(
+        formDefinitionService = formDefinitionService
+    )
 
     @Bean
     fun viewModelLoaderFactory(
-        loaders: List<ViewModelLoader<*>>
+        loaders: List<ViewModelLoader<*>>,
+        formDefinitionService: FormDefinitionService
     ) = ViewModelLoaderFactory(
-        loaders
+        viewModelLoaders = loaders,
+        formDefinitionService = formDefinitionService
     )
 
     @Bean
@@ -133,19 +151,20 @@ class FormViewModelAutoConfiguration {
         formViewModelStartFormSubmissionHandlerFactory: FormViewModelStartFormSubmissionHandlerFactory,
         formViewModelUserTaskSubmissionHandlerFactory: FormViewModelUserTaskSubmissionHandlerFactory
     ) = OnStartUpViewModelValidator(
-        formIoFormDefinitionService,
-        viewModelLoaders,
-        formViewModelStartFormSubmissionHandlerFactory,
-        formViewModelUserTaskSubmissionHandlerFactory
+        formIoFormDefinitionService = formIoFormDefinitionService,
+        viewModelLoaders = viewModelLoaders,
+        formViewModelStartFormSubmissionHandlerFactory = formViewModelStartFormSubmissionHandlerFactory,
+        formViewModelUserTaskSubmissionHandlerFactory = formViewModelUserTaskSubmissionHandlerFactory
     )
 
     @Bean
     fun processAuthorizationService(
         camundaRepositoryService: CamundaRepositoryService,
-        authorizationService: AuthorizationService
+        authorizationService: AuthorizationService,
+        documentService: JsonSchemaDocumentService
     ) = ProcessAuthorizationService(
-        camundaRepositoryService,
-        authorizationService
+        camundaRepositoryService = camundaRepositoryService,
+        authorizationService = authorizationService,
     )
 
     @Bean
@@ -154,8 +173,8 @@ class FormViewModelAutoConfiguration {
         camundaProcessService: CamundaProcessService,
         processDocumentAssociationService: ProcessDocumentAssociationService
     ) = StartProcessCommandHandler(
-        camundaProcessService,
-        processDocumentAssociationService
+        camundaProcessService = camundaProcessService,
+        processDocumentAssociationService = processDocumentAssociationService
     )
 
     @Bean
@@ -163,6 +182,6 @@ class FormViewModelAutoConfiguration {
     fun completeTaskCommandHandler(
         camundaTaskService: CamundaTaskService
     ) = CompleteTaskCommandHandler(
-        camundaTaskService
+        camundaTaskService = camundaTaskService
     )
 }

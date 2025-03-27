@@ -17,19 +17,20 @@
 package com.ritense.document.domain
 
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 
 data class DocumentMigrationRequest(
     val documentDefinitionNameSource: String,
-    val documentDefinitionVersionSource: Long,
+    val caseDefinitionIdSource: CaseDefinitionId,
     val documentDefinitionNameTarget: String,
-    val documentDefinitionVersionTarget: Long,
+    val caseDefinitionIdTarget: CaseDefinitionId,
     val patches: List<DocumentMigrationPatch>
 ) {
     fun getDocumentDefinitionIdSource(): JsonSchemaDocumentDefinitionId =
-        JsonSchemaDocumentDefinitionId.existingId(documentDefinitionNameSource, documentDefinitionVersionSource)
+        JsonSchemaDocumentDefinitionId.existingId(documentDefinitionNameSource, caseDefinitionIdSource)
 
     fun getDocumentDefinitionIdTarget(): JsonSchemaDocumentDefinitionId =
-        JsonSchemaDocumentDefinitionId.existingId(documentDefinitionNameTarget, documentDefinitionVersionTarget)
+        JsonSchemaDocumentDefinitionId.existingId(documentDefinitionNameTarget, caseDefinitionIdTarget)
 
     fun getConflicts(): List<DocumentMigrationConflict> =
         patches.map { DocumentMigrationConflict.of(it) }

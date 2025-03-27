@@ -16,8 +16,10 @@
 
 package com.ritense.valtimo.contract.case_
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.ritense.valtimo.contract.domain.AbstractId
 import com.ritense.valtimo.contract.repository.SemverConverter
+import com.ritense.valtimo.contract.serializer.SemverSerializer
 import jakarta.persistence.Column
 import jakarta.persistence.Convert
 import jakarta.persistence.Embeddable
@@ -29,6 +31,7 @@ data class CaseDefinitionId(
     val key: String,
     @Convert(converter = SemverConverter::class)
     @Column(name = "case_definition_version_tag", nullable = false, updatable = true)
+    @JsonSerialize(using = SemverSerializer::class)
     val versionTag: Semver
 ) : AbstractId<CaseDefinitionId>() {
 
@@ -50,7 +53,7 @@ data class CaseDefinitionId(
 
 
     override fun toString(): String {
-        return "${key}-${versionTag}"
+        return "${key}:${versionTag}"
     }
 
     companion object {

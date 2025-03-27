@@ -18,34 +18,28 @@ package com.ritense.document.domain.impl.sequence;
 
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
-import com.ritense.document.domain.DocumentDefinition;
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.sequence.DocumentDefinitionSequenceRecord;
 import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Version;
 import org.springframework.data.domain.Persistable;
 
 @Entity
 @Table(name = "json_schema_document_definition_sequence_record")
 public class JsonSchemaDocumentDefinitionSequenceRecord
-    implements DocumentDefinitionSequenceRecord, Persistable<JsonSchemaDocumentDefinitionId> {
+    implements DocumentDefinitionSequenceRecord, Persistable<String> {
 
-    @EmbeddedId
-    private JsonSchemaDocumentDefinitionId id;
+    @Id
+    @Column(name = "document_definition_name", length = 50, columnDefinition = "VARCHAR(50)", nullable = false, updatable = false)
+    private String name;
 
     @Column(name = "sequence_value", columnDefinition = "BIGINT")
     private long sequence;
 
-    @Version
-    @Column(name = "sequence_version", columnDefinition = "BIGINT", nullable = false)
-    private long version;
-
-    public JsonSchemaDocumentDefinitionSequenceRecord(JsonSchemaDocumentDefinitionId id) {
-        assertArgumentNotNull(id, "id is required");
-        this.id = id;
+    public JsonSchemaDocumentDefinitionSequenceRecord(String jsonSchemaDocumentDefinitionName) {
+        assertArgumentNotNull(jsonSchemaDocumentDefinitionName, "jsonSchemaDocumentDefinitionName is required");
+        this.name = jsonSchemaDocumentDefinitionName;
         this.sequence = 1L;
     }
 
@@ -58,23 +52,17 @@ public class JsonSchemaDocumentDefinitionSequenceRecord
     }
 
     @Override
-    public DocumentDefinition.Id definitionId() {
-        return id;
-    }
-
-    @Override
     public long sequence() {
         return sequence;
     }
 
     @Override
-    public JsonSchemaDocumentDefinitionId getId() {
-        return id;
+    public String getId() {
+        return name;
     }
 
     @Override
     public boolean isNew() {
-        return id.isNew();
+        return true;
     }
-
 }

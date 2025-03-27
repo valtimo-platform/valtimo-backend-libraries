@@ -122,7 +122,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
                 .andExpect(status().isOk());
 
         // The search field should have been stored in the database
-        var storedSearchFields = searchFieldRepository.findAllByIdDocumentDefinitionNameOrderByOrder(DOCUMENT_DEFINITION_NAME);
+        var storedSearchFields = searchFieldRepository.findAllByIdCaseDefinitionKeyOrderByOrder(DOCUMENT_DEFINITION_NAME);
 
         assertNotNull(storedSearchFields);
         assertEquals(1, storedSearchFields.size());
@@ -250,7 +250,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
                 return null;
             }
         );
-        SearchFieldId searchFieldId = searchFieldRepository.findAllByIdDocumentDefinitionNameOrderByOrder(DOCUMENT_DEFINITION_NAME).get(0).getId();
+        SearchFieldId searchFieldId = searchFieldRepository.findAllByIdCaseDefinitionKeyOrderByOrder(DOCUMENT_DEFINITION_NAME).get(0).getId();
         SearchFieldDto searchFieldToUpdate = new SearchFieldDto(
                 SEARCH_FIELD.getKey(),
                 SEARCH_FIELD.getPath(),
@@ -269,7 +269,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
                 .andExpect(status().isOk());
 
         assertNotNull(searchFieldId);
-        Optional<SearchField> searchFieldUpdated = searchFieldRepository.findByIdDocumentDefinitionNameAndKey(
+        Optional<SearchField> searchFieldUpdated = searchFieldRepository.findByIdCaseDefinitionKeyAndKey(
                 DOCUMENT_DEFINITION_NAME, searchFieldToUpdate.getKey());
         assertEquals(Boolean.TRUE, searchFieldUpdated.isPresent());
         assertEquals(searchFieldId.getId(), Objects.requireNonNull(searchFieldUpdated.orElseGet(SearchField::new).getId()).getId());
@@ -308,7 +308,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        var searchFieldsResult = searchFieldRepository.findAllByIdDocumentDefinitionNameOrderByOrder("person");
+        var searchFieldsResult = searchFieldRepository.findAllByIdCaseDefinitionKeyOrderByOrder("person");
         assertEquals("age", searchFieldsResult.get(0).getKey());
         assertEquals(0, searchFieldsResult.get(0).getOrder());
         assertEquals("firstName", searchFieldsResult.get(1).getKey());
@@ -325,7 +325,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isOk());
-        Optional<SearchField> searchField = searchFieldRepository.findByIdDocumentDefinitionNameAndKey(
+        Optional<SearchField> searchField = searchFieldRepository.findByIdCaseDefinitionKeyAndKey(
                 DOCUMENT_DEFINITION_NAME, SEARCH_FIELD.getKey());
         assertTrue(searchField.isPresent());
         mockMvc.perform(
@@ -335,7 +335,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
                 )
                 .andDo(print())
                 .andExpect(status().isNoContent());
-        searchField = searchFieldRepository.findByIdDocumentDefinitionNameAndKey(
+        searchField = searchFieldRepository.findByIdCaseDefinitionKeyAndKey(
                 DOCUMENT_DEFINITION_NAME, SEARCH_FIELD.getKey());
         assertTrue(searchField.isEmpty());
     }

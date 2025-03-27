@@ -45,13 +45,15 @@ class DocumentenApiColumnDeploymentService(
     @EventListener(DocumentDefinitionDeployedEvent::class)
     fun createDocumentenApiColumns(event: DocumentDefinitionDeployedEvent) {
         logger.info { "Create columns for document definition ${event.documentDefinition().id().name()}" }
-        if (event.documentDefinition().id()
+
+        //TODO: how to tackle this for case definitions?
+/*        if (event.documentDefinition().id()
                 .version() == 1L && !columnsExistForDocumentDefinitionName(event.documentDefinition().id().name())
         ) {
             getDefaultColumns(event.documentDefinition().id().name()).forEach { column ->
                 documentenApiService.createOrUpdateColumn(column)
             }
-        }
+        }*/
     }
 
     private fun getDefaultColumns(documentDefinitionName: String): List<DocumentenApiColumn> {

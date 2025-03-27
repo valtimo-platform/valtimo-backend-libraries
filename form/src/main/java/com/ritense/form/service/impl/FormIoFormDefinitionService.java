@@ -26,6 +26,7 @@ import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.form.web.rest.dto.FormOption;
 import com.ritense.logging.LoggableResource;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -60,6 +61,18 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     }
 
     @Override
+    public Page<? extends FormDefinition> queryFormDefinitions(
+        CaseDefinitionId caseDefinitionId,
+        String searchTerm,
+        Pageable pageable
+    ) {
+        return formDefinitionRepository.findAllByCaseDefinitionIdAndNameContainingIgnoreCase(
+            caseDefinitionId,
+            searchTerm, pageable
+        );
+    }
+
+    @Override
     public Optional<FormIoFormDefinition> getFormDefinitionById(
         @LoggableResource(resourceType = FormIoFormDefinition.class) UUID formDefinitionId
     ) {
@@ -73,6 +86,13 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
         return formDefinitionRepository.findByName(name);
     }
 
+    public Optional<FormIoFormDefinition> getFormDefinitionByName(
+        @LoggableResource("formDefinitionName") String name,
+        @LoggableResource("caseDefinitionId") CaseDefinitionId caseDefinitionId
+    ) {
+        return formDefinitionRepository.findByNameAndCaseDefinitionId(name, caseDefinitionId);
+    }
+
     @Override
     public Optional<FormIoFormDefinition> getFormDefinitionByNameIgnoringCase(
         @LoggableResource("formDefinitionName") String name
@@ -82,9 +102,12 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
 
     @Override
     @Transactional
-    public FormIoFormDefinition createFormDefinition(CreateFormDefinitionRequest request) {
+    public FormIoFormDefinition createFormDefinition(
+        CaseDefinitionId caseDefinitionId,
+        CreateFormDefinitionRequest request
+    ) {
         return withLoggingContext("formDefinitionName", request.getName(), () -> {
-            if (formDefinitionRepository.findByName(request.getName()).isPresent()) {
+            if (formDefinitionRepository.findByNameAndCaseDefinitionId(request.getName(), caseDefinitionId).isPresent()) {
                 throw new IllegalArgumentException("Duplicate name for new form: " + request.getName());
             }
             return formDefinitionRepository.save(
@@ -92,6 +115,7 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
                     UUID.randomUUID(),
                     request.getName(),
                     request.getFormDefinition(),
+                    caseDefinitionId,
                     request.isReadOnly()
                 )
             );
@@ -101,6 +125,23 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     @Override
     @Transactional
     public FormIoFormDefinition modifyFormDefinition(ModifyFormDefinitionRequest request) {
+        return withLoggingContext("formDefinitionName", request.getName(), () -> {
+            if (!formDefinitionRepository.existsById(request.getId())) {
+                throw new RuntimeException("Form definition not found with id " + request.getId().toString());
+            }
+            return formDefinitionRepository
+                .findById(request.getId())
+                .map(formIoFormDefinition -> {
+                    formIoFormDefinition.changeName(request.getName());
+                    formIoFormDefinition.changeDefinition(request.getFormDefinition());
+                    return formDefinitionRepository.save(formIoFormDefinition);
+                }).orElseThrow();
+        });
+    }
+
+    @Override
+    @Transactional
+    public FormDefinition modifyFormDefinition(CaseDefinitionId caseDefinitionId, ModifyFormDefinitionRequest request) {
         return withLoggingContext("formDefinitionName", request.getName(), () -> {
             if (!formDefinitionRepository.existsById(request.getId())) {
                 throw new RuntimeException("Form definition not found with id " + request.getId().toString());
@@ -143,6 +184,12 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     public void deleteFormDefinition(
         @LoggableResource(resourceType = FormIoFormDefinition.class) UUID formDefinitionId
     ) {
+        formDefinitionRepository.deleteById(formDefinitionId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteFormDefinition(CaseDefinitionId caseDefinitionId, UUID formDefinitionId) {
         formDefinitionRepository.deleteById(formDefinitionId);
     }
 

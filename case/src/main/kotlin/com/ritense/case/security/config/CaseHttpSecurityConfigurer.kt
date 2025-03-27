@@ -37,13 +37,15 @@ class CaseHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(antMatcher(POST, LIST_COLUMN_URL)).hasAuthority(ADMIN) // Deprecated
                     .requestMatchers(antMatcher(PUT, LIST_COLUMN_URL)).hasAuthority(ADMIN) // Deprecated
                     .requestMatchers(antMatcher(DELETE, "$LIST_COLUMN_URL/{columnKey}")).hasAuthority(ADMIN) // Deprecated
-                    .requestMatchers(antMatcher(GET, "/api/v1/case/{caseDefinitionName}/settings")).authenticated()
-                    .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/tab")).authenticated() // Deprecated
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionName}/version")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionKey}/settings")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionkey}/version/{caseDefinitionVersionTag}/tab")).authenticated() // Deprecated
                     .requestMatchers(antMatcher(GET, "/api/v1/document/{documentId}/tab")).authenticated()
-                    .requestMatchers(antMatcher(PATCH, "/api/v1/case/{caseDefinitionName}/settings")).hasAuthority(ADMIN) // Deprecated
+                    .requestMatchers(antMatcher(PATCH, "/api/v1/case/{caseDefinitionkey}/version/{caseDefinitionVersionTag}/settings")).hasAuthority(ADMIN) // Deprecated
                     .requestMatchers(antMatcher(POST, "/api/v1/case/{caseDefinitionName}/search")).authenticated()
-                    .requestMatchers(antMatcher(GET, "/api/management/v1/case/{caseDefinitionName}/settings")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(PATCH, "/api/management/v1/case/{caseDefinitionName}/settings")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/settings")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PATCH, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/settings")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, MANAGEMENT_CASE_LIST_COLUMN_URL)).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(POST, MANAGEMENT_CASE_LIST_COLUMN_URL)).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(PUT, MANAGEMENT_CASE_LIST_COLUMN_URL)).hasAuthority(ADMIN)

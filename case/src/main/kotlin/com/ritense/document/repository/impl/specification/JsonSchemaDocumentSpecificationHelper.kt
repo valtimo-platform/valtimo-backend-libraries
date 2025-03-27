@@ -18,6 +18,7 @@ package com.ritense.document.repository.impl.specification
 
 import com.ritense.document.domain.DocumentDefinition
 import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Root
@@ -36,17 +37,17 @@ class JsonSchemaDocumentSpecificationHelper {
         }
 
         @JvmStatic
-        fun byDocumentDefinitionIdVersion(version: Long): Specification<JsonSchemaDocument> {
+        fun byDocumentDefinitionIdCaseDefinitionId(caseDefinitionId: CaseDefinitionId): Specification<JsonSchemaDocument> {
             return Specification { root: Root<JsonSchemaDocument>,
                                    _: CriteriaQuery<*>?,
                                    criteriaBuilder: CriteriaBuilder ->
-                criteriaBuilder.equal(root.get<Any>("documentDefinitionId").get<String>("version"), version)
+                criteriaBuilder.equal(root.get<Any>("documentDefinitionId").get<CaseDefinitionId>("caseDefinitionId"), caseDefinitionId)
             }
         }
 
         @JvmStatic
         fun byDocumentDefinitionId(id: DocumentDefinition.Id): Specification<JsonSchemaDocument> {
-            return byDocumentDefinitionIdName(id.name()).and(byDocumentDefinitionIdVersion(id.version()))
+            return byDocumentDefinitionIdName(id.name()).and(byDocumentDefinitionIdCaseDefinitionId(id.caseDefinitionId()))
         }
     }
 }

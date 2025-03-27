@@ -17,6 +17,7 @@
 package com.ritense.valtimo.importer
 
 import com.ritense.importer.ImportRequest
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.service.CamundaProcessService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -69,10 +70,11 @@ class CamundaDecisionDefinitionImporterTest(
         val dmnContent = "<some-xml />"
         importer.import(ImportRequest(FILENAME, dmnContent.toByteArray()))
 
+        val caseDefinitionIdCaptor = argumentCaptor<CaseDefinitionId>()
         val nameCaptor = argumentCaptor<String>()
         val contentCaptor = argumentCaptor<ByteArrayInputStream>()
 
-        verify(camundaProcessService).deploy(nameCaptor.capture(), contentCaptor.capture())
+        verify(camundaProcessService).deploy(caseDefinitionIdCaptor.capture(), nameCaptor.capture(), contentCaptor.capture())
 
         assertThat(nameCaptor.firstValue).isEqualTo("mydecision.dmn")
         val contentValue = contentCaptor.firstValue.readAllBytes().toString(Charsets.UTF_8)

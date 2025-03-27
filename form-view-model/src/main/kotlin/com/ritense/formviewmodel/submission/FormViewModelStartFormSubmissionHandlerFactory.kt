@@ -16,14 +16,33 @@
 
 package com.ritense.formviewmodel.submission
 
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.form.domain.FormProcessLink
+import com.ritense.form.service.FormDefinitionService
 import com.ritense.formviewmodel.viewmodel.Submission
+import com.ritense.processlink.domain.ProcessLink
 
 class FormViewModelStartFormSubmissionHandlerFactory(
-    private val handlers: List<FormViewModelStartFormSubmissionHandler<*>>
+    private val handlers: List<FormViewModelStartFormSubmissionHandler<*>>,
+    private val formDefinitionService: FormDefinitionService
 ) {
 
-    fun getHandler(formName: String): FormViewModelStartFormSubmissionHandler<out Submission>? {
+    @Deprecated("Deprecated since 12.6.0", replaceWith = ReplaceWith("getHandlerForFormValidation(formName)"))
+    fun getHandler(formName: String) = getHandlerForFormValidation(formName)
+
+    fun getHandlerForFormValidation(formName: String): FormViewModelStartFormSubmissionHandler<out Submission>? {
         return handlers.find { it.supports(formName) }
+    }
+
+    fun getHandler(processLink: ProcessLink): FormViewModelStartFormSubmissionHandler<out Submission>? {
+        val formName = (processLink as? FormProcessLink)?.let { runWithoutAuthorization {
+            formDefinitionService.getFormDefinitionById(processLink.formDefinitionId)
+        }.orElse(null)?.name }
+
+        return handlers.find { handler ->
+            handler.supports(processLink) ||
+                (formName?.let { handler.supports(formName) } ?: false)
+        }
     }
 
 }

@@ -19,6 +19,8 @@ package com.ritense.form.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
+import com.ritense.document.service.DocumentService
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.form.autodeployment.FormDefinitionDeploymentService
 import com.ritense.form.casewidget.FormIoCaseWidgetDataProvider
@@ -37,7 +39,7 @@ import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.form.validation.FormDefinitionExistsValidator
 import com.ritense.form.web.rest.FormResource
 import com.ritense.form.web.rest.IntermediateSubmissionResource
-import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
@@ -54,6 +56,7 @@ import org.springframework.core.annotation.Order
 class FormAutoConfigurationKotlin {
 
     @Bean
+    @Order(10)
     @ConditionalOnMissingBean(FormSupportedProcessLinksHandler::class)
     fun formSupportedProcessLinks(
         formDefinitionService: FormDefinitionService
@@ -69,10 +72,12 @@ class FormAutoConfigurationKotlin {
     @Bean
     @ConditionalOnMissingBean(FormResource::class)
     fun formResource(
+        documentService: DocumentService,
         formSubmissionService: FormSubmissionService,
         prefillFormService: PrefillFormService,
         formDefinitionService: FormDefinitionService,
     ) = FormResource(
+        documentService,
         formSubmissionService,
         prefillFormService,
         formDefinitionService
@@ -90,7 +95,8 @@ class FormAutoConfigurationKotlin {
         processLinkService: ProcessLinkService,
         formDefinitionService: FormIoFormDefinitionService,
         documentService: JsonSchemaDocumentService,
-        processDocumentAssociationService: ProcessDocumentAssociationService,
+        documentDefinitionService: JsonSchemaDocumentDefinitionService,
+        processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
         processDocumentService: ProcessDocumentService,
         camundaTaskService: CamundaTaskService,
         repositoryService: CamundaRepositoryService,
@@ -103,7 +109,8 @@ class FormAutoConfigurationKotlin {
         processLinkService,
         formDefinitionService,
         documentService,
-        processDocumentAssociationService,
+        documentDefinitionService,
+        processDefinitionCaseDefinitionService,
         processDocumentService,
         camundaTaskService,
         repositoryService,

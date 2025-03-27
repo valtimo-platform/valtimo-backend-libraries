@@ -20,5 +20,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 
 @JsonTypeName("datetime")
 data class DateTimeFieldDisplayProperties(
-    val format: String? = null
+    val format: String? = null,
+    override val hideWhenEmpty: Boolean? = false
 ) : FieldDisplayProperties

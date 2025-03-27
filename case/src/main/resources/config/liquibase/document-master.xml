@@ -46,4 +46,6 @@
     <include file="changelog/20240104-update-version-column.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20240201-add-internal-case-status-table.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20240214-add-column-color-to-internal-case-status-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20241220-update-document-sequence.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20250113-major13-upgrade.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

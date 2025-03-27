@@ -19,7 +19,6 @@ package com.ritense.case.configuration
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.ritense.authorization.AuthorizationService
-import com.ritense.case.deployment.CaseTabDeploymentService
 import com.ritense.case.deployment.CaseTaskListDeploymentService
 import com.ritense.case.domain.BooleanDisplayTypeParameter
 import com.ritense.case.domain.DateFormatDisplayTypeParameter
@@ -35,7 +34,6 @@ import com.ritense.case.service.CaseDefinitionExporter
 import com.ritense.case.service.CaseDefinitionImporter
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.service.CaseInstanceService
-import com.ritense.case.service.CaseListDeploymentService
 import com.ritense.case.service.CaseListExporter
 import com.ritense.case.service.CaseListImporter
 import com.ritense.case.service.CaseTabExporter
@@ -51,11 +49,13 @@ import com.ritense.case.web.rest.CaseTabManagementResource
 import com.ritense.case.web.rest.CaseTabResource
 import com.ritense.case.web.rest.TaskListResource
 import com.ritense.case_.repository.CaseDefinitionRepository
+import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentSearchService
 import com.ritense.document.service.DocumentService
 import com.ritense.exporter.ExportService
 import com.ritense.importer.ImportService
+import com.ritense.importer.ValtimoImportService
 import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.authentication.UserManagementService
@@ -90,9 +90,10 @@ class CaseAutoConfiguration {
     fun caseDefinitionResource(
         service: CaseDefinitionService,
         exportService: ExportService,
-        importService: ImportService
+        importService: ImportService,
+        activeCaseDefinitionService: ActiveCaseDefinitionService
     ): CaseDefinitionResource {
-        return CaseDefinitionResource(service, exportService, importService)
+        return CaseDefinitionResource(service, activeCaseDefinitionService, exportService, importService)
     }
 
     @Bean
@@ -201,13 +202,15 @@ class CaseAutoConfiguration {
     @Bean
     fun caseDefinitionDeploymentService(
         resourceLoader: ResourceLoader,
-        objectMapper: ObjectMapper,
-        caseDefinitionRepository: CaseDefinitionRepository
+        valtimoImportService: ValtimoImportService,
+        caseDefinitionRepository: CaseDefinitionRepository,
+        changelogDeployer: ChangelogDeployer,
     ): CaseDefinitionDeploymentService {
         return CaseDefinitionDeploymentService(
             resourceLoader,
-            objectMapper,
-            caseDefinitionRepository
+            valtimoImportService,
+            caseDefinitionRepository,
+            changelogDeployer,
         )
     }
 
@@ -215,20 +218,6 @@ class CaseAutoConfiguration {
     @ConditionalOnMissingBean(ResourcePatternResolver::class)
     fun resourcePatternResolver(resourceLoader: ResourceLoader): ResourcePatternResolver {
         return PathMatchingResourcePatternResolver(resourceLoader)
-    }
-
-    @Bean
-    @Order(Ordered.LOWEST_PRECEDENCE)
-    fun caseListDeploymentService(
-        resourcePatternResolver: ResourcePatternResolver,
-        objectMapper: ObjectMapper,
-        caseDefinitionService: CaseDefinitionService
-    ): CaseListDeploymentService {
-        return CaseListDeploymentService(
-            resourcePatternResolver,
-            objectMapper,
-            caseDefinitionService
-        )
     }
 
     @Order(300)
@@ -266,23 +255,6 @@ class CaseAutoConfiguration {
         displayTypeParameterTypes: Collection<NamedType>
     ): ObjectMapperConfigurer {
         return ObjectMapperConfigurer(objectMapper, displayTypeParameterTypes)
-    }
-
-    @Bean
-    fun caseTabDeployer(
-        objectMapper: ObjectMapper,
-        caseTabRepository: CaseTabRepository,
-        changelogService: ChangelogService,
-        caseTabService: CaseTabService,
-        @Value("\${valtimo.changelog.case-tabs.clear-tables:false}") clearTables: Boolean
-    ): CaseTabDeploymentService {
-        return CaseTabDeploymentService(
-            objectMapper,
-            caseTabRepository,
-            changelogService,
-            caseTabService,
-            clearTables
-        )
     }
 
     @Bean
@@ -337,15 +309,17 @@ class CaseAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(CaseListImporter::class)
     fun caseListImporter(
-        caseListDeploymentService: CaseListDeploymentService
-    ) = CaseListImporter(caseListDeploymentService)
+        resourcePatternResolver: ResourcePatternResolver,
+        objectMapper: ObjectMapper,
+        caseDefinitionService: CaseDefinitionService
+    ) = CaseListImporter(resourcePatternResolver, objectMapper, caseDefinitionService)
 
     @Bean
     @ConditionalOnMissingBean(CaseTabImporter::class)
     fun caseTabImporter(
-        caseTabDeploymentService: CaseTabDeploymentService,
-        changelogDeployer: ChangelogDeployer
-    ) = CaseTabImporter(caseTabDeploymentService, changelogDeployer)
+        objectMapper: ObjectMapper,
+        caseTabRepository: CaseTabRepository
+    ) = CaseTabImporter(objectMapper, caseTabRepository)
 
     @Bean
     @ConditionalOnMissingBean(CaseTaskListExporter::class)
@@ -377,9 +351,10 @@ class CaseAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(CaseDefinitionImporter::class)
     fun caseDefinitionSettingsImporter(
-        deploymentService: CaseDefinitionDeploymentService
+        objectMapper: ObjectMapper,
+        caseDefinitionRepository: CaseDefinitionRepository
     ) = CaseDefinitionImporter(
-        deploymentService
+        objectMapper, caseDefinitionRepository
     )
 
     @Bean

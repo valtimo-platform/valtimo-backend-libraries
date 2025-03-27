@@ -18,7 +18,6 @@ package com.ritense.document.service.impl;
 
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.sequence.JsonSchemaDocumentDefinitionSequenceRecord;
 import com.ritense.document.repository.DocumentDefinitionSequenceRepository;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
@@ -63,9 +62,7 @@ public class JsonSchemaDocumentDefinitionSequenceGeneratorService implements Doc
             sequenceRecord.increment();
             logger.debug("Updating sequence record for - {} - next {}", documentDefinitionId, sequenceRecord.sequence());
         } else {
-            sequenceRecord = new JsonSchemaDocumentDefinitionSequenceRecord(
-                JsonSchemaDocumentDefinitionId.existingId(documentDefinitionId)
-            );
+            sequenceRecord = new JsonSchemaDocumentDefinitionSequenceRecord(documentDefinitionId.name());
             logger.debug(
                 "Creating new sequence record for - {} - initial sequence {}",
                 documentDefinitionId,

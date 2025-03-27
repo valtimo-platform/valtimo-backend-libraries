@@ -17,7 +17,7 @@
 package com.ritense.zakenapi.service
 
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
-import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey
+import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionId
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinition
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinitionId
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService
@@ -118,20 +118,24 @@ class ZaakTypeLinkServiceTest {
 
     @Test
     fun `should get zaakTypeLinks`() {
-        whenever(processDocumentAssociationService.findAllProcessDocumentDefinitions(CamundaProcessDefinitionKey("processDefinitionKey")))
+        whenever(processDocumentAssociationService.findAllProcessDocumentDefinitions(
+            CamundaProcessDefinitionId(
+                "processDefinitionKey"
+            )
+        ))
             .thenReturn(listOf(
                 CamundaProcessJsonSchemaDocumentDefinition(
                     CamundaProcessJsonSchemaDocumentDefinitionId.newId(
-                        CamundaProcessDefinitionKey("processDefinitionKey"),
-                        JsonSchemaDocumentDefinitionId.newId("documentDefinitionId")
+                        CamundaProcessDefinitionId("processDefinitionKey"),
+                        JsonSchemaDocumentDefinitionId.of("documentDefinitionId")
                     ),
                     true,
                     false
                 ),
                 CamundaProcessJsonSchemaDocumentDefinition(
                     CamundaProcessJsonSchemaDocumentDefinitionId.newId(
-                        CamundaProcessDefinitionKey("processDefinitionKey"),
-                        JsonSchemaDocumentDefinitionId.newId("documentDefinitionId2")
+                        CamundaProcessDefinitionId("processDefinitionKey"),
+                        JsonSchemaDocumentDefinitionId.of("documentDefinitionId2")
                     ),
                     true,
                     false

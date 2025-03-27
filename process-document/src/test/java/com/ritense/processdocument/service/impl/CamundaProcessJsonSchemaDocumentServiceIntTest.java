@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.processdocument.BaseIntegrationTest;
-import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
+import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionId;
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest;
 import com.ritense.valtimo.service.CamundaProcessService;
 import org.junit.jupiter.api.Tag;
@@ -56,7 +56,7 @@ class CamundaProcessJsonSchemaDocumentServiceIntTest extends BaseIntegrationTest
         );
 
         var optAssociation = AuthorizationContext.runWithoutAuthorization(() ->
-            camundaProcessJsonSchemaDocumentAssociationService.findProcessDocumentDefinition(new CamundaProcessDefinitionKey(PROCESS_DEFINITION_KEY))
+            camundaProcessJsonSchemaDocumentAssociationService.findProcessDocumentDefinition(new CamundaProcessDefinitionId(PROCESS_DEFINITION_KEY))
         );
         assertThat(optAssociation).isEmpty();
         assertThat(result.errors()).isEmpty();

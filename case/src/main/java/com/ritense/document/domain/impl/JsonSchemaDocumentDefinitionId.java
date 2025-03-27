@@ -18,70 +18,58 @@ package com.ritense.document.domain.impl;
 
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentRange;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentTrue;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.ritense.document.domain.DocumentDefinition;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import com.ritense.valtimo.contract.domain.AbstractId;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.Transient;
+import jakarta.persistence.Embedded;
 import java.util.Objects;
 
 @Embeddable
 public class JsonSchemaDocumentDefinitionId extends AbstractId<JsonSchemaDocumentDefinitionId>
     implements DocumentDefinition.Id {
 
-    @Transient
-    private static final long INITIAL_VERSION = 1;
-
     @Column(name = "document_definition_name", length = 50, columnDefinition = "VARCHAR(50)", nullable = false, updatable = true)
     private String name;
 
-    @Column(name = "document_definition_version", columnDefinition = "BIGINT", nullable = false, updatable = true)
-    private long version;
-
-    private JsonSchemaDocumentDefinitionId(String id) {
-        assertArgumentNotNull(id, "id is required");
-        assertArgumentTrue(id.contains(":"), "id doesn't contain split operator ':'. For id: " + id);
-        String[] idParts = id.split(":");
-        this.name = idParts[0];
-        this.version = Long.parseLong(idParts[1]);
-        assertArgumentId(name, version);
-    }
+    @Embedded
+    private CaseDefinitionId caseDefinitionId;
 
     @JsonCreator
-    private JsonSchemaDocumentDefinitionId(String name, long version) {
-        assertArgumentId(name, version);
+    private JsonSchemaDocumentDefinitionId(String name, CaseDefinitionId caseDefinitionId) {
+        assertArgumentId(name, caseDefinitionId);
         this.name = name;
-        this.version = version;
+        this.caseDefinitionId = caseDefinitionId;
     }
 
     private JsonSchemaDocumentDefinitionId() {
     }
 
-    private void assertArgumentId(String name, long version) {
+    private void assertArgumentId(String name, CaseDefinitionId caseDefinitionId) {
         assertArgumentNotNull(name, "name is required");
         assertArgumentLength(name, 1, 50, "name must be between 1-50 characters");
         assertArgumentTrue(name.matches("[A-z0-9-_.]+"), "name contains illegal character. For name: " + name);
-        assertArgumentRange(version, INITIAL_VERSION, Long.MAX_VALUE, "version should be >= 1. For version: " + version);
+        assertArgumentNotNull(caseDefinitionId, "CaseDefinitionId is required");
     }
 
-    public static JsonSchemaDocumentDefinitionId nextVersion(DocumentDefinition.Id documentDefinitionId) {
-        return new JsonSchemaDocumentDefinitionId(documentDefinitionId.name(), documentDefinitionId.version() + 1).newIdentity();
+    /*
+     * @Deprecated This method is deprecated and should not be used. Use `of(String, CaseDefinitionId)` instead.
+     */
+    @Deprecated()
+    public static JsonSchemaDocumentDefinitionId existingId(String name, CaseDefinitionId caseDefinitionId) {
+        return new JsonSchemaDocumentDefinitionId(name, caseDefinitionId);
+    }
+
+    public static JsonSchemaDocumentDefinitionId of(String name, CaseDefinitionId caseDefinitionId) {
+        return new JsonSchemaDocumentDefinitionId(name, caseDefinitionId);
     }
 
     public static JsonSchemaDocumentDefinitionId existingId(DocumentDefinition.Id documentDefinitionId) {
         return (JsonSchemaDocumentDefinitionId) documentDefinitionId;
-    }
-
-    public static JsonSchemaDocumentDefinitionId existingId(String name, long version) {
-        return new JsonSchemaDocumentDefinitionId(name, version);
-    }
-
-    public static JsonSchemaDocumentDefinitionId newId(String name) {
-        return new JsonSchemaDocumentDefinitionId(name, INITIAL_VERSION).newIdentity();
     }
 
     @Override
@@ -90,13 +78,13 @@ public class JsonSchemaDocumentDefinitionId extends AbstractId<JsonSchemaDocumen
     }
 
     @Override
-    public long version() {
-        return version;
+    public CaseDefinitionId caseDefinitionId() {
+        return caseDefinitionId;
     }
 
     @Override
     public String toString() {
-        return name + ":" + version;
+        return name + ":" + caseDefinitionId.toString();
     }
 
     @Override
@@ -108,11 +96,11 @@ public class JsonSchemaDocumentDefinitionId extends AbstractId<JsonSchemaDocumen
             return false;
         }
         JsonSchemaDocumentDefinitionId that = (JsonSchemaDocumentDefinitionId) o;
-        return version == that.version && Objects.equals(name, that.name);
+        return caseDefinitionId.equals(that.caseDefinitionId) && Objects.equals(name, that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, version);
+        return Objects.hash(name, caseDefinitionId);
     }
 }

@@ -56,9 +56,6 @@ public class JsonSchemaDocumentDefinition extends AbstractAggregateRoot<JsonSche
     @Column(name = "created_on", columnDefinition = "DATETIME", nullable = false)
     private LocalDateTime createdOn;
 
-    @Column(name = "read_only", columnDefinition = "BIT")
-    private Boolean readOnly = false;
-
     public JsonSchemaDocumentDefinition(
         final JsonSchemaDocumentDefinitionId id,
         final JsonSchema schema
@@ -102,15 +99,6 @@ public class JsonSchemaDocumentDefinition extends AbstractAggregateRoot<JsonSche
 
     public JsonSchema getSchema() {
         return schema;
-    }
-
-    public void markReadOnly() {
-        this.readOnly = true;
-    }
-
-    @JsonProperty
-    public boolean isReadOnly() {
-        return readOnly;
     }
 
     @Override

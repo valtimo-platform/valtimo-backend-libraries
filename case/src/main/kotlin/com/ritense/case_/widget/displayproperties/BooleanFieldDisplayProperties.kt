@@ -19,4 +19,4 @@ package com.ritense.case_.widget.displayproperties
 import com.fasterxml.jackson.annotation.JsonTypeName
 
 @JsonTypeName("boolean")
-class BooleanFieldDisplayProperties : FieldDisplayProperties
+class BooleanFieldDisplayProperties(override val hideWhenEmpty: Boolean? = false) : FieldDisplayProperties

@@ -16,12 +16,13 @@
 
 package com.ritense.document.service;
 
-import static com.ritense.document.repository.SearchFieldRepository.byIdDocumentDefinitionName;
+import static com.ritense.document.repository.SearchFieldRepository.byIdCaseDefinitionKey;
 import static com.ritense.document.service.SearchFieldActionProvider.VIEW_LIST;
 
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
+import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
@@ -37,6 +38,7 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import com.ritense.logging.LoggableResource;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.zalando.problem.Status;
@@ -64,7 +66,7 @@ public class SearchFieldService {
         denyAuthorization();
 
         Optional<SearchField> optSearchField = searchFieldRepository
-            .findByIdDocumentDefinitionNameAndKey(documentDefinitionName, searchField.getKey());
+            .findByIdCaseDefinitionKeyAndKey(documentDefinitionName, searchField.getKey());
         if (optSearchField.isPresent()) {
             throw new IllegalArgumentException(
                 "Search field already exists for document '" + documentDefinitionName + "' and key '" + searchField.getKey() + "'."
@@ -89,7 +91,7 @@ public class SearchFieldService {
         );
 
         return searchFieldRepository.findAll(
-            authorizationSpec.and(byIdDocumentDefinitionName(documentDefinitionName)),
+            authorizationSpec.and(byIdCaseDefinitionKey(documentDefinitionName)),
             Sort.by(Sort.Order.asc("order"))
         );
     }
@@ -97,7 +99,7 @@ public class SearchFieldService {
     public void deleteSearchFields(
         @LoggableResource("documentDefinitionName") String documentDefinitionName
     ) {
-        searchFieldRepository.deleteAllByIdDocumentDefinitionName(documentDefinitionName);
+        searchFieldRepository.deleteAllByIdCaseDefinitionKey(documentDefinitionName);
     }
 
     public void updateSearchFields(
@@ -116,12 +118,17 @@ public class SearchFieldService {
         searchFieldRepository.saveAll(searchFields);
     }
 
-    public void createSearchConfiguration(List<SearchField> searchFields) {
+    public void createSearchConfiguration(List<SearchField> searchFields, CaseDefinitionId caseDefinitionId) {
         denyAuthorization();
 
         searchFields.forEach(searchField -> {
             assert searchField.getId() != null;
-            documentDefinitionService.validateJsonPath(searchField.getId().getDocumentDefinitionName(), searchField.getPath());
+            Optional<? extends DocumentDefinition> optionalDocumentDefinition =
+                documentDefinitionService.findByCaseDefinitionId(caseDefinitionId);
+            documentDefinitionService.validateJsonPath(
+                optionalDocumentDefinition.get().id().name(),
+                searchField.getPath()
+            );
         });
         if (searchFields.stream()
             .filter((searchField ->
@@ -137,13 +144,13 @@ public class SearchFieldService {
     public void deleteSearchField(String documentDefinitionName, String key) {
         denyAuthorization();
 
-        searchFieldRepository.findByIdDocumentDefinitionNameAndKey(documentDefinitionName, key).ifPresent(
+        searchFieldRepository.findByIdCaseDefinitionKeyAndKey(documentDefinitionName, key).ifPresent(
             searchFieldRepository::delete);
     }
 
     private SearchField toOrderedSearchField(String documentDefinitionName, SearchFieldDto searchFieldDto, int order) {
         Optional<SearchField> fieldToUpdate = searchFieldRepository
-            .findByIdDocumentDefinitionNameAndKey(documentDefinitionName, searchFieldDto.getKey());
+            .findByIdCaseDefinitionKeyAndKey(documentDefinitionName, searchFieldDto.getKey());
         if (fieldToUpdate.isEmpty()) {
             throw new IllegalArgumentException(
                 "No search field found for document '" + documentDefinitionName + "' and key '" + searchFieldDto.getKey() + "'."

@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.processdocument.BaseIntegrationTest;
-import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
+import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionId;
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -151,7 +151,7 @@ class CamundaProcessJsonSchemaDocumentDeploymentServiceJavaIntTest extends BaseI
 
         var association = AuthorizationContext.runWithoutAuthorization(() ->
             camundaProcessJsonSchemaDocumentAssociationService.findProcessDocumentDefinition(
-                new CamundaProcessDefinitionKey("deadlock-process")
+                new CamundaProcessDefinitionId("deadlock-process")
             ).orElseThrow()
         );
 

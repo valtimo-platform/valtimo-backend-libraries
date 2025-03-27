@@ -18,7 +18,7 @@ package com.ritense.processdocument.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationService;
-import com.ritense.document.repository.DocumentDefinitionRepository;
+import com.ritense.case_.service.ActiveCaseDefinitionService;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
@@ -31,16 +31,14 @@ import com.ritense.processdocument.domain.impl.listener.UndeployDocumentDefiniti
 import com.ritense.processdocument.domain.listener.StartEventFromCallActivityListener;
 import com.ritense.processdocument.domain.listener.StartEventListener;
 import com.ritense.processdocument.repository.DocumentDefinitionProcessLinkRepository;
-import com.ritense.processdocument.repository.ProcessDocumentDefinitionRepository;
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository;
 import com.ritense.processdocument.resolver.DocumentJsonValueResolverFactory;
 import com.ritense.processdocument.resolver.DocumentTableValueResolver;
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService;
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
-import com.ritense.processdocument.service.ProcessDocumentDeploymentService;
 import com.ritense.processdocument.service.ProcessDocumentService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService;
-import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentDeploymentService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService;
 import com.ritense.processdocument.service.impl.DocumentDefinitionProcessLinkServiceImpl;
 import com.ritense.processdocument.web.rest.ProcessDocumentResource;
@@ -57,7 +55,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @AutoConfiguration
@@ -87,10 +84,7 @@ public class ProcessDocumentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ProcessDocumentAssociationService.class)
     public CamundaProcessJsonSchemaDocumentAssociationService processDocumentAssociationService(
-        ProcessDocumentDefinitionRepository processDocumentDefinitionRepository,
         ProcessDocumentInstanceRepository processDocumentInstanceRepository,
-        DocumentDefinitionRepository documentDefinitionRepository,
-        DocumentDefinitionService documentDefinitionService,
         CamundaRepositoryService repositoryService,
         RuntimeService runtimeService,
         HistoryService historyService,
@@ -99,10 +93,7 @@ public class ProcessDocumentAutoConfiguration {
         UserManagementService userManagementService
     ) {
         return new CamundaProcessJsonSchemaDocumentAssociationService(
-            processDocumentDefinitionRepository,
             processDocumentInstanceRepository,
-            documentDefinitionRepository,
-            documentDefinitionService,
             repositoryService,
             runtimeService,
             historyService,
@@ -139,12 +130,16 @@ public class ProcessDocumentAutoConfiguration {
     public StartEventListenerImpl startEventListener(
         ProcessDocumentService processDocumentService,
         ProcessDocumentAssociationService processDocumentAssociationService,
+        ProcessDefinitionCaseDefinitionService processDefinitionCaseDefinitionService,
+        DocumentDefinitionService documentDefinitionService,
         ApplicationEventPublisher applicationEventPublisher,
         ObjectMapper objectMapper
     ) {
         return new StartEventListenerImpl(
             processDocumentService,
             processDocumentAssociationService,
+            processDefinitionCaseDefinitionService,
+            documentDefinitionService,
             applicationEventPublisher,
             objectMapper
         );
@@ -154,10 +149,12 @@ public class ProcessDocumentAutoConfiguration {
     @ConditionalOnMissingBean(UndeployDocumentDefinitionEventListener.class)
     public UndeployDocumentDefinitionEventListener undeployDocumentDefinitionEventListener(
         ProcessDocumentAssociationService processDocumentAssociationService,
+        ProcessDefinitionCaseDefinitionService processDefinitionCaseDefinitionService,
         CamundaProcessService camundaProcessService
     ) {
         return new UndeployDocumentDefinitionEventListener(
             processDocumentAssociationService,
+            processDefinitionCaseDefinitionService,
             camundaProcessService
         );
     }
@@ -167,24 +164,14 @@ public class ProcessDocumentAutoConfiguration {
     public ProcessDocumentResource processDocumentResource(
         ProcessDocumentService processDocumentService,
         ProcessDocumentAssociationService processDocumentAssociationService,
-        DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService
+        ProcessDefinitionCaseDefinitionService processDefinitionCaseDefinitionService,
+        ActiveCaseDefinitionService activeCaseDefinitionService
     ) {
-        return new ProcessDocumentResource(processDocumentService, processDocumentAssociationService, documentDefinitionProcessLinkService);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(ProcessDocumentDeploymentService.class)
-    public ProcessDocumentDeploymentService processDocumentDeploymentService(
-            ResourceLoader resourceLoader,
-            ProcessDocumentAssociationService processDocumentAssociationService,
-            DocumentDefinitionService documentDefinitionService,
-            ObjectMapper objectMapper
-    ) {
-        return new CamundaProcessJsonSchemaDocumentDeploymentService(
-            resourceLoader,
+        return new ProcessDocumentResource(
+            processDocumentService,
             processDocumentAssociationService,
-            documentDefinitionService,
-            objectMapper
+            processDefinitionCaseDefinitionService,
+            activeCaseDefinitionService
         );
     }
 

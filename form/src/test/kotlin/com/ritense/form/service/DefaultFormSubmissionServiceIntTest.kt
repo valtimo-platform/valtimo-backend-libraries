@@ -34,6 +34,7 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 class DefaultFormSubmissionServiceIntTest @Autowired constructor(
     private val defaultFormSubmissionService: DefaultFormSubmissionService,
@@ -77,8 +78,8 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
         val dateOfBirth = processExecution?.getVariable("dateOfBirth")
         assertThat(dateOfBirth, equalTo("1980-02-03"))
 
-        val argumentCaptor = argumentCaptor<Map<String, Any>>()
-        verify(testValueResolverFactory).handleValues(any(), argumentCaptor.capture())
+        val argumentCaptor = argumentCaptor<Map<String, Any?>>()
+        verify(testValueResolverFactory).handleValues(any<UUID>(), argumentCaptor.capture())
 
         assertThat(argumentCaptor.firstValue["gender"], equalTo("M"))
     }

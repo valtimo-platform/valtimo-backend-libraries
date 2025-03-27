@@ -19,6 +19,7 @@ package com.ritense.document.repository.impl;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.repository.DocumentDefinitionRepository;
 import java.util.List;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -30,7 +31,8 @@ public interface JsonSchemaDocumentDefinitionRepository extends DocumentDefiniti
     @Query(nativeQuery = true, value = "" +
         "select " +
         "    distinct jsonschema.document_definition_name, " +
-        "    jsonschema.document_definition_version, " +
+        "    jsonschema.case_definition_key, " +
+        "    jsonschema.case_definition_version_tag, " +
         "    jsonschema.created_on, " +
         "    jsonschema.read_only, " +
         "    jsonschema.json_schema " +
@@ -46,21 +48,24 @@ public interface JsonSchemaDocumentDefinitionRepository extends DocumentDefiniti
         "        ) " +
         "inner join (" +
         "        select" +
-        "            max(jsonschema_for_max.document_definition_version) as latest_version," +
+        "            max(jsonschema_for_max.case_definition_version_tag) as latest_version," +
+        "            jsonschema_for_max.case_definition_key" +
         "            jsonschema_for_max.document_definition_name" +
         "        from" +
         "            json_schema_document_definition jsonschema_for_max " +
         "        group by " +
         "            jsonschema_for_max.document_definition_name" +
         ") version_per_definition " +
-        "on version_per_definition.latest_version = jsonschema.document_definition_version " +
+        "on version_per_definition.latest_version = jsonschema.case_definition_version_tag " +
+        "and version_per_definition.case_definition_key = jsonschema.case_definition_key " +
         "and version_per_definition.document_definition_name = jsonschema.document_definition_name ")
     Page<JsonSchemaDocumentDefinition> findAllForRoles(List<String> roles, Pageable pageable);
 
     @Query(nativeQuery = true, value = "" +
         "select " +
         "    distinct jsonschema.document_definition_name, " +
-        "    jsonschema.document_definition_version, " +
+        "    jsonschema.case_definition_key, " +
+        "    jsonschema.case_definition_version_tag, " +
         "    jsonschema.created_on, " +
         "    jsonschema.read_only, " +
         "    jsonschema.json_schema " +
@@ -68,7 +73,8 @@ public interface JsonSchemaDocumentDefinitionRepository extends DocumentDefiniti
         "    json_schema_document_definition jsonschema " +
         "inner join (" +
         "        select" +
-        "            max(jsonschema_for_max.document_definition_version) as latest_version," +
+        "            max(jsonschema_for_max.case_definition_version_tag) as latest_version," +
+        "            jsonschema_for_max.case_definition_key" +
         "            jsonschema_for_max.document_definition_name" +
         "        from" +
         "            json_schema_document_definition jsonschema_for_max " +
@@ -76,13 +82,14 @@ public interface JsonSchemaDocumentDefinitionRepository extends DocumentDefiniti
         "            jsonschema_for_max.document_definition_name" +
         ") version_per_definition " +
         "on version_per_definition.latest_version = jsonschema.document_definition_version " +
+        "and version_per_definition.case_definition_key = jsonschema.case_definition_key " +
         "and version_per_definition.document_definition_name = jsonschema.document_definition_name ")
     Page<JsonSchemaDocumentDefinition> findAll(Pageable pageable);
 
     @Query("" +
-        "   SELECT      definition.id.version" +
+        "   SELECT      definition.id.caseDefinitionId" +
         "   FROM        JsonSchemaDocumentDefinition definition " +
         "   WHERE       definition.id.name = :documentDefinitionName " +
-        "   ORDER BY    definition.id.version DESC")
-    List<Long> findVersionsByName(String documentDefinitionName);
+        "   ORDER BY    definition.id.caseDefinitionId.key, definition.id.caseDefinitionId.versionTag DESC")
+    List<CaseDefinitionId> findVersionsByName(String documentDefinitionName);
 }

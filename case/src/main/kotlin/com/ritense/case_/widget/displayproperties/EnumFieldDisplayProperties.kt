@@ -21,5 +21,6 @@ import jakarta.validation.constraints.NotEmpty
 
 @JsonTypeName("enum")
 data class EnumFieldDisplayProperties(
-    @field:NotEmpty val values: Map<String, Any>
+    @field:NotEmpty val values: Map<String, Any>,
+    override val hideWhenEmpty: Boolean? = false
 ) : FieldDisplayProperties

@@ -48,7 +48,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
@@ -109,12 +108,12 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     private Long sequence;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumns(
-        {
-            @JoinColumn(name="case_definition_name", referencedColumnName="case_definition_name"),
-            @JoinColumn(name="internal_case_status_key", referencedColumnName="internal_case_status_key")
-        }
+    // TODO: Fix this. Using a new column for it is not nice at all
+    @JoinColumn(
+        name = "ics_case_definition_key",
+        referencedColumnName = "case_definition_key"
     )
+    @JoinColumn(name = "internal_case_status_key", referencedColumnName = "internal_case_status_key")
     private InternalCaseStatus internalStatus;
 
     @Column(name = "assignee_id", columnDefinition = "varchar(64)")
@@ -411,9 +410,9 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
         return id.isNew();
     }
 
-    ////////////////////////////////////////
-    //// DocumentResult IMPLEMENTATIONS ////
-    ////////////////////////////////////////
+    /// /////////////////////////////////////
+    /// / DocumentResult IMPLEMENTATIONS ////
+    /// /////////////////////////////////////
 
     public static class CreateDocumentResultImpl extends AbstractDocumentResult implements CreateDocumentResult {
         CreateDocumentResultImpl(JsonSchemaDocument resultingDocument) {

@@ -38,7 +38,7 @@ class JsonSchemaDocumentDefinitionExporter(
         DocumentDefinitionExportRequest::class.java
 
     override fun export(request: DocumentDefinitionExportRequest): ExportResult {
-        val documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId(request.name, request.version)
+        val documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId(request.name, request.caseDefinitionId)
         val documentDefinition = documentDefinitionService.findBy(documentDefinitionId).orElseThrow()
 
         val exportFile = ByteArrayOutputStream().use {
@@ -52,7 +52,7 @@ class JsonSchemaDocumentDefinitionExporter(
 
         return ExportResult(
             exportFile,
-            setOf(FormDefinitionExportRequest(request.name + ".summary", false))
+            setOf(FormDefinitionExportRequest(request.name + ".summary", request.caseDefinitionId, false))
         )
     }
 

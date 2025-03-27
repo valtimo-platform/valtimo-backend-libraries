@@ -19,6 +19,7 @@ package com.ritense.document.service
 import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
+import com.ritense.case.service.CaseDefinitionService
 import com.ritense.document.domain.InternalCaseStatus
 import com.ritense.document.domain.InternalCaseStatusId
 import com.ritense.document.exception.InternalCaseStatusAlreadyExistsException
@@ -32,7 +33,6 @@ import jakarta.validation.Valid
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.annotation.Validated
-import kotlin.jvm.optionals.getOrNull
 
 @Validated
 @Transactional
@@ -40,26 +40,32 @@ import kotlin.jvm.optionals.getOrNull
 @SkipComponentScan
 class InternalCaseStatusService(
     private val internalCaseStatusRepository: InternalCaseStatusRepository,
-    private val documentDefinitionService: DocumentDefinitionService,
+    private val caseDefinitionService: CaseDefinitionService,
     private val authorizationService: AuthorizationService,
 ) {
     fun getInternalCaseStatuses(documentDefinitionName: String): List<InternalCaseStatus> {
-        return internalCaseStatusRepository.findByIdCaseDefinitionNameOrderByOrder(documentDefinitionName)
+        return internalCaseStatusRepository.findByIdCaseDefinitionKeyOrderByOrder(documentDefinitionName)
     }
 
     fun get(caseDefinitionName: String, statusKey: String): InternalCaseStatus {
         return internalCaseStatusRepository.getReferenceById(InternalCaseStatusId(caseDefinitionName, statusKey))
     }
 
+    fun exists(caseDefinitionKey: String, statusKey: String): Boolean {
+        return internalCaseStatusRepository.existsByIdCaseDefinitionKeyAndIdKey(caseDefinitionKey, statusKey)
+    }
+
     fun create(
-        caseDefinitionName: String,
+        caseDefinitionKey: String,
         @Valid request: InternalCaseStatusCreateRequestDto
     ): InternalCaseStatus {
         denyManagementOperation()
 
-        documentDefinitionService.findLatestByName(caseDefinitionName).getOrNull()
-            ?: throw NoSuchElementException("Case definition with name $caseDefinitionName does not exist!")
-        val currentInternalCaseStatuses = getInternalCaseStatuses(caseDefinitionName)
+        caseDefinitionService.getLatestCaseDefinition(caseDefinitionKey)?: throw NoSuchElementException(
+            "Case definition with key $caseDefinitionKey does not exist!"
+        )
+
+        val currentInternalCaseStatuses = getInternalCaseStatuses(caseDefinitionKey)
         if (currentInternalCaseStatuses.any { status ->
                 status.id.key == request.key
             }) {
@@ -69,7 +75,7 @@ class InternalCaseStatusService(
         return internalCaseStatusRepository.save(
             InternalCaseStatus(
                 InternalCaseStatusId(
-                    caseDefinitionName,
+                    caseDefinitionKey,
                     request.key
                 ),
                 request.title,
@@ -88,7 +94,7 @@ class InternalCaseStatusService(
         denyManagementOperation()
 
         val oldInternalCaseStatus = internalCaseStatusRepository
-            .findDistinctByIdCaseDefinitionNameAndIdKey(
+            .findDistinctByIdCaseDefinitionKeyAndIdKey(
                 caseDefinitionName, internalCaseStatusKey
             ) ?: throw InternalCaseStatusNotFoundException(internalCaseStatusKey, caseDefinitionName)
 
@@ -108,7 +114,7 @@ class InternalCaseStatusService(
         denyManagementOperation()
 
         val existingInternalCaseStatuses = internalCaseStatusRepository
-            .findByIdCaseDefinitionNameOrderByOrder(caseDefinitionName)
+            .findByIdCaseDefinitionKeyOrderByOrder(caseDefinitionName)
         check(existingInternalCaseStatuses.size == requests.size) {
             throw IllegalStateException(
                 "Failed to update internal case statuses. Reason: the number of internal "
@@ -134,7 +140,7 @@ class InternalCaseStatusService(
         denyManagementOperation()
 
         val internalCaseStatus =
-            internalCaseStatusRepository.findDistinctByIdCaseDefinitionNameAndIdKey(
+            internalCaseStatusRepository.findDistinctByIdCaseDefinitionKeyAndIdKey(
                 caseDefinitionName, internalCaseStatusKey
             ) ?: throw InternalCaseStatusNotFoundException(internalCaseStatusKey, caseDefinitionName)
 
@@ -143,7 +149,7 @@ class InternalCaseStatusService(
     }
 
     private fun reorder(caseDefinitionName: String) {
-        val internalCaseStatuses = internalCaseStatusRepository.findByIdCaseDefinitionNameOrderByOrder(
+        val internalCaseStatuses = internalCaseStatusRepository.findByIdCaseDefinitionKeyOrderByOrder(
             caseDefinitionName
         ).mapIndexed { index, internalCaseStatus -> internalCaseStatus.copy(order = index) }
         internalCaseStatusRepository.saveAll(internalCaseStatuses)

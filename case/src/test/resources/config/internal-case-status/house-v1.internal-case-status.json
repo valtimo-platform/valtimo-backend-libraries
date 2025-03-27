@@ -1,0 +1,26 @@
+{
+    "changesetId": "house-v1.internal-case-status",
+    "internalCaseStatuses": [
+        {
+            "key": "suspended",
+            "caseDefinitionName": "house",
+            "title": "Suspended",
+            "visibleInCaseListByDefault": false,
+            "color": "GRAY"
+        },
+        {
+            "key": "closed",
+            "caseDefinitionName": "house",
+            "title": "Closed",
+            "visibleInCaseListByDefault": false,
+            "color": "GRAY"
+        },
+        {
+            "key": "started",
+            "caseDefinitionName": "house",
+            "title": "Started",
+            "visibleInCaseListByDefault": true,
+            "color": "GRAY"
+        }
+    ]
+}

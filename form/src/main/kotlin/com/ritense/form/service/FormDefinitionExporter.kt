@@ -32,6 +32,7 @@ class FormDefinitionExporter(
     override fun supports() = FormDefinitionExportRequest::class.java
 
     override fun export(request: FormDefinitionExportRequest): ExportResult {
+        // TODO: use caseDefinitionId to retrieve form definition and write to the updated path
         val formDefinition = formDefinitionService.getFormDefinitionByName(request.formDefinitionName).orElseThrow()
 
         return ExportResult(
@@ -43,6 +44,6 @@ class FormDefinitionExporter(
     }
 
     companion object {
-        private const val PATH = "config/form/%s.json"
+        private const val PATH = "config/case/%s/%s/form/%s.json"
     }
 }

@@ -16,6 +16,7 @@
 
 package com.ritense.processdocument.domain.config;
 
+import com.ritense.processdocument.domain.ProcessDefinitionCaseDefinition;
 import com.ritense.processdocument.domain.ProcessDocumentDefinition;
 
 public class ProcessDocumentLinkConfigItem {
@@ -66,6 +67,13 @@ public class ProcessDocumentLinkConfigItem {
         return processDocumentDefinition.processDocumentDefinitionId().processDefinitionKey().toString().equals(getProcessDefinitionKey())
                 && processDocumentDefinition.startableByUser() == isStartableByUser()
                 && processDocumentDefinition.canInitializeDocument() == canInitializeDocument();
+    }
+
+    public boolean equalsProcessDocumentDefinition(ProcessDefinitionCaseDefinition processDefinitionCaseDefinition) {
+        //TODO: how to get key
+        return true //processDefinitionCaseDefinition.getId().equals()
+            && processDefinitionCaseDefinition.getStartableByUser() == isStartableByUser()
+            && processDefinitionCaseDefinition.getCanInitializeDocument() == canInitializeDocument();
     }
 
     @Override

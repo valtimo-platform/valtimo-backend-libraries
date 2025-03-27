@@ -18,6 +18,7 @@ package com.ritense.document.service.request;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import jakarta.validation.constraints.NotNull;
 
 public class DocumentDefinitionCreateRequest {
@@ -25,14 +26,23 @@ public class DocumentDefinitionCreateRequest {
     @JsonProperty
     private final String definition;
 
+    @JsonProperty
+    private final CaseDefinitionId caseDefinitionId;
+
     @JsonCreator
     public DocumentDefinitionCreateRequest(
-        @JsonProperty(value = "definition", required = true) @NotNull String definition
+        @JsonProperty(value = "definition", required = true) @NotNull String definition,
+        @JsonProperty(value = "caseDefinitionId", required = true) @NotNull CaseDefinitionId caseDefinitionId
     ) {
         this.definition = definition;
+        this.caseDefinitionId = caseDefinitionId;
     }
 
     public String getDefinition() {
         return this.definition;
+    }
+
+    public CaseDefinitionId getCaseDefinitionId() {
+        return caseDefinitionId;
     }
 }

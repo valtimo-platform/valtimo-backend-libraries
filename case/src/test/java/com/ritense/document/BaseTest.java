@@ -27,6 +27,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaRelatedFile;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -35,28 +36,50 @@ public abstract class BaseTest {
 
     protected static final String USERNAME = "test@test.com";
     protected DocumentSequenceGeneratorService documentSequenceGeneratorService;
+    protected TestHelper testHelper;
 
     public BaseTest() {
+        testHelper = new TestHelper();
         documentSequenceGeneratorService = mock(DocumentSequenceGeneratorService.class);
         when(documentSequenceGeneratorService.next(any())).thenReturn(1L);
     }
 
     protected JsonSchemaDocumentDefinition definition() {
-        final var jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.newId("house");
-        final var schema = JsonSchema.fromResourceUri(path(jsonSchemaDocumentDefinitionId.name()));
+        final var jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.of("house", caseDefinitionId());
+        final var schema = JsonSchema.fromResourceUri(path(
+            jsonSchemaDocumentDefinitionId.caseDefinitionId(),
+            jsonSchemaDocumentDefinitionId.name()
+        ));
         return new JsonSchemaDocumentDefinition(jsonSchemaDocumentDefinitionId, schema);
     }
 
     protected JsonSchemaDocumentDefinition definitionOf(String name) {
-        final var documentDefinitionName = JsonSchemaDocumentDefinitionId.newId(name);
-        final var schema = JsonSchema.fromResourceUri(path(documentDefinitionName.name()));
+        final var documentDefinitionName = JsonSchemaDocumentDefinitionId.of(name, caseDefinitionId());
+        final var schema = JsonSchema.fromResourceUri(path(
+            documentDefinitionName.caseDefinitionId(),
+            documentDefinitionName.name()
+        ));
         return new JsonSchemaDocumentDefinition(documentDefinitionName, schema);
     }
 
-    protected JsonSchemaDocumentDefinition definitionOf(String name, long version, String schemaPath) {
-        final var documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId(name, version);
-        final var schema = JsonSchema.fromResourceUri(URI.create("config/document/definition/" + schemaPath));
+    protected JsonSchemaDocumentDefinition definitionOf(JsonSchemaDocumentDefinitionId documentDefinitionId) {
+        final var schema = JsonSchema.fromResourceUri(path(
+            documentDefinitionId.caseDefinitionId(),
+            documentDefinitionId.name()
+        ));
         return new JsonSchemaDocumentDefinition(documentDefinitionId, schema);
+    }
+
+    protected JsonSchemaDocumentDefinition definitionOfForUnitTests(String name) {
+        final var documentDefinitionName = JsonSchemaDocumentDefinitionId.of(name, caseDefinitionId());
+        final var schema = JsonSchema.fromResourceUri(testHelper.path(
+            documentDefinitionName.name()
+        ));
+        return new JsonSchemaDocumentDefinition(documentDefinitionName, schema);
+    }
+
+    protected CaseDefinitionId caseDefinitionId() {
+        return CaseDefinitionId.of("house", "1.0.0");
     }
 
     protected JsonSchemaDocument createDocument() {
@@ -72,7 +95,10 @@ public abstract class BaseTest {
             .orElseThrow();
     }
 
-    protected JsonSchemaDocument.CreateDocumentResultImpl createDocument(JsonSchemaDocumentDefinition definition, JsonDocumentContent content) {
+    protected JsonSchemaDocument.CreateDocumentResultImpl createDocument(
+        JsonSchemaDocumentDefinition definition,
+        JsonDocumentContent content
+    ) {
         return JsonSchemaDocument.create(definition, content, USERNAME, documentSequenceGeneratorService, null);
     }
 
@@ -86,8 +112,17 @@ public abstract class BaseTest {
         );
     }
 
-    public URI path(String name) {
-        return URI.create(String.format("config/document/definition/%s.json", name + ".schema"));
+    public URI path(CaseDefinitionId caseDefinitionId, String name) {
+        var caseDefinitionVersion = caseDefinitionId.getVersionTag();
+        var formattedCaseDefinitionVersion = caseDefinitionVersion.getMajor() +
+            "-" + caseDefinitionVersion.getMinor() +
+            "-" + caseDefinitionVersion.getPatch();
+        return URI.create(String.format(
+            "config/case/%s/%s/document/definition/%s.json",
+            caseDefinitionId.getKey(),
+            formattedCaseDefinitionVersion,
+            name + ".schema"
+        ));
     }
 
 }

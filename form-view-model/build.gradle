@@ -29,13 +29,14 @@ dockerCompose {
 }
 
 dependencies {
+    implementation project(":case")
+    implementation project(":authorization")
+    implementation project(":command-handling")
     implementation project(":contract")
     implementation project(":core")
-    implementation project(":authorization")
     implementation project(":form")
-    implementation project(":process-link")
     implementation project(":process-document")
-    implementation project(":command-handling")
+    implementation project(":process-link")
     implementation project(":web")
 
     api "org.springframework.security:spring-security-core"
@@ -70,6 +71,7 @@ dependencies {
     testImplementation "org.apache.httpcomponents.client5:httpclient5"
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
+    testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:${camundaMockitoVersion}"
 
     jar {
         enabled = true

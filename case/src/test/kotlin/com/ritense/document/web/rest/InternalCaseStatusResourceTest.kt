@@ -86,7 +86,7 @@ class InternalCaseStatusResourceTest : BaseTest() {
             .let {
                 val status = internalCaseStatuses[0]
                 it.andExpect(jsonPath("$[0].key").value(status.id.key))
-                    .andExpect(jsonPath("$[0].caseDefinitionName").value(status.id.caseDefinitionName))
+                    .andExpect(jsonPath("$[0].caseDefinitionName").value(status.id.caseDefinitionKey))
                     .andExpect(jsonPath("$[0].title").value(status.title))
                     .andExpect(jsonPath("$[0].order").value(status.order))
                     .andExpect(jsonPath("$[0].color").value(status.color.name))
@@ -107,7 +107,7 @@ class InternalCaseStatusResourceTest : BaseTest() {
             .let {
                 val status = internalCaseStatuses[1]
                 it.andExpect(jsonPath("$[1].key").value(status.id.key))
-                    .andExpect(jsonPath("$[1].caseDefinitionName").value(status.id.caseDefinitionName))
+                    .andExpect(jsonPath("$[1].caseDefinitionName").value(status.id.caseDefinitionKey))
                     .andExpect(jsonPath("$[1].title").value(status.title))
                     .andExpect(jsonPath("$[1].order").value(status.order))
                     .andExpect(jsonPath("$[1].color").value(status.color.name))

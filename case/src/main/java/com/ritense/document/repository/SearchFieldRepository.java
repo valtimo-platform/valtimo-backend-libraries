@@ -18,10 +18,6 @@ package com.ritense.document.repository;
 
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.searchfield.SearchFieldId;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.domain.Specification;
@@ -30,20 +26,16 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface SearchFieldRepository extends JpaRepository<SearchField, SearchFieldId>, JpaSpecificationExecutor<SearchField> {
 
-    List<SearchField> findAllByIdDocumentDefinitionNameOrderByOrder(String documentDefinitionName);
+    List<SearchField> findAllByIdCaseDefinitionKeyOrderByOrder(String caseDefinitionKey);
 
-    Optional<SearchField> findByIdDocumentDefinitionNameAndKey(String documentDefinitionName, String key);
+    Optional<SearchField> findByIdCaseDefinitionKeyAndKey(String caseDefinitionKey, String key);
 
-    boolean existsByIdDocumentDefinitionName(String documentDefinitionName);
+    boolean existsByIdCaseDefinitionKey(String caseDefinitionKey);
 
-    void deleteAllByIdDocumentDefinitionName(String documentDefinitionName);
+    void deleteAllByIdCaseDefinitionKey(String caseDefinitionKey);
 
-    static Specification<SearchField> byIdDocumentDefinitionName(String documentDefinitionName) {
-        return new Specification<SearchField>() {
-            @Override
-            public Predicate toPredicate(Root<SearchField> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-                return criteriaBuilder.equal(root.get("id").get("documentDefinitionName"), documentDefinitionName);
-            }
-        };
+    static Specification<SearchField> byIdCaseDefinitionKey(String caseDefinitionKey) {
+        return (root, query, criteriaBuilder) ->
+            criteriaBuilder.equal(root.get("id").get("caseDefinitionKey"), caseDefinitionKey);
     }
 }

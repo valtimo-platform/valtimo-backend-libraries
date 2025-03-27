@@ -16,8 +16,8 @@
 package com.ritense.processdocument.listener
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.service.CaseDefinitionService
+import com.ritense.case_.domain.definition.CaseDefinition
 import com.ritense.document.domain.Document
 import com.ritense.document.event.DocumentAssigneeChangedEvent
 import com.ritense.document.event.DocumentUnassignedEvent
@@ -42,11 +42,11 @@ class CaseAssigneeListener(
         val document: Document = runWithoutAuthorization {
             documentService.get(event.documentId.toString())
         }
-        val caseSettings: CaseDefinitionSettings = caseDefinitionService.getCaseSettings(
-            document.definitionId().name()
+        val caseDefinition: CaseDefinition = caseDefinitionService.getCaseDefinition(
+            document.definitionId().caseDefinitionId()
         )
 
-        if (caseSettings.canHaveAssignee && caseSettings.autoAssignTasks) {
+        if (caseDefinition.canHaveAssignee && caseDefinition.autoAssignTasks) {
             val assignee = userManagementService.findByUserIdentifier(document.assigneeId())
             val tasks = runWithoutAuthorization {
                 camundaTaskService.findTasks(
@@ -74,11 +74,11 @@ class CaseAssigneeListener(
         val document: Document = runWithoutAuthorization {
             documentService.get(event.documentId.toString())
         }
-        val caseSettings: CaseDefinitionSettings = caseDefinitionService.getCaseSettings(
-            document.definitionId().name()
+        val caseDefinition: CaseDefinition = caseDefinitionService.getCaseDefinition(
+            document.definitionId().caseDefinitionId()
         )
 
-        if (caseSettings.canHaveAssignee && caseSettings.autoAssignTasks) {
+        if (caseDefinition.canHaveAssignee && caseDefinition.autoAssignTasks) {
             val tasks = runWithoutAuthorization {
                 camundaTaskService.findTasks(
                     byProcessInstanceBusinessKey(document.id().toString())

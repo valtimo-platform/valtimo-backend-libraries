@@ -19,7 +19,6 @@ package com.ritense.form.autoconfigure;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.service.DocumentService;
-import com.ritense.form.autodeployment.FormApplicationReadyEventListener;
 import com.ritense.form.autodeployment.FormDefinitionDeploymentService;
 import com.ritense.form.domain.FormSpringContextHelper;
 import com.ritense.form.mapper.FormProcessLinkMapper;
@@ -35,7 +34,7 @@ import com.ritense.form.web.rest.FormFileResource;
 import com.ritense.form.web.rest.FormManagementResource;
 import com.ritense.form.web.rest.impl.FormIoFormDefinitionResource;
 import com.ritense.form.web.rest.impl.FormIoFormFileResource;
-import com.ritense.form.web.rest.impl.FormIoFormManagementResource;
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
@@ -101,12 +100,6 @@ public class FormAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(FormApplicationReadyEventListener.class)
-    public FormApplicationReadyEventListener formApplicationReadyEventListener(FormDefinitionDeploymentService formDefinitionDeploymentService) {
-        return new FormApplicationReadyEventListener(formDefinitionDeploymentService);
-    }
-
-    @Bean
     @ConditionalOnBean(ResourceService.class)
     @ConditionalOnMissingBean(FormFileResource.class)
     public FormIoFormFileResource formFileResource(ResourceService resourceService) {
@@ -115,8 +108,8 @@ public class FormAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(FormManagementResource.class)
-    public FormIoFormManagementResource formManagementResource(FormDefinitionService formDefinitionService) {
-        return new FormIoFormManagementResource(formDefinitionService);
+    public FormManagementResource formManagementResource(FormDefinitionService formDefinitionService) {
+        return new FormManagementResource(formDefinitionService);
     }
 
     @Bean
@@ -135,9 +128,10 @@ public class FormAutoConfiguration {
     @ConditionalOnMissingBean(FormProcessLinkMapper.class)
     public FormProcessLinkMapper formProcessLinkMapper(
         final ObjectMapper objectMapper,
-        final FormDefinitionService formDefinitionService
+        final FormDefinitionService formDefinitionService,
+        final ProcessDefinitionCaseDefinitionService processDefinitionCaseDefinitionService
     ) {
-        return new FormProcessLinkMapper(objectMapper, formDefinitionService);
+        return new FormProcessLinkMapper(objectMapper, formDefinitionService, processDefinitionCaseDefinitionService);
     }
 
     @Bean

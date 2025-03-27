@@ -38,9 +38,7 @@ dependencies {
     implementation project(":contract")
     implementation project(":exporter")
     implementation project(":importer")
-    implementation project(":plugin")
     implementation project(":web")
-    implementation project(":zgw")
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter-webflux"

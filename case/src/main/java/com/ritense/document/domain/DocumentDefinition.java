@@ -19,6 +19,7 @@ package com.ritense.document.domain;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.document.domain.validation.DocumentContentValidationResult;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import java.time.temporal.Temporal;
 
 public interface DocumentDefinition {
@@ -40,7 +41,7 @@ public interface DocumentDefinition {
         String name();
 
         @JsonProperty
-        long version();
+        CaseDefinitionId caseDefinitionId();
 
     }
 

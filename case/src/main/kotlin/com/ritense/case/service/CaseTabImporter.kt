@@ -16,31 +16,65 @@
 
 package com.ritense.case.service
 
-import com.ritense.case.deployment.CaseTabDeploymentService
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.case.deployment.CaseTabDto
+import com.ritense.case.domain.CaseTab
+import com.ritense.case.domain.CaseTabId
+import com.ritense.case.domain.CaseTabType
+import com.ritense.case.repository.CaseTabRepository
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_TAB
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
-import com.ritense.importer.ValtimoImportTypes.Companion.FORM
-import com.ritense.valtimo.changelog.service.ChangelogDeployer
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 class CaseTabImporter(
-    private val caseTabDeploymentService: CaseTabDeploymentService,
-    private val changelogDeployer: ChangelogDeployer
+    private val objectMapper: ObjectMapper,
+    private val caseTabRepository: CaseTabRepository,
 ) : Importer {
     override fun type() = CASE_TAB
 
-    override fun dependsOn() = setOf(DOCUMENT_DEFINITION, FORM)
+    override fun dependsOn() = setOf(DOCUMENT_DEFINITION)
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
-        changelogDeployer.deploy(caseTabDeploymentService, request.fileName, request.content.toString(Charsets.UTF_8))
+        deploy(request.content.toString(Charsets.UTF_8), request.caseDefinitionId!!)
+    }
+
+    private fun deploy(fileContent: String, caseDefinitionId: CaseDefinitionId) {
+        val tabs = try {
+            objectMapper.readValue(fileContent, object : TypeReference<List<CaseTabDto>>() {})
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Failed to parse file content as valid case widget tabs: ${e.message}", e)
+        }
+
+        val toSave = tabs.mapIndexed { index, tab ->
+            CaseTab(
+                id = CaseTabId(caseDefinitionId, tab.key),
+                name = tab.name,
+                tabOrder = index,
+                type = tab.type,
+                contentKey = tab.contentKey,
+                showTasks = true // TODO: expand import DTO to allow showTasks to be configured
+            )
+        }
+
+        caseTabRepository.saveAll(toSave)
     }
 
     private companion object {
-        val FILENAME_REGEX = """config/case-tabs/([^/]+)\.case-tabs\.json""".toRegex()
+        private val FILENAME_REGEX = """/case/tab/([^/]+)\.case-tabs\.json""".toRegex()
+
+        private val STANDARD_CASE_TABS = listOf(
+            CaseTabDto("summary", null, CaseTabType.STANDARD, "summary"),
+            CaseTabDto("progress", null, CaseTabType.STANDARD, "progress"),
+            CaseTabDto("audit", null, CaseTabType.STANDARD, "audit"),
+            CaseTabDto("documents", null, CaseTabType.STANDARD, "documents"),
+            CaseTabDto("notes", null, CaseTabType.STANDARD, "notes")
+        )
     }
 }

@@ -29,7 +29,7 @@ data class InternalCaseStatusResponseDto(
 ) {
     constructor(internalCaseStatus: InternalCaseStatus) : this(
         internalCaseStatus.id.key,
-        internalCaseStatus.id.caseDefinitionName,
+        internalCaseStatus.id.caseDefinitionKey,
         internalCaseStatus.title,
         internalCaseStatus.visibleInCaseListByDefault,
         internalCaseStatus.order,

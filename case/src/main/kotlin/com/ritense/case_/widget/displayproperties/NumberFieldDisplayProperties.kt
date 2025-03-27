@@ -20,5 +20,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 
 @JsonTypeName("number")
 data class NumberFieldDisplayProperties(
-    val digitsInfo: String? = null
+    val digitsInfo: String? = null,
+    override val hideWhenEmpty: Boolean? = false
 ) : FieldDisplayProperties

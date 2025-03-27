@@ -26,6 +26,8 @@ data class URLProcessLinkResponseDto(
     override val processDefinitionId: String,
     override val activityId: String,
     override val activityType: ActivityTypeWithEventName,
-    override val processLinkType: String = PROCESS_LINK_TYPE_URL,
     val url: String
-) : ProcessLinkResponseDto
+) : ProcessLinkResponseDto {
+    override val processLinkType: String
+        get() = PROCESS_LINK_TYPE_URL
+}

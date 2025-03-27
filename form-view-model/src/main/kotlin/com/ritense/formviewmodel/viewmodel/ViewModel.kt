@@ -16,16 +16,30 @@
 
 package com.ritense.formviewmodel.viewmodel
 
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.valtimo.camunda.domain.CamundaTask
 
 interface ViewModel {
 
+    @Deprecated("Deprecated since 12.6.0", replaceWith = ReplaceWith("update(task, page, document)"))
     fun update(task: CamundaTask? = null): ViewModel {
         return this
     }
 
-    fun update(task: CamundaTask? = null, page: Int?): ViewModel {
-        return this
+    @Deprecated("Deprecated since 12.6.0", replaceWith = ReplaceWith("update(task, page, document)"))
+    fun update(
+        task: CamundaTask? = null,
+        page: Int?
+    ): ViewModel {
+        return update(task)
+    }
+
+    fun update(
+        task: CamundaTask? = null,
+        page: Int?,
+        document: JsonSchemaDocument? = null
+    ): ViewModel {
+        return update(task, page)
     }
 
 }

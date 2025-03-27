@@ -33,6 +33,7 @@ import com.ritense.form.BaseTest
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.form.FormFieldDataResolver
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.json.patch.operation.AddOperation
@@ -335,7 +336,7 @@ class PrefillFormServiceTest : BaseTest() {
     private fun document(): JsonSchemaDocument {
         val schema = JsonSchemaDocumentDefinition(
             JsonSchemaDocumentDefinitionId.existingId(
-                "test", 1L
+                "test", CaseDefinitionId.of("person", "1.0.0"),
             ),
             JsonSchema.fromString("""
                 {

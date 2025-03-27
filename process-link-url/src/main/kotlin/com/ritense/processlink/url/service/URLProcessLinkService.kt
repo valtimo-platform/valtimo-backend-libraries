@@ -25,7 +25,7 @@ import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.processdocument.domain.ProcessDocumentDefinition
-import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey
+import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionId
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndStartProcessRequest
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
@@ -112,14 +112,15 @@ class URLProcessLinkService(
         processDefinition: CamundaProcessDefinition,
         document: Document?
     ): ProcessDocumentDefinition {
-        val processDefinitionKey = CamundaProcessDefinitionKey(processDefinition.key)
+        val processDefinitionKey =
+            CamundaProcessDefinitionId(processDefinition.key)
         return AuthorizationContext.runWithoutAuthorization {
             if (document == null) {
                 processDocumentAssociationService.getProcessDocumentDefinition(processDefinitionKey)
             } else {
                 processDocumentAssociationService.getProcessDocumentDefinition(
                     processDefinitionKey,
-                    document.definitionId().version()
+                    null // TODO: Fix this
                 )
             }
         }

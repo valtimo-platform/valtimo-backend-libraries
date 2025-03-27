@@ -16,6 +16,8 @@
 
 package com.ritense.valtimo.contract.authorization
 
+import PermissionConditionKey
+
 object CurrentUserExpressionHandler {
 
     fun <V> resolveValue(value: V?): Any? {

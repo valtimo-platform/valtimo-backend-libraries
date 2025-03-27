@@ -18,10 +18,38 @@ package com.ritense.case_.repository
 
 import com.ritense.case_.domain.definition.CaseDefinition
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import org.semver4j.Semver
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import org.springframework.data.jpa.repository.Query
 
 interface CaseDefinitionRepository
     : JpaRepository<CaseDefinition, CaseDefinitionId>, JpaSpecificationExecutor<CaseDefinition> {
     fun findFirstByIdKeyOrderByIdVersionTagDesc(key: String): CaseDefinition?
+
+    @Query(value = "" +
+        "SELECT cd.* " +
+        "FROM case_definition cd " +
+        "INNER JOIN ( " +
+        "    SELECT MAX(case_definition_version_tag) AS case_definition_version_tag, " +
+        "           case_definition_key " +
+        "    FROM case_definition " +
+        "    GROUP BY case_definition_key " +
+        ") as cd2 ON cd2.case_definition_key = cd.case_definition_key " +
+        "AND cd2.case_definition_version_tag = cd.case_definition_version_tag " +
+        "ORDER BY 1 ",
+        countQuery = "" +
+            "SELECT COUNT(DISTINCT case_definition.case_definition_key)" +
+            "FROM case_definition",
+        nativeQuery = true)
+    fun findAllLatestCaseDefinitions(pageable: Pageable): Page<CaseDefinition>
+
+    @Query(value = "" +
+        "SELECT c.id.versionTag " +
+        "FROM CaseDefinition c " +
+        "WHERE c.id.key = :key " +
+        "ORDER BY c.id.versionTag DESC")
+    fun findVersionsForCaseDefinitionKey(key: String): List<Semver>
 }
