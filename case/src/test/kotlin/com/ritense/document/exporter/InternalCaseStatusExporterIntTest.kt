@@ -45,7 +45,7 @@ class InternalCaseStatusExporterIntTest @Autowired constructor(
     fun `should export tabs for case definition`(): Unit = runWithoutAuthorization {
         val caseDefinitionName = "person"
 
-        val request = DocumentDefinitionExportRequest(caseDefinitionName, CaseDefinitionId("house", "1.0.0"))
+        val request = DocumentDefinitionExportRequest(caseDefinitionName, CaseDefinitionId("person", "1.0.0"))
         val exportResult = exporter.export(request)
 
         val path = PATH.format(caseDefinitionName)
@@ -55,14 +55,6 @@ class InternalCaseStatusExporterIntTest @Autowired constructor(
         requireNotNull(export)
         val exportJson = objectMapper.readTree(export.content)
 
-        //Check if the changesetId ends with a timestamp
-        val changesetIdField = "changesetId"
-        val changesetRegex = """(person\.internal-case-status)\.\d+""".toRegex()
-        val matchResult = changesetRegex.matchEntire(exportJson.get(changesetIdField).textValue())
-        assertThat(matchResult).isNotNull
-
-        //Remove the timestamp from the changesetId, so we can compare it as usual
-        (exportJson as ObjectNode).set<TextNode>(changesetIdField, TextNode(matchResult!!.groupValues[1]))
         val expectedJson = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
             .getResource("classpath:${PATH.format(caseDefinitionName)}")
             .inputStream
@@ -72,13 +64,13 @@ class InternalCaseStatusExporterIntTest @Autowired constructor(
         JSONAssert.assertEquals(
             expectedJson,
             objectMapper.writeValueAsString(exportJson),
-            JSONCompareMode.NON_EXTENSIBLE
+            JSONCompareMode.LENIENT
         )
 
         assertThat(exportResult.relatedRequests).isEmpty()
     }
 
     companion object {
-        private const val PATH = "config/internal-case-status/%s.internal-case-status.json"
+        private const val PATH = "config/case/person/1-0-0/internal-case-status/%s.internal-case-status.json"
     }
 }

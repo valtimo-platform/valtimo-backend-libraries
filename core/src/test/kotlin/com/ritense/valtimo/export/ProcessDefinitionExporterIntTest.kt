@@ -23,6 +23,7 @@ import com.ritense.valtimo.BaseIntegrationTest
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersion
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.model.bpmn.Bpmn
@@ -35,7 +36,7 @@ import java.io.ByteArrayInputStream
 @Transactional(readOnly = true)
 class ProcessDefinitionExporterIntTest @Autowired constructor(
     private val repositoryService: RepositoryService,
-    private val camundaRepositoryService:CamundaRepositoryService,
+    private val camundaRepositoryService: CamundaRepositoryService,
     private val processDefinitionExporter: ProcessDefinitionExporter
 ) : BaseIntegrationTest() {
 
@@ -43,7 +44,9 @@ class ProcessDefinitionExporterIntTest @Autowired constructor(
     fun `should export process definition with DMN reference`(): Unit = runWithoutAuthorization {
         val processDefinitionKey = "dmn-sample"
         val processDefinitionId = getProcessDefinitionId(processDefinitionKey)
-        val result = processDefinitionExporter.export(ProcessDefinitionExportRequest(processDefinitionId))
+        val caseDefinitionId = CaseDefinitionId("dmn-sample", "1.0.0")
+        val result =
+            processDefinitionExporter.export(ProcessDefinitionExportRequest(processDefinitionId, caseDefinitionId))
 
         assertThat(result.exportFiles).isNotEmpty()
 
@@ -62,7 +65,9 @@ class ProcessDefinitionExporterIntTest @Autowired constructor(
         )
 
         assertThat(result.relatedRequests).contains(
-            ProcessDefinitionExportRequest(getProcessDefinitionId("test-process"))
+            ProcessDefinitionExportRequest(
+                getProcessDefinitionId("test-process"), caseDefinitionId
+            )
         )
     }
 
@@ -70,7 +75,8 @@ class ProcessDefinitionExporterIntTest @Autowired constructor(
     fun `should export process definition without DMN reference`(): Unit = runWithoutAuthorization {
         val processDefinitionKey = "test-process"
         val processDefinitionId = getProcessDefinitionId(processDefinitionKey)
-        val result = processDefinitionExporter.export(ProcessDefinitionExportRequest(processDefinitionId))
+        val caseDefinitionId = CaseDefinitionId("test-process", "1.0.0")
+        val result = processDefinitionExporter.export(ProcessDefinitionExportRequest(processDefinitionId, caseDefinitionId))
 
         assertThat(result.exportFiles).isNotEmpty()
 
@@ -88,25 +94,28 @@ class ProcessDefinitionExporterIntTest @Autowired constructor(
     }
 
     @Test
-    fun `should throw error when process definition contains an invalid DMN reference`(): Unit = runWithoutAuthorization {
-        val processDefinitionKey = "invalid-dmn-ref"
-        val processDefinitionId = getProcessDefinitionId(processDefinitionKey)
-        val exception = assertThrows<IllegalStateException> {
-            processDefinitionExporter.export(ProcessDefinitionExportRequest(processDefinitionId))
-        }
+    fun `should throw error when process definition contains an invalid DMN reference`(): Unit =
+        runWithoutAuthorization {
+            val processDefinitionKey = "invalid-dmn-ref"
+            val processDefinitionId = getProcessDefinitionId(processDefinitionKey)
+            val caseDefinitionId = CaseDefinitionId("invalid-dmn-ref", "1.0.0")
+            val exception = assertThrows<IllegalStateException> {
+                processDefinitionExporter.export(ProcessDefinitionExportRequest(processDefinitionId, caseDefinitionId))
+            }
 
-        assertThat(exception.message).isEqualTo("Decision definition with reference 'invalidDmnRef' could not be found!")
-    }
+            assertThat(exception.message).isEqualTo("Decision definition with reference 'invalidDmnRef' could not be found!")
+        }
 
     fun getProcessDefinitionId(processDefinitionKey: String): String {
         return requireNotNull(
             camundaRepositoryService.findProcessDefinition(
                 byKey(processDefinitionKey)
-                    .and(byLatestVersion()))
+                    .and(byLatestVersion())
+            )
         ).id
     }
 
-    fun getDecisionDefinitionId(decisionDefinitionKey:String): String {
+    fun getDecisionDefinitionId(decisionDefinitionKey: String): String {
         return repositoryService.createDecisionDefinitionQuery()
             .decisionDefinitionKey(decisionDefinitionKey)
             .latestVersion()

@@ -40,7 +40,7 @@ class JsonSchemaDocumentTest extends BaseTest {
     @Test
     void shouldCreateDocumentWithEmptyJsonContent() {
         final var content = new JsonDocumentContent("{}");
-        final var createResult = createDocument(definitionOf("person"), content);
+        final var createResult = createDocument(definitionOfForUnitTests("person"), content);
 
         assertThat(createResult.errors()).isEmpty();
         assertThat(createResult.resultingDocument()).isPresent();
@@ -49,7 +49,7 @@ class JsonSchemaDocumentTest extends BaseTest {
     @Test
     void shouldReturnNoAdditionalPropertyAllowedValidationError() {
         final var content = new JsonDocumentContent("{\"id\": \"123-123\"}");
-        final var createResult = createDocument(definitionOf("additional-property-example"), content);
+        final var createResult = createDocument(definitionOfForUnitTests("additional-property-example"), content);
 
         assertThat(createResult.errors()).hasSize(1);
         assertThat(createResult.errors()).extracting("message").contains("#: extraneous key [id] is not permitted");
@@ -59,7 +59,7 @@ class JsonSchemaDocumentTest extends BaseTest {
     @Test
     void shouldCreateDocumentWithMatchingPropertyOnly() {
         final var content = new JsonDocumentContent("{\"firstname\": \"aName\"}");
-        final var createResult = createDocument(definitionOf("additional-property-example"), content);
+        final var createResult = createDocument(definitionOfForUnitTests("additional-property-example"), content);
 
         assertThat(createResult.errors()).isEmpty();
         assertThat(createResult.resultingDocument()).isPresent();
@@ -75,7 +75,7 @@ class JsonSchemaDocumentTest extends BaseTest {
             "\"city\": \"Amsterdam\", " +
             "\"province\": \"Noord-holland\"} }"
         );
-        final var createResult = createDocument(definitionOf("combined-schema-additional-property-example"), content);
+        final var createResult = createDocument(definitionOfForUnitTests("combined-schema-additional-property-example"), content);
 
         assertThat(createResult.errors()).hasSize(1);
         assertThat(createResult.errors()).extracting("message").contains("#/address: extraneous key [additionalProp] is not permitted");
@@ -85,7 +85,7 @@ class JsonSchemaDocumentTest extends BaseTest {
     @Test
     void shouldCreateDocumentWithMatchingPropertiesOnlyWithCombinedSchema() {
         final var content = new JsonDocumentContent("{\"address\": {\"streetName\": \"Straatnaam\", \"number\": \"1F\", \"city\": \"Amsterdam\", \"province\": \"Noord-holland\"} }");
-        final var createResult = createDocument(definitionOf("combined-schema-additional-property-example"), content);
+        final var createResult = createDocument(definitionOfForUnitTests("combined-schema-additional-property-example"), content);
 
         assertThat(createResult.errors()).isEmpty();
         assertThat(createResult.resultingDocument()).isPresent();
@@ -94,7 +94,7 @@ class JsonSchemaDocumentTest extends BaseTest {
     @Test
     void shouldReturnReadOnlyValidationError() {
         final var content = new JsonDocumentContent("{\"firstName\": \"changed\"}");
-        final var createResult = createDocument(definitionOf("readonly-example"), content);
+        final var createResult = createDocument(definitionOfForUnitTests("readonly-example"), content);
 
         assertThat(createResult.errors()).hasSize(1);
         assertThat(createResult.errors()).extracting("message").contains("#/firstName: value is read-only");
@@ -104,7 +104,7 @@ class JsonSchemaDocumentTest extends BaseTest {
     @Test
     void shouldReturnUuidValidationError() {
         final var content = new JsonDocumentContent("{\"id\": \"123-123\"}");
-        final var createResult = createDocument(definitionOf("uuid-example"), content);
+        final var createResult = createDocument(definitionOfForUnitTests("uuid-example"), content);
 
         assertThat(createResult.errors()).hasSize(1);
         assertThat(createResult.errors()).extracting("message").contains("#/id: invalid uuid [123-123]");
@@ -114,7 +114,7 @@ class JsonSchemaDocumentTest extends BaseTest {
     @Test
     void shouldReturnValidUuidDocument() {
         final var content = new JsonDocumentContent("{\"id\": \"" + UUID.randomUUID() + "\"}");
-        final var createResult = createDocument(definitionOf("uuid-example"), content);
+        final var createResult = createDocument(definitionOfForUnitTests("uuid-example"), content);
 
         assertThat(createResult.errors()).isEmpty();
         assertThat(createResult.resultingDocument()).isPresent();
@@ -124,7 +124,7 @@ class JsonSchemaDocumentTest extends BaseTest {
     void shouldReturnDocumentWithDefaultValue() {
         final var content = new JsonDocumentContent("{\"firstName\": \"Jan\"}");
 
-        final var createResult = createDocument(definitionOf("defaults-example"), content);
+        final var createResult = createDocument(definitionOfForUnitTests("defaults-example"), content);
 
         assertThat(createResult.errors()).isEmpty();
         assertThat(createResult.resultingDocument()).isPresent();
@@ -136,7 +136,7 @@ class JsonSchemaDocumentTest extends BaseTest {
     @Test
     void shouldReturnMaxLengthValidationError() {
         final var content = new JsonDocumentContent("{\"firstName\": \"Joeasdasdsadsadasdasdasdasdasdasdasd\"}");
-        final var createResult = createDocument(definitionOf("person"), content);
+        final var createResult = createDocument(definitionOfForUnitTests("person"), content);
 
         assertThat(createResult.errors()).hasSize(1);
         assertThat(createResult.resultingDocument()).isNotPresent();
@@ -145,7 +145,7 @@ class JsonSchemaDocumentTest extends BaseTest {
     @Test
     void shouldReturnDocumentWithIntegerValue() {
         final var content = new JsonDocumentContent("{\"age\": 40 }");
-        final var createResult = createDocument(definitionOf("person"), content);
+        final var createResult = createDocument(definitionOfForUnitTests("person"), content);
 
         assertThat(createResult.errors()).isEmpty();
         assertThat(createResult.resultingDocument()).isPresent();
@@ -157,7 +157,7 @@ class JsonSchemaDocumentTest extends BaseTest {
     @Test
     void shouldReturnDocumentWithDateValue() {
         final var content = new JsonDocumentContent("{\"birthday\": \"1982-01-01\" }");
-        final var createResult = createDocument(definitionOf("person"), content);
+        final var createResult = createDocument(definitionOfForUnitTests("person"), content);
 
         assertThat(createResult.errors()).isEmpty();
         assertThat(createResult.resultingDocument()).isPresent();
@@ -169,7 +169,7 @@ class JsonSchemaDocumentTest extends BaseTest {
     @Test
     void shouldReturnDocumentWithBooleanValue() {
         final var content = new JsonDocumentContent("{\"is-cool\": true }");
-        final var createResult = createDocument(definitionOf("person"), content);
+        final var createResult = createDocument(definitionOfForUnitTests("person"), content);
 
         assertThat(createResult.errors()).isEmpty();
         assertThat(createResult.resultingDocument()).isPresent();
@@ -181,7 +181,7 @@ class JsonSchemaDocumentTest extends BaseTest {
     @Test
     void shouldCreateDocument() {
         final var content = new JsonDocumentContent("{\"firstName\": \"John\"}");
-        final var createResult = createDocument(definitionOf("person"), content);
+        final var createResult = createDocument(definitionOfForUnitTests("person"), content);
 
         assertThat(createResult.errors()).hasSize(0);
         assertThat(createResult.resultingDocument()).isPresent();
@@ -189,7 +189,7 @@ class JsonSchemaDocumentTest extends BaseTest {
 
     @Test
     void shouldModifyDocument() {
-        var definition = definitionOf("person");
+        var definition = definitionOfForUnitTests("person");
 
         final var content = new JsonDocumentContent("{\"firstName\": \"John\"}");
         final var createResult = createDocument(definition, content);
@@ -207,7 +207,7 @@ class JsonSchemaDocumentTest extends BaseTest {
 
     @Test
     void shouldModifyDocumentPartial() {
-        var definition = definitionOf("person");
+        var definition = definitionOfForUnitTests("person");
 
         final var content = new JsonDocumentContent("{\"firstName\": \"John\", \"lastName\": \"Doe\"}");
         final var createResult = createDocument(definition, content);
@@ -227,9 +227,9 @@ class JsonSchemaDocumentTest extends BaseTest {
 
     @Test
     void shouldAddArrayItem() {
-        var definition = definitionOf("person");
+        var definition = definitionOfForUnitTests("person");
         final var content = new JsonDocumentContent("{\"files\": [{\"id\" : \"1\"}]}");
-        final var createResult = createDocument(definitionOf("array-example"), content);
+        final var createResult = createDocument(definitionOfForUnitTests("array-example"), content);
 
         final var document = createResult.resultingDocument().orElseThrow();
 
@@ -251,7 +251,7 @@ class JsonSchemaDocumentTest extends BaseTest {
 
     @Test
     void shouldEmptyArrayItems() {
-        var definition = definitionOf("array-example");
+        var definition = definitionOfForUnitTests("array-example");
         final var content = new JsonDocumentContent("{\"files\": [{\"id\" : \"1\"}, {\"id\" : \"2\"}, {\"id\" : \"3\"}]}");
         final var createResult = createDocument(definition, content);
 
@@ -270,7 +270,7 @@ class JsonSchemaDocumentTest extends BaseTest {
 
     @Test
     void shouldEmptyAllArrayRefItems() {
-        var definition = definitionOf("array-example");
+        var definition = definitionOfForUnitTests("array-example");
         final var content = new JsonDocumentContent("{\"files\" : [{\"id\" : \"1\"}, {\"id\" : \"2\"}, {\"id\" : \"3\"}]}");
         final var createResult = createDocument(definition, content);
 
@@ -289,7 +289,7 @@ class JsonSchemaDocumentTest extends BaseTest {
 
     @Test
     void shouldNotAllowAdditionalItemInArray() {
-        var definition = definitionOf("array-example");
+        var definition = definitionOfForUnitTests("array-example");
         final var content = new JsonDocumentContent("{\"files\" : [{\"id\" : \"1\"}, {\"id\" : \"2\"}, {\"id\" : \"3\"}]}");
         final var createResult = createDocument(definition, content);
 
@@ -304,7 +304,7 @@ class JsonSchemaDocumentTest extends BaseTest {
     @Test
     void shouldReturnNextEnumValueConditionally() {
         final var content = new JsonDocumentContent("{\"status\": \"1\"}");
-        final var createResult = createDocument(definitionOf("conditional-example"), content);
+        final var createResult = createDocument(definitionOfForUnitTests("conditional-example"), content);
 
         assertThat(createResult.errors()).isEmpty();
         assertThat(createResult.resultingDocument()).isPresent();
@@ -313,7 +313,7 @@ class JsonSchemaDocumentTest extends BaseTest {
 
     @Test
     void shouldNotAllowAdditionalItemInReferencedArray() {
-        var definition = definitionOf("referenced-array");
+        var definition = definitionOfForUnitTests("referenced-array");
         final var content = new JsonDocumentContent("{\"addresses\" : [{\"streetName\" : \"Funenpark\"}]}");
         final var createResult = createDocument(definition, content);
 

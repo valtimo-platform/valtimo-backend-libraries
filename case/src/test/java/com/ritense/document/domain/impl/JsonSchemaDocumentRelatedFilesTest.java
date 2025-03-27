@@ -28,7 +28,7 @@ public class JsonSchemaDocumentRelatedFilesTest extends BaseTest {
 
     @BeforeEach
     public void setUp() {
-        definition = definitionOf("person");
+        definition = definitionOfForUnitTests("person");
     }
 
     @Test

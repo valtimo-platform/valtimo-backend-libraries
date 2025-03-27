@@ -27,7 +27,6 @@ import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_TAB
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
-import com.ritense.importer.ValtimoImportTypes.Companion.FORM
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.springframework.transaction.annotation.Transactional
 
@@ -38,7 +37,7 @@ class CaseTabImporter(
 ) : Importer {
     override fun type() = CASE_TAB
 
-    override fun dependsOn() = setOf(DOCUMENT_DEFINITION, FORM)
+    override fun dependsOn() = setOf(DOCUMENT_DEFINITION)
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
