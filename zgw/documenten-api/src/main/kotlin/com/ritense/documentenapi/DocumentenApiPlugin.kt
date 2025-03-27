@@ -381,7 +381,7 @@ class DocumentenApiPlugin(
 
         val bestandsdelenRequest = BestandsdelenRequest(
             inhoud = inhoudAsInputStream,
-            lock = documentCreateResult.getLockFromBestandsdelen()
+            lock = documentCreateResult.getLockOrEmpty()
         )
 
         client.storeDocumentInParts(
@@ -391,7 +391,7 @@ class DocumentenApiPlugin(
             documentCreateResult,
         )
 
-        val documentLock = DocumentLock(documentCreateResult.getLockFromBestandsdelen())
+        val documentLock = DocumentLock(documentCreateResult.getLockOrEmpty())
         client.unlockInformatieObject(
             authenticationPluginConfiguration,
             URI.create(documentCreateResult.url),
