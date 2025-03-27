@@ -7,7 +7,7 @@
         "address": {
             "allOf": [
                 {
-                    "$ref": "address.schema.json#/definitions/streetName"
+                    "$ref": "/case/referenced/1-0-0/document/definition/reference/address.schema.json#/definitions/streetName"
                 }
             ]
         }

@@ -1,51 +1,57 @@
 [
     {
-        "type": "fields",
-        "key": "test-widget-2",
-        "title": "Widget 2",
-        "width": 2,
-        "highContrast": true,
-        "actions": [
+        "key": "widget-tab",
+        "widgets": [
             {
-                "name": "Edit",
-                "processDefinitionKey": "edit-process"
-            }
-        ],
-        "properties": {
-            "columns": [
-                [
+                "type": "fields",
+                "key": "test-widget-2",
+                "title": "Widget 2",
+                "width": 2,
+                "highContrast": true,
+                "actions": [
                     {
-                        "key": "someKey",
-                        "title": "Some key",
-                        "value": "test:/myKey"
-                    }
-                ]
-            ]
-        }
-    },
-    {
-        "type": "fields",
-        "key": "test-widget-1",
-        "title": "Widget 1",
-        "width": 1,
-        "highContrast": false,
-        "properties": {
-            "columns": [
-                [
-                    {
-                        "key": "someKey",
-                        "title": "Some key",
-                        "value": "test:/myKey"
+                        "name": "Edit",
+                        "processDefinitionKey": "edit-process"
                     }
                 ],
-                [
-                    {
-                        "key": "someKey2",
-                        "title": "Some key 2",
-                        "value": "test:/myKey2"
-                    }
-                ]
-            ]
-        }
+                "properties": {
+                    "columns": [
+                        [
+                            {
+                                "key": "someKey",
+                                "title": "Some key",
+                                "value": "test:/myKey"
+                            }
+                        ]
+                    ]
+                }
+            },
+            {
+                "type": "fields",
+                "key": "test-widget-1",
+                "title": "Widget 1",
+                "width": 1,
+                "highContrast": false,
+                "properties": {
+                    "columns": [
+                        [
+                            {
+                                "key": "someKey",
+                                "title": "Some key",
+                                "value": "test:/myKey"
+                            }
+                        ],
+                        [
+                            {
+                                "key": "someKey2",
+                                "title": "Some key 2",
+                                "value": "test:/myKey2"
+                            }
+                        ]
+                    ]
+                },
+                "actions": []
+            }
+        ]
     }
 ]

@@ -38,7 +38,7 @@ class CaseWidgetTabManagementResource(
     private val caseWidgetTabService: CaseWidgetTabService
 ) {
 
-    @GetMapping("/v1/case-definition/{caseDefinitionkey}/version/{caseDefinitionVersionTag}/widget-tab/{tabKey}")
+    @GetMapping("/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/widget-tab/{tabKey}")
     fun getCaseWidgetTab(
         @PathVariable caseDefinitionKey: String,
         @PathVariable caseDefinitionVersionTag: String,
@@ -50,9 +50,10 @@ class CaseWidgetTabManagementResource(
         return ResponseEntity.ofNullable(widgetTab)
     }
 
-    @PostMapping("/v1/case-definition/{caseDefinitionName}/widget-tab/{tabKey}")
+    @PostMapping("/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/widget-tab/{tabKey}")
     fun updateCaseWidgetTab(
-        @PathVariable caseDefinitionName: String,
+        @PathVariable caseDefinitionKey: String,
+        @PathVariable caseDefinitionVersionTag: String,
         @PathVariable tabKey: String,
         @Valid @RequestBody caseWidgetTabDto: CaseWidgetTabDto
     ): ResponseEntity<CaseWidgetTabDto> {

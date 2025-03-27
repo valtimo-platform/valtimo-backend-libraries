@@ -66,7 +66,7 @@ class CaseDefinitionExporterIntTest @Autowired constructor(
         requireNotNull(caseTabsExport)
         val exportJson = caseTabsExport.content.toString(Charsets.UTF_8)
         val expectedJson = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
-            .getResource("classpath:config/$caseDefinitionKey/1-2-3/case/definition/$caseDefinitionKey.json")
+            .getResource("classpath:config/case/$caseDefinitionKey/1-2-3/case/definition/$caseDefinitionKey.json")
             .inputStream
             .use { inputStream ->
                 StreamUtils.copyToString(inputStream, Charsets.UTF_8)

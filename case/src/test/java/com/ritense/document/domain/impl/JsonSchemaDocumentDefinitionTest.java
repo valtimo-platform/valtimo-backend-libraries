@@ -22,6 +22,7 @@ import static org.mockito.Mockito.mock;
 
 import com.ritense.document.TestHelper;
 import java.net.URI;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import org.everit.json.schema.ValidationException;
 import org.junit.jupiter.api.Test;
 

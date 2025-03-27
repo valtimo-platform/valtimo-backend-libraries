@@ -17,6 +17,7 @@
 package com.ritense.document.repository.impl.specification
 
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Root
@@ -42,19 +43,20 @@ class JsonSchemaDocumentDefinitionSpecificationHelper {
 
                 val sub = query.subquery(Long::class.java)
                 val subRoot = sub.from(JsonSchemaDocumentDefinition::class.java)
-                sub.select(cb.max(subRoot.get<Any>(ID).get(VERSION)))
+                sub.select(cb.max(subRoot.get<Any>(ID).get<CaseDefinitionId>(CASEDEFINITIONID).get(VERSION)))
                 sub.where(
                     cb.and(
                         cb.equal(subRoot.get<Any>(ID).get<String>(NAME), root.get<Any>(ID).get<String>(NAME)),
                     )
                 )
 
-                cb.equal(root.get<Any>(ID).get<Long>(VERSION), sub)
+                cb.equal(root.get<Any>(ID).get<CaseDefinitionId>(CASEDEFINITIONID).get<Long>(VERSION), sub)
             }
         }
 
         private const val ID: String = "id"
-        private const val VERSION: String = "version"
+        private const val CASEDEFINITIONID: String = "caseDefinitionId"
+        private const val VERSION: String = "versionTag"
         private const val NAME: String = "name"
     }
 }

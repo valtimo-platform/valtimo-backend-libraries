@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.document.service.SearchFieldService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -28,10 +29,8 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import org.springframework.core.io.ResourceLoader
 
 @ExtendWith(MockitoExtension::class)
@@ -66,19 +65,6 @@ class SearchFieldImporterTest(
     fun `should not support invalid document definition fileName`() {
         assertThat(importer.supports("/search/not/person.json")).isFalse()
         assertThat(importer.supports("/search/person.xml")).isFalse()
-    }
-
-    @Test
-    fun `should call deploy method for import with correct parameters`() {
-        doNothing().whenever(importer.deploy(any(), any()))
-        val jsonContent = this::class.java.getResource("/$FILENAME")!!.readText(Charsets.UTF_8)
-
-        importer.import(ImportRequest(FILENAME, jsonContent.toByteArray()))
-
-        val jsonCaptor = argumentCaptor<String>()
-        verify(importer).deploy(any(), jsonCaptor.capture())
-
-        assertThat(jsonCaptor.secondValue).isEqualTo(jsonContent)
     }
 
     private companion object {

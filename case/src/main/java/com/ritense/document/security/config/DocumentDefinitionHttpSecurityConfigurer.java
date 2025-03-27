@@ -48,7 +48,7 @@ public class DocumentDefinitionHttpSecurityConfigurer implements HttpSecurityCon
                     .hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "/api/management/v1/document-definition/{name}"))
                     .hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(GET, "/api/management/v1/document-definition/{name}/version/{version}"))
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/document-definition"))
                     .hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "/api/management/v1/document-definition/{name}/version"))
                     .hasAuthority(ADMIN)

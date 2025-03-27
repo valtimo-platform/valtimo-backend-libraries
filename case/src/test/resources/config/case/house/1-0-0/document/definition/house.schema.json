@@ -23,6 +23,10 @@
             "type": "string",
             "description": "Additional information on the user",
             "maxLength": 100
+        },
+        "loan-approved": {
+            "type": "boolean",
+            "description": "Was the loan for the house approved"
         }
     },
     "additionalProperties": false

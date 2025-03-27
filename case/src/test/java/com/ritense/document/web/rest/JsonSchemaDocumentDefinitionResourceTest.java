@@ -240,9 +240,9 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
         var caseDefinitionId = definition.getId().caseDefinitionId();
         when(documentDefinitionService.findByCaseDefinitionId(caseDefinitionId)).thenReturn(Optional.of(definition));
         mockMvc.perform(get(
-                "/api/management/v1/document-definition/{name}/version/{version}",
+                "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/document-definition",
                 caseDefinitionId.getKey(),
-                1
+                caseDefinitionId.getVersionTag().getVersion()
             ))
             .andDo(print())
             .andExpect(status().isOk())
@@ -255,9 +255,9 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
         var caseDefinitionId = definition.getId().caseDefinitionId();
         when(documentDefinitionService.findByCaseDefinitionId(caseDefinitionId)).thenReturn(Optional.empty());
         mockMvc.perform(get(
-                "/api/management/v1/document-definition/{name}/version/{version}",
+                "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/document-definition",
                 caseDefinitionId.getKey(),
-                1
+                caseDefinitionId.getVersionTag().getVersion()
             ))
             .andDo(print())
             .andExpect(status().isNotFound());

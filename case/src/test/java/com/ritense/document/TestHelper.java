@@ -21,7 +21,7 @@ import java.net.URI;
 public class TestHelper {
 
     public URI path(String name) {
-        return URI.create(String.format("config/document/definition/%s.json", name + ".schema"));
+        return URI.create(String.format("config/unit-test/document/definition/%s.json", name + ".schema"));
     }
 
 }

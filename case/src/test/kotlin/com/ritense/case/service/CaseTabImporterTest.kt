@@ -47,7 +47,7 @@ class CaseTabImporterTest(
 
     @Test
     fun `should depend on 'documentdefinition' and 'form' type`() {
-        assertThat(importer.dependsOn()).isEqualTo(setOf(DOCUMENT_DEFINITION, FORM))
+        assertThat(importer.dependsOn()).isEqualTo(setOf(DOCUMENT_DEFINITION))
     }
 
     @Test

@@ -133,17 +133,13 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
 
     @Override
     public ResponseEntity<? extends DocumentDefinition> getDocumentDefinitionVersion(
-        String name,
         String caseDefinitionKey,
-        String caseDefinitionVersionTag
+        String versionTag
     ) {
         return of(
             runWithoutAuthorization(
-                () -> documentDefinitionService.findBy(
-                    JsonSchemaDocumentDefinitionId.existingId(
-                        name,
-                        CaseDefinitionId.of(caseDefinitionKey, caseDefinitionVersionTag)
-                    )
+                () -> documentDefinitionService.findByCaseDefinitionId(
+                    CaseDefinitionId.of(caseDefinitionKey, versionTag)
                 )
             )
         );

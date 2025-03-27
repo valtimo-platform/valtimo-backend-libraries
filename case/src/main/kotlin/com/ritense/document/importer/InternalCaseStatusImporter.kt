@@ -40,8 +40,8 @@ class InternalCaseStatusImporter(
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
-        val deploymentDto = objectMapper.readValue<InternalCaseStatusDeploymentDto>(request.content)
-        deploy(request.caseDefinitionId!!.key, deploymentDto.internalCaseStatuses)
+        val internalCaseStatuses = objectMapper.readValue<List<InternalCaseStatusDto>>(request.content)
+        deploy(request.caseDefinitionId!!.key, internalCaseStatuses)
     }
 
     private fun deploy(caseDefinitionKey: String, internalCaseStatuses: List<InternalCaseStatusDto>) {
