@@ -26,10 +26,10 @@ import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.form.web.rest.dto.FormOption;
 import com.ritense.logging.LoggableResource;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,6 +84,13 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
         @LoggableResource("formDefinitionName") String name
     ) {
         return formDefinitionRepository.findByName(name);
+    }
+
+    public Optional<FormIoFormDefinition> getFormDefinitionByName(
+        @LoggableResource("formDefinitionName") String name,
+        @LoggableResource("caseDefinitionId") CaseDefinitionId caseDefinitionId
+    ) {
+        return formDefinitionRepository.findByNameAndCaseDefinitionId(name, caseDefinitionId);
     }
 
     @Override

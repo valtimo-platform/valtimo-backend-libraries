@@ -48,8 +48,8 @@ open class CaseAssigneeTaskCreatedListener(
 
         document?.run {
             val caseDefinition = runWithoutAuthorization {
-                caseDefinitionService.getLatestCaseDefinition(
-                    this.definitionId().name()
+                caseDefinitionService.getCaseDefinition(
+                    document.definitionId().caseDefinitionId()
                 )
             }
 

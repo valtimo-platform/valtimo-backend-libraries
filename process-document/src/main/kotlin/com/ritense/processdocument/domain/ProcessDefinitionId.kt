@@ -15,16 +15,38 @@
  */
 package com.ritense.processdocument.domain
 
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.JsonDeserializer
+import com.fasterxml.jackson.databind.JsonSerializer
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.ritense.valtimo.contract.utils.AssertionConcern
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
 
 @Embeddable
+@JsonSerialize(using = ProcessDefinitionIdSerializer::class)
+@JsonDeserialize(using = ProcessDefinitionIdDeserializer::class)
 data class ProcessDefinitionId(
     @Column(name = "process_definition_id", columnDefinition = "VARCHAR(255)")
     val id: String
 ) {
     init {
         AssertionConcern.assertArgumentLength(id, 255, "id max length is 255")
+    }
+}
+
+class ProcessDefinitionIdSerializer : JsonSerializer<ProcessDefinitionId>() {
+    override fun serialize(value: ProcessDefinitionId, gen: JsonGenerator, serializers: SerializerProvider) {
+        gen.writeString(value.id)
+    }
+}
+
+class ProcessDefinitionIdDeserializer : JsonDeserializer<ProcessDefinitionId>() {
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): ProcessDefinitionId {
+        return ProcessDefinitionId(p.valueAsString)
     }
 }

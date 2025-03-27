@@ -17,17 +17,29 @@ package com.ritense.processdocument.service
 
 import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.request.AuthorizationResourceContext
 import com.ritense.authorization.request.EntityAuthorizationRequest
+import com.ritense.authorization.request.RelatedEntityAuthorizationRequest
+import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.processdocument.domain.ProcessDefinitionCaseDefinition
 import com.ritense.processdocument.domain.ProcessDefinitionCaseDefinitionId
 import com.ritense.processdocument.domain.ProcessDefinitionId
 import com.ritense.processdocument.domain.ProcessDocumentDefinitionRequest
+import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.repository.ProcessDefinitionCaseDefinitionRepository
+import com.ritense.valtimo.camunda.authorization.CamundaExecutionActionProvider
+import com.ritense.valtimo.camunda.domain.CamundaExecution
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import org.camunda.bpm.engine.RuntimeService
+import java.util.UUID
 
 class ProcessDefinitionCaseDefinitionService(
     private val authorizationService: AuthorizationService,
-    private val processDefinitionCaseDefinitionRepository: ProcessDefinitionCaseDefinitionRepository
+    private val processDefinitionCaseDefinitionRepository: ProcessDefinitionCaseDefinitionRepository,
+    private val documentService: JsonSchemaDocumentService,
+    private val runtimeService: RuntimeService
 ) {
     fun findById(id: ProcessDefinitionCaseDefinitionId): ProcessDefinitionCaseDefinition? {
         return processDefinitionCaseDefinitionRepository.findById(id).orElse(null)
@@ -37,9 +49,67 @@ class ProcessDefinitionCaseDefinitionService(
         return processDefinitionCaseDefinitionRepository.findByIdProcessDefinitionId(processDefinitionId)
     }
 
-    fun findProcessDocumentDefinitions(caseDefinitionId: CaseDefinitionId): List<ProcessDefinitionCaseDefinition> {
+    fun findProcessDefinitionCaseDefinitions(caseDefinitionId: CaseDefinitionId): List<ProcessDefinitionCaseDefinition> {
         return processDefinitionCaseDefinitionRepository.findByIdCaseDefinitionId(caseDefinitionId)
     }
+
+    fun findProcessDefinitionCaseDefinition(camundaProcessInstanceId: CamundaProcessInstanceId): ProcessDefinitionCaseDefinition {
+        val processInstance = (runtimeService.createProcessInstanceQuery()
+            .processInstanceId(camundaProcessInstanceId.toString())
+            .singleResult()
+            ?: throw IllegalArgumentException("Process instance not found"))
+        return findByProcessDefinitionId(ProcessDefinitionId(processInstance.processDefinitionId))
+    }
+
+    fun findProcessDefinitionCaseDefinitions(
+        caseDefinitionId: CaseDefinitionId,
+        startableByUser: Boolean?,
+        canInitializeDocument: Boolean?
+    ): List<ProcessDefinitionCaseDefinition> {
+        val definitions = processDefinitionCaseDefinitionRepository.
+            findAll(caseDefinitionId, startableByUser, canInitializeDocument)
+
+        return definitions
+            .filter {
+                authorizationService.hasPermission(
+                    RelatedEntityAuthorizationRequest<CamundaExecution>(
+                        CamundaExecution::class.java,
+                        CamundaExecutionActionProvider.CREATE,
+                        CamundaProcessDefinition::class.java,
+                        it.id.processDefinitionId.id
+                    )
+                )
+            }
+    }
+
+    fun findProcessDefinitionCaseDefinitions(
+        documentId: UUID,
+        startableByUser: Boolean?,
+        canInitializeDocument: Boolean?
+    ): List<ProcessDefinitionCaseDefinition> {
+
+        val document = documentService.get(documentId.toString())
+        val definitions = processDefinitionCaseDefinitionRepository.
+        findAll(document.definitionId().caseDefinitionId(), startableByUser, canInitializeDocument)
+
+        return definitions
+            .filter {
+                authorizationService.hasPermission(
+                    RelatedEntityAuthorizationRequest<CamundaExecution>(
+                        CamundaExecution::class.java,
+                        CamundaExecutionActionProvider.CREATE,
+                        CamundaProcessDefinition::class.java,
+                        it.id.processDefinitionId.id
+                    ).withContext(
+                        AuthorizationResourceContext(
+                            JsonSchemaDocument::class.java,
+                            document
+                        )
+                    )
+                )
+            }
+    }
+
 
     fun deleteProcessDocumentDefinition(processDefinitionId: ProcessDefinitionId, caseDefinitionId: CaseDefinitionId) {
         denyAuthorization()

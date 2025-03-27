@@ -77,16 +77,11 @@ class CaseDefinitionService(
             ?: throw UnknownCaseDefinitionException(caseDefinitionId)
     }
 
-    fun getLatestCaseDefinition(caseDefinitionKey: String): CaseDefinition? {
-        return caseDefinitionRepository.findFirstByIdKeyOrderByIdVersionTagDesc(caseDefinitionKey)
-    }
-
     fun getCaseDefinitionVersions(caseDefinitionKey: String): List<String> {
         return caseDefinitionRepository.findVersionsForCaseDefinitionKey(caseDefinitionKey).map {
             it.toString()
         }
     }
-
 
     @Throws(UnknownDocumentDefinitionException::class)
     fun updateCaseSettings(caseDefinitionId: CaseDefinitionId, newSettings: CaseSettingsDto): CaseDefinition {
@@ -167,6 +162,10 @@ class CaseDefinitionService(
                 Action.deny()
             )
         )
+    }
+
+    internal fun getLatestCaseDefinition(caseDefinitionKey: String): CaseDefinition? {
+        return caseDefinitionRepository.findFirstByIdKeyOrderByIdVersionTagDesc(caseDefinitionKey)
     }
 
     @Throws(UnknownDocumentDefinitionException::class)

@@ -49,6 +49,7 @@ import com.ritense.case.web.rest.CaseTabManagementResource
 import com.ritense.case.web.rest.CaseTabResource
 import com.ritense.case.web.rest.TaskListResource
 import com.ritense.case_.repository.CaseDefinitionRepository
+import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentSearchService
 import com.ritense.document.service.DocumentService
@@ -89,9 +90,10 @@ class CaseAutoConfiguration {
     fun caseDefinitionResource(
         service: CaseDefinitionService,
         exportService: ExportService,
-        importService: ImportService
+        importService: ImportService,
+        activeCaseDefinitionService: ActiveCaseDefinitionService
     ): CaseDefinitionResource {
-        return CaseDefinitionResource(service, exportService, importService)
+        return CaseDefinitionResource(service, activeCaseDefinitionService, exportService, importService)
     }
 
     @Bean

@@ -36,7 +36,7 @@ class ProcessDocumentLinkExporter(
     override fun supports() = DocumentDefinitionExportRequest::class.java
 
     override fun export(request: DocumentDefinitionExportRequest): ExportResult {
-        val processDefinitions = processDefinitionCaseDefinitionService.findProcessDocumentDefinitions(
+        val processDefinitions = processDefinitionCaseDefinitionService.findProcessDefinitionCaseDefinitions(
             request.caseDefinitionId
         ).map { definition ->
             Pair(definition, camundaRepositoryService.findProcessDefinitionById(definition.id.processDefinitionId.toString())!!)

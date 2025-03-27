@@ -20,10 +20,10 @@ import com.ritense.form.domain.FormDefinition;
 import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.form.domain.request.ModifyFormDefinitionRequest;
 import com.ritense.form.web.rest.dto.FormOption;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -44,6 +44,8 @@ public interface FormDefinitionService {
     Optional<? extends FormDefinition> getFormDefinitionById(UUID id);
 
     Optional<? extends FormDefinition> getFormDefinitionByName(String name);
+
+    Optional<? extends FormDefinition> getFormDefinitionByName(String name, CaseDefinitionId caseDefinitionId);
 
     Optional<? extends FormDefinition> getFormDefinitionByNameIgnoringCase(String name);
 

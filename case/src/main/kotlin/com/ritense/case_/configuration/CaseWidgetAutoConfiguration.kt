@@ -18,6 +18,7 @@ package com.ritense.case_.configuration
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.case.repository.CaseTabRepository
+import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.service.CaseTabService
 import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 import com.ritense.case_.repository.CaseWidgetTabRepository
@@ -25,6 +26,7 @@ import com.ritense.case_.repository.CaseWidgetTabWidgetSpecificationFactory
 import com.ritense.case_.rest.CaseWidgetTabManagementResource
 import com.ritense.case_.rest.CaseWidgetTabResource
 import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
+import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.case_.service.CaseWidgetTabExporter
 import com.ritense.case_.service.CaseWidgetTabImporter
 import com.ritense.case_.service.CaseWidgetTabService
@@ -165,4 +167,10 @@ class CaseWidgetAutoConfiguration {
     @ConditionalOnMissingBean(CustomCaseWidgetMapper::class)
     @Bean
     fun customCaseWidgetMapper() = CustomCaseWidgetMapper()
+
+    @ConditionalOnMissingBean(ActiveCaseDefinitionService::class)
+    @Bean
+    fun activeCaseDefinitionService(
+        caseDefinitionService: CaseDefinitionService
+    ) = ActiveCaseDefinitionService(caseDefinitionService)
 }

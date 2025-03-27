@@ -32,7 +32,7 @@ import java.util.UUID
 class NoteSpecification(
         authRequest: AuthorizationRequest<Note>,
         permissions: List<Permission>,
-        private val noteService: NoteService,
+        private val noteRepository: NoteRepository,
         private val queryDialectHelper: QueryDialectHelper
 ) : AuthorizationSpecification<Note>(authRequest, permissions) {
     override fun toPredicate(
@@ -65,7 +65,7 @@ class NoteSpecification(
 
     override fun identifierToEntity(identifier: String): Note {
         return runWithoutAuthorization {
-            noteService.getNoteById(UUID.fromString(identifier))
+            noteRepository.getReferenceById(UUID.fromString(identifier))
         }
     }
 }

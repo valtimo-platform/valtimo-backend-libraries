@@ -18,6 +18,7 @@ package com.ritense.form.web.rest
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.document.service.DocumentService
 import com.ritense.form.service.FormDefinitionService
 import com.ritense.form.service.FormSubmissionService
 import com.ritense.form.service.PrefillFormService
@@ -42,6 +43,7 @@ import java.util.UUID
 @SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class FormResource(
+    private val documentService: DocumentService,
     private val formSubmissionService: FormSubmissionService,
     private val prefillFormService: PrefillFormService,
     private val formDefinitionService: FormDefinitionService,
@@ -70,9 +72,10 @@ class FormResource(
         @PathVariable formKey: String,
         @LoggableResource(resourceType = JsonSchemaDocument::class) @RequestParam(required = false) documentId: UUID?,
     ): ResponseEntity<JsonNode> {
-        val formDefinition = formDefinitionService.getFormDefinitionByName(formKey).orElse(null)
-
-        return if (formDefinition != null) {
+        return if (documentId != null) {
+            val document = documentService.get(documentId.toString())
+            val formDefinition = formDefinitionService
+                .getFormDefinitionByName(formKey, document.definitionId().caseDefinitionId()).orElse(null)
             ResponseEntity.ok(
                 prefillFormService.getPrefilledFormDefinition(formDefinition.id, documentId).formDefinition
             )

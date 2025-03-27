@@ -42,10 +42,10 @@ public class ProcessDocumentHttpSecurityConfigurer implements HttpSecurityConfig
                 .requestMatchers(antMatcher(DELETE, DEFINITION_URL))
                 .hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(
-                    GET, DEFINITION_URL + "/document/{document-definition-name}"))
+                    GET, "/api/v1/case-definition/{caseDefinitionKey}/process-definition/settings"))
                 .authenticated()
                 .requestMatchers(antMatcher(
-                    GET, "/api/v2/process-document/definition/document/{document-definition-name}"))
+                    GET, "/api/v1/document/{documentId}/process-definition/settings"))
                 .authenticated()
                 .requestMatchers(antMatcher(
                     GET, "/api/management/v1/process-document/definition/document/{document-definition-name}"))

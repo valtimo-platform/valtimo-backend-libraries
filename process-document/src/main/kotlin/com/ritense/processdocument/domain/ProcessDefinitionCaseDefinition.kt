@@ -19,6 +19,7 @@ import jakarta.persistence.Column
 import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
 import jakarta.persistence.Table
+import org.hibernate.annotations.Formula
 
 @Entity
 @Table(name = "process_definition_case_definition")
@@ -30,5 +31,17 @@ class ProcessDefinitionCaseDefinition(
     val canInitializeDocument: Boolean = false,
 
     @Column(name = "startableByUser", columnDefinition = "BOOLEAN")
-    val startableByUser: Boolean = false
-)
+    val startableByUser: Boolean = false,
+) {
+    @Formula("( " +
+        " SELECT   act_re_procdef.name_ " +
+        " FROM     act_re_procdef " +
+        " WHERE    act_re_procdef.id_ = process_definition_id)")
+    val processDefinitionName: String? = null
+
+    @Formula("( " +
+        " SELECT   act_re_procdef.key_ " +
+        " FROM     act_re_procdef " +
+        " WHERE    act_re_procdef.id_ = process_definition_id)")
+    val processDefinitionKey: String? = null
+}
