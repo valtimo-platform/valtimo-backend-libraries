@@ -199,7 +199,7 @@ DocumentenApiClientTest {
                 1,
                 0,
                 false,
-                "de9c883a-cdfc-493b-9c38-5824e334a1b1"
+                "a2a4663c-44f5-447b-b9fd-0063bbc71502"
             )
         )
 
@@ -209,7 +209,8 @@ DocumentenApiClientTest {
             "bestandsnaam.jpg",
             0L,
             LocalDateTime.now(),
-            bestandsdelen
+            bestandsdelen,
+            "de9c883a-cdfc-493b-9c38-5824e334a1b1"
         )
 
         client.storeDocumentInParts(
