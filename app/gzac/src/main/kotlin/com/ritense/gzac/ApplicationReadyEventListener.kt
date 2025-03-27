@@ -6,6 +6,7 @@ import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 
+//TODO: Should be temporary. sets link between case definition and upload process. Can't be imported yet.
 @Component
 class ApplicationReadyEventListener(
     private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
