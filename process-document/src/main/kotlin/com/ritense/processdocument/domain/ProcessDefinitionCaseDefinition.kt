@@ -37,5 +37,11 @@ class ProcessDefinitionCaseDefinition(
         " SELECT   act_re_procdef.name_ " +
         " FROM     act_re_procdef " +
         " WHERE    act_re_procdef.id_ = process_definition_id)")
-    val processName: String? = null
+    val processDefinitionName: String? = null
+
+    @Formula("( " +
+        " SELECT   act_re_procdef.key_ " +
+        " FROM     act_re_procdef " +
+        " WHERE    act_re_procdef.id_ = process_definition_id)")
+    val processDefinitionKey: String? = null
 }

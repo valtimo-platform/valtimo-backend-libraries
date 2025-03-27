@@ -16,15 +16,16 @@
 
 package com.ritense.processdocument.web.rest;
 
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-import com.ritense.authorization.AuthorizationContext;
 import com.ritense.case_.service.ActiveCaseDefinitionService;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.processdocument.domain.ProcessDefinitionCaseDefinition;
 import com.ritense.processdocument.domain.ProcessDocumentInstance;
+import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest;
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndStartProcessRequest;
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest;
@@ -80,7 +81,7 @@ public class ProcessDocumentResource {
         @RequestParam(value = "canInitializeDocument", required = false) @Nullable Boolean canInitializeDocument
     ) {
         CaseDefinitionId caseDefinitionId = activeCaseDefinitionService.getActiveCaseDefinition(caseDefinitionKey).getId();
-        List<ProcessDefinitionCaseDefinition> processDocumentDefinitions = processDefinitionCaseDefinitionService.findProcessDocumentDefinitions(
+        List<ProcessDefinitionCaseDefinition> processDocumentDefinitions = processDefinitionCaseDefinitionService.findProcessDefinitionCaseDefinitions(
             caseDefinitionId,
             startableByUser,
             canInitializeDocument
@@ -95,11 +96,20 @@ public class ProcessDocumentResource {
         @RequestParam(value = "startableByUser", required = false) @Nullable Boolean startableByUser,
         @RequestParam(value = "canInitializeDocument", required = false) @Nullable Boolean canInitializeDocument
     ) {
-        return ResponseEntity.ok(processDefinitionCaseDefinitionService.findProcessDocumentDefinitions(
+        return ResponseEntity.ok(processDefinitionCaseDefinitionService.findProcessDefinitionCaseDefinitions(
             documentId,
             startableByUser,
             canInitializeDocument
         ));
+    }
+
+    @GetMapping("/v1/process-document/definition/processinstance/{processInstanceId}")
+    public ResponseEntity<ProcessDefinitionCaseDefinition> getProcessDocumentDefinition(
+        @PathVariable String processInstanceId
+    ) {
+        return runWithoutAuthorization(() ->
+            ResponseEntity.ok(processDefinitionCaseDefinitionService.findProcessDefinitionCaseDefinition(
+                new CamundaProcessInstanceId(processInstanceId))));
     }
 
 /*    @PostMapping(value = "/v1/process-document/definition", consumes = APPLICATION_JSON_VALUE)

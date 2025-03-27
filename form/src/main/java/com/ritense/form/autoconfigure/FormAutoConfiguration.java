@@ -34,6 +34,7 @@ import com.ritense.form.web.rest.FormFileResource;
 import com.ritense.form.web.rest.FormManagementResource;
 import com.ritense.form.web.rest.impl.FormIoFormDefinitionResource;
 import com.ritense.form.web.rest.impl.FormIoFormFileResource;
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
@@ -127,9 +128,10 @@ public class FormAutoConfiguration {
     @ConditionalOnMissingBean(FormProcessLinkMapper.class)
     public FormProcessLinkMapper formProcessLinkMapper(
         final ObjectMapper objectMapper,
-        final FormDefinitionService formDefinitionService
+        final FormDefinitionService formDefinitionService,
+        final ProcessDefinitionCaseDefinitionService processDefinitionCaseDefinitionService
     ) {
-        return new FormProcessLinkMapper(objectMapper, formDefinitionService);
+        return new FormProcessLinkMapper(objectMapper, formDefinitionService, processDefinitionCaseDefinitionService);
     }
 
     @Bean

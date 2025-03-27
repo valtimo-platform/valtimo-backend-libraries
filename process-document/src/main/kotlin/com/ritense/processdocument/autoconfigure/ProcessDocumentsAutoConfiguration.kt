@@ -309,12 +309,14 @@ class ProcessDocumentsAutoConfiguration {
     fun processDefinitionCaseDefinitionService(
         authorizationService: AuthorizationService,
         processDefinitionCaseDefinitionRepository: ProcessDefinitionCaseDefinitionRepository,
-        documentService: JsonSchemaDocumentService
+        documentService: JsonSchemaDocumentService,
+        runtimeService: RuntimeService
     ): ProcessDefinitionCaseDefinitionService {
         return ProcessDefinitionCaseDefinitionService(
             authorizationService,
             processDefinitionCaseDefinitionRepository,
-            documentService
+            documentService,
+            runtimeService
         )
     }
 

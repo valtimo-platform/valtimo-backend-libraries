@@ -19,6 +19,7 @@ package com.ritense.form.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
+import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.form.autodeployment.FormDefinitionDeploymentService
@@ -71,10 +72,12 @@ class FormAutoConfigurationKotlin {
     @Bean
     @ConditionalOnMissingBean(FormResource::class)
     fun formResource(
+        documentService: DocumentService,
         formSubmissionService: FormSubmissionService,
         prefillFormService: PrefillFormService,
         formDefinitionService: FormDefinitionService,
     ) = FormResource(
+        documentService,
         formSubmissionService,
         prefillFormService,
         formDefinitionService

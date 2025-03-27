@@ -20,6 +20,10 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <changeSet id="1" author="Ritense">
+        <dropUniqueConstraint tableName="zaak_type_link" constraintName="zaak_type_url_constraint"/>
+    </changeSet>
+
+    <changeSet id="2" author="Ritense">
         <renameColumn tableName="zaak_type_link"
                       oldColumnName="document_definition_name"
                       newColumnName="case_definition_key"
@@ -30,6 +34,13 @@
                 <constraints nullable="true"/>
             </column>
         </addColumn>
+    </changeSet>
+
+    <changeSet id="3" author="Ritense">
+        <addUniqueConstraint tableName="zaak_type_link"
+                             columnNames="case_definition_key, case_definition_version_tag, zaak_type_url"
+                             constraintName="zaak_type_url_constraint"
+        />
     </changeSet>
 
 </databaseChangeLog>
