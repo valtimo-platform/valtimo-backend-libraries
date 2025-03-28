@@ -210,7 +210,7 @@ class DefaultFormSubmissionService(
                     "modifyDocumentWithJsonPatchValue"
                 } else if (prefix == DOC_PREFIX && document == null) {
                     "createDocumentWithContent"
-                } else if (prefix == PV_PREFIX && document == null) {
+                } else if (prefix == PV_PREFIX) {
                     "withProcessVar"
                 } else {
                     "valueResolverValue"
