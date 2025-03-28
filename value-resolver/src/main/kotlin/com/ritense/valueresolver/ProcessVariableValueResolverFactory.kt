@@ -24,6 +24,7 @@ import com.flipkart.zjsonpatch.JsonPatch
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.VariableScope
+import org.camunda.bpm.engine.impl.context.Context
 import java.util.function.Function
 
 /**
@@ -46,7 +47,11 @@ class ProcessVariableValueResolverFactory(
     ): Function<String, Any?> {
         var variablesJson: JsonNode? = null
         return Function { requestedValue ->
-            val value = runtimeService.getVariable(processInstanceId, requestedValue)
+            val value = if (areVariablesInVariableScopeAvailable()) {
+                variableScope.getVariable(requestedValue)
+            } else {
+                runtimeService.getVariable(processInstanceId, requestedValue)
+            }
             if (value != null) {
                 return@Function value
             }
@@ -54,7 +59,12 @@ class ProcessVariableValueResolverFactory(
                 return@Function null
             }
             if (variablesJson == null) {
-                variablesJson = objectMapper.valueToTree(runtimeService.getVariables(processInstanceId))
+                val variables = if (areVariablesInVariableScopeAvailable()) {
+                    variableScope.variables
+                } else {
+                    runtimeService.getVariables(processInstanceId)
+                }
+                variablesJson = objectMapper.valueToTree(variables)
             }
             return@Function getValue(variablesJson!!.at(toJsonPointer(requestedValue)))
         }
@@ -93,13 +103,21 @@ class ProcessVariableValueResolverFactory(
         val variableNames = values.keys
             .map { variablePath -> toJsonPointer(variablePath).matchingProperty }
             .distinct()
-        val existingValues = runtimeService.getVariables(processInstanceId, variableNames)
+        val existingValues = if (variableScope != null && areVariablesInVariableScopeAvailable()) {
+            variableNames.associateWith { variableName -> variableScope.getVariable(variableName) }
+        } else {
+            runtimeService.getVariables(processInstanceId, variableNames)
+        }
 
         val root = objectMapper.valueToTree<JsonNode>(existingValues)
         buildJsonPatch(root, values)
         val newValues = objectMapper.treeToValue<Map<String, Any?>>(root)
 
-        runtimeService.setVariables(processInstanceId, newValues)
+        if (variableScope != null && areVariablesInVariableScopeAvailable()) {
+            variableScope.variables = newValues
+        } else {
+            runtimeService.setVariables(processInstanceId, newValues)
+        }
     }
 
     override fun preProcessValuesForNewCase(values: Map<String, Any?>): Map<String, Any> {
@@ -138,6 +156,10 @@ class ProcessVariableValueResolverFactory(
 
     private fun isPath(path: String): Boolean {
         return path.contains('.') || path.contains('/')
+    }
+
+    private fun areVariablesInVariableScopeAvailable(): Boolean {
+        return Context.getCommandContext()?.variableInstanceManager != null
     }
 
     companion object {

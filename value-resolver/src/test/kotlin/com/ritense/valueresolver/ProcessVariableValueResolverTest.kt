@@ -24,12 +24,15 @@ import java.time.LocalDate
 import java.util.UUID
 import org.assertj.core.api.Assertions
 import org.camunda.bpm.engine.RuntimeService
+import org.camunda.bpm.engine.impl.context.Context
+import org.camunda.bpm.engine.impl.interceptor.CommandContext
 import org.camunda.bpm.engine.variable.Variables
 import org.camunda.bpm.engine.variable.impl.value.ObjectValueImpl
 import org.camunda.bpm.engine.variable.impl.value.builder.SerializedObjectValueBuilderImpl
 import org.camunda.community.mockito.delegate.DelegateCaseVariableInstanceFake
 import org.camunda.community.mockito.delegate.DelegateTaskFake
 import org.camunda.community.mockito.process.ProcessInstanceFake
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import org.mockito.kotlin.mock
@@ -40,6 +43,13 @@ internal class ProcessVariableValueResolverTest {
     private val runtimeService: RuntimeService = mock(defaultAnswer = RETURNS_DEEP_STUBS)
     private val objectMapper = MapperSingleton.get()
     private val processVariableValueResolver = ProcessVariableValueResolverFactory(runtimeService, objectMapper)
+
+    @BeforeEach
+    fun setUp() {
+        val commandContext: CommandContext = mock()
+        whenever(commandContext.variableInstanceManager).thenReturn(mock())
+        Context.setCommandContext(commandContext)
+    }
 
     @Test
     fun `should resolve requestedValue from process variables`() {
