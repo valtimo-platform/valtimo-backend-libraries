@@ -23,14 +23,23 @@ import java.net.URI
 
 class ZakenDocumentDeleteHandler(
     private val pluginService: PluginService
-): DocumentDeleteHandler {
+) : DocumentDeleteHandler {
+
     override fun preDocumentDelete(documentUrl: URI) {
         val pluginConfigurations = pluginService.findPluginConfigurations(ZakenApiPlugin::class.java)
-        pluginConfigurations.forEach {
+        val exceptions = pluginConfigurations.map {
             val plugin = pluginService.createInstance(it.id) as ZakenApiPlugin
-            plugin.getZaakInformatieObjectenByInformatieobjectUrl(documentUrl).forEach { zaakInformatieObject ->
-                plugin.deleteZaakInformatieobject(zaakInformatieObject.url)
+            try {
+                plugin.getZaakInformatieObjectenByInformatieobjectUrl(documentUrl).forEach { zaakInformatieObject ->
+                    plugin.deleteZaakInformatieobject(zaakInformatieObject.url)
+                }
+                null
+            } catch (e: Exception) {
+                e
             }
+        }
+        if (exceptions.all { it != null }) {
+            exceptions.forEach { throw it!! }
         }
     }
 }
