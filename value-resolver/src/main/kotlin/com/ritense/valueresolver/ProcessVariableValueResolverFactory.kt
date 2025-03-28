@@ -47,7 +47,7 @@ class ProcessVariableValueResolverFactory(
     ): Function<String, Any?> {
         var variablesJson: JsonNode? = null
         return Function { requestedValue ->
-            val value = if (areVariablesInVariableScopeAvailable()) {
+            val value = if (areVariablesInVariableScopeAvailable(variableScope)) {
                 variableScope.getVariable(requestedValue)
             } else {
                 runtimeService.getVariable(processInstanceId, requestedValue)
@@ -59,7 +59,7 @@ class ProcessVariableValueResolverFactory(
                 return@Function null
             }
             if (variablesJson == null) {
-                val variables = if (areVariablesInVariableScopeAvailable()) {
+                val variables = if (areVariablesInVariableScopeAvailable(variableScope)) {
                     variableScope.variables
                 } else {
                     runtimeService.getVariables(processInstanceId)
@@ -103,7 +103,7 @@ class ProcessVariableValueResolverFactory(
         val variableNames = values.keys
             .map { variablePath -> toJsonPointer(variablePath).matchingProperty }
             .distinct()
-        val existingValues = if (variableScope != null && areVariablesInVariableScopeAvailable()) {
+        val existingValues = if (variableScope != null && areVariablesInVariableScopeAvailable(variableScope)) {
             variableNames.associateWith { variableName -> variableScope.getVariable(variableName) }
         } else {
             runtimeService.getVariables(processInstanceId, variableNames)
@@ -113,7 +113,7 @@ class ProcessVariableValueResolverFactory(
         buildJsonPatch(root, values)
         val newValues = objectMapper.treeToValue<Map<String, Any?>>(root)
 
-        if (variableScope != null && areVariablesInVariableScopeAvailable()) {
+        if (variableScope != null && areVariablesInVariableScopeAvailable(variableScope)) {
             variableScope.variables = newValues
         } else {
             runtimeService.setVariables(processInstanceId, newValues)
@@ -158,8 +158,11 @@ class ProcessVariableValueResolverFactory(
         return path.contains('.') || path.contains('/')
     }
 
-    private fun areVariablesInVariableScopeAvailable(): Boolean {
-        return Context.getCommandContext()?.variableInstanceManager != null
+    private fun areVariablesInVariableScopeAvailable(variableScope: VariableScope?): Boolean {
+        return variableScope != null && (
+            variableScope.javaClass.name == "com.ritense.valtimo.camunda.domain.CamundaTask"
+                || Context.getCommandContext()?.variableInstanceManager != null
+            )
     }
 
     companion object {
