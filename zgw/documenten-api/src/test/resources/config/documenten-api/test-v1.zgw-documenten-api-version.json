@@ -18,6 +18,7 @@
             "titel",
             "vertrouwelijkheidaanduiding"
         ],
-        "supportsTrefwoorden": true
+        "supportsTrefwoorden": true,
+        "supportsUpdatingDefinitiveDocument": true
     }
 ]

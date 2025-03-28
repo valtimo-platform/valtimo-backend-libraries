@@ -16,4 +16,4 @@
 
 package com.ritense.catalogiapi.exception
 
-class StatustypeNotFoundException(message: String) : RuntimeException("No statustype was found $message")
+class EigenschapNotFoundException(message: String) : RuntimeException("No eigenschap was found $message")
