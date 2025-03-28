@@ -46,7 +46,7 @@ class ProcessVariableValueResolverFactory(
     ): Function<String, Any?> {
         var variablesJson: JsonNode? = null
         return Function { requestedValue ->
-            val value = variableScope.getVariable(requestedValue)
+            val value = runtimeService.getVariable(processInstanceId, requestedValue)
             if (value != null) {
                 return@Function value
             }
@@ -54,7 +54,7 @@ class ProcessVariableValueResolverFactory(
                 return@Function null
             }
             if (variablesJson == null) {
-                variablesJson = objectMapper.valueToTree(variableScope.variables)
+                variablesJson = objectMapper.valueToTree(runtimeService.getVariables(processInstanceId))
             }
             return@Function getValue(variablesJson!!.at(toJsonPointer(requestedValue)))
         }
@@ -93,22 +93,13 @@ class ProcessVariableValueResolverFactory(
         val variableNames = values.keys
             .map { variablePath -> toJsonPointer(variablePath).matchingProperty }
             .distinct()
-        val existingValues = if (variableScope == null) {
-            runtimeService.getVariables(processInstanceId, variableNames)
-        } else {
-            variableNames
-                .associateWith { variableName -> variableScope.getVariable(variableName) }
-        }
+        val existingValues = runtimeService.getVariables(processInstanceId, variableNames)
 
         val root = objectMapper.valueToTree<JsonNode>(existingValues)
         buildJsonPatch(root, values)
         val newValues = objectMapper.treeToValue<Map<String, Any?>>(root)
 
-        if (variableScope == null) {
-            runtimeService.setVariables(processInstanceId, newValues)
-        } else {
-            variableScope.variables = newValues
-        }
+        runtimeService.setVariables(processInstanceId, newValues)
     }
 
     override fun preProcessValuesForNewCase(values: Map<String, Any?>): Map<String, Any> {
