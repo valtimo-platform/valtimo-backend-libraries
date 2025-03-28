@@ -52,7 +52,6 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.domain.ActivityTypeWithEventName.START_EVENT_START
 import com.ritense.processlink.domain.ActivityTypeWithEventName.USER_TASK_CREATE
-import com.ritense.processlink.domain.ActivityTypeWithEventName.USER_TASK_START
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.camunda.authorization.CamundaExecutionActionProvider
