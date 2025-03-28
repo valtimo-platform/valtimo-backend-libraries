@@ -102,8 +102,25 @@
                     "type": "textfield",
                     "defaultValue": "..",
                     "input": true
+                },
+                {
+                    "label": "Add to array",
+                    "key": "apples",
+                    "type": "textfield",
+                    "properties": {
+                        "container": "/fruitTypes/-/"
+                    },
+                    "input": true
+                },
+                {
+                    "label": "Find and replace in array",
+                    "key": "name",
+                    "type": "textfield",
+                    "properties": {
+                        "container": "/favorites/{indexOf(/breadId)}/"
+                    },
+                    "input": true
                 }
-
             ]
         },
         {
