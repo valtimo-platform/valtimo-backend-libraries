@@ -46,53 +46,54 @@ class CaseDefinitionDeploymentService(
     @Order(Ordered.LOWEST_PRECEDENCE)
     @EventListener(ApplicationReadyEvent::class)
     fun deployOnStartup() {
-        val absoluteBasePathLength = try {
-            ResourcePatternUtils
+        try {
+            val absoluteBasePathLength = ResourcePatternUtils
                 .getResourcePatternResolver(resourceLoader)
                 .getResource("classpath:/config/case/")
                 .file
                 .absolutePath
                 .length
+
+            val resources = ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(PATH)
+                .groupBy {
+                    val relativePath = it.file.absolutePath.substring(
+                        absoluteBasePathLength
+                    )
+
+                    relativePath.substring(0, StringUtils.ordinalIndexOf(relativePath, "/", 3))
+                }
+                .map { (key, files) ->
+                    key to (files.map {
+                        it.file.absolutePath.substring(
+                            absoluteBasePathLength
+                        ).substring(key.length) to it
+                    })
+                }
+            resources.forEach { (_, files) ->
+                runWithoutAuthorization {
+                    valtimoImportService.importCaseDefinition(files, caseDefinitionRepository.findAll().map { it.id })
+                }
+            }
+
         } catch (ex: FileNotFoundException) {
             // No resources found, nothing to import
-            logger.info { "No case definitions found. Continuing startup without importing." }
-            return
+            logger.info { "No case definitions found. Continuing startup without importing case definitions." }
         }
 
-        val resources = ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(PATH)
-            .groupBy {
-                val relativePath = it.file.absolutePath.substring(
-                    absoluteBasePathLength
-                )
-
-                relativePath.substring(0, StringUtils.ordinalIndexOf(relativePath, "/", 3))
-            }
-            .map { (key, files) ->
-                key to (files.map {
-                    it.file.absolutePath.substring(
-                        absoluteBasePathLength
-                    ).substring(key.length) to it
-                })
-            }
-        resources.forEach { (_, files) ->
-            runWithoutAuthorization {
-                valtimoImportService.importCaseDefinition(files, caseDefinitionRepository.findAll().map { it.id })
-            }
-        }
+        changelogDeployer.deployAll()
 
         // Group by 1st * and 2nd *
         // Turn back into list of list resources
         // Import for each list of resources in the list
         // If one fails, everything fails.
         // TODO Implement triggering of imports
-
-        changelogDeployer.deployAll()
     }
 
     //private fun getRelativeMap
 
     companion object {
-        private const val PATH = "classpath:config/case/*/*/**/*.*" // TODO: Determine if we want to do config/case/ instead
+        private const val PATH =
+            "classpath:config/case/*/*/**/*.*" // TODO: Determine if we want to do config/case/ instead
         val logger = KotlinLogging.logger {}
     }
 }
