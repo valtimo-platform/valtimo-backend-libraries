@@ -532,7 +532,7 @@ class ZakenApiClient(
         request: ZaakObjectRequest
     ): ZaakObject {
         validateUrlHost(baseUrl, request.zaakUrl)
-        request.objectUrl = sanitizeUriHost(request.objectUrl)
+        request.objectUrl = request.objectUrl
 
         var result = buildRestClient(authentication)
             .post()
@@ -547,7 +547,7 @@ class ZakenApiClient(
             .retrieve()
             .body<ZaakObject>()!!
 
-        result = result.copy(objectUrl = sanitizeUriHost(result.objectUrl))
+        result = result.copy(objectUrl = result.objectUrl)
 
         outboxService.send {
             ZaakObjectCreated(result.url.toString(), objectMapper.valueToTree(result))
@@ -563,18 +563,6 @@ class ZakenApiClient(
         }
     }
 
-    private fun sanitizeUriHost(objectUrl: URI): URI {
-        val url =
-        if (objectUrl.host == LOCALHOST) {
-            URI.create(objectUrl.toString().replace(LOCALHOST, HOST_DOCKER_INTERNAL))
-        } else if (objectUrl.host == HOST_DOCKER_INTERNAL) {
-            URI.create(objectUrl.toString().replace(HOST_DOCKER_INTERNAL, LOCALHOST))
-        } else {
-            objectUrl
-        }
-        return url
-    }
-
     private fun defaultHeaders(headers: HttpHeaders) {
         headers.set("Accept-Crs", "EPSG:4326")
         headers.set("Content-Crs", "EPSG:4326")
@@ -587,10 +575,5 @@ class ZakenApiClient(
                 authentication.applyAuth(it)
             }
             .build()
-    }
-
-    companion object {
-        const val HOST_DOCKER_INTERNAL = "host.docker.internal"
-        private const val LOCALHOST = "localhost"
     }
 }
