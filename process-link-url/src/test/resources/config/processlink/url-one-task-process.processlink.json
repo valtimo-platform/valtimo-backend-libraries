@@ -7,7 +7,7 @@
     },
     {
         "activityId": "do-something",
-        "activityType": "bpmn:UserTask:start",
+        "activityType": "bpmn:UserTask:create",
         "processLinkType": "url",
         "url": "https://www.ritense.nl"
     }

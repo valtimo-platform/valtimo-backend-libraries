@@ -76,7 +76,7 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
             FormFlowProcessLinkCreateRequestDto(
                 processDefinitionId = processDefinition.id,
                 activityId = "do-something",
-                activityType = ActivityTypeWithEventName.USER_TASK_START,
+                activityType = ActivityTypeWithEventName.USER_TASK_CREATE,
                 formFlowDefinitionId = "inkomens_loket:latest"
             )
         )
@@ -104,7 +104,7 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
             FormFlowProcessLinkCreateRequestDto(
                 processDefinitionId = processDefinition.id,
                 activityId = "do-something",
-                activityType = ActivityTypeWithEventName.USER_TASK_START,
+                activityType = ActivityTypeWithEventName.USER_TASK_CREATE,
                 formFlowDefinitionId = "inkomens_loket:latest"
             )
         )
