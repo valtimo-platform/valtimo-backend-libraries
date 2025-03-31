@@ -32,7 +32,6 @@ import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
-import com.ritense.zakenapi.client.ZakenApiClient.Companion.HOST_DOCKER_INTERNAL
 import com.ritense.zakenapi.domain.CreateZaakRequest
 import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
 import com.ritense.zakenapi.domain.CreateZaakStatusRequest
@@ -762,11 +761,7 @@ class ZakenApiPlugin(
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"
         const val DOCUMENT_URL_PROCESS_VAR = "documentUrl"
         fun findConfigurationByUrl(url: URI) = { properties: JsonNode ->
-            if (url.host == HOST_DOCKER_INTERNAL) {
-                url.toString().replace(HOST_DOCKER_INTERNAL, "localhost")
-            } else {
-                url.toString()
-            }.startsWith(properties[URL_PROPERTY].textValue())
+            url.toString().startsWith(properties[URL_PROPERTY].textValue())
         }
     }
 }
