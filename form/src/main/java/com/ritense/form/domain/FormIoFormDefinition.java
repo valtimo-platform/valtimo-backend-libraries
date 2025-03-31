@@ -77,6 +77,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     private static final String PROPERTY_ATTRIBUTES = "attributes";
     private static final String PROPERTY_TESTID = "data-testid";
 
+    public static final String PROPERTIES_CONTAINER_POINTER = "/properties/container";
     public static final String SOURCE_KEY_POINTER = "/properties/sourceKey";
     public static final String TARGET_KEY_POINTER = "/properties/targetKey";
 
@@ -366,7 +367,12 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         }
         final var documentJsonPointer = getDocumentContentVarStatic(field);
         if (documentJsonPointer.isPresent()) {
-            return documentJsonPointer.map(it -> "doc:" + it.getName());
+            var docPath = documentJsonPointer.get().getName();
+            var containerPath = field.at(PROPERTIES_CONTAINER_POINTER).textValue();
+            if (containerPath != null && !containerPath.isEmpty()) {
+                docPath = containerPath + docPath.substring(1);
+            }
+            return Optional.of("doc:" + docPath);
         }
         return Optional.empty();
     }
