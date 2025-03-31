@@ -252,6 +252,9 @@ valtimo:
             enabled:true
     logging:
         retentionInMinutes: 1440
+    docker:
+        filter:
+            enabled: true
 
 spring-actuator:
     username: admin
