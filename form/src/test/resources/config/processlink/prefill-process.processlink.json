@@ -6,9 +6,9 @@
         "formDefinitionName": "form-example-various-prefill-fields"
     },
     {
-        "activityId": "do-something",
+        "activityId": "prefill-task",
         "activityType": "bpmn:UserTask:create",
         "processLinkType": "form",
-        "formDefinitionName": "form-example"
+        "formDefinitionName": "form-example-various-prefill-fields"
     }
 ]
