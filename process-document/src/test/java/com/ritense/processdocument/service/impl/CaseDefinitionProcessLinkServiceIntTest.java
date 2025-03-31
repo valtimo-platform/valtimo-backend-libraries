@@ -20,29 +20,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ritense.processdocument.BaseIntegrationTest;
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest;
-import com.ritense.processdocument.repository.DocumentDefinitionProcessLinkRepository;
-import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService;
+import com.ritense.processdocument.repository.CaseDefinitionProcessLinkRepository;
+import com.ritense.processdocument.service.CaseDefinitionProcessLinkService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
-class DocumentDefinitionProcessLinkServiceIntTest extends BaseIntegrationTest {
+class CaseDefinitionProcessLinkServiceIntTest extends BaseIntegrationTest {
 
     private static final String DOCUMENT_DEFINITION_NAME = "house";
     private static final String DOCUMENT_UPLOAD = "DOCUMENT_UPLOAD";
     private static final String PROCESS_DEFINITION_KEY = "loan-process-demo";
 
     @Autowired
-    private DocumentDefinitionProcessLinkRepository documentDefinitionProcessLinkRepository;
+    private CaseDefinitionProcessLinkRepository caseDefinitionProcessLinkRepository;
 
     @Autowired
-    private DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService;
+    private CaseDefinitionProcessLinkService caseDefinitionProcessLinkService;
 
     @BeforeEach
     public void beforeEach() {
-        documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+        caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
             DOCUMENT_DEFINITION_NAME,
             new DocumentDefinitionProcessRequest(
                 PROCESS_DEFINITION_KEY,
@@ -53,7 +53,7 @@ class DocumentDefinitionProcessLinkServiceIntTest extends BaseIntegrationTest {
 
     @Test
     void shouldGetDocumentDefinitionProcessLink() {
-        var link = documentDefinitionProcessLinkService.getDocumentDefinitionProcessLink(
+        var link = caseDefinitionProcessLinkService.getDocumentDefinitionProcessLink(
             DOCUMENT_DEFINITION_NAME,
             DOCUMENT_UPLOAD
         );
@@ -66,7 +66,7 @@ class DocumentDefinitionProcessLinkServiceIntTest extends BaseIntegrationTest {
 
     @Test
     void shouldGetDocumentDefinitionProcessLinkList() {
-        documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+        caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
             DOCUMENT_DEFINITION_NAME,
             new DocumentDefinitionProcessRequest(
                 "embedded-subprocess-example",
@@ -74,16 +74,16 @@ class DocumentDefinitionProcessLinkServiceIntTest extends BaseIntegrationTest {
             )
         );
 
-        var links = documentDefinitionProcessLinkService.getDocumentDefinitionProcessList(DOCUMENT_DEFINITION_NAME);
+        var links = caseDefinitionProcessLinkService.getDocumentDefinitionProcessList(DOCUMENT_DEFINITION_NAME);
 
         assertThat(links.size()).isEqualTo(2);
-        assertThat(links.get(0).getProcessDefinitionKey()).isEqualTo(PROCESS_DEFINITION_KEY);
-        assertThat(links.get(1).getProcessDefinitionKey()).isEqualTo("embedded-subprocess-example");
+        assertThat(links.get(0).processDefinitionKey).isEqualTo(PROCESS_DEFINITION_KEY);
+        assertThat(links.get(1).processDefinitionKey).isEqualTo("embedded-subprocess-example");
     }
 
     @Test
     void shouldOverrideProcessDefinitionKeyInLinkWhenSaving() {
-        documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+        caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
             DOCUMENT_DEFINITION_NAME,
             new DocumentDefinitionProcessRequest(
                 "embedded-subprocess-example",
@@ -91,15 +91,15 @@ class DocumentDefinitionProcessLinkServiceIntTest extends BaseIntegrationTest {
             )
         );
 
-        var links = documentDefinitionProcessLinkService.getDocumentDefinitionProcessList(DOCUMENT_DEFINITION_NAME);
+        var links = caseDefinitionProcessLinkService.getDocumentDefinitionProcessList(DOCUMENT_DEFINITION_NAME);
 
         assertThat(links.size()).isEqualTo(1);
-        assertThat(links.get(0).getProcessDefinitionKey()).isEqualTo("embedded-subprocess-example");
+        assertThat(links.get(0).processDefinitionKey).isEqualTo("embedded-subprocess-example");
     }
 
     @Test
     void shouldOverrideTypeInLinkWhenSaving() {
-        documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+        caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
             DOCUMENT_DEFINITION_NAME,
             new DocumentDefinitionProcessRequest(
                 PROCESS_DEFINITION_KEY,
@@ -107,7 +107,7 @@ class DocumentDefinitionProcessLinkServiceIntTest extends BaseIntegrationTest {
             )
         );
 
-        var links = documentDefinitionProcessLinkRepository.findAllByIdDocumentDefinitionName(DOCUMENT_DEFINITION_NAME);
+        var links = caseDefinitionProcessLinkRepository.findAllByIdDocumentDefinitionName(DOCUMENT_DEFINITION_NAME);
 
         assertThat(links.size()).isEqualTo(1);
         assertThat(links.get(0).getType()).isEqualTo("my-type");
