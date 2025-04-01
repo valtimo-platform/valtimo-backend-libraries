@@ -106,7 +106,6 @@ class DecisionManagementResourceIT(
     }
 
     @Test
-    @Transactional
     fun `should delete an existing decision definition`() {
         mockMvc.perform(
             MockMvcRequestBuilders.delete("$DECISION_MANAGEMENT_URL/{decisionDefinitionId}", "everything", "1.0.0", "test")
