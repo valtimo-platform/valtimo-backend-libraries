@@ -7,7 +7,7 @@
   },
   {
     "activityId": "melding-bekijken",
-    "activityType": "bpmn:UserTask:start",
+    "activityType": "bpmn:UserTask:create",
     "processLinkType": "form",
     "formDefinitionName": "user-task-melding-bekijken"
   }
