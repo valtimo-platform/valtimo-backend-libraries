@@ -23,7 +23,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.result.CreateDocumentResult
 import com.ritense.valtimo.contract.Constants
-import com.ritense.authorization.UserManagementServiceHolder
+import com.ritense.valtimo.contract.authorization.UserManagementServiceHolder
 import com.ritense.valtimo.contract.dashboard.QueryCondition
 import com.ritense.valtimo.contract.repository.ExpressionOperator
 import org.assertj.core.api.Assertions.assertThat

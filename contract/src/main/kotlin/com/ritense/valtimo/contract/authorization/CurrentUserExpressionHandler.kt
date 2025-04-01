@@ -16,7 +16,7 @@
 
 package com.ritense.valtimo.contract.authorization
 
-import com.ritense.authorization.UserManagementServiceHolder
+import PermissionConditionKey
 
 object CurrentUserExpressionHandler {
 
