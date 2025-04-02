@@ -24,19 +24,20 @@ import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentService
-import com.ritense.processdocument.domain.ProcessDocumentDefinition
-import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionId
+import com.ritense.processdocument.domain.ProcessDefinitionCaseDefinition
+import com.ritense.processdocument.domain.ProcessDefinitionId
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndStartProcessRequest
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.domain.request.Request
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkService
-import com.ritense.processlink.url.domain.URLVariables
 import com.ritense.processlink.url.domain.URLProcessLink
+import com.ritense.processlink.url.domain.URLVariables
 import com.ritense.processlink.url.web.rest.dto.URLSubmissionResult
 import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
@@ -48,7 +49,7 @@ import java.util.UUID
 class URLProcessLinkService(
     private val processLinkService: ProcessLinkService,
     private val documentService: JsonSchemaDocumentService,
-    private val processDocumentAssociationService: ProcessDocumentAssociationService,
+    private val processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
     private val processDocumentService: ProcessDocumentService,
     private val repositoryService: CamundaRepositoryService,
     private val objectMapper: ObjectMapper,
@@ -71,8 +72,7 @@ class URLProcessLinkService(
         val processDefinition = getProcessDefinition(processLink)
         val documentDefinitionNameToUse = document?.definitionId()?.name()
             ?: documentDefinitionName
-            ?: getProcessDocumentDefinition(processDefinition, document).processDocumentDefinitionId()
-                .documentDefinitionId().name()
+            ?: getProcessDefinitionCaseDefinition(processDefinition).id.caseDefinitionId.key
 
         val request = getRequest(
             processLink,
@@ -108,21 +108,12 @@ class URLProcessLinkService(
         }
     }
 
-    private fun getProcessDocumentDefinition(
-        processDefinition: CamundaProcessDefinition,
-        document: Document?
-    ): ProcessDocumentDefinition {
-        val processDefinitionKey =
-            CamundaProcessDefinitionId(processDefinition.key)
+    private fun getProcessDefinitionCaseDefinition(
+        processDefinition: CamundaProcessDefinition
+    ): ProcessDefinitionCaseDefinition {
+        val processDefinitionId = ProcessDefinitionId(processDefinition.id)
         return AuthorizationContext.runWithoutAuthorization {
-            if (document == null) {
-                processDocumentAssociationService.getProcessDocumentDefinition(processDefinitionKey)
-            } else {
-                processDocumentAssociationService.getProcessDocumentDefinition(
-                    processDefinitionKey,
-                    null // TODO: Fix this
-                )
-            }
+            processDefinitionCaseDefinitionService.findByProcessDefinitionId(processDefinitionId)
         }
     }
 
