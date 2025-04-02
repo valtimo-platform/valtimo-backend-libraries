@@ -20,6 +20,9 @@ import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthor
 import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.Permission
 import com.ritense.document.BaseIntegrationTest
+import com.ritense.document.domain.CaseTag
+import com.ritense.document.domain.CaseTagColor
+import com.ritense.document.domain.CaseTagId
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchemaDocument
@@ -30,11 +33,14 @@ import com.ritense.document.event.DocumentAssigned
 import com.ritense.document.event.DocumentCreated
 import com.ritense.document.event.DocumentDeleted
 import com.ritense.document.event.DocumentStatusChanged
+import com.ritense.document.event.DocumentTagsChanged
 import com.ritense.document.event.DocumentUnassigned
 import com.ritense.document.event.DocumentUpdated
 import com.ritense.document.event.DocumentViewed
 import com.ritense.document.event.DocumentsListed
+import com.ritense.document.repository.CaseTagRepository
 import com.ritense.document.service.JsonSchemaDocumentActionProvider
+import com.ritense.document.web.rest.dto.CaseTagResponseDto
 import com.ritense.outbox.domain.BaseEvent
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
@@ -64,6 +70,9 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var objectMapper: ObjectMapper
+
+    @Autowired
+    lateinit var caseTagRepository: CaseTagRepository
 
     lateinit var definition: JsonSchemaDocumentDefinition
     lateinit var originalDocument: JsonSchemaDocument
@@ -186,6 +195,97 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
             .single { it is DocumentStatusChanged }
         assertThat(event.resultId).isEqualTo(document.id()!!.toString())
         assertThat(event.result?.get("internalStatus")?.isNull).isTrue()
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = [ADMIN])
+    fun `should add case tag and send outbox event`() {
+        val document = createDocument("""{"street": "Admin street"}""")
+        assertThat(document.caseTags()).isEmpty()
+
+        reset(outboxService)
+
+        // Adding tags to the database in preparation for the integration test
+        val tag1 = CaseTag(
+            CaseTagId("house", "new"),
+            "New",
+            CaseTagColor.GREEN,
+            order = 0
+
+        )
+        val tag2 = CaseTag(
+            CaseTagId("house", "priority-request"),
+            "Priority request",
+            CaseTagColor.MAGENTA,
+            order = 1
+        )
+        caseTagRepository.save(tag1)
+        caseTagRepository.save(tag2)
+
+        // Adding a tag to the document
+        val caseTagKey = "new"
+        documentService.addCaseTag(document.id, caseTagKey)
+
+        //Assert change
+        val modifiedDocument = documentService.findBy(document.id).get()
+        assertThat(modifiedDocument.caseTags().first()).isEqualTo(CaseTagResponseDto(tag1))
+
+        //Assert outbox event
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+        verify(outboxService, atLeastOnce()).send(eventCapture.capture())
+        val event = eventCapture.allValues.map { it.get() }
+            .single { it is DocumentTagsChanged }
+        assertThat(event.resultId).isEqualTo(document.id!!.toString())
+        assertThat(event.result).isEqualTo(objectMapper.valueToTree(document))
+        assertThat(event.result?.get("caseTags")!!.get(0)!!.get("title").asText()).isEqualTo("New")
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = [ADMIN])
+    fun `ensure case tags are unique`() {
+        val document = createDocument("""{"street": "Admin street"}""")
+        assertThat(document.caseTags()).isEmpty()
+
+        reset(outboxService)
+
+        // Adding tags to the database in preparation for the integration test
+        val caseTagKey1 = "new"
+        val tag1 = CaseTag(
+            CaseTagId("house", caseTagKey1),
+            "New",
+            CaseTagColor.GREEN,
+            order = 0
+        )
+        val caseTagKey2 = "priority-request"
+        val tag2 = CaseTag(
+            CaseTagId("house", caseTagKey2),
+            "Priority request",
+            CaseTagColor.MAGENTA,
+            1
+        )
+        caseTagRepository.save(tag1)
+        caseTagRepository.save(tag2)
+
+        // Adding a tag to the document
+        documentService.addCaseTag(document.id, caseTagKey1)
+        // Adding the same tag again
+        documentService.addCaseTag(document.id, caseTagKey1)
+        // Adding another tag
+        documentService.addCaseTag(document.id, caseTagKey2)
+
+        //Assert change
+        val modifiedDocument = documentService.findBy(document.id).get()
+        assertThat(modifiedDocument.caseTags()).hasSize(2)
+        assertThat(modifiedDocument.caseTags()).containsExactlyInAnyOrder(CaseTagResponseDto(tag1), CaseTagResponseDto(tag2))
+
+        //Assert outbox event
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+        verify(outboxService, atLeastOnce()).send(eventCapture.capture())
+        val event = eventCapture.allValues.map { it.get() }
+            .filter { it is DocumentTagsChanged }.last()
+        assertThat(event.resultId).isEqualTo(document.id!!.toString())
+        assertThat(event.result).isEqualTo(objectMapper.valueToTree(document))
+        assertThat(event.result?.get("caseTags")!!.size() == 2)
     }
 
     @Test
