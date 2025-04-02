@@ -30,17 +30,16 @@ import com.ritense.processdocument.domain.impl.listener.StartEventListenerImpl;
 import com.ritense.processdocument.domain.impl.listener.UndeployDocumentDefinitionEventListener;
 import com.ritense.processdocument.domain.listener.StartEventFromCallActivityListener;
 import com.ritense.processdocument.domain.listener.StartEventListener;
-import com.ritense.processdocument.repository.DocumentDefinitionProcessLinkRepository;
+import com.ritense.processdocument.repository.CaseDefinitionProcessLinkRepository;
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository;
 import com.ritense.processdocument.resolver.DocumentJsonValueResolverFactory;
 import com.ritense.processdocument.resolver.DocumentTableValueResolver;
-import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService;
+import com.ritense.processdocument.service.CaseDefinitionProcessLinkService;
 import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService;
-import com.ritense.processdocument.service.impl.DocumentDefinitionProcessLinkServiceImpl;
 import com.ritense.processdocument.web.rest.ProcessDocumentResource;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
@@ -201,12 +200,12 @@ public class ProcessDocumentAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(DocumentDefinitionProcessLinkService.class)
-    public DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService(
-        DocumentDefinitionProcessLinkRepository documentDefinitionProcessLinkRepository,
+    @ConditionalOnMissingBean(CaseDefinitionProcessLinkService.class)
+    public CaseDefinitionProcessLinkService documentDefinitionProcessLinkService(
+        CaseDefinitionProcessLinkRepository caseDefinitionProcessLinkRepository,
         CamundaRepositoryService repositoryService
     ) {
-        return new DocumentDefinitionProcessLinkServiceImpl(documentDefinitionProcessLinkRepository, repositoryService);
+        return new CaseDefinitionProcessLinkService(caseDefinitionProcessLinkRepository, repositoryService);
     }
 
 

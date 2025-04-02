@@ -74,7 +74,7 @@ public class ProcessDocumentResource {
         this.activeCaseDefinitionService = activeCaseDefinitionService;
     }
 
-    @GetMapping("/v1/case-definition/{caseDefinitionKey}/process-definition/settings")
+    @GetMapping("/v1/case-definition/{caseDefinitionKey}/case-process-link")
     public ResponseEntity<List<ProcessDefinitionCaseDefinition>> findProcessDocumentDefinitions(
         @PathVariable(name = "caseDefinitionKey") String caseDefinitionKey,
         @RequestParam(value = "startableByUser", required = false) @Nullable Boolean startableByUser,
@@ -90,7 +90,7 @@ public class ProcessDocumentResource {
         return ResponseEntity.ok(processDocumentDefinitions);
     }
 
-    @GetMapping("/v1/document/{documentId}/process-definition/settings")
+    @GetMapping("/v1/document-instance/{documentId}/case-process-link")
     public ResponseEntity<List<ProcessDefinitionCaseDefinition>> findProcessDocumentDefinitions(
         @PathVariable(name = "documentId") UUID documentId,
         @RequestParam(value = "startableByUser", required = false) @Nullable Boolean startableByUser,
@@ -103,7 +103,7 @@ public class ProcessDocumentResource {
         ));
     }
 
-    @GetMapping("/v1/process-document/definition/processinstance/{processInstanceId}")
+    @GetMapping("/v1/process-instance/{processInstanceId}/case-process-link")
     public ResponseEntity<ProcessDefinitionCaseDefinition> getProcessDocumentDefinition(
         @PathVariable String processInstanceId
     ) {
