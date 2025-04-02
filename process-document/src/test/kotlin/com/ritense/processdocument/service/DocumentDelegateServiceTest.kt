@@ -16,12 +16,14 @@
 
 package com.ritense.processdocument.service
 
+import com.ritense.document.domain.CaseTagColor
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
+import com.ritense.document.web.rest.dto.CaseTagCreateRequestDto
 import com.ritense.processdocument.BaseTest
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.valtimo.contract.OauthConfigHolder
@@ -277,6 +279,38 @@ internal class DocumentDelegateServiceTest : BaseTest() {
         documentDelegateService.setInternalStatus(delegateExecutionFake, newStatus)
 
         verify(documentService).setInternalStatus(documentId, newStatus)
+    }
+
+    @Test
+    fun `should add case tag to document`() {
+        val documentId = JsonSchemaDocumentId.existingId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
+        val processInstanceId = "00000000-0000-0000-0000-000000000000"
+        val delegateExecutionFake = DelegateExecutionFake("id")
+            .withProcessInstanceId(processInstanceId)
+            .withProcessBusinessKey(documentId.toString())
+        whenever(
+            processDocumentService.getDocumentId(CamundaProcessInstanceId(processInstanceId), delegateExecutionFake)
+        ).thenReturn(documentId)
+
+        documentDelegateService.addCaseTag(delegateExecutionFake, "important")
+
+        verify(documentService).addCaseTag(documentId, "important")
+    }
+
+    @Test
+    fun `should remove case tag from document`() {
+        val documentId = JsonSchemaDocumentId.existingId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
+        val processInstanceId = "00000000-0000-0000-0000-000000000000"
+        val delegateExecutionFake = DelegateExecutionFake("id")
+            .withProcessInstanceId(processInstanceId)
+            .withProcessBusinessKey(documentId.toString())
+        whenever(
+            processDocumentService.getDocumentId(CamundaProcessInstanceId(processInstanceId), delegateExecutionFake)
+        ).thenReturn(documentId)
+
+        documentDelegateService.removeCaseTag(delegateExecutionFake, "important")
+
+        verify(documentService).removeCaseTag(documentId, "important")
     }
 
     @Test
