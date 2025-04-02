@@ -18,6 +18,7 @@ package com.ritense.documentenapi
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
+import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentService
@@ -41,7 +42,7 @@ import com.ritense.documentenapi.web.rest.DocumentenApiManagementResource
 import com.ritense.documentenapi.web.rest.DocumentenApiResource
 import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
-import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
+import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.changelog.service.ChangelogDeployer
@@ -139,9 +140,10 @@ class DocumentenApiAutoConfiguration {
         authorizationService: AuthorizationService,
         documentService: DocumentService,
         documentDefinitionService: DocumentDefinitionService,
-        documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
+        caseDefinitionProcessLinkService: CaseDefinitionProcessLinkService,
         pluginProcessLinkService: PluginProcessLinkService,
         camundaRepositoryService: CamundaRepositoryService,
+        activeCaseDefinitionService: ActiveCaseDefinitionService,
     ): DocumentenApiVersionService {
         return DocumentenApiVersionService(
             resourceLoader,
@@ -151,9 +153,10 @@ class DocumentenApiAutoConfiguration {
             authorizationService,
             documentService,
             documentDefinitionService,
-            documentDefinitionProcessLinkService,
+            caseDefinitionProcessLinkService,
             pluginProcessLinkService,
             camundaRepositoryService,
+            activeCaseDefinitionService,
         )
     }
 

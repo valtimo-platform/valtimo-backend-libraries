@@ -133,6 +133,10 @@ dependencies {
     implementation "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
     implementation "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
 
+    testImplementation (project(":case")) {
+        exclude(group: "com.ritense.valtimo", module: "core")
+    }
+
     // Camunda test
     testImplementation project(":test-utils-common")
     testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:${camundaMockitoVersion}"

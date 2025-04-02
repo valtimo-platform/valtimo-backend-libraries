@@ -32,6 +32,7 @@ import com.ritense.processdocument.listener.CaseAssigneeListener
 import com.ritense.processdocument.listener.CaseAssigneeTaskCreatedListener
 import com.ritense.processdocument.repository.ProcessDefinitionCaseDefinitionRepository
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository
+import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
 import com.ritense.processdocument.service.CaseTaskListSearchService
 import com.ritense.processdocument.service.CorrelationService
 import com.ritense.processdocument.service.CorrelationServiceImpl
@@ -47,6 +48,7 @@ import com.ritense.processdocument.tasksearch.TaskListSearchFieldV2Mapper
 import com.ritense.processdocument.tasksearch.TaskSearchFieldDeployer
 import com.ritense.processdocument.tasksearch.TaskSearchFieldExporter
 import com.ritense.processdocument.tasksearch.TaskSearchFieldImporter
+import com.ritense.processdocument.web.CaseDefinitionProcessManagementResource
 import com.ritense.processdocument.web.TaskListResource
 import com.ritense.search.repository.SearchFieldV2Repository
 import com.ritense.search.service.SearchFieldV2Service
@@ -341,5 +343,13 @@ class ProcessDocumentsAutoConfiguration {
         return DefaultProcessDefinitionCaseDefinitionLinker(
             processDefinitionCaseDefinitionService
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CaseDefinitionProcessManagementResource::class)
+    fun caseDefinitionProcessManagementResource(
+        caseDefinitionProcessLinkService: CaseDefinitionProcessLinkService
+    ): CaseDefinitionProcessManagementResource {
+        return CaseDefinitionProcessManagementResource(caseDefinitionProcessLinkService)
     }
 }

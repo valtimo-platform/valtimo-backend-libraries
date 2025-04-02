@@ -29,7 +29,7 @@ class CamundaDecisionService(
         // It is not possible to look for a decision definition by version tag so we get them all and filter based on the version tag
         val decisionDefinitions = repositoryService
             .createDecisionDefinitionQuery()
-            .versionTag(caseDefinitionId.toString())
+            .versionTag("CD:$caseDefinitionId")
             .list()
 
         return decisionDefinitions
@@ -41,7 +41,7 @@ class CamundaDecisionService(
 
         val decisionDefinition = repositoryService
             .createDecisionDefinitionQuery()
-            .versionTag(caseDefinitionId.toString())
+            .versionTag("CD:$caseDefinitionId")
             .decisionDefinitionKey(decisionDefinitionKey)
             .singleResult()
 
@@ -61,8 +61,10 @@ class CamundaDecisionService(
             .list()
 
         if (allDecisions.size > 1 || allProcesses.isNotEmpty()) {
-            throw IllegalStateException("Failed to delete decision definition $decisionDefinitionKey for case definition $caseDefinitionId. " +
-                "The deployment ${decisionDefinition.deploymentId} has more resources than only the single decision definition.")
+            throw IllegalStateException(
+                "Failed to delete decision definition $decisionDefinitionKey for case definition $caseDefinitionId. " +
+                    "The deployment ${decisionDefinition.deploymentId} has more resources than only the single decision definition."
+            )
         } else {
             repositoryService.deleteDeployment(decisionDefinition.deploymentId)
         }

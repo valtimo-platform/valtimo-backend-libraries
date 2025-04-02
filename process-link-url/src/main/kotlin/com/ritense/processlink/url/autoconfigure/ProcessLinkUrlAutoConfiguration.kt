@@ -20,7 +20,7 @@ package com.ritense.processlink.url.autoconfigure
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.ValtimoAuthorizationService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
-import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.processlink.url.configuration.URLProcessLinkSecurityConfigurer
@@ -81,7 +81,7 @@ class ProcessLinkUrlAutoConfiguration {
     fun urlProcessLinkService(
         processLinkService: ProcessLinkService,
         documentService: JsonSchemaDocumentService,
-        processDocumentAssociationService: ProcessDocumentAssociationService,
+        processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
         processDocumentService: ProcessDocumentService,
         repositoryService: CamundaRepositoryService,
         applicationEventPublisher: ApplicationEventPublisher,
@@ -92,7 +92,7 @@ class ProcessLinkUrlAutoConfiguration {
     ) = URLProcessLinkService(
         processLinkService,
         documentService,
-        processDocumentAssociationService,
+        processDefinitionCaseDefinitionService,
         processDocumentService,
         repositoryService,
         objectMapper,

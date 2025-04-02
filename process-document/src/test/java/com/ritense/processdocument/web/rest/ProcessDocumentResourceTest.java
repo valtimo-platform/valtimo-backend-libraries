@@ -51,7 +51,7 @@ import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndComplete
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndStartProcessRequest;
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest;
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest;
-import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService;
+import com.ritense.processdocument.service.CaseDefinitionProcessLinkService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService;
 import com.ritense.processdocument.service.impl.result.ModifyDocumentAndCompleteTaskResultSucceeded;
@@ -91,7 +91,7 @@ class ProcessDocumentResourceTest extends BaseTest {
     @MockBean
     private CamundaProcessJsonSchemaDocumentAssociationService processDocumentAssociationService;
 
-    private DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService;
+    private CaseDefinitionProcessLinkService caseDefinitionProcessLinkService;
     private MockMvc mockMvc;
     private CamundaProcessJsonSchemaDocumentDefinition processDocumentDefinition;
     private ProcessDocumentInstanceDto processDocumentInstance;
@@ -105,11 +105,11 @@ class ProcessDocumentResourceTest extends BaseTest {
         objectMapper = MapperSingleton.INSTANCE.get();
         processDocumentService = mock(CamundaProcessJsonSchemaDocumentService.class);
         processDocumentAssociationService = mock(CamundaProcessJsonSchemaDocumentAssociationService.class);
-        documentDefinitionProcessLinkService = mock(DocumentDefinitionProcessLinkService.class);
+        caseDefinitionProcessLinkService = mock(CaseDefinitionProcessLinkService.class);
         ProcessDocumentResource processDocumentResource = new ProcessDocumentResource(
             processDocumentService,
             processDocumentAssociationService,
-            documentDefinitionProcessLinkService
+            caseDefinitionProcessLinkService
         );
 
         mockMvc = MockMvcBuilders.standaloneSetup(processDocumentResource)
