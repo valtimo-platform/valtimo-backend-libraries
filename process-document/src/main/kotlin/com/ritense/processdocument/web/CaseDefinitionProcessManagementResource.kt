@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @SkipComponentScan
-@RequestMapping(value = ["/api/mangement"], produces = [ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE])
+@RequestMapping(value = ["/api/management"], produces = [ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE])
 class CaseDefinitionProcessManagementResource(
     private val caseDefinitionProcessLinkService: CaseDefinitionProcessLinkService
 ) {
