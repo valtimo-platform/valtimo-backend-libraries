@@ -49,7 +49,6 @@ import java.util.UUID
 class URLProcessLinkService(
     private val processLinkService: ProcessLinkService,
     private val documentService: JsonSchemaDocumentService,
-    private val processDocumentAssociationService: ProcessDocumentAssociationService,
     private val processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
     private val processDocumentService: ProcessDocumentService,
     private val repositoryService: CamundaRepositoryService,
