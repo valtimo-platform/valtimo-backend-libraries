@@ -16,6 +16,7 @@
 
 package com.ritense.document.domain.impl.snapshot;
 
+import com.ritense.document.domain.CaseTag;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.InternalCaseStatusId;
@@ -26,13 +27,16 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.relation.DocumentRelation;
+import com.ritense.document.web.rest.dto.CaseTagResponseDto;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Transient;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -55,6 +59,11 @@ public class HistoricDocument implements Document {
 
     @Embedded
     private InternalCaseStatusId internalStatus;
+
+    // TODO: discuss with product team
+    // Not persisting caseTags. HistoricDocument will be deprecated.
+    @Transient
+    private Set<CaseTag> caseTags;
 
     @Transient
     private int version;
@@ -145,6 +154,13 @@ public class HistoricDocument implements Document {
         } else {
             return internalStatus.getKey();
         }
+    }
+
+    // TODO: discuss with product team
+    // Case tags are not supported for historic documents
+    @Override
+    public List<CaseTagResponseDto> caseTags() {
+        return Collections.emptyList();
     }
 
     @Override
