@@ -41,12 +41,12 @@ class CamundaDecisionServiceIT(
 
         val dmnModel1 = Dmn.readModelFromStream(getDecisionXml("delete-test-1").byteInputStream())
         dmnModel1.getDefinitions().getChildElementsByType<Decision>(Decision::class.java).forEach(
-            Consumer { dmn: Decision -> dmn.setVersionTag("test-1.0.0") }
+            Consumer { dmn: Decision -> dmn.setVersionTag("CD:everything:1.0.0") }
         )
 
         val dmnModel2 = Dmn.readModelFromStream(getDecisionXml("delete-test-2").byteInputStream())
         dmnModel2.getDefinitions().getChildElementsByType<Decision>(Decision::class.java).forEach(
-            Consumer { dmn: Decision -> dmn.setVersionTag("test-1.0.0") }
+            Consumer { dmn: Decision -> dmn.setVersionTag("CD:everything:1.0.0") }
         )
 
         val deployment = repositoryService
@@ -56,10 +56,10 @@ class CamundaDecisionServiceIT(
             .deployWithResult()
 
         val exception = assertThrows<IllegalStateException> {
-            camundaDecisionService.deleteDecisionDefinition(CaseDefinitionId("test", "1.0.0"), "delete-test-1")
+            camundaDecisionService.deleteDecisionDefinition(CaseDefinitionId("everything", "1.0.0"), "delete-test-1")
         }
 
-        assertEquals("Failed to delete decision definition delete-test-1 for case definition test-1.0.0. " +
+        assertEquals("Failed to delete decision definition delete-test-1 for case definition everything:1.0.0. " +
             "The deployment ${deployment.id} has more resources than only the single decision definition.", exception.message)
     }
 

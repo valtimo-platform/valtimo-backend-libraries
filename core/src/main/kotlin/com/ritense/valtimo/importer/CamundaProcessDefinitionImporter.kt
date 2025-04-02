@@ -31,10 +31,7 @@ class CamundaProcessDefinitionImporter(
 
     override fun dependsOn(): Set<String> = setOf(CASE_DEFINITION)
 
-    override fun supports(fileName: String): Boolean {
-        return fileName.startsWith(PATH)
-            && fileName.substringAfterLast('.') == EXTENSION
-    }
+    override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
         request.content.inputStream().use {
@@ -47,7 +44,6 @@ class CamundaProcessDefinitionImporter(
     }
 
     private companion object {
-            private const val PATH = "/bpmn/"
-            private const val EXTENSION = "bpmn"
+        val FILENAME_REGEX = """/bpmn/([^/]+)\.bpmn""".toRegex()
     }
 }

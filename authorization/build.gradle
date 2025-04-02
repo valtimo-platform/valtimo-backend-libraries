@@ -51,6 +51,10 @@ dependencies {
     testImplementation (project(":core")) {
         exclude(group: "com.ritense.valtimo", module: "authorization")
     }
+    testImplementation (project(":case")) {
+        exclude(group: "com.ritense.valtimo", module: "authorization")
+    }
+
     testImplementation project(":test-utils-common")
 
     jar {

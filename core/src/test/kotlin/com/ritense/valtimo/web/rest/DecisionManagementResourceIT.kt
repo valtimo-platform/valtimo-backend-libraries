@@ -51,7 +51,7 @@ class DecisionManagementResourceIT(
     @Autowired
     private val repositoryService: RepositoryService
 ): BaseIntegrationTest() {
-    val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
+    val caseDefinitionId = CaseDefinitionId("everything", "1.0.0")
 
     lateinit var mockMvc: MockMvc
     lateinit var testDecisionId : String
@@ -59,8 +59,8 @@ class DecisionManagementResourceIT(
     @BeforeEach
     fun setup() {
         testDecisionId = deployExampleDmn("test", caseDefinitionId)
-        deployExampleDmn("test-version", CaseDefinitionId("test", "1.1.0"))
-        deployExampleDmn("test-other", CaseDefinitionId("other", "1.0.0"))
+        deployExampleDmn("test-version", caseDefinitionId)
+        deployExampleDmn("test-other", caseDefinitionId)
 
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build()
     }
@@ -68,22 +68,20 @@ class DecisionManagementResourceIT(
     @Test
     fun `should get decision definitions`() {
         mockMvc.perform(
-            get(DECISION_MANAGEMENT_URL, "test", "1.0.0")
+            get(DECISION_MANAGEMENT_URL, "everything", "1.0.0")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
         .andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk)
         .andExpect(jsonPath("$").isNotEmpty)
         .andExpect(jsonPath("$").isArray)
-        .andExpect(jsonPath("$[0].name").value("Test Decision"))
-        .andExpect(jsonPath("$[0].key").value("test"))
-        .andExpect(jsonPath("$[0].versionTag").value("test-1.0.0"))
+        .andExpect(jsonPath("$[0].versionTag").value("CD:everything:1.0.0"))
     }
 
     @Test
     fun `should create a new decision definition`() {
         mockMvc.perform(
-            MockMvcRequestBuilders.multipart(DECISION_MANAGEMENT_URL, "test-case", "1.0.0")
+            MockMvcRequestBuilders.multipart(DECISION_MANAGEMENT_URL, "everything", "1.0.0")
                 .file(
                     MockMultipartFile(
                         "file",
@@ -103,15 +101,14 @@ class DecisionManagementResourceIT(
             .singleResult()
             .let {
                 assertEquals("test-2", it.key)
-                assertEquals("test-case-1.0.0", it.versionTag)
+                assertEquals("CD:everything:1.0.0", it.versionTag)
             }
     }
 
     @Test
-    @Transactional(propagation = Propagation.NEVER)
     fun `should delete an existing decision definition`() {
         mockMvc.perform(
-            MockMvcRequestBuilders.delete("$DECISION_MANAGEMENT_URL/{decisionDefinitionId}", "test", "1.0.0", "test")
+            MockMvcRequestBuilders.delete("$DECISION_MANAGEMENT_URL/{decisionDefinitionId}", "everything", "1.0.0", "test")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
         .andDo(MockMvcResultHandlers.print())

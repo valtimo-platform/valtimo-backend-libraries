@@ -1,0 +1,7 @@
+{
+    "key": "everything",
+    "name": "Everything",
+    "versionTag": "1.0.0",
+    "canHaveAssignee": true,
+    "autoAssignTasks": true
+}
