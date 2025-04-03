@@ -16,14 +16,23 @@
 
 package com.ritense.valueresolver
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.module.kotlin.convertValue
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.valtimo.contract.json.MapperSingleton
 import java.time.LocalDate
 import java.util.UUID
 import org.assertj.core.api.Assertions
 import org.camunda.bpm.engine.RuntimeService
+import org.camunda.bpm.engine.impl.context.Context
+import org.camunda.bpm.engine.impl.interceptor.CommandContext
 import org.camunda.bpm.engine.variable.Variables
+import org.camunda.bpm.engine.variable.impl.value.ObjectValueImpl
+import org.camunda.bpm.engine.variable.impl.value.builder.SerializedObjectValueBuilderImpl
 import org.camunda.community.mockito.delegate.DelegateCaseVariableInstanceFake
 import org.camunda.community.mockito.delegate.DelegateTaskFake
 import org.camunda.community.mockito.process.ProcessInstanceFake
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import org.mockito.kotlin.mock
@@ -32,7 +41,15 @@ import org.mockito.kotlin.whenever
 
 internal class ProcessVariableValueResolverTest {
     private val runtimeService: RuntimeService = mock(defaultAnswer = RETURNS_DEEP_STUBS)
-    private val processVariableValueResolver = ProcessVariableValueResolverFactory(runtimeService)
+    private val objectMapper = MapperSingleton.get()
+    private val processVariableValueResolver = ProcessVariableValueResolverFactory(runtimeService, objectMapper)
+
+    @BeforeEach
+    fun setUp() {
+        val commandContext: CommandContext = mock()
+        whenever(commandContext.variableInstanceManager).thenReturn(mock())
+        Context.setCommandContext(commandContext)
+    }
 
     @Test
     fun `should resolve requestedValue from process variables`() {
@@ -54,6 +71,56 @@ internal class ProcessVariableValueResolverTest {
 
         Assertions.assertThat(somePropertyValue).isEqualTo(true)
         Assertions.assertThat(serializedValue).isEqualTo(now)
+    }
+
+    @Test
+    fun `should resolve legacy requestedValue with dots from process variables`() {
+        val variableScope = DelegateTaskFake()
+            .withVariable("person.firstName", "John")
+
+        val resolver = processVariableValueResolver.createResolver(
+            processInstanceId = UUID.randomUUID().toString(),
+            variableScope = variableScope
+        )
+
+        Assertions.assertThat(resolver.apply("person.firstName")).isEqualTo("John")
+    }
+
+    @Test
+    fun `should resolve json from process variables`() {
+        val personVariable = objectMapper.readValue<JsonNode>("""
+                {
+                    "firstName":"John",
+                    "birthDate":"2000-01-01",
+                    "verified": true,
+                    "location":{
+                        "streetName":"Funenpark",
+                        "streetNumber": 1
+                    }
+                }
+            """)
+        val variableScope = DelegateTaskFake()
+            .withVariable("person", personVariable)
+
+        val resolver = processVariableValueResolver.createResolver(
+            processInstanceId =  UUID.randomUUID().toString(),
+            variableScope = variableScope
+        )
+
+        Assertions.assertThat(resolver.apply("/person/firstName")).isEqualTo("John")
+        Assertions.assertThat(resolver.apply("/person/birthDate")).isEqualTo("2000-01-01")
+        Assertions.assertThat(resolver.apply("/person/verified")).isEqualTo(true)
+        Assertions.assertThat(resolver.apply("/person/location/streetName")).isEqualTo("Funenpark")
+        Assertions.assertThat(resolver.apply("/person/location/streetNumber")).isEqualTo(1)
+        Assertions.assertThat(resolver.apply("/person/location")).isEqualTo(mapOf("streetName" to "Funenpark", "streetNumber" to 1))
+        Assertions.assertThat(resolver.apply("/person")).isEqualTo(objectMapper.convertValue<Map<String, Any?>>(personVariable))
+        Assertions.assertThat(resolver.apply("person.firstName")).isEqualTo("John")
+        Assertions.assertThat(resolver.apply("person.birthDate")).isEqualTo("2000-01-01")
+        Assertions.assertThat(resolver.apply("person.verified")).isEqualTo(true)
+        Assertions.assertThat(resolver.apply("person.location.streetName")).isEqualTo("Funenpark")
+        Assertions.assertThat(resolver.apply("person.location.streetNumber")).isEqualTo(1)
+        Assertions.assertThat(resolver.apply("person.location")).isEqualTo(mapOf("streetName" to "Funenpark", "streetNumber" to 1))
+        Assertions.assertThat(resolver.apply("person")).isEqualTo(personVariable)
     }
 
     @Test
@@ -98,8 +165,55 @@ internal class ProcessVariableValueResolverTest {
     }
 
     @Test
+    fun `should resolve json from process variables by document ID`() {
+        val personVariable = objectMapper.readValue<JsonNode>("""
+                {
+                    "firstName":"John",
+                    "birthDate":"2000-01-01",
+                    "verified": true,
+                    "location":{
+                        "streetName":"Funenpark",
+                        "streetNumber": 1
+                    }
+                }
+            """)
+        val documentInstanceId = UUID.randomUUID().toString()
+        val processInstance = ProcessInstanceFake.builder().processInstanceId(UUID.randomUUID().toString()).build()
+        whenever(runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(documentInstanceId).list())
+            .thenReturn(listOf(processInstance))
+        val variableInstance = DelegateCaseVariableInstanceFake().create(
+            "person",
+            SerializedObjectValueBuilderImpl(ObjectValueImpl(personVariable)).create()
+        )
+        whenever(runtimeService.createVariableInstanceQuery()
+            .processInstanceIdIn(processInstance.id)
+            .variableName("person")
+            .list())
+            .thenReturn(listOf(variableInstance))
+
+        val resolver = processVariableValueResolver.createResolver(
+            documentId = documentInstanceId
+        )
+
+        Assertions.assertThat(resolver.apply("/person/firstName")).isEqualTo("John")
+        Assertions.assertThat(resolver.apply("/person/birthDate")).isEqualTo("2000-01-01")
+        Assertions.assertThat(resolver.apply("/person/verified")).isEqualTo(true)
+        Assertions.assertThat(resolver.apply("/person/location/streetName")).isEqualTo("Funenpark")
+        Assertions.assertThat(resolver.apply("/person/location/streetNumber")).isEqualTo(1)
+        Assertions.assertThat(resolver.apply("/person/location")).isEqualTo(mapOf("streetName" to "Funenpark", "streetNumber" to 1))
+        Assertions.assertThat(resolver.apply("/person")).isEqualTo(objectMapper.convertValue<Map<String, Any?>>(personVariable))
+        Assertions.assertThat(resolver.apply("person.firstName")).isEqualTo("John")
+        Assertions.assertThat(resolver.apply("person.birthDate")).isEqualTo("2000-01-01")
+        Assertions.assertThat(resolver.apply("person.verified")).isEqualTo(true)
+        Assertions.assertThat(resolver.apply("person.location.streetName")).isEqualTo("Funenpark")
+        Assertions.assertThat(resolver.apply("person.location.streetNumber")).isEqualTo(1)
+        Assertions.assertThat(resolver.apply("person.location")).isEqualTo(mapOf("streetName" to "Funenpark", "streetNumber" to 1))
+        Assertions.assertThat(resolver.apply("person")).isEqualTo(objectMapper.convertValue<Map<String, Any?>>(personVariable))
+    }
+
+    @Test
     fun `should handle value from process variables`() {
-        val variableScope = DelegateTaskFake()
+        val variableScope = mock<DelegateTaskFake>()
         val processInstanceId = UUID.randomUUID().toString()
 
         processVariableValueResolver.handleValues(
@@ -107,5 +221,64 @@ internal class ProcessVariableValueResolverTest {
         )
 
         verify(runtimeService).setVariables(processInstanceId, mapOf("firstName" to "John"))
+    }
+
+    @Test
+    fun `should handle value from process variables from runtimeService`() {
+        val processInstanceId = UUID.randomUUID().toString()
+
+        processVariableValueResolver.handleValues(
+            processInstanceId, null, mapOf("firstName" to "John")
+        )
+
+        verify(runtimeService).setVariables(processInstanceId, mapOf("firstName" to "John"))
+    }
+
+    @Test
+    fun `should handle json values from process variables`() {
+        val processInstanceId = UUID.randomUUID().toString()
+
+        processVariableValueResolver.handleValues(
+            processInstanceId, null, mapOf("person.firstName" to "John")
+        )
+
+        verify(runtimeService).setVariables(processInstanceId, mapOf("person" to mapOf("firstName" to "John")))
+    }
+
+    @Test
+    fun `should handle json values and merge them with existing process variables`() {
+        val processInstanceId = UUID.randomUUID().toString()
+        whenever(runtimeService.getVariables(processInstanceId, listOf("person")))
+            .thenReturn(mapOf("person" to mapOf("firstName" to "John", "lastName" to "Doe")))
+
+        processVariableValueResolver.handleValues(
+            processInstanceId, null, mapOf("person.firstName" to "Hans")
+        )
+
+        verify(runtimeService).setVariables(
+            processInstanceId,
+            mapOf("person" to mapOf("firstName" to "Hans", "lastName" to "Doe"))
+        )
+    }
+
+    @Test
+    fun `should handle json arrays and merge them with existing process variables`() {
+        val processInstanceId = UUID.randomUUID().toString()
+        whenever(runtimeService.getVariables(processInstanceId, listOf("employees")))
+            .thenReturn(mapOf("employees" to listOf(mapOf("firstName" to "John", "lastName" to "Doe"))))
+
+        processVariableValueResolver.handleValues(
+            processInstanceId, null, mapOf("employees.0.firstName" to "Hans", "employees.-.firstName" to "Peter")
+        )
+
+        verify(runtimeService).setVariables(
+            processInstanceId,
+            mapOf(
+                "employees" to listOf(
+                    mapOf("firstName" to "Hans", "lastName" to "Doe"),
+                    mapOf("firstName" to "Peter")
+                )
+            )
+        )
     }
 }
