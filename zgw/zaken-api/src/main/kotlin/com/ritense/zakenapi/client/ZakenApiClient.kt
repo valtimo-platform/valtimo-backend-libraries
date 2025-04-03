@@ -532,7 +532,6 @@ class ZakenApiClient(
         request: ZaakObjectRequest
     ): ZaakObject {
         validateUrlHost(baseUrl, request.zaakUrl)
-        request.objectUrl = request.objectUrl
 
         var result = buildRestClient(authentication)
             .post()
