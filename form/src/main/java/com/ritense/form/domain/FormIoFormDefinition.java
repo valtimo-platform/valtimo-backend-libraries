@@ -133,7 +133,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         assertArgumentNotNull(formDefinition, "formDefinition is required");
         this.id = id;
         this.name = name;
-        this.caseDefinitionId = caseDefinitionId != null ? caseDefinitionId : null;
+        this.caseDefinitionId = caseDefinitionId;
         setFormDefinition(formDefinition);
         setReadOnly(isReadOnly);
         this.isNew = true;
