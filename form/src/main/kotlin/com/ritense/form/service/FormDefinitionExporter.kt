@@ -32,12 +32,17 @@ class FormDefinitionExporter(
     override fun supports() = FormDefinitionExportRequest::class.java
 
     override fun export(request: FormDefinitionExportRequest): ExportResult {
-        // TODO: use caseDefinitionId to retrieve form definition and write to the updated path
-        val formDefinition = formDefinitionService.getFormDefinitionByName(request.formDefinitionName).orElseThrow()
+        val formDefinition =
+            formDefinitionService.getFormDefinitionByName(request.formDefinitionName, request.caseDefinitionId)
+                .orElseThrow()
+
+        val formattedCaseDefinitionVersion = request.caseDefinitionId.versionTag.let {
+            "${it.major}-${it.minor}-${it.patch}"
+        }
 
         return ExportResult(
             ExportFile(
-                PATH.format(formDefinition.name),
+                PATH.format(request.caseDefinitionId.key, formattedCaseDefinitionVersion, formDefinition.name),
                 objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(formDefinition.formDefinition)
             )
         )
