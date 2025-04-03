@@ -220,7 +220,7 @@ internal class ProcessVariableValueResolverTest {
             processInstanceId, variableScope, mapOf("firstName" to "John")
         )
 
-        verify(variableScope).setVariables(mapOf("firstName" to "John"))
+        verify(runtimeService).setVariables(processInstanceId, mapOf("firstName" to "John"))
     }
 
     @Test

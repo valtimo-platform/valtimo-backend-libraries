@@ -139,7 +139,7 @@ internal class ValueResolverFactoryServiceImplTest {
             )
         )
 
-        verify(variableScope).setVariables(mapOf(
+        verify(runtimeService).setVariables(processInstanceId, mapOf(
             "firstName" to "John",
             "lastName" to "Doe",
             "active" to true,
