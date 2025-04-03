@@ -133,7 +133,7 @@ class PrefillFormService(
             .filter { FormIoFormDefinition.HAS_PREFILL_ENABLED.test(it) }
             .mapNotNull {
                 val inputKey = FormIoFormDefinition.getKey(it)
-                val sourceKey = FormIoFormDefinition.getSourceKey(it)
+                val sourceKey = FormIoFormDefinition.resolveSourceKey(it)
                 if (inputKey.isPresent && sourceKey.isPresent) {
                     Pair(inputKey.get(), sourceKey.get())
                 } else {
@@ -164,11 +164,11 @@ class PrefillFormService(
     }
 
     private fun prefillProcessVariables(formDefinition: FormIoFormDefinition, document: Document) {
-        val processVarsNames = formDefinition.extractProcessVarNames()
+        val processVarPointers = formDefinition.extractProcessVarJsonPointers()
         val processInstanceVariables = runWithoutAuthorization {
             processDocumentAssociationService.findProcessDocumentInstances(document.id())
                 .map { it.processDocumentInstanceId().processInstanceId().toString() }
-                .flatMap { camundaProcessService.getProcessInstanceVariables(it, processVarsNames).entries }
+                .flatMap { camundaProcessService.getProcessInstanceVariablesByJsonPointers(it, processVarPointers).entries }
                 .associate { it.key to it.value }
         }
         if (processInstanceVariables.isNotEmpty()) {

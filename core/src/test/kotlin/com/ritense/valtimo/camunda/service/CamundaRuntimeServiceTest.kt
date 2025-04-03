@@ -16,12 +16,15 @@
 
 package com.ritense.valtimo.camunda.service
 
+import com.fasterxml.jackson.core.JsonPointer
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
 import com.ritense.valtimo.camunda.domain.CamundaVariableInstance
 import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkRepository
 import com.ritense.valtimo.camunda.repository.CamundaVariableInstanceRepository
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.camunda.bpm.engine.RuntimeService
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -35,15 +38,21 @@ class CamundaRuntimeServiceTest {
     val camundaVariableInstanceRepository: CamundaVariableInstanceRepository = mock()
     val camundaIdentityLinkRepository: CamundaIdentityLinkRepository = mock()
     val authorizationService: AuthorizationService = mock()
+    lateinit var camundaRuntimeService: CamundaRuntimeService
 
-    @Test
-    fun `should get variables`() {
-        val camundaRuntimeService = CamundaRuntimeService(
+    @BeforeEach
+    fun beforeEach() {
+        camundaRuntimeService = CamundaRuntimeService(
             runtimeService,
             camundaVariableInstanceRepository,
             camundaIdentityLinkRepository,
-            authorizationService
+            authorizationService,
+            MapperSingleton.get(),
         )
+    }
+
+    @Test
+    fun `should get variables`() {
         val variableInstances = listOf(
             createMockedVariableInstance("val1", "nothing"),
             createMockedVariableInstance("val2", "something")
@@ -59,12 +68,6 @@ class CamundaRuntimeServiceTest {
 
     @Test
     fun `should get process variables with empty values`() {
-        val camundaRuntimeService = CamundaRuntimeService(
-            runtimeService,
-            camundaVariableInstanceRepository,
-            camundaIdentityLinkRepository,
-            authorizationService
-        )
         val variableInstances = listOf(
             createMockedVariableInstance("val1", null),
             createMockedVariableInstance("val2", "something")
@@ -75,6 +78,23 @@ class CamundaRuntimeServiceTest {
         }
         assertEquals(1, processInstanceVariables.size)
         assertEquals("something", processInstanceVariables["val2"])
+    }
+
+    @Test
+    fun `should get process variables with jsonPointer`() {
+        val variableInstances = listOf(
+            createMockedVariableInstance("person", mapOf("firstName" to "John", "lastName" to "Doe")),
+        )
+        whenever(camundaVariableInstanceRepository.findAll(any(), any<Sort>())).thenReturn(variableInstances)
+        val result = runWithoutAuthorization {
+            camundaRuntimeService.getVariablesByJsonPointers("123", listOf(
+                JsonPointer.valueOf("/person/firstName"),
+                JsonPointer.valueOf("/person/lastName"),
+            ))
+        }
+        assertEquals(2, result.size)
+        assertEquals("John", result["/person/firstName"])
+        assertEquals("Doe", result["/person/lastName"])
     }
 
     private fun createMockedVariableInstance(name: String, value: Any?): CamundaVariableInstance {
