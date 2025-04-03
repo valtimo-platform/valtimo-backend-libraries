@@ -43,7 +43,7 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
 
     @Override
     public Page<FormIoFormDefinition> getAll(Pageable pageable) {
-        return formDefinitionRepository.findAll(pageable);
+        return formDefinitionRepository.findByCaseDefinitionIdIsNull(pageable);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
 
     @Override
     public Page<? extends FormDefinition> queryFormDefinitions(String searchTerm, Pageable pageable) {
-        return formDefinitionRepository.findAllByNameContainingIgnoreCase(searchTerm, pageable);
+        return formDefinitionRepository.findAllWithoutCaseByNameContainingIgnoreCase(searchTerm, pageable);
     }
 
     @Override
