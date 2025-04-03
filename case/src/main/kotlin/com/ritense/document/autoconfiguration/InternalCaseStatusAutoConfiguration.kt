@@ -19,6 +19,7 @@ package com.ritense.document.autoconfiguration
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.case.service.CaseDefinitionService
+import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.document.exporter.InternalCaseStatusExporter
 import com.ritense.document.importer.InternalCaseStatusImporter
 import com.ritense.document.repository.InternalCaseStatusRepository
@@ -51,10 +52,10 @@ class InternalCaseStatusAutoConfiguration {
     @ConditionalOnMissingBean(InternalCaseStatusService::class)
     fun internalCaseStatusService(
         repository: InternalCaseStatusRepository,
-        caseDefinitionService: CaseDefinitionService,
+        activeCaseDefinitionService: ActiveCaseDefinitionService,
         authorizationService: AuthorizationService,
     ): InternalCaseStatusService {
-        return InternalCaseStatusService(repository, caseDefinitionService, authorizationService)
+        return InternalCaseStatusService(repository, activeCaseDefinitionService, authorizationService)
     }
 
     @Bean

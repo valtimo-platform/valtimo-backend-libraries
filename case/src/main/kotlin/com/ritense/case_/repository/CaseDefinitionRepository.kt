@@ -29,22 +29,11 @@ interface CaseDefinitionRepository
     : JpaRepository<CaseDefinition, CaseDefinitionId>, JpaSpecificationExecutor<CaseDefinition> {
     fun findFirstByIdKeyOrderByIdVersionTagDesc(key: String): CaseDefinition?
 
-    @Query(value = "" +
-        "SELECT cd.* " +
-        "FROM case_definition cd " +
-        "INNER JOIN ( " +
-        "    SELECT MAX(case_definition_version_tag) AS case_definition_version_tag, " +
-        "           case_definition_key " +
-        "    FROM case_definition " +
-        "    GROUP BY case_definition_key " +
-        ") as cd2 ON cd2.case_definition_key = cd.case_definition_key " +
-        "AND cd2.case_definition_version_tag = cd.case_definition_version_tag " +
-        "ORDER BY 1 ",
-        countQuery = "" +
-            "SELECT COUNT(DISTINCT case_definition.case_definition_key)" +
-            "FROM case_definition",
-        nativeQuery = true)
-    fun findAllLatestCaseDefinitions(pageable: Pageable): Page<CaseDefinition>
+    fun findAllByActiveIsTrue(pageable: Pageable): Page<CaseDefinition>
+
+    fun findByActiveIsTrueAndIdKey(caseDefinitionKey: String): CaseDefinition?
+
+    fun findAllByIdKeyOrderByIdVersionTagDesc(caseDefinitionKey: String): List<CaseDefinition>
 
     @Query(value = "" +
         "SELECT c.id.versionTag " +
