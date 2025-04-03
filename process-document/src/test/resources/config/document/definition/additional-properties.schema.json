@@ -1,0 +1,9 @@
+{
+    "$id": "additional-properties.schema",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Not a house",
+    "type": "object",
+    "properties": {
+        "additionalProperties": true
+    }
+}

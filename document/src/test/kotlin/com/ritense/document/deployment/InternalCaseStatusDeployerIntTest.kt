@@ -27,7 +27,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @Transactional
-class InternalCaseDeployerIntTest @Autowired constructor(
+class InternalCaseStatusDeployerIntTest @Autowired constructor(
     private val internalCaseStatusRepository: InternalCaseStatusRepository
 ) : BaseIntegrationTest() {
 
@@ -50,7 +50,7 @@ class InternalCaseDeployerIntTest @Autowired constructor(
         val internalCaseStatuses =
             internalCaseStatusRepository.findByIdCaseDefinitionNameOrderByOrder("house")
 
-        assertEquals(InternalCaseStatusColor.BLUE, internalCaseStatuses.filter{ it.title == "Closed" }.first().color)
+        assertEquals(InternalCaseStatusColor.BLUE, internalCaseStatuses.first { it.title == "Closed" }.color)
     }
 
 }
