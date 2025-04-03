@@ -34,6 +34,8 @@ public interface FormDefinitionRepository extends JpaRepository<FormIoFormDefini
 
     List<FormIoFormDefinition> findAllByOrderByNameAsc();
 
+    Page<FormIoFormDefinition> findByCaseDefinitionIdIsNull(Pageable pageable);
+
     Optional<FormIoFormDefinition> findByName(String name);
 
     Optional<FormIoFormDefinition> findByIdAndCaseDefinitionId(
@@ -47,6 +49,9 @@ public interface FormDefinitionRepository extends JpaRepository<FormIoFormDefini
 
     @Query("SELECT f FROM FormIoFormDefinition f WHERE upper(f.name) LIKE upper(concat('%', :name, '%'))")
     Page<FormDefinition> findAllByNameContainingIgnoreCase(@Param("name") String name, Pageable pageable);
+
+    @Query("SELECT f FROM FormIoFormDefinition f WHERE upper(f.name) LIKE upper(concat('%', :name, '%')) AND f.caseDefinitionId IS NULL")
+    Page<FormDefinition> findAllWithoutCaseByNameContainingIgnoreCase(@Param("name") String name, Pageable pageable);
 
     @Query("" +
         "SELECT f " +
