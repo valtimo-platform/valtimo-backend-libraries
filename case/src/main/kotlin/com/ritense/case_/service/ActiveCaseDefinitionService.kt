@@ -36,7 +36,7 @@ class ActiveCaseDefinitionService(
             ?: throw UnknownCaseDefinitionException(caseDefinitionKey)
     }
 
-    fun setGlobalActiveCaseDefinition(caseDefinitionKey: CaseDefinitionId): CaseDefinition {
-        return caseDefinitionService.setActiveCaseDefinition(caseDefinitionKey)
+    fun setGlobalActiveCaseDefinition(caseDefinitionId: CaseDefinitionId): CaseDefinition {
+        return caseDefinitionService.setActiveCaseDefinition(caseDefinitionId)
     }
 }
