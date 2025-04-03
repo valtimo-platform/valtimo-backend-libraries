@@ -16,6 +16,7 @@
 
 package com.ritense.valueresolver.autoconfiguration
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.valueresolver.FixedValueResolverFactory
 import com.ritense.valueresolver.ProcessVariableValueResolverFactory
 import com.ritense.valueresolver.ValueResolverFactory
@@ -65,8 +66,9 @@ class ValueResolverAutoConfiguration {
     @ConditionalOnMissingBean(ProcessVariableValueResolverFactory::class)
     fun processVariableValueResolver(
         runtimeService: RuntimeService,
+        objectMapper: ObjectMapper,
     ): ValueResolverFactory {
-        return ProcessVariableValueResolverFactory(runtimeService)
+        return ProcessVariableValueResolverFactory(runtimeService, objectMapper)
     }
 
     @Bean

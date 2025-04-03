@@ -44,7 +44,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 
-public class FormIoFormDefinitionTest extends BaseTest {
+class FormIoFormDefinitionTest extends BaseTest {
 
     @BeforeEach
     void setUp() {
@@ -52,7 +52,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void getProcessVarsNames() throws IOException {
+    void getProcessVarsNames() throws IOException {
         final var formDefinition = formDefinitionOf("process-variables-form-example");
         final List<String> processVarsNames = formDefinition.extractProcessVarNames();
 
@@ -63,7 +63,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldPreFill() throws IOException {
+    void shouldPreFill() throws IOException {
         final var formDefinition = formDefinitionOf("process-variables-form-example");
 
         var content = content(Map.of("pv", Map.of(
@@ -79,7 +79,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldPreFillForMultiLevelKey() throws IOException {
+    void shouldPreFillForMultiLevelKey() throws IOException {
         // Given
         Map<String, FormFieldDataResolver> resolvers = new HashMap<>();
         resolvers.put("some-bean", new FormFieldDataResolverImpl("externalPrefix"));
@@ -99,7 +99,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldPreFillForMultiLevelKeyWithPrefix() throws IOException {
+    void shouldPreFillForMultiLevelKeyWithPrefix() throws IOException {
         // Given
         Map<String, FormFieldDataResolver> resolvers = new HashMap<>();
         resolvers.put("some-bean", new FormFieldDataResolverImpl("externalPrefix"));
@@ -120,7 +120,22 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldNotEscapeHtmlAtPreFill() throws IOException {
+    void shouldPrefillWithSupportForJsonPointers() throws IOException {
+        final var formDefinition = formDefinitionOf("process-variables-with-json-pointers");
+        Map<String, Object> content = Map.of(
+            "person", Map.of("firstName", "John"),
+            "incidents", List.of(Map.of("name", "Err 123"))
+        );
+
+        final var formDefinitionPreFilled = formDefinition.preFillWith("pv", content);
+
+        final var components = formDefinitionPreFilled.getFormDefinition().get("components");
+        assertThat(components.get(0).get("defaultValue").asText()).isEqualTo("John");
+        assertThat(components.get(1).get("defaultValue").asText()).isEqualTo("Err 123");
+    }
+
+    @Test
+    void shouldNotEscapeHtmlAtPreFill() throws IOException {
         final var formDefinition = formDefinitionOf("process-variables-form-example");
 
         var content = content(Map.of("pv", Map.of("firstName", "</b>")));
@@ -131,7 +146,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldNotExtractProcessVarsWhenSubmissionIsEmpty() throws IOException {
+    void shouldNotExtractProcessVarsWhenSubmissionIsEmpty() throws IOException {
         final var formDefinition = formDefinitionOf("process-variables-form-example");
 
         final ObjectNode formData = JsonNodeFactory.instance.objectNode();
@@ -145,7 +160,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldExtractProcessVarsWithoutDisabledFieldsWhenFlagIsSet() throws IOException {
+    void shouldExtractProcessVarsWithoutDisabledFieldsWhenFlagIsSet() throws IOException {
         new FormAutoConfiguration(true);
 
         final var formDefinition = formDefinitionOf("process-variables-form-example");
@@ -165,7 +180,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldExtractProcessVarsWithDisabledFieldsWhenFlagIsNotSet() throws IOException {
+    void shouldExtractProcessVarsWithDisabledFieldsWhenFlagIsNotSet() throws IOException {
         new FormAutoConfiguration(false);
 
         final var formDefinition = formDefinitionOf("process-variables-form-example");
@@ -185,7 +200,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldExtractProcessVarsArrayValue() throws IOException {
+    void shouldExtractProcessVarsArrayValue() throws IOException {
         final var formDefinition = formDefinitionOf("process-variables-form-example");
 
         final ObjectNode formData = JsonNodeFactory.instance.objectNode();
@@ -203,7 +218,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldExtractProcessVarsArrayObject() throws IOException {
+    void shouldExtractProcessVarsArrayObject() throws IOException {
         final var formDefinition = formDefinitionOf("process-variables-upload-example");
 
         final var formData = MapperSingleton.get().readValue("""
@@ -237,7 +252,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldResolveTargetKeyFromKeyPvProperty() throws IOException {
+    void shouldResolveTargetKeyFromKeyPvProperty() throws IOException {
         final var formData = MapperSingleton.get().readValue("""
           {
               "key": "pv.uploadReceipt",
@@ -253,7 +268,23 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldResolveTargetKeyFromKeyDocProperty() throws IOException {
+    void shouldResolveNestedTargetKeyFromKeyPvProperty() throws IOException {
+        final var formData = MapperSingleton.get().readValue("""
+          {
+              "key": "pv.person.name",
+              "type": "documenten-api-file",
+              "input": true,
+              "label": "Upload receipt"
+          }
+        """, JsonNode.class);
+
+        var targetKey = FormIoFormDefinition.resolveTargetKey(formData).orElseThrow();
+
+        assertEquals("pv:person.name", targetKey);
+    }
+
+    @Test
+    void shouldResolveTargetKeyFromKeyDocProperty() throws IOException {
         final var formData = MapperSingleton.get().readValue("""
           {
               "key": "archive.uploadReceipt",
@@ -269,7 +300,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldResolveTargetKeyFromSourceKeyProperty() throws IOException {
+    void shouldResolveTargetKeyFromSourceKeyProperty() throws IOException {
         final var formData = MapperSingleton.get().readValue("""
           {
               "key": "key",
@@ -288,7 +319,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldResolveTargetKeyFromTargetKeyProperty() throws IOException {
+    void shouldResolveTargetKeyFromTargetKeyProperty() throws IOException {
         final var formData = MapperSingleton.get().readValue("""
           {
               "key": "pv.key",
@@ -308,21 +339,41 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldGetInputFieldsOnly() throws IOException {
+    void shouldResolveSourceKeyFromTargetKeyProperty() throws IOException {
+        final var formData = MapperSingleton.get().readValue("""
+          {
+              "key": "pv.key",
+              "type": "documenten-api-file",
+              "input": true,
+              "label": "Upload receipt",
+              "properties": {
+                  "sourceKey": "pv:sourceKey",
+                  "targetKey": "pv:uploadReceipt"
+              }
+          }
+        """, JsonNode.class);
+
+        var sourceKey = FormIoFormDefinition.resolveSourceKey(formData).orElseThrow();
+
+        assertEquals("pv:sourceKey", sourceKey);
+    }
+
+    @Test
+    void shouldGetInputFieldsOnly() throws IOException {
         final var formDefinition = formDefinitionOf("form-example-nested-components");
 
         assertThat(formDefinition.getInputFields()).hasSize(7);
     }
 
     @Test
-    public void shouldGetDocumentMappedFields() throws IOException {
+    void shouldGetDocumentMappedFields() throws IOException {
         final var formDefinition = formDefinitionOf("form-example-nested-components");
         var result = formDefinition.getDocumentMappedFields();
         assertThat(result).hasSize(13);
     }
 
     @Test
-    public void shouldNotRemoveDisabledFieldFromDocumentMappedFieldsWhenFlagIsEnabled() throws IOException {
+    void shouldNotRemoveDisabledFieldFromDocumentMappedFieldsWhenFlagIsEnabled() throws IOException {
         new FormAutoConfiguration(true);
         final var formDefinition = formDefinitionOf("form-example-nested-components");
         var result = formDefinition.getDocumentMappedFields();
@@ -332,7 +383,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldRemoveDisabledFieldFromDocumentMappedFieldsForSubmissionWhenFlagIsEnabled() throws IOException {
+    void shouldRemoveDisabledFieldFromDocumentMappedFieldsForSubmissionWhenFlagIsEnabled() throws IOException {
         new FormAutoConfiguration(true);
         final var formDefinition = formDefinitionOf("form-example-nested-components");
         var result = formDefinition.getDocumentMappedFieldsForSubmission();
@@ -342,7 +393,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldNotRemoveDisabledFieldFromDocumentMappedFieldsWhenFlagIsDisabled() throws IOException {
+    void shouldNotRemoveDisabledFieldFromDocumentMappedFieldsWhenFlagIsDisabled() throws IOException {
         new FormAutoConfiguration(false);
         final var formDefinition = formDefinitionOf("form-example-nested-components");
         var result = formDefinition.getDocumentMappedFields();
@@ -352,7 +403,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldNotRemoveDisabledFieldFromDocumentMappedFieldsForSubmissionWhenFlagIsDisabled() throws IOException {
+    void shouldNotRemoveDisabledFieldFromDocumentMappedFieldsForSubmissionWhenFlagIsDisabled() throws IOException {
         new FormAutoConfiguration(false);
         final var formDefinition = formDefinitionOf("form-example-nested-components");
         var result = formDefinition.getDocumentMappedFieldsForSubmission();
@@ -362,7 +413,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldFindExternalFieldsWithFlagDisabled() throws IOException {
+    void shouldFindExternalFieldsWithFlagDisabled() throws IOException {
         new FormAutoConfiguration(false);
 
         final var formDefinition = formDefinitionOf("form-example-external-field");
@@ -381,7 +432,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldFindExternalFieldsWithFlagEnabled() throws IOException {
+    void shouldFindExternalFieldsWithFlagEnabled() throws IOException {
         new FormAutoConfiguration(true);
 
         final var formDefinition = formDefinitionOf("form-example-external-field");
@@ -400,7 +451,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldFindExternalFieldsForSubmissionWithFlagEnabled() throws IOException {
+    void shouldFindExternalFieldsForSubmissionWithFlagEnabled() throws IOException {
         new FormAutoConfiguration(true);
 
         final var formDefinition = formDefinitionOf("form-example-external-field");
@@ -419,7 +470,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldFindExternalFieldsForSubmissionWithFlagDisabled() throws IOException {
+    void shouldFindExternalFieldsForSubmissionWithFlagDisabled() throws IOException {
         new FormAutoConfiguration(false);
 
         final var formDefinition = formDefinitionOf("form-example-external-field");
