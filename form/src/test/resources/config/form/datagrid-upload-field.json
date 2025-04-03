@@ -1,0 +1,37 @@
+{
+    "display": "form",
+    "components": [
+        {
+            "key": "textField",
+            "type": "textfield",
+            "input": true,
+            "label": "Text Field"
+        },
+        {
+            "key": "dataGrid",
+            "type": "datagrid",
+            "input": true,
+            "label": "Data Grid",
+            "components": [
+                {
+                    "key": "documentenApiFile",
+                    "type": "documenten-api-file",
+                    "input": true,
+                    "label": "documentenApiFileInGrid"
+                },
+                {
+                    "key": "documentenApiFile2",
+                    "type": "documenten-api-file",
+                    "input": true,
+                    "label": "documentenApiFileInGrid2"
+                }
+            ]
+        },
+        {
+            "key": "submit",
+            "type": "button",
+            "input": true,
+            "label": "Submit"
+        }
+    ]
+}
