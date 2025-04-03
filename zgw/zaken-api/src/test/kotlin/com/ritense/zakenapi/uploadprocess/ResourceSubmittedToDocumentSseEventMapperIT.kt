@@ -22,7 +22,7 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
-import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
+import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.domain.TemporaryResourceSubmittedEvent
@@ -46,7 +46,7 @@ class ResourceSubmittedToDocumentSseEventMapperIT @Autowired constructor(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val historyService: HistoryService,
     private val processDocumentAssociationService: ProcessDocumentAssociationService,
-    private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
+    private val caseDefinitionProcessLinkService: CaseDefinitionProcessLinkService,
     private val objectMapper: ObjectMapper,
 ): BaseIntegrationTest() {
 
@@ -60,7 +60,7 @@ class ResourceSubmittedToDocumentSseEventMapperIT @Autowired constructor(
                     true
                 )
             )
-            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+            caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
                 DOCUMENT_DEFINITION_KEY,
                 DocumentDefinitionProcessRequest(
                     UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY,

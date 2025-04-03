@@ -97,6 +97,9 @@ class CamundaProcessServiceTest {
     @Mock
     private CamundaExecutionRepository camundaExecutionRepository;
 
+    @Mock
+    private ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker;
+
     private CamundaHistoryService historyService = mock(CamundaHistoryService.class, RETURNS_DEEP_STUBS);
 
     @BeforeEach
@@ -107,7 +110,7 @@ class CamundaProcessServiceTest {
     @Test
     void getAllActiveContextProcessesStartedByCurrentUserTestExpectAll() {
         camundaProcessService = new CamundaProcessService(runtimeService, camundaRuntimeService, repositoryService, camundaRepositoryService, formService, historyService, processPropertyService, valtimoProperties, authorizationService,
-                camundaExecutionRepository
+                camundaExecutionRepository, processDefinitionCaseDefinitionLinker
         );
 
         //when
@@ -141,7 +144,7 @@ class CamundaProcessServiceTest {
     @Test
     void getAllActiveContextProcessesStartedByCurrentUserTestExpectTwo() {
         camundaProcessService = new CamundaProcessService(runtimeService, camundaRuntimeService, repositoryService, camundaRepositoryService, formService, historyService, processPropertyService, valtimoProperties, authorizationService,
-                camundaExecutionRepository
+                camundaExecutionRepository, processDefinitionCaseDefinitionLinker
         );
 
         //when
