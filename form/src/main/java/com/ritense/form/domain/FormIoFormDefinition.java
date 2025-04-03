@@ -28,10 +28,12 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.ritense.document.domain.patch.JsonPatchService;
 import com.ritense.form.autoconfigure.FormAutoConfiguration;
 import com.ritense.form.domain.event.FormRegisteredEvent;
 import com.ritense.form.domain.exception.FormDefinitionParsingException;
 import com.ritense.valtimo.contract.json.MapperSingleton;
+import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
@@ -184,20 +186,29 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
                 String fieldKey = getFieldKey(fieldNode);
                 Object value = valueMap.get(fieldKey);
                 if (value != null) {
-                    JsonNode valueNode = MapperSingleton.INSTANCE.get().valueToTree(value);
+                    JsonNode valueNode = MapperSingleton.get().valueToTree(value);
                     setDefaultValueField(fieldNode, valueNode);
                 }
             });
     }
 
     public FormDefinition preFillWith(final String prefix, final Map<String, Object> variableMap) {
-        final ObjectNode rootNode = JsonNodeFactory.instance.objectNode();
-        final ObjectNode objectNode = JsonNodeFactory.instance.objectNode();
-        variableMap.forEach((fieldName, value) -> objectNode.set(
-            fieldName,
-            MapperSingleton.INSTANCE.get().valueToTree(value)
-        ));
-        rootNode.set(prefix, objectNode);
+        JsonNode rootNode = JsonNodeFactory.instance.objectNode();
+        JsonPatchBuilder jsonPatchBuilder = new JsonPatchBuilder();
+
+        for (var entry : variableMap.entrySet()) {
+            JsonPointer jsonPointer = toJsonPointer(entry.getKey());
+            JsonNode valueNode = MapperSingleton.get().valueToTree(entry.getValue());
+            jsonPatchBuilder.addJsonNodeValue(rootNode, jsonPointer, valueNode);
+        }
+
+        JsonPatchService.apply(jsonPatchBuilder.build().toJson(), rootNode);
+
+        if (prefix != null) {
+            var newRootNode = JsonNodeFactory.instance.objectNode();
+            newRootNode.set(prefix, rootNode);
+            rootNode = newRootNode;
+        }
         return preFill(rootNode);
     }
 
@@ -207,6 +218,16 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
             .filter(Optional::isPresent)
             .map(Optional::get)
             .map(ContentItem::getName)
+            .toList();
+    }
+
+    public List<JsonPointer> extractProcessVarJsonPointers() {
+        return getInputFields().stream()
+            .map(FormIoFormDefinition::getProcessVar)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .map(ContentItem::getJsonPointer)
+            .map(JsonPointer::tail)
             .toList();
     }
 
@@ -357,13 +378,17 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         if (targetKey.isPresent()) {
             return targetKey;
         }
+        return resolveSourceKey(field);
+    }
+
+    public static Optional<String> resolveSourceKey(JsonNode field) {
         final var sourceKey = getSourceKey(field);
         if (sourceKey.isPresent()) {
             return sourceKey;
         }
-        final var processVariableName = getProcessVar(field);
-        if (processVariableName.isPresent()) {
-            return processVariableName.map(it -> PROCESS_VAR_PREFIX + ":" + it.getName());
+        final var fieldKey = getFieldKey(field);
+        if (fieldKey.startsWith(PROCESS_VAR_PREFIX)) {
+            return Optional.of(fieldKey.replaceFirst("\\.", ":"));
         }
         final var documentJsonPointer = getDocumentContentVarStatic(field);
         if (documentJsonPointer.isPresent()) {
@@ -441,12 +466,11 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
 
     private static Optional<ContentItem> getProcessVar(JsonNode field) {
         if (isProcessVar(field)) {
-            String jsonPointerExpr = getFieldKey(field).replace(".", "/");
-            String processVarName = jsonPointerExpr.substring(
-                PROCESS_VAR_PREFIX.length() + 1); //example pv.varName -> gets varName
-            jsonPointerExpr = JSON_POINTER_DELIMITER + jsonPointerExpr;
-            return buildJsonPointer(jsonPointerExpr).flatMap(
-                jsonPointer -> Optional.of(new ContentItem(processVarName, jsonPointer)));
+            String key = getFieldKey(field);
+            String jsonPointerExpr = JSON_POINTER_DELIMITER + key.replace(".", "/");
+            String processVarName = key.substring(PROCESS_VAR_PREFIX.length() + 1);
+            return buildJsonPointer(jsonPointerExpr).map(
+                jsonPointer -> new ContentItem(processVarName, jsonPointer));
         }
         return Optional.empty();
     }
@@ -624,6 +648,14 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     public static Optional<String> getKey(JsonNode jsonNode) {
         JsonNode keyNode = jsonNode.path(PROPERTY_KEY);
         return Optional.ofNullable(keyNode.isTextual() ? keyNode.textValue() : null);
+    }
+
+    private static JsonPointer toJsonPointer(String path) {
+        String newPath = path;
+        if (!path.startsWith("/")) {
+            newPath = "/" + path;
+        }
+        return JsonPointer.valueOf(newPath.replace('.', '/'));
     }
 
     @Override
