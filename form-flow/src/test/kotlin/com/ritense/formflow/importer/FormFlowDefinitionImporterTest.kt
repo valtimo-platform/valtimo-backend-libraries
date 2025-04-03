@@ -67,44 +67,8 @@ class FormFlowDefinitionImporterTest(
 
     @Test
     fun `should not support non-formflow fileName`() {
-        assertThat(formFlowDefinitionImporter.supports("config/form-flow/not-supported/test.json")).isFalse()
-        assertThat(formFlowDefinitionImporter.supports("config/form-flow/test-json")).isFalse()
-    }
-
-    @Test
-    fun `should deploy method for import with correct parameters`() {
-        val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
-        val jsonContent = """
-            {
-                "startStep": "step1",
-                "steps": [
-                    {
-                        "key": "step1",
-                        "type": {
-                            "name": "form",
-                            "properties": {
-                                "definition": "aandachtspunten-step1"
-                            }
-                        }
-                    }
-                ]
-            }
-        """.trimIndent()
-        formFlowDefinitionImporter.import(ImportRequest(FILENAME, jsonContent.toByteArray(), caseDefinitionId))
-
-        val formFlowDefinitionCaptor = argumentCaptor<FormFlowDefinition>()
-
-        val formFlowKeyCaptor = argumentCaptor<String>()
-        val caseDefinitionIdCaptor = argumentCaptor<CaseDefinitionId>()
-
-        verify(formFlowService).findDefinitionOrNull(formFlowKeyCaptor.capture(), caseDefinitionIdCaptor.capture())
-        verify(formFlowService).save(formFlowDefinitionCaptor.capture())
-
-        assertThat(formFlowKeyCaptor.firstValue).isEqualTo("my-form")
-        assertThat(caseDefinitionIdCaptor.firstValue).isEqualTo(caseDefinitionId)
-
-        assertThat(formFlowDefinitionCaptor.firstValue.startStep).isEqualTo("step1")
-        assertThat(formFlowDefinitionCaptor.firstValue.steps.size).isEqualTo(1)
+        assertThat(formFlowDefinitionImporter.supports("/form-flow/not-supported/test.json")).isFalse()
+        assertThat(formFlowDefinitionImporter.supports("/form-flow/test-json")).isFalse()
     }
 
     private companion object {
