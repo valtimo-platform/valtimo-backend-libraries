@@ -1,7 +1,7 @@
 [
     {
         "activityId": "do-something",
-        "activityType": "bpmn:UserTask:start",
+        "activityType": "bpmn:UserTask:create",
         "processLinkType": "form-flow",
         "formFlowDefinitionId": "inkomens_loket:latest"
     }

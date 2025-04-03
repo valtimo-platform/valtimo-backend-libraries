@@ -21,7 +21,6 @@ import com.ritense.logging.withLoggingContext
 import com.ritense.objectenapi.client.ObjectRequest
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.client.ObjectenApiClient
-import com.ritense.objectenapi.client.ObjectenApiClient.Companion.HOST_DOCKER_INTERNAL
 import com.ritense.objectenapi.client.ObjectsList
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
@@ -144,11 +143,7 @@ class ObjectenApiPlugin(
         const val URL_PROPERTY = "url"
 
         fun findConfigurationByUrl(url: URI) = { properties: JsonNode ->
-            if (url.host == HOST_DOCKER_INTERNAL) {
-                url.toString().replace(HOST_DOCKER_INTERNAL, "localhost")
-            } else {
-                url.toString()
-            }.startsWith(properties[URL_PROPERTY].textValue())
+            url.toString().startsWith(properties[URL_PROPERTY].textValue())
         }
     }
 }

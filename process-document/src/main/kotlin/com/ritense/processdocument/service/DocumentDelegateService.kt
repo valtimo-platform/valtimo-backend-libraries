@@ -109,6 +109,20 @@ class DocumentDelegateService(
         documentService.setInternalStatus(documentId, statusKey)
     }
 
+    fun addCaseTag(execution: DelegateExecution, caseTagKey: String) {
+        val processInstanceId = CamundaProcessInstanceId(execution.processInstanceId)
+        val documentId = processDocumentService.getDocumentId(processInstanceId, execution)
+
+        documentService.addCaseTag(documentId, caseTagKey)
+    }
+
+    fun removeCaseTag(execution: DelegateExecution, caseTagKey: String) {
+        val processInstanceId = CamundaProcessInstanceId(execution.processInstanceId)
+        val documentId = processDocumentService.getDocumentId(processInstanceId, execution)
+
+        documentService.removeCaseTag(documentId, caseTagKey)
+    }
+
     fun unassign(execution: DelegateExecution) {
         logger.debug("Unassigning user from document {}", execution.processBusinessKey)
 
