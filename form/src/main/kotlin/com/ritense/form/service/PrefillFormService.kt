@@ -253,11 +253,13 @@ class PrefillFormService(
                     val indexValueJsonPointer = getIndexValueJsonPointer(container)
                     val id = placeholders.at(indexValueJsonPointer).textValue()
                     val arrayPointer = JsonPointer.compile(container.substringBefore("/{"))
-                    val list = source.at(arrayPointer) as ArrayNode //get sources array
-                    val calculatedArrayItemIndex = lookupIndexForIdValue(list, id)
-                    val arrayItemForSourceJsonPointer =
-                        JsonPointer.compile("$arrayPointer/$calculatedArrayItemIndex/$propertyName")
-                    dataToPreFill.set<JsonNode>(propertyName, source.at(arrayItemForSourceJsonPointer))
+                    if (source.at(arrayPointer) is ArrayNode) {
+                        val list = source.at(arrayPointer) as ArrayNode //get sources array
+                        val calculatedArrayItemIndex = lookupIndexForIdValue(list, id)
+                        val arrayItemForSourceJsonPointer =
+                            JsonPointer.compile("$arrayPointer/$calculatedArrayItemIndex/$propertyName")
+                        dataToPreFill.set<JsonNode>(propertyName, source.at(arrayItemForSourceJsonPointer))
+                    }
                     val customPropertiesObject = field[CUSTOM_PROPERTIES] as ObjectNode
                     customPropertiesObject.remove(CONTAINER_KEY)
                 }
@@ -373,11 +375,13 @@ class PrefillFormService(
                     val indexValueJsonPointer = getIndexValueJsonPointer(container)
                     val id = placeholders.at(indexValueJsonPointer).textValue()
                     val arrayPointer = JsonPointer.compile(container.substringBefore("/{"))
-                    val list = source.at(arrayPointer) as ArrayNode //get sources array
-                    val calculatedArrayItemIndex = lookupIndexForIdValue(list, id)
-                    val arrayItemForSourceJsonPointer =
-                        JsonPointer.compile("$arrayPointer/$calculatedArrayItemIndex/$propertyName")
-                    sourceJsonPatchBuilder.replace(arrayItemForSourceJsonPointer, propertyValue)
+                    if (source.at(arrayPointer) is ArrayNode) {
+                        val list = source.at(arrayPointer) as ArrayNode //get sources array
+                        val calculatedArrayItemIndex = lookupIndexForIdValue(list, id)
+                        val arrayItemForSourceJsonPointer =
+                            JsonPointer.compile("$arrayPointer/$calculatedArrayItemIndex/$propertyName")
+                        sourceJsonPatchBuilder.replace(arrayItemForSourceJsonPointer, propertyValue)
+                    }
                     submissionJsonPatchBuilder.remove(submissionProperty)
                 } else if (container.contains("/-/")) {
                     val arrayPointer = JsonPointer.compile(container.substringBefore("/-"))

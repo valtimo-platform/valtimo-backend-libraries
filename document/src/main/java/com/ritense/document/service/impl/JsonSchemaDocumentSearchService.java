@@ -24,6 +24,7 @@ import static java.util.stream.Collectors.toMap;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
+import com.ritense.document.domain.CaseTag;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.search.AdvancedSearchRequest;
@@ -45,6 +46,7 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Path;
@@ -85,6 +87,9 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     private static final String INTERNAL_STATUS = "internalStatus";
     private static final String INTERNAL_STATUS_KEY = "internalStatus.id.key";
     private static final String INTERNAL_STATUS_ORDER = "internalStatus.order";
+    private static final String CASE_TAGS = "caseTags";
+    private static final String ID = "id";
+    private static final String KEY = "key";
     private static final String DOC_PREFIX = "doc:";
     private static final String CASE_PREFIX = "case:";
 
@@ -269,6 +274,11 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         if (searchRequest.getStatusFilter() != null && !searchRequest.getStatusFilter().isEmpty()) {
             predicates.add(getStatusFilterPredicate(cb, documentRoot, searchRequest.getStatusFilter()));
         }
+
+        if (searchRequest.getCaseTagsFilter() != null && !searchRequest.getCaseTagsFilter().isEmpty()) {
+            predicates.add(getCaseTagsFilterPredicate(cb, documentRoot, searchRequest.getCaseTagsFilter()));
+        }
+
         query.where(predicates.toArray(Predicate[]::new));
     }
 
@@ -376,6 +386,18 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                 }
             }
         ).toArray(Predicate[]::new);
+
+        return cb.or(predicates);
+    }
+
+    private Predicate getCaseTagsFilterPredicate(CriteriaBuilder cb, Root<JsonSchemaDocument> root, Set<String> caseTagsFilter) {
+
+        Join<JsonSchemaDocument, CaseTag> caseTagJoin = root.join(CASE_TAGS);
+        Path<String> caseTagKeyPath = caseTagJoin.get(ID).get(KEY);
+        Predicate[] predicates = caseTagsFilter.stream()
+            .filter(tagKey -> tagKey != null && !tagKey.isEmpty())
+            .map(tagKey -> cb.equal(caseTagKeyPath, tagKey))
+            .toArray(Predicate[]::new);
 
         return cb.or(predicates);
     }

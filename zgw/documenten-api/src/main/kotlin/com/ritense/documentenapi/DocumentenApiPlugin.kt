@@ -28,7 +28,6 @@ import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.client.DocumentLock
 import com.ritense.documentenapi.client.DocumentStatusType
 import com.ritense.documentenapi.client.DocumentenApiClient
-import com.ritense.documentenapi.client.DocumentenApiClient.Companion.HOST_DOCKER_INTERNAL
 import com.ritense.documentenapi.client.PatchDocumentRequest
 import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.documentenapi.service.DocumentDeleteHandler
@@ -457,11 +456,7 @@ class DocumentenApiPlugin(
         val logger = KotlinLogging.logger { }
 
         fun findConfigurationByUrl(url: URI) = { properties: JsonNode ->
-            if (url.host == HOST_DOCKER_INTERNAL) {
-                url.toString().replace(HOST_DOCKER_INTERNAL, "localhost")
-            } else {
-                url.toString()
-            }.startsWith(properties[URL_PROPERTY].textValue())
+            url.toString().startsWith(properties[URL_PROPERTY].textValue())
         }
     }
 }
