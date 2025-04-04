@@ -28,11 +28,15 @@ interface CaseTagRepository : JpaRepository<CaseTag, CaseTagId> {
     fun existsByIdCaseDefinitionNameAndIdKey(caseDefinitionName: String, key: String): Boolean
     @Query(
         value = """
-        SELECT EXISTS (
-            SELECT 1 FROM case_tag_link
-            WHERE case_tag_key = :caseTagKey
-            AND case_definition_name = :caseDefinitionName
-        )
+            SELECT CASE
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM case_tag_link
+                    WHERE case_tag_key = :caseTagKey
+                    AND case_definition_name = :caseDefinitionName
+                ) THEN 'true'
+                ELSE 'false'
+            END
         """, nativeQuery = true
     )
     fun isCaseTagInUse(
