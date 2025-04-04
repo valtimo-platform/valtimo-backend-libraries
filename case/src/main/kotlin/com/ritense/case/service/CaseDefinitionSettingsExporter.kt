@@ -41,12 +41,7 @@ class CaseDefinitionSettingsExporter(
             PATH.format(caseName),
             objectMapper
                 .writer(ExportPrettyPrinter())
-                .writeValueAsBytes(
-                    CaseSettingsDto(
-                        settings.canHaveAssignee,
-                        settings.autoAssignTasks
-                    )
-                )
+                .writeValueAsBytes(CaseSettingsDto.from(settings))
         )
 
         return ExportResult(caseTabExport)
