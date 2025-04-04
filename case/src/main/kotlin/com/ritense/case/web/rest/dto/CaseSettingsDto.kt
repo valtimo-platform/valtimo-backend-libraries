@@ -20,20 +20,49 @@ import com.ritense.case.domain.CaseDefinitionSettings
 
 data class CaseSettingsDto(
     val canHaveAssignee: Boolean? = null,
-    val autoAssignTasks: Boolean? = null
+    val autoAssignTasks: Boolean? = null,
+    val hasExternalStartForm: Boolean? = null,
+    val externalStartFormUrl: String? = null,
+    val externalStartFormDescription: String? = null,
 ) {
     fun update(currentSettings: CaseDefinitionSettings): CaseDefinitionSettings {
         return CaseDefinitionSettings(
-            currentSettings.name,
-            getSettingForUpdate(currentSettings.canHaveAssignee, this.canHaveAssignee) ?: false,
-            when (this.canHaveAssignee) {
+            name = currentSettings.name,
+            canHaveAssignee = getSettingForUpdate(currentSettings.canHaveAssignee, this.canHaveAssignee) ?: false,
+            autoAssignTasks = when (this.canHaveAssignee) {
                 false -> false
                 else -> getSettingForUpdate(currentSettings.autoAssignTasks, this.autoAssignTasks) ?: false
+            },
+            hasExternalStartForm = getSettingForUpdate(
+                currentSettings.hasExternalStartForm,
+                this.hasExternalStartForm
+            ) ?: false,
+            externalStartFormUrl = when (this.hasExternalStartForm) {
+                false -> null
+                else -> getSettingForUpdate(currentSettings.externalStartFormUrl, this.externalStartFormUrl)
+            },
+            externalStartFormDescription = when (this.hasExternalStartForm) {
+                false -> null
+                else -> getSettingForUpdate(
+                    currentSettings.externalStartFormUrl,
+                    this.externalStartFormDescription
+                )
             }
         )
     }
 
     private fun <T> getSettingForUpdate(currentValue: T?, newValue: T?): T? {
         return newValue ?: currentValue
+    }
+
+    companion object {
+
+        fun from(settings: CaseDefinitionSettings) = CaseSettingsDto(
+            canHaveAssignee = settings.canHaveAssignee,
+            autoAssignTasks = settings.autoAssignTasks,
+            hasExternalStartForm = settings.hasExternalStartForm,
+            externalStartFormUrl = settings.externalStartFormUrl,
+            externalStartFormDescription = settings.externalStartFormDescription,
+        )
     }
 }
