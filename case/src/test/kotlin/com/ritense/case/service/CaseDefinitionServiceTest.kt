@@ -47,15 +47,12 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class CaseDefinitionServiceTest {
+
     lateinit var caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository
-
     lateinit var caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository
-
-    lateinit var service: CaseDefinitionService
-
     lateinit var documentDefinitionService: DocumentDefinitionService
-
     lateinit var valueResolverService: ValueResolverService
+    lateinit var service: CaseDefinitionService
 
     @BeforeEach
     fun setUp() {
@@ -75,16 +72,26 @@ class CaseDefinitionServiceTest {
     @Test
     fun `should get case settings by id`() {
         val caseDefinitionName = "name"
-        val caseDefinitionSettings = CaseDefinitionSettings(caseDefinitionName, true)
+        val externalFormUrl = "https://www.example.com/external-form"
+        val caseDefinitionSettings = CaseDefinitionSettings(
+            name = caseDefinitionName,
+            canHaveAssignee = true,
+            hasExternalStartForm = true,
+            externalStartFormUrl = externalFormUrl
+        )
 
-        whenever(documentDefinitionService.findLatestByName(caseDefinitionName)).thenReturn(Optional.of(mock()))
-        whenever(caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)).thenReturn(caseDefinitionSettings)
+        whenever(documentDefinitionService.findLatestByName(caseDefinitionName))
+            .thenReturn(Optional.of(mock()))
+        whenever(caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName))
+            .thenReturn(caseDefinitionSettings)
 
         val foundCaseDefinitionSettings = service.getCaseSettings(caseDefinitionName)
 
         verify(caseDefinitionSettingsRepository).getReferenceById(caseDefinitionName)
         assertEquals(caseDefinitionName, foundCaseDefinitionSettings.name)
         assertTrue(foundCaseDefinitionSettings.canHaveAssignee)
+        assertTrue(foundCaseDefinitionSettings.hasExternalStartForm)
+        assertEquals(externalFormUrl, foundCaseDefinitionSettings.externalStartFormUrl)
     }
 
     @Test
@@ -97,17 +104,58 @@ class CaseDefinitionServiceTest {
     }
 
     @Test
-    fun `should update case settings`() {
+    fun `should update case setting 'can have assignee`() {
         val caseDefinitionName = "name"
-        val currentCaseDefinitionSettings = CaseDefinitionSettings(caseDefinitionName, true)
-        val updatedCaseDefinitionSettings = CaseDefinitionSettings(caseDefinitionName, false)
-        val caseSettingsDto: CaseSettingsDto = mock()
-        whenever(documentDefinitionService.findLatestByName(caseDefinitionName)).thenReturn(Optional.of(mock()))
-        whenever(caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)).thenReturn(currentCaseDefinitionSettings)
-        whenever(caseDefinitionSettingsRepository.save(updatedCaseDefinitionSettings)).thenReturn(
-            updatedCaseDefinitionSettings
+        val currentCaseDefinitionSettings = CaseDefinitionSettings(
+            name = caseDefinitionName,
+            canHaveAssignee = true
         )
-        whenever(caseSettingsDto.update(currentCaseDefinitionSettings)).thenReturn(updatedCaseDefinitionSettings)
+        val updatedCaseDefinitionSettings = CaseDefinitionSettings(
+            name = caseDefinitionName,
+            canHaveAssignee = false
+        )
+        val caseSettingsDto: CaseSettingsDto = mock()
+        whenever(documentDefinitionService.findLatestByName(caseDefinitionName))
+            .thenReturn(Optional.of(mock()))
+        whenever(caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName))
+            .thenReturn(currentCaseDefinitionSettings)
+        whenever(caseDefinitionSettingsRepository.save(updatedCaseDefinitionSettings))
+            .thenReturn(
+                updatedCaseDefinitionSettings
+            )
+        whenever(caseSettingsDto.update(currentCaseDefinitionSettings))
+            .thenReturn(updatedCaseDefinitionSettings)
+
+        val returnedCaseDefinitionSettings = service.updateCaseSettings(caseDefinitionName, caseSettingsDto)
+        verify(caseDefinitionSettingsRepository).getReferenceById(caseDefinitionName)
+        assertEquals(caseDefinitionName, returnedCaseDefinitionSettings.name)
+        assertFalse(returnedCaseDefinitionSettings.canHaveAssignee)
+    }
+
+    @Test
+    fun `should update case setting 'has external case start form`() {
+        val caseDefinitionName = "name"
+        val currentCaseDefinitionSettings = CaseDefinitionSettings(
+            name = caseDefinitionName,
+            hasExternalStartForm = false
+        )
+        val updatedCaseDefinitionSettings = CaseDefinitionSettings(
+            name = caseDefinitionName,
+            hasExternalStartForm = true,
+            externalStartFormUrl = "https://www.example.com/external-form"
+        )
+        val caseSettingsDto: CaseSettingsDto = mock()
+        whenever(documentDefinitionService.findLatestByName(caseDefinitionName))
+            .thenReturn(Optional.of(mock()))
+        whenever(caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName))
+            .thenReturn(currentCaseDefinitionSettings)
+        whenever(caseDefinitionSettingsRepository.save(updatedCaseDefinitionSettings))
+            .thenReturn(
+                updatedCaseDefinitionSettings
+            )
+        whenever(caseSettingsDto.update(currentCaseDefinitionSettings))
+            .thenReturn(updatedCaseDefinitionSettings)
+
         val returnedCaseDefinitionSettings = service.updateCaseSettings(caseDefinitionName, caseSettingsDto)
         verify(caseDefinitionSettingsRepository).getReferenceById(caseDefinitionName)
         assertEquals(caseDefinitionName, returnedCaseDefinitionSettings.name)
@@ -213,8 +261,8 @@ class CaseDefinitionServiceTest {
         doAnswer {
             throw ValueResolverValidationException(
                 "JsonPath '"
-                        + listColumnDto.path +
-                        "' doesn't point to any property inside document definition '" + caseDefinitionName + "'"
+                    + listColumnDto.path +
+                    "' doesn't point to any property inside document definition '" + caseDefinitionName + "'"
             )
         }
             .whenever(valueResolverService).validateValues(caseDefinitionName, listOf(listColumnDto.path))
@@ -228,8 +276,8 @@ class CaseDefinitionServiceTest {
         verify(valueResolverService).validateValues(caseDefinitionName, listOf(listColumnDto.path))
         assertEquals(
             "JsonPath '"
-                    + listColumnDto.path +
-                    "' doesn't point to any property inside document definition '" + caseDefinitionName + "'",
+                + listColumnDto.path +
+                "' doesn't point to any property inside document definition '" + caseDefinitionName + "'",
             exception.message
         )
 
@@ -339,8 +387,8 @@ class CaseDefinitionServiceTest {
         doAnswer {
             throw ValueResolverValidationException(
                 "JsonPath '"
-                        + listColumnDtoFirstName.path +
-                        "' doesn't point to any property inside document definition '" + caseDefinitionName + "'"
+                    + listColumnDtoFirstName.path +
+                    "' doesn't point to any property inside document definition '" + caseDefinitionName + "'"
             )
         }
             .whenever(valueResolverService).validateValues(caseDefinitionName, listOf(listColumnDtoFirstName.path))
@@ -354,8 +402,8 @@ class CaseDefinitionServiceTest {
         verify(valueResolverService).validateValues(caseDefinitionName, listOf(listColumnDtoFirstName.path))
         assertEquals(
             "JsonPath '"
-                    + listColumnDtoFirstName.path +
-                    "' doesn't point to any property inside document definition '" + caseDefinitionName + "'",
+                + listColumnDtoFirstName.path +
+                "' doesn't point to any property inside document definition '" + caseDefinitionName + "'",
             exception.message
         )
     }
