@@ -27,6 +27,7 @@ import com.ritense.case.service.validations.CreateCaseListColumnValidator
 import com.ritense.case.service.validations.ListColumnValidator
 import com.ritense.case.service.validations.Operation
 import com.ritense.case.service.validations.UpdateCaseListColumnValidator
+import com.ritense.case.web.rest.dto.CaseDefinitionDraftCreateRequest
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.case.web.rest.mapper.CaseListColumnMapper
@@ -37,7 +38,10 @@ import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.valtimo.contract.event.CaseDefinitionCreatedEvent
+import com.ritense.valtimo.contract.event.CaseDefinitionDeletedEvent
 import com.ritense.valueresolver.ValueResolverService
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
@@ -53,7 +57,8 @@ class CaseDefinitionService(
     private val documentDefinitionService: DocumentDefinitionService,
     private val caseDefinitionRepository: CaseDefinitionRepository,
     valueResolverService: ValueResolverService,
-    private val authorizationService: AuthorizationService
+    private val authorizationService: AuthorizationService,
+    private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
     var validators: Map<Operation, ListColumnValidator<CaseListColumnDto>> = mapOf(
         Operation.CREATE to CreateCaseListColumnValidator(
@@ -67,6 +72,46 @@ class CaseDefinitionService(
             valueResolverService
         )
     )
+
+    fun createCaseDefinitionDraft(
+        basedOnCaseDefinitionId: CaseDefinitionId,
+        request: CaseDefinitionDraftCreateRequest
+    ): CaseDefinition {
+        denyManagementOperation()
+        val newCaseDefinitionId = CaseDefinitionId.of(basedOnCaseDefinitionId.key, request.versionTag)
+        require(!caseDefinitionRepository.existsById(newCaseDefinitionId)) {
+            "Failed to create case-definition. Case-definition with id: '$newCaseDefinitionId' already exists."
+        }
+        val basedOnCaseDefinition = getCaseDefinition(basedOnCaseDefinitionId)
+        require(!basedOnCaseDefinition.isFinal) {
+            "Failed to create case-definition. Case-definition with id: '$basedOnCaseDefinitionId' is not final."
+        }
+        val newCaseDefinition = caseDefinitionRepository.save(
+            basedOnCaseDefinition.copy(
+                id = newCaseDefinitionId,
+                description = request.description,
+                isFinal = false,
+                createdBy = null,
+                createdDate = null,
+                baseOnVersionTag = basedOnCaseDefinitionId.versionTag,
+            )
+        )
+        applicationEventPublisher.publishEvent(
+            CaseDefinitionCreatedEvent(newCaseDefinitionId, basedOnCaseDefinitionId)
+        )
+        return newCaseDefinition
+    }
+
+    fun deleteCaseDefinition(caseDefinitionId: CaseDefinitionId) {
+        denyManagementOperation()
+        require(!getCaseDefinition(caseDefinitionId).isFinal) {
+            "Failed to delete case-definition. Case-definition with id: '$caseDefinitionId' is final."
+        }
+        caseDefinitionRepository.deleteById(caseDefinitionId)
+        applicationEventPublisher.publishEvent(
+            CaseDefinitionDeletedEvent(caseDefinitionId)
+        )
+    }
 
     fun getCaseDefinitions(pageable: Pageable): Page<CaseDefinition> {
         return caseDefinitionRepository.findAllLatestCaseDefinitions(pageable)

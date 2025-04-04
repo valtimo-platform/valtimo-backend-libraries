@@ -20,6 +20,7 @@ import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthor
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.case.service.CaseDefinitionService
+import com.ritense.case.web.rest.dto.CaseDefinitionDraftCreateRequest
 import com.ritense.case.web.rest.dto.CaseDefinitionResponseDto
 import com.ritense.case.web.rest.dto.CaseDefinitionSettingsResponseDto
 import com.ritense.case.web.rest.dto.CaseListColumnDto
@@ -63,6 +64,41 @@ class CaseDefinitionResource(
     private val exportService: ExportService,
     private val importService: ImportService
 ) {
+
+    @RunWithoutAuthorization
+    @GetMapping("/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}")
+    fun getCaseDefinition(
+        @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
+        @LoggableResource("versionTag") @PathVariable versionTag: String,
+    ): ResponseEntity<CaseDefinitionResponseDto> {
+        return ResponseEntity.ok(
+            CaseDefinitionResponseDto.of(
+                service.getCaseDefinition(CaseDefinitionId.of(caseDefinitionKey, versionTag))
+            )
+        )
+    }
+
+    @RunWithoutAuthorization
+    @PostMapping("/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/draft")
+    fun createCaseDefinitionDraft(
+        @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
+        @LoggableResource("versionTag") @PathVariable versionTag: String,
+        @RequestBody request: CaseDefinitionDraftCreateRequest
+    ): ResponseEntity<CaseDefinitionResponseDto> {
+        return ResponseEntity.ok(
+            CaseDefinitionResponseDto.of(service.createCaseDefinitionDraft(CaseDefinitionId.of(caseDefinitionKey, versionTag), request))
+        )
+    }
+
+    @RunWithoutAuthorization
+    @DeleteMapping("/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}")
+    fun deleteCaseDefinition(
+        @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
+        @LoggableResource("versionTag") @PathVariable versionTag: String,
+    ): ResponseEntity<Unit> {
+        service.deleteCaseDefinition(CaseDefinitionId.of(caseDefinitionKey, versionTag))
+        return ResponseEntity.ok().build()
+    }
 
     @GetMapping("/management/v1/case-definition")
     fun getCaseDefinitions(

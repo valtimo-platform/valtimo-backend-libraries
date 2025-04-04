@@ -16,11 +16,18 @@
 
 import com.ritense.case_.domain.definition.CaseDefinition
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import org.semver4j.Semver
+import java.time.LocalDateTime
 
 data class CaseDefinitionDto(
     val key: String,
     val versionTag: String,
     val name: String,
+    val description: String?,
+    val createdBy: String?,
+    val createdDate: LocalDateTime?,
+    val baseOnVersionTag: String?,
+    val isFinal: Boolean,
     val canHaveAssignee: Boolean = false,
     val autoAssignTasks: Boolean = false,
 ) {
@@ -29,6 +36,11 @@ data class CaseDefinitionDto(
         return CaseDefinition(
             id = id,
             name = name,
+            description = description,
+            createdBy = createdBy,
+            createdDate = createdDate,
+            baseOnVersionTag = baseOnVersionTag?.let { Semver(it) },
+            isFinal = isFinal,
             canHaveAssignee = canHaveAssignee,
             autoAssignTasks = autoAssignTasks
         )

@@ -17,11 +17,17 @@
 package com.ritense.case.web.rest.dto
 
 import com.ritense.case_.domain.definition.CaseDefinition
+import java.time.LocalDateTime
 
 data class CaseDefinitionResponseDto(
     val caseDefinitionKey: String,
     val caseDefinitionVersionTag: String,
     val name: String,
+    val description: String?,
+    val createdBy: String?,
+    val createdDate: LocalDateTime?,
+    val baseOnVersionTag: String?,
+    val isFinal: Boolean,
     val canHaveAssignee: Boolean,
     val autoAssignTasks: Boolean,
 ) {
@@ -31,6 +37,11 @@ data class CaseDefinitionResponseDto(
                 caseDefinition.id.key,
                 caseDefinition.id.versionTag.version,
                 caseDefinition.name,
+                caseDefinition.description,
+                caseDefinition.createdBy,
+                caseDefinition.createdDate,
+                caseDefinition.baseOnVersionTag?.version,
+                caseDefinition.isFinal,
                 caseDefinition.canHaveAssignee,
                 caseDefinition.autoAssignTasks
             )
