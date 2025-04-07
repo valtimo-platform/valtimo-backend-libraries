@@ -19,7 +19,6 @@ package com.ritense.document.domain.impl;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.document.domain.DocumentContent;
 import com.ritense.document.domain.DocumentDefinition;

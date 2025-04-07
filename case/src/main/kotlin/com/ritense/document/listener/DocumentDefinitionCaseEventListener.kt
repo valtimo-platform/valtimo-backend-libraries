@@ -24,6 +24,8 @@ import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.event.CaseDefinitionCreatedEvent
 import com.ritense.valtimo.contract.event.CaseDefinitionDeletedEvent
 import org.springframework.context.event.EventListener
+import org.springframework.core.Ordered.LOWEST_PRECEDENCE
+import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
@@ -34,6 +36,7 @@ class DocumentDefinitionCaseEventListener(
     private val service: DocumentDefinitionService,
 ) {
 
+    @Order(LOWEST_PRECEDENCE)
     @RunWithoutAuthorization
     @EventListener(CaseDefinitionCreatedEvent::class)
     fun handleCaseDefinitionCreatedEvent(event: CaseDefinitionCreatedEvent) {
@@ -44,6 +47,7 @@ class DocumentDefinitionCaseEventListener(
         }
     }
 
+    @Order(LOWEST_PRECEDENCE)
     @RunWithoutAuthorization
     @EventListener(CaseDefinitionDeletedEvent::class)
     fun handleCaseDefinitionDeletedEvent(event: CaseDefinitionDeletedEvent) {

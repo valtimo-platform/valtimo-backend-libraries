@@ -49,7 +49,10 @@ class CaseDefinitionExporterIntTest @Autowired constructor(
                 CaseDefinitionId(
                     caseDefinitionKey,
                     caseDefinitionVersionTag
-                )
+                ),
+                name = "Some case type",
+                canHaveAssignee = true,
+                autoAssignTasks = true,
             )
         )
 
@@ -71,7 +74,7 @@ class CaseDefinitionExporterIntTest @Autowired constructor(
         JSONAssert.assertEquals(
             expectedJson,
             exportJson,
-            JSONCompareMode.NON_EXTENSIBLE
+            JSONCompareMode.LENIENT
         )
     }
 

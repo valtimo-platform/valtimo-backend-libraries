@@ -32,7 +32,6 @@ import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateOrderDto
 import com.ritense.case_.service.event.CaseTabCreatedEvent
-import com.ritense.case_.service.event.CaseTabDeletedEvent
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentDefinitionService
@@ -197,7 +196,6 @@ class CaseTabService(
             .ifPresent {
                 caseTabRepository.delete(it)
                 reorderTabs(caseDefinitionId)
-                applicationEventPublisher.publishEvent(CaseTabDeletedEvent(caseDefinitionId, tabKey))
             }
     }
 
@@ -205,7 +203,6 @@ class CaseTabService(
         denyAuthorization()
         caseTabRepository.findAll(byCaseDefinitionId(caseDefinitionId)).forEach { caseTab ->
             caseTabRepository.delete(caseTab)
-            applicationEventPublisher.publishEvent(CaseTabDeletedEvent(caseTab.id.caseDefinitionId, caseTab.id.key))
         }
     }
 

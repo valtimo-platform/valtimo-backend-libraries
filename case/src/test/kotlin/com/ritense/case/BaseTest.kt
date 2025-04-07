@@ -30,6 +30,7 @@ class BaseTest {
         name: String = "name",
         canHaveAssignee: Boolean = false,
         autoAssignTasks: Boolean = false,
+        active: Boolean = true,
     ): CaseDefinition {
         return CaseDefinition(
             id = caseDefinitionId,
@@ -40,7 +41,8 @@ class BaseTest {
             baseOnVersionTag = Semver.parse("1.0.0-SNAPSHOT"),
             isFinal = true,
             canHaveAssignee = canHaveAssignee,
-            autoAssignTasks = autoAssignTasks
+            autoAssignTasks = autoAssignTasks,
+            active = active,
         )
     }
 }

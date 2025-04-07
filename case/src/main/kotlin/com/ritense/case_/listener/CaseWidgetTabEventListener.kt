@@ -16,16 +16,12 @@
 
 package com.ritense.case_.listener
 
-import com.ritense.authorization.annotation.RunWithoutAuthorization
-import com.ritense.case.domain.CaseTabId
 import com.ritense.case.domain.CaseTabType
 import com.ritense.case_.domain.tab.CaseWidgetTab
 import com.ritense.case_.repository.CaseWidgetTabRepository
 import com.ritense.case_.service.event.CaseTabCreatedEvent
-import com.ritense.case_.service.event.CaseTabDeletedEvent
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.springframework.context.event.EventListener
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
@@ -40,14 +36,6 @@ class CaseWidgetTabEventListener(
     fun handleCaseTabCreatedEvent(event: CaseTabCreatedEvent) {
         if (event.tab.type == CaseTabType.WIDGETS) {
             caseWidgetTabRepository.save(CaseWidgetTab(event.tab.id))
-        }
-    }
-
-    @RunWithoutAuthorization
-    @EventListener(CaseTabDeletedEvent::class)
-    fun handleCaseTabDeletedEvent(event: CaseTabDeletedEvent) {
-        caseWidgetTabRepository.findByIdOrNull(CaseTabId(event.caseDefinitionId, event.tabKey))?.let {
-            caseWidgetTabRepository.delete(it)
         }
     }
 }
