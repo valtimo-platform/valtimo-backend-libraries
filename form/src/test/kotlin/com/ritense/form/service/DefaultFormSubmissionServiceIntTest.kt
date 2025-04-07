@@ -88,6 +88,9 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
         assertThat(json, hasNoJsonPath("""${'$'}.apples"""))
         assertThat(json, hasNoJsonPath("""${'$'}.favorites"""))
         assertThat(json, hasNoJsonPath("""${'$'}.name"""))
+        assertThat(json, hasJsonPath("""${'$'}.hiddenInputTrue""", equalTo("test-value")))
+        assertThat(json, hasNoJsonPath("""${'$'}.hiddenInputFalse"""))
+        assertThat(json, hasNoJsonPath("""${'$'}.inputDisabled"""))
 
         val processExecution = runWithoutAuthorization {
             processService.findExecutionByBusinessKey(businessKey)
@@ -157,6 +160,9 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
         assertThat(json, hasJsonPath("""${'$'}.favorites[1].name""", equalTo("Focaccia")))
         assertThat(json, hasNoJsonPath("""${'$'}.favorites[2]"""))
         assertThat(json, hasNoJsonPath("""${'$'}.name"""))
+        assertThat(json, hasJsonPath("""${'$'}.hiddenInputTrue""", equalTo("test-value")))
+        assertThat(json, hasNoJsonPath("""${'$'}.hiddenInputFalse"""))
+        assertThat(json, hasNoJsonPath("""${'$'}.inputDisabled"""))
     }
 
     private fun createFormData(): JsonNode {
@@ -168,7 +174,10 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
                 "vrTestGender": "M",
                 "vrPvTaskDateOfBirth": "1980-02-03",
                 "apples": 3,
-                "name": "Focaccia"
+                "name": "Focaccia",
+                "hiddenInputTrue": "test-value",
+                "hiddenInputFalse": "test-value",
+                "inputDisabled": "test-value"
             }
         """.trimIndent()
         )
