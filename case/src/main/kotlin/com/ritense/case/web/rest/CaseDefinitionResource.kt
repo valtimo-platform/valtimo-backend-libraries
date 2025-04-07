@@ -102,7 +102,7 @@ class CaseDefinitionResource(
 
     @GetMapping("/management/v1/case-definition")
     fun getCaseDefinitions(
-        @PageableDefault(sort = ["case_definition_key"], direction = Sort.Direction.ASC) pageable: Pageable
+        @PageableDefault(sort = ["name"], direction = Sort.Direction.ASC) pageable: Pageable
     ): ResponseEntity<Page<CaseDefinitionResponseDto>> {
         return ResponseEntity.ok(
             runWithoutAuthorization {
