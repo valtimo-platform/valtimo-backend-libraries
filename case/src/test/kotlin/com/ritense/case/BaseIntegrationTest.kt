@@ -33,7 +33,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @SpringBootTest
 @ExtendWith(SpringExtension::class, LiquibaseRunnerExtension::class)
 @Tag("integration")
-class BaseIntegrationTest {
+class BaseIntegrationTest: BaseTest() {
 
     @MockBean
     lateinit var userManagementService: UserManagementService

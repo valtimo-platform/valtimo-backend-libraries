@@ -45,14 +45,11 @@ class CaseDefinitionExporterIntTest @Autowired constructor(
         val caseDefinitionVersionTag = "1.2.3"
 
         caseDefinitionRepository.save(
-            CaseDefinition(
+            caseDefinition(
                 CaseDefinitionId(
                     caseDefinitionKey,
                     caseDefinitionVersionTag
-                ),
-                "Some case type",
-                true,
-                true
+                )
             )
         )
 

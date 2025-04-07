@@ -14,11 +14,22 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.contract.event
+package com.ritense.case.repository
 
+import com.ritense.case_.domain.tab.CaseWidgetTab
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import org.springframework.data.jpa.domain.Specification
 
-data class CaseDefinitionCreatedEvent(
-    val caseDefinitionId: CaseDefinitionId,
-    val basedOnCaseDefinitionId: CaseDefinitionId? = null,
-)
+class CaseWidgetTabSpecificationHelper {
+
+    companion object {
+
+        const val ID: String = "id"
+        const val CASE_DEFINITION_ID: String = "caseDefinitionId"
+
+        @JvmStatic
+        fun byCaseDefinitionId(caseDefinitionId: CaseDefinitionId) = Specification<CaseWidgetTab> { root, _, cb ->
+            cb.equal(root.get<Any>(ID).get<Any>(CASE_DEFINITION_ID), caseDefinitionId)
+        }
+    }
+}

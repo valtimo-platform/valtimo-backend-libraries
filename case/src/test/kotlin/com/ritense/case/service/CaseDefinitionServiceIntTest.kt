@@ -35,24 +35,18 @@ class CaseDefinitionServiceIntTest @Autowired constructor(
     @Test
     fun `find case definition based on version`() {
         // normally when sorting alphabetically 1.20.0 is greater than 1.100.0, but in semver 1.100.0 is greater than 1.20.0
-        val caseDefinition1 = CaseDefinition(
+        val caseDefinition1 = caseDefinition(
             CaseDefinitionId(
                 "key",
                 Semver("1.20.0")
-            ),
-            "name",
-            true,
-            true
+            )
         )
 
-        val caseDefinition2 = CaseDefinition(
+        val caseDefinition2 = caseDefinition(
             CaseDefinitionId(
                 "key",
                 Semver("1.100.0")
-            ),
-            "name",
-            true,
-            true
+            )
         )
 
         caseDefinitionRepository.save(caseDefinition1)

@@ -16,6 +16,7 @@
 
 package com.ritense.case.service
 
+import com.ritense.case.BaseTest
 import com.ritense.case.domain.CaseListColumn
 import com.ritense.case.domain.CaseListColumnId
 import com.ritense.case.domain.ColumnDefaultSort
@@ -41,7 +42,7 @@ import org.springframework.data.domain.Sort
 import java.util.UUID
 import kotlin.test.assertEquals
 
-class CaseInstanceServiceTest {
+class CaseInstanceServiceTest: BaseTest() {
 
     private lateinit var service: CaseInstanceService
 
@@ -87,10 +88,8 @@ class CaseInstanceServiceTest {
             .thenReturn(PageImpl(listOf(DOCUMENT)))
         whenever(caseDefinitionService.getLatestCaseDefinition(CASE_DEFINITION_NAME))
             .thenReturn(
-                CaseDefinition(
+                caseDefinition(
                     CaseDefinitionId.of(CASE_DEFINITION_NAME, "1.0.0"),
-                    CASE_DEFINITION_NAME,
-                    false
                 )
             )
 
@@ -110,10 +109,9 @@ class CaseInstanceServiceTest {
             .thenReturn(PageImpl(listOf(DOCUMENT)))
         whenever(caseDefinitionService.getLatestCaseDefinition(CASE_DEFINITION_NAME))
             .thenReturn(
-                CaseDefinition(
+                caseDefinition(
                     CaseDefinitionId.of(CASE_DEFINITION_NAME, "1.0.0"),
                     CASE_DEFINITION_NAME,
-                    false
                 )
             )
 

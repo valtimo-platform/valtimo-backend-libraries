@@ -21,6 +21,8 @@ import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.service.CaseTabService
 import com.ritense.case_.domain.tab.CaseWidgetTabWidget
+import com.ritense.case_.listener.CaseTabListener
+import com.ritense.case_.listener.CaseWidgetTabListener
 import com.ritense.case_.repository.CaseWidgetTabRepository
 import com.ritense.case_.repository.CaseWidgetTabWidgetSpecificationFactory
 import com.ritense.case_.rest.CaseWidgetTabManagementResource
@@ -173,4 +175,16 @@ class CaseWidgetAutoConfiguration {
     fun activeCaseDefinitionService(
         caseDefinitionService: CaseDefinitionService
     ) = ActiveCaseDefinitionService(caseDefinitionService)
+
+    @ConditionalOnMissingBean(CaseTabListener::class)
+    @Bean
+    fun caseTabListener(
+        caseTabService: CaseTabService
+    ) = CaseTabListener(caseTabService)
+
+    @ConditionalOnMissingBean(CaseWidgetTabListener::class)
+    @Bean
+    fun caseWidgetTabListener(
+        caseWidgetTabService: CaseWidgetTabService
+    ) = CaseWidgetTabListener(caseWidgetTabService)
 }

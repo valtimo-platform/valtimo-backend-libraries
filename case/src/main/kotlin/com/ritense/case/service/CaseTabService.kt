@@ -19,6 +19,7 @@ package com.ritense.case.service
 import com.ritense.authorization.Action.Companion.deny
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.authorization.request.AuthorizationResourceContext
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.case.domain.CaseTab
@@ -40,7 +41,9 @@ import com.ritense.document.service.findByOrNull
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.valtimo.contract.event.CaseDefinitionDeletedEvent
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.context.event.EventListener
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -197,6 +200,11 @@ class CaseTabService(
                 caseTabRepository.delete(it)
                 reorderTabs(caseDefinitionId)
             }
+    }
+
+    fun deleteCaseTabs(caseDefinitionId: CaseDefinitionId) {
+        denyAuthorization()
+        caseTabRepository.deleteAll(caseTabRepository.findAll(byCaseDefinitionId(caseDefinitionId)))
     }
 
     private fun reorderTabs(caseDefinitionId: CaseDefinitionId) {

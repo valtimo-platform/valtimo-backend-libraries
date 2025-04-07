@@ -16,17 +16,18 @@
 
 package com.ritense.case_.domain.definition
 
+import com.ritense.case.BaseTest
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import kotlin.test.assertFailsWith
 
 
-class CaseDefinitionTest {
+class CaseDefinitionTest: BaseTest() {
     @Test
     fun `should set autoAssignTasks to false when canHaveAssignee is set to false`() {
         val exception = assertFailsWith<IllegalArgumentException> {
-            CaseDefinition(
+            caseDefinition(
                 CaseDefinitionId("key", "1.0.0"),
                 "name",
                 canHaveAssignee = false,

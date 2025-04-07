@@ -26,6 +26,7 @@ import com.ritense.case.domain.CaseTab
 import com.ritense.case.domain.CaseTabId
 import com.ritense.case.domain.CaseTabType
 import com.ritense.case.repository.CaseTabRepository
+import com.ritense.case.repository.CaseWidgetTabSpecificationHelper.Companion.byCaseDefinitionId
 import com.ritense.case.service.CaseTabActionProvider.Companion.VIEW
 import com.ritense.case_.domain.tab.CaseWidgetTab
 import com.ritense.case_.domain.tab.CaseWidgetTabWidget
@@ -41,6 +42,7 @@ import com.ritense.document.service.DocumentService
 import com.ritense.document.service.findByOrNull
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.valtimo.contract.event.CaseDefinitionDeletedEvent
 import jakarta.validation.Valid
 import org.springframework.context.event.EventListener
 import org.springframework.data.domain.Pageable
@@ -159,6 +161,11 @@ class CaseWidgetTabService(
                 .first { provider -> provider.supportedWidgetType().isAssignableFrom(widget::class.java) }
                 .getData(document.id().id, widgetTab, widget, pageable)
         }
+    }
+
+    fun deleteCaseWidgetTabs(caseDefinitionId: CaseDefinitionId) {
+        denyAuthorization()
+        caseWidgetTabRepository.deleteAll(caseWidgetTabRepository.findAll(byCaseDefinitionId(caseDefinitionId)))
     }
 
     private fun checkCaseTabAccess(caseDefinitionId: CaseDefinitionId, key: String, action: Action<CaseTab>) {
