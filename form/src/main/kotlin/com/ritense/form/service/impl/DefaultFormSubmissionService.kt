@@ -202,6 +202,8 @@ class DefaultFormSubmissionService(
         document: Document?
     ): CategorizedSubmitValues {
         val categorizedMap = formDefinition.inputFields
+            .filter { FormIoFormDefinition.NOT_IGNORED.test(it) }
+            .filter { FormIoFormDefinition.isInputComponent(it) }
             .mapNotNull { field ->
                 getTargetKeyValuePair(field, formData)
             }.groupBy { (key, _) ->
