@@ -104,6 +104,20 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     }
 
     @Override
+    public List<JsonSchemaDocumentDefinition> findAllBy(CaseDefinitionId caseDefinitionId) {
+        final var spec = authorizationService
+            .getAuthorizationSpecification(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocumentDefinition.class,
+                    VIEW_LIST
+                ),
+                null
+            );
+        spec.and(JsonSchemaDocumentDefinitionSpecificationHelper.byIdCaseDefinitionId(caseDefinitionId));
+        return documentDefinitionRepository.findAll(spec);
+    }
+
+    @Override
     public Page<JsonSchemaDocumentDefinition> findAllForManagement(Pageable pageable) {
         authorizationService.requirePermission(
             new EntityAuthorizationRequest<>(
@@ -312,6 +326,24 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         ));
 
         documentDefinitionRepository.deleteByIdName(documentDefinitionName);
+    }
+
+    @Override
+    public void removeDocumentDefinition(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName,
+        CaseDefinitionId caseDefinitionId
+    ) {
+        findByNameAndCaseDefinitionId(documentDefinitionName, caseDefinitionId).ifPresent(documentDefinition -> {
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocumentDefinition.class,
+                    DELETE,
+                    documentDefinition
+                )
+            );
+
+            documentDefinitionRepository.delete(documentDefinition);
+        });
     }
 
     @Override

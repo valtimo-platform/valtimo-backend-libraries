@@ -17,6 +17,7 @@
 package com.ritense.zakenapi.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.case_.listener.ZaakTypeLinkCaseEventListener
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.document.service.DocumentService
@@ -295,6 +296,16 @@ class ZakenApiAutoConfiguration {
         return ZaakTypeLinkImporter(
             objectMapper,
             zaakTypeLinkService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ZaakTypeLinkCaseEventListener::class)
+    fun zaakTypeLinkCaseEventListener(
+        zaakTypeLinkService: ZaakTypeLinkService,
+    ): ZaakTypeLinkCaseEventListener {
+        return ZaakTypeLinkCaseEventListener(
+            zaakTypeLinkService,
         )
     }
 }

@@ -43,20 +43,32 @@ class JsonSchemaDocumentDefinitionSpecificationHelper {
 
                 val sub = query.subquery(Long::class.java)
                 val subRoot = sub.from(JsonSchemaDocumentDefinition::class.java)
-                sub.select(cb.max(subRoot.get<Any>(ID).get<CaseDefinitionId>(CASEDEFINITIONID).get(VERSION)))
+                sub.select(cb.max(subRoot.get<Any>(ID).get<CaseDefinitionId>(CASE_DEFINITION_ID).get(VERSION_TAG)))
                 sub.where(
                     cb.and(
                         cb.equal(subRoot.get<Any>(ID).get<String>(NAME), root.get<Any>(ID).get<String>(NAME)),
                     )
                 )
 
-                cb.equal(root.get<Any>(ID).get<CaseDefinitionId>(CASEDEFINITIONID).get<Long>(VERSION), sub)
+                cb.equal(root.get<Any>(ID).get<CaseDefinitionId>(CASE_DEFINITION_ID).get<Long>(VERSION_TAG), sub)
+            }
+        }
+
+        @JvmStatic
+        fun byIdCaseDefinitionId(caseDefinitionId: CaseDefinitionId): Specification<JsonSchemaDocumentDefinition> {
+            return Specification { root: Root<JsonSchemaDocumentDefinition>,
+                                   _: CriteriaQuery<*>,
+                                   criteriaBuilder: CriteriaBuilder ->
+                val caseDefinitionIdPath = root.get<Any>(ID).get<String>(CASE_DEFINITION_ID)
+                criteriaBuilder.equal(caseDefinitionIdPath.get<String>(KEY), caseDefinitionId.key)
+                criteriaBuilder.equal(caseDefinitionIdPath.get<String>(VERSION_TAG), caseDefinitionId.key)
             }
         }
 
         private const val ID: String = "id"
-        private const val CASEDEFINITIONID: String = "caseDefinitionId"
-        private const val VERSION: String = "versionTag"
+        private const val CASE_DEFINITION_ID: String = "caseDefinitionId"
+        private const val KEY: String = "name"
+        private const val VERSION_TAG: String = "versionTag"
         private const val NAME: String = "name"
     }
 }

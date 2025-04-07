@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.case_.listener
+package com.ritense.document.listener
 
 import com.ritense.authorization.annotation.RunWithoutAuthorization
-import com.ritense.case.domain.CaseTabId
 import com.ritense.case.service.CaseTabService
 import com.ritense.case.web.rest.dto.CaseTabDto
-import com.ritense.case_.service.CaseWidgetTabService
+import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.event.CaseDefinitionCreatedEvent
 import com.ritense.valtimo.contract.event.CaseDefinitionDeletedEvent
@@ -31,23 +30,25 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 @Component
 @SkipComponentScan
-class CaseTabListener(
-    private val service: CaseTabService,
+class DocumentDefinitionCaseEventListener(
+    private val service: DocumentDefinitionService,
 ) {
 
     @RunWithoutAuthorization
     @EventListener(CaseDefinitionCreatedEvent::class)
     fun handleCaseDefinitionCreatedEvent(event: CaseDefinitionCreatedEvent) {
         if (event.basedOnCaseDefinitionId != null) {
-            service.getCaseTabs(event.basedOnCaseDefinitionId!!)
-                .map { CaseTabDto.of(it) }
-                .forEach { service.createCaseTab(event.caseDefinitionId, it) }
+            service.findByCaseDefinitionId(event.basedOnCaseDefinitionId!!).ifPresent { documentDefinition ->
+                service.deploy(documentDefinition.schema().textValue(), event.caseDefinitionId)
+            }
         }
     }
 
     @RunWithoutAuthorization
     @EventListener(CaseDefinitionDeletedEvent::class)
     fun handleCaseDefinitionDeletedEvent(event: CaseDefinitionDeletedEvent) {
-        service.deleteCaseTabs(event.caseDefinitionId)
+        service.findAllBy(event.caseDefinitionId).forEach { documentDefinition ->
+            service.removeDocumentDefinition(documentDefinition.id.name(), documentDefinition.id.caseDefinitionId())
+        }
     }
 }

@@ -17,24 +17,37 @@
 package com.ritense.case_.listener
 
 import com.ritense.authorization.annotation.RunWithoutAuthorization
-import com.ritense.case.service.CaseTabService
-import com.ritense.case_.service.CaseWidgetTabService
+import com.ritense.case.domain.CaseTabId
+import com.ritense.case.domain.CaseTabType
+import com.ritense.case_.domain.tab.CaseWidgetTab
+import com.ritense.case_.repository.CaseWidgetTabRepository
+import com.ritense.case_.service.event.CaseTabCreatedEvent
+import com.ritense.case_.service.event.CaseTabDeletedEvent
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import com.ritense.valtimo.contract.event.CaseDefinitionDeletedEvent
 import org.springframework.context.event.EventListener
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 @Component
 @SkipComponentScan
-class CaseWidgetTabListener(
-    private val service: CaseWidgetTabService,
+class CaseWidgetTabEventListener(
+    private val caseWidgetTabRepository: CaseWidgetTabRepository,
 ) {
 
+    @EventListener(CaseTabCreatedEvent::class)
+    fun handleCaseTabCreatedEvent(event: CaseTabCreatedEvent) {
+        if (event.tab.type == CaseTabType.WIDGETS) {
+            caseWidgetTabRepository.save(CaseWidgetTab(event.tab.id))
+        }
+    }
+
     @RunWithoutAuthorization
-    @EventListener(CaseDefinitionDeletedEvent::class)
-    fun handleCaseDefinitionDeletedEvent(event: CaseDefinitionDeletedEvent) {
-        service.deleteCaseWidgetTabs(event.caseDefinitionId)
+    @EventListener(CaseTabDeletedEvent::class)
+    fun handleCaseTabDeletedEvent(event: CaseTabDeletedEvent) {
+        caseWidgetTabRepository.findByIdOrNull(CaseTabId(event.caseDefinitionId, event.tabKey))?.let {
+            caseWidgetTabRepository.delete(it)
+        }
     }
 }

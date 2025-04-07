@@ -19,7 +19,6 @@ package com.ritense.case.service
 import com.ritense.authorization.Action.Companion.deny
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
-import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.authorization.request.AuthorizationResourceContext
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.case.domain.CaseTab
@@ -33,6 +32,7 @@ import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateOrderDto
 import com.ritense.case_.service.event.CaseTabCreatedEvent
+import com.ritense.case_.service.event.CaseTabDeletedEvent
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentDefinitionService
@@ -41,9 +41,7 @@ import com.ritense.document.service.findByOrNull
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
-import com.ritense.valtimo.contract.event.CaseDefinitionDeletedEvent
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.context.event.EventListener
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -199,12 +197,16 @@ class CaseTabService(
             .ifPresent {
                 caseTabRepository.delete(it)
                 reorderTabs(caseDefinitionId)
+                applicationEventPublisher.publishEvent(CaseTabDeletedEvent(caseDefinitionId, tabKey))
             }
     }
 
     fun deleteCaseTabs(caseDefinitionId: CaseDefinitionId) {
         denyAuthorization()
-        caseTabRepository.deleteAll(caseTabRepository.findAll(byCaseDefinitionId(caseDefinitionId)))
+        caseTabRepository.findAll(byCaseDefinitionId(caseDefinitionId)).forEach { caseTab ->
+            caseTabRepository.delete(caseTab)
+            applicationEventPublisher.publishEvent(CaseTabDeletedEvent(caseTab.id.caseDefinitionId, caseTab.id.key))
+        }
     }
 
     private fun reorderTabs(caseDefinitionId: CaseDefinitionId) {
