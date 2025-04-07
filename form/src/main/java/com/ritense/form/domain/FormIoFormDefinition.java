@@ -617,7 +617,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
             && jsonNode.get("type").textValue().equalsIgnoreCase("button");
     }
 
-    private static boolean isInputComponent(JsonNode jsonNode) {
+    public static boolean isInputComponent(JsonNode jsonNode) {
         return jsonNode.has("input")
             && jsonNode.get("input").booleanValue()
             && jsonNode.has(PROPERTY_KEY);
