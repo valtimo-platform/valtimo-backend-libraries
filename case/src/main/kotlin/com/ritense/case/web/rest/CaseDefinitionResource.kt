@@ -175,6 +175,38 @@ class CaseDefinitionResource(
         }
     }
 
+    @GetMapping("/management/v1/case-definition/{caseDefinitionKey}")
+    @RunWithoutAuthorization
+    fun getActive(
+        @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
+    ): ResponseEntity<CaseDefinitionResponseDto> {
+        return try {
+           val caseDefinition = activeCaseDefinitionService.getActiveCaseDefinition(caseDefinitionKey)
+           ResponseEntity.ok(CaseDefinitionResponseDto.of(caseDefinition))
+        } catch (exception: UnknownCaseDefinitionException) {
+            ResponseEntity.notFound().build()
+        }
+    }
+
+    @PostMapping("/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/active")
+    @RunWithoutAuthorization
+    fun setActive(
+        @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
+        @LoggableResource("caseDefinitionVersionTag") @PathVariable caseDefinitionVersionTag: String,
+    ): ResponseEntity<CaseDefinitionResponseDto> {
+        return try {
+            ResponseEntity.ok(
+                CaseDefinitionResponseDto.of(
+                    activeCaseDefinitionService.setGlobalActiveCaseDefinition(
+                        CaseDefinitionId.of(caseDefinitionKey, caseDefinitionVersionTag)
+                    )
+                )
+            )
+        } catch (exception: UnknownCaseDefinitionException) {
+            ResponseEntity.notFound().build()
+        }
+    }
+
     @GetMapping("/v1/case/{caseDefinitionName}/list-column")
     fun getCaseListColumn(
         @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.case.service
+package com.ritense.case.repository
 
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.case_.domain.definition.CaseDefinition
@@ -27,13 +27,12 @@ import org.springframework.transaction.annotation.Transactional
 import kotlin.test.assertEquals
 
 @Transactional
-class CaseDefinitionServiceIntTest @Autowired constructor(
-    private val caseDefinitionService: CaseDefinitionService,
+class CaseDefinitionRepositoryIntTest @Autowired constructor(
     private val caseDefinitionRepository: CaseDefinitionRepository
 ): BaseIntegrationTest() {
 
     @Test
-    fun `find case definition based on version`() {
+    fun `should support sorting on SemVer`() {
         // normally when sorting alphabetically 1.20.0 is greater than 1.100.0, but in semver 1.100.0 is greater than 1.20.0
         val caseDefinition1 = caseDefinition(
             CaseDefinitionId(
@@ -52,7 +51,7 @@ class CaseDefinitionServiceIntTest @Autowired constructor(
         caseDefinitionRepository.save(caseDefinition1)
         caseDefinitionRepository.save(caseDefinition2)
 
-        val foundDefinition = caseDefinitionService.getLatestCaseDefinition("key")
+        val foundDefinition = caseDefinitionRepository.findFirstByIdKeyOrderByIdVersionTagDesc("key")
 
         assertEquals(caseDefinition2, foundDefinition)
     }

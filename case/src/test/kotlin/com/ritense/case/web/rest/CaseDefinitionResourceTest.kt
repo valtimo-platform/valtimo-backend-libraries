@@ -43,6 +43,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -95,6 +96,7 @@ class CaseDefinitionResourceTest : BaseTest() {
             .andExpect(jsonPath("$.caseDefinitionVersionTag").value(caseDefinitionId.versionTag.version))
             .andExpect(jsonPath("$.canHaveAssignee").value(true))
             .andExpect(jsonPath("$.autoAssignTasks").value(false))
+            .andExpect(jsonPath("$.active").value(true))
 
         verify(activeCaseDefinitionService).getActiveCaseDefinition("key")
     }
@@ -102,7 +104,7 @@ class CaseDefinitionResourceTest : BaseTest() {
     @Test
     fun `should update case settings`() {
         val caseDefinitionId = CaseDefinitionId("key", "1.0.0")
-        val caseDefinition = caseDefinition(caseDefinitionId, canHaveAssignee = true)
+        val caseDefinition = caseDefinition(caseDefinitionId, canHaveAssignee = true, active = false)
         val caseSettingsDto = CaseSettingsDto(false, false)
 
         whenever(service.updateCaseSettings(caseDefinitionId, caseSettingsDto)).thenReturn(caseDefinition)
@@ -123,6 +125,7 @@ class CaseDefinitionResourceTest : BaseTest() {
             .andExpect(jsonPath("$.caseDefinitionVersionTag").value(caseDefinitionId.versionTag.version))
             .andExpect(jsonPath("$.canHaveAssignee").value(true))
             .andExpect(jsonPath("$.autoAssignTasks").value(false))
+            .andExpect(jsonPath("$.active").value(false))
 
         verify(service).updateCaseSettings(caseDefinitionId, caseSettingsDto)
     }
@@ -130,7 +133,7 @@ class CaseDefinitionResourceTest : BaseTest() {
     @Test
     fun `should accept null case settings`() {
         val caseDefinitionId = CaseDefinitionId("key", "1.0.0")
-        val caseDefinition = caseDefinition(caseDefinitionId, canHaveAssignee = true)
+        val caseDefinition = caseDefinition(caseDefinitionId, canHaveAssignee = true, active = false)
         val caseSettingsDto = CaseSettingsDto()
 
         whenever(service.updateCaseSettings(eq(caseDefinitionId), any())).thenReturn(caseDefinition)
@@ -151,6 +154,7 @@ class CaseDefinitionResourceTest : BaseTest() {
             .andExpect(jsonPath("$.caseDefinitionVersionTag").value(caseDefinitionId.versionTag.version))
             .andExpect(jsonPath("$.canHaveAssignee").value(true))
             .andExpect(jsonPath("$.autoAssignTasks").value(false))
+            .andExpect(jsonPath("$.active").value(false))
 
         verify(service).updateCaseSettings(caseDefinitionId, caseSettingsDto)
     }

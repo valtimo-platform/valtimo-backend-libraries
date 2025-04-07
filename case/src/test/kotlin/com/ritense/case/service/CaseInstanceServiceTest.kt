@@ -33,6 +33,7 @@ import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valueresolver.ValueResolverService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.springframework.data.domain.PageImpl
@@ -86,7 +87,7 @@ class CaseInstanceServiceTest: BaseTest() {
         val pageable = Pageable.ofSize(10)
         whenever(documentSearchService.search(CASE_DEFINITION_NAME, searchRequest, pageable))
             .thenReturn(PageImpl(listOf(DOCUMENT)))
-        whenever(caseDefinitionService.getLatestCaseDefinition(CASE_DEFINITION_NAME))
+        whenever(caseDefinitionService.findCaseDefinition(any()))
             .thenReturn(
                 caseDefinition(
                     CaseDefinitionId.of(CASE_DEFINITION_NAME, "1.0.0"),
@@ -107,7 +108,7 @@ class CaseInstanceServiceTest: BaseTest() {
         val pageable = PageRequest.of(0, 1, Sort.by("\$.some.jsonPath"))
         whenever(documentSearchService.search(CASE_DEFINITION_NAME, searchRequest, pageable))
             .thenReturn(PageImpl(listOf(DOCUMENT)))
-        whenever(caseDefinitionService.getLatestCaseDefinition(CASE_DEFINITION_NAME))
+        whenever(caseDefinitionService.findCaseDefinition(any()))
             .thenReturn(
                 caseDefinition(
                     CaseDefinitionId.of(CASE_DEFINITION_NAME, "1.0.0"),

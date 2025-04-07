@@ -114,12 +114,33 @@ class CaseDefinitionService(
     }
 
     fun getCaseDefinitions(pageable: Pageable): Page<CaseDefinition> {
-        return caseDefinitionRepository.findAllLatestCaseDefinitions(pageable)
+        return caseDefinitionRepository.findAllByActiveIsTrue(pageable)
     }
 
     fun getCaseDefinition(caseDefinitionId: CaseDefinitionId): CaseDefinition {
         return caseDefinitionRepository.findByIdOrNull(caseDefinitionId)
             ?: throw UnknownCaseDefinitionException(caseDefinitionId)
+    }
+
+    fun findCaseDefinition(caseDefinitionId: CaseDefinitionId): CaseDefinition? {
+        return caseDefinitionRepository.findByIdOrNull(caseDefinitionId)
+    }
+
+    fun getActiveCaseDefinition(caseDefinitionKey: String): CaseDefinition? {
+        return caseDefinitionRepository.findByActiveIsTrueAndIdKey(caseDefinitionKey)
+    }
+
+    @Throws(UnknownDocumentDefinitionException::class)
+    fun setActiveCaseDefinition(caseDefinitionId: CaseDefinitionId): CaseDefinition {
+        denyManagementOperation()
+        val caseDefinition = runWithoutAuthorization { getCaseDefinition(caseDefinitionId) }
+
+        val activeCaseDefinition = caseDefinitionRepository.findByActiveIsTrueAndIdKey(caseDefinitionId.key)
+        if (activeCaseDefinition != null && activeCaseDefinition.id != caseDefinitionId) {
+            caseDefinitionRepository.save(activeCaseDefinition.copy(active = false))
+        }
+
+        return caseDefinitionRepository.save(caseDefinition.copy(active = true))
     }
 
     fun getCaseDefinitionVersions(caseDefinitionKey: String): List<String> {
@@ -207,10 +228,6 @@ class CaseDefinitionService(
                 Action.deny()
             )
         )
-    }
-
-    internal fun getLatestCaseDefinition(caseDefinitionKey: String): CaseDefinition? {
-        return caseDefinitionRepository.findFirstByIdKeyOrderByIdVersionTagDesc(caseDefinitionKey)
     }
 
     @Throws(UnknownDocumentDefinitionException::class)

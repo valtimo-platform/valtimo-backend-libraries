@@ -30,6 +30,7 @@ data class CaseDefinitionResponseDto(
     val isFinal: Boolean,
     val canHaveAssignee: Boolean,
     val autoAssignTasks: Boolean,
+    val active: Boolean,
 ) {
     companion object {
         fun of(caseDefinition: CaseDefinition) =
@@ -43,7 +44,8 @@ data class CaseDefinitionResponseDto(
                 caseDefinition.baseOnVersionTag?.version,
                 caseDefinition.isFinal,
                 caseDefinition.canHaveAssignee,
-                caseDefinition.autoAssignTasks
+                caseDefinition.autoAssignTasks,
+                caseDefinition.active,
             )
     }
 }
