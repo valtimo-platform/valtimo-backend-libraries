@@ -17,6 +17,7 @@
 package com.ritense.document.service
 
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.document.BaseIntegrationTest
 import com.ritense.document.domain.InternalCaseStatusColor.GRAY
 import com.ritense.document.exception.InternalCaseStatusAlreadyExistsException
@@ -118,7 +119,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
 
     @Test
     fun `should not create status for missing definition`() {
-        assertThrows<NoSuchElementException> {
+        assertThrows<UnknownCaseDefinitionException> {
             AuthorizationContext.runWithoutAuthorization {
                 internalCaseStatusService.create(
                     "case-definition-that-does-not-exist",

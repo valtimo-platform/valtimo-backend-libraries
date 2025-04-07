@@ -43,7 +43,7 @@ class CaseDefinitionResourceTest {
     @Test
     fun `should get case settings`() {
         val caseDefinitionId = CaseDefinitionId("key", "1.0.0")
-        val caseDefinition = CaseDefinition(caseDefinitionId, "name", true, false)
+        val caseDefinition = CaseDefinition(caseDefinitionId, "name", true, false, true)
 
         whenever(activeCaseDefinitionService.getActiveCaseDefinition("key")).thenReturn(caseDefinition)
 
@@ -63,6 +63,7 @@ class CaseDefinitionResourceTest {
                 .value(caseDefinitionId.versionTag.version))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
             .andExpect(MockMvcResultMatchers.jsonPath("$.autoAssignTasks").value(false))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.active").value(true))
 
         verify(activeCaseDefinitionService).getActiveCaseDefinition("key")
     }
@@ -93,6 +94,7 @@ class CaseDefinitionResourceTest {
                 .value(caseDefinitionId.versionTag.version))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
             .andExpect(MockMvcResultMatchers.jsonPath("$.autoAssignTasks").value(false))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.active").value(false))
 
         verify(service).updateCaseSettings(caseDefinitionId, caseSettingsDto)
     }
@@ -123,6 +125,7 @@ class CaseDefinitionResourceTest {
                 .value(caseDefinitionId.versionTag.version))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
             .andExpect(MockMvcResultMatchers.jsonPath("$.autoAssignTasks").value(false))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.active").value(false))
 
         verify(service).updateCaseSettings(caseDefinitionId, caseSettingsDto)
     }

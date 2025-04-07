@@ -20,6 +20,7 @@ import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case_.domain.definition.CaseDefinition
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -31,7 +32,11 @@ class ActiveCaseDefinitionService(
 ) {
 
     fun getActiveCaseDefinition(caseDefinitionKey: String): CaseDefinition {
-        return caseDefinitionService.getLatestCaseDefinition(caseDefinitionKey)
+        return caseDefinitionService.getActiveCaseDefinition(caseDefinitionKey)
             ?: throw UnknownCaseDefinitionException(caseDefinitionKey)
+    }
+
+    fun setGlobalActiveCaseDefinition(caseDefinitionId: CaseDefinitionId): CaseDefinition {
+        return caseDefinitionService.setActiveCaseDefinition(caseDefinitionId)
     }
 }

@@ -33,6 +33,8 @@ data class CaseDefinition(
     val canHaveAssignee: Boolean = false,
     @Column(name = "auto_assign_tasks")
     val autoAssignTasks: Boolean = false,
+    @Column(name = "active")
+    val active: Boolean = false,
 ) {
     init {
         require(
