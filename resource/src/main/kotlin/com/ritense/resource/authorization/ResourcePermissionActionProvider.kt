@@ -21,7 +21,7 @@ import com.ritense.authorization.ResourceActionProvider
 
 class ResourcePermissionActionProvider : ResourceActionProvider<ResourcePermission> {
     override fun getAvailableActions(): List<Action<ResourcePermission>> {
-        return listOf(VIEW, VIEW_LIST, CREATE, MODIFY, DELETE)
+        return listOf(VIEW, VIEW_LIST, CREATE, MODIFY, DELETE, IMPORT)
     }
 
     companion object {
@@ -30,5 +30,6 @@ class ResourcePermissionActionProvider : ResourceActionProvider<ResourcePermissi
         var CREATE = Action<ResourcePermission>(Action.CREATE)
         var MODIFY = Action<ResourcePermission>(Action.MODIFY)
         var DELETE = Action<ResourcePermission>(Action.DELETE)
+        var IMPORT = Action<ResourcePermission>(Action.DELETE)
     }
 }

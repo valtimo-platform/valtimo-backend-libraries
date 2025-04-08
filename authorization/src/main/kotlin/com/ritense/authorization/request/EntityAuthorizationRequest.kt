@@ -17,6 +17,7 @@
 package com.ritense.authorization.request
 
 import com.ritense.authorization.Action
+import java.util.*
 
 open class EntityAuthorizationRequest<T>(
     override val resourceType: Class<T>,
@@ -38,4 +39,19 @@ open class EntityAuthorizationRequest<T>(
         this.context = context
         return this
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is EntityAuthorizationRequest<*>) return false
+
+        return resourceType == other.resourceType &&
+            action == other.action &&
+            entities == other.entities &&
+            context == other.context
+    }
+
+    override fun hashCode(): Int {
+        return Objects.hash(resourceType, action, entities, context)
+    }
+
 }

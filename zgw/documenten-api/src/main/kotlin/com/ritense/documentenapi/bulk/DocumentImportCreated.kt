@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.resource.authorization
+package com.ritense.documentenapi.bulk
 
-class ResourcePermission {
-    override fun equals(other: Any?): Boolean = other is ResourcePermission
-}
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.outbox.domain.BaseEvent
+
+// ideally this would be a data class, but the BaseEvent is not a data class.
+class DocumentImportCreated(statusUrl: String, result: ObjectNode) : BaseEvent(
+    type = "com.ritense.gzac.drc.document.import.created",
+    resultType = "com.ritense.documentenapi.bulk.CreateImportResult",
+    resultId = statusUrl,
+    result = result
+)
