@@ -83,7 +83,8 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
         val businessKey = document.id.id.toString()
         val json = objectMapper.writeValueAsString(document.content().asJson())
         assertThat(json, hasJsonPath("""${'$'}.personalInformation.firstName""", equalTo("John")))
-        assertThat(json, hasJsonPath("""${'$'}.fruitTypes[0].apples""", equalTo(3)))
+        //assertThat(json, hasJsonPath("""${'$'}.fruitTypes[0].apples""", equalTo(3)))
+        assertThat(json, hasNoJsonPath("""${'$'}.fruitTypes[0]""")) // <- difference
         assertThat(json, hasNoJsonPath("""${'$'}.fruitTypes[1]"""))
         assertThat(json, hasNoJsonPath("""${'$'}.apples"""))
         assertThat(json, hasNoJsonPath("""${'$'}.favorites"""))
@@ -91,6 +92,15 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
         assertThat(json, hasJsonPath("""${'$'}.hiddenInputTrue""", equalTo("test-value")))
         assertThat(json, hasNoJsonPath("""${'$'}.hiddenInputFalse"""))
         assertThat(json, hasNoJsonPath("""${'$'}.inputDisabled"""))
+        //assertThat(json, hasJsonPath("""${'$'}.arrayInDocument[0].property1""", equalTo("property1")))
+        //assertThat(json, hasJsonPath("""${'$'}.arrayInDocument[0].property2""", equalTo("property2")))
+        assertThat(json, hasNoJsonPath("""${'$'}.arrayInDocument""")) // <- difference
+        assertThat(json, hasNoJsonPath("""${'$'}.property1"""))
+        assertThat(json, hasNoJsonPath("""${'$'}.property2"""))
+        //assertThat(json, hasJsonPath("""${'$'}.informatieverzoeken[0].verzoek.jaartallen""", equalTo("2010")))
+        //assertThat(json, hasJsonPath("""${'$'}.informatieverzoeken[0].verzoek.toelichting""", equalTo("From 2010")))
+        assertThat(json, hasNoJsonPath("""${'$'}.informatieverzoeken""")) // <- difference
+        assertThat(json, hasNoJsonPath("""${'$'}.verzoek"""))
 
         val processExecution = runWithoutAuthorization {
             processService.findExecutionByBusinessKey(businessKey)
@@ -163,6 +173,13 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
         assertThat(json, hasJsonPath("""${'$'}.hiddenInputTrue""", equalTo("test-value")))
         assertThat(json, hasNoJsonPath("""${'$'}.hiddenInputFalse"""))
         assertThat(json, hasNoJsonPath("""${'$'}.inputDisabled"""))
+        assertThat(json, hasJsonPath("""${'$'}.arrayInDocument[0].property1""", equalTo("property1")))
+        assertThat(json, hasJsonPath("""${'$'}.arrayInDocument[0].property2""", equalTo("property2")))
+        assertThat(json, hasNoJsonPath("""${'$'}.property1"""))
+        assertThat(json, hasNoJsonPath("""${'$'}.property2"""))
+        assertThat(json, hasJsonPath("""${'$'}.informatieverzoeken[0].verzoek.jaartallen""", equalTo("2010")))
+        assertThat(json, hasJsonPath("""${'$'}.informatieverzoeken[0].verzoek.toelichting""", equalTo("From 2010")))
+        assertThat(json, hasNoJsonPath("""${'$'}.verzoek"""))
     }
 
     private fun createFormData(): JsonNode {
@@ -177,7 +194,10 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
                 "name": "Focaccia",
                 "hiddenInputTrue": "test-value",
                 "hiddenInputFalse": "test-value",
-                "inputDisabled": "test-value"
+                "inputDisabled": "test-value",
+                "property1": "property1",
+                "property2": "property2",
+                "verzoek": {"jaartallen":"2010","toelichting":"From 2010"}
             }
         """.trimIndent()
         )

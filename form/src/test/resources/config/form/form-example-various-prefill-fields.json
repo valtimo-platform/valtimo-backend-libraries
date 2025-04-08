@@ -139,6 +139,48 @@
                         "container": "/favorites/{indexOf(/breadId)}/"
                     },
                     "input": true
+                },
+                {
+                    "key": "property1",
+                    "type": "hidden",
+                    "input": true,
+                    "label": "property1",
+                    "tableView": false,
+                    "properties": {
+                        "container": "/arrayInDocument/-/"
+                    }
+                },
+                {
+                    "key": "property2",
+                    "type": "hidden",
+                    "input": true,
+                    "label": "property2",
+                    "tableView": false,
+                    "properties": {
+                        "container": "/arrayInDocument/-/"
+                    }
+                },
+                {
+                    "label": "Informatieverzoek",
+                    "key": "verzoek",
+                    "properties": {
+                        "container": "/informatieverzoeken/-/"
+                    },
+                    "type": "hidden",
+                    "defaultValue": {},
+                    "input": true
+                },
+                {
+                    "label": "Jaartallen",
+                    "key": "verzoek.jaartallen",
+                    "type": "textfield",
+                    "input": true
+                },
+                {
+                    "label": "Toelichting",
+                    "key": "verzoek.toelichting",
+                    "type": "textfield",
+                    "input": true
                 }
             ]
         },
