@@ -16,8 +16,10 @@
 
 package com.ritense.form.service.impl
 
+import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
@@ -29,6 +31,7 @@ import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.domain.impl.request.NewDocumentRequest
+import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.form.domain.FormIoFormDefinition
@@ -63,6 +66,7 @@ import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
 import com.ritense.valtimo.contract.json.patch.JsonPatch
+import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.valtimo.contract.result.OperationError
 import com.ritense.valtimo.contract.result.OperationError.FromException
 import com.ritense.valtimo.service.CamundaTaskService
@@ -201,12 +205,34 @@ class DefaultFormSubmissionService(
         formData: JsonNode,
         document: Document?
     ): CategorizedSubmitValues {
-        val categorizedMap = formDefinition.inputFields
+        val targetKeysToJsonPointers = formDefinition.inputFields
             .filter { FormIoFormDefinition.NOT_IGNORED.test(it) }
             .filter { FormIoFormDefinition.isInputComponent(it) }
-            .mapNotNull { field ->
-                getTargetKeyValuePair(field, formData)
-            }.groupBy { (key, _) ->
+            .mapNotNull { field -> getTargetKeyJsonPointerPair(field, formData) }
+
+        val targetKeysToValues = targetKeysToJsonPointers
+            .groupBy { (targetKey, _) ->
+                val index = targetKey.lastIndexOf("/-")
+                if (index == -1) targetKey else targetKey.substring(0, index + 2)
+            }
+            .mapNotNull { (targetKey, targetKeyToJsonPointers) ->
+                val jsonPointers = targetKeyToJsonPointers.map { (_, jsonPointer) -> jsonPointer }
+                val value = if (targetKey.contains("/-")) {
+                    val targetJson = objectMapper.createObjectNode()
+                    val jsonPatchBuilder = JsonPatchBuilder()
+                    jsonPointers.forEach {
+                        jsonPatchBuilder.addJsonNodeValue(targetJson, it, consumeJsonNode(formData, it))
+                    }
+                    JsonPatchService.apply(jsonPatchBuilder.build(), targetJson)
+                    convertNodeValue(targetJson)
+                } else {
+                    convertNodeValue(formData.at(jsonPointers.single()))
+                }
+                if (value == null) null else targetKey to value
+            }
+
+        val categorizedMap = targetKeysToValues
+            .groupBy { (key, _) ->
                 val prefix = key.substringBefore(ValueResolverServiceImpl.DELIMITER, missingDelimiterValue = "")
                 if (prefix == DOC_PREFIX && key.contains("{indexOf")) {
                     "modifyDocumentWithJsonPatchValue"
@@ -241,20 +267,37 @@ class DefaultFormSubmissionService(
         )
     }
 
-    private fun getTargetKeyValuePair(
+    private fun getTargetKeyJsonPointerPair(
         field: ObjectNode,
         formData: JsonNode
-    ): Pair<String, Any>? {
+    ): Pair<String, JsonPointer>? {
         return FormIoFormDefinition.resolveTargetKey(field).getOrNull()?.let { targetKey ->
-            getFormValue(field, formData)?.let { value -> Pair(targetKey, value) }
+            getFormDataJsonPointer(field, formData)?.let { jsonPointer -> targetKey to jsonPointer }
         }
     }
 
-    private fun getFormValue(field: ObjectNode, formData: JsonNode): Any? {
+    private fun getFormDataJsonPointer(field: ObjectNode, formData: JsonNode): JsonPointer? {
         return FormIoFormDefinition.getKey(field).getOrNull()?.let { inputKey ->
-            val jsonPointer = "/${inputKey.replace('.', '/')}"
-            convertNodeValue(formData.at(jsonPointer))
+            val jsonPointer = JsonPointer.compile("/${inputKey.replace('.', '/')}")
+            if (formData.at(jsonPointer).isNull || formData.at(jsonPointer).isMissingNode) {
+                null
+            } else {
+                jsonPointer
+            }
         }
+    }
+
+    private fun consumeJsonNode(formData: JsonNode, jsonPointer: JsonPointer): JsonNode {
+        val valueNode = formData.at(jsonPointer)
+        if (!valueNode.isMissingNode) {
+            val head = jsonPointer.head()
+            if (formData.at(head).isObject) {
+                (formData.at(head) as ObjectNode).remove(jsonPointer.last().matchingProperty)
+            } else if (formData.at(head).isArray) {
+                (formData.at(head) as ArrayNode).remove(jsonPointer.last().matchingProperty.toInt())
+            }
+        }
+        return valueNode
     }
 
     private fun convertNodeValue(node: JsonNode): Any? {
