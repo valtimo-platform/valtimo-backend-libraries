@@ -20,6 +20,7 @@ import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.case.service.CaseDefinitionService
+import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.document.domain.InternalCaseStatus
 import com.ritense.document.domain.InternalCaseStatusId
 import com.ritense.document.exception.InternalCaseStatusAlreadyExistsException
@@ -40,7 +41,7 @@ import org.springframework.validation.annotation.Validated
 @SkipComponentScan
 class InternalCaseStatusService(
     private val internalCaseStatusRepository: InternalCaseStatusRepository,
-    private val caseDefinitionService: CaseDefinitionService,
+    private val activeCaseDefinitionService: ActiveCaseDefinitionService,
     private val authorizationService: AuthorizationService,
 ) {
     fun getInternalCaseStatuses(documentDefinitionName: String): List<InternalCaseStatus> {
@@ -61,9 +62,7 @@ class InternalCaseStatusService(
     ): InternalCaseStatus {
         denyManagementOperation()
 
-        caseDefinitionService.getLatestCaseDefinition(caseDefinitionKey)?: throw NoSuchElementException(
-            "Case definition with key $caseDefinitionKey does not exist!"
-        )
+        require(activeCaseDefinitionService.getActiveCaseDefinition(caseDefinitionKey).active)
 
         val currentInternalCaseStatuses = getInternalCaseStatuses(caseDefinitionKey)
         if (currentInternalCaseStatuses.any { status ->

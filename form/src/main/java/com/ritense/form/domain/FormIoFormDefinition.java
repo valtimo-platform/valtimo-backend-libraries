@@ -41,7 +41,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -106,6 +105,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     private String formDefinition;
 
     @Embedded
+    @Nullable
     private CaseDefinitionId caseDefinitionId;
 
     @Column(name = "read_only", columnDefinition = "BIT")
@@ -124,7 +124,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         final UUID id,
         final String name,
         final String formDefinition,
-        final CaseDefinitionId caseDefinitionId,
+        @Nullable final CaseDefinitionId caseDefinitionId,
         final Boolean isReadOnly
     ) {
         assertArgumentNotNull(id, "id is required");
@@ -279,6 +279,10 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         return readOnly;
     }
 
+    public Optional<CaseDefinitionId> getCaseDefinitionId() {
+        return Optional.ofNullable(caseDefinitionId);
+    }
+
     public JsonNode asJson() {
         if (this.workingCopy == null) {
             try {
@@ -348,7 +352,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         components.forEach(componentsNode -> componentsNode.forEach(fieldNode -> {
             if (
                 (isInputComponent(fieldNode) || isTextFieldComponent(fieldNode) || isHiddenFieldComponent(fieldNode))
-                && !isButtonTypeComponent(fieldNode)
+                    && !isButtonTypeComponent(fieldNode)
             ) {
                 inputFields.add((ObjectNode) fieldNode);
             }

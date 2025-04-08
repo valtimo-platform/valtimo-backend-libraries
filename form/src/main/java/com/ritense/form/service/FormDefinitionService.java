@@ -43,11 +43,15 @@ public interface FormDefinitionService {
 
     Optional<? extends FormDefinition> getFormDefinitionById(UUID id);
 
+    Optional<? extends FormDefinition> getFormDefinitionById(CaseDefinitionId caseDefinitionId, UUID id);
+
     Optional<? extends FormDefinition> getFormDefinitionByName(String name);
 
     Optional<? extends FormDefinition> getFormDefinitionByName(String name, CaseDefinitionId caseDefinitionId);
 
     Optional<? extends FormDefinition> getFormDefinitionByNameIgnoringCase(String name);
+
+    FormDefinition createFormDefinition(CreateFormDefinitionRequest request);
 
     FormDefinition createFormDefinition(CaseDefinitionId caseDefinitionId, CreateFormDefinitionRequest request);
 
