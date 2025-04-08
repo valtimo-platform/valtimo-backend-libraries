@@ -17,13 +17,12 @@
 package com.ritense.document.listener
 
 import com.ritense.authorization.annotation.RunWithoutAuthorization
-import com.ritense.case.service.CaseTabService
-import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.event.CaseDefinitionCreatedEvent
-import com.ritense.valtimo.contract.event.CaseDefinitionDeletedEvent
+import com.ritense.valtimo.contract.event.CaseDefinitionPreDeleteEvent
 import org.springframework.context.event.EventListener
+import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.Ordered.LOWEST_PRECEDENCE
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
@@ -36,21 +35,21 @@ class DocumentDefinitionCaseEventListener(
     private val service: DocumentDefinitionService,
 ) {
 
-    @Order(LOWEST_PRECEDENCE)
+    @Order(HIGHEST_PRECEDENCE)
     @RunWithoutAuthorization
     @EventListener(CaseDefinitionCreatedEvent::class)
     fun handleCaseDefinitionCreatedEvent(event: CaseDefinitionCreatedEvent) {
         if (event.basedOnCaseDefinitionId != null) {
             service.findByCaseDefinitionId(event.basedOnCaseDefinitionId!!).ifPresent { documentDefinition ->
-                service.deploy(documentDefinition.schema().textValue(), event.caseDefinitionId)
+                service.deploy(documentDefinition.schema().toString(), event.caseDefinitionId)
             }
         }
     }
 
     @Order(LOWEST_PRECEDENCE)
     @RunWithoutAuthorization
-    @EventListener(CaseDefinitionDeletedEvent::class)
-    fun handleCaseDefinitionDeletedEvent(event: CaseDefinitionDeletedEvent) {
+    @EventListener(CaseDefinitionPreDeleteEvent::class)
+    fun handleCaseDefinitionPreDeleteEvent(event: CaseDefinitionPreDeleteEvent) {
         service.findAllBy(event.caseDefinitionId).forEach { documentDefinition ->
             service.removeDocumentDefinition(documentDefinition.id.name(), documentDefinition.id.caseDefinitionId())
         }

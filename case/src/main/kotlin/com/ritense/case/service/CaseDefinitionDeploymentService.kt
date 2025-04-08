@@ -74,6 +74,7 @@ class CaseDefinitionDeploymentService(
                     valtimoImportService.importCaseDefinition(files, caseDefinitionRepository.findAll().map { it.id })
                 }
             }
+            setLatestToActiveIfNoneIsActive()
 
         } catch (ex: FileNotFoundException) {
             // No resources found, nothing to import
@@ -87,6 +88,16 @@ class CaseDefinitionDeploymentService(
         // Import for each list of resources in the list
         // If one fails, everything fails.
         // TODO Implement triggering of imports
+    }
+
+    private fun setLatestToActiveIfNoneIsActive() {
+        caseDefinitionRepository.findAll()
+            .groupBy { it.id.key }
+            .map { it.value }
+            .filter { caseDefinitions -> caseDefinitions.none { caseDefinition -> caseDefinition.active } }
+            .map { caseDefinitions -> caseDefinitions.maxBy { it.id.versionTag } }
+            .map { caseDefinition -> caseDefinition.copy(active = true) }
+            .forEach { caseDefinition -> caseDefinitionRepository.save(caseDefinition) }
     }
 
     //private fun getRelativeMap

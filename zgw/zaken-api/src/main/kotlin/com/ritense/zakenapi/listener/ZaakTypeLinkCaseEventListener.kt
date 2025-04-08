@@ -19,7 +19,7 @@ package com.ritense.case_.listener
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.event.CaseDefinitionCreatedEvent
-import com.ritense.valtimo.contract.event.CaseDefinitionDeletedEvent
+import com.ritense.valtimo.contract.event.CaseDefinitionPreDeleteEvent
 import com.ritense.zakenapi.service.ZaakTypeLinkService
 import com.ritense.zakenapi.web.rest.request.CreateZaakTypeLinkRequest
 import org.springframework.context.event.EventListener
@@ -44,8 +44,8 @@ class ZaakTypeLinkCaseEventListener(
     }
 
     @RunWithoutAuthorization
-    @EventListener(CaseDefinitionDeletedEvent::class)
-    fun handleCaseDefinitionDeletedEvent(event: CaseDefinitionDeletedEvent) {
+    @EventListener(CaseDefinitionPreDeleteEvent::class)
+    fun handleCaseDefinitionPreDeleteEvent(event: CaseDefinitionPreDeleteEvent) {
         zaakTypeLinkService.deleteZaakTypeLinkBy(event.caseDefinitionId)
     }
 }

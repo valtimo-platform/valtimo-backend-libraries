@@ -17,11 +17,14 @@
 package com.ritense.case_.listener
 
 import com.ritense.authorization.annotation.RunWithoutAuthorization
+import com.ritense.case.domain.CaseTabType
 import com.ritense.case.service.CaseTabService
 import com.ritense.case.web.rest.dto.CaseTabDto
+import com.ritense.case_.domain.tab.CaseWidgetTabWidgetId
+import com.ritense.case_.repository.CaseWidgetTabRepository
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.event.CaseDefinitionCreatedEvent
-import com.ritense.valtimo.contract.event.CaseDefinitionDeletedEvent
+import com.ritense.valtimo.contract.event.CaseDefinitionPreDeleteEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -31,21 +34,36 @@ import org.springframework.transaction.annotation.Transactional
 @SkipComponentScan
 class CaseTabCaseEventListener(
     private val service: CaseTabService,
+    private val caseWidgetTabRepository: CaseWidgetTabRepository,
 ) {
 
     @RunWithoutAuthorization
     @EventListener(CaseDefinitionCreatedEvent::class)
     fun handleCaseDefinitionCreatedEvent(event: CaseDefinitionCreatedEvent) {
         if (event.basedOnCaseDefinitionId != null) {
-            service.getCaseTabs(event.basedOnCaseDefinitionId!!)
-                .map { CaseTabDto.of(it) }
-                .forEach { service.createCaseTab(event.caseDefinitionId, it) }
+            service.getCaseTabs(event.basedOnCaseDefinitionId!!).forEach { oldCaseTab ->
+                val caseTab = service.createCaseTab(event.caseDefinitionId, CaseTabDto.of(oldCaseTab))
+
+                if (caseTab.type == CaseTabType.WIDGETS) {
+                    caseWidgetTabRepository.findById(oldCaseTab.id).ifPresent { widgetTab ->
+                        val newCaseWidget = caseWidgetTabRepository.save(
+                            widgetTab.copy(
+                                id = caseTab.id,
+                                widgets = widgetTab.widgets.map {
+                                    it.copy(id = CaseWidgetTabWidgetId(key = it.id.key, caseWidgetTab = widgetTab))
+                                }
+                            )
+                        )
+                        caseWidgetTabRepository.save(newCaseWidget)
+                    }
+                }
+            }
         }
     }
 
     @RunWithoutAuthorization
-    @EventListener(CaseDefinitionDeletedEvent::class)
-    fun handleCaseDefinitionDeletedEvent(event: CaseDefinitionDeletedEvent) {
+    @EventListener(CaseDefinitionPreDeleteEvent::class)
+    fun handleCaseDefinitionPreDeleteEvent(event: CaseDefinitionPreDeleteEvent) {
         service.deleteCaseTabs(event.caseDefinitionId)
     }
 }

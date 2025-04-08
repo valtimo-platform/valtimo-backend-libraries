@@ -19,6 +19,7 @@ package com.ritense.case_.widget.collection
 import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 import com.ritense.case_.domain.tab.CaseWidgetTabWidgetId
 import com.ritense.case_.rest.dto.CaseWidgetAction
+import com.ritense.case_.widget.custom.CustomCaseWidget
 import com.ritense.valtimo.contract.annotation.AllOpen
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.Column
@@ -42,4 +43,14 @@ class CollectionCaseWidget(
     val properties: CollectionWidgetProperties
 ) : CaseWidgetTabWidget(
     id, title, order, width, highContrast, actions
-)
+) {
+    override fun copy(id: CaseWidgetTabWidgetId) = CollectionCaseWidget(
+        id = id,
+        title = title,
+        order = order,
+        width = width,
+        highContrast = highContrast,
+        actions = actions,
+        properties = properties
+    )
+}

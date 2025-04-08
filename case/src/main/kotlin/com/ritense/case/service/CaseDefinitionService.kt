@@ -39,7 +39,8 @@ import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.event.CaseDefinitionCreatedEvent
-import com.ritense.valtimo.contract.event.CaseDefinitionDeletedEvent
+import com.ritense.valtimo.contract.event.CaseDefinitionPreDeleteEvent
+import com.ritense.valtimo.contract.utils.SecurityUtils
 import com.ritense.valueresolver.ValueResolverService
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
@@ -47,6 +48,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 import kotlin.jvm.optionals.getOrNull
 
 @Transactional
@@ -91,9 +93,10 @@ class CaseDefinitionService(
                 id = newCaseDefinitionId,
                 description = request.description,
                 isFinal = false,
-                createdBy = null,
-                createdDate = null,
+                createdBy = SecurityUtils.getCurrentUserLogin(),
+                createdDate = LocalDateTime.now(),
                 baseOnVersionTag = basedOnCaseDefinitionId.versionTag,
+                active = false
             )
         )
         applicationEventPublisher.publishEvent(
@@ -107,10 +110,10 @@ class CaseDefinitionService(
         require(!getCaseDefinition(caseDefinitionId).isFinal) {
             "Failed to delete case-definition. Case-definition with id: '$caseDefinitionId' is final."
         }
-        caseDefinitionRepository.deleteById(caseDefinitionId)
         applicationEventPublisher.publishEvent(
-            CaseDefinitionDeletedEvent(caseDefinitionId)
+            CaseDefinitionPreDeleteEvent(caseDefinitionId)
         )
+        caseDefinitionRepository.deleteById(caseDefinitionId)
     }
 
     fun getCaseDefinitions(pageable: Pageable): Page<CaseDefinition> {
