@@ -395,7 +395,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
             var docPath = documentJsonPointer.get().getName();
             var containerPath = field.at(PROPERTIES_CONTAINER_POINTER).textValue();
             if (containerPath != null && !containerPath.isEmpty()) {
-                docPath = containerPath + docPath.substring(1);
+                docPath = containerPath.replace("/-/", "/+/") + docPath.substring(1);
             }
             return Optional.of("doc:" + docPath);
         }
