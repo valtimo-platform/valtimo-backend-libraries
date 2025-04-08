@@ -160,6 +160,67 @@ internal class ObjectenApiClientTest {
     }
 
     @Test
+    fun `should send get single objectrecord request and parse response`() {
+        val client = ObjectenApiClient(restClientBuilder, outboxService, objectMapper)
+
+        val responseBody = """
+            {
+                "index": 0,
+                "typeVersion": 32767,
+                "data": {
+                  "property1": "henk",
+                  "property2": 123
+                },
+                "geometry": {
+                  "type": "string",
+                  "coordinates": [
+                    0,
+                    0
+                  ]
+                },
+                "startAt": "2019-08-24",
+                "endAt": "2019-08-25",
+                "registrationAt": "2019-08-26",
+                "correctionFor": "string",
+                "correctedBy": "string2"
+            }
+        """.trimIndent()
+
+        mockApi.enqueue(mockResponse(responseBody))
+
+
+        val objectUrl = mockApi.url("/some-object/1").toString()
+
+        val result = client.getObjectRecord(
+            TestAuthentication(),
+            URI(objectUrl),
+            2
+        )
+
+        val recordedRequest = mockApi.takeRequest()
+        val requestedUrl = recordedRequest.requestUrl
+
+        assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
+
+        assertEquals("$objectUrl/2", requestedUrl.toString())
+
+        assertEquals(0, result.index)
+        assertEquals(32767, result.typeVersion)
+        assertEquals("henk", (result.data?.get("property1") as TextNode).asText())
+        assertEquals(123, (result.data?.get("property2") as IntNode).asInt())
+        assertEquals(2, result.data?.size())
+        assertEquals("string", result.geometry?.type)
+        assertEquals(0, result.geometry?.coordinates?.get(0))
+        assertEquals(0, result.geometry?.coordinates?.get(1))
+        assertEquals(2, result.geometry?.coordinates?.size)
+        assertEquals(LocalDate.of(2019, 8, 24), result.startAt)
+        assertEquals(LocalDate.of(2019, 8, 25), result.endAt)
+        assertEquals(LocalDate.of(2019, 8, 26), result.registrationAt)
+        assertEquals("string", result.correctionFor)
+        assertEquals("string2", result.correctedBy)
+    }
+
+    @Test
     fun `should send outbox message on retrieving object`() {
         val client = ObjectenApiClient(restClientBuilder, outboxService, objectMapper)
 
