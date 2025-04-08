@@ -31,7 +31,6 @@ import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.domain.impl.request.NewDocumentRequest
-import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.form.domain.FormIoFormDefinition
@@ -66,7 +65,6 @@ import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
 import com.ritense.valtimo.contract.json.patch.JsonPatch
-import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.valtimo.contract.result.OperationError
 import com.ritense.valtimo.contract.result.OperationError.FromException
 import com.ritense.valtimo.service.CamundaTaskService
@@ -205,34 +203,12 @@ class DefaultFormSubmissionService(
         formData: JsonNode,
         document: Document?
     ): CategorizedSubmitValues {
-        val targetKeysToJsonPointers = formDefinition.inputFields
+        val categorizedMap = formDefinition.inputFields
             .filter { FormIoFormDefinition.NOT_IGNORED.test(it) }
             .filter { FormIoFormDefinition.isInputComponent(it) }
-            .mapNotNull { field -> getTargetKeyJsonPointerPair(field, formData) }
-
-        val targetKeysToValues = targetKeysToJsonPointers
-            .groupBy { (targetKey, _) ->
-                val index = targetKey.lastIndexOf("/-")
-                if (index == -1) targetKey else targetKey.substring(0, index + 2)
-            }
-            .mapNotNull { (targetKey, targetKeyToJsonPointers) ->
-                val jsonPointers = targetKeyToJsonPointers.map { (_, jsonPointer) -> jsonPointer }
-                val value = if (targetKey.contains("/-")) {
-                    val targetJson = objectMapper.createObjectNode()
-                    val jsonPatchBuilder = JsonPatchBuilder()
-                    jsonPointers.forEach {
-                        jsonPatchBuilder.addJsonNodeValue(targetJson, it, consumeJsonNode(formData, it))
-                    }
-                    JsonPatchService.apply(jsonPatchBuilder.build(), targetJson)
-                    convertNodeValue(targetJson)
-                } else {
-                    convertNodeValue(formData.at(jsonPointers.single()))
-                }
-                if (value == null) null else targetKey to value
-            }
-
-        val categorizedMap = targetKeysToValues
-            .groupBy { (key, _) ->
+            .mapNotNull { field ->
+                getTargetKeyValuePair(field, formData)
+            }.groupBy { (key, _) ->
                 val prefix = key.substringBefore(ValueResolverServiceImpl.DELIMITER, missingDelimiterValue = "")
                 if (prefix == DOC_PREFIX && key.contains("{indexOf")) {
                     "modifyDocumentWithJsonPatchValue"
@@ -267,27 +243,27 @@ class DefaultFormSubmissionService(
         )
     }
 
-    private fun getTargetKeyJsonPointerPair(
+    private fun getTargetKeyValuePair(
         field: ObjectNode,
         formData: JsonNode
-    ): Pair<String, JsonPointer>? {
+    ): Pair<String, Any>? {
         return FormIoFormDefinition.resolveTargetKey(field).getOrNull()?.let { targetKey ->
-            getFormDataJsonPointer(field, formData)?.let { jsonPointer -> targetKey to jsonPointer }
+            getFormValue(field, formData)?.let { value -> Pair(targetKey, value) }
         }
     }
 
-    private fun getFormDataJsonPointer(field: ObjectNode, formData: JsonNode): JsonPointer? {
+    private fun getFormValue(field: ObjectNode, formData: JsonNode): Any? {
         return FormIoFormDefinition.getKey(field).getOrNull()?.let { inputKey ->
             val jsonPointer = JsonPointer.compile("/${inputKey.replace('.', '/')}")
-            if (formData.at(jsonPointer).isNull || formData.at(jsonPointer).isMissingNode) {
-                null
+            if (field.at(FormIoFormDefinition.PROPERTIES_CONTAINER_POINTER).isTextual) {
+                consumeValue(formData, jsonPointer)
             } else {
-                jsonPointer
+                convertNodeValue(formData.at(jsonPointer))
             }
         }
     }
 
-    private fun consumeJsonNode(formData: JsonNode, jsonPointer: JsonPointer): JsonNode {
+    private fun consumeValue(formData: JsonNode, jsonPointer: JsonPointer): Any? {
         val valueNode = formData.at(jsonPointer)
         if (!valueNode.isMissingNode) {
             val head = jsonPointer.head()
@@ -297,7 +273,7 @@ class DefaultFormSubmissionService(
                 (formData.at(head) as ArrayNode).remove(jsonPointer.last().matchingProperty.toInt())
             }
         }
-        return valueNode
+        return convertNodeValue(valueNode)
     }
 
     private fun convertNodeValue(node: JsonNode): Any? {
