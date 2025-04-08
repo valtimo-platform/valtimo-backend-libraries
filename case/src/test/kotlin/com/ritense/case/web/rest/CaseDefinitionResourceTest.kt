@@ -3,6 +3,7 @@ package com.ritense.case.web.rest
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.case_.domain.definition.CaseDefinition
+import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.exporter.ExportService
 import com.ritense.importer.ImportService
@@ -29,6 +30,7 @@ class CaseDefinitionResourceTest {
     lateinit var activeCaseDefinitionService: ActiveCaseDefinitionService
     lateinit var exportService: ExportService
     lateinit var importService: ImportService
+    lateinit var caseDefinitionRepository: CaseDefinitionRepository
 
     @BeforeEach
     fun setUp() {
@@ -36,7 +38,14 @@ class CaseDefinitionResourceTest {
         activeCaseDefinitionService = mock()
         exportService = mock()
         importService = mock()
-        resource = CaseDefinitionResource(service, activeCaseDefinitionService, exportService, importService)
+        caseDefinitionRepository = mock()
+        resource = CaseDefinitionResource(
+            service,
+            activeCaseDefinitionService,
+            exportService,
+            importService,
+            caseDefinitionRepository
+        )
         mockMvc = MockMvcBuilders.standaloneSetup(resource).build()
     }
 
@@ -59,8 +68,10 @@ class CaseDefinitionResourceTest {
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.caseDefinitionKey").value(caseDefinitionId.key))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.caseDefinitionVersionTag")
-                .value(caseDefinitionId.versionTag.version))
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.caseDefinitionVersionTag")
+                    .value(caseDefinitionId.versionTag.version)
+            )
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
             .andExpect(MockMvcResultMatchers.jsonPath("$.autoAssignTasks").value(false))
             .andExpect(MockMvcResultMatchers.jsonPath("$.active").value(true))
@@ -90,8 +101,10 @@ class CaseDefinitionResourceTest {
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.caseDefinitionKey").value(caseDefinitionId.key))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.caseDefinitionVersionTag")
-                .value(caseDefinitionId.versionTag.version))
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.caseDefinitionVersionTag")
+                    .value(caseDefinitionId.versionTag.version)
+            )
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
             .andExpect(MockMvcResultMatchers.jsonPath("$.autoAssignTasks").value(false))
             .andExpect(MockMvcResultMatchers.jsonPath("$.active").value(false))
@@ -121,8 +134,10 @@ class CaseDefinitionResourceTest {
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.caseDefinitionKey").value(caseDefinitionId.key))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.caseDefinitionVersionTag")
-                .value(caseDefinitionId.versionTag.version))
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.caseDefinitionVersionTag")
+                    .value(caseDefinitionId.versionTag.version)
+            )
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
             .andExpect(MockMvcResultMatchers.jsonPath("$.autoAssignTasks").value(false))
             .andExpect(MockMvcResultMatchers.jsonPath("$.active").value(false))
