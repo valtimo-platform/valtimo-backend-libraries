@@ -176,7 +176,7 @@ internal class ProcessLinkResourceIT @Autowired constructor(
 
     @Test
     fun `should get the processes for a case definition`() {
-        val caseDefinitionId = CaseDefinitionId("test-case", "1.0.0")
+        val caseDefinitionId = CaseDefinitionId("autodeploy", "1.0.0")
         val bpmnFile =
             """
         <?xml version="1.0" encoding="UTF-8"?>
@@ -211,26 +211,26 @@ internal class ProcessLinkResourceIT @Autowired constructor(
         }
 
         mockMvc.perform(
-            get("/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/process-definition", "test-case", "1.0.0")
+            get("/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/process-definition", "autodeploy", "1.0.0")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
         .andDo(print())
         .andExpect(status().isOk)
         .andExpect(content().contentType(ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE))
         .andExpect(jsonPath("$").isArray)
-        .andExpect(jsonPath("$[0].processDefinition.id").isNotEmpty())
-        .andExpect(jsonPath("$[0].processDefinition.key").value("test-process-2"))
-        .andExpect(jsonPath("$[0].processDefinition.name").value("Test Process 2"))
-        .andExpect(jsonPath("$[0].processDefinition.versionTag").value("test-case-1.0.0"))
-        .andExpect(jsonPath("$[0].processCaseLink.id.caseDefinitionId.key").value("test-case"))
-        .andExpect(jsonPath("$[0].processCaseLink.id.caseDefinitionId.versionTag").value("1.0.0"))
-        .andExpect(jsonPath("$[0].processCaseLink.canInitializeDocument").value(true))
-        .andExpect(jsonPath("$[0].processCaseLink.startableByUser").value(true))
-        .andExpect(jsonPath("$[0].processLinks").isArray)
-        .andExpect(jsonPath("$[0].processLinks[0].activityId").value("start"))
-        .andExpect(jsonPath("$[0].processLinks[0].activityType").value("bpmn:ServiceTask:start"))
-        .andExpect(jsonPath("$[0].processLinks[0].processLinkType").value("test"))
-        .andExpect(jsonPath("$[0].bpmn20Xml").isNotEmpty)
+        .andExpect(jsonPath("$[4].processDefinition.id").isNotEmpty())
+        .andExpect(jsonPath("$[4].processDefinition.key").value("test-process-2"))
+        .andExpect(jsonPath("$[4].processDefinition.name").value("Test Process 2"))
+        .andExpect(jsonPath("$[4].processDefinition.versionTag").value("autodeploy:1.0.0"))
+        .andExpect(jsonPath("$[4].processCaseLink.id.caseDefinitionId.key").value("autodeploy"))
+        .andExpect(jsonPath("$[4].processCaseLink.id.caseDefinitionId.versionTag").value("1.0.0"))
+        .andExpect(jsonPath("$[4].processCaseLink.canInitializeDocument").value(true))
+        .andExpect(jsonPath("$[4].processCaseLink.startableByUser").value(true))
+        .andExpect(jsonPath("$[4].processLinks").isArray)
+        .andExpect(jsonPath("$[4].processLinks[0].activityId").value("start"))
+        .andExpect(jsonPath("$[4].processLinks[0].activityType").value("bpmn:ServiceTask:start"))
+        .andExpect(jsonPath("$[4].processLinks[0].processLinkType").value("test"))
+        .andExpect(jsonPath("$[4].bpmn20Xml").isNotEmpty)
     }
 
     @Test
@@ -264,7 +264,7 @@ internal class ProcessLinkResourceIT @Autowired constructor(
         val processLinksJson = ObjectMapper().writeValueAsString(processLinks)
 
         mockMvc.perform(
-            MockMvcRequestBuilders.multipart("/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/process-definition", "test-case", "1.0.0")
+            MockMvcRequestBuilders.multipart("/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/process-definition", "autodeploy", "1.0.0")
                 .file(bpmnFile)
                 .file(
                     MockMultipartFile(
@@ -283,13 +283,13 @@ internal class ProcessLinkResourceIT @Autowired constructor(
 
         runWithoutAuthorization {
             val deployedProcess = camundaProcessService.getProcessDefinition("test-process")
-            assertEquals("test-case-1.0.0", deployedProcess?.versionTag)
+            assertEquals("autodeploy:1.0.0", deployedProcess?.versionTag)
 
 
             val procdef = camundaProcessService.getProcessDefinition("test-process")
             val processCaseLink = processDefinitionCaseDefinitionService.findByProcessDefinitionId(ProcessDefinitionId(procdef.id))
 
-            assertEquals("test-case", processCaseLink.id.caseDefinitionId.key)
+            assertEquals("autodeploy", processCaseLink.id.caseDefinitionId.key)
             assertEquals(Semver("1.0.0"), processCaseLink.id.caseDefinitionId.versionTag)
         }
     }

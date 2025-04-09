@@ -55,12 +55,16 @@ internal class CopyProcessLinkOnProcessDeploymentListenerIntTest : BaseIntegrati
     fun `should copy process link on latest process to a newly deployed process`() {
         // given
         createProcessLink(processDefinition)
-        val changedProcessBpmn = readFileAsString("/bpmn/service-task-process.bpmn")
+        val changedProcessBpmn = readFileAsString("/config/case/autodeploy/1-0-0/bpmn/service-task-process.bpmn")
             .replace("My service task", "My service task changed")
 
         // when
         runWithoutAuthorization {
-            camundaProcessService.deploy(CaseDefinitionId("test", "1.0.0"), "service-task-process.bpmn", changedProcessBpmn.byteInputStream())
+            camundaProcessService.deploy(
+                CaseDefinitionId("autodeploy", "1.0.0"),
+                "service-task-process.bpmn",
+                changedProcessBpmn.byteInputStream()
+            )
         }
 
         // then
@@ -74,18 +78,26 @@ internal class CopyProcessLinkOnProcessDeploymentListenerIntTest : BaseIntegrati
     @Test
     fun `should NOT copy process link on old process to a newly deployed process`() {
         // given
-        val changedProcessBpmn = readFileAsString("/bpmn/service-task-process.bpmn")
+        val changedProcessBpmn = readFileAsString("/config/case/autodeploy/1-0-0/bpmn/service-task-process.bpmn")
             .replace("My service task", "My service task changed")
         runWithoutAuthorization {
-            camundaProcessService.deploy(CaseDefinitionId("test", "1.0.0"), "service-task-process.bpmn", changedProcessBpmn.byteInputStream())
+            camundaProcessService.deploy(
+                CaseDefinitionId("autodeploy", "1.0.0"),
+                "service-task-process.bpmn",
+                changedProcessBpmn.byteInputStream()
+            )
         }
         createProcessLink(processDefinition)
-        val changedAgainProcessBpmn = readFileAsString("/bpmn/service-task-process.bpmn")
+        val changedAgainProcessBpmn = readFileAsString("/config/case/autodeploy/1-0-0/bpmn/service-task-process.bpmn")
             .replace("My service task", "My service task changed again")
 
         // when
         runWithoutAuthorization {
-            camundaProcessService.deploy(CaseDefinitionId("test", "1.0.0"), "service-task-process.bpmn", changedAgainProcessBpmn.byteInputStream())
+            camundaProcessService.deploy(
+                CaseDefinitionId("autodeploy", "1.0.0"),
+                "service-task-process.bpmn",
+                changedAgainProcessBpmn.byteInputStream()
+            )
         }
 
         // then
@@ -101,8 +113,9 @@ internal class CopyProcessLinkOnProcessDeploymentListenerIntTest : BaseIntegrati
             TestProcessLinkCreateRequestDto(
                 processDefinition.id,
                 SERVICE_TASK_ID,
-                ActivityTypeWithEventName.SERVICE_TASK_START
-            )
+                ActivityTypeWithEventName.SERVICE_TASK_START,
+            ),
+            CaseDefinitionId.of("autodeploy", "1.0.0")
         )
     }
 

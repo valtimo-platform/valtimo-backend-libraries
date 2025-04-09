@@ -47,6 +47,7 @@ dependencies {
     implementation "io.github.classgraph:classgraph:${classgraphVersion}"
 
     testImplementation project(":core")
+    testImplementation project(":case")
     testImplementation project(":resource:local-resource")
     testImplementation project(":test-utils-common")
 

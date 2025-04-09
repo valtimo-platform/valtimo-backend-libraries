@@ -17,10 +17,7 @@
 package com.ritense.form.security.config;
 
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
-import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
@@ -28,8 +25,6 @@ import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 public class FormManagementHttpSecurityConfigurer implements HttpSecurityConfigurer {
-
-    private static final String MANAGEMENT_URL = "/api/v1/form-management";
 
     public FormManagementHttpSecurityConfigurer() {
         //Default constructor
@@ -39,13 +34,7 @@ public class FormManagementHttpSecurityConfigurer implements HttpSecurityConfigu
     public void configure(HttpSecurity http) {
         try {
             http.authorizeHttpRequests(requests -> requests
-                .requestMatchers(antMatcher(GET, "/api/v1/form-definition")).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(GET, MANAGEMENT_URL)).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(GET, MANAGEMENT_URL + "/{formDefinitionId}")).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(GET, MANAGEMENT_URL + "/exists/{name}")).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(DELETE, MANAGEMENT_URL + "/{formDefinitionId}")).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(PUT, MANAGEMENT_URL)).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(POST, MANAGEMENT_URL)).hasAuthority(ADMIN));
+                .requestMatchers(antMatcher(GET, "/api/v1/form-definition")).hasAuthority(ADMIN));
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }
