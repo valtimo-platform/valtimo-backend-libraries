@@ -17,9 +17,9 @@
 package com.ritense.documentenapi.bulk
 
 data class DocumentImportStatus(
-    val total: Number,
-    val processed: Number,
-    val processedSuccessfully: Number,
-    val processedInvalid: Number,
+    val total: Long,
+    val processed: Long,
+    val processedSuccessfully: Long,
+    val processedInvalid: Long,
     val status: String,
 )
