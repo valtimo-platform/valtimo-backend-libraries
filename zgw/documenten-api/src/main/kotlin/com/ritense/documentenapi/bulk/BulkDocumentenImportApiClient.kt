@@ -123,11 +123,14 @@ class BulkDocumentenImportApiClient(
             .body(Resource::class.java)!!.inputStream
     }
 
+    /**
+     * Allows for uploading a CSV using an InputStream.
+     */
     fun uploadImportCsv(
         authentication: DocumentenApiAuthentication,
         csv: InputStream,
         importUuidOrUrl: String,
-        baseUrl: URI?,
+        baseUrl: URI? = null,
     ) {
 
         checkPermission()
