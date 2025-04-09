@@ -16,8 +16,10 @@
 
 package com.ritense.form.service.impl
 
+import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
@@ -206,6 +208,13 @@ class DefaultFormSubmissionService(
             .filter { FormIoFormDefinition.isInputComponent(it) }
             .mapNotNull { field ->
                 getTargetKeyValuePair(field, formData)
+            }
+            .groupBy { it.first.substringBefore("/-/") }
+            .flatMap { (_, groups) ->
+                groups.mapIndexed { i, (targetKey, value) ->
+                    val newTargetKey = if (i == 0) targetKey else targetKey.replace("/-/", "/+/")
+                    newTargetKey to value
+                }
             }.groupBy { (key, _) ->
                 val prefix = key.substringBefore(ValueResolverServiceImpl.DELIMITER, missingDelimiterValue = "")
                 if (prefix == DOC_PREFIX && key.contains("{indexOf")) {
@@ -252,9 +261,26 @@ class DefaultFormSubmissionService(
 
     private fun getFormValue(field: ObjectNode, formData: JsonNode): Any? {
         return FormIoFormDefinition.getKey(field).getOrNull()?.let { inputKey ->
-            val jsonPointer = "/${inputKey.replace('.', '/')}"
-            convertNodeValue(formData.at(jsonPointer))
+            val jsonPointer = JsonPointer.compile("/${inputKey.replace('.', '/')}")
+            if (field.at(FormIoFormDefinition.PROPERTIES_CONTAINER_POINTER).isTextual) {
+                consumeValue(formData, jsonPointer)
+            } else {
+                convertNodeValue(formData.at(jsonPointer))
+            }
         }
+    }
+
+    private fun consumeValue(formData: JsonNode, jsonPointer: JsonPointer): Any? {
+        val valueNode = formData.at(jsonPointer)
+        if (!valueNode.isMissingNode) {
+            val head = jsonPointer.head()
+            if (formData.at(head).isObject) {
+                (formData.at(head) as ObjectNode).remove(jsonPointer.last().matchingProperty)
+            } else if (formData.at(head).isArray) {
+                (formData.at(head) as ArrayNode).remove(jsonPointer.last().matchingProperty.toInt())
+            }
+        }
+        return convertNodeValue(valueNode)
     }
 
     private fun convertNodeValue(node: JsonNode): Any? {
