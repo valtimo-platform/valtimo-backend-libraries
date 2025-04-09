@@ -135,7 +135,7 @@ class BulkDocumentenImportApiClient(
 
         checkPermission()
         restClient(authentication)
-            .put()
+            .post()
             .uri {
                 if (baseUrl != null)
                     ClientTools.baseUrlToBuilder(it, baseUrl)
@@ -147,6 +147,7 @@ class BulkDocumentenImportApiClient(
             .contentType(MediaType.parseMediaType("text/csv"))
             .body(InputStreamResource(csv))
             .retrieve()
+            .toBodilessEntity()
     }
 
     private fun checkPermission() {
