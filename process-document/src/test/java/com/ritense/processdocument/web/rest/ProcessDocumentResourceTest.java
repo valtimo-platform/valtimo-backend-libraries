@@ -21,10 +21,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.kotlin.OngoingStubbingKt.whenever;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -34,43 +33,40 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ritense.case_.domain.definition.CaseDefinition;
+import com.ritense.case_.service.ActiveCaseDefinitionService;
 import com.ritense.document.domain.impl.JsonDocumentContent;
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.processdocument.BaseTest;
-import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionId;
+import com.ritense.processdocument.domain.ProcessDefinitionCaseDefinition;
+import com.ritense.processdocument.domain.ProcessDefinitionCaseDefinitionId;
+import com.ritense.processdocument.domain.ProcessDefinitionId;
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
-import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinition;
-import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinitionId;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstanceId;
 import com.ritense.processdocument.domain.impl.ProcessDocumentInstanceDto;
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest;
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndStartProcessRequest;
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest;
-import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest;
-import com.ritense.processdocument.service.CaseDefinitionProcessLinkService;
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService;
 import com.ritense.processdocument.service.impl.result.ModifyDocumentAndCompleteTaskResultSucceeded;
 import com.ritense.processdocument.service.impl.result.ModifyDocumentAndStartProcessResultSucceeded;
 import com.ritense.processdocument.service.impl.result.NewDocumentAndStartProcessResultSucceeded;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.valtimo.contract.utils.TestUtil;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -83,7 +79,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 class ProcessDocumentResourceTest extends BaseTest {
     private static final String PROCESS_DEFINITION_KEY = "definition-id";
     private static final String PROCESS_INSTANCE_ID = UUID.randomUUID().toString();
-    private static final String DOCUMENT_DEFINITION_NAME = "house";
 
     @MockBean
     private CamundaProcessJsonSchemaDocumentService processDocumentService;
@@ -91,25 +86,28 @@ class ProcessDocumentResourceTest extends BaseTest {
     @MockBean
     private CamundaProcessJsonSchemaDocumentAssociationService processDocumentAssociationService;
 
-    private CaseDefinitionProcessLinkService caseDefinitionProcessLinkService;
     private MockMvc mockMvc;
-    private CamundaProcessJsonSchemaDocumentDefinition processDocumentDefinition;
+    private ProcessDefinitionCaseDefinition processDefinitionCaseDefinition;
     private ProcessDocumentInstanceDto processDocumentInstance;
-    private Page<CamundaProcessJsonSchemaDocumentDefinition> processDocumentInstancesPage;
     private ObjectMapper objectMapper;
-    private JsonSchemaDocumentDefinitionId documentDefinitionId;
-    private CamundaProcessDefinitionId processDefinitionKey;
+    private ProcessDefinitionCaseDefinitionService processDefinitionCaseDefinitionService;
+    private ActiveCaseDefinitionService activeCaseDefinitionService;
+
+    private CaseDefinitionId caseDefinitionId;
+    private CaseDefinition caseDefinition;
 
     @BeforeEach
     void setUp() {
         objectMapper = MapperSingleton.INSTANCE.get();
         processDocumentService = mock(CamundaProcessJsonSchemaDocumentService.class);
         processDocumentAssociationService = mock(CamundaProcessJsonSchemaDocumentAssociationService.class);
-        caseDefinitionProcessLinkService = mock(CaseDefinitionProcessLinkService.class);
+        processDefinitionCaseDefinitionService = mock(ProcessDefinitionCaseDefinitionService.class);
+        activeCaseDefinitionService = mock(ActiveCaseDefinitionService.class);
         ProcessDocumentResource processDocumentResource = new ProcessDocumentResource(
             processDocumentService,
             processDocumentAssociationService,
-            caseDefinitionProcessLinkService
+            processDefinitionCaseDefinitionService,
+            activeCaseDefinitionService
         );
 
         mockMvc = MockMvcBuilders.standaloneSetup(processDocumentResource)
@@ -117,13 +115,10 @@ class ProcessDocumentResourceTest extends BaseTest {
             .setMessageConverters(new MappingJackson2HttpMessageConverter(MapperSingleton.INSTANCE.get()))
             .build();
 
-        documentDefinitionId = JsonSchemaDocumentDefinitionId.of(DOCUMENT_DEFINITION_NAME);
-        processDefinitionKey = new CamundaProcessDefinitionId(PROCESS_DEFINITION_KEY);
-
-        processDocumentDefinition = new CamundaProcessJsonSchemaDocumentDefinition(
-            CamundaProcessJsonSchemaDocumentDefinitionId.newId(
-                processDefinitionKey,
-                documentDefinitionId
+        processDefinitionCaseDefinition = new ProcessDefinitionCaseDefinition(
+            new ProcessDefinitionCaseDefinitionId(
+                new ProcessDefinitionId("test"),
+                CASE_DEFINITION_ID
             ),
             false,
             false
@@ -142,61 +137,46 @@ class ProcessDocumentResourceTest extends BaseTest {
             LocalDateTime.parse("2024-01-01T12:10:00")
         );
 
-        List<CamundaProcessJsonSchemaDocumentDefinition> camundaProcessJsonSchemaDocumentDefinitions = List.of(
-            processDocumentDefinition
-        );
-        Pageable unpaged = Pageable.unpaged();
-        processDocumentInstancesPage = new PageImpl<>(camundaProcessJsonSchemaDocumentDefinitions, unpaged, 1);
+        caseDefinitionId = new CaseDefinitionId("house", "1.0.0");
+        caseDefinition = new CaseDefinition(caseDefinitionId, "house", true, true);
+        when(activeCaseDefinitionService.getActiveCaseDefinition("house")).thenReturn(caseDefinition);
     }
 
     @Test
     void shouldReturnOkWhenGettingProcessDocumentDefinition() throws Exception {
-        when(processDocumentAssociationService.findProcessDocumentDefinitions(eq(documentDefinitionId.name()), isNull(), isNull()))
-            .thenReturn(List.of(processDocumentDefinition));
+        when(processDefinitionCaseDefinitionService.findProcessDefinitionCaseDefinitions(eq(caseDefinitionId), isNull(), isNull()))
+            .thenReturn(List.of(processDefinitionCaseDefinition));
 
         mockMvc.perform(
-                get("/api/v1/process-document/definition/document/{document-definition-name}", DOCUMENT_DEFINITION_NAME)
+                get("/api/v1/case-definition/{caseDefinitionKey}/case-process-link", DOCUMENT_DEFINITION_NAME)
                     .accept(APPLICATION_JSON_VALUE)
                     .contentType(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
-            .andExpect(jsonPath("$.[0].id.processDefinitionKey").value(processDefinitionKey.toString()))
-            .andExpect(jsonPath("$.[0].id.documentDefinitionId.name").value(documentDefinitionId.name()))
-            .andExpect(jsonPath("$.[0].id.documentDefinitionId.version").value(documentDefinitionId.version()));
-    }
-
-    @Test
-    void shouldReturnOkWhenGettingProcessDocumentDefinitionByProcessDefinitionKey() throws Exception {
-        when(processDocumentAssociationService.findProcessDocumentDefinitionsByProcessDefinitionKey(eq(processDefinitionKey.toString())))
-            .thenReturn(List.of(processDocumentDefinition));
-
-        mockMvc.perform(
-                get("/api/v1/process-document/definition/process/{process-definition-key}", PROCESS_DEFINITION_KEY)
-                    .accept(APPLICATION_JSON_VALUE)
-                    .contentType(APPLICATION_JSON_VALUE))
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
-            .andExpect(jsonPath("$.[0].id.processDefinitionKey").value(processDefinitionKey.toString()))
-            .andExpect(jsonPath("$.[0].id.documentDefinitionId.name").value(documentDefinitionId.name()))
-            .andExpect(jsonPath("$.[0].id.documentDefinitionId.version").value(documentDefinitionId.version()));
+            .andExpect(jsonPath("$.[0].id.processDefinitionId").value("test"))
+            .andExpect(jsonPath("$.[0].id.caseDefinitionId.key").value("house"))
+            .andExpect(jsonPath("$.[0].id.caseDefinitionId.versionTag").value("1.0.0"))
+            .andExpect(jsonPath("$.[0].canInitializeDocument").value(false))
+            .andExpect(jsonPath("$.[0].startableByUser").value(false));
     }
 
     @Test
     void shouldReturnOkWhenGettingProcessDocumentDefinitionByProcessInstanceId() throws Exception {
-        when(processDocumentService.findProcessDocumentDefinition(new CamundaProcessInstanceId(PROCESS_INSTANCE_ID)))
-            .thenReturn(Optional.of(processDocumentDefinition));
+        when(processDefinitionCaseDefinitionService.findProcessDefinitionCaseDefinition(new CamundaProcessInstanceId(PROCESS_INSTANCE_ID)))
+            .thenReturn(processDefinitionCaseDefinition);
 
         mockMvc.perform(
-                get("/api/v1/process-document/definition/processinstance/{processInstanceId}", PROCESS_INSTANCE_ID)
+                get("/api/v1/process-instance/{processInstanceId}/case-process-link", PROCESS_INSTANCE_ID)
                     .accept(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
-            .andExpect(jsonPath("$.id.processDefinitionKey").value(processDefinitionKey.toString()))
-            .andExpect(jsonPath("$.id.documentDefinitionId.name").value(documentDefinitionId.name()))
-            .andExpect(jsonPath("$.id.documentDefinitionId.version").value(documentDefinitionId.version()));
+            .andExpect(jsonPath("$.id.processDefinitionId").value("test"))
+            .andExpect(jsonPath("$.id.caseDefinitionId.key").value("house"))
+            .andExpect(jsonPath("$.id.caseDefinitionId.versionTag").value("1.0.0"))
+            .andExpect(jsonPath("$.canInitializeDocument").value(false))
+            .andExpect(jsonPath("$.startableByUser").value(false));
     }
 
     @Test
@@ -283,51 +263,6 @@ class ProcessDocumentResourceTest extends BaseTest {
     }
 
     @Test
-    void shouldReturnOkWhenCreatingProcessDocumentDefinition() throws Exception {
-        final var processDefinitionKey = new CamundaProcessDefinitionId("some-key");
-        final var documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId("house", 1);
-        final var request = new ProcessDocumentDefinitionRequest(
-            processDefinitionKey.toString(),
-            documentDefinitionId.name(),
-            false,
-            false
-        );
-
-        final var camundaProcessJsonSchemaDocumentDefinition = new CamundaProcessJsonSchemaDocumentDefinition(
-            CamundaProcessJsonSchemaDocumentDefinitionId.newId(processDefinitionKey, documentDefinitionId),
-            false,
-            false
-        );
-        when(processDocumentAssociationService.createProcessDocumentDefinition(any()))
-            .thenReturn(Optional.of(camundaProcessJsonSchemaDocumentDefinition));
-
-        mockMvc.perform(
-                post("/api/v1/process-document/definition")
-                    .characterEncoding(StandardCharsets.UTF_8.name())
-                    .accept(APPLICATION_JSON_VALUE)
-                    .contentType(APPLICATION_JSON_VALUE)
-                    .content(TestUtil.convertObjectToJsonBytes(request)))
-            .andDo(print())
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    void shouldReturnBadRequestWhenCreatingProcessDocumentDefinition() throws Exception {
-        final var request = new ProcessDocumentDefinitionRequest(null, null, false, false);
-
-        when(processDocumentAssociationService.createProcessDocumentDefinition(any())).thenReturn(Optional.empty());
-
-        mockMvc.perform(
-                post("/api/v1/process-document/definition")
-                    .characterEncoding(StandardCharsets.UTF_8.name())
-                    .accept(APPLICATION_JSON_VALUE)
-                    .contentType(APPLICATION_JSON_VALUE)
-                    .content(TestUtil.convertObjectToJsonBytes(request)))
-            .andDo(print())
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
     void shouldReturnOkWhenModifyDocumentAndStartProcess() throws Exception {
         var content = new JsonDocumentContent("{\"street\": \"Funenparks\"}");
         final CreateDocumentResult result = createDocument(definition(), content);
@@ -355,23 +290,5 @@ class ProcessDocumentResourceTest extends BaseTest {
             .andExpect(jsonPath("$.document").exists())
             .andExpect(jsonPath("$.errors").exists())
             .andExpect(jsonPath("$.errors").isEmpty());
-    }
-
-    @Test
-    void shouldDeleteProcessDocumentDefinition() throws Exception {
-        final var request = new ProcessDocumentDefinitionRequest(
-            "some-key",
-            "documentDefinitionName",
-            false,
-            false
-        );
-        mockMvc.perform(
-                delete("/api/v1/process-document/definition")
-                    .characterEncoding(StandardCharsets.UTF_8.name())
-                    .contentType(APPLICATION_JSON_VALUE)
-                    .content(TestUtil.convertObjectToJsonBytes(request)))
-            .andDo(print())
-            .andExpect(status().isNoContent());
-        verify(processDocumentAssociationService).deleteProcessDocumentDefinition((ProcessDocumentDefinitionRequest) any());
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2024 Ritense BV, the Netherlands.
+ * Copyright 2015-2025 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.processdocument.service;
+package com.ritense.processdocument.service
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ritense.valtimo.contract.case_.CaseDefinitionId;
+import org.junit.jupiter.api.Assertions.*
 
-public interface ProcessDocumentDeploymentService {
 
-    void deploy(CaseDefinitionId caseDefinitionId, String documentDefinitionName, String content) throws JsonProcessingException;
+class CaseDefinitionProcessLinkServiceTest {
 
 }

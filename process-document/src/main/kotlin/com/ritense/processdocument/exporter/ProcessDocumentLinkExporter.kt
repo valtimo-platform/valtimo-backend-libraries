@@ -39,7 +39,7 @@ class ProcessDocumentLinkExporter(
         val processDefinitions = processDefinitionCaseDefinitionService.findProcessDefinitionCaseDefinitions(
             request.caseDefinitionId
         ).map { definition ->
-            Pair(definition, camundaRepositoryService.findProcessDefinitionById(definition.id.processDefinitionId.toString())!!)
+            Pair(definition, camundaRepositoryService.findProcessDefinitionById(definition.id.processDefinitionId.id)!!)
         }
 
         if (processDefinitions.isEmpty()) {
@@ -60,15 +60,20 @@ class ProcessDocumentLinkExporter(
                 ProcessDefinitionExportRequest(processDefinition.id, request.caseDefinitionId)
             }.toSet()
 
+        val caseDefinitionKey = request.caseDefinitionId.key
+        val formattedCaseDefinitionVersion = request.caseDefinitionId.versionTag.let {
+            "${it.major}-${it.minor}-${it.patch}"
+        }
+
         return ExportResult(
             ExportFile(
-                PATH.format(request.name),
+                PATH.format(caseDefinitionKey, formattedCaseDefinitionVersion, request.name),
                 objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(exportItems)
             ),
             relatedRequests
         )
     }
     companion object {
-        private const val PATH = "config/process-document-link/%s.json";
+        private const val PATH = "config/case/%s/%s/process-document-link/%s.json"
     }
 }

@@ -83,9 +83,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class CamundaProcessService {
 
+    public static final String CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX = "CD:";
+
     private static final String UNDEFINED_BUSINESS_KEY = "UNDEFINED_BUSINESS_KEY";
     private static final String SYSTEM_PROCESS_PROPERTY = "systemProcess";
-    private static final String CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX = "CD:";
     private static final Logger logger = LoggerFactory.getLogger(CamundaProcessService.class);
 
     private final RuntimeService runtimeService;
@@ -438,7 +439,7 @@ public class CamundaProcessService {
     private void setProcessesVersionTag(BpmnModelInstance bpmnModel, CaseDefinitionId caseDefinitionId) {
         bpmnModel.getDefinitions().getChildElementsByType(Process.class).forEach(
             process -> {
-                process.setCamundaVersionTag(  caseDefinitionId.toString());
+                process.setCamundaVersionTag(CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.toString());
                 process.getChildElementsByType(CallActivity.class).forEach(
                     callActivity -> {
                         var elementBinding = callActivity.getCamundaCalledElementBinding();
