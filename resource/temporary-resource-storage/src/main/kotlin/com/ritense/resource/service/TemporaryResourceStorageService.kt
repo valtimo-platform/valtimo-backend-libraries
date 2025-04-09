@@ -19,15 +19,17 @@ package com.ritense.resource.service
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.resource.domain.MetadataType
+import com.ritense.temporaryresource.domain.ResourceStorageMetadata
 import com.ritense.temporaryresource.domain.ResourceStorageMetadataId
+import com.ritense.temporaryresource.domain.StorageMetadataKeys
 import com.ritense.temporaryresource.domain.getEnumFromKey
 import com.ritense.temporaryresource.repository.ResourceStorageMetadataRepository
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.upload.MimeTypeDeniedException
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
-import jakarta.persistence.EntityNotFoundException
 import mu.KotlinLogging
 import org.apache.tika.Tika
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.io.BufferedInputStream
 import java.io.InputStream
@@ -155,20 +157,33 @@ class TemporaryResourceStorageService(
     fun getMetadataValue(resourceStorageFieldId: String, metadataKey: String): String {
         return getEnumFromKey(metadataKey).fold(
             onSuccess = { enumKey ->
-                try {
-                    repository.getReferenceById(
-                        ResourceStorageMetadataId(
-                            fileId = resourceStorageFieldId,
-                            metadataKey = enumKey
-                        )
-                    ).metadataValue
-                } catch (e: EntityNotFoundException) {
-                    throw IllegalStateException("Resource $resourceStorageFieldId does not exist", e)
-                }
+                getMetadataValueOrNull(resourceStorageFieldId, enumKey)
+                    ?: throw IllegalStateException("Resource $resourceStorageFieldId does not exist")
             },
             onFailure = { exception ->
                 throw IllegalStateException("Failed to resolve metadata key '$metadataKey'", exception)
             }
+        )
+    }
+
+    fun getMetadataValueOrNull(resourceStorageFieldId: String, metadataKey: StorageMetadataKeys): String? {
+        return repository.findByIdOrNull(
+            ResourceStorageMetadataId(
+                fileId = resourceStorageFieldId,
+                metadataKey = metadataKey
+            )
+        )?.metadataValue
+    }
+
+    fun saveMetadataValue(resourceStorageFieldId: String, metadataKey: StorageMetadataKeys, metadataValue: String?) {
+        repository.save(
+            ResourceStorageMetadata(
+                id = ResourceStorageMetadataId(
+                    fileId = resourceStorageFieldId,
+                    metadataKey = metadataKey
+                ),
+                metadataValue = metadataValue,
+            )
         )
     }
 

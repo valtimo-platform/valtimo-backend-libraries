@@ -157,11 +157,11 @@ internal class URLProcessLinkResourceIntegrationTest @Autowired constructor(
             .andExpect(jsonPath("$").isNotEmpty)
             .andExpect(jsonPath("$").isArray)
             .andExpect(jsonPath("$[0].activityId", inMatcher(listOf("start-event", "do-something"))))
-            .andExpect(jsonPath("$[0].activityType", inMatcher(listOf("bpmn:StartEvent:start", "bpmn:UserTask:start"))))
+            .andExpect(jsonPath("$[0].activityType", inMatcher(listOf("bpmn:StartEvent:start", "bpmn:UserTask:create"))))
             .andExpect(jsonPath("$[0].processLinkType").value( "url"))
             .andExpect(jsonPath("$[0].url").value( "https://www.ritense.nl"))
             .andExpect(jsonPath("$[1].activityId", inMatcher(listOf("start-event", "do-something"))))
-            .andExpect(jsonPath("$[1].activityType", inMatcher(listOf("bpmn:StartEvent:start", "bpmn:UserTask:start"))))
+            .andExpect(jsonPath("$[1].activityType", inMatcher(listOf("bpmn:StartEvent:start", "bpmn:UserTask:create"))))
             .andExpect(jsonPath("$[1].processLinkType").value( "url"))
             .andExpect(jsonPath("$[1].url").value( "https://www.ritense.nl"))
     }

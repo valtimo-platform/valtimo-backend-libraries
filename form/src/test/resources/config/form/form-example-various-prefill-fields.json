@@ -60,6 +60,25 @@
             }
         },
         {
+            "label": "Hidden field input true",
+            "key": "hiddenInputTrue",
+            "type": "hidden",
+            "input": true
+        },
+        {
+            "label": "Hidden field input false",
+            "key": "hiddenInputFalse",
+            "type": "hidden",
+            "input": false
+        },
+        {
+            "label": "Input field disabled",
+            "key": "inputDisabled",
+            "type": "textfield",
+            "input": true,
+            "disabled": true
+        },
+        {
             "label": "Legacy",
             "key": "legacy",
             "components": [
@@ -102,8 +121,25 @@
                     "type": "textfield",
                     "defaultValue": "..",
                     "input": true
+                },
+                {
+                    "label": "Add to array",
+                    "key": "apples",
+                    "type": "textfield",
+                    "properties": {
+                        "container": "/fruitTypes/-/"
+                    },
+                    "input": true
+                },
+                {
+                    "label": "Find and replace in array",
+                    "key": "name",
+                    "type": "textfield",
+                    "properties": {
+                        "container": "/favorites/{indexOf(/breadId)}/"
+                    },
+                    "input": true
                 }
-
             ]
         },
         {

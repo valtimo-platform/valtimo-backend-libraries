@@ -32,7 +32,6 @@ import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
-import com.ritense.zakenapi.client.ZakenApiClient.Companion.HOST_DOCKER_INTERNAL
 import com.ritense.zakenapi.domain.CreateZaakRequest
 import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
 import com.ritense.zakenapi.domain.CreateZaakStatusRequest
@@ -117,6 +116,11 @@ class ZakenApiPlugin(
             val documentId = UUID.fromString(execution.businessKey)
             val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
 
+            if (getZaakInformatieObject(zaakUrl, URI(documentUrl)) != null) {
+                logger.warn { "Skipping document-zaak-link creation. Link already exists between zaak '$zaakUrl' and document: '$documentUrl'." }
+                return
+            }
+
             val request = LinkDocumentRequest(
                 documentUrl,
                 zaakUrl.toString(),
@@ -146,6 +150,11 @@ class ZakenApiPlugin(
 
         val documentId = UUID.fromString(execution.businessKey)
         val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+
+        if (getZaakInformatieObject(zaakUrl, URI(documentUrl)) != null) {
+            logger.warn { "Skipping document-zaak-link creation. Link already exists between zaak '$zaakUrl' and document: '$documentUrl'." }
+            return
+        }
 
         val request = LinkDocumentRequest(
             documentUrl,
@@ -589,7 +598,7 @@ class ZakenApiPlugin(
         objectUrl: URI,
         objectTypeOverige: String,
         documentId: UUID
-        ) {
+    ) {
         withLoggingContext(
             LoggingConstants.ZAKEN_API.ZAAK to zaakUrl.toString(),
             LoggingConstants.ZAKEN_API.OBJECT to objectUrl.toString()
@@ -624,6 +633,17 @@ class ZakenApiPlugin(
             baseUrl = url,
             informatieobjectUrl = informatieobjectUrl
         )
+    }
+
+    fun getZaakInformatieObject(zaakUrl: URI, informatieobjectUrl: URI): ZaakInformatieObject? {
+        logger.debug { "Fetching zaak informatie object by '$zaakUrl' and '$informatieobjectUrl'" }
+        val results = client.getZaakInformatieObjecten(
+            authentication = authenticationPluginConfiguration,
+            baseUrl = url,
+            zaakUrl = zaakUrl,
+            informatieobjectUrl = informatieobjectUrl,
+        )
+        return results.singleOrNull()
     }
 
     fun deleteZaakInformatieobject(zaakInformatieobjectUrl: URI) {
@@ -741,11 +761,7 @@ class ZakenApiPlugin(
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"
         const val DOCUMENT_URL_PROCESS_VAR = "documentUrl"
         fun findConfigurationByUrl(url: URI) = { properties: JsonNode ->
-            if (url.host == HOST_DOCKER_INTERNAL) {
-                url.toString().replace(HOST_DOCKER_INTERNAL, "localhost")
-            } else {
-                url.toString()
-            }.startsWith(properties[URL_PROPERTY].textValue())
+            url.toString().startsWith(properties[URL_PROPERTY].textValue())
         }
     }
 }
