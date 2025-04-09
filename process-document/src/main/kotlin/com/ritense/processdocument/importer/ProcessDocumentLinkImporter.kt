@@ -23,6 +23,7 @@ import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthor
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
+import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
 import com.ritense.importer.ValtimoImportTypes.Companion.PROCESS_DEFINITION
 import com.ritense.importer.ValtimoImportTypes.Companion.PROCESS_DOCUMENT_LINK
 import com.ritense.processdocument.domain.ProcessDefinitionCaseDefinitionId
@@ -31,6 +32,7 @@ import com.ritense.processdocument.domain.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.domain.config.ProcessDocumentLinkConfigItem
 import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.valtimo.service.CamundaProcessService
 import mu.KLogger
 import mu.KotlinLogging
 import org.camunda.bpm.engine.RepositoryService
@@ -46,7 +48,7 @@ class ProcessDocumentLinkImporter(
 
     override fun type() = PROCESS_DOCUMENT_LINK
 
-    override fun dependsOn() = setOf(PROCESS_DEFINITION)
+    override fun dependsOn() = setOf(CASE_DEFINITION, PROCESS_DEFINITION)
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
@@ -79,7 +81,7 @@ class ProcessDocumentLinkImporter(
         val processDefinition = repositoryService
             .createProcessDefinitionQuery()
             .processDefinitionKey(item.processDefinitionKey)
-            .versionTag("$caseDefinitionId")
+            .versionTag(CamundaProcessService.CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.toString())
             .singleResult()
 
         val request = ProcessDocumentDefinitionRequest(
@@ -114,7 +116,6 @@ class ProcessDocumentLinkImporter(
                 )
                 processDefinitionCaseDefinitionService.createProcessDocumentDefinition(request)
             }
-            null
         }
     }
 

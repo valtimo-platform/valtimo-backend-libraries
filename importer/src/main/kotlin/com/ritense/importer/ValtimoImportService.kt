@@ -124,8 +124,10 @@ open class ValtimoImportService(
             .let {
                 it[it.keys.first()]
             }
+        val caseDefinitionContent = caseDefinitionEntries?.firstOrNull()?.content ?:
+            throw IllegalStateException("No case definition file found in the provided resources")
         val caseDefinitionMap: Map<String, Any> = jacksonObjectMapper()
-            .readValue(caseDefinitionEntries?.first()?.content!!) // TODO: Throw proper error message
+            .readValue(caseDefinitionContent)
         caseDefinitionId = CaseDefinitionId(
             caseDefinitionMap["key"] as String,
             caseDefinitionMap["versionTag"] as String
