@@ -231,6 +231,34 @@
             ]
         },
         {
+            "label": "Geslacht",
+            "type": "container",
+            "key": "aanvrager",
+            "input": true,
+            "components": [
+                {
+                    "label": "Geslacht",
+                    "key": "geslacht",
+                    "type": "textfield",
+                    "input": true
+                }
+            ]
+        },
+        {
+            "label": "Voornaam",
+            "type": "container",
+            "key": "aanvrager.persoonsgegevens",
+            "input": true,
+            "components": [
+                {
+                    "label": "Voornaam",
+                    "key": "voornaam",
+                    "type": "textfield",
+                    "input": true
+                }
+            ]
+        },
+        {
             "type": "button",
             "label": "Submit",
             "key": "submit",

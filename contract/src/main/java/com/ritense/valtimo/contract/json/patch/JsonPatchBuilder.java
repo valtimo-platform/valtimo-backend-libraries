@@ -95,7 +95,7 @@ public final class JsonPatchBuilder {
     /**
      * This will adjust the first un-indexed array position ('/-' or '/+') to an index depending on previous operations or destination object.
      * The '/-' will add the JSON to a new element in the array.
-     * The '/+' will group JSON operations together and will add this group to a single new element in the array.
+     * The '/+' will append JSON to the last element in the array, or create a new element.
      * Any subsequent occurrences of '/-' will be replaced by 0, as the first one will create a new node already.
      * <p>Example (where x in destination has a length of 1):
      * /x/-/y/-/z -> /x/1/y/0/z</p>
@@ -120,16 +120,18 @@ public final class JsonPatchBuilder {
             }
         } else {
             String arrayPath = stringPath.substring(0, plusIndex);
-            boolean prevOpIsAppendable = false;
+            boolean prevIsAppendable = false;
             for (int i = 0; ; i++) {
                 String testPath = arrayPath + "/" + i;
                 var op = operations.stream().filter(it -> it.getPath().equals(testPath)).findFirst().orElse(null);
-                if (op == null && destination.at(testPath).isMissingNode()) {
-                    int appendI = prevOpIsAppendable ? i - 1 : i;
+                var destNode = destination.at(testPath);
+                if (op == null && destNode.isMissingNode()) {
+                    int appendI = prevIsAppendable ? i - 1 : i;
                     String correctedPath = arrayPath + "/" + appendI + stringPath.substring(plusIndex + 2);
                     return determineUnindexedPath(destination, JsonPointer.compile(correctedPath));
                 }
-                prevOpIsAppendable = op != null && op instanceof AddOperation addOp && addOp.getValue().isObject();
+                prevIsAppendable = destNode.isObject() ||
+                    (op != null && op instanceof AddOperation addOp && addOp.getValue().isObject());
             }
         }
     }
