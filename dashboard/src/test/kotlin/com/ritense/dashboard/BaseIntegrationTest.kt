@@ -19,6 +19,7 @@ package com.ritense.dashboard
 import com.ritense.dashboard.deployment.DashboardDeployer
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
+import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
@@ -32,6 +33,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @Import(TestAutoConfiguration::class)
 @Tag("integration")
 abstract class BaseIntegrationTest {
+
+    @MockBean
+    lateinit var processDefinitionCaseDefinitionLinker: ProcessDefinitionCaseDefinitionLinker
 
     @MockBean
     lateinit var userManagementService: UserManagementService

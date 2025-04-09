@@ -23,6 +23,8 @@ dependencies {
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
     implementation "io.github.microutils:kotlin-logging:$kotlinLoggingVersion"
 
+
+    testImplementation project(":case")
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion"
 
