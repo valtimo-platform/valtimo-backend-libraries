@@ -107,6 +107,8 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
         assertThat(json, hasNoJsonPath("""${'$'}.containerProperty1"""))
         assertThat(json, hasNoJsonPath("""${'$'}.containerProperty2"""))
         assertThat(json, hasNoJsonPath("""${'$'}.containerProperty3"""))
+        assertThat(json, hasJsonPath("""${'$'}.aanvrager.geslacht""", equalTo("M")))
+        assertThat(json, hasJsonPath("""${'$'}.aanvrager.persoonsgegevens.voornaam""", equalTo("Henk")))
 
         val processExecution = runWithoutAuthorization {
             processService.findExecutionByBusinessKey(businessKey)
@@ -192,6 +194,8 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
         assertThat(json, hasNoJsonPath("""${'$'}.containerProperty1"""))
         assertThat(json, hasNoJsonPath("""${'$'}.containerProperty2"""))
         assertThat(json, hasNoJsonPath("""${'$'}.containerProperty3"""))
+        assertThat(json, hasJsonPath("""${'$'}.aanvrager.geslacht""", equalTo("M")))
+        assertThat(json, hasJsonPath("""${'$'}.aanvrager.persoonsgegevens.voornaam""", equalTo("Henk")))
     }
 
     private fun createFormData(): JsonNode {
@@ -210,7 +214,8 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
                 "property1": "property1",
                 "property2": "property2",
                 "verzoek": {"jaartallen":"2010","toelichting":"From 2010"},
-                "container": {"containerProperty1":"containerProperty1","containerProperty2":"containerProperty2"}
+                "container": {"containerProperty1":"containerProperty1","containerProperty2":"containerProperty2"},
+                "aanvrager":{"geslacht":"M","persoonsgegevens":{"voornaam":"Henk"}}
             }
         """.trimIndent()
         )

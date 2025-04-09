@@ -206,11 +206,17 @@ class DefaultFormSubmissionService(
         val categorizedMap = formDefinition.inputFields
             .filter { FormIoFormDefinition.NOT_IGNORED.test(it) }
             .filter { FormIoFormDefinition.isInputComponent(it) }
-            .mapNotNull { field ->
-                getTargetKeyValuePair(field, formData)
-            }.groupBy { (key, _) ->
-                val prefix = key.substringBefore(ValueResolverServiceImpl.DELIMITER, missingDelimiterValue = "")
-                if (prefix == DOC_PREFIX && key.contains("{indexOf")) {
+            .mapNotNull { field -> getTargetKeyValuePair(field, formData) }
+            .groupBy { it.first.substringBefore("/-/") }
+            .flatMap { (_, groups) ->
+                groups.mapIndexed { i, (targetKey, value) ->
+                    val newTargetKey = if (i == 0) targetKey else targetKey.replace("/-/", "/+/")
+                    newTargetKey to value
+                }
+            }
+            .groupBy { (targetKey, _) ->
+                val prefix = targetKey.substringBefore(ValueResolverServiceImpl.DELIMITER, missingDelimiterValue = "")
+                if (prefix == DOC_PREFIX && targetKey.contains("{indexOf")) {
                     "modifyDocumentWithJsonPatchValue"
                 } else if (prefix == DOC_PREFIX && document == null) {
                     "createDocumentWithContent"
