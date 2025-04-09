@@ -38,7 +38,7 @@ class BaseTest {
             description = "description",
             createdBy = "system",
             createdDate = LocalDateTime.now(),
-            baseOnVersionTag = Semver.parse("1.0.0-SNAPSHOT"),
+            basedOnVersionTag = Semver.parse("1.0.0-SNAPSHOT"),
             isFinal = true,
             canHaveAssignee = canHaveAssignee,
             autoAssignTasks = autoAssignTasks,

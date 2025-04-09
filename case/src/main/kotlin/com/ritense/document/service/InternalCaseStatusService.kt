@@ -62,7 +62,7 @@ class InternalCaseStatusService(
     ): InternalCaseStatus {
         denyManagementOperation()
 
-        require(activeCaseDefinitionService.getActiveCaseDefinition(caseDefinitionKey).active)
+        requireNotNull(activeCaseDefinitionService.getActiveCaseDefinition(caseDefinitionKey))
 
         val currentInternalCaseStatuses = getInternalCaseStatuses(caseDefinitionKey)
         if (currentInternalCaseStatuses.any { status ->

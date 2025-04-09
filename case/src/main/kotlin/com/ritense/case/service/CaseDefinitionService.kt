@@ -42,6 +42,7 @@ import com.ritense.valtimo.contract.event.CaseDefinitionCreatedEvent
 import com.ritense.valtimo.contract.event.CaseDefinitionPreDeleteEvent
 import com.ritense.valtimo.contract.utils.SecurityUtils
 import com.ritense.valueresolver.ValueResolverService
+import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -95,7 +96,7 @@ class CaseDefinitionService(
                 isFinal = false,
                 createdBy = SecurityUtils.getCurrentUserLogin(),
                 createdDate = LocalDateTime.now(),
-                baseOnVersionTag = basedOnCaseDefinitionId.versionTag,
+                basedOnVersionTag = basedOnCaseDefinitionId.versionTag,
                 active = false
             )
         )
@@ -130,7 +131,17 @@ class CaseDefinitionService(
     }
 
     fun getActiveCaseDefinition(caseDefinitionKey: String): CaseDefinition? {
-        return caseDefinitionRepository.findByActiveIsTrueAndIdKey(caseDefinitionKey)
+        val caseDefinitions = caseDefinitionRepository.findAllByIdKeyOrderByIdVersionTagDesc(caseDefinitionKey)
+        if (caseDefinitions.isEmpty()) return null
+        val activeCaseDefinitions = caseDefinitions.filter {it.active }
+        require (activeCaseDefinitions.size <= 1) {
+            "Multiple active case-definitions found for case-definition '$caseDefinitionKey'"
+        }
+        if (activeCaseDefinitions.isEmpty()) {
+            // TODO: throw error here
+            logger.error { "No active case-definition found for case-definition '$caseDefinitionKey'" }
+        }
+        return activeCaseDefinitions.firstOrNull() ?: caseDefinitions.firstOrNull()
     }
 
     @Throws(UnknownDocumentDefinitionException::class)
@@ -237,5 +248,9 @@ class CaseDefinitionService(
     private fun assertDocumentDefinitionExists(caseDefinitionKey: String): DocumentDefinition {
         return documentDefinitionService.findLatestByName(caseDefinitionKey)
             .getOrNull() ?: throw UnknownCaseDefinitionException(caseDefinitionKey)
+    }
+
+    companion object {
+        val logger = KotlinLogging.logger {}
     }
 }

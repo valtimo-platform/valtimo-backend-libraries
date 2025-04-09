@@ -23,7 +23,7 @@
                     "type": "field",
                     "field": "id.key",
                     "operator": "==",
-                    "value": "test"
+                    "value": "some-tab"
                 }
             ]
         },

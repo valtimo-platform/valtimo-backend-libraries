@@ -52,7 +52,7 @@ class CaseDefinitionExporter(
                         caseDefinition.description,
                         caseDefinition.createdBy,
                         caseDefinition.createdDate,
-                        caseDefinition.baseOnVersionTag?.version,
+                        caseDefinition.basedOnVersionTag?.version,
                         caseDefinition.isFinal,
                         caseDefinition.canHaveAssignee,
                         caseDefinition.autoAssignTasks

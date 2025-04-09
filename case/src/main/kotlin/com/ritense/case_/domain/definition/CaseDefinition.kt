@@ -50,7 +50,7 @@ data class CaseDefinition(
     @Convert(converter = SemverConverter::class)
     @Column(name = "based_on_version_tag", updatable = false)
     @JsonSerialize(using = SemverSerializer::class)
-    val baseOnVersionTag: Semver? = null,
+    val basedOnVersionTag: Semver? = null,
     @Column(name = "is_final")
     val isFinal: Boolean,
 

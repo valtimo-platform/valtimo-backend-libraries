@@ -84,7 +84,7 @@ class CaseTabServiceTest(
 
         caseTabService.createCaseTab(caseDefinitionId, CaseTabDto.of(caseTab))
 
-        verify(applicationEventPublisher).publishEvent(eq(CaseTabCreatedEvent(caseTab, baseOnCaseTabId)))
+        verify(applicationEventPublisher).publishEvent(eq(CaseTabCreatedEvent(caseTab)))
     }
 
 }

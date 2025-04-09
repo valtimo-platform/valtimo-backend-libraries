@@ -19,7 +19,6 @@ package com.ritense.case_.widget.custom
 import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 import com.ritense.case_.domain.tab.CaseWidgetTabWidgetId
 import com.ritense.case_.rest.dto.CaseWidgetAction
-import com.ritense.case_.widget.collection.CollectionCaseWidget
 import com.ritense.valtimo.contract.annotation.AllOpen
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.Column

@@ -24,8 +24,6 @@ import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import com.ritense.logging.LoggableResource;
 import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import jakarta.validation.ValidationException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -66,10 +64,7 @@ public interface DocumentDefinitionService {
 
     void removeDocumentDefinition(String documentDefinitionName);
 
-    void removeDocumentDefinition(
-        @LoggableResource("documentDefinitionName") String documentDefinitionName,
-        CaseDefinitionId caseDefinitionId
-    );
+    void removeDocumentDefinition(String documentDefinitionName, CaseDefinitionId caseDefinitionId);
 
     boolean currentUserCanAccessDocumentDefinition(String documentDefinitionName);
 
