@@ -130,7 +130,7 @@ data class UploadField(
                     && (jsonNode["type"].textValue().equals("file", ignoreCase = true) ||
                     jsonNode["type"].textValue().equals("valtimo-file", ignoreCase = true) ||
                     jsonNode["type"].textValue().equals("documenten-api-file", ignoreCase = true))
-                    && jsonNode["input"].booleanValue()
+                    && jsonNode.has("input") && jsonNode["input"].booleanValue()
                     && jsonNode.has(PROPERTY_KEY)
         }
     }
