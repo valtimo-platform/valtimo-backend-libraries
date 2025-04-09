@@ -95,7 +95,7 @@ public final class JsonPatchBuilder {
     /**
      * This will adjust the first un-indexed array position ('/-' or '/+') to an index depending on previous operations or destination object.
      * The '/-' will add the JSON to a new element in the array.
-     * The '/+' will append JSON to the last element in the array, or create a new element.
+     * The '/+' will append JSON to the last element in the array. If appending is not possible, the JSON is added to a new element in the array.
      * Any subsequent occurrences of '/-' will be replaced by 0, as the first one will create a new node already.
      * <p>Example (where x in destination has a length of 1):
      * /x/-/y/-/z -> /x/1/y/0/z</p>
@@ -106,7 +106,7 @@ public final class JsonPatchBuilder {
         int plusIndex = stringPath.indexOf("/+");
         if (dashIndex == -1 && plusIndex == -1) {
             return path;
-        } else if (dashIndex != -1) {
+        } else if (dashIndex != -1 && (plusIndex == -1 || dashIndex < plusIndex)) {
             String arrayPath = stringPath.substring(0, dashIndex);
             for (int i = 0; ; i++) {
                 String testPath = arrayPath + "/" + i;
@@ -115,7 +115,7 @@ public final class JsonPatchBuilder {
                 ) {
                     String correctedPath = testPath + stringPath.substring(dashIndex + 2)
                         .replace("/-", "/0");
-                    return JsonPointer.compile(correctedPath);
+                    return determineUnindexedPath(destination, JsonPointer.compile(correctedPath));
                 }
             }
         } else {

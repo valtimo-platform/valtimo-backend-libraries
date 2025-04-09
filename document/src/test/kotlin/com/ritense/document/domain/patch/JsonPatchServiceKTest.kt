@@ -25,6 +25,7 @@ import org.skyscreamer.jsonassert.JSONAssert.assertEquals
 import org.skyscreamer.jsonassert.JSONCompareMode
 
 class JsonPatchServiceKTest {
+
     @Test
     @Throws(JsonProcessingException::class)
     fun `should patch existing object`() {
@@ -42,6 +43,7 @@ class JsonPatchServiceKTest {
         jsonPatchBuilder.addJsonNodeValue(obj, JsonPointer.compile("/x/+/y/birthYear"), TextNode.valueOf("2001"))
         jsonPatchBuilder.addJsonNodeValue(obj, JsonPointer.compile("/x/-/y/status"), TextNode.valueOf("Unknown"))
         jsonPatchBuilder.addJsonNodeValue(obj, JsonPointer.compile("/x/+/y/valid"), TextNode.valueOf("true"))
+        jsonPatchBuilder.addJsonNodeValue(obj, JsonPointer.compile("/u/+/v/-/w"), TextNode.valueOf("value"))
         jsonPatchBuilder.addJsonNodeValue(obj, JsonPointer.compile("/z/-"), TextNode.valueOf("1"))
         jsonPatchBuilder.addJsonNodeValue(obj, JsonPointer.compile("/z/-"), TextNode.valueOf("2"))
         jsonPatchBuilder.addJsonNodeValue(obj, JsonPointer.compile("/z/+"), TextNode.valueOf("3"))
@@ -64,6 +66,15 @@ class JsonPatchServiceKTest {
                         }
                     }
                 ],
+                "u": [
+                    {
+                        "v": [
+                            {
+                                "w": "value"
+                            }
+                        ]
+                    }
+                ],
                 "z": [
                     "1",
                     "1",
@@ -83,5 +94,31 @@ class JsonPatchServiceKTest {
         jsonPatchBuilder.addJsonNodeValue(obj, JsonPointer.compile("/address/streetName"), TextNode.valueOf("Funenpark"))
         JsonPatchService.apply(jsonPatchBuilder.build(), obj)
         assertEquals("""{"address":{"streetName":"Funenpark"}}""", mapper.writeValueAsString(obj), false)
+    }
+
+    @Test
+    fun `should add new array when none exists`() {
+        val mapper = MapperSingleton.get()
+        val jsonPatchBuilder = JsonPatchBuilder()
+        val obj = mapper.createObjectNode()
+
+        jsonPatchBuilder.addJsonNodeValue(
+            obj,
+            JsonPointer.compile("/verzoeken/+/documenten/-"),
+            TextNode.valueOf("https://my.document.url")
+        )
+        JsonPatchService.apply(jsonPatchBuilder.build(), obj)
+
+        assertEquals("""
+            {
+                "verzoeken": [
+                    {
+                        "documenten": [
+                            "https://my.document.url"
+                        ]
+                    }
+                ]
+            }
+        """.trimIndent(), mapper.writeValueAsString(obj), JSONCompareMode.STRICT_ORDER)
     }
 }
