@@ -1,0 +1,7 @@
+{
+    "key": "nested-array-reference-example",
+    "name": "nested-array-reference-example",
+    "versionTag": "1.0.0",
+    "canHaveAssignee": true,
+    "autoAssignTasks": true
+}

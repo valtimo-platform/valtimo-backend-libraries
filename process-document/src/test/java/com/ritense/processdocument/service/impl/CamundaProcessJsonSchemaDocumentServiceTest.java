@@ -37,6 +37,7 @@ import com.ritense.processdocument.service.impl.result.StartProcessForDocumentRe
 import com.ritense.processdocument.service.result.StartProcessForDocumentResult;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import java.util.HashMap;
@@ -100,7 +101,8 @@ class CamundaProcessJsonSchemaDocumentServiceTest {
 
     @Test
     void startProcessForDocument_shouldReturnSuccessWhenProcessWasStarted() {
-        JsonSchemaDocumentDefinitionId documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId("testdef", 1L);
+        CaseDefinitionId caseDefinitionId = new CaseDefinitionId("house", "1.0.0");
+        JsonSchemaDocumentDefinitionId documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId("testdef", caseDefinitionId);
 
         JsonSchemaDocument document = mock(JsonSchemaDocument.class);
         UUID documentUuid = UUID.randomUUID();
