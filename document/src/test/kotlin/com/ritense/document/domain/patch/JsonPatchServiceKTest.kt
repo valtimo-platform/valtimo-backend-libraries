@@ -25,6 +25,7 @@ import org.skyscreamer.jsonassert.JSONAssert.assertEquals
 import org.skyscreamer.jsonassert.JSONCompareMode
 
 class JsonPatchServiceKTest {
+
     @Test
     @Throws(JsonProcessingException::class)
     fun `should patch existing object`() {
@@ -42,6 +43,7 @@ class JsonPatchServiceKTest {
         jsonPatchBuilder.addJsonNodeValue(obj, JsonPointer.compile("/x/+/y/birthYear"), TextNode.valueOf("2001"))
         jsonPatchBuilder.addJsonNodeValue(obj, JsonPointer.compile("/x/-/y/status"), TextNode.valueOf("Unknown"))
         jsonPatchBuilder.addJsonNodeValue(obj, JsonPointer.compile("/x/+/y/valid"), TextNode.valueOf("true"))
+        jsonPatchBuilder.addJsonNodeValue(obj, JsonPointer.compile("/u/+/v/-/w"), TextNode.valueOf("value"))
         jsonPatchBuilder.addJsonNodeValue(obj, JsonPointer.compile("/z/-"), TextNode.valueOf("1"))
         jsonPatchBuilder.addJsonNodeValue(obj, JsonPointer.compile("/z/-"), TextNode.valueOf("2"))
         jsonPatchBuilder.addJsonNodeValue(obj, JsonPointer.compile("/z/+"), TextNode.valueOf("3"))
@@ -62,6 +64,15 @@ class JsonPatchServiceKTest {
                             "status": "Unknown",
                             "valid": "true"
                         }
+                    }
+                ],
+                "u": [
+                    {
+                        "v": [
+                            {
+                                "w": "value"
+                            }
+                        ]
                     }
                 ],
                 "z": [
