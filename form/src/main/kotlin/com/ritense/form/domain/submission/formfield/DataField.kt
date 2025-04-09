@@ -43,7 +43,7 @@ data class DataField(
         fun isDataFieldComponent(jsonNode: ObjectNode): Boolean {
             return (jsonNode.has("type")
                     && !jsonNode["type"].textValue().equals("button", ignoreCase = true)
-                    && jsonNode["input"].booleanValue()
+                    && jsonNode.has("input") && jsonNode["input"].booleanValue()
                     && jsonNode.has(PROPERTY_KEY))
         }
     }

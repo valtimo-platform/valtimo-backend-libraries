@@ -158,15 +158,13 @@ class DocumentJsonValueResolverFactory(
     }
 
     private fun buildJsonPatch(jsonNode: JsonNode, values: Map<String, Any?>) {
-        val jsonPatchBuilder = JsonPatchBuilder()
-
         values.forEach {
             val jsonPointer = toJsonPointer(it.key.substringAfter(":"))
             val valueNode = toValueNode(it.value)
+            val jsonPatchBuilder = JsonPatchBuilder()
             jsonPatchBuilder.addJsonNodeValue(jsonNode, jsonPointer, valueNode)
+            JsonPatchService.apply(jsonPatchBuilder.build(), jsonNode)
         }
-
-        JsonPatchService.apply(jsonPatchBuilder.build(), jsonNode)
     }
 
     private fun toJsonPointer(path: String): JsonPointer {
