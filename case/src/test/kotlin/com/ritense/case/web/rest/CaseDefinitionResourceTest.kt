@@ -22,6 +22,8 @@ import com.ritense.case.BaseTest
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.web.rest.dto.CaseDefinitionDraftCreateRequest
 import com.ritense.case.web.rest.dto.CaseSettingsDto
+import com.ritense.case_.domain.definition.CaseDefinition
+import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.exporter.ExportService
 import com.ritense.importer.ImportService
@@ -55,6 +57,7 @@ class CaseDefinitionResourceTest : BaseTest() {
     lateinit var activeCaseDefinitionService: ActiveCaseDefinitionService
     lateinit var exportService: ExportService
     lateinit var importService: ImportService
+    lateinit var caseDefinitionRepository: CaseDefinitionRepository
     lateinit var mapper: ObjectMapper
 
     @BeforeEach
@@ -63,7 +66,14 @@ class CaseDefinitionResourceTest : BaseTest() {
         activeCaseDefinitionService = mock()
         exportService = mock()
         importService = mock()
-        resource = CaseDefinitionResource(service, activeCaseDefinitionService, exportService, importService)
+        caseDefinitionRepository = mock()
+        resource = CaseDefinitionResource(
+            service,
+            activeCaseDefinitionService,
+            exportService,
+            importService,
+            caseDefinitionRepository
+        )
 
         mapper = MapperSingleton.get()
         val converter = MappingJackson2HttpMessageConverter()

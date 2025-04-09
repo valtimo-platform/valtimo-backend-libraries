@@ -1,0 +1,37 @@
+[
+    {
+        "processDefinitionKey" : "call-activity-subprocess-example",
+        "canInitializeDocument" : false,
+        "startableByUser" : false
+    },
+    {
+        "processDefinitionKey" : "child-process",
+        "canInitializeDocument" : false,
+        "startableByUser" : false
+    },
+    {
+        "processDefinitionKey" : "embedded-subprocess-example",
+        "canInitializeDocument" : false,
+        "startableByUser" : false
+    },
+    {
+        "processDefinitionKey" : "parent-process-with-non-existing-key",
+        "canInitializeDocument" : false,
+        "startableByUser" : false
+    },
+    {
+        "processDefinitionKey" : "parent-process",
+        "canInitializeDocument" : false,
+        "startableByUser" : false
+    },
+    {
+        "processDefinitionKey" : "loan-process-demo",
+        "canInitializeDocument" : true,
+        "startableByUser" : true
+    },
+    {
+        "processDefinitionKey" : "single-user-task-process",
+        "canInitializeDocument" : true,
+        "startableByUser" : true
+    }
+]

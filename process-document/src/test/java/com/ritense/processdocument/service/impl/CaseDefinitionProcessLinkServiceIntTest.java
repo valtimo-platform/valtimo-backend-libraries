@@ -22,6 +22,7 @@ import com.ritense.processdocument.BaseIntegrationTest;
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest;
 import com.ritense.processdocument.repository.CaseDefinitionProcessLinkRepository;
 import com.ritense.processdocument.service.CaseDefinitionProcessLinkService;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 class CaseDefinitionProcessLinkServiceIntTest extends BaseIntegrationTest {
 
     private static final String DOCUMENT_DEFINITION_NAME = "house";
+    private static final CaseDefinitionId CASE_DEFINITION_ID = new CaseDefinitionId(DOCUMENT_DEFINITION_NAME, "1.0.0");
     private static final String DOCUMENT_UPLOAD = "DOCUMENT_UPLOAD";
     private static final String PROCESS_DEFINITION_KEY = "loan-process-demo";
 
@@ -43,7 +45,7 @@ class CaseDefinitionProcessLinkServiceIntTest extends BaseIntegrationTest {
     @BeforeEach
     public void beforeEach() {
         caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-            DOCUMENT_DEFINITION_NAME,
+            CASE_DEFINITION_ID,
             new DocumentDefinitionProcessRequest(
                 PROCESS_DEFINITION_KEY,
                 DOCUMENT_UPLOAD
@@ -54,63 +56,29 @@ class CaseDefinitionProcessLinkServiceIntTest extends BaseIntegrationTest {
     @Test
     void shouldGetDocumentDefinitionProcessLink() {
         var link = caseDefinitionProcessLinkService.getDocumentDefinitionProcessLink(
-            DOCUMENT_DEFINITION_NAME,
+            CASE_DEFINITION_ID,
             DOCUMENT_UPLOAD
         );
 
-        assertThat(link.isPresent()).isTrue();
-        assertThat(link.get().getId().getDocumentDefinitionName()).isEqualTo(DOCUMENT_DEFINITION_NAME);
-        assertThat(link.get().getId().getProcessDefinitionKey()).isEqualTo(PROCESS_DEFINITION_KEY);
-        assertThat(link.get().getType()).isEqualTo(DOCUMENT_UPLOAD);
-    }
-
-    @Test
-    void shouldGetDocumentDefinitionProcessLinkList() {
-        caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-            DOCUMENT_DEFINITION_NAME,
-            new DocumentDefinitionProcessRequest(
-                "embedded-subprocess-example",
-                "my-other-link-type"
-            )
-        );
-
-        var links = caseDefinitionProcessLinkService.getDocumentDefinitionProcessList(DOCUMENT_DEFINITION_NAME);
-
-        assertThat(links.size()).isEqualTo(2);
-        assertThat(links.get(0).processDefinitionKey).isEqualTo(PROCESS_DEFINITION_KEY);
-        assertThat(links.get(1).processDefinitionKey).isEqualTo("embedded-subprocess-example");
+        assertThat(link).isNotNull();
+        assertThat(link.getId().getCaseDefinitionId()).isEqualTo(CASE_DEFINITION_ID);
+        assertThat(link.getId().getProcessDefinitionKey()).isEqualTo(PROCESS_DEFINITION_KEY);
+        assertThat(link.getType()).isEqualTo(DOCUMENT_UPLOAD);
     }
 
     @Test
     void shouldOverrideProcessDefinitionKeyInLinkWhenSaving() {
         caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-            DOCUMENT_DEFINITION_NAME,
+            CASE_DEFINITION_ID,
             new DocumentDefinitionProcessRequest(
                 "embedded-subprocess-example",
                 DOCUMENT_UPLOAD
             )
         );
 
-        var links = caseDefinitionProcessLinkService.getDocumentDefinitionProcessList(DOCUMENT_DEFINITION_NAME);
+        var caseDefinitionProcess = caseDefinitionProcessLinkService.getDocumentDefinitionProcess(CASE_DEFINITION_ID, DOCUMENT_UPLOAD);
 
-        assertThat(links.size()).isEqualTo(1);
-        assertThat(links.get(0).processDefinitionKey).isEqualTo("embedded-subprocess-example");
+        assertThat(caseDefinitionProcess).isNotNull();
+        assertThat(caseDefinitionProcess.getProcessDefinitionKey()).isEqualTo("embedded-subprocess-example");
     }
-
-    @Test
-    void shouldOverrideTypeInLinkWhenSaving() {
-        caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-            DOCUMENT_DEFINITION_NAME,
-            new DocumentDefinitionProcessRequest(
-                PROCESS_DEFINITION_KEY,
-                "my-type"
-            )
-        );
-
-        var links = caseDefinitionProcessLinkRepository.findAllByIdDocumentDefinitionName(DOCUMENT_DEFINITION_NAME);
-
-        assertThat(links.size()).isEqualTo(1);
-        assertThat(links.get(0).getType()).isEqualTo("my-type");
-    }
-
 }

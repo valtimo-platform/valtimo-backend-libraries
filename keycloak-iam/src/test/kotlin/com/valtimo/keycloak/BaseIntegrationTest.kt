@@ -18,6 +18,7 @@ package com.valtimo.keycloak
 
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
+import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
@@ -43,6 +44,9 @@ import kotlin.reflect.jvm.isAccessible
 @ExtendWith(SpringExtension::class)
 @Tag("integration")
 abstract class BaseIntegrationTest {
+
+    @MockBean
+    lateinit var processDefinitionCaseDefinitionLinker: ProcessDefinitionCaseDefinitionLinker
 
     @MockBean
     lateinit var mailSender: MailSender

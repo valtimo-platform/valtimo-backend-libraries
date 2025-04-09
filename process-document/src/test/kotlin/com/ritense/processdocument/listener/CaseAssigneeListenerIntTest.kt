@@ -29,6 +29,7 @@ import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Com
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.ManageableUser
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.service.CamundaTaskService
 import org.camunda.bpm.engine.RuntimeService
 import org.junit.jupiter.api.Assertions.assertNull
@@ -68,8 +69,12 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
 
     lateinit var testUser2: ManageableUser
 
+    lateinit var caseDefinitionId: CaseDefinitionId
+
     @BeforeEach
     fun init() {
+        caseDefinitionId = CaseDefinitionId("house", "1.0.0")
+
         testUser = ValtimoUserBuilder()
             .id("AAAA-1111")
             .firstName("Test")
@@ -104,7 +109,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
 
         runWithoutAuthorization {
             caseDefinitionService.updateCaseSettings(
-                caseDefinitionName = "house",
+                caseDefinitionId,
                 CaseSettingsDto(
                     canHaveAssignee = true,
                     autoAssignTasks = true
@@ -143,7 +148,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
     fun `should do nothing when and task is created and autoAssignTasks is off`() {
         runWithoutAuthorization {
             caseDefinitionService.updateCaseSettings(
-                caseDefinitionName = "house",
+                caseDefinitionId,
                 CaseSettingsDto(
                     canHaveAssignee = true,
                     autoAssignTasks = false

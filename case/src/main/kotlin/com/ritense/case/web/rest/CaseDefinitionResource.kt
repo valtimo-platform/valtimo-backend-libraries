@@ -25,6 +25,7 @@ import com.ritense.case.web.rest.dto.CaseDefinitionResponseDto
 import com.ritense.case.web.rest.dto.CaseDefinitionSettingsResponseDto
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
+import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.exporter.ExportService
 import com.ritense.exporter.request.CaseDefinitionExportRequest
@@ -62,7 +63,8 @@ class CaseDefinitionResource(
     private val service: CaseDefinitionService,
     private val activeCaseDefinitionService: ActiveCaseDefinitionService,
     private val exportService: ExportService,
-    private val importService: ImportService
+    private val importService: ImportService,
+    private val caseDefinitionRepository: CaseDefinitionRepository,
 ) {
 
     @RunWithoutAuthorization
@@ -275,7 +277,7 @@ class CaseDefinitionResource(
         @RequestParam("file") file: MultipartFile
     ): ResponseEntity<Unit> {
         return try {
-            importService.import(file.inputStream)
+            importService.import(file.inputStream, caseDefinitionRepository.findAll().map { it.id })
             ResponseEntity.ok().build()
         } catch (exception: ImportServiceException) {
             logger.info(exception) { "Import failed" }

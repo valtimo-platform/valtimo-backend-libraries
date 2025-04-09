@@ -49,26 +49,6 @@ class CaseWidgetTabWidgetSpecificationIntTest @Autowired constructor(
     val caseDefinitionId = CaseDefinitionId.of("widgets", "1.0.0")
     val tabKey = "some-tab"
 
-    @BeforeEach
-    fun setup() {
-        runWithoutAuthorization {
-            caseTabService.createCaseTab(caseDefinitionId, CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-"))
-
-            caseWidgetTabService.updateWidgetTab(
-                CaseWidgetTabDto(
-                    caseDefinitionId.key,
-                    caseDefinitionId.versionTag.version,
-                    tabKey,
-                    widgets = listOf(
-                        TestCaseWidgetTabWidgetDto("test", "Widget 1", 1, false, TestCaseWidgetProperties("test123")),
-                        TestCaseWidgetTabWidgetDto("other-widget", "Widget 2", 2, true, TestCaseWidgetProperties("test123")),
-                    )
-                )
-            )
-
-        }
-    }
-
     @Test
     @WithMockUser(authorities = ["ROLE_ALL_WIDGETS"])
     fun `should get tab with all widgets`() {

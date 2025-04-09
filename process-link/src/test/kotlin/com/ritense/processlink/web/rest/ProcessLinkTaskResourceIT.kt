@@ -34,6 +34,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
+import java.util.UUID
 
 @Transactional
 @Import(ProcessLinkActivityService::class)
@@ -54,7 +55,13 @@ internal class ProcessLinkTaskResourceIT @Autowired constructor(
     @Test
     fun `should list tasks with process links`() {
         val processInstanceWithDefinition =
-            runWithoutAuthorization { camundaProcessService.startProcess(PROCESS_DEF_ID, "", emptyMap()) }
+            runWithoutAuthorization {
+                camundaProcessService.startProcess(
+                    PROCESS_DEF_ID,
+                    UUID.randomUUID().toString(),
+                    emptyMap()
+                )
+            }
 
         runWithoutAuthorization {
             mockMvc.perform(

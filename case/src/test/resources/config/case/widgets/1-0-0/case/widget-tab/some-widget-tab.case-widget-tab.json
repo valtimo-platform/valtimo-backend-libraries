@@ -1,0 +1,27 @@
+[
+    {
+        "key": "some-tab",
+        "widgets": [
+            {
+                "type": "test",
+                "key": "test",
+                "title": "Widget 1",
+                "width": 1,
+                "highContrast": false,
+                "properties": {
+                    "stringProperty": "test123"
+                }
+            },
+            {
+                "type": "test",
+                "key": "other-widget",
+                "title": "Widget 2",
+                "width": 2,
+                "highContrast": true,
+                "properties": {
+                    "stringProperty": "test123"
+                }
+            }
+        ]
+    }
+]
