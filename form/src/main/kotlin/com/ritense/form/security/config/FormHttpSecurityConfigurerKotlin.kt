@@ -38,11 +38,36 @@ class FormHttpSecurityConfigurerKotlin : HttpSecurityConfigurer {
                         antMatcher(DELETE, INTERMEDIATE_BASE_URL)
                     ).authenticated()
                     .requestMatchers(
-                        antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form"),
-                        antMatcher(POST, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form"),
-                        antMatcher(PUT, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form"),
-                        antMatcher(DELETE, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form/{formDefinitionId}")
-                    ).hasAuthority(ADMIN)
+                        antMatcher(
+                            GET,
+                            "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form"
+                        ),
+                        antMatcher(
+                            POST,
+                            "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form"
+                        ),
+                        antMatcher(
+                            PUT,
+                            "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form"
+                        ),
+                        antMatcher(
+                            DELETE,
+                            "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form/{formDefinitionId}"
+                        ),
+                        antMatcher(
+                            GET,
+                            "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form/{formDefinitionId}"
+                        ),
+                        antMatcher(
+                            GET,
+                            "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form/{name}/exists"
+                        ),
+                        antMatcher(
+                            GET,
+                            "/api/v1/form-management"
+                        ),
+
+                        ).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

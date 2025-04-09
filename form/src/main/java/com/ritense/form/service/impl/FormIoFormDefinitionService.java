@@ -44,7 +44,7 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
 
     @Override
     public Page<FormIoFormDefinition> getAll(Pageable pageable) {
-        return formDefinitionRepository.findAll(pageable);
+        return formDefinitionRepository.findByCaseDefinitionIdIsNull(pageable);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
 
     @Override
     public Page<? extends FormDefinition> queryFormDefinitions(String searchTerm, Pageable pageable) {
-        return formDefinitionRepository.findAllByNameContainingIgnoreCase(searchTerm, pageable);
+        return formDefinitionRepository.findAllWithoutCaseByNameContainingIgnoreCase(searchTerm, pageable);
     }
 
     @Override
@@ -77,6 +77,14 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
         @LoggableResource(resourceType = FormIoFormDefinition.class) UUID formDefinitionId
     ) {
         return formDefinitionRepository.findById(formDefinitionId);
+    }
+
+    @Override
+    public Optional<FormIoFormDefinition> getFormDefinitionById(
+        @LoggableResource("caseDefinitionId") CaseDefinitionId caseDefinitionId,
+        @LoggableResource(resourceType = FormIoFormDefinition.class) UUID formDefinitionId
+    ) {
+        return formDefinitionRepository.findByIdAndCaseDefinitionId(formDefinitionId, caseDefinitionId);
     }
 
     @Override
@@ -103,11 +111,34 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     @Override
     @Transactional
     public FormIoFormDefinition createFormDefinition(
+        CreateFormDefinitionRequest request
+    ) {
+        return withLoggingContext("formDefinitionName", request.getName(), () -> {
+            if (formDefinitionRepository.findByName(request.getName())
+                .isPresent()) {
+                throw new IllegalArgumentException("Duplicate name for new form: " + request.getName());
+            }
+            return formDefinitionRepository.save(
+                new FormIoFormDefinition(
+                    UUID.randomUUID(),
+                    request.getName(),
+                    request.getFormDefinition(),
+                    null,
+                    request.isReadOnly()
+                )
+            );
+        });
+    }
+
+    @Override
+    @Transactional
+    public FormIoFormDefinition createFormDefinition(
         CaseDefinitionId caseDefinitionId,
         CreateFormDefinitionRequest request
     ) {
         return withLoggingContext("formDefinitionName", request.getName(), () -> {
-            if (formDefinitionRepository.findByNameAndCaseDefinitionId(request.getName(), caseDefinitionId).isPresent()) {
+            if (formDefinitionRepository.findByNameAndCaseDefinitionId(request.getName(), caseDefinitionId)
+                .isPresent()) {
                 throw new IllegalArgumentException("Duplicate name for new form: " + request.getName());
             }
             return formDefinitionRepository.save(
