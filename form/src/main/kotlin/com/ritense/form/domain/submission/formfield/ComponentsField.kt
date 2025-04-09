@@ -68,7 +68,7 @@ data class ComponentsField(
         fun isComponentsComponent(jsonNode: ObjectNode): Boolean {
             return jsonNode.has("components")
                 && jsonNode["components"].isArray
-                && jsonNode["input"].booleanValue()
+                && jsonNode.has("input") && jsonNode["input"].booleanValue()
                 && jsonNode.has(PROPERTY_KEY)
         }
     }

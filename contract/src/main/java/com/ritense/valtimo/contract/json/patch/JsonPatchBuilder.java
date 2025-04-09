@@ -93,28 +93,45 @@ public final class JsonPatchBuilder {
     }
 
     /**
-     * This will adjust the first unindexed array position ('/-') to a new index depending on previous operations or destination object.
+     * This will adjust the first un-indexed array position ('/-' or '/+') to an index depending on previous operations or destination object.
+     * The '/-' will add the JSON to a new element in the array.
+     * The '/+' will append JSON to the last element in the array. If appending is not possible, the JSON is added to a new element in the array.
      * Any subsequent occurrences of '/-' will be replaced by 0, as the first one will create a new node already.
-     *
      * <p>Example (where x in destination has a length of 1):
      * /x/-/y/-/z -> /x/1/y/0/z</p>
      */
     private JsonPointer determineUnindexedPath(JsonNode destination, JsonPointer path) {
         String stringPath = path.toString();
         int dashIndex = stringPath.indexOf("/-");
-        if (dashIndex == -1) {
+        int plusIndex = stringPath.indexOf("/+");
+        if (dashIndex == -1 && plusIndex == -1) {
             return path;
-        }
-
-        String arrayPath = stringPath.substring(0, dashIndex);
-        for (int i = 0; ; i++) {
-            String testPath = arrayPath + "/" + i;
-            if (operations.stream().noneMatch(op -> op.getPath().equals(testPath))
-                && destination.at(testPath).isMissingNode()
-            ) {
-                String correctedPath = testPath + stringPath.substring(dashIndex + 2)
-                    .replace("/-", "/0");
-                return JsonPointer.compile(correctedPath);
+        } else if (dashIndex != -1 && (plusIndex == -1 || dashIndex < plusIndex)) {
+            String arrayPath = stringPath.substring(0, dashIndex);
+            for (int i = 0; ; i++) {
+                String testPath = arrayPath + "/" + i;
+                if (operations.stream().noneMatch(op -> op.getPath().equals(testPath))
+                    && destination.at(testPath).isMissingNode()
+                ) {
+                    String correctedPath = testPath + stringPath.substring(dashIndex + 2)
+                        .replace("/-", "/0");
+                    return determineUnindexedPath(destination, JsonPointer.compile(correctedPath));
+                }
+            }
+        } else {
+            String arrayPath = stringPath.substring(0, plusIndex);
+            boolean prevIsAppendable = false;
+            for (int i = 0; ; i++) {
+                String testPath = arrayPath + "/" + i;
+                var op = operations.stream().filter(it -> it.getPath().equals(testPath)).findFirst().orElse(null);
+                var destNode = destination.at(testPath);
+                if (op == null && destNode.isMissingNode()) {
+                    int appendI = prevIsAppendable ? i - 1 : i;
+                    String correctedPath = arrayPath + "/" + appendI + stringPath.substring(plusIndex + 2);
+                    return determineUnindexedPath(destination, JsonPointer.compile(correctedPath));
+                }
+                prevIsAppendable = destNode.isObject() ||
+                    (op != null && op instanceof AddOperation addOp && addOp.getValue().isObject());
             }
         }
     }
