@@ -115,7 +115,7 @@ public final class JsonPatchBuilder {
                 ) {
                     String correctedPath = testPath + stringPath.substring(dashIndex + 2)
                         .replace("/-", "/0");
-                    return JsonPointer.compile(correctedPath);
+                    return determineUnindexedPath(destination, JsonPointer.compile(correctedPath));
                 }
             }
         } else {

@@ -95,4 +95,30 @@ class JsonPatchServiceKTest {
         JsonPatchService.apply(jsonPatchBuilder.build(), obj)
         assertEquals("""{"address":{"streetName":"Funenpark"}}""", mapper.writeValueAsString(obj), false)
     }
+
+    @Test
+    fun `should add new array when none exists`() {
+        val mapper = MapperSingleton.get()
+        val jsonPatchBuilder = JsonPatchBuilder()
+        val obj = mapper.createObjectNode()
+
+        jsonPatchBuilder.addJsonNodeValue(
+            obj,
+            JsonPointer.compile("/verzoeken/+/documenten/-"),
+            TextNode.valueOf("https://my.document.url")
+        )
+        JsonPatchService.apply(jsonPatchBuilder.build(), obj)
+
+        assertEquals("""
+            {
+                "verzoeken": [
+                    {
+                        "documenten": [
+                            "https://my.document.url"
+                        ]
+                    }
+                ]
+            }
+        """.trimIndent(), mapper.writeValueAsString(obj), JSONCompareMode.STRICT_ORDER)
+    }
 }
