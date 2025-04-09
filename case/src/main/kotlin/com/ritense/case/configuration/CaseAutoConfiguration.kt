@@ -91,9 +91,16 @@ class CaseAutoConfiguration {
         service: CaseDefinitionService,
         exportService: ExportService,
         importService: ImportService,
-        activeCaseDefinitionService: ActiveCaseDefinitionService
+        activeCaseDefinitionService: ActiveCaseDefinitionService,
+        caseDefinitionRepository: CaseDefinitionRepository,
     ): CaseDefinitionResource {
-        return CaseDefinitionResource(service, activeCaseDefinitionService, exportService, importService)
+        return CaseDefinitionResource(
+            service,
+            activeCaseDefinitionService,
+            exportService,
+            importService,
+            caseDefinitionRepository
+        )
     }
 
     @Bean
