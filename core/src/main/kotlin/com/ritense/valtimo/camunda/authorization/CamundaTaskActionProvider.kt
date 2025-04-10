@@ -43,5 +43,8 @@ class CamundaTaskActionProvider : ResourceActionProvider<CamundaTask> {
 
         @JvmField
         val VIEW = Action<CamundaTask>(Action.VIEW)
+
+        @JvmField
+        val MODIFY = Action<CamundaTask>(Action.MODIFY)
     }
 }
