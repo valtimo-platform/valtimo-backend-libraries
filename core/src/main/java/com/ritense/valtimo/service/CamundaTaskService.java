@@ -21,6 +21,7 @@ import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvide
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.ASSIGNABLE;
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.CLAIM;
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.COMPLETE;
+import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.MODIFY;
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.VIEW;
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.VIEW_LIST;
 import static com.ritense.valtimo.camunda.repository.CamundaIdentityLinkSpecificationHelper.byTaskId;
@@ -34,7 +35,6 @@ import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHel
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.PROCESS_INSTANCE;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.all;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byAssignee;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byId;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byProcessInstanceId;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byUnassigned;
 import static java.util.Comparator.comparing;
@@ -66,10 +66,12 @@ import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import com.ritense.valtimo.contract.event.TaskAssignedEvent;
+import com.ritense.valtimo.contract.event.TaskDueDateSetEvent;
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
 import com.ritense.valtimo.event.TaskAssigned;
 import com.ritense.valtimo.event.TaskCompleted;
+import com.ritense.valtimo.event.TaskDueDateSet;
 import com.ritense.valtimo.event.TaskUnassigned;
 import com.ritense.valtimo.helper.DelegateTaskHelper;
 import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
@@ -83,10 +85,11 @@ import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Root;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -231,6 +234,46 @@ public class CamundaTaskService {
             throw new IllegalStateException("Cannot unassign task: the user has no permission.", ex);
         } catch (ProcessEngineException ex) {
             throw new IllegalStateException("An error occurred while unassigning the task.", ex);
+        }
+    }
+
+    @Transactional
+    public void setDueDate(String taskId, LocalDateTime dueDate) throws IllegalStateException {
+        if (dueDate == null) {
+            removeDueDate(taskId);
+            return;
+        }
+
+        final CamundaTask task = runWithoutAuthorization(() -> findTaskById(taskId));
+
+        requirePermission(task, MODIFY);
+
+        LocalDateTime formerDueDate = task.getDueDate();
+
+        try {
+            taskService.setDueDate(task.getId(), Date.from(dueDate.toInstant(ZoneOffset.UTC)));
+            entityManager.refresh(task);
+            publishTaskDueDateSetEvent(task, formerDueDate, dueDate);
+            outboxService.send(() -> new TaskDueDateSet(task.getId(), objectMapper.valueToTree(task)));
+        } catch (AuthorizationException ex) {
+            throw new IllegalStateException("Cannot modify task due date: the user has no permission.", ex);
+        } catch (ProcessEngineException ex) {
+            throw new IllegalStateException("An error occurred while modifying the task due date.", ex);
+        }
+    }
+
+    @Transactional
+    public void removeDueDate(String taskId) {
+        final CamundaTask task = runWithoutAuthorization(() -> findTaskById(taskId));
+        requirePermission(task, MODIFY);
+        try {
+            taskService.setDueDate(task.getId(), null);
+            entityManager.refresh(task);
+            outboxService.send(() -> new TaskDueDateSet(task.getId(), objectMapper.valueToTree(task)));
+        } catch (AuthorizationException ex) {
+            throw new IllegalStateException("Cannot remove task due date: the user has no permission.", ex);
+        } catch (ProcessEngineException ex) {
+            throw new IllegalStateException("An error occurred while removing due date from task.", ex);
         }
     }
 
@@ -398,7 +441,10 @@ public class CamundaTaskService {
                             assigneeMap.put(task.getAssignee(), valtimoUser);
                         }
                     } catch (Exception e) {
-                        logger.error("Failed to retrieve assignee " + task.getAssignee() + " for task " + task.getId(), e);
+                        logger.error(
+                            "Failed to retrieve assignee " + task.getAssignee() + " for task " + task.getId(),
+                            e
+                        );
                     }
                 }
 
@@ -549,6 +595,33 @@ public class CamundaTaskService {
             )
         );
     }
+
+    private void publishTaskDueDateSetEvent(CamundaTask task, LocalDateTime formerDueDate, LocalDateTime newDueDate) {
+        String businessKey = runtimeService
+            .createProcessInstanceQuery()
+            .processInstanceId(task.getProcessInstanceId())
+            .singleResult()
+            .getBusinessKey();
+
+        applicationEventPublisher.publishEvent(
+            new TaskDueDateSetEvent(
+                UUID.randomUUID(),
+                RequestHelper.getOrigin(),
+                LocalDateTime.now(),
+                SecurityUtils.getCurrentUserLogin(),
+                formerDueDate,
+                newDueDate,
+                task.getAssignee(),
+                task.getId(),
+                task.getName(),
+                task.getCreateTime(),
+                task.getProcessDefinitionId(),
+                task.getProcessInstanceId(),
+                businessKey
+            )
+        );
+    }
+
 
     private Specification<CamundaTask> buildTaskFilterSpecification(TaskFilter taskFilter) {
         var filterSpec = all();
