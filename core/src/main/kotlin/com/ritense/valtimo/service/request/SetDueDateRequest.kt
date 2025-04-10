@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2024 Ritense BV, the Netherlands.
+ * Copyright 2015-2025 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.contract.audit;
+package com.ritense.valtimo.service.request
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import jakarta.validation.constraints.NotNull
+import java.time.LocalDateTime
 
-public interface TaskMetaData {
-
-    @JsonProperty
-    LocalDateTime createdOn();
-
-    @JsonProperty
-    String getAssignee();
-}
+data class SetDueDateRequest @JsonCreator constructor(
+    @JsonProperty(value = "dueDate", required = true)
+    @NotNull val dueDate: LocalDateTime,
+)
