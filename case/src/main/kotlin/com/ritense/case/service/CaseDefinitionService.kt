@@ -23,6 +23,9 @@ import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.case.exception.InvalidListColumnException
 import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
+import com.ritense.case.repository.CaseDefinitionSpecificationHelper.Companion.byActive
+import com.ritense.case.repository.CaseDefinitionSpecificationHelper.Companion.byCaseDefinitionKey
+import com.ritense.case.repository.CaseDefinitionSpecificationHelper.Companion.query
 import com.ritense.case.service.validations.CreateCaseListColumnValidator
 import com.ritense.case.service.validations.ListColumnValidator
 import com.ritense.case.service.validations.Operation
@@ -68,8 +71,23 @@ class CaseDefinitionService(
         )
     )
 
-    fun getCaseDefinitions(pageable: Pageable): Page<CaseDefinition> {
-        return caseDefinitionRepository.findAllByActiveIsTrue(pageable)
+    fun getCaseDefinitions(
+        caseDefinitionKey: String? = null,
+        active: Boolean? = null,
+        pageable: Pageable,
+    ): Page<CaseDefinition> {
+        if (active == null || active == false) {
+            denyManagementOperation()
+        }
+
+        var spec = query()
+        if (caseDefinitionKey != null) {
+            spec = spec.and(byCaseDefinitionKey(caseDefinitionKey))
+        }
+        if (active != null) {
+            spec = spec.and(byActive(active))
+        }
+        return caseDefinitionRepository.findAll(spec, pageable)
     }
 
     fun getCaseDefinition(caseDefinitionId: CaseDefinitionId): CaseDefinition {
@@ -96,12 +114,6 @@ class CaseDefinitionService(
         }
 
         return caseDefinitionRepository.save(caseDefinition.copy(active = true))
-    }
-
-    fun getCaseDefinitionVersions(caseDefinitionKey: String): List<String> {
-        return caseDefinitionRepository.findVersionsForCaseDefinitionKey(caseDefinitionKey).map {
-            it.toString()
-        }
     }
 
     @Throws(UnknownDocumentDefinitionException::class)
