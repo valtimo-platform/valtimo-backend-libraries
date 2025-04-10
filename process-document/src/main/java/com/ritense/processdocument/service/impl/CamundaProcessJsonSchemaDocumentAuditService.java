@@ -40,6 +40,7 @@ import com.ritense.valtimo.contract.document.event.DocumentRelatedFileRemovedEve
 import com.ritense.valtimo.contract.documentgeneration.event.DossierDocumentGeneratedEvent;
 import com.ritense.valtimo.contract.event.TaskAssignedEvent;
 import com.ritense.valtimo.contract.event.TaskCompletedEvent;
+import com.ritense.valtimo.contract.event.TaskDueDateSetEvent;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -79,7 +80,8 @@ public class CamundaProcessJsonSchemaDocumentAuditService implements ProcessDocu
             DocumentRelatedFileRemovedEvent.class,
             BesluitAddedEvent.class,
             DocumentAssigneeChangedEvent.class,
-            DocumentUnassignedEvent.class
+            DocumentUnassignedEvent.class,
+            TaskDueDateSetEvent.class
         );
 
         final var document = documentService.getDocumentBy(id);
