@@ -16,9 +16,8 @@
 
 package com.ritense.case.web.dto
 
-import com.ritense.case.BaseTest
+import com.ritense.BaseTest
 import com.ritense.case.web.rest.dto.CaseSettingsDto
-import com.ritense.case_.domain.definition.CaseDefinition
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.junit.jupiter.api.Test
 import kotlin.test.assertFalse

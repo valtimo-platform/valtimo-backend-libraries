@@ -24,12 +24,15 @@ import com.ritense.authorization.request.AuthorizationResourceContext
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.case.domain.CaseTab
 import com.ritense.case.domain.CaseTabId
+import com.ritense.case.domain.CaseTabType
 import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.service.CaseTabActionProvider.Companion.VIEW
+import com.ritense.case_.domain.tab.CaseWidgetTab
 import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 import com.ritense.case_.repository.CaseWidgetTabRepository
 import com.ritense.case_.rest.dto.CaseWidgetTabDto
 import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
+import com.ritense.case_.service.event.CaseTabCreatedEvent
 import com.ritense.case_.widget.CaseWidgetDataProvider
 import com.ritense.case_.widget.CaseWidgetMapper
 import com.ritense.document.domain.impl.JsonSchemaDocument
@@ -39,6 +42,7 @@ import com.ritense.document.service.findByOrNull
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import jakarta.validation.Valid
+import org.springframework.context.event.EventListener
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -58,6 +62,13 @@ class CaseWidgetTabService(
     private val caseWidgetMappers: List<CaseWidgetMapper<CaseWidgetTabWidget, CaseWidgetTabWidgetDto>>,
     private val caseWidgetDataProviders: List<CaseWidgetDataProvider<CaseWidgetTabWidget>>
 ) {
+
+    @EventListener(CaseTabCreatedEvent::class)
+    fun handleCaseTabCreatedEvent(event: CaseTabCreatedEvent) {
+        if (event.tab.type == CaseTabType.WIDGETS) {
+            caseWidgetTabRepository.save(CaseWidgetTab(event.tab.id))
+        }
+    }
 
     fun getWidgetTab(caseDefinitionId: CaseDefinitionId, key: String): CaseWidgetTabDto? {
         checkCaseTabAccess(caseDefinitionId, key, VIEW)
@@ -99,7 +110,7 @@ class CaseWidgetTabService(
                 ), tabDto.key)
             )
             ?: throw RuntimeException(
-                "Failed to update dashboard. Dashboard with key '${tabDto.key}' doesn't exist " +
+                "Failed to update tab. Tab with key '${tabDto.key}' doesn't exist " +
                     "for case definition with key '${tabDto.caseDefinitionKey}' and version tag " +
                     "'${tabDto.caseDefinitionVersionTag}'."
             )

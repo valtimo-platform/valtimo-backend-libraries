@@ -16,16 +16,16 @@
 
 package com.ritense.case.deployment
 
-import com.ritense.case.BaseIntegrationTest
+import com.ritense.BaseIntegrationTest
 import com.ritense.case.repository.TaskListColumnRepository
 import com.ritense.valtimo.changelog.repository.ChangesetRepository
 import com.ritense.valtimo.changelog.service.ChangelogDeployer
-import java.time.Instant
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
+import java.time.Instant
 
 @Transactional
 class CaseTaskListDeploymentServiceIT @Autowired constructor(

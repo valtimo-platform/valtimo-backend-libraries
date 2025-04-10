@@ -19,7 +19,7 @@ package com.ritense.document.service.impl;
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ritense.document.BaseIntegrationTest;
+import com.ritense.BaseIntegrationTest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
@@ -39,7 +39,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @Tag("integration")
 @SpringBootTest(properties = {"valtimo.versioning.enabled=true"})
 public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTest {

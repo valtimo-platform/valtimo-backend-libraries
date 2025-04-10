@@ -42,20 +42,15 @@ class CaseTabCaseEventListener(
     fun handleCaseDefinitionCreatedEvent(event: CaseDefinitionCreatedEvent) {
         if (event.basedOnCaseDefinitionId != null) {
             service.getCaseTabs(event.basedOnCaseDefinitionId!!).forEach { oldCaseTab ->
-                val caseTab = service.createCaseTab(event.caseDefinitionId, CaseTabDto.of(oldCaseTab))
+                val newCaseTab = service.createCaseTab(event.caseDefinitionId, CaseTabDto.of(oldCaseTab))
 
-                if (caseTab.type == CaseTabType.WIDGETS) {
-                    caseWidgetTabRepository.findById(oldCaseTab.id).ifPresent { widgetTab ->
-                        val newCaseWidget = caseWidgetTabRepository.save(
-                            widgetTab.copy(
-                                id = caseTab.id,
-                                widgets = widgetTab.widgets.map {
-                                    it.copy(id = CaseWidgetTabWidgetId(key = it.id.key, caseWidgetTab = widgetTab))
-                                }
-                            )
-                        )
-                        caseWidgetTabRepository.save(newCaseWidget)
+                if (newCaseTab.type == CaseTabType.WIDGETS) {
+                    val oldWidgetTab = caseWidgetTabRepository.findById(oldCaseTab.id).orElseThrow()
+                    val newWidgetTab = caseWidgetTabRepository.findById(newCaseTab.id).orElseThrow()
+                    val newWidgets = oldWidgetTab.widgets.map { oldWidget ->
+                        oldWidget.copy(id = CaseWidgetTabWidgetId(key = oldWidget.id.key, caseWidgetTab = newWidgetTab))
                     }
+                    caseWidgetTabRepository.save(newWidgetTab.copy(widgets = newWidgets))
                 }
             }
         }

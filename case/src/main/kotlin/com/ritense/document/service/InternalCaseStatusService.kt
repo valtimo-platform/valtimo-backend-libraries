@@ -19,7 +19,6 @@ package com.ritense.document.service
 import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
-import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.document.domain.InternalCaseStatus
 import com.ritense.document.domain.InternalCaseStatusId

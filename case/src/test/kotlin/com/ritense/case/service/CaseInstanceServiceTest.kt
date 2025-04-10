@@ -16,14 +16,13 @@
 
 package com.ritense.case.service
 
-import com.ritense.case.BaseTest
+import com.ritense.BaseTest
 import com.ritense.case.domain.CaseListColumn
 import com.ritense.case.domain.CaseListColumnId
 import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DisplayType
 import com.ritense.case.domain.EmptyDisplayTypeParameter
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
-import com.ritense.case_.domain.definition.CaseDefinition
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.domain.impl.JsonSchemaDocumentId

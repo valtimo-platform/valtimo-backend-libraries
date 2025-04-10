@@ -83,17 +83,17 @@ class CaseDefinitionService(
         denyManagementOperation()
         val newCaseDefinitionId = CaseDefinitionId.of(basedOnCaseDefinitionId.key, request.versionTag)
         require(!caseDefinitionRepository.existsById(newCaseDefinitionId)) {
-            "Failed to create case-definition. Case-definition with id: '$newCaseDefinitionId' already exists."
+            "Failed to create case-definition-draft. Case-definition with id: '$newCaseDefinitionId' already exists."
         }
         val basedOnCaseDefinition = getCaseDefinition(basedOnCaseDefinitionId)
-        require(!basedOnCaseDefinition.isFinal) {
-            "Failed to create case-definition. Case-definition with id: '$basedOnCaseDefinitionId' is not final."
+        require(basedOnCaseDefinition.final) {
+            "Failed to create case-definition-draft. Case-definition with id: '$basedOnCaseDefinitionId' is not final."
         }
         val newCaseDefinition = caseDefinitionRepository.save(
             basedOnCaseDefinition.copy(
                 id = newCaseDefinitionId,
                 description = request.description,
-                isFinal = false,
+                final = false,
                 createdBy = SecurityUtils.getCurrentUserLogin(),
                 createdDate = LocalDateTime.now(),
                 basedOnVersionTag = basedOnCaseDefinitionId.versionTag,
@@ -108,7 +108,10 @@ class CaseDefinitionService(
 
     fun deleteCaseDefinition(caseDefinitionId: CaseDefinitionId) {
         denyManagementOperation()
-        require(!getCaseDefinition(caseDefinitionId).isFinal) {
+        require(!getCaseDefinition(caseDefinitionId).active) {
+            "Failed to delete case-definition. Case-definition with id: '$caseDefinitionId' is the global active version."
+        }
+        require(!getCaseDefinition(caseDefinitionId).final) {
             "Failed to delete case-definition. Case-definition with id: '$caseDefinitionId' is final."
         }
         applicationEventPublisher.publishEvent(

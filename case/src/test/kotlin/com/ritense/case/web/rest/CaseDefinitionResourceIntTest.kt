@@ -17,7 +17,7 @@
 //package com.ritense.case.web.rest
 //
 //import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-//import com.ritense.case.BaseIntegrationTest
+//import com.ritense.BaseIntegrationTest
 //import com.ritense.case.domain.ColumnDefaultSort
 //import com.ritense.case.repository.CaseDefinitionListColumnRepository
 //import com.ritense.case_.domain.definition.CaseDefinition

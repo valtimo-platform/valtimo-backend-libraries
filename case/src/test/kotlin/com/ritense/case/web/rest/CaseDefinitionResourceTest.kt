@@ -18,11 +18,10 @@ package com.ritense.case.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
-import com.ritense.case.BaseTest
+import com.ritense.BaseTest
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.web.rest.dto.CaseDefinitionDraftCreateRequest
 import com.ritense.case.web.rest.dto.CaseSettingsDto
-import com.ritense.case_.domain.definition.CaseDefinition
 import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.exporter.ExportService
@@ -45,7 +44,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -191,7 +189,7 @@ class CaseDefinitionResourceTest : BaseTest() {
             .andExpect(jsonPath("$.createdBy").value(caseDefinition.createdBy))
             .andExpect(jsonPath("$.createdDate").value(mapper.convertValue<String>(caseDefinition.createdDate!!)))
             .andExpect(jsonPath("$.basedOnVersionTag").value(caseDefinition.basedOnVersionTag?.version))
-            .andExpect(jsonPath("$.isFinal").value(caseDefinition.isFinal))
+            .andExpect(jsonPath("$.final").value(caseDefinition.final))
             .andExpect(jsonPath("$.canHaveAssignee").value(caseDefinition.canHaveAssignee))
             .andExpect(jsonPath("$.autoAssignTasks").value(caseDefinition.autoAssignTasks))
     }
@@ -223,7 +221,7 @@ class CaseDefinitionResourceTest : BaseTest() {
             .andExpect(jsonPath("$.createdBy").value(caseDefinition.createdBy))
             .andExpect(jsonPath("$.createdDate").value(mapper.convertValue<String>(caseDefinition.createdDate!!)))
             .andExpect(jsonPath("$.basedOnVersionTag").value(caseDefinition.basedOnVersionTag?.version))
-            .andExpect(jsonPath("$.isFinal").value(caseDefinition.isFinal))
+            .andExpect(jsonPath("$.final").value(caseDefinition.final))
             .andExpect(jsonPath("$.canHaveAssignee").value(caseDefinition.canHaveAssignee))
             .andExpect(jsonPath("$.autoAssignTasks").value(caseDefinition.autoAssignTasks))
     }

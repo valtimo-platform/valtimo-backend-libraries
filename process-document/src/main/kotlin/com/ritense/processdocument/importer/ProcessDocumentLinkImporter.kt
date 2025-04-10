@@ -82,7 +82,8 @@ class ProcessDocumentLinkImporter(
             .createProcessDefinitionQuery()
             .processDefinitionKey(item.processDefinitionKey)
             .versionTag(CamundaProcessService.CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.toString())
-            .singleResult()
+            .list()
+            .first()
 
         val request = ProcessDocumentDefinitionRequest(
             ProcessDefinitionId(processDefinition.id),

@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -34,13 +33,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ritense.document.BaseIntegrationTest;
-import com.ritense.document.domain.Document;
+import com.ritense.BaseIntegrationTest;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.request.AssignToDocumentsRequest;
-import com.ritense.document.exception.DocumentNotFoundException;
-import com.ritense.document.repository.DocumentRepository;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
 import com.ritense.outbox.domain.BaseEvent;
 import com.ritense.valtimo.contract.event.DocumentDeletedEvent;
@@ -74,7 +70,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
             definition(),
             content,
             USERNAME,
-            documentSequenceGeneratorService,
+            getDocumentSequenceGeneratorService(),
             null
         );
         document = result.resultingDocument().orElseThrow();
@@ -125,7 +121,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
             definition(),
             content,
             USERNAME,
-            documentSequenceGeneratorService,
+            getDocumentSequenceGeneratorService(),
             null
         );
         var document2 = resultDoc.resultingDocument().orElseThrow();
@@ -177,7 +173,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
             definition(),
             content,
             USERNAME,
-            documentSequenceGeneratorService,
+            getDocumentSequenceGeneratorService(),
             null
         );
         var document2 = resultDoc.resultingDocument().orElseThrow();

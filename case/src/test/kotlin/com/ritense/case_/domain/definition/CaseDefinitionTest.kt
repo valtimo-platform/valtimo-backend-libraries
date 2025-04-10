@@ -16,7 +16,7 @@
 
 package com.ritense.case_.domain.definition
 
-import com.ritense.case.BaseTest
+import com.ritense.BaseTest
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

@@ -53,7 +53,7 @@ class CaseDefinitionExporter(
                         caseDefinition.createdBy,
                         caseDefinition.createdDate,
                         caseDefinition.basedOnVersionTag?.version,
-                        caseDefinition.isFinal,
+                        caseDefinition.final,
                         caseDefinition.canHaveAssignee,
                         caseDefinition.autoAssignTasks
                     )

@@ -52,7 +52,7 @@ data class CaseDefinition(
     @JsonSerialize(using = SemverSerializer::class)
     val basedOnVersionTag: Semver? = null,
     @Column(name = "is_final")
-    val isFinal: Boolean,
+    val final: Boolean,
 
     @Column(name = "can_have_assignee")
     val canHaveAssignee: Boolean = false,

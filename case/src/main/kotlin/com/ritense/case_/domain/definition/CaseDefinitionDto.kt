@@ -27,7 +27,7 @@ data class CaseDefinitionDto(
     val createdBy: String?,
     val createdDate: LocalDateTime?,
     val basedOnVersionTag: String?,
-    val isFinal: Boolean,
+    val final: Boolean,
     val canHaveAssignee: Boolean = false,
     val autoAssignTasks: Boolean = false,
 ) {
@@ -40,7 +40,7 @@ data class CaseDefinitionDto(
             createdBy = createdBy,
             createdDate = createdDate,
             basedOnVersionTag = basedOnVersionTag?.let { Semver(it) },
-            isFinal = isFinal,
+            final = final,
             canHaveAssignee = canHaveAssignee,
             autoAssignTasks = autoAssignTasks
         )
