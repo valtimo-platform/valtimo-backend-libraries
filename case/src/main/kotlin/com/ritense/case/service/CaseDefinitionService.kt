@@ -43,6 +43,7 @@ import com.ritense.valtimo.contract.event.CaseDefinitionPreDeleteEvent
 import com.ritense.valtimo.contract.utils.SecurityUtils
 import com.ritense.valueresolver.ValueResolverService
 import mu.KotlinLogging
+import org.semver4j.Semver
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -164,6 +165,10 @@ class CaseDefinitionService(
         return caseDefinitionRepository.findVersionsForCaseDefinitionKey(caseDefinitionKey).map {
             it.toString()
         }
+    }
+
+    fun getCaseDefinitionsBasedOnVersion(caseDefinitionKey: String, basedOnVersionTag: Semver): List<CaseDefinition> {
+        return caseDefinitionRepository.findAllByIdKeyAndBasedOnVersionTag(caseDefinitionKey, basedOnVersionTag)
     }
 
     @Throws(UnknownDocumentDefinitionException::class)

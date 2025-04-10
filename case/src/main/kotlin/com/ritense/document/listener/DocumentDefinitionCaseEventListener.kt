@@ -40,7 +40,7 @@ class DocumentDefinitionCaseEventListener(
     @EventListener(CaseDefinitionCreatedEvent::class)
     fun handleCaseDefinitionCreatedEvent(event: CaseDefinitionCreatedEvent) {
         if (event.basedOnCaseDefinitionId != null) {
-            service.findByCaseDefinitionId(event.basedOnCaseDefinitionId!!).ifPresent { documentDefinition ->
+            service.findAllBy(event.basedOnCaseDefinitionId!!).forEach { documentDefinition ->
                 service.deploy(documentDefinition.schema().toString(), event.caseDefinitionId)
             }
         }

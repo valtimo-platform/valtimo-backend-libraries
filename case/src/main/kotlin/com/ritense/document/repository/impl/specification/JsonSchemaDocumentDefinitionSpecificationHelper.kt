@@ -60,14 +60,16 @@ class JsonSchemaDocumentDefinitionSpecificationHelper {
                                    _: CriteriaQuery<*>,
                                    criteriaBuilder: CriteriaBuilder ->
                 val caseDefinitionIdPath = root.get<Any>(ID).get<String>(CASE_DEFINITION_ID)
-                criteriaBuilder.equal(caseDefinitionIdPath.get<String>(KEY), caseDefinitionId.key)
-                criteriaBuilder.equal(caseDefinitionIdPath.get<String>(VERSION_TAG), caseDefinitionId.key)
+                criteriaBuilder.and(
+                    criteriaBuilder.equal(caseDefinitionIdPath.get<String>(KEY), caseDefinitionId.key),
+                    criteriaBuilder.equal(caseDefinitionIdPath.get<String>(VERSION_TAG), caseDefinitionId.versionTag)
+                )
             }
         }
 
         private const val ID: String = "id"
         private const val CASE_DEFINITION_ID: String = "caseDefinitionId"
-        private const val KEY: String = "name"
+        private const val KEY: String = "key"
         private const val VERSION_TAG: String = "versionTag"
         private const val NAME: String = "name"
     }

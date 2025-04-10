@@ -16,9 +16,12 @@
 
 package com.ritense.case.web.rest.dto
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.ritense.case_.domain.definition.CaseDefinition
 import java.time.LocalDateTime
 
+@JsonInclude(Include.NON_EMPTY)
 data class CaseDefinitionResponseDto(
     val caseDefinitionKey: String,
     val caseDefinitionVersionTag: String,
@@ -31,6 +34,7 @@ data class CaseDefinitionResponseDto(
     val canHaveAssignee: Boolean,
     val autoAssignTasks: Boolean,
     val active: Boolean,
+    val conflictingVersions: String? = null,
 ) {
     companion object {
         fun of(caseDefinition: CaseDefinition) =
@@ -47,5 +51,21 @@ data class CaseDefinitionResponseDto(
                 caseDefinition.autoAssignTasks,
                 caseDefinition.active,
             )
+
+    fun of(caseDefinition: CaseDefinition, conflictingVersions: String?) =
+        CaseDefinitionResponseDto(
+            caseDefinition.id.key,
+            caseDefinition.id.versionTag.version,
+            caseDefinition.name,
+            caseDefinition.description,
+            caseDefinition.createdBy,
+            caseDefinition.createdDate,
+            caseDefinition.basedOnVersionTag?.version,
+            caseDefinition.final,
+            caseDefinition.canHaveAssignee,
+            caseDefinition.autoAssignTasks,
+            caseDefinition.active,
+            conflictingVersions,
+        )
     }
 }

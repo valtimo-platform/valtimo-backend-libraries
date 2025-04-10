@@ -73,11 +73,17 @@ class CaseDefinitionResource(
         @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
         @LoggableResource("versionTag") @PathVariable versionTag: String,
     ): ResponseEntity<CaseDefinitionResponseDto> {
-        return ResponseEntity.ok(
-            CaseDefinitionResponseDto.of(
-                service.getCaseDefinition(CaseDefinitionId.of(caseDefinitionKey, versionTag))
-            )
-        )
+        val caseDefinition = service.getCaseDefinition(CaseDefinitionId.of(caseDefinitionKey, versionTag))
+        val similarCaseDefinitions = caseDefinition.basedOnVersionTag?.let {
+            service.getCaseDefinitionsBasedOnVersion(caseDefinitionKey, caseDefinition.basedOnVersionTag)
+                .filter { it.id != caseDefinition.id }
+        } ?: emptyList()
+        val conflictingVersions = if (similarCaseDefinitions.isNotEmpty()) {
+            similarCaseDefinitions.joinToString { it.id.versionTag.toString() }
+        } else {
+            null
+        }
+        return ResponseEntity.ok(CaseDefinitionResponseDto.of(caseDefinition, conflictingVersions))
     }
 
     @RunWithoutAuthorization
@@ -88,7 +94,14 @@ class CaseDefinitionResource(
         @RequestBody request: CaseDefinitionDraftCreateRequest
     ): ResponseEntity<CaseDefinitionResponseDto> {
         return ResponseEntity.ok(
-            CaseDefinitionResponseDto.of(service.createCaseDefinitionDraft(CaseDefinitionId.of(caseDefinitionKey, versionTag), request))
+            CaseDefinitionResponseDto.of(
+                service.createCaseDefinitionDraft(
+                    CaseDefinitionId.of(
+                        caseDefinitionKey,
+                        versionTag
+                    ), request
+                )
+            )
         )
     }
 
@@ -183,8 +196,8 @@ class CaseDefinitionResource(
         @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
     ): ResponseEntity<CaseDefinitionResponseDto> {
         return try {
-           val caseDefinition = activeCaseDefinitionService.getActiveCaseDefinition(caseDefinitionKey)
-           ResponseEntity.ok(CaseDefinitionResponseDto.of(caseDefinition))
+            val caseDefinition = activeCaseDefinitionService.getActiveCaseDefinition(caseDefinitionKey)
+            ResponseEntity.ok(CaseDefinitionResponseDto.of(caseDefinition))
         } catch (exception: UnknownCaseDefinitionException) {
             ResponseEntity.notFound().build()
         }
