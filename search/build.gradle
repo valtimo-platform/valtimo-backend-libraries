@@ -46,7 +46,9 @@ dependencies {
 
 
     testImplementation project(":contract")
-    testImplementation project(':plugin-valtimo')
+    testImplementation(project(':plugin-valtimo')) {
+        exclude(group: "com.ritense.valtimo", module: "search")
+    }
     testImplementation project(":core")
     testImplementation project(":resource:local-resource")
     testImplementation project(":test-utils-common")
