@@ -16,8 +16,8 @@
 
 package com.ritense.valtimo.web.rest;
 
-import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static com.ritense.logging.LoggingContextKt.withLoggingContext;
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 import com.ritense.logging.LoggableResource;
@@ -30,6 +30,7 @@ import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.request.AssigneeRequest;
+import com.ritense.valtimo.service.request.SetDueDateRequest;
 import com.ritense.valtimo.web.rest.dto.BatchAssignTaskDTO;
 import com.ritense.valtimo.web.rest.dto.CustomTaskDto;
 import com.ritense.valtimo.web.rest.dto.TaskCompletionDTO;
@@ -37,7 +38,7 @@ import com.ritense.valtimo.web.rest.util.PaginationUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import java.beans.PropertyEditorSupport;
 import java.util.List;
-import java.util.Map;
+import javax.annotation.Nullable;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.task.Comment;
 import org.springframework.data.domain.Page;
@@ -151,8 +152,22 @@ public class TaskResource extends AbstractTaskResource {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/v1/task/{taskId}/set-due-date")
+    public ResponseEntity<Void> setDueDate(
+        @LoggableResource(resourceType = CamundaTask.class) @PathVariable String taskId,
+        @RequestBody @Nullable SetDueDateRequest setDueDateRequest
+    ) {
+        camundaTaskService.setDueDate(
+            taskId,
+            (setDueDateRequest != null) ? setDueDateRequest.getDueDate() : null
+        );
+        
+        return ResponseEntity.ok().build();
+    }
+
     /**
      * Retrieve a list of comments that are associated to the task and to the process instance.
+     *
      * @deprecated Task comments will be removed in the future.
      */
     @Deprecated(since = "11.1.0", forRemoval = true)

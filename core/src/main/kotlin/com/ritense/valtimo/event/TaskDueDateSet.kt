@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.contract.audit;
+package com.ritense.valtimo.event
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.LocalDateTime;
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.outbox.domain.BaseEvent
 
-public interface TaskMetaData {
-
-    @JsonProperty
-    LocalDateTime createdOn();
-
-    @JsonProperty
-    String getAssignee();
-}
+class TaskDueDateSet(taskId: String, task: ObjectNode) : BaseEvent(
+    type = "com.ritense.valtimo.task.dueDateSet",
+    resultType = "com.ritense.valtimo.camunda.domain.CamundaTask",
+    resultId = taskId,
+    result = task
+)
