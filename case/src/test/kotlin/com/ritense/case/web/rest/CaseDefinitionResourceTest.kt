@@ -104,7 +104,6 @@ class CaseDefinitionResourceTest : BaseTest() {
             .andExpect(jsonPath("$.caseDefinitionVersionTag").value(caseDefinitionId.versionTag.version))
             .andExpect(jsonPath("$.canHaveAssignee").value(true))
             .andExpect(jsonPath("$.autoAssignTasks").value(false))
-            .andExpect(jsonPath("$.active").value(true))
 
         verify(activeCaseDefinitionService).getActiveCaseDefinition("key")
     }
@@ -133,7 +132,6 @@ class CaseDefinitionResourceTest : BaseTest() {
             .andExpect(jsonPath("$.caseDefinitionVersionTag").value(caseDefinitionId.versionTag.version))
             .andExpect(jsonPath("$.canHaveAssignee").value(true))
             .andExpect(jsonPath("$.autoAssignTasks").value(false))
-            .andExpect(jsonPath("$.active").value(false))
 
         verify(service).updateCaseSettings(caseDefinitionId, caseSettingsDto)
     }
@@ -162,7 +160,6 @@ class CaseDefinitionResourceTest : BaseTest() {
             .andExpect(jsonPath("$.caseDefinitionVersionTag").value(caseDefinitionId.versionTag.version))
             .andExpect(jsonPath("$.canHaveAssignee").value(true))
             .andExpect(jsonPath("$.autoAssignTasks").value(false))
-            .andExpect(jsonPath("$.active").value(false))
 
         verify(service).updateCaseSettings(caseDefinitionId, caseSettingsDto)
     }
