@@ -27,6 +27,7 @@ import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
 import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.hamcrest.Matchers.containsInRelativeOrder
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -64,6 +65,8 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
 
     lateinit var mockMvc: MockMvc
 
+    private val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
+
     @BeforeEach
     fun beforeEach() {
         mockMvc = MockMvcBuilders
@@ -75,7 +78,7 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
     fun `should get a list of all Documenten API column keys`() {
         runWithoutAuthorization {
             caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-                "profile",
+                caseDefinitionId,
                 DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
             )
         }
@@ -97,7 +100,7 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
     fun `should get a list of ordered Documenten API columns`() {
         runWithoutAuthorization {
             caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-                "profile",
+                caseDefinitionId,
                 DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
             )
         }
@@ -130,7 +133,7 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
     fun `should reorder list of Documenten API columns`() {
         runWithoutAuthorization {
             caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-                "profile",
+                caseDefinitionId,
                 DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
             )
         }
@@ -176,7 +179,7 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
     fun `should update Documenten API column`() {
         runWithoutAuthorization {
             caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-                "profile",
+                caseDefinitionId,
                 DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
             )
         }
@@ -211,7 +214,7 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
     fun `should delete Documenten API column`() {
         runWithoutAuthorization {
             caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-                "profile",
+                caseDefinitionId,
                 DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
             )
             documentenApiService.createOrUpdateColumn(
@@ -236,7 +239,7 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
     fun `should get API version`() {
         runWithoutAuthorization {
             caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-                "profile",
+                caseDefinitionId,
                 DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
             )
         }

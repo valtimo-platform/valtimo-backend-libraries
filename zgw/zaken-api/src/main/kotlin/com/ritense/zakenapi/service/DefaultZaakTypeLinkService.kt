@@ -58,12 +58,12 @@ class DefaultZaakTypeLinkService(
     override fun getByProcess(
         @LoggableResource("processDefinitionId") processDefinitionId: String
     ): ZaakTypeLink? {
-        val processDocumentDefinitions = AuthorizationContext.runWithoutAuthorization {
+        val processDocumentDefinition = AuthorizationContext.runWithoutAuthorization {
             processDefinitionCaseDefinitionService.findByProcessDefinitionId(ProcessDefinitionId(processDefinitionId))
         }
-        if (processDocumentDefinitions != null) {
+        if (processDocumentDefinition != null) {
             val documentDefinitionOptional =
-                documentDefinitionService.findByCaseDefinitionId(processDocumentDefinitions.id.caseDefinitionId)
+                documentDefinitionService.findByCaseDefinitionId(processDocumentDefinition.id.caseDefinitionId)
             return documentDefinitionOptional.map {
                 it.id?.let { id -> zaakTypeLinkRepository.findByCaseDefinitionId(id.caseDefinitionId()) }
             }.orElse(null)

@@ -16,8 +16,6 @@
 
 package com.ritense.documentenapi.web.rest
 
-import com.ritense.case.domain.CaseDefinitionSettings
-import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.documentenapi.BaseIntegrationTest
 import com.ritense.documentenapi.service.ZgwDocumentTrefwoordService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
@@ -49,8 +47,8 @@ internal class ZgwDocumentTrefwoordResourceIT : BaseIntegrationTest() {
     @Autowired
     private lateinit var service: ZgwDocumentTrefwoordService
 
-    @Autowired
-    private lateinit var caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository
+    //@Autowired
+    //private lateinit var caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository
 
     private lateinit var mockMvc: MockMvc
 
@@ -66,7 +64,7 @@ internal class ZgwDocumentTrefwoordResourceIT : BaseIntegrationTest() {
     fun `test getTrefwoorden as a user`() {
         val caseDefinitionName = "TestDefinition"
 
-        caseDefinitionSettingsRepository.save(CaseDefinitionSettings(caseDefinitionName))
+        //caseDefinitionSettingsRepository.save(CaseDefinitionSettings(caseDefinitionName))
 
         service.createTrefwoord(caseDefinitionName, "Trefwoord1")
         service.createTrefwoord(caseDefinitionName, "Trefwoord2")
@@ -87,7 +85,7 @@ internal class ZgwDocumentTrefwoordResourceIT : BaseIntegrationTest() {
     fun `test getTrefwoorden`() {
         val caseDefinitionName = "TestDefinition"
 
-        caseDefinitionSettingsRepository.save(CaseDefinitionSettings(caseDefinitionName))
+        //caseDefinitionSettingsRepository.save(CaseDefinitionSettings(caseDefinitionName))
 
         service.createTrefwoord(caseDefinitionName, "Trefwoord1")
         service.createTrefwoord(caseDefinitionName, "Trefwoord2")
@@ -108,7 +106,7 @@ internal class ZgwDocumentTrefwoordResourceIT : BaseIntegrationTest() {
     fun `test getTrefwoorden with search`() {
         val caseDefinitionName = "TestDefinition"
 
-        caseDefinitionSettingsRepository.save(CaseDefinitionSettings(caseDefinitionName))
+        //caseDefinitionSettingsRepository.save(CaseDefinitionSettings(caseDefinitionName))
 
         service.createTrefwoord(caseDefinitionName, "test123")
         service.createTrefwoord(caseDefinitionName, "test456")
@@ -149,7 +147,7 @@ internal class ZgwDocumentTrefwoordResourceIT : BaseIntegrationTest() {
     fun `test deleteTrefwoorden`() {
         val caseDefinitionName = "TestDefinition"
 
-        caseDefinitionSettingsRepository.save(CaseDefinitionSettings(caseDefinitionName))
+        //caseDefinitionSettingsRepository.save(CaseDefinitionSettings(caseDefinitionName))
 
         service.createTrefwoord(caseDefinitionName, "Trefwoord1")
         service.createTrefwoord(caseDefinitionName, "Trefwoord2")

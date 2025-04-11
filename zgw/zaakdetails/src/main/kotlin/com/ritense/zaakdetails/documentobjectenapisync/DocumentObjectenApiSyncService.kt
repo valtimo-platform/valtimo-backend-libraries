@@ -69,96 +69,63 @@ class DocumentObjectenApiSyncService(
         sync(documentService.get(event.documentId().id.toString()))
     }
 
-    @Deprecated(
-        "Since 12.6.0",
-        ReplaceWith("com.ritense.zaakdetails.documentobjectenapisync.DocumentObjectenApiSyncManagementServic.getSyncConfiguration")
-    )
-    fun getSyncConfiguration(
-        documentDefinitionName: String,
-        documentDefinitionVersion: Long
-    ): DocumentObjectenApiSync? {
-        return documentObjectenApiSyncManagementService.getSyncConfiguration(
-            documentDefinitionName,
-            documentDefinitionVersion
-        )
-    }
-
-    @Deprecated(
-        "Since 12.6.0",
-        ReplaceWith("com.ritense.zaakdetails.documentobjectenapisync.DocumentObjectenApiSyncManagementService.saveSyncConfiguration")
-    )
-    fun saveSyncConfiguration(sync: DocumentObjectenApiSync) {
-        documentObjectenApiSyncManagementService.saveSyncConfiguration(sync)
-    }
-
-    @Deprecated(
-        "Since 12.6.0",
-        ReplaceWith("com.ritense.zaakdetails.documentobjectenapisync.DocumentObjectenApiSyncManagementService.deleteSyncConfigurationByDocumentDefinition")
-    )
-    fun deleteSyncConfigurationByDocumentDefinition(documentDefinitionName: String, documentDefinitionVersion: Long) {
-        documentObjectenApiSyncManagementService.deleteSyncConfigurationByDocumentDefinition(
-            documentDefinitionName,
-            documentDefinitionVersion
-        )
-    }
-
     private fun sync(document: Document) {
-//        val syncConfiguration = documentObjectenApiSyncManagementService.getSyncConfiguration(document.definitionId().name(), document.definitionId().caseDefinitionId())
-//        if (syncConfiguration?.enabled == true) {
-//            logger.debug { "Sync configuration found for document ${document.id()}" }
-//            val objectManagementConfiguration =
-//                objectObjectManagementInfoProvider.getObjectManagementInfo(syncConfiguration.objectManagementConfigurationId)
-//            val objectenApiPlugin =
-//                pluginService.createInstance<ObjectenApiPlugin>(objectManagementConfiguration.objectenApiPluginConfigurationId)
-//            val objecttypenApiPlugin =
-//                pluginService.createInstance<ObjecttypenApiPlugin>(objectManagementConfiguration.objecttypenApiPluginConfigurationId)
-//
-//            val objectRequest = getObjectRequest(document, objecttypenApiPlugin, objectManagementConfiguration)
-//
-//            val zaakdetailsObject: ZaakdetailsObject;
-//            val zaakdetailsObjectOptional = zaakdetailsObjectService.findByDocumentId(document.id().id)
-//
-//            val checkExistingZaakObjectBeforeCreating: Boolean;
-//
-//            if(zaakdetailsObjectOptional.isPresent) { //Zaakdetails object exists and reference has been stored: update
-//                logger.debug { "Zaakdetails object already exists: update." }
-//                zaakdetailsObject = zaakdetailsObjectOptional.get()
-//
-//                objectenApiPlugin.objectUpdate(zaakdetailsObject.objectURI, objectRequest)
-//
-//                checkExistingZaakObjectBeforeCreating = false
-//            } else {
-//                logger.debug { "Reference to Zaakdetails object does not exist yet." }
-//                val existingObjectWrapper = getObjectWithCaseId(document, objectenApiPlugin, objectManagementConfiguration, objecttypenApiPlugin)
-//
-//                if(existingObjectWrapper != null) { //Zaakdetails object exists, but reference has not been stored: update and store reference
-//                    objectenApiPlugin.objectUpdate(existingObjectWrapper.url, objectRequest)
-//
-//                    zaakdetailsObject = ZaakdetailsObject(
-//                        documentId = document.id().id,
-//                        objectURI = existingObjectWrapper.url
-//                    )
-//
-//                    checkExistingZaakObjectBeforeCreating = true
-//                } else {
-//                    logger.debug { "Zaakdetails object does not exist yet: create." }
-//                    val newObjectWrapper = objectenApiPlugin.createObject(objectRequest)
-//                    zaakdetailsObject = ZaakdetailsObject(
-//                        documentId = document.id().id,
-//                        objectURI = newObjectWrapper.url
-//                    )
-//
-//                    //New zaakdetails object, the zaakobject can't exist yet
-//                    checkExistingZaakObjectBeforeCreating = false
-//                }
-//
-//                zaakdetailsObjectService.save(zaakdetailsObject)
-//            }
-//
-//            if(!zaakdetailsObject.linkedToZaak && linkZaakdetailsToZaakEnabled) {
-//                createZaakObjectIfNotExisting(zaakdetailsObject, checkExistingZaakObjectBeforeCreating)
-//            }
-//        }
+        val syncConfiguration = documentObjectenApiSyncManagementService.getSyncConfiguration(document.definitionId().caseDefinitionId())
+        if (syncConfiguration?.enabled == true) {
+            logger.debug { "Sync configuration found for document ${document.id()}" }
+            val objectManagementConfiguration =
+                objectObjectManagementInfoProvider.getObjectManagementInfo(syncConfiguration.objectManagementConfigurationId)
+            val objectenApiPlugin =
+                pluginService.createInstance<ObjectenApiPlugin>(objectManagementConfiguration.objectenApiPluginConfigurationId)
+            val objecttypenApiPlugin =
+                pluginService.createInstance<ObjecttypenApiPlugin>(objectManagementConfiguration.objecttypenApiPluginConfigurationId)
+
+            val objectRequest = getObjectRequest(document, objecttypenApiPlugin, objectManagementConfiguration)
+
+            val zaakdetailsObject: ZaakdetailsObject;
+            val zaakdetailsObjectOptional = zaakdetailsObjectService.findByDocumentId(document.id().id)
+
+            val checkExistingZaakObjectBeforeCreating: Boolean;
+
+            if(zaakdetailsObjectOptional.isPresent) { //Zaakdetails object exists and reference has been stored: update
+                logger.debug { "Zaakdetails object already exists: update." }
+                zaakdetailsObject = zaakdetailsObjectOptional.get()
+
+                objectenApiPlugin.objectUpdate(zaakdetailsObject.objectURI, objectRequest)
+
+                checkExistingZaakObjectBeforeCreating = false
+            } else {
+                logger.debug { "Reference to Zaakdetails object does not exist yet." }
+                val existingObjectWrapper = getObjectWithCaseId(document, objectenApiPlugin, objectManagementConfiguration, objecttypenApiPlugin)
+
+                if(existingObjectWrapper != null) { //Zaakdetails object exists, but reference has not been stored: update and store reference
+                    objectenApiPlugin.objectUpdate(existingObjectWrapper.url, objectRequest)
+
+                    zaakdetailsObject = ZaakdetailsObject(
+                        documentId = document.id().id,
+                        objectURI = existingObjectWrapper.url
+                    )
+
+                    checkExistingZaakObjectBeforeCreating = true
+                } else {
+                    logger.debug { "Zaakdetails object does not exist yet: create." }
+                    val newObjectWrapper = objectenApiPlugin.createObject(objectRequest)
+                    zaakdetailsObject = ZaakdetailsObject(
+                        documentId = document.id().id,
+                        objectURI = newObjectWrapper.url
+                    )
+
+                    //New zaakdetails object, the zaakobject can't exist yet
+                    checkExistingZaakObjectBeforeCreating = false
+                }
+
+                zaakdetailsObjectService.save(zaakdetailsObject)
+            }
+
+            if(!zaakdetailsObject.linkedToZaak && linkZaakdetailsToZaakEnabled) {
+                createZaakObjectIfNotExisting(zaakdetailsObject, checkExistingZaakObjectBeforeCreating)
+            }
+        }
     }
 
     private fun getObjectRequest(
@@ -229,7 +196,7 @@ class DocumentObjectenApiSyncService(
             zaakdetailsObject.linkedToZaak = true
             zaakdetailsObjectService.save(zaakdetailsObject)
         } catch (e: ZaakInstanceLinkNotFoundException) {
-            logger.debug { "Zaak does not exist yet: can't link the Zaakdetails object to the Zaak" }
+            logger.debug(e) { "Zaak does not exist yet: can't link the Zaakdetails object to the Zaak" }
             return
         }
     }
