@@ -91,6 +91,24 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
         assertThat(json, hasJsonPath("""${'$'}.hiddenInputTrue""", equalTo("test-value")))
         assertThat(json, hasNoJsonPath("""${'$'}.hiddenInputFalse"""))
         assertThat(json, hasNoJsonPath("""${'$'}.inputDisabled"""))
+        assertThat(json, hasJsonPath("""${'$'}.arrayInDocument[0].property1""", equalTo("property1")))
+        assertThat(json, hasJsonPath("""${'$'}.arrayInDocument[0].property2""", equalTo("property2")))
+        assertThat(json, hasNoJsonPath("""${'$'}.arrayInDocument[0].property3"""))
+        assertThat(json, hasNoJsonPath("""${'$'}.property1"""))
+        assertThat(json, hasNoJsonPath("""${'$'}.property2"""))
+        assertThat(json, hasNoJsonPath("""${'$'}.property3"""))
+        assertThat(json, hasJsonPath("""${'$'}.informatieverzoeken[0].verzoek.jaartallen""", equalTo("2010")))
+        assertThat(json, hasJsonPath("""${'$'}.informatieverzoeken[0].verzoek.toelichting""", equalTo("From 2010")))
+        assertThat(json, hasNoJsonPath("""${'$'}.informatieverzoeken[0].verzoek.missing"""))
+        assertThat(json, hasNoJsonPath("""${'$'}.verzoek"""))
+        assertThat(json, hasJsonPath("""${'$'}.containerArray[0].container.containerProperty1""", equalTo("containerProperty1")))
+        assertThat(json, hasJsonPath("""${'$'}.containerArray[0].container.containerProperty2""", equalTo("containerProperty2")))
+        assertThat(json, hasNoJsonPath("""${'$'}.containerArray[0].container.containerProperty3"""))
+        assertThat(json, hasNoJsonPath("""${'$'}.containerProperty1"""))
+        assertThat(json, hasNoJsonPath("""${'$'}.containerProperty2"""))
+        assertThat(json, hasNoJsonPath("""${'$'}.containerProperty3"""))
+        assertThat(json, hasJsonPath("""${'$'}.aanvrager.geslacht""", equalTo("M")))
+        assertThat(json, hasJsonPath("""${'$'}.aanvrager.persoonsgegevens.voornaam""", equalTo("Henk")))
 
         val processExecution = runWithoutAuthorization {
             processService.findExecutionByBusinessKey(businessKey)
@@ -163,6 +181,21 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
         assertThat(json, hasJsonPath("""${'$'}.hiddenInputTrue""", equalTo("test-value")))
         assertThat(json, hasNoJsonPath("""${'$'}.hiddenInputFalse"""))
         assertThat(json, hasNoJsonPath("""${'$'}.inputDisabled"""))
+        assertThat(json, hasJsonPath("""${'$'}.arrayInDocument[0].property1""", equalTo("property1")))
+        assertThat(json, hasJsonPath("""${'$'}.arrayInDocument[0].property2""", equalTo("property2")))
+        assertThat(json, hasNoJsonPath("""${'$'}.property1"""))
+        assertThat(json, hasNoJsonPath("""${'$'}.property2"""))
+        assertThat(json, hasJsonPath("""${'$'}.informatieverzoeken[0].verzoek.jaartallen""", equalTo("2010")))
+        assertThat(json, hasJsonPath("""${'$'}.informatieverzoeken[0].verzoek.toelichting""", equalTo("From 2010")))
+        assertThat(json, hasNoJsonPath("""${'$'}.verzoek"""))
+        assertThat(json, hasJsonPath("""${'$'}.containerArray[0].container.containerProperty1""", equalTo("containerProperty1")))
+        assertThat(json, hasJsonPath("""${'$'}.containerArray[0].container.containerProperty2""", equalTo("containerProperty2")))
+        assertThat(json, hasNoJsonPath("""${'$'}.containerArray[0].container.containerProperty3"""))
+        assertThat(json, hasNoJsonPath("""${'$'}.containerProperty1"""))
+        assertThat(json, hasNoJsonPath("""${'$'}.containerProperty2"""))
+        assertThat(json, hasNoJsonPath("""${'$'}.containerProperty3"""))
+        assertThat(json, hasJsonPath("""${'$'}.aanvrager.geslacht""", equalTo("M")))
+        assertThat(json, hasJsonPath("""${'$'}.aanvrager.persoonsgegevens.voornaam""", equalTo("Henk")))
     }
 
     private fun createFormData(): JsonNode {
@@ -177,7 +210,12 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
                 "name": "Focaccia",
                 "hiddenInputTrue": "test-value",
                 "hiddenInputFalse": "test-value",
-                "inputDisabled": "test-value"
+                "inputDisabled": "test-value",
+                "property1": "property1",
+                "property2": "property2",
+                "verzoek": {"jaartallen":"2010","toelichting":"From 2010"},
+                "container": {"containerProperty1":"containerProperty1","containerProperty2":"containerProperty2"},
+                "aanvrager":{"geslacht":"M","persoonsgegevens":{"voornaam":"Henk"}}
             }
         """.trimIndent()
         )

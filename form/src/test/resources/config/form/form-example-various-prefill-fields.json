@@ -139,6 +139,122 @@
                         "container": "/favorites/{indexOf(/breadId)}/"
                     },
                     "input": true
+                },
+                {
+                    "key": "property1",
+                    "type": "hidden",
+                    "input": true,
+                    "label": "property1",
+                    "tableView": false,
+                    "properties": {
+                        "container": "/arrayInDocument/-/"
+                    }
+                },
+                {
+                    "key": "property2",
+                    "type": "hidden",
+                    "input": true,
+                    "label": "property2",
+                    "tableView": false,
+                    "properties": {
+                        "container": "/arrayInDocument/-/"
+                    }
+                },
+                {
+                    "key": "property3",
+                    "type": "hidden",
+                    "input": true,
+                    "label": "property3",
+                    "tableView": false,
+                    "properties": {
+                        "container": "/arrayInDocument/-/"
+                    }
+                },
+                {
+                    "label": "Informatieverzoek",
+                    "key": "verzoek",
+                    "properties": {
+                        "container": "/informatieverzoeken/-/"
+                    },
+                    "type": "hidden",
+                    "defaultValue": {},
+                    "input": true
+                },
+                {
+                    "label": "Jaartallen",
+                    "key": "verzoek.jaartallen",
+                    "type": "textfield",
+                    "input": true
+                },
+                {
+                    "label": "Toelichting",
+                    "key": "verzoek.toelichting",
+                    "type": "textfield",
+                    "input": true
+                },
+                {
+                    "label": "Missing",
+                    "key": "verzoek.missing",
+                    "type": "textfield",
+                    "input": true
+                },
+                {
+                    "label": "Container",
+                    "key": "container",
+                    "type": "container",
+                    "input": true,
+                    "tableView": false,
+                    "properties": {
+                        "container": "/containerArray/-/"
+                    },
+                    "components": [
+                        {
+                            "label": "Container property 1",
+                            "key": "containerProperty1",
+                            "type": "textfield",
+                            "input": true
+                        },
+                        {
+                            "label": "Container property 2",
+                            "key": "containerProperty2",
+                            "type": "textfield",
+                            "input": true
+                        },
+                        {
+                            "label": "Container property 3",
+                            "key": "containerProperty3",
+                            "type": "textfield",
+                            "input": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Geslacht",
+            "type": "container",
+            "key": "aanvrager",
+            "input": true,
+            "components": [
+                {
+                    "label": "Geslacht",
+                    "key": "geslacht",
+                    "type": "textfield",
+                    "input": true
+                }
+            ]
+        },
+        {
+            "label": "Voornaam",
+            "type": "container",
+            "key": "aanvrager.persoonsgegevens",
+            "input": true,
+            "components": [
+                {
+                    "label": "Voornaam",
+                    "key": "voornaam",
+                    "type": "textfield",
+                    "input": true
                 }
             ]
         },
