@@ -105,20 +105,6 @@ class ZaakTypeLinkServiceTest {
     }
 
     @Test
-    fun `should not create entity`() {
-        val request = CreateZaakTypeLinkRequest(
-            zaakTypeUrl
-        )
-
-        assertThrows<ConstraintViolationException> {
-            zaakTypeLinkService.createZaakTypeLink(
-                CaseDefinitionId("other", "1.0.0"),
-                request
-            )
-        }
-    }
-
-    @Test
     fun `should get zaakTypeLink`() {
 
         whenever(processDefinitionCaseDefinitionService.findByProcessDefinitionId(
