@@ -20,6 +20,7 @@ import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.A
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
@@ -49,6 +50,8 @@ public class DocumentDefinitionHttpSecurityConfigurer implements HttpSecurityCon
                     .requestMatchers(antMatcher(GET, "/api/management/v1/document-definition/{name}"))
                     .hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/document-definition"))
+                    .hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/document-definition"))
                     .hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "/api/management/v1/document-definition/{name}/version"))
                     .hasAuthority(ADMIN)
