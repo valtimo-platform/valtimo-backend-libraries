@@ -30,6 +30,8 @@ import com.ritense.processdocument.exporter.ProcessDocumentLinkExporter
 import com.ritense.processdocument.importer.ProcessDocumentLinkImporter
 import com.ritense.processdocument.listener.CaseAssigneeListener
 import com.ritense.processdocument.listener.CaseAssigneeTaskCreatedListener
+import com.ritense.processdocument.listener.ProcessDefinitionAssociationCaseListener
+import com.ritense.processdocument.listener.ProcessDefinitionCaseEventListener
 import com.ritense.processdocument.repository.ProcessDefinitionCaseDefinitionRepository
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository
 import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
@@ -351,5 +353,21 @@ class ProcessDocumentsAutoConfiguration {
         caseDefinitionProcessLinkService: CaseDefinitionProcessLinkService
     ): CaseDefinitionProcessManagementResource {
         return CaseDefinitionProcessManagementResource(caseDefinitionProcessLinkService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessDefinitionCaseEventListener::class)
+    fun processDefinitionCaseEventListener(
+        service: CamundaProcessService,
+    ): ProcessDefinitionCaseEventListener {
+        return ProcessDefinitionCaseEventListener(service)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessDefinitionAssociationCaseListener::class)
+    fun processDefinitionAssociationCaseListener(
+        service: ProcessDefinitionCaseDefinitionService,
+    ): ProcessDefinitionAssociationCaseListener {
+        return ProcessDefinitionAssociationCaseListener(service)
     }
 }

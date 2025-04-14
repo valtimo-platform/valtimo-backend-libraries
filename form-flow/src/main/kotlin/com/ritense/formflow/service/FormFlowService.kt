@@ -116,6 +116,10 @@ class FormFlowService(
         formFlowDefinitionRepository.deleteById(FormFlowDefinitionId.existingId(definitionKey, caseDefinitionId))
     }
 
+    fun deleteAllByCaseDefinitionId(caseDefinitionId: CaseDefinitionId) {
+        formFlowDefinitionRepository.deleteAllByIdCaseDefinitionId(caseDefinitionId)
+    }
+
     fun getBreadcrumbs(instance: FormFlowInstance): List<FormFlowBreadcrumb> {
         return withLoggingContext(FormFlowInstance::class.java.canonicalName to instance.id.toString()) {
             val lastCompletedOrder = instance.getHistory()

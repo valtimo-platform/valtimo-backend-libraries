@@ -63,7 +63,6 @@ import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState;
-import org.camunda.bpm.engine.repository.Deployment;
 import org.camunda.bpm.engine.repository.DeploymentWithDefinitions;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
@@ -99,6 +98,7 @@ public class CamundaProcessService {
     private final ValtimoProperties valtimoProperties;
     private final AuthorizationService authorizationService;
     private final ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker;
+    private final CamundaByteArrayService camundaByteArrayService;
 
     private final CamundaExecutionRepository camundaExecutionRepository;
 
@@ -113,7 +113,8 @@ public class CamundaProcessService {
         ValtimoProperties valtimoProperties,
         AuthorizationService authorizationService,
         CamundaExecutionRepository camundaExecutionRepository,
-        ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker
+        ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker,
+        CamundaByteArrayService camundaByteArrayService
     ) {
         this.runtimeService = runtimeService;
         this.camundaRuntimeService = camundaRuntimeService;
@@ -126,6 +127,7 @@ public class CamundaProcessService {
         this.authorizationService = authorizationService;
         this.camundaExecutionRepository = camundaExecutionRepository;
         this.processDefinitionCaseDefinitionLinker = processDefinitionCaseDefinitionLinker;
+        this.camundaByteArrayService = camundaByteArrayService;
     }
 
     public CamundaProcessDefinition findProcessDefinitionById(String processDefinitionId) {
@@ -328,6 +330,13 @@ public class CamundaProcessService {
                 .and(byKey(processDefinitionKey))
                 .and(byLatestVersion(versionTag))
         ));
+    }
+
+    public byte[] getBpmnModel(CamundaProcessDefinition camundaProcessDefinition) {
+        return camundaByteArrayService.getByNameAndDeploymentId(
+            camundaProcessDefinition.getResourceName(),
+            camundaProcessDefinition.getDeploymentId()
+        ).getBytes();
     }
 
     @Transactional
