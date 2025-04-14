@@ -93,11 +93,10 @@ class TaakObjectListener(
         val task = camundaTaskService.findTaskById(taakObject.verwerkerTaakId.toString())
         if (!taakObject.verzondenData.isNullOrEmpty()) {
             val processInstanceId = CamundaProcessInstanceId(task.getProcessInstanceId())
-            val variableScope = getVariableScope(task)
             val taakObjectData = objectMapper.valueToTree<JsonNode>(taakObject.verzondenData)
             val resolvedValues = getResolvedValues(task, taakObjectData)
-            loadTaakObjectDocuments(processInstanceId, variableScope, taakObjectData)
-            handleTaakObjectData(processInstanceId, variableScope, resolvedValues)
+            loadTaakObjectDocuments(processInstanceId, task, taakObjectData)
+            handleTaakObjectData(processInstanceId, task, resolvedValues)
         }
         camundaTaskService.complete(taakObject.verwerkerTaakId.toString())
     }
@@ -180,12 +179,6 @@ class TaakObjectListener(
             throw RuntimeException("Failed to do '$camundaName' for task '${task.taskDefinitionKey}'. Missing data on path '$path'")
         }
         return objectMapper.treeToValue(valueNode, Object::class.java)
-    }
-
-    private fun getVariableScope(task: CamundaTask): VariableScope {
-        return runtimeService.createProcessInstanceQuery()
-            .processInstanceId(task.getProcessInstanceId())
-            .singleResult() as VariableScope
     }
 
     companion object {

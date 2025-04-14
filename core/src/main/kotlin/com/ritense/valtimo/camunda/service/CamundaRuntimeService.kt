@@ -16,6 +16,10 @@
 
 package com.ritense.valtimo.camunda.service
 
+import com.fasterxml.jackson.core.JsonPointer
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
@@ -42,7 +46,8 @@ class CamundaRuntimeService(
     private val runtimeService: RuntimeService,
     private val camundaVariableInstanceRepository: CamundaVariableInstanceRepository,
     private val camundaIdentityLinkRepository: CamundaIdentityLinkRepository,
-    private val authorizationService: AuthorizationService
+    private val authorizationService: AuthorizationService,
+    private val objectMapper: ObjectMapper,
 ) {
 
     @Transactional(readOnly = true)
@@ -70,6 +75,23 @@ class CamundaRuntimeService(
     }
 
     @Transactional(readOnly = true)
+    fun getVariablesByJsonPointers(processInstanceId: String, variablePointers: List<JsonPointer>): Map<String, Any?> {
+        denyAuthorization()
+
+        val variableNames = variablePointers
+            .map { it.matchingProperty }
+            .distinct()
+
+        return getVariables(processInstanceId, variableNames)
+            .flatMap { (variableName, variableValue) ->
+                variablePointers
+                    .filter { it.matchingProperty == variableName }
+                    .map { it to objectMapper.valueToTree<JsonNode>(variableValue).at(it.tail()) }
+                    .map { it.first.toString() to getValue(it.second) }
+            }.toMap()
+    }
+
+    @Transactional(readOnly = true)
     fun findProcessInstanceById(processInstanceId: String): ProcessInstance? {
         denyAuthorization()
         return runtimeService
@@ -82,6 +104,14 @@ class CamundaRuntimeService(
     fun getIdentityLink(identityLinkId: String): CamundaIdentityLink? {
         denyAuthorization()
         return camundaIdentityLinkRepository.findById(identityLinkId).orElse(null)
+    }
+
+    private fun getValue(valueNode: JsonNode): Any? {
+        return if (valueNode.isMissingNode) {
+            null
+        } else {
+            objectMapper.treeToValue(valueNode)
+        }
     }
 
     private fun denyAuthorization() {

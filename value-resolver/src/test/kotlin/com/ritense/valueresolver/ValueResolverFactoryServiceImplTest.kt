@@ -16,6 +16,7 @@
 
 package com.ritense.valueresolver
 
+import com.ritense.valtimo.contract.json.MapperSingleton
 import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.HistoryService
@@ -30,8 +31,9 @@ internal class ValueResolverFactoryServiceImplTest {
 
     private val runtimeService: RuntimeService = mock()
     private val historyService: HistoryService = mock()
+    private val objectMapper = MapperSingleton.get()
     private val resolverService = ValueResolverServiceImpl(
-        listOf(ProcessVariableValueResolverFactory(runtimeService, historyService), FixedValueResolverFactory())
+        listOf(ProcessVariableValueResolverFactory(runtimeService, historyService, objectMapper), FixedValueResolverFactory())
     )
 
     @Test
@@ -39,8 +41,8 @@ internal class ValueResolverFactoryServiceImplTest {
         val exception = assertThrows<RuntimeException> {
             val resolverService = ValueResolverServiceImpl(
                 listOf(
-                    ProcessVariableValueResolverFactory(runtimeService, historyService),
-                    ProcessVariableValueResolverFactory(runtimeService, historyService)
+                    ProcessVariableValueResolverFactory(runtimeService, historyService, objectMapper),
+                    ProcessVariableValueResolverFactory(runtimeService, historyService, objectMapper)
                 )
             )
 
@@ -129,7 +131,7 @@ internal class ValueResolverFactoryServiceImplTest {
     @Test
     fun `Should handle list of values`() {
         val processInstanceId = UUID.randomUUID().toString()
-        val variableScope = DelegateTaskFake()
+        val variableScope = mock<DelegateTaskFake>()
 
         resolverService.handleValues(
             processInstanceId, variableScope, mapOf(

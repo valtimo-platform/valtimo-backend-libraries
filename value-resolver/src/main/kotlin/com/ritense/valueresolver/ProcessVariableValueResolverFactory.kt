@@ -16,9 +16,16 @@
 
 package com.ritense.valueresolver
 
-import org.camunda.bpm.engine.HistoryService
+import com.fasterxml.jackson.core.JsonPointer
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.treeToValue
+import com.flipkart.zjsonpatch.JsonPatch
+import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import org.camunda.bpm.engine.RuntimeService
+import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.delegate.VariableScope
+import org.camunda.bpm.engine.impl.context.Context
 import java.util.function.Function
 
 /**
@@ -29,6 +36,7 @@ import java.util.function.Function
 class ProcessVariableValueResolverFactory(
     private val runtimeService: RuntimeService,
     private val historicService: HistoryService,
+    private val objectMapper: ObjectMapper,
 ) : ValueResolverFactory {
 
     override fun supportedPrefix(): String {
@@ -39,9 +47,19 @@ class ProcessVariableValueResolverFactory(
         processInstanceId: String,
         variableScope: VariableScope
     ): Function<String, Any?> {
-
+        var variablesJson: JsonNode? = null
         return Function { requestedValue ->
-            variableScope.variables[requestedValue]
+            val value = variableScope.getVariable(requestedValue)
+            if (value != null) {
+                return@Function value
+            }
+            if (!isPath(requestedValue)) {
+                return@Function null
+            }
+            if (variablesJson == null) {
+                variablesJson = objectMapper.valueToTree(variableScope.variables)
+            }
+            return@Function getValue(variablesJson!!.at(toJsonPointer(requestedValue)))
         }
     }
 
@@ -53,15 +71,18 @@ class ProcessVariableValueResolverFactory(
             .toTypedArray()
 
         return Function { requestedValue ->
+            val jsonPointer = toJsonPointer(requestedValue)
             val values = historicService.createHistoricVariableInstanceQuery()
                 .processInstanceIdIn(*processInstanceIds)
-                .variableName(requestedValue)
+                .variableName(jsonPointer.matchingProperty)
                 .list()
-                .map { it.value }
+                .map { getValue(objectMapper.valueToTree<JsonNode>(it.value).at(jsonPointer.tail())) }
                 .distinct()
             if (values.size > 1) {
-                throw RuntimeException("Cannot infer a unique process variable value for key `$requestedValue` using the document id as businessKey. " +
-                    "Please provide a variable scope, use a unique key, or use a different value resolver.")
+                throw RuntimeException(
+                    "Cannot infer a unique process variable value for key `$requestedValue` using the document id as businessKey. " +
+                        "Please provide a variable scope, use a unique key, or use a different value resolver."
+                )
             }
             values.singleOrNull()
         }
@@ -72,7 +93,58 @@ class ProcessVariableValueResolverFactory(
         variableScope: VariableScope?,
         values: Map<String, Any?>
     ) {
-        runtimeService.setVariables(processInstanceId, values)
+        val variableNames = values.keys
+            .map { variablePath -> toJsonPointer(variablePath).matchingProperty }
+            .distinct()
+        val existingValues = if (variableScope != null) {
+            variableNames.associateWith { variableName -> variableScope.getVariable(variableName) }
+        } else {
+            runtimeService.getVariables(processInstanceId, variableNames)
+        }
+
+        val root = objectMapper.valueToTree<JsonNode>(existingValues)
+        buildJsonPatch(root, values)
+        val newValues = objectMapper.treeToValue<Map<String, Any?>>(root)
+
+        runtimeService.setVariables(processInstanceId, newValues)
+    }
+
+    override fun preProcessValuesForNewCase(values: Map<String, Any?>): Map<String, Any> {
+        val jsonNode = objectMapper.createObjectNode()
+        buildJsonPatch(jsonNode, values)
+        return objectMapper.treeToValue(jsonNode)
+    }
+
+    private fun buildJsonPatch(jsonNode: JsonNode, values: Map<String, Any?>) {
+        val jsonPatchBuilder = JsonPatchBuilder()
+
+        values.forEach {
+            val jsonPointer = toJsonPointer(it.key.substringAfter(":"))
+            val valueNode = objectMapper.valueToTree<JsonNode>(it.value)
+            jsonPatchBuilder.addJsonNodeValue(jsonNode, jsonPointer, valueNode)
+        }
+
+        JsonPatch.applyInPlace(jsonPatchBuilder.build().toJson(), jsonNode)
+    }
+
+    private fun getValue(valueNode: JsonNode): Any? {
+        return if (valueNode.isMissingNode) {
+            null
+        } else {
+            objectMapper.treeToValue(valueNode)
+        }
+    }
+
+    private fun toJsonPointer(path: String): JsonPointer {
+        var newPath: String = path
+        if (!path.startsWith('/')) {
+            newPath = "/${path}"
+        }
+        return JsonPointer.valueOf(newPath.replace('.', '/'))
+    }
+
+    private fun isPath(path: String): Boolean {
+        return path.contains('.') || path.contains('/')
     }
 
     companion object {
