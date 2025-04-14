@@ -302,7 +302,7 @@ public class CamundaProcessService {
         denyAuthorization();
         return AuthorizationContext.runWithoutAuthorization(() -> camundaRepositoryService.findProcessDefinitions(
             byActive()
-                .and(byVersionTag(caseDefinitionId.toString()))
+                .and(byVersionTag("CD:" + caseDefinitionId.toString()))
                 .and(byLatestVersion()),
             Sort.by(NAME)
         ));
@@ -314,7 +314,7 @@ public class CamundaProcessService {
     ) {
         denyAuthorization();
         return AuthorizationContext.runWithoutAuthorization(() -> camundaRepositoryService.findProcessDefinitions(
-            byVersionTag(caseDefinitionId.toString())
+            byVersionTag("CD:" + caseDefinitionId.toString())
                 .and(byKey(processDefinitionKey))
         ));
     }
