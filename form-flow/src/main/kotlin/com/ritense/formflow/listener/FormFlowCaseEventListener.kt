@@ -37,7 +37,7 @@ class FormFlowCaseEventListener(
     @RunWithoutAuthorization
     @EventListener(CaseDefinitionCreatedEvent::class)
     fun handleCaseDefinitionCreatedEvent(event: CaseDefinitionCreatedEvent) {
-        if (event.basedOnCaseDefinitionId != null) {
+        if (event.duplicate) {
             service.getFormFlowDefinitions(event.basedOnCaseDefinitionId!!).forEach { oldFormFlowDefinition ->
                 val newSteps = oldFormFlowDefinition.steps.map { step ->
                     step.copy(id = FormFlowStepId.create(step.id.key))

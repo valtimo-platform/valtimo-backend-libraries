@@ -35,7 +35,7 @@ class ProcessDefinitionCaseEventListener(
     @RunWithoutAuthorization
     @EventListener(CaseDefinitionCreatedEvent::class)
     fun handleCaseDefinitionCreatedEvent(event: CaseDefinitionCreatedEvent) {
-        if (event.basedOnCaseDefinitionId != null) {
+        if (event.duplicate) {
             service.getDeployedDefinitions(event.basedOnCaseDefinitionId!!).forEach { definition ->
                 service.deploy(
                     event.caseDefinitionId,

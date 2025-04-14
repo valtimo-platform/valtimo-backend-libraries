@@ -36,7 +36,7 @@ class FormCaseEventListener(
     @RunWithoutAuthorization
     @EventListener(CaseDefinitionCreatedEvent::class)
     fun handleCaseDefinitionCreatedEvent(event: CaseDefinitionCreatedEvent) {
-        if (event.basedOnCaseDefinitionId != null) {
+        if (event.duplicate) {
             service.getFormDefinitions(event.basedOnCaseDefinitionId!!).forEach { oldFormDefinition ->
                 service.createFormDefinition(
                     event.caseDefinitionId, CreateFormDefinitionRequest(

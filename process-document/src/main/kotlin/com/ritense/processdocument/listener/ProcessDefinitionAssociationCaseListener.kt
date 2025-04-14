@@ -36,7 +36,7 @@ class ProcessDefinitionAssociationCaseListener(
     @RunWithoutAuthorization
     @EventListener(CaseDefinitionCreatedEvent::class)
     fun handleCaseDefinitionCreatedEvent(event: CaseDefinitionCreatedEvent) {
-        if (event.basedOnCaseDefinitionId != null) {
+        if (event.duplicate) {
             service.findProcessDefinitionCaseDefinitions(event.basedOnCaseDefinitionId!!).forEach { association ->
                 service.createProcessDocumentDefinition(
                     ProcessDocumentDefinitionRequest(
