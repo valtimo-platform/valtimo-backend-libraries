@@ -1,0 +1,26 @@
+[
+    {
+        "activityId": "start-event-bezwaar-proces-gestart",
+        "activityType": "bpmn:StartEvent:start",
+        "processLinkType": "form",
+        "formDefinitionName": "start-form-bezwaar"
+    },
+    {
+        "activityId": "validate-request",
+        "activityType": "bpmn:UserTask:create",
+        "formDefinitionName": "user-task-validate-request",
+        "processLinkType": "form",
+        "formDisplayType": "panel",
+        "formSize": "medium",
+        "subtitles": [
+            "Subtitle test 1",
+            "Subtitle test 2"
+        ]
+    },
+    {
+        "activityId": "in-behandeling",
+        "activityType": "bpmn:UserTask:create",
+        "formDefinitionName": "empty-form",
+        "processLinkType": "form"
+    }
+]

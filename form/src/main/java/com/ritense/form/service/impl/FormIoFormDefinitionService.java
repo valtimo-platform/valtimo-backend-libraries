@@ -73,6 +73,11 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     }
 
     @Override
+    public List<FormIoFormDefinition> getFormDefinitions(CaseDefinitionId caseDefinitionId) {
+        return formDefinitionRepository.findAllByCaseDefinitionId(caseDefinitionId);
+    }
+
+    @Override
     public Optional<FormIoFormDefinition> getFormDefinitionById(
         @LoggableResource(resourceType = FormIoFormDefinition.class) UUID formDefinitionId
     ) {
@@ -222,6 +227,12 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     @Transactional
     public void deleteFormDefinition(CaseDefinitionId caseDefinitionId, UUID formDefinitionId) {
         formDefinitionRepository.deleteById(formDefinitionId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllFormDefinitions(CaseDefinitionId caseDefinitionId) {
+        formDefinitionRepository.deleteAllByCaseDefinitionId(caseDefinitionId);
     }
 
     @Override

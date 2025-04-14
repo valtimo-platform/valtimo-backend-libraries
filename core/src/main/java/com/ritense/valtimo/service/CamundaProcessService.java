@@ -34,6 +34,7 @@ import com.ritense.valtimo.camunda.domain.CamundaExecution;
 import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
+import com.ritense.valtimo.camunda.repository.CamundaBytearrayRepository;
 import com.ritense.valtimo.camunda.repository.CamundaExecutionRepository;
 import com.ritense.valtimo.camunda.service.CamundaHistoryService;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
@@ -99,6 +100,7 @@ public class CamundaProcessService {
     private final ValtimoProperties valtimoProperties;
     private final AuthorizationService authorizationService;
     private final ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker;
+    private final CamundaByteArrayService camundaByteArrayService;
 
     private final CamundaExecutionRepository camundaExecutionRepository;
 
@@ -113,7 +115,8 @@ public class CamundaProcessService {
         ValtimoProperties valtimoProperties,
         AuthorizationService authorizationService,
         CamundaExecutionRepository camundaExecutionRepository,
-        ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker
+        ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker,
+        CamundaByteArrayService camundaByteArrayService
     ) {
         this.runtimeService = runtimeService;
         this.camundaRuntimeService = camundaRuntimeService;
@@ -126,6 +129,7 @@ public class CamundaProcessService {
         this.authorizationService = authorizationService;
         this.camundaExecutionRepository = camundaExecutionRepository;
         this.processDefinitionCaseDefinitionLinker = processDefinitionCaseDefinitionLinker;
+        this.camundaByteArrayService = camundaByteArrayService;
     }
 
     public CamundaProcessDefinition findProcessDefinitionById(String processDefinitionId) {
@@ -314,6 +318,13 @@ public class CamundaProcessService {
             byVersionTag(caseDefinitionId.toString())
                 .and(byKey(processDefinitionKey))
         ));
+    }
+
+    public byte[] getBpmnModel(CamundaProcessDefinition camundaProcessDefinition) {
+        return camundaByteArrayService.getByNameAndDeploymentId(
+            camundaProcessDefinition.getName(),
+            camundaProcessDefinition.getDeploymentId()
+        ).getBytes();
     }
 
     @Transactional

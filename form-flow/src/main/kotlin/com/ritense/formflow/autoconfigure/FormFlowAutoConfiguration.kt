@@ -35,6 +35,7 @@ import com.ritense.formflow.handler.FormFlowStepTypeFormHandler
 import com.ritense.formflow.handler.FormFlowStepTypeHandler
 import com.ritense.formflow.importer.FormFlowDefinitionImporter
 import com.ritense.formflow.json.MapperSingleton
+import com.ritense.formflow.listener.FormFlowCaseEventListener
 import com.ritense.formflow.mapper.FormFlowProcessLinkMapper
 import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
@@ -323,5 +324,11 @@ class FormFlowAutoConfiguration {
             objectMapper,
             doSubmissionDataFiltering
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(FormFlowCaseEventListener::class)
+    fun formFlowCaseEventListener(service: FormFlowService): FormFlowCaseEventListener {
+        return FormFlowCaseEventListener(service)
     }
 }

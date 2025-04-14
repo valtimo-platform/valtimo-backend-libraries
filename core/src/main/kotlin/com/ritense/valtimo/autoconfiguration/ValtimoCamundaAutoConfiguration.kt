@@ -43,6 +43,7 @@ import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.decision.CamundaDecisionService
 import com.ritense.valtimo.repository.ValtimoApplicationPropertyRepository
 import com.ritense.valtimo.security.DecisionHttpSecurityConfigurer
+import com.ritense.valtimo.service.CamundaByteArrayService
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valtimo.web.rest.DecisionManagementResource
@@ -209,5 +210,14 @@ class ValtimoCamundaAutoConfiguration {
         camundaDecisionService: CamundaDecisionService,
     ): DecisionManagementResource {
         return DecisionManagementResource(camundaProcessService, camundaDecisionService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CamundaByteArrayService::class)
+    fun camundaByteArrayService(
+        camundaBytearrayRepository: CamundaBytearrayRepository,
+        authorizationService: AuthorizationService,
+    ): CamundaByteArrayService {
+        return CamundaByteArrayService(camundaBytearrayRepository, authorizationService)
     }
 }

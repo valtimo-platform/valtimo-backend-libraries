@@ -25,6 +25,7 @@ import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.form.autodeployment.FormDefinitionDeploymentService
 import com.ritense.form.casewidget.FormIoCaseWidgetDataProvider
 import com.ritense.form.casewidget.FormIoCaseWidgetMapper
+import com.ritense.form.listener.FormCaseEventListener
 import com.ritense.form.repository.IntermediateSubmissionRepository
 import com.ritense.form.security.config.FormHttpSecurityConfigurerKotlin
 import com.ritense.form.service.FormDefinitionExporter
@@ -167,4 +168,9 @@ class FormAutoConfigurationKotlin {
     ) = IntermediateSubmissionResource(
         intermediateSubmissionService
     )
+
+    @Bean
+    @ConditionalOnMissingBean(FormCaseEventListener::class)
+    fun formCaseEventListener(formDefinitionService: FormDefinitionService) =
+        FormCaseEventListener(formDefinitionService)
 }
