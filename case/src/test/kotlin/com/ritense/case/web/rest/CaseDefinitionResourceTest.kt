@@ -246,7 +246,7 @@ class CaseDefinitionResourceTest : BaseTest() {
     @Test
     fun `should get case definitions`() {
         val caseDefinitionId = CaseDefinitionId("key", "1.0.0")
-        val caseDefinition = CaseDefinition(caseDefinitionId, "name", true, false)
+        val caseDefinition = caseDefinition(caseDefinitionId, "name", true, false)
         whenever(service.getCaseDefinitions(isNull(), isNull(), any())).thenReturn(PageImpl(listOf(caseDefinition)))
 
         mockMvc.perform(
@@ -266,7 +266,7 @@ class CaseDefinitionResourceTest : BaseTest() {
     @Test
     fun `should get case definition versions`() {
         val caseDefinitionId = CaseDefinitionId("key", "1.0.0")
-        val caseDefinition = CaseDefinition(caseDefinitionId, "name", true, false)
+        val caseDefinition = caseDefinition(caseDefinitionId, "name", true, false)
         whenever(service.getCaseDefinitions(eq(caseDefinitionId.key), isNull(), any())).thenReturn(PageImpl(listOf(caseDefinition)))
 
         mockMvc.perform(
