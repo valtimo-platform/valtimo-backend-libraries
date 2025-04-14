@@ -33,9 +33,12 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.http.MediaType
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.test.web.servlet.MockMvc
@@ -79,6 +82,7 @@ class CaseDefinitionResourceTest : BaseTest() {
 
         mockMvc = MockMvcBuilders
             .standaloneSetup(resource)
+            .setCustomArgumentResolvers(PageableHandlerMethodArgumentResolver())
             .setMessageConverters(converter)
             .build()
     }
@@ -241,4 +245,43 @@ class CaseDefinitionResourceTest : BaseTest() {
 
         verify(service).deleteCaseDefinition(caseDefinitionId)
     }
+
+    fun `should get case definitions`() {
+        val caseDefinitionId = CaseDefinitionId("key", "1.0.0")
+        val caseDefinition = caseDefinition(caseDefinitionId, "name", true, false)
+        whenever(service.getCaseDefinitions(isNull(), isNull(), any())).thenReturn(PageImpl(listOf(caseDefinition)))
+
+        mockMvc.perform(
+            get("/api/management/v1/case-definition")
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.content.length()").value(1))
+            .andExpect(jsonPath("$.content[0].caseDefinitionKey").value(caseDefinition.id.key))
+            .andExpect(jsonPath("$.content[0].caseDefinitionVersionTag").value(caseDefinition.id.versionTag.version))
+            .andExpect(jsonPath("$.content[0].name").value(caseDefinition.name))
+            .andExpect(jsonPath("$.content[0].canHaveAssignee").value(caseDefinition.canHaveAssignee))
+            .andExpect(jsonPath("$.content[0].autoAssignTasks").value(caseDefinition.autoAssignTasks))
+            .andExpect(jsonPath("$.content[0].active").value(caseDefinition.active))
+    }
+
+    @Test
+    fun `should get case definition versions`() {
+        val caseDefinitionId = CaseDefinitionId("key", "1.0.0")
+        val caseDefinition = caseDefinition(caseDefinitionId, "name", true, false)
+        whenever(service.getCaseDefinitions(eq(caseDefinitionId.key), isNull(), any())).thenReturn(PageImpl(listOf(caseDefinition)))
+
+        mockMvc.perform(
+            get(
+                "/api/management/v1/case-definition/{caseDefinitionKey}/version",
+                caseDefinitionId.key
+            )
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.length()").value(1))
+            .andExpect(jsonPath("$[0].versionTag").value(caseDefinition.id.versionTag.version))
+            .andExpect(jsonPath("$[0].active").value(caseDefinition.active))
+    }
+
 }
