@@ -73,8 +73,8 @@ class ProcessDocumentDeletedEventListenerTest {
 
         processDocumentDeletedEventListener!!.handle(DocumentDeletedEvent(documentId))
 
-        verify(runtimeService).deleteProcessInstance("4320f9c0-5568-4ed2-91f9-d2c85fd4ce55", "Document deleted", false, true)
-        verify(runtimeService).deleteProcessInstance("a69cf6c5-5e65-4dc9-81f6-2b64c12e3f0f", "Document deleted", false, true)
+        verify(runtimeService).deleteProcessInstance("4320f9c0-5568-4ed2-91f9-d2c85fd4ce55", "Document deleted", true, true, true, false)
+        verify(runtimeService).deleteProcessInstance("a69cf6c5-5e65-4dc9-81f6-2b64c12e3f0f", "Document deleted", true, true, true, false)
         verify(processDocumentAssociationService, times(2)).deleteProcessDocumentInstance(pdiId)
     }
 
@@ -100,8 +100,8 @@ class ProcessDocumentDeletedEventListenerTest {
 
         processDocumentDeletedEventListener!!.handle(DocumentDeletedEvent(documentId))
 
-        verify(runtimeService).deleteProcessInstance("4320f9c0-5568-4ed2-91f9-d2c85fd4ce55", "Document deleted", false, true)
-        verify(runtimeService).deleteProcessInstance("a69cf6c5-5e65-4dc9-81f6-2b64c12e3f0f", "Document deleted", false, true)
+        verify(runtimeService).deleteProcessInstance("4320f9c0-5568-4ed2-91f9-d2c85fd4ce55", "Document deleted", true, true, true, false)
+        verify(runtimeService).deleteProcessInstance("a69cf6c5-5e65-4dc9-81f6-2b64c12e3f0f", "Document deleted", true, true, true, false)
         verify(processDocumentAssociationService, never()).deleteProcessDocumentInstance(any())
     }
 }
