@@ -39,7 +39,7 @@ class DocumentDefinitionCaseEventListener(
     @RunWithoutAuthorization
     @EventListener(CaseDefinitionCreatedEvent::class)
     fun handleCaseDefinitionCreatedEvent(event: CaseDefinitionCreatedEvent) {
-        if (event.basedOnCaseDefinitionId != null) {
+        if (event.duplicate) {
             service.findAllBy(event.basedOnCaseDefinitionId!!).forEach { documentDefinition ->
                 service.deploy(documentDefinition.schema().toString(), event.caseDefinitionId)
             }
@@ -51,7 +51,7 @@ class DocumentDefinitionCaseEventListener(
     @EventListener(CaseDefinitionPreDeleteEvent::class)
     fun handleCaseDefinitionPreDeleteEvent(event: CaseDefinitionPreDeleteEvent) {
         service.findAllBy(event.caseDefinitionId).forEach { documentDefinition ->
-            service.removeDocumentDefinition(documentDefinition.id.name(), documentDefinition.id.caseDefinitionId())
+            service.removeDocumentDefinition(documentDefinition.id().name(), documentDefinition.id().caseDefinitionId())
         }
     }
 }

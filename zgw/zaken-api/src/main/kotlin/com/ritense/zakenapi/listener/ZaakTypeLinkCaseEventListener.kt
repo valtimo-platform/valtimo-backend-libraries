@@ -36,7 +36,7 @@ class ZaakTypeLinkCaseEventListener(
     @RunWithoutAuthorization
     @EventListener(CaseDefinitionCreatedEvent::class)
     fun handleCaseDefinitionCreatedEvent(event: CaseDefinitionCreatedEvent) {
-        if (event.basedOnCaseDefinitionId != null) {
+        if (event.duplicate) {
             zaakTypeLinkService.get(event.basedOnCaseDefinitionId!!)?.let {
                 zaakTypeLinkService.createZaakTypeLink(event.caseDefinitionId, CreateZaakTypeLinkRequest.of(it))
             }

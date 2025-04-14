@@ -78,33 +78,48 @@ class CaseDefinitionService(
     )
 
     fun createCaseDefinitionDraft(
-        basedOnCaseDefinitionId: CaseDefinitionId,
         request: CaseDefinitionDraftCreateRequest
     ): CaseDefinition {
         denyManagementOperation()
-        val newCaseDefinitionId = CaseDefinitionId.of(basedOnCaseDefinitionId.key, request.versionTag)
-        require(!caseDefinitionRepository.existsById(newCaseDefinitionId)) {
-            "Failed to create case-definition-draft. Case-definition with id: '$newCaseDefinitionId' already exists."
+        val caseDefinitionId = request.getCaseDefinitionId()
+        require(!caseDefinitionRepository.existsById(caseDefinitionId)) {
+            "Failed to create case-definition-draft. Case-definition with id: '${caseDefinitionId}' already exists."
         }
-        val basedOnCaseDefinition = getCaseDefinition(basedOnCaseDefinitionId)
-        require(basedOnCaseDefinition.final) {
-            "Failed to create case-definition-draft. Case-definition with id: '$basedOnCaseDefinitionId' is not final."
-        }
-        val newCaseDefinition = caseDefinitionRepository.save(
-            basedOnCaseDefinition.copy(
-                id = newCaseDefinitionId,
+        val basedOnCaseDefinitionId = request.getBasedOnCaseDefinitionId()
+        val newCaseDefinition = if (basedOnCaseDefinitionId == null) {
+            CaseDefinition(
+                id = caseDefinitionId,
+                name = request.name ?: error("Case definition name cannot be null"),
                 description = request.description,
+                final = false,
+                createdBy = SecurityUtils.getCurrentUserLogin(),
+                createdDate = LocalDateTime.now(),
+                active = true
+            )
+        } else {
+            val basedOnCaseDefinition = getCaseDefinition(basedOnCaseDefinitionId)
+            require(basedOnCaseDefinition.final) {
+                "Failed to create case-definition-draft. Case-definition with id: '$basedOnCaseDefinitionId' is not final."
+            }
+            basedOnCaseDefinition.copy(
+                id = caseDefinitionId,
+                description = request.description ?: basedOnCaseDefinition.description,
                 final = false,
                 createdBy = SecurityUtils.getCurrentUserLogin(),
                 createdDate = LocalDateTime.now(),
                 basedOnVersionTag = basedOnCaseDefinitionId.versionTag,
                 active = false
             )
-        )
+        }
+        val newSavedCaseDefinition = caseDefinitionRepository.save(newCaseDefinition)
         applicationEventPublisher.publishEvent(
-            CaseDefinitionCreatedEvent(newCaseDefinitionId, basedOnCaseDefinitionId)
+            CaseDefinitionCreatedEvent(
+                caseDefinitionId = newSavedCaseDefinition.id,
+                basedOnCaseDefinitionId = basedOnCaseDefinitionId,
+                duplicate = basedOnCaseDefinitionId != null
+            )
         )
-        return newCaseDefinition
+        return newSavedCaseDefinition
     }
 
     fun deleteCaseDefinition(caseDefinitionId: CaseDefinitionId) {
@@ -121,6 +136,10 @@ class CaseDefinitionService(
         caseDefinitionRepository.deleteById(caseDefinitionId)
     }
 
+    fun existsCaseDefinition(caseDefinitionKey: String): Boolean {
+        return caseDefinitionRepository.existsByIdKey(caseDefinitionKey)
+    }
+
     fun getCaseDefinitions(pageable: Pageable): Page<CaseDefinition> {
         return caseDefinitionRepository.findAllByActiveIsTrue(pageable)
     }
@@ -135,17 +154,7 @@ class CaseDefinitionService(
     }
 
     fun getActiveCaseDefinition(caseDefinitionKey: String): CaseDefinition? {
-        val caseDefinitions = caseDefinitionRepository.findAllByIdKeyOrderByIdVersionTagDesc(caseDefinitionKey)
-        if (caseDefinitions.isEmpty()) return null
-        val activeCaseDefinitions = caseDefinitions.filter {it.active }
-        require (activeCaseDefinitions.size <= 1) {
-            "Multiple active case-definitions found for case-definition '$caseDefinitionKey'"
-        }
-        if (activeCaseDefinitions.isEmpty()) {
-            // TODO: throw error here
-            logger.error { "No active case-definition found for case-definition '$caseDefinitionKey'" }
-        }
-        return activeCaseDefinitions.firstOrNull() ?: caseDefinitions.firstOrNull()
+        return caseDefinitionRepository.findByActiveIsTrueAndIdKey(caseDefinitionKey)
     }
 
     @Throws(UnknownDocumentDefinitionException::class)

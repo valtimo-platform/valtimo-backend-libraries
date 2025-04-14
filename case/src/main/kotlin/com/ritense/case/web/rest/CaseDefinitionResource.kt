@@ -87,20 +87,13 @@ class CaseDefinitionResource(
     }
 
     @RunWithoutAuthorization
-    @PostMapping("/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/draft")
+    @PostMapping("/management/v1/case-definition/draft")
     fun createCaseDefinitionDraft(
-        @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
-        @LoggableResource("versionTag") @PathVariable versionTag: String,
         @RequestBody request: CaseDefinitionDraftCreateRequest
     ): ResponseEntity<CaseDefinitionResponseDto> {
         return ResponseEntity.ok(
             CaseDefinitionResponseDto.of(
-                service.createCaseDefinitionDraft(
-                    CaseDefinitionId.of(
-                        caseDefinitionKey,
-                        versionTag
-                    ), request
-                )
+                service.createCaseDefinitionDraft(request)
             )
         )
     }

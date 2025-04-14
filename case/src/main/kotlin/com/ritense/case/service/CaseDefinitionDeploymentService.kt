@@ -71,7 +71,7 @@ class CaseDefinitionDeploymentService(
                 }
             resources.forEach { (_, files) ->
                 runWithoutAuthorization {
-                    valtimoImportService.importCaseDefinition(files, caseDefinitionRepository.findAll().map { it.id })
+                    valtimoImportService.importCaseDefinition(files, caseDefinitionRepository.findAllByFinalTrue().map { it.id })
                 }
             }
             setLatestToActiveIfNoneIsActive()
