@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ritense.document.BaseTest;
+import com.ritense.BaseTest;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
 import com.ritense.document.domain.impl.template.DocumentDefinitionTemplateRequestDto;

@@ -16,9 +16,9 @@
 
 package com.ritense.document.service
 
+import com.ritense.BaseIntegrationTest
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.case.exception.UnknownCaseDefinitionException
-import com.ritense.document.BaseIntegrationTest
 import com.ritense.document.domain.InternalCaseStatusColor.GRAY
 import com.ritense.document.exception.InternalCaseStatusAlreadyExistsException
 import com.ritense.document.exception.InternalCaseStatusNotFoundException
