@@ -1,5 +1,22 @@
+/*
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ritense.case.web.rest
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.case_.domain.definition.CaseDefinition
@@ -14,13 +31,20 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.http.MediaType
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
 class CaseDefinitionResourceTest {
@@ -31,6 +55,7 @@ class CaseDefinitionResourceTest {
     lateinit var exportService: ExportService
     lateinit var importService: ImportService
     lateinit var caseDefinitionRepository: CaseDefinitionRepository
+    lateinit var mapper: ObjectMapper
 
     @BeforeEach
     fun setUp() {
@@ -46,7 +71,16 @@ class CaseDefinitionResourceTest {
             importService,
             caseDefinitionRepository
         )
-        mockMvc = MockMvcBuilders.standaloneSetup(resource).build()
+
+        mapper = MapperSingleton.get()
+        val converter = MappingJackson2HttpMessageConverter()
+        converter.objectMapper = mapper
+
+        mockMvc = MockMvcBuilders
+            .standaloneSetup(resource)
+            .setCustomArgumentResolvers(PageableHandlerMethodArgumentResolver())
+            .setMessageConverters(converter)
+            .build()
     }
 
     @Test
@@ -58,23 +92,18 @@ class CaseDefinitionResourceTest {
 
         mockMvc
             .perform(
-                MockMvcRequestBuilders
-                    .get(
-                        "/api/v1/case-definition/{caseDefinitionName}/settings",
-                        caseDefinitionId.key,
-                    )
+                get(
+                    "/api/v1/case-definition/{caseDefinitionName}/settings",
+                    caseDefinitionId.key,
+                )
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
             )
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.caseDefinitionKey").value(caseDefinitionId.key))
-            .andExpect(
-                MockMvcResultMatchers.jsonPath("$.caseDefinitionVersionTag")
-                    .value(caseDefinitionId.versionTag.version)
-            )
-            .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.autoAssignTasks").value(false))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.active").value(true))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$").isNotEmpty)
+            .andExpect(jsonPath("$.caseDefinitionKey").value(caseDefinitionId.key))
+            .andExpect(jsonPath("$.caseDefinitionVersionTag").value(caseDefinitionId.versionTag.version))
+            .andExpect(jsonPath("$.canHaveAssignee").value(true))
+            .andExpect(jsonPath("$.autoAssignTasks").value(false))
 
         verify(activeCaseDefinitionService).getActiveCaseDefinition("key")
     }
@@ -89,25 +118,20 @@ class CaseDefinitionResourceTest {
 
         mockMvc
             .perform(
-                MockMvcRequestBuilders
-                    .patch(
-                        "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/settings",
-                        caseDefinitionId.key,
-                        caseDefinitionId.versionTag
-                    )
+                patch(
+                    "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/settings",
+                    caseDefinitionId.key,
+                    caseDefinitionId.versionTag
+                )
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(TestUtil.convertObjectToJsonBytes(caseSettingsDto))
             )
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.caseDefinitionKey").value(caseDefinitionId.key))
-            .andExpect(
-                MockMvcResultMatchers.jsonPath("$.caseDefinitionVersionTag")
-                    .value(caseDefinitionId.versionTag.version)
-            )
-            .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.autoAssignTasks").value(false))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.active").value(false))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$").isNotEmpty)
+            .andExpect(jsonPath("$.caseDefinitionKey").value(caseDefinitionId.key))
+            .andExpect(jsonPath("$.caseDefinitionVersionTag").value(caseDefinitionId.versionTag.version))
+            .andExpect(jsonPath("$.canHaveAssignee").value(true))
+            .andExpect(jsonPath("$.autoAssignTasks").value(false))
 
         verify(service).updateCaseSettings(caseDefinitionId, caseSettingsDto)
     }
@@ -122,26 +146,61 @@ class CaseDefinitionResourceTest {
 
         mockMvc
             .perform(
-                MockMvcRequestBuilders
-                    .patch(
-                        "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/settings",
-                        caseDefinitionId.key,
-                        caseDefinitionId.versionTag
-                    )
+                patch(
+                    "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/settings",
+                    caseDefinitionId.key,
+                    caseDefinitionId.versionTag
+                )
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(MapperSingleton.get().writeValueAsString(caseSettingsDto))
             )
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.caseDefinitionKey").value(caseDefinitionId.key))
-            .andExpect(
-                MockMvcResultMatchers.jsonPath("$.caseDefinitionVersionTag")
-                    .value(caseDefinitionId.versionTag.version)
-            )
-            .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.autoAssignTasks").value(false))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.active").value(false))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$").isNotEmpty)
+            .andExpect(jsonPath("$.caseDefinitionKey").value(caseDefinitionId.key))
+            .andExpect(jsonPath("$.caseDefinitionVersionTag").value(caseDefinitionId.versionTag.version))
+            .andExpect(jsonPath("$.canHaveAssignee").value(true))
+            .andExpect(jsonPath("$.autoAssignTasks").value(false))
 
         verify(service).updateCaseSettings(caseDefinitionId, caseSettingsDto)
     }
+
+    @Test
+    fun `should get case definitions`() {
+        val caseDefinitionId = CaseDefinitionId("key", "1.0.0")
+        val caseDefinition = CaseDefinition(caseDefinitionId, "name", true, false)
+        whenever(service.getCaseDefinitions(isNull(), isNull(), any())).thenReturn(PageImpl(listOf(caseDefinition)))
+
+        mockMvc.perform(
+            get("/api/management/v1/case-definition")
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.content.length()").value(1))
+            .andExpect(jsonPath("$.content[0].caseDefinitionKey").value(caseDefinition.id.key))
+            .andExpect(jsonPath("$.content[0].caseDefinitionVersionTag").value(caseDefinition.id.versionTag.version))
+            .andExpect(jsonPath("$.content[0].name").value(caseDefinition.name))
+            .andExpect(jsonPath("$.content[0].canHaveAssignee").value(caseDefinition.canHaveAssignee))
+            .andExpect(jsonPath("$.content[0].autoAssignTasks").value(caseDefinition.autoAssignTasks))
+            .andExpect(jsonPath("$.content[0].active").value(caseDefinition.active))
+    }
+
+    @Test
+    fun `should get case definition versions`() {
+        val caseDefinitionId = CaseDefinitionId("key", "1.0.0")
+        val caseDefinition = CaseDefinition(caseDefinitionId, "name", true, false)
+        whenever(service.getCaseDefinitions(eq(caseDefinitionId.key), isNull(), any())).thenReturn(PageImpl(listOf(caseDefinition)))
+
+        mockMvc.perform(
+            get(
+                "/api/management/v1/case-definition/{caseDefinitionKey}/version",
+                caseDefinitionId.key
+            )
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.length()").value(1))
+            .andExpect(jsonPath("$[0].versionTag").value(caseDefinition.id.versionTag.version))
+            .andExpect(jsonPath("$[0].active").value(caseDefinition.active))
+    }
+
 }
