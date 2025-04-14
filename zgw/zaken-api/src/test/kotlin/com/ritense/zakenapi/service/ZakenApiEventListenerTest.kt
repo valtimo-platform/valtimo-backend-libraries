@@ -198,6 +198,7 @@ class ZakenApiEventListenerTest {
         val event = mock<DocumentCreatedEvent>()
         val idMock = mock<DocumentDefinition.Id>()
         whenever(event.definitionId()).thenReturn(idMock)
+        whenever(idMock.caseDefinitionId()).thenReturn(caseDefinitionId)
         whenever(idMock.name()).thenReturn("test")
         return event
     }
