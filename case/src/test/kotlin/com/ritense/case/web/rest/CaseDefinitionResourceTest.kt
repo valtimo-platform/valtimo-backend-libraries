@@ -200,14 +200,17 @@ class CaseDefinitionResourceTest : BaseTest() {
         val caseDefinitionId = CaseDefinitionId("key", "1.0.0")
         val caseDefinition = caseDefinition(caseDefinitionId)
         val request = CaseDefinitionDraftCreateRequest(
-            versionTag = "1.0.0",
+            caseDefinitionKey = caseDefinition.id.key,
+            caseDefinitionVersion = caseDefinition.id.versionTag.toString(),
+            name = "name",
             description = "description",
+            basedOnCaseDefinitionVersion = "1.0.0-SNAPSHOT"
         )
-        whenever(service.createCaseDefinitionDraft(eq(caseDefinitionId), eq(request))).thenReturn(caseDefinition)
+        whenever(service.createCaseDefinitionDraft(eq(request))).thenReturn(caseDefinition)
 
         mockMvc.perform(
             post(
-                "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/draft",
+                "/api/management/v1/case-definition/draft",
                 caseDefinitionId.key,
                 caseDefinitionId.versionTag
             )

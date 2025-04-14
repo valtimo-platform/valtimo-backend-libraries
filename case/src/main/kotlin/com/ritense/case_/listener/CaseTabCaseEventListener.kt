@@ -40,7 +40,7 @@ class CaseTabCaseEventListener(
     @RunWithoutAuthorization
     @EventListener(CaseDefinitionCreatedEvent::class)
     fun handleCaseDefinitionCreatedEvent(event: CaseDefinitionCreatedEvent) {
-        if (event.basedOnCaseDefinitionId != null) {
+        if (event.duplicate) {
             service.getCaseTabs(event.basedOnCaseDefinitionId!!).forEach { oldCaseTab ->
                 val newCaseTab = service.createCaseTab(event.caseDefinitionId, CaseTabDto.of(oldCaseTab))
 
