@@ -23,7 +23,9 @@ spring:
                     provider_disables_autocommit: true
         hibernate:
             ddl-auto: none
-
+spring-actuator:
+    username: admin
+    password: password
 valtimo:
     plugin:
         encryption-secret: "abcdefghijklmnop"
