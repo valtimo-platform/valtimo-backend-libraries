@@ -23,7 +23,6 @@ import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
 import mu.KotlinLogging
-import org.springframework.data.repository.findByIdOrNull
 
 class CaseDefinitionImporter(
     private val objectMapper: ObjectMapper,
@@ -50,14 +49,8 @@ class CaseDefinitionImporter(
 
         logger.debug { "Deploying case definition with id '${caseDefinition.id}'" }
 
-        val existingCaseDefinition = caseDefinitionRepository.findByIdOrNull(caseDefinition.id)
-
-        if (existingCaseDefinition == null) {
-            caseDefinitionRepository.save(caseDefinition)
-            logger.debug { "Case definition with id '${caseDefinition.id}' was saved" }
-        } else {
-            logger.debug { "Not deploying case definition with '${caseDefinition.id}', it already exists" }
-        }
+        caseDefinitionRepository.save(caseDefinition)
+        logger.debug { "Case definition with id '${caseDefinition.id}' was saved" }
     }
 
     private companion object {
