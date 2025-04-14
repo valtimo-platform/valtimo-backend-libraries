@@ -200,6 +200,7 @@ class ZakenApiEventListenerTest {
         whenever(event.definitionId()).thenReturn(idMock)
         whenever(idMock.caseDefinitionId()).thenReturn(caseDefinitionId)
         whenever(idMock.name()).thenReturn("test")
+        whenever(idMock.caseDefinitionId()).thenReturn(caseDefinitionId)
         return event
     }
 }
