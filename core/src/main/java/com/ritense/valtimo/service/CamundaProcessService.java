@@ -34,7 +34,6 @@ import com.ritense.valtimo.camunda.domain.CamundaExecution;
 import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
-import com.ritense.valtimo.camunda.repository.CamundaBytearrayRepository;
 import com.ritense.valtimo.camunda.repository.CamundaExecutionRepository;
 import com.ritense.valtimo.camunda.service.CamundaHistoryService;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
@@ -64,7 +63,6 @@ import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState;
-import org.camunda.bpm.engine.repository.Deployment;
 import org.camunda.bpm.engine.repository.DeploymentWithDefinitions;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
@@ -306,8 +304,7 @@ public class CamundaProcessService {
         denyAuthorization();
         return AuthorizationContext.runWithoutAuthorization(() -> camundaRepositoryService.findProcessDefinitions(
             byActive()
-                .and(byVersionTag(caseDefinitionId.toString()))
-                .and(byLatestVersion()),
+                .and(byVersionTag(CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.toString())),
             Sort.by(NAME)
         ));
     }
@@ -322,7 +319,7 @@ public class CamundaProcessService {
 
     public byte[] getBpmnModel(CamundaProcessDefinition camundaProcessDefinition) {
         return camundaByteArrayService.getByNameAndDeploymentId(
-            camundaProcessDefinition.getName(),
+            camundaProcessDefinition.getResourceName(),
             camundaProcessDefinition.getDeploymentId()
         ).getBytes();
     }

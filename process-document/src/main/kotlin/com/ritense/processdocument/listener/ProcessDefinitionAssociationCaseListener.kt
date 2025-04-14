@@ -17,10 +17,11 @@
 package com.ritense.processdocument.listener
 
 import com.ritense.authorization.annotation.RunWithoutAuthorization
+import com.ritense.processdocument.domain.ProcessDocumentDefinitionRequest
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.event.CaseDefinitionCreatedEvent
 import com.ritense.valtimo.contract.event.CaseDefinitionPreDeleteEvent
-import com.ritense.valtimo.service.CamundaProcessService
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -28,19 +29,22 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 @Component
 @SkipComponentScan
-class ProcessDefinitionCaseEventListener(
-    private val service: CamundaProcessService,
+class ProcessDefinitionAssociationCaseListener(
+    private val service: ProcessDefinitionCaseDefinitionService,
 ) {
 
     @RunWithoutAuthorization
     @EventListener(CaseDefinitionCreatedEvent::class)
     fun handleCaseDefinitionCreatedEvent(event: CaseDefinitionCreatedEvent) {
         if (event.basedOnCaseDefinitionId != null) {
-            service.getDeployedDefinitions(event.basedOnCaseDefinitionId!!).forEach { definition ->
-                service.deploy(
-                    event.caseDefinitionId,
-                    definition.resourceName,
-                    service.getBpmnModel(definition).inputStream()
+            service.findProcessDefinitionCaseDefinitions(event.basedOnCaseDefinitionId!!).forEach { association ->
+                service.createProcessDocumentDefinition(
+                    ProcessDocumentDefinitionRequest(
+                        processDefinitionId = association.id.processDefinitionId,
+                        caseDefinitionId = event.caseDefinitionId,
+                        canInitializeDocument = association.canInitializeDocument,
+                        startableByUser = association.startableByUser
+                    )
                 )
             }
         }
@@ -49,8 +53,11 @@ class ProcessDefinitionCaseEventListener(
     @RunWithoutAuthorization
     @EventListener(CaseDefinitionPreDeleteEvent::class)
     fun handleCaseDefinitionPreDeleteEvent(event: CaseDefinitionPreDeleteEvent) {
-        service.getDeployedDefinitions(event.caseDefinitionId).forEach { definition ->
-            service.deleteProcessDefinition(definition.id)
+        service.findProcessDefinitionCaseDefinitions(event.caseDefinitionId).forEach { association ->
+            service.deleteProcessDocumentDefinition(
+                processDefinitionId = association.id.processDefinitionId,
+                caseDefinitionId = event.caseDefinitionId,
+            )
         }
     }
 }

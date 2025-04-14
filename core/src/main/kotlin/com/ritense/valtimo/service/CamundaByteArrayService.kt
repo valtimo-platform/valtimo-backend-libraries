@@ -24,15 +24,18 @@ import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.repository.CamundaByteArraySpecificationHelper.Companion.byDeploymentId
 import com.ritense.valtimo.camunda.repository.CamundaByteArraySpecificationHelper.Companion.byName
 import com.ritense.valtimo.camunda.repository.CamundaBytearrayRepository
+import kotlin.jvm.optionals.getOrNull
 
 class CamundaByteArrayService(
     private val camundaBytearrayRepository: CamundaBytearrayRepository,
     private val authorizationService: AuthorizationService,
 ) {
 
-    fun getByNameAndDeploymentId(name: String, deploymentId: String): CamundaBytearray {
+    fun getByNameAndDeploymentId(resourceName: String, deploymentId: String): CamundaBytearray {
+        require(resourceName.contains(".")) { "Resource name $resourceName is not a file name" }
         denyAuthorization()
-        return camundaBytearrayRepository.findOne(byName(name).and(byDeploymentId(deploymentId))).orElseThrow()
+        return camundaBytearrayRepository.findOne(byName(resourceName).and(byDeploymentId(deploymentId))).getOrNull()
+            ?: error("No Camunda bytes found for name '$resourceName' and deploymentId '$deploymentId'")
     }
 
     private fun denyAuthorization() {
