@@ -27,7 +27,6 @@ import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.impl.context.Context
 import org.camunda.bpm.engine.impl.interceptor.CommandContext
-import org.camunda.bpm.engine.variable.Variables
 import org.camunda.bpm.engine.variable.impl.value.ObjectValueImpl
 import org.camunda.bpm.engine.variable.impl.value.builder.SerializedObjectValueBuilderImpl
 import org.camunda.community.mockito.delegate.DelegateCaseVariableInstanceFake
@@ -41,14 +40,16 @@ import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.time.LocalDate
-import java.util.UUID
 
 internal class ProcessVariableValueResolverTest {
     private val runtimeService: RuntimeService = mock(defaultAnswer = RETURNS_DEEP_STUBS)
     private val historyService: HistoryService = mock(defaultAnswer = RETURNS_DEEP_STUBS)
     private val objectMapper = MapperSingleton.get()
-    private val processVariableValueResolver = ProcessVariableValueResolverFactory(runtimeService, objectMapper)
+    private val processVariableValueResolver = ProcessVariableValueResolverFactory(
+        runtimeService,
+        historyService,
+        objectMapper
+    )
 
     @BeforeEach
     fun setUp() {
@@ -186,14 +187,14 @@ internal class ProcessVariableValueResolverTest {
                 }
             """)
         val documentInstanceId = UUID.randomUUID().toString()
-        val processInstance = ProcessInstanceFake.builder().processInstanceId(UUID.randomUUID().toString()).build()
-        whenever(runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(documentInstanceId).list())
+        val processInstance: HistoricProcessInstance = mock()
+        whenever(processInstance.id).thenReturn(UUID.randomUUID().toString())
+        whenever(historyService.createHistoricProcessInstanceQuery().processInstanceBusinessKey(documentInstanceId).list())
             .thenReturn(listOf(processInstance))
-        val variableInstance = DelegateCaseVariableInstanceFake().create(
-            "person",
-            SerializedObjectValueBuilderImpl(ObjectValueImpl(personVariable)).create()
-        )
-        whenever(runtimeService.createVariableInstanceQuery()
+        val variableInstance: HistoricVariableInstance = mock()
+        whenever(variableInstance.name).thenReturn("person")
+        whenever(variableInstance.value).thenReturn(personVariable)
+        whenever(historyService.createHistoricVariableInstanceQuery()
             .processInstanceIdIn(processInstance.id)
             .variableName("person")
             .list())

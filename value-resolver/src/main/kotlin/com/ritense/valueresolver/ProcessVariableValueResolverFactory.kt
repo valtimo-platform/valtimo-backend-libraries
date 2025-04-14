@@ -25,7 +25,6 @@ import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.delegate.VariableScope
-import org.camunda.bpm.engine.impl.context.Context
 import java.util.function.Function
 
 /**
