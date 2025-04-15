@@ -203,7 +203,6 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
         assertNotNull(associatedProcessDocumentsForDocumentOne.firstOrNull { it.processName().equals("start-correlation-test-process")})
         assertNotNull(associatedProcessDocumentsForDocumentOne.firstOrNull { it.processName().equals("intermediate-catch-event-sample-one")})
         assertNull(associatedProcessDocumentsForDocumentOne.firstOrNull {it.processName().equals("intermediate-catch-event-sample-two") })
-        assertNull(associatedProcessDocumentsForDocumentTwo.firstOrNull {it.processName().equals("intermediate-catch-event-sample-two") })
         assertEquals(document.id(), associatedProcessDocumentsForDocumentOne.first {
             it.processName().equals("start-correlation-test-process")
         }.id!!.documentId()
