@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.documentenapi.BaseIntegrationTest
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -38,11 +39,14 @@ class ZgwDocumentTrefwoordExporterIntTest @Autowired constructor(
     private val resourceLoader: ResourceLoader,
     private val zgwDocumentTrefwoordExporter: ZgwDocumentTrefwoordExporter
 ) : BaseIntegrationTest() {
+
+    private val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
+
     @Test
     fun `should export zgw document trefwoorden for case definition`(): Unit = AuthorizationContext.runWithoutAuthorization {
         val caseDefinitionName = "profile"
 
-        val request = DocumentDefinitionExportRequest(caseDefinitionName, 1)
+        val request = DocumentDefinitionExportRequest(caseDefinitionName, caseDefinitionId)
         val exportFiles = zgwDocumentTrefwoordExporter.export(request).exportFiles
 
         val path = PATH.format(caseDefinitionName)

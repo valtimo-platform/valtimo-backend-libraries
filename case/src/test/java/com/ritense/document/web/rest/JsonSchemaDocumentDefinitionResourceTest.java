@@ -42,13 +42,9 @@ import com.ritense.document.service.DocumentStatisticService;
 import com.ritense.document.service.UndeployDocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
 import com.ritense.document.service.impl.UndeployJsonSchemaDocumentDefinitionService;
-import com.ritense.document.service.request.DocumentDefinitionCreateRequest;
-import com.ritense.document.service.result.DeployDocumentDefinitionResultFailed;
-import com.ritense.document.service.result.DeployDocumentDefinitionResultSucceeded;
 import com.ritense.document.service.result.UndeployDocumentDefinitionResultFailed;
 import com.ritense.document.service.result.UndeployDocumentDefinitionResultSucceeded;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentDefinitionResource;
-import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import com.ritense.valtimo.contract.json.MapperSingleton;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -233,120 +229,6 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
             .andExpect(jsonPath("$").isNotEmpty());
 
         verify(documentDefinitionService).findLatestByName(definitionName);
-    }
-
-    @Test
-    void shouldReturnSingleDefinitionRecordByNameAndVersion() throws Exception {
-        var caseDefinitionId = definition.getId().caseDefinitionId();
-        when(documentDefinitionService.findByCaseDefinitionId(caseDefinitionId)).thenReturn(Optional.of(definition));
-        mockMvc.perform(get(
-                "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/document-definition",
-                caseDefinitionId.getKey(),
-                caseDefinitionId.getVersionTag().getVersion()
-            ))
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
-            .andExpect(jsonPath("$").isNotEmpty());
-    }
-
-    @Test
-    void shouldReturnNoDefinitionRecordByNameAndVersion() throws Exception {
-        var caseDefinitionId = definition.getId().caseDefinitionId();
-        when(documentDefinitionService.findByCaseDefinitionId(caseDefinitionId)).thenReturn(Optional.empty());
-        mockMvc.perform(get(
-                "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/document-definition",
-                caseDefinitionId.getKey(),
-                caseDefinitionId.getVersionTag().getVersion()
-            ))
-            .andDo(print())
-            .andExpect(status().isNotFound());
-    }
-
-    @Test
-    void shouldReturnCreateSuccessResult() throws Exception {
-        ObjectMapper objectMapper = MapperSingleton.INSTANCE.get();
-        DocumentDefinitionCreateRequest documentDefinitionCreateRequest = new DocumentDefinitionCreateRequest(
-            "{\n" +
-                "  \"$id\": \"person.schema\",\n" +
-                "  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
-                "  \"title\": \"Person\",\n" +
-                "  \"type\": \"object\",\n" +
-                "  \"properties\": {\n" +
-                "    \"firstName\": {\n" +
-                "      \"type\": \"string\",\n" +
-                "      \"description\": \"The person's first name.\"\n" +
-                "    },\n" +
-                "    \"lastName\": {\n" +
-                "      \"type\": \"string\",\n" +
-                "      \"description\": \"The person's last name.\"\n" +
-                "    },\n" +
-                "    \"age\": {\n" +
-                "      \"description\": \"Age in years which must be equal to or greater than zero.\",\n" +
-                "      \"type\": \"integer\",\n" +
-                "      \"minimum\": 0\n" +
-                "    }\n" +
-                "  }\n" +
-                "}\n",
-            CaseDefinitionId.of("caseDefinitionId", "1.0.0")
-        );
-
-        when(documentDefinitionService.deploy(anyString(), any(CaseDefinitionId.class)))
-            .thenReturn(new DeployDocumentDefinitionResultSucceeded(definition));
-
-        mockMvc.perform(post("/api/v1/document-definition")
-                .content(objectMapper.writeValueAsString(documentDefinitionCreateRequest))
-                .characterEncoding(StandardCharsets.UTF_8.name())
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-            )
-            .andDo(print())
-            .andExpect(status().isOk());
-
-        verify(documentDefinitionService, times(1)).deploy(anyString(), any(CaseDefinitionId.class));
-    }
-
-    @Test
-    void shouldReturnCreateFailedResult() throws Exception {
-        ObjectMapper objectMapper = MapperSingleton.INSTANCE.get();
-        DocumentDefinitionCreateRequest documentDefinitionCreateRequest = new DocumentDefinitionCreateRequest(
-            "{\n" +
-                "  \"$id\": \"person.schema\",\n" +
-                "  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
-                "  \"title\": \"Person\",\n" +
-                "  \"type\": \"object\",\n" +
-                "  \"properties\": {\n" +
-                "    \"firstName\": {\n" +
-                "      \"type\": \"string\",\n" +
-                "      \"description\": \"The person's first name.\"\n" +
-                "    },\n" +
-                "    \"lastName\": {\n" +
-                "      \"type\": \"string\",\n" +
-                "      \"description\": \"The person's last name.\"\n" +
-                "    },\n" +
-                "    \"age\": {\n" +
-                "      \"description\": \"Age in years which must be equal to or greater than zero.\",\n" +
-                "      \"type\": \"integer\",\n" +
-                "      \"minimum\": 0\n" +
-                "    }\n" +
-                "  }\n" +
-                "}\n",
-            CaseDefinitionId.of("caseDefinitionId", "1.0.0")
-        );
-
-        when(documentDefinitionService.deploy(anyString(), any(CaseDefinitionId.class)))
-            .thenReturn(new DeployDocumentDefinitionResultFailed(List.of(() -> "This schema was already deployed")));
-
-        mockMvc.perform(post("/api/v1/document-definition")
-                .content(objectMapper.writeValueAsString(documentDefinitionCreateRequest))
-                .characterEncoding(StandardCharsets.UTF_8.name())
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-            )
-            .andDo(print())
-            .andExpect(status().isBadRequest());
-
-        verify(documentDefinitionService, times(1)).deploy(anyString(), any(CaseDefinitionId.class));
     }
 
     @Test

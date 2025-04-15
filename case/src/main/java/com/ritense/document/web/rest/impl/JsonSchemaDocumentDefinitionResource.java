@@ -132,20 +132,6 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     }
 
     @Override
-    public ResponseEntity<? extends DocumentDefinition> getDocumentDefinitionVersion(
-        String caseDefinitionKey,
-        String versionTag
-    ) {
-        return of(
-            runWithoutAuthorization(
-                () -> documentDefinitionService.findByCaseDefinitionId(
-                    CaseDefinitionId.of(caseDefinitionKey, versionTag)
-                )
-            )
-        );
-    }
-
-    @Override
     public ResponseEntity<DocumentVersionsResult> getDocumentDefinitionVersions(String name) {
         List<CaseDefinitionId> versions = runWithoutAuthorization(
             () -> documentDefinitionService.findVersionsByName(name)
@@ -161,15 +147,6 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     @Override
     public ResponseEntity<List<UnassignedDocumentCountDto>> getUnassignedDocumentCount() {
         return ok(documentStatisticService.getUnassignedDocumentCountDtos());
-    }
-
-    @Override
-    public ResponseEntity<DeployDocumentDefinitionResult> deployDocumentDefinition(
-        DocumentDefinitionCreateRequest request
-    ) {
-        var result = runWithoutAuthorization(() -> documentDefinitionService.deploy(request.getDefinition(), request.getCaseDefinitionId()));
-        var httpStatus = result.documentDefinition() != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
-        return ResponseEntity.status(httpStatus).body(result);
     }
 
     @Override

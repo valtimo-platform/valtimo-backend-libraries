@@ -46,29 +46,26 @@ class CaseDefinitionDeploymentService(
     @Order(Ordered.LOWEST_PRECEDENCE)
     @EventListener(ApplicationReadyEvent::class)
     fun deployOnStartup() {
+        deployCase()
+        deployGlobal()
+
+        // TODO: convert changelogdeployers to importers
+        changelogDeployer.deployAll()
+    }
+
+    private fun deployCase() {
         try {
-            val absoluteBasePathLength = ResourcePatternUtils
-                .getResourcePatternResolver(resourceLoader)
-                .getResource("classpath:/config/case/")
-                .file
-                .absolutePath
-                .length
-
-            val resources = ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(PATH)
-                .groupBy {
-                    val relativePath = it.file.absolutePath.substring(
-                        absoluteBasePathLength
-                    )
-
-                    relativePath.substring(0, StringUtils.ordinalIndexOf(relativePath, "/", 3))
-                }
-                .map { (key, files) ->
-                    key to (files.map {
-                        it.file.absolutePath.substring(
-                            absoluteBasePathLength
-                        ).substring(key.length) to it
-                    })
-                }
+            val resources =
+                ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(CASE_DEFINITION_PATH)
+                    .groupBy { resource ->
+                        val relativePath = resource.url.path.substringAfter(CASE_DEFINITION_FOLDER_STRUCTURE)
+                        relativePath.substring(0, StringUtils.ordinalIndexOf(relativePath, "/", 3))
+                    }
+                    .map { (key, files) ->
+                        key to (files.map {
+                            it.url.path.substringAfter(CASE_DEFINITION_FOLDER_STRUCTURE).substring(key.length) to it
+                        })
+                    }
             resources.forEach { (_, files) ->
                 runWithoutAuthorization {
                     valtimoImportService.importCaseDefinition(files, caseDefinitionRepository.findAllByFinalTrue().map { it.id })
@@ -80,14 +77,31 @@ class CaseDefinitionDeploymentService(
             // No resources found, nothing to import
             logger.info { "No case definitions found. Continuing startup without importing case definitions." }
         }
+    }
 
-        changelogDeployer.deployAll()
 
-        // Group by 1st * and 2nd *
-        // Turn back into list of list resources
-        // Import for each list of resources in the list
-        // If one fails, everything fails.
-        // TODO Implement triggering of imports
+    private fun deployGlobal() {
+        try {
+            val resources =
+                ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(GLOBAL_DEFINITION_PATH)
+                    .groupBy {
+                        it.url.path.substringAfter(GLOBAL_DEFINITION_FOLDER_STRUCTURE)
+                    }
+                    .map { (key, files) ->
+                        key to (files.map {
+                           "/global" + it.url.path.substringAfter(GLOBAL_DEFINITION_FOLDER_STRUCTURE) to it
+                        })
+                    }
+            resources.forEach { (_, files) ->
+                runWithoutAuthorization {
+                    valtimoImportService.importGlobalDefinitions(files)
+                }
+            }
+
+        } catch (ex: FileNotFoundException) {
+            // No resources found, nothing to import
+            logger.info { "No global definitions found. Continuing startup without importing global definitions." }
+        }
     }
 
     private fun setLatestToActiveIfNoneIsActive() {
@@ -100,11 +114,12 @@ class CaseDefinitionDeploymentService(
             .forEach { caseDefinition -> caseDefinitionRepository.save(caseDefinition) }
     }
 
-    //private fun getRelativeMap
-
     companion object {
-        private const val PATH =
-            "classpath:config/case/*/*/**/*.*" // TODO: Determine if we want to do config/case/ instead
+        private const val CASE_DEFINITION_PATH = "classpath*:config/case/*/*/**/*.*"
+        private const val CASE_DEFINITION_FOLDER_STRUCTURE = "/config/case"
+        private const val GLOBAL_DEFINITION_PATH = "classpath*:config/global/**/*.*"
+        private const val GLOBAL_DEFINITION_FOLDER_STRUCTURE = "/config/global"
+
         val logger = KotlinLogging.logger {}
     }
 }
