@@ -35,7 +35,7 @@ class DefaultZaaktypeUrlProvider(
         @LoggableResource("caseDefinitionId") caseDefinitionId: CaseDefinitionId
     ): URI {
         val zaakTypeLink = zaakTypeLinkService.get(caseDefinitionId)
-            ?: throw ZaakTypeLinkNotFoundException("For case definition with id $caseDefinitionId")
+            ?: throw ZaakTypeLinkNotFoundException("For case definition $caseDefinitionId")
         return zaakTypeLink.zaakTypeUrl
     }
 }

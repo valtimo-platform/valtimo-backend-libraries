@@ -43,6 +43,7 @@ import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentSearchService;
 import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.document.service.impl.UndeployJsonSchemaDocumentDefinitionService;
+import com.ritense.document.web.rest.DocumentDefinitionManagementResource;
 import com.ritense.document.web.rest.DocumentDefinitionResource;
 import com.ritense.document.web.rest.DocumentResource;
 import com.ritense.document.web.rest.DocumentSearchResource;
@@ -228,6 +229,14 @@ public class DocumentAutoConfiguration {
         DocumentService documentService
     ) {
         return new JsonSchemaDocumentResource(documentService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DocumentDefinitionManagementResource.class)
+    public DocumentDefinitionManagementResource documentDefinitionManagementResource(
+        DocumentDefinitionService documentDefinitionService
+    ) {
+        return new DocumentDefinitionManagementResource(documentDefinitionService);
     }
 
     @Bean

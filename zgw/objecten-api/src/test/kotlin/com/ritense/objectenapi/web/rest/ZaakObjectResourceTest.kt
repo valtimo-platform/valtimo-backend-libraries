@@ -22,6 +22,7 @@ import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.objecttypenapi.client.Objecttype
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.json.MapperSingleton
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
@@ -150,6 +151,7 @@ internal class ZaakObjectResourceTest {
             formId,
             "form-name",
             "{\"content\":\"test\"}",
+            CaseDefinitionId("test", "1.0.0"),
             false
         )
 

@@ -20,13 +20,15 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentService
+import com.ritense.processdocument.domain.ProcessDefinitionId
+import com.ritense.processdocument.domain.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
-import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
-import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.domain.TemporaryResourceSubmittedEvent
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.zakenapi.BaseIntegrationTest
 import com.ritense.zakenapi.uploadprocess.UploadProcessService.Companion.DOCUMENT_UPLOAD
 import com.ritense.zakenapi.uploadprocess.UploadProcessService.Companion.RESOURCE_ID_PROCESS_VAR
@@ -45,23 +47,25 @@ class ResourceSubmittedToDocumentSseEventMapperIT @Autowired constructor(
     private val temporaryResourceStorageService: TemporaryResourceStorageService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val historyService: HistoryService,
-    private val processDocumentAssociationService: ProcessDocumentAssociationService,
+    private val processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
     private val caseDefinitionProcessLinkService: CaseDefinitionProcessLinkService,
     private val objectMapper: ObjectMapper,
 ): BaseIntegrationTest() {
 
+    val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
+
     @BeforeEach
     fun beforeEach() {
         runWithoutAuthorization {
-            processDocumentAssociationService.createProcessDocumentDefinition(
+            processDefinitionCaseDefinitionService.createProcessDocumentDefinition(
                 ProcessDocumentDefinitionRequest(
-                    UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY,
-                    DOCUMENT_DEFINITION_KEY,
+                    ProcessDefinitionId(UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY),
+                    caseDefinitionId,
                     true
                 )
             )
             caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-                DOCUMENT_DEFINITION_KEY,
+                caseDefinitionId,
                 DocumentDefinitionProcessRequest(
                     UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY,
                     DOCUMENT_UPLOAD
