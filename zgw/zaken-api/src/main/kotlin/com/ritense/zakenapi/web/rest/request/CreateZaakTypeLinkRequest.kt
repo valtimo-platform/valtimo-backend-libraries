@@ -16,7 +16,6 @@
 
 package com.ritense.zakenapi.web.rest.request
 
-import com.ritense.zakenapi.domain.ZaakTypeLink
 import java.net.URI
 import java.util.UUID
 
@@ -25,13 +24,4 @@ data class CreateZaakTypeLinkRequest(
     val zakenApiPluginConfigurationId: UUID? = null,
     val createWithDossier: Boolean? = false,
     val rsin: String? = null
-) {
-    companion object {
-        fun of(zaakTypeLink: ZaakTypeLink) = CreateZaakTypeLinkRequest(
-            zaakTypeUrl = zaakTypeLink.zaakTypeUrl,
-            zakenApiPluginConfigurationId = zaakTypeLink.zakenApiPluginConfigurationId,
-            createWithDossier = zaakTypeLink.createWithDossier,
-            rsin = zaakTypeLink.rsin.toString(),
-        )
-    }
-}
+)

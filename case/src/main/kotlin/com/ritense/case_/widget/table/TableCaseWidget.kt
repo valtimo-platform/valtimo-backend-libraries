@@ -42,14 +42,4 @@ class TableCaseWidget(
     val properties: TableWidgetProperties
 ) : CaseWidgetTabWidget(
     id, title, order, width, highContrast, actions
-) {
-    override fun copy(id: CaseWidgetTabWidgetId) = TableCaseWidget(
-        id = id,
-        title = title,
-        order = order,
-        width = width,
-        highContrast = highContrast,
-        actions = actions,
-        properties = properties
-    )
-}
+)

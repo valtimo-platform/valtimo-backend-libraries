@@ -1,7 +1,7 @@
 package com.ritense.case_.service
 
-import com.ritense.BaseIntegrationTest
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.domain.CaseTabId
 import com.ritense.case.domain.CaseTabType
 import com.ritense.case.service.CaseTabService
@@ -13,6 +13,7 @@ import com.ritense.case_.widget.TestCaseWidgetProperties
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.request.NewDocumentRequest
+import com.ritense.document.service.DocumentService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
@@ -30,6 +31,7 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
     private val caseTabService: CaseTabService,
     private val caseWidgetTabRepository: CaseWidgetTabRepository,
     private val caseWidgetTabService: CaseWidgetTabService,
+    private val documentService: DocumentService
 ) : BaseIntegrationTest() {
 
     @Test

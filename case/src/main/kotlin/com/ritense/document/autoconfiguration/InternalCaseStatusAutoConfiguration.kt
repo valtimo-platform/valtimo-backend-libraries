@@ -52,10 +52,10 @@ class InternalCaseStatusAutoConfiguration {
     @ConditionalOnMissingBean(InternalCaseStatusService::class)
     fun internalCaseStatusService(
         repository: InternalCaseStatusRepository,
-        caseDefinitionService: CaseDefinitionService,
+        activeCaseDefinitionService: ActiveCaseDefinitionService,
         authorizationService: AuthorizationService,
     ): InternalCaseStatusService {
-        return InternalCaseStatusService(repository, caseDefinitionService, authorizationService)
+        return InternalCaseStatusService(repository, activeCaseDefinitionService, authorizationService)
     }
 
     @Bean

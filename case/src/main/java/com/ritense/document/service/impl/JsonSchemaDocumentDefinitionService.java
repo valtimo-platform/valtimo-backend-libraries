@@ -17,8 +17,6 @@
 package com.ritense.document.service.impl;
 
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
-import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentDefinitionSpecificationHelper.byIdCaseDefinitionId;
-import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentDefinitionSpecificationHelper.byLatestVersion;
 import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.CREATE;
 import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.DELETE;
 import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.MODIFY;
@@ -48,6 +46,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.DocumentDefinitionRepository;
+import com.ritense.document.repository.impl.specification.JsonSchemaDocumentDefinitionSpecificationHelper;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import com.ritense.document.service.result.DeployDocumentDefinitionResultFailed;
@@ -105,19 +104,6 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     }
 
     @Override
-    public List<JsonSchemaDocumentDefinition> findAllBy(CaseDefinitionId caseDefinitionId) {
-        final var spec = authorizationService
-            .getAuthorizationSpecification(
-                new EntityAuthorizationRequest<>(
-                    JsonSchemaDocumentDefinition.class,
-                    VIEW_LIST
-                ),
-                null
-            );
-        return documentDefinitionRepository.findAll(spec.and(byIdCaseDefinitionId(caseDefinitionId)));
-    }
-
-    @Override
     public Page<JsonSchemaDocumentDefinition> findAllForManagement(Pageable pageable) {
         authorizationService.requirePermission(
             new EntityAuthorizationRequest<>(
@@ -125,7 +111,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
                 Action.deny()
             ));
 
-        final var spec = byLatestVersion();
+        final var spec = JsonSchemaDocumentDefinitionSpecificationHelper.byLatestVersion();
         return documentDefinitionRepository.findAll(spec, pageable);
     }
 
@@ -326,24 +312,6 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         ));
 
         documentDefinitionRepository.deleteByIdName(documentDefinitionName);
-    }
-
-    @Override
-    public void removeDocumentDefinition(
-        @LoggableResource("documentDefinitionName") String documentDefinitionName,
-        CaseDefinitionId caseDefinitionId
-    ) {
-        findByNameAndCaseDefinitionId(documentDefinitionName, caseDefinitionId).ifPresent(documentDefinition -> {
-            authorizationService.requirePermission(
-                new EntityAuthorizationRequest<>(
-                    JsonSchemaDocumentDefinition.class,
-                    DELETE,
-                    documentDefinition
-                )
-            );
-
-            documentDefinitionRepository.delete(documentDefinition);
-        });
     }
 
     @Override

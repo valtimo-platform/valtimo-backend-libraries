@@ -18,7 +18,7 @@ package com.ritense.document.web.rest
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.ritense.BaseTest
+import com.ritense.document.BaseTest
 import com.ritense.document.domain.InternalCaseStatus
 import com.ritense.document.domain.InternalCaseStatusColor
 import com.ritense.document.domain.InternalCaseStatusId

@@ -14,41 +14,41 @@
  * limitations under the License.
  */
 
-package com.ritense
+package com.ritense.case
 
-import com.ritense.case.TestFormExporter
+import com.ritense.case.configuration.CaseAutoConfiguration
 import com.ritense.case_.TestResolverFactory
-import com.ritense.case_.widget.TestCaseWidgetDataProvider
-import com.ritense.case_.widget.TestCaseWidgetMapper
-import org.mockito.kotlin.spy
+import com.ritense.resource.service.ResourceService
+import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
+import com.ritense.valueresolver.ValueResolverFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Bean
 
-@SpringBootApplication
+@SpringBootApplication(
+    scanBasePackageClasses = [LiquibaseRunnerAutoConfiguration::class, CaseAutoConfiguration::class],
+)
 class TestApplication {
 
     fun main(args: Array<String>) {
         runApplication<TestApplication>(*args)
     }
 
+    @Bean
+    fun testResolverFactory(): ValueResolverFactory{
+        return TestResolverFactory()
+    }
+
+    @Bean
+    fun testFormExporter() = TestFormExporter()
 
     @TestConfiguration
     class TestConfig {
 
-        @Bean
-        fun testResolverFactory(): TestResolverFactory {
-            return spy(TestResolverFactory())
-        }
+        @MockBean
+        lateinit var resourceService: ResourceService
 
-        @Bean
-        fun testFormExporter() = TestFormExporter()
-
-        @Bean
-        fun testCaseWidgetMapper() = TestCaseWidgetMapper()
-
-        @Bean
-        fun testCaseWidgetDataProvider() = TestCaseWidgetDataProvider()
     }
 }

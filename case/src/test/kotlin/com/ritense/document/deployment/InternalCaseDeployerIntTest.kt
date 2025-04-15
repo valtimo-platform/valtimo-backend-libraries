@@ -16,7 +16,8 @@
 
 package com.ritense.document.deployment
 
-import com.ritense.BaseIntegrationTest
+import com.ritense.document.BaseIntegrationTest
+import com.ritense.document.domain.InternalCaseStatusColor
 import com.ritense.document.repository.InternalCaseStatusRepository
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired

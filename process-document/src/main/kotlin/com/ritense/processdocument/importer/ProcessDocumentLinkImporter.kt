@@ -35,6 +35,7 @@ import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.service.CamundaProcessService
 import mu.KLogger
 import mu.KotlinLogging
+import org.camunda.bpm.engine.RepositoryService
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
@@ -42,7 +43,7 @@ class ProcessDocumentLinkImporter(
     private val processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
     private val documentDefinitionService: DocumentDefinitionService,
     private val objectMapper: ObjectMapper,
-    private val processService: CamundaProcessService,
+    private val repositoryService: RepositoryService
 ) : Importer {
 
     override fun type() = PROCESS_DOCUMENT_LINK
@@ -77,10 +78,11 @@ class ProcessDocumentLinkImporter(
         documentDefinitionName: String,
         item: ProcessDocumentLinkConfigItem
     ) {
-        val processDefinition = processService.getLatestDefinitionByKeyAndCaseDefinition(
-            caseDefinitionId,
-            item.processDefinitionKey
-        )
+        val processDefinition = repositoryService
+            .createProcessDefinitionQuery()
+            .processDefinitionKey(item.processDefinitionKey)
+            .versionTag(CamundaProcessService.CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.toString())
+            .singleResult()
 
         val request = ProcessDocumentDefinitionRequest(
             ProcessDefinitionId(processDefinition.id),

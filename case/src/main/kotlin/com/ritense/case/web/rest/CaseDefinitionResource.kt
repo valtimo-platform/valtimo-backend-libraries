@@ -20,7 +20,6 @@ import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthor
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.case.service.CaseDefinitionService
-import com.ritense.case.web.rest.dto.CaseDefinitionDraftCreateRequest
 import com.ritense.case.web.rest.dto.CaseDefinitionResponseDto
 import com.ritense.case.web.rest.dto.CaseDefinitionSettingsResponseDto
 import com.ritense.case.web.rest.dto.CaseListColumnDto
@@ -69,47 +68,6 @@ class CaseDefinitionResource(
     private val importService: ImportService,
     private val caseDefinitionRepository: CaseDefinitionRepository,
 ) {
-
-    @RunWithoutAuthorization
-    @GetMapping("/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}")
-    fun getCaseDefinition(
-        @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
-        @LoggableResource("versionTag") @PathVariable versionTag: String,
-    ): ResponseEntity<CaseDefinitionResponseDto> {
-        val caseDefinition = service.getCaseDefinition(CaseDefinitionId.of(caseDefinitionKey, versionTag))
-        val similarCaseDefinitions = caseDefinition.basedOnVersionTag?.let {
-            service.getCaseDefinitionsBasedOnVersion(caseDefinitionKey, caseDefinition.basedOnVersionTag)
-                .filter { it.id != caseDefinition.id }
-        } ?: emptyList()
-        val conflictingVersions = if (similarCaseDefinitions.isNotEmpty()) {
-            similarCaseDefinitions.joinToString { it.id.versionTag.toString() }
-        } else {
-            null
-        }
-        return ResponseEntity.ok(CaseDefinitionResponseDto.of(caseDefinition, conflictingVersions))
-    }
-
-    @RunWithoutAuthorization
-    @PostMapping("/management/v1/case-definition/draft")
-    fun createCaseDefinitionDraft(
-        @RequestBody request: CaseDefinitionDraftCreateRequest
-    ): ResponseEntity<CaseDefinitionResponseDto> {
-        return ResponseEntity.ok(
-            CaseDefinitionResponseDto.of(
-                service.createCaseDefinitionDraft(request)
-            )
-        )
-    }
-
-    @RunWithoutAuthorization
-    @DeleteMapping("/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}")
-    fun deleteCaseDefinition(
-        @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
-        @LoggableResource("versionTag") @PathVariable versionTag: String,
-    ): ResponseEntity<Unit> {
-        service.deleteCaseDefinition(CaseDefinitionId.of(caseDefinitionKey, versionTag))
-        return ResponseEntity.ok().build()
-    }
 
     @RunWithoutAuthorization
     @GetMapping("/management/v1/case-definition")
@@ -195,8 +153,8 @@ class CaseDefinitionResource(
         @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
     ): ResponseEntity<CaseDefinitionResponseDto> {
         return try {
-            val caseDefinition = activeCaseDefinitionService.getActiveCaseDefinition(caseDefinitionKey)
-            ResponseEntity.ok(CaseDefinitionResponseDto.of(caseDefinition))
+           val caseDefinition = activeCaseDefinitionService.getActiveCaseDefinition(caseDefinitionKey)
+           ResponseEntity.ok(CaseDefinitionResponseDto.of(caseDefinition))
         } catch (exception: UnknownCaseDefinitionException) {
             ResponseEntity.notFound().build()
         }

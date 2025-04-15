@@ -16,8 +16,8 @@
 
 package com.ritense.case_.repository
 
-import com.ritense.BaseIntegrationTest
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.domain.CaseTabType
 import com.ritense.case.service.CaseTabService
 import com.ritense.case.web.rest.dto.CaseTabDto
@@ -28,6 +28,7 @@ import com.ritense.case_.widget.TestCaseWidgetProperties
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.request.NewDocumentRequest
+import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -42,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional
 class CaseWidgetTabWidgetSpecificationIntTest @Autowired constructor(
     private val caseTabService: CaseTabService,
     private val caseWidgetTabService: CaseWidgetTabService,
+    private val documentService: JsonSchemaDocumentService,
 ) : BaseIntegrationTest() {
 
     val caseDefinitionId = CaseDefinitionId.of("widgets", "1.0.0")

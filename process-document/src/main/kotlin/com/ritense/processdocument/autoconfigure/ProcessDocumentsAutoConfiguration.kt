@@ -212,13 +212,13 @@ class ProcessDocumentsAutoConfiguration {
         processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
         documentDefinitionService: DocumentDefinitionService,
         objectMapper: ObjectMapper,
-        processService: CamundaProcessService
+        repositoryService: RepositoryService
     ): ProcessDocumentLinkImporter {
         return ProcessDocumentLinkImporter(
             processDefinitionCaseDefinitionService,
             documentDefinitionService,
             objectMapper,
-            processService
+            repositoryService
         )
     }
 

@@ -17,10 +17,13 @@
 package com.ritense.case_.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.BaseIntegrationTest
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.case.BaseIntegrationTest
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode

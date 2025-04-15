@@ -241,7 +241,7 @@ valtimo:
             rabbitmq:
                 exchange: valtimo-events
                 delivery-timeout: "PT0.5S"
-            polling.rate: "PT15M"
+            polling.rate: "PT1S"
 
     authorization:
         dashboard:
