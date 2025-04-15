@@ -17,10 +17,14 @@
 package com.ritense.processdocument.listener
 
 import com.ritense.authorization.annotation.RunWithoutAuthorization
+import com.ritense.processdocument.domain.ProcessDefinitionId
+import com.ritense.processdocument.domain.ProcessDocumentDefinitionRequest
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.event.CaseDefinitionCreatedEvent
 import com.ritense.valtimo.contract.event.CaseDefinitionPreDeleteEvent
 import com.ritense.valtimo.service.CamundaProcessService
+import mu.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -29,19 +33,38 @@ import org.springframework.transaction.annotation.Transactional
 @Component
 @SkipComponentScan
 class ProcessDefinitionCaseEventListener(
-    private val service: CamundaProcessService,
+    private val processService: CamundaProcessService,
+    private val associationService: ProcessDefinitionCaseDefinitionService,
 ) {
 
     @RunWithoutAuthorization
     @EventListener(CaseDefinitionCreatedEvent::class)
     fun handleCaseDefinitionCreatedEvent(event: CaseDefinitionCreatedEvent) {
         if (event.duplicate) {
-            service.getDeployedDefinitions(event.basedOnCaseDefinitionId!!).forEach { definition ->
-                service.deploy(
-                    event.caseDefinitionId,
-                    definition.resourceName,
-                    service.getBpmnModel(definition).inputStream()
-                )
+            val associations = associationService.findProcessDefinitionCaseDefinitions(event.basedOnCaseDefinitionId!!)
+
+            processService.getDeployedDefinitions(event.basedOnCaseDefinitionId!!).forEach { oldProcessDefinition ->
+                val association = associations.firstOrNull { it.processDefinitionKey == oldProcessDefinition.key }
+                if (association == null) {
+                    logger.error { "Missing association between caseDefinitionId ${event.basedOnCaseDefinitionId} and processDefinitionKey ${oldProcessDefinition.key}" }
+                } else {
+                    val deploymentId = processService.deploy(
+                        event.caseDefinitionId,
+                        oldProcessDefinition.resourceName,
+                        processService.getBpmnModel(oldProcessDefinition).inputStream()
+                    )
+                        ?: error { "Failed to duplicate process definition ${oldProcessDefinition.key} for ${event.caseDefinitionId}" }
+
+                    val processDefinition = processService.getProcessDefinitionByDeploymentId(deploymentId)
+                    associationService.createProcessDocumentDefinition(
+                        ProcessDocumentDefinitionRequest(
+                            processDefinitionId = ProcessDefinitionId(processDefinition.id),
+                            caseDefinitionId = event.caseDefinitionId,
+                            canInitializeDocument = association.canInitializeDocument,
+                            startableByUser = association.startableByUser,
+                        )
+                    )
+                }
             }
         }
     }
@@ -49,8 +72,18 @@ class ProcessDefinitionCaseEventListener(
     @RunWithoutAuthorization
     @EventListener(CaseDefinitionPreDeleteEvent::class)
     fun handleCaseDefinitionPreDeleteEvent(event: CaseDefinitionPreDeleteEvent) {
-        service.getDeployedDefinitions(event.caseDefinitionId).forEach { definition ->
-            service.deleteProcessDefinition(definition.id)
+        associationService.findProcessDefinitionCaseDefinitions(event.caseDefinitionId).forEach { association ->
+            associationService.deleteProcessDocumentDefinition(
+                processDefinitionId = association.id.processDefinitionId,
+                caseDefinitionId = event.caseDefinitionId,
+            )
         }
+        processService.getDeployedDefinitions(event.caseDefinitionId).forEach { definition ->
+            processService.deleteProcessDefinition(definition.id)
+        }
+    }
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
     }
 }
