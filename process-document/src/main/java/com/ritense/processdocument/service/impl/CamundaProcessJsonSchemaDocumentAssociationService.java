@@ -473,8 +473,23 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     ) {
         denyAuthorization(CamundaProcessJsonSchemaDocumentInstance.class);
 
+        CamundaProcessInstanceId camundaProcessInstanceId = new CamundaProcessInstanceId(processInstanceId);
+        final var existingOpt = processDocumentInstanceRepository.findByProcessInstanceId(camundaProcessInstanceId);
+        if (existingOpt.isPresent()) {
+            CamundaProcessJsonSchemaDocumentInstance existing = existingOpt.get();
+            if (!existing.processDocumentInstanceId().documentId().getId().equals(documentId)) {
+                throw new IllegalStateException("Process was already associated with another document: " + documentId);
+            }
+            if (processName != null && !processName.isEmpty() && !existing.processName().equals(processName)) {
+                existing.setProcessName(processName);
+                processDocumentInstanceRepository.save(existing);
+                return existingOpt;
+            }
+            return existingOpt;
+        }
+
         final var id = CamundaProcessJsonSchemaDocumentInstanceId.newId(
-            new CamundaProcessInstanceId(processInstanceId),
+            camundaProcessInstanceId,
             JsonSchemaDocumentId.existingId(documentId)
         );
         final var association = processDocumentInstanceRepository.saveAndFlush(
