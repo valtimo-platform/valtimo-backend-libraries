@@ -44,6 +44,8 @@ data class CaseDefinitionId(
             ?: throw IllegalArgumentException("Given version '$versionTag' is not a valid Semver version")
     )
 
+    constructor(caseDefinitionId: String) : this(caseDefinitionId.split(':')[0], caseDefinitionId.split(':')[2])
+
     init {
         require(key.isNotBlank()) { "[caseDefinitionId.key] was blank!" }
         require(key.matches(Regex("^[a-zA-Z0-9\\-]+$"))) {

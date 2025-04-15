@@ -110,7 +110,7 @@ class CaseWidgetTabService(
                 ), tabDto.key)
             )
             ?: throw RuntimeException(
-                "Failed to update dashboard. Dashboard with key '${tabDto.key}' doesn't exist " +
+                "Failed to update tab. Tab with key '${tabDto.key}' doesn't exist " +
                     "for case definition with key '${tabDto.caseDefinitionKey}' and version tag " +
                     "'${tabDto.caseDefinitionVersionTag}'."
             )
