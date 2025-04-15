@@ -32,6 +32,9 @@ spring-actuator:
     password: test
 
 valtimo:
+    authorization:
+        zgwDocuments:
+            enabled: true
     connector-encryption:
         secret: "abcdefghijklmnop"
     plugin:

@@ -23,6 +23,7 @@ import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpe
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
 
+import com.fasterxml.jackson.core.JsonPointer;
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationService;
@@ -180,7 +181,7 @@ public class CamundaProcessService {
 
     public void deleteProcessInstanceById(String processInstanceId, String reason) {
         denyAuthorization();
-        runtimeService.deleteProcessInstance(processInstanceId, reason);
+        runtimeService.deleteProcessInstance(processInstanceId, reason, true, true, true, false);
     }
 
     public void removeProcessVariables(String processInstanceId, Collection<String> variableNames) {
@@ -260,6 +261,16 @@ public class CamundaProcessService {
         denyAuthorization();
         return AuthorizationContext
             .runWithoutAuthorization(() -> camundaRuntimeService.getVariables(processInstanceId, variableNames));
+    }
+
+    public Map<String, Object> getProcessInstanceVariablesByJsonPointers(
+        String processInstanceId,
+        List<JsonPointer> variablePointers
+    ) {
+        denyAuthorization();
+        return AuthorizationContext.runWithoutAuthorization(() ->
+            camundaRuntimeService.getVariablesByJsonPointers(processInstanceId, variablePointers)
+        );
     }
 
     public List<CamundaHistoricProcessInstance> getAllActiveContextProcessesStartedByCurrentUser(

@@ -1,0 +1,54 @@
+[
+    {
+        "activityId": "StartEvent_1",
+        "activityType": "bpmn:StartEvent:start",
+        "processLinkType": "plugin",
+        "pluginConfigurationId": "d65113e0-a9cb-4904-93e1-5e8b1206e625",
+        "pluginActionDefinitionKey": "create-portaaltaak",
+        "actionProperties": {
+            "formType": "id",
+            "formTypeId": "person",
+            "sendData": [
+                {
+                    "key": "/firstName",
+                    "value": "doc:/firstName"
+                }
+            ],
+            "receiveData": [
+                {
+                    "key": "doc:/firstName",
+                    "value": "/firstName"
+                }
+            ],
+            "receiver": "other",
+            "identificationKey": "bsn",
+            "identificationValue": "569312863"
+        }
+    },
+    {
+        "activityId": "test-user-task",
+        "activityType": "bpmn:UserTask:create",
+        "processLinkType": "plugin",
+        "pluginConfigurationId": "d65113e0-a9cb-4904-93e1-5e8b1206e625",
+        "pluginActionDefinitionKey": "create-portaaltaak",
+        "actionProperties": {
+            "formType": "id",
+            "formTypeId": "person",
+            "sendData": [
+                {
+                    "key": "/firstName",
+                    "value": "doc:/firstName"
+                }
+            ],
+            "receiveData": [
+                {
+                    "key": "doc:/firstName",
+                    "value": "/firstName"
+                }
+            ],
+            "receiver": "other",
+            "identificationKey": "bsn",
+            "identificationValue": "569312863"
+        }
+    }
+]

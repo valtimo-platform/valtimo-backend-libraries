@@ -18,7 +18,9 @@
 package com.ritense.valtimo.processlink.service
 
 import com.ritense.plugin.domain.PluginProcessLink
+import com.ritense.valtimo.processlink.web.rest.result.CompatiblePluginProcessLinks
 
 interface PluginProcessLinkService {
     fun getProcessLinks(processDefinitionId: String): List<PluginProcessLink>
+    fun getCompatibleProcessLinks(pluginActionDefinitionKey: String): List<CompatiblePluginProcessLinks>
 }
