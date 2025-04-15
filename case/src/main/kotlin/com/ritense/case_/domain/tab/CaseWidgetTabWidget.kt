@@ -61,6 +61,8 @@ abstract class CaseWidgetTabWidget(
     @Column(name = "actions", nullable = false)
     val actions: List<CaseWidgetAction> = emptyList(),
 ) {
+    abstract fun copy(id: CaseWidgetTabWidgetId = this.id): CaseWidgetTabWidget
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is CaseWidgetTabWidget) return false

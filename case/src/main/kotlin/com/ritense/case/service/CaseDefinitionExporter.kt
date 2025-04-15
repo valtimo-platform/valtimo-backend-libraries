@@ -49,6 +49,11 @@ class CaseDefinitionExporter(
                         caseDefinition.id.key,
                         caseDefinition.id.versionTag.version,
                         caseDefinition.name,
+                        caseDefinition.description,
+                        caseDefinition.createdBy,
+                        caseDefinition.createdDate,
+                        caseDefinition.basedOnVersionTag?.version,
+                        caseDefinition.final,
                         caseDefinition.canHaveAssignee,
                         caseDefinition.autoAssignTasks
                     )

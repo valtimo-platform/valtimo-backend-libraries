@@ -199,6 +199,13 @@ class CaseTabService(
             }
     }
 
+    fun deleteCaseTabs(caseDefinitionId: CaseDefinitionId) {
+        denyAuthorization()
+        caseTabRepository.findAll(byCaseDefinitionId(caseDefinitionId)).forEach { caseTab ->
+            caseTabRepository.delete(caseTab)
+        }
+    }
+
     private fun reorderTabs(caseDefinitionId: CaseDefinitionId) {
         val caseTabs = caseTabRepository.findAll(byCaseDefinitionId(caseDefinitionId), Sort.by(TAB_ORDER))
             .mapIndexed { index, caseTab -> caseTab.copy(tabOrder = index) }

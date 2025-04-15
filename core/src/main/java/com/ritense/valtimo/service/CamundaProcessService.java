@@ -300,10 +300,11 @@ public class CamundaProcessService {
 
     public List<CamundaProcessDefinition> getDeployedDefinitions(CaseDefinitionId caseDefinitionId) {
         denyAuthorization();
+        String versionTag = CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.toString();
         return AuthorizationContext.runWithoutAuthorization(() -> camundaRepositoryService.findProcessDefinitions(
             byActive()
-                .and(byVersionTag("CD:" + caseDefinitionId.toString()))
-                .and(byLatestVersion()),
+                .and(byVersionTag(versionTag))
+                .and(byLatestVersion(versionTag)),
             Sort.by(NAME)
         ));
     }
@@ -314,8 +315,21 @@ public class CamundaProcessService {
     ) {
         denyAuthorization();
         return AuthorizationContext.runWithoutAuthorization(() -> camundaRepositoryService.findProcessDefinitions(
-            byVersionTag("CD:" + caseDefinitionId.toString())
+            byVersionTag(CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.toString())
                 .and(byKey(processDefinitionKey))
+        ));
+    }
+
+    public CamundaProcessDefinition getLatestDefinitionByKeyAndCaseDefinition(
+        CaseDefinitionId caseDefinitionId,
+        String processDefinitionKey
+    ) {
+        denyAuthorization();
+        String versionTag = CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.toString();
+        return AuthorizationContext.runWithoutAuthorization(() -> camundaRepositoryService.findProcessDefinition(
+            byVersionTag(versionTag)
+                .and(byKey(processDefinitionKey))
+                .and(byLatestVersion(versionTag))
         ));
     }
 

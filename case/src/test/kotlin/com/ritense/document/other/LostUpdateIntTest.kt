@@ -16,13 +16,12 @@
 
 package com.ritense.document.other
 
+import com.ritense.BaseIntegrationTest
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.document.BaseIntegrationTest
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.domain.impl.request.NewDocumentRequest
-import com.ritense.document.service.DocumentService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser
@@ -45,9 +44,6 @@ import kotlin.test.assertTrue
 internal class LostUpdateIntTest : BaseIntegrationTest() {
 
     @Autowired
-    lateinit var documentService: DocumentService
-
-    @Autowired
     lateinit var lostUpdateService: LostUpdateService
 
     @BeforeEach
@@ -61,7 +57,7 @@ internal class LostUpdateIntTest : BaseIntegrationTest() {
     }
 
     @AfterEach
-    override fun afterEach() {
+    fun afterEach() {
         documentRepository.deleteAll()
     }
 

@@ -16,10 +16,10 @@
 package com.ritense.document.service.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.BaseIntegrationTest
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.Permission
-import com.ritense.document.BaseIntegrationTest
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchemaDocument

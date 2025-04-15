@@ -16,7 +16,7 @@
 
 package com.ritense.case.service
 
-import com.ritense.case.BaseIntegrationTest
+import com.ritense.BaseIntegrationTest
 import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.junit.jupiter.api.Test
