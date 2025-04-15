@@ -35,12 +35,6 @@ interface CaseDefinitionRepository
 
     fun findAllByIdKeyOrderByIdVersionTagDesc(caseDefinitionKey: String): List<CaseDefinition>
 
-    fun findAllByIdKeyAndBasedOnVersionTag(caseDefinitionKey: String, basedOnVersionTag: Semver?): List<CaseDefinition>
-
-    fun findAllByFinalTrue(): List<CaseDefinition>
-
-    fun existsByIdKey(caseDefinitionKey: String): Boolean
-
     @Query(value = "" +
         "SELECT c.id.versionTag " +
         "FROM CaseDefinition c " +

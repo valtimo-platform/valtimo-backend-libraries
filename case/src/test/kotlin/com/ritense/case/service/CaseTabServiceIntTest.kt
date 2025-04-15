@@ -16,11 +16,12 @@
 
 package com.ritense.case.service
 
-import com.ritense.BaseIntegrationTest
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.domain.CaseTabType
 import com.ritense.case.service.exception.TabAlreadyExistsException
 import com.ritense.case.web.rest.dto.CaseTabDto
+import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
@@ -30,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional
 
 class CaseTabServiceIntTest @Autowired constructor(
     private val caseTabService: CaseTabService,
+    private val documentDefinitionService: DocumentDefinitionService
 ) : BaseIntegrationTest() {
 
     @Test

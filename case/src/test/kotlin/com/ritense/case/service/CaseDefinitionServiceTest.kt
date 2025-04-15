@@ -65,8 +65,7 @@ class CaseDefinitionServiceTest {
             documentDefinitionService,
             caseDefinitionRepository,
             valueResolverService,
-            mock(),
-            mock(),
+            mock()
         )
     }
 

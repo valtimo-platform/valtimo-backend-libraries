@@ -16,8 +16,8 @@
 
 package com.ritense.case_.web.rest
 
-import com.ritense.BaseIntegrationTest
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.domain.CaseTabType
 import com.ritense.case.service.CaseTabService
 import com.ritense.case.web.rest.dto.CaseTabDto
@@ -27,6 +27,7 @@ import com.ritense.case_.web.rest.dto.TestCaseWidgetTabWidgetDto
 import com.ritense.case_.widget.TestCaseWidgetProperties
 import com.ritense.case_.widget.displayproperties.CurrencyFieldDisplayProperties
 import com.ritense.document.domain.impl.request.NewDocumentRequest
+import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.DEVELOPER
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
@@ -51,6 +52,7 @@ class CaseWidgetTabResourceIntTest @Autowired constructor(
     private val webApplicationContext: WebApplicationContext,
     private val tabService: CaseTabService,
     private val widgetTabService: CaseWidgetTabService,
+    private val documentService: JsonSchemaDocumentService
 ) : BaseIntegrationTest() {
 
     lateinit var mockMvc: MockMvc

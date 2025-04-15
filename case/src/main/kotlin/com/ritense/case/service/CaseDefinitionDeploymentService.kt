@@ -68,10 +68,9 @@ class CaseDefinitionDeploymentService(
                     }
             resources.forEach { (_, files) ->
                 runWithoutAuthorization {
-                    valtimoImportService.importCaseDefinition(files, caseDefinitionRepository.findAllByFinalTrue().map { it.id })
+                    valtimoImportService.importCaseDefinition(files, caseDefinitionRepository.findAll().map { it.id })
                 }
             }
-            setLatestToActiveIfNoneIsActive()
 
         } catch (ex: FileNotFoundException) {
             // No resources found, nothing to import
@@ -102,16 +101,6 @@ class CaseDefinitionDeploymentService(
             // No resources found, nothing to import
             logger.info { "No global definitions found. Continuing startup without importing global definitions." }
         }
-    }
-
-    private fun setLatestToActiveIfNoneIsActive() {
-        caseDefinitionRepository.findAll()
-            .groupBy { it.id.key }
-            .map { it.value }
-            .filter { caseDefinitions -> caseDefinitions.none { caseDefinition -> caseDefinition.active } }
-            .map { caseDefinitions -> caseDefinitions.maxBy { it.id.versionTag } }
-            .map { caseDefinition -> caseDefinition.copy(active = true) }
-            .forEach { caseDefinition -> caseDefinitionRepository.save(caseDefinition) }
     }
 
     companion object {

@@ -26,7 +26,6 @@ import com.ritense.document.domain.impl.listener.RelatedJsonSchemaDocumentAvaila
 import com.ritense.document.domain.impl.sequence.JsonSchemaDocumentDefinitionSequenceRecord;
 import com.ritense.document.exporter.JsonSchemaDocumentDefinitionExporter;
 import com.ritense.document.importer.JsonSchemaDocumentDefinitionImporter;
-import com.ritense.document.listener.DocumentDefinitionCaseEventListener;
 import com.ritense.document.repository.DocumentDefinitionRepository;
 import com.ritense.document.repository.DocumentDefinitionSequenceRepository;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
@@ -258,16 +257,6 @@ public class DocumentAutoConfiguration {
     ) {
         return new DocumentModuleExceptionTranslator(
             adviceTraits.get(0)
-        );
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(DocumentDefinitionCaseEventListener.class)
-    public DocumentDefinitionCaseEventListener documentDefinitionCaseEventListener(
-        DocumentDefinitionService documentDefinitionService
-    ) {
-        return new DocumentDefinitionCaseEventListener(
-            documentDefinitionService
         );
     }
 }

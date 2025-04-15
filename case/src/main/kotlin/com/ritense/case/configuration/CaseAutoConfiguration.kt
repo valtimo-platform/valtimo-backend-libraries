@@ -145,16 +145,14 @@ class CaseAutoConfiguration {
         documentDefinitionService: DocumentDefinitionService,
         caseDefinitionRepository: CaseDefinitionRepository,
         valueResolverService: ValueResolverService,
-        authorizationService: AuthorizationService,
-        applicationEventPublisher: ApplicationEventPublisher,
+        authorizationService: AuthorizationService
     ): CaseDefinitionService {
         return CaseDefinitionService(
             caseDefinitionListColumnRepository,
             documentDefinitionService,
             caseDefinitionRepository,
             valueResolverService,
-            authorizationService,
-            applicationEventPublisher,
+            authorizationService
         )
     }
 

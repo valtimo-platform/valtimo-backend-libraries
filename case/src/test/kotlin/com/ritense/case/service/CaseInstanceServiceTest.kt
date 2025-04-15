@@ -16,13 +16,13 @@
 
 package com.ritense.case.service
 
-import com.ritense.BaseTest
 import com.ritense.case.domain.CaseListColumn
 import com.ritense.case.domain.CaseListColumnId
 import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DisplayType
 import com.ritense.case.domain.EmptyDisplayTypeParameter
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
+import com.ritense.case_.domain.definition.CaseDefinition
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
@@ -42,7 +42,7 @@ import org.springframework.data.domain.Sort
 import java.util.UUID
 import kotlin.test.assertEquals
 
-class CaseInstanceServiceTest: BaseTest() {
+class CaseInstanceServiceTest {
 
     private lateinit var service: CaseInstanceService
 
@@ -88,8 +88,10 @@ class CaseInstanceServiceTest: BaseTest() {
             .thenReturn(PageImpl(listOf(DOCUMENT)))
         whenever(caseDefinitionService.findCaseDefinition(any()))
             .thenReturn(
-                caseDefinition(
+                CaseDefinition(
                     CaseDefinitionId.of(CASE_DEFINITION_NAME, "1.0.0"),
+                    CASE_DEFINITION_NAME,
+                    false
                 )
             )
 
@@ -109,9 +111,10 @@ class CaseInstanceServiceTest: BaseTest() {
             .thenReturn(PageImpl(listOf(DOCUMENT)))
         whenever(caseDefinitionService.findCaseDefinition(any()))
             .thenReturn(
-                caseDefinition(
+                CaseDefinition(
                     CaseDefinitionId.of(CASE_DEFINITION_NAME, "1.0.0"),
                     CASE_DEFINITION_NAME,
+                    false
                 )
             )
 

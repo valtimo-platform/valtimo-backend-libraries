@@ -27,8 +27,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ritense.BaseIntegrationTest;
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.web.rest.error.DocumentModuleExceptionTranslator;

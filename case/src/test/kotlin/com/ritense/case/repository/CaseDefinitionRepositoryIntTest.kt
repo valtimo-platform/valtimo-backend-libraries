@@ -16,7 +16,8 @@
 
 package com.ritense.case.repository
 
-import com.ritense.BaseIntegrationTest
+import com.ritense.case.BaseIntegrationTest
+import com.ritense.case_.domain.definition.CaseDefinition
 import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.junit.jupiter.api.Test
@@ -33,18 +34,24 @@ class CaseDefinitionRepositoryIntTest @Autowired constructor(
     @Test
     fun `should support sorting on SemVer`() {
         // normally when sorting alphabetically 1.20.0 is greater than 1.100.0, but in semver 1.100.0 is greater than 1.20.0
-        val caseDefinition1 = caseDefinition(
+        val caseDefinition1 = CaseDefinition(
             CaseDefinitionId(
                 "key",
                 Semver("1.20.0")
-            )
+            ),
+            "name",
+            true,
+            true
         )
 
-        val caseDefinition2 = caseDefinition(
+        val caseDefinition2 = CaseDefinition(
             CaseDefinitionId(
                 "key",
                 Semver("1.100.0")
-            )
+            ),
+            "name",
+            true,
+            true
         )
 
         caseDefinitionRepository.save(caseDefinition1)

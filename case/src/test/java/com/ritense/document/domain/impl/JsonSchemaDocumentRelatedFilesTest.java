@@ -18,7 +18,7 @@ package com.ritense.document.domain.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ritense.BaseTest;
+import com.ritense.document.BaseTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

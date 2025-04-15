@@ -16,8 +16,8 @@
 
 package com.ritense.case_.deployment
 
-import com.ritense.BaseIntegrationTest
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.case.BaseIntegrationTest
 import com.ritense.case_.repository.CaseWidgetTabRepository
 import com.ritense.case_.service.CaseWidgetTabService
 import com.ritense.case_.widget.fields.FieldsCaseWidgetDto

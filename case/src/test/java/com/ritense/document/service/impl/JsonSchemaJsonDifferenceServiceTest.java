@@ -19,7 +19,7 @@ package com.ritense.document.service.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.ritense.BaseTest;
+import com.ritense.document.BaseTest;
 import com.ritense.document.domain.event.DocumentFieldChangedEvent;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;

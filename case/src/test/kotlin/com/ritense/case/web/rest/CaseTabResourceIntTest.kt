@@ -16,11 +16,12 @@
 
 package com.ritense.case.web.rest
 
-import com.ritense.BaseIntegrationTest
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.case.BaseIntegrationTest
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.request.NewDocumentRequest
+import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import org.junit.jupiter.api.BeforeEach
@@ -39,6 +40,9 @@ class CaseTabResourceIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var webApplicationContext: WebApplicationContext
+
+    @Autowired
+    lateinit var documentService: JsonSchemaDocumentService
 
     lateinit var mockMvc: MockMvc
 

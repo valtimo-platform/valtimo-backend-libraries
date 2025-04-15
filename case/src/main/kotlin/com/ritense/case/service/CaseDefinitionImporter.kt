@@ -23,6 +23,7 @@ import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
 import mu.KotlinLogging
+import org.springframework.data.repository.findByIdOrNull
 
 class CaseDefinitionImporter(
     private val objectMapper: ObjectMapper,
@@ -35,10 +36,10 @@ class CaseDefinitionImporter(
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
-        deploy(request.content.toString(Charsets.UTF_8))
+        deploy(request.content.toString(Charsets.UTF_8), true)
     }
 
-    private fun deploy(fileContent: String) {
+    private fun deploy(fileContent: String, forceDeploy: Boolean = false) {
         val caseDefinitionDto = try {
             objectMapper.readValue(fileContent, CaseDefinitionDto::class.java)
         } catch (e: Exception) {
@@ -49,8 +50,20 @@ class CaseDefinitionImporter(
 
         logger.debug { "Deploying case definition with id '${caseDefinition.id}'" }
 
-        caseDefinitionRepository.save(caseDefinition)
-        logger.debug { "Case definition with id '${caseDefinition.id}' was saved" }
+        val existingCaseDefinition = caseDefinitionRepository.findByIdOrNull(caseDefinition.id)
+
+        if (existingCaseDefinition == null || forceDeploy) { // TODO: revisit forceDeploy this when doing drafts
+            val activeCaseDefinition = caseDefinitionRepository.findByActiveIsTrueAndIdKey(caseDefinition.id.key)
+            if (activeCaseDefinition == null || activeCaseDefinition.id.versionTag < caseDefinition.id.versionTag) {
+                caseDefinitionRepository.save(caseDefinition.copy(active = true))
+                activeCaseDefinition?.let {caseDefinitionRepository.save(it.copy(active = false)) }
+            } else {
+                caseDefinitionRepository.save(caseDefinition)
+            }
+            logger.debug { "Case definition with id '${caseDefinition.id}' was saved" }
+        } else {
+            logger.debug { "Not deploying case definition with '${caseDefinition.id}', it already exists" }
+        }
     }
 
     private companion object {

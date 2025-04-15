@@ -30,7 +30,6 @@ import com.ritense.case.service.validations.CreateCaseListColumnValidator
 import com.ritense.case.service.validations.ListColumnValidator
 import com.ritense.case.service.validations.Operation
 import com.ritense.case.service.validations.UpdateCaseListColumnValidator
-import com.ritense.case.web.rest.dto.CaseDefinitionDraftCreateRequest
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.case.web.rest.mapper.CaseListColumnMapper
@@ -41,19 +40,12 @@ import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
-import com.ritense.valtimo.contract.event.CaseDefinitionCreatedEvent
-import com.ritense.valtimo.contract.event.CaseDefinitionPreDeleteEvent
-import com.ritense.valtimo.contract.utils.SecurityUtils
 import com.ritense.valueresolver.ValueResolverService
-import mu.KotlinLogging
-import org.semver4j.Semver
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
 import kotlin.jvm.optionals.getOrNull
 
 @Transactional
@@ -64,8 +56,7 @@ class CaseDefinitionService(
     private val documentDefinitionService: DocumentDefinitionService,
     private val caseDefinitionRepository: CaseDefinitionRepository,
     valueResolverService: ValueResolverService,
-    private val authorizationService: AuthorizationService,
-    private val applicationEventPublisher: ApplicationEventPublisher,
+    private val authorizationService: AuthorizationService
 ) {
     var validators: Map<Operation, ListColumnValidator<CaseListColumnDto>> = mapOf(
         Operation.CREATE to CreateCaseListColumnValidator(
@@ -79,69 +70,6 @@ class CaseDefinitionService(
             valueResolverService
         )
     )
-
-    fun createCaseDefinitionDraft(
-        request: CaseDefinitionDraftCreateRequest
-    ): CaseDefinition {
-        denyManagementOperation()
-        val caseDefinitionId = request.getCaseDefinitionId()
-        require(!caseDefinitionRepository.existsById(caseDefinitionId)) {
-            "Failed to create case-definition-draft. Case-definition with id: '${caseDefinitionId}' already exists."
-        }
-        val basedOnCaseDefinitionId = request.getBasedOnCaseDefinitionId()
-        val newCaseDefinition = if (basedOnCaseDefinitionId == null) {
-            CaseDefinition(
-                id = caseDefinitionId,
-                name = request.name ?: error("Case definition name cannot be null"),
-                description = request.description,
-                final = false,
-                createdBy = SecurityUtils.getCurrentUserLogin(),
-                createdDate = LocalDateTime.now(),
-                active = true
-            )
-        } else {
-            val basedOnCaseDefinition = getCaseDefinition(basedOnCaseDefinitionId)
-            require(basedOnCaseDefinition.final) {
-                "Failed to create case-definition-draft. Case-definition with id: '$basedOnCaseDefinitionId' is not final."
-            }
-            basedOnCaseDefinition.copy(
-                id = caseDefinitionId,
-                description = request.description ?: basedOnCaseDefinition.description,
-                final = false,
-                createdBy = SecurityUtils.getCurrentUserLogin(),
-                createdDate = LocalDateTime.now(),
-                basedOnVersionTag = basedOnCaseDefinitionId.versionTag,
-                active = false
-            )
-        }
-        val newSavedCaseDefinition = caseDefinitionRepository.save(newCaseDefinition)
-        applicationEventPublisher.publishEvent(
-            CaseDefinitionCreatedEvent(
-                caseDefinitionId = newSavedCaseDefinition.id,
-                basedOnCaseDefinitionId = basedOnCaseDefinitionId,
-                duplicate = basedOnCaseDefinitionId != null
-            )
-        )
-        return newSavedCaseDefinition
-    }
-
-    fun deleteCaseDefinition(caseDefinitionId: CaseDefinitionId) {
-        denyManagementOperation()
-        require(!getCaseDefinition(caseDefinitionId).active) {
-            "Failed to delete case-definition. Case-definition with id: '$caseDefinitionId' is the global active version."
-        }
-        require(!getCaseDefinition(caseDefinitionId).final) {
-            "Failed to delete case-definition. Case-definition with id: '$caseDefinitionId' is final."
-        }
-        applicationEventPublisher.publishEvent(
-            CaseDefinitionPreDeleteEvent(caseDefinitionId)
-        )
-        caseDefinitionRepository.deleteById(caseDefinitionId)
-    }
-
-    fun existsCaseDefinition(caseDefinitionKey: String): Boolean {
-        return caseDefinitionRepository.existsByIdKey(caseDefinitionKey)
-    }
 
     fun getCaseDefinitions(
         caseDefinitionKey: String? = null,
@@ -186,16 +114,6 @@ class CaseDefinitionService(
         }
 
         return caseDefinitionRepository.save(caseDefinition.copy(active = true))
-    }
-
-    fun getCaseDefinitionVersions(caseDefinitionKey: String): List<String> {
-        return caseDefinitionRepository.findVersionsForCaseDefinitionKey(caseDefinitionKey).map {
-            it.toString()
-        }
-    }
-
-    fun getCaseDefinitionsBasedOnVersion(caseDefinitionKey: String, basedOnVersionTag: Semver): List<CaseDefinition> {
-        return caseDefinitionRepository.findAllByIdKeyAndBasedOnVersionTag(caseDefinitionKey, basedOnVersionTag)
     }
 
     @Throws(UnknownDocumentDefinitionException::class)
@@ -283,9 +201,5 @@ class CaseDefinitionService(
     private fun assertDocumentDefinitionExists(caseDefinitionKey: String): DocumentDefinition {
         return documentDefinitionService.findLatestByName(caseDefinitionKey)
             .getOrNull() ?: throw UnknownCaseDefinitionException(caseDefinitionKey)
-    }
-
-    companion object {
-        val logger = KotlinLogging.logger {}
     }
 }
