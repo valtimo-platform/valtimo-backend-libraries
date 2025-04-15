@@ -38,4 +38,20 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="2" author="Ritense">
+        <addColumn tableName="document_objecten_api_sync">
+            <column name="case_definition_key" type="VARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="case_definition_version_tag" type="VARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="3" author="Ritense">
+        <dropColumn tableName="document_objecten_api_sync" columnName="document_definition_name"/>
+        <dropColumn tableName="document_objecten_api_sync" columnName="document_definition_version"/>
+    </changeSet>
+
 </databaseChangeLog>

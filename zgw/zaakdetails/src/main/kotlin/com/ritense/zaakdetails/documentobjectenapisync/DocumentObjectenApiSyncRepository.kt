@@ -16,6 +16,7 @@
 
 package com.ritense.zaakdetails.documentobjectenapisync
 
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.util.UUID
@@ -23,13 +24,11 @@ import java.util.UUID
 @Repository
 interface DocumentObjectenApiSyncRepository : JpaRepository<DocumentObjectenApiSync, UUID> {
 
-    fun findByDocumentDefinitionNameAndDocumentDefinitionVersion(
-        documentDefinitionName: String,
-        documentDefinitionVersion: Long
+    fun findByCaseDefinitionId(
+        caseDefinitionId: CaseDefinitionId
     ): DocumentObjectenApiSync?
 
-    fun deleteByDocumentDefinitionNameAndDocumentDefinitionVersion(
-        documentDefinitionName: String,
-        documentDefinitionVersion: Long
+    fun deleteByCaseDefinitionId(
+        caseDefinitionId: CaseDefinitionId
     )
 }

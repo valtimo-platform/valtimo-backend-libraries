@@ -16,6 +16,7 @@
 
 package com.ritense.zakenapi.service
 
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.zakenapi.BaseIntegrationTest
 import com.ritense.zakenapi.web.rest.request.CreateZaakTypeLinkRequest
 import jakarta.inject.Inject
@@ -34,10 +35,12 @@ class ZaakTypeLinkServiceIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should create zaakTypeLink`() {
+        val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
         val result = zaakTypeLinkService.createZaakTypeLink(
-            CreateZaakTypeLinkRequest("test", zaakUrl)
+            caseDefinitionId,
+            CreateZaakTypeLinkRequest(zaakUrl)
         )
-        assertThat(result.documentDefinitionName).isEqualTo("test")
+        assertThat(result.caseDefinitionId).isEqualTo(caseDefinitionId)
         assertThat(result.zaakTypeUrl).isEqualTo(zaakUrl)
     }
 }

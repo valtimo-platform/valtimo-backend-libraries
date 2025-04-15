@@ -22,15 +22,12 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.client.ObjectsList
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.zaakdetails.BaseIntegrationTest
-import com.ritense.zakenapi.domain.CreateZaakResponse
 import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zakenapi.service.ZaakTypeLinkService
 import com.ritense.zakenapi.web.rest.request.CreateZaakTypeLinkRequest
 import com.ritense.zgw.Rsin
-import org.assertj.core.api.Assertions
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -41,7 +38,6 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.TestPropertySource
 import org.springframework.transaction.annotation.Transactional
 import java.net.URI
 import java.time.LocalDate
@@ -67,6 +63,8 @@ class DocumentObjectenApiSyncServiceIntTest : BaseIntegrationTest() {
     @Autowired
     lateinit var zaakTypeLinkService: ZaakTypeLinkService
 
+    val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
+
     @Test
     fun `should create zaakdetails object and link to the zaak when zaak exists`() {
         val objectWrapper = ObjectWrapper(
@@ -78,15 +76,14 @@ class DocumentObjectenApiSyncServiceIntTest : BaseIntegrationTest() {
 
         documentObjectenApiSyncManagementService.saveSyncConfiguration(
             DocumentObjectenApiSync(
-                documentDefinitionName = "profile",
-                documentDefinitionVersion = 1,
+                caseDefinitionId = caseDefinitionId,
                 objectManagementConfigurationId = UUID.fromString("462ef788-f7db-4701-9b87-0400fc79ad7e")
             )
         )
 
         zaakTypeLinkService.createZaakTypeLink(
+            caseDefinitionId,
             CreateZaakTypeLinkRequest(
-                "profile",
                 URI("http://localhost:56273/zaaktype/98d703e3-4afa-47fe-9787-e3d1ab0ab42c"),
                 UUID.fromString("3079d6fe-42e3-4f8f-a9db-52ce2507b7ee"),
                 true,
@@ -132,15 +129,14 @@ class DocumentObjectenApiSyncServiceIntTest : BaseIntegrationTest() {
 
         documentObjectenApiSyncManagementService.saveSyncConfiguration(
             DocumentObjectenApiSync(
-                documentDefinitionName = "profile",
-                documentDefinitionVersion = 1,
+                caseDefinitionId = caseDefinitionId,
                 objectManagementConfigurationId = UUID.fromString("462ef788-f7db-4701-9b87-0400fc79ad7e")
             )
         )
 
         zaakTypeLinkService.createZaakTypeLink(
+            caseDefinitionId,
             CreateZaakTypeLinkRequest(
-                "profile",
                 URI("http://localhost:56273/zaaktype/98d703e3-4afa-47fe-9787-e3d1ab0ab42c"),
                 UUID.fromString("3079d6fe-42e3-4f8f-a9db-52ce2507b7ee"),
                 true,
@@ -183,8 +179,8 @@ class DocumentObjectenApiSyncServiceIntTest : BaseIntegrationTest() {
     @Test
     fun `should not create zaakdetails object when no configuration exists`() {
         zaakTypeLinkService.createZaakTypeLink(
+            caseDefinitionId,
             CreateZaakTypeLinkRequest(
-                "profile",
                 URI("http://localhost:56273/zaaktype/98d703e3-4afa-47fe-9787-e3d1ab0ab42c"),
                 UUID.fromString("3079d6fe-42e3-4f8f-a9db-52ce2507b7ee"),
                 false,
@@ -217,8 +213,7 @@ class DocumentObjectenApiSyncServiceIntTest : BaseIntegrationTest() {
 
         documentObjectenApiSyncManagementService.saveSyncConfiguration(
             DocumentObjectenApiSync(
-                documentDefinitionName = "profile",
-                documentDefinitionVersion = 1,
+                caseDefinitionId = caseDefinitionId,
                 objectManagementConfigurationId = UUID.fromString("462ef788-f7db-4701-9b87-0400fc79ad7e")
             )
         )

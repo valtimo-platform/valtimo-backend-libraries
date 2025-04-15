@@ -137,10 +137,25 @@ open class ValtimoImportService(
             return
         }
 
-        importerEntriesList.forEach { (importer, entries) ->
+        importerEntriesList.filter { it.key.partOfCaseDefinition() }.forEach { (importer, entries) ->
             entries.forEach { entry ->
                 logger.debug { "Importing ${entry.fileName} with importer ${importer.type()}" }
                 importer.import(ImportRequest(entry.fileName, entry.content, caseDefinitionId))
+            }
+        }
+
+    }
+
+    @Transactional
+    open fun importGlobalDefinitions(
+        resources: List<Pair<String, Resource>>
+    ) {
+        val importerEntriesList = getEntriesByImporter(getEntriesFromResources(resources))
+
+        importerEntriesList.filter { !it.key.partOfCaseDefinition() }.forEach { (importer, entries) ->
+            entries.forEach { entry ->
+                logger.debug { "Importing ${entry.fileName} with importer ${importer.type()}" }
+                importer.import(ImportRequest(entry.fileName, entry.content))
             }
         }
 

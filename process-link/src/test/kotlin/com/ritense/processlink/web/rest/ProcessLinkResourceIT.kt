@@ -221,7 +221,7 @@ internal class ProcessLinkResourceIT @Autowired constructor(
         .andExpect(jsonPath("$[4].processDefinition.id").isNotEmpty())
         .andExpect(jsonPath("$[4].processDefinition.key").value("test-process-2"))
         .andExpect(jsonPath("$[4].processDefinition.name").value("Test Process 2"))
-        .andExpect(jsonPath("$[4].processDefinition.versionTag").value("autodeploy:1.0.0"))
+        .andExpect(jsonPath("$[4].processDefinition.versionTag").value("CD:autodeploy:1.0.0"))
         .andExpect(jsonPath("$[4].processCaseLink.id.caseDefinitionId.key").value("autodeploy"))
         .andExpect(jsonPath("$[4].processCaseLink.id.caseDefinitionId.versionTag").value("1.0.0"))
         .andExpect(jsonPath("$[4].processCaseLink.canInitializeDocument").value(true))
@@ -283,7 +283,7 @@ internal class ProcessLinkResourceIT @Autowired constructor(
 
         runWithoutAuthorization {
             val deployedProcess = camundaProcessService.getProcessDefinition("test-process")
-            assertEquals("autodeploy:1.0.0", deployedProcess?.versionTag)
+            assertEquals("CD:autodeploy:1.0.0", deployedProcess?.versionTag)
 
 
             val procdef = camundaProcessService.getProcessDefinition("test-process")
