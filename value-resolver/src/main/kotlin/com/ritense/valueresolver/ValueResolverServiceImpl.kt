@@ -74,9 +74,10 @@ class ValueResolverServiceImpl(
         request: ValueResolverOptionRequest,
         @LoggableResource("documentDefinitionName") documentDefinitionName: String
     ): List<ValueResolverOption> {
-        return request.prefixes.fold(emptyList()) { list, prefix ->
+        val prefixes = request.prefixes.ifEmpty { resolverFactoryMap.keys }
+        return prefixes.fold(emptyList()) { list, prefix ->
             val newOptions = resolverFactoryMap[prefix]?.getResolvableKeyOptions(documentDefinitionName) ?: emptyList()
-            list + newOptions.filter { option -> request.type.equals(option.type) }
+            list + newOptions.filter { option -> request.type == option.type }
         }
     }
 
@@ -85,9 +86,10 @@ class ValueResolverServiceImpl(
         @LoggableResource("documentDefinitionName") documentDefinitionName: String,
         version: Long
     ): List<ValueResolverOption> {
-        return request.prefixes.fold(emptyList()) { list, prefix ->
+        val prefixes = request.prefixes.ifEmpty { resolverFactoryMap.keys }
+        return prefixes.fold(emptyList()) { list, prefix ->
             val newOptions = resolverFactoryMap[prefix]?.getResolvableKeyOptions(documentDefinitionName, version) ?: emptyList()
-            list + newOptions.filter { option -> request.type.equals(option.type) }
+            list + newOptions.filter { option -> request.type == option.type }
         }
     }
 

@@ -258,6 +258,33 @@ internal class PluginServiceIT : BaseIntegrationTest() {
 
     @Test
     @Transactional
+    fun `should handle plugin action property with leading 0`() {
+        val processLink = PluginProcessLink(
+            PluginProcessLinkId.newId(),
+            processDefinitionId = UUID.randomUUID().toString(),
+            activityId = "test",
+            pluginConfigurationId = pluginConfiguration.id,
+            pluginActionDefinitionKey = "other-test-action",
+            actionProperties = objectMapper.readTree("""{"someString": "01234"}""") as ObjectNode,
+            activityType = ActivityTypeWithEventName.SERVICE_TASK_START
+        )
+
+        val testPlugin = spy(TestPlugin("someString"))
+        doReturn(testPlugin).whenever(pluginFactory).create(pluginConfiguration)
+
+        val execution = DelegateExecutionFake.of()
+            .withProcessInstanceId(UUID.randomUUID().toString())
+
+        pluginService.invoke(execution, processLink)
+
+        val argumentCaptor = argumentCaptor<String>()
+        verify(testPlugin).testAction(argumentCaptor.capture())
+
+        assertEquals("01234", argumentCaptor.firstValue)
+    }
+
+    @Test
+    @Transactional
     fun `should fail when invoking an action with missing required parameter`() {
         val processLink = PluginProcessLink(
             PluginProcessLinkId.newId(),

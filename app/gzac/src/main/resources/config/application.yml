@@ -229,6 +229,10 @@ valtimo:
             clear-tables: false
         case-tabs:
             clear-tables: false
+        case-tag:
+            clear-tables: false
+        internal-case-status:
+            clear-tables: false
         zgw-document-list-column:
             clear-tables: false
         task-search-fields:
@@ -246,8 +250,13 @@ valtimo:
     authorization:
         dashboard:
             enabled: true
+        zgwDocuments:
+            enabled:true
     logging:
         retentionInMinutes: 1440
+    docker:
+        filter:
+            enabled: true
 
 spring-actuator:
     username: admin

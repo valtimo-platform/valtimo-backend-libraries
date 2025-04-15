@@ -70,6 +70,10 @@ public class CamundaProcessJsonSchemaDocumentInstance
         return this.processName;
     }
 
+    public void setProcessName(String processName) {
+        this.processName = processName;
+    }
+
     @Override
     @JsonIgnore
     public CamundaProcessJsonSchemaDocumentInstanceId getId() {

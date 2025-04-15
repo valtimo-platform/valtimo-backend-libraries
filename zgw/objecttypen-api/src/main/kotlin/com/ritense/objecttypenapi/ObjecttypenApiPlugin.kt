@@ -70,7 +70,8 @@ class ObjecttypenApiPlugin(
         private val logger = KotlinLogging.logger {}
         const val URL_PROPERTY = "url"
 
-        fun findConfigurationByUrl(url: URI) =
-            { properties: JsonNode -> url.toString().startsWith(properties.get(URL_PROPERTY).textValue()) }
+        fun findConfigurationByUrl(url: URI) = { properties: JsonNode ->
+            url.toString().startsWith(properties[URL_PROPERTY].textValue())
+        }
     }
 }

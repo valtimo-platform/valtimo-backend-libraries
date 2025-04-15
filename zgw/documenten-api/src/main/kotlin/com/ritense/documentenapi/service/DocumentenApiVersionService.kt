@@ -100,7 +100,7 @@ class DocumentenApiVersionService(
         return detectPluginConfigurations(caseDefinitionName)
             .map {  pluginConfiguration ->
                 val plugin = pluginService.createInstance(pluginConfiguration) as DocumentenApiPlugin
-                val version = getVersionByTag(plugin.apiVersion)
+                val version = getVersionByTagOrNull(plugin.apiVersion)
                 Triple(pluginConfiguration, plugin, version)
             }
             .sortedByDescending { it.third }
@@ -134,7 +134,10 @@ class DocumentenApiVersionService(
         return detectedConfigurations
     }
 
-    fun getVersionByTag(versionTag: String?) = documentenApiVersions[versionTag]
+    fun getVersionByTag(versionTag: String?): DocumentenApiVersion =
+        getVersionByTagOrNull(versionTag) ?: MINIMUM_VERSION
+
+    fun getVersionByTagOrNull(versionTag: String?): DocumentenApiVersion? = documentenApiVersions[versionTag]
 
     private fun loadResources(): Array<Resource> {
         return ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(PATH)
