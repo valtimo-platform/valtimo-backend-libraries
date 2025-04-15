@@ -47,9 +47,6 @@ internal class ZgwDocumentTrefwoordResourceIT : BaseIntegrationTest() {
     @Autowired
     private lateinit var service: ZgwDocumentTrefwoordService
 
-    //@Autowired
-    //private lateinit var caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository
-
     private lateinit var mockMvc: MockMvc
 
     @BeforeEach
@@ -63,8 +60,6 @@ internal class ZgwDocumentTrefwoordResourceIT : BaseIntegrationTest() {
     @WithMockUser(username = "user@ritense.com", authorities = [USER])
     fun `test getTrefwoorden as a user`() {
         val caseDefinitionName = "TestDefinition"
-
-        //caseDefinitionSettingsRepository.save(CaseDefinitionSettings(caseDefinitionName))
 
         service.createTrefwoord(caseDefinitionName, "Trefwoord1")
         service.createTrefwoord(caseDefinitionName, "Trefwoord2")
@@ -85,8 +80,6 @@ internal class ZgwDocumentTrefwoordResourceIT : BaseIntegrationTest() {
     fun `test getTrefwoorden`() {
         val caseDefinitionName = "TestDefinition"
 
-        //caseDefinitionSettingsRepository.save(CaseDefinitionSettings(caseDefinitionName))
-
         service.createTrefwoord(caseDefinitionName, "Trefwoord1")
         service.createTrefwoord(caseDefinitionName, "Trefwoord2")
 
@@ -105,8 +98,6 @@ internal class ZgwDocumentTrefwoordResourceIT : BaseIntegrationTest() {
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `test getTrefwoorden with search`() {
         val caseDefinitionName = "TestDefinition"
-
-        //caseDefinitionSettingsRepository.save(CaseDefinitionSettings(caseDefinitionName))
 
         service.createTrefwoord(caseDefinitionName, "test123")
         service.createTrefwoord(caseDefinitionName, "test456")
@@ -146,8 +137,6 @@ internal class ZgwDocumentTrefwoordResourceIT : BaseIntegrationTest() {
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `test deleteTrefwoorden`() {
         val caseDefinitionName = "TestDefinition"
-
-        //caseDefinitionSettingsRepository.save(CaseDefinitionSettings(caseDefinitionName))
 
         service.createTrefwoord(caseDefinitionName, "Trefwoord1")
         service.createTrefwoord(caseDefinitionName, "Trefwoord2")
