@@ -424,7 +424,8 @@ public class CamundaProcessService {
     }
 
     @Transactional
-    public void deploy(
+    @Nullable
+    public String deploy(
         CaseDefinitionId caseDefinitionId,
         String fileName,
         ByteArrayInputStream fileInput
@@ -442,7 +443,7 @@ public class CamundaProcessService {
             setProcessesExecutable(bpmnModel);
 
             if (isProcessDefinitionPreviouslyDeployed(fileName, bpmnModel)) {
-                return;
+                return null;
             }
 
             if (!isDeployable(bpmnModel)) {
@@ -458,13 +459,14 @@ public class CamundaProcessService {
                     caseDefinitionId,
                     deployment.getDeployedProcessDefinitions().get(0).getId()
                 );
+                return deployment.getId();
             }
         } else if (fileName.endsWith(".dmn")) {
             DmnModelInstance dmnModel = Dmn.readModelFromStream(fileInput);
 
             setDecisionsVersionTag(dmnModel, caseDefinitionId);
 
-            repositoryService.createDeployment().addModelInstance(fileName, dmnModel).deploy();
+            return repositoryService.createDeployment().addModelInstance(fileName, dmnModel).deploy().getId();
         } else {
             String[] splitFileName = fileName.split("\\.");
 
@@ -475,6 +477,7 @@ public class CamundaProcessService {
                 throw new NoFileExtensionFoundException(fileName);
             }
         }
+        return null;
     }
 
     private boolean isProcessDefinitionPreviouslyDeployed(String fileName, BpmnModelInstance bpmnModel) throws
