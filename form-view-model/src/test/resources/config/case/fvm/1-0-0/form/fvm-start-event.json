@@ -19,6 +19,17 @@
             }
         },
         {
+            "label": "reversedString",
+            "key": "reversedString",
+            "type": "textfield",
+            "input": true,
+            "validate": {
+                "maxLength": 10,
+                "unique": false,
+                "multiple": false
+            }
+        },
+        {
             "label": "age",
             "key": "age",
             "type": "textfield",

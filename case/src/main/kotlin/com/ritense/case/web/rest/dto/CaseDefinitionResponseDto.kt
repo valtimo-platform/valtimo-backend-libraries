@@ -22,9 +22,12 @@ data class CaseDefinitionResponseDto(
     val caseDefinitionKey: String,
     val caseDefinitionVersionTag: String,
     val name: String,
+    val active: Boolean,
     val canHaveAssignee: Boolean,
     val autoAssignTasks: Boolean,
-    val active: Boolean,
+    val hasExternalStartForm: Boolean? = null,
+    val externalStartFormUrl: String? = null,
+    val externalStartFormDescription: String? = null,
 ) {
     companion object {
         fun of(caseDefinition: CaseDefinition) =
@@ -32,9 +35,12 @@ data class CaseDefinitionResponseDto(
                 caseDefinition.id.key,
                 caseDefinition.id.versionTag.version,
                 caseDefinition.name,
+                caseDefinition.active,
                 caseDefinition.canHaveAssignee,
                 caseDefinition.autoAssignTasks,
-                caseDefinition.active,
+                caseDefinition.hasExternalStartForm,
+                caseDefinition.externalStartFormUrl,
+                caseDefinition.externalStartFormDescription
             )
     }
 }

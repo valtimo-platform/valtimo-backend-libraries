@@ -33,8 +33,10 @@ import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.request.AssigneeRequest;
+import com.ritense.valtimo.service.request.SetDueDateRequest;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 import org.camunda.bpm.engine.FormService;
@@ -57,9 +59,11 @@ class TaskResourceTest {
     private CamundaTaskService camundaTaskService;
     private CamundaProcessService camundaProcessService;
     private AssigneeRequest assigneeRequest;
+    private SetDueDateRequest dueDateRequest;
     private ObjectMapper objectMapper;
     private String assigneeId = "AAAA-1111";
     private String taskId = UUID.randomUUID().toString();
+    private LocalDateTime dueDate;
 
     @BeforeEach
     void init() {
@@ -75,6 +79,9 @@ class TaskResourceTest {
         objectMapper = MapperSingleton.INSTANCE.get();
 
         assigneeRequest = new AssigneeRequest(assigneeId);
+
+        dueDate = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
+        dueDateRequest = new SetDueDateRequest(dueDate);
 
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         converter.setObjectMapper(objectMapper);
@@ -97,6 +104,33 @@ class TaskResourceTest {
             .andExpect(status().isOk());
 
         verify(camundaTaskService, times(1)).assign(taskId, assigneeId);
+    }
+
+    @Test
+    void setDueDate() throws Exception {
+        mockMvc.perform(post("/api/v1/task/{taskId}/set-due-date", taskId)
+                .content(objectMapper.writeValueAsString(dueDateRequest))
+                .characterEncoding(StandardCharsets.UTF_8.name())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+            )
+            .andDo(print())
+            .andExpect(status().isOk());
+
+        verify(camundaTaskService, times(1)).setDueDate(taskId, dueDate);
+    }
+
+    @Test
+    void removeDueDate() throws Exception {
+        mockMvc.perform(post("/api/v1/task/{taskId}/set-due-date", taskId)
+                .characterEncoding(StandardCharsets.UTF_8.name())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+            )
+            .andDo(print())
+            .andExpect(status().isOk());
+
+        verify(camundaTaskService, times(1)).setDueDate(taskId, null);
     }
 
     @Test

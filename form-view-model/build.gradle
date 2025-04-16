@@ -29,8 +29,8 @@ dockerCompose {
 }
 
 dependencies {
-    implementation project(":case")
     implementation project(":authorization")
+    implementation project(":case")
     implementation project(":command-handling")
     implementation project(":contract")
     implementation project(":core")

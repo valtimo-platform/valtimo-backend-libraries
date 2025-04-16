@@ -49,12 +49,12 @@ class ValueResolverServiceImpl(
         return resolverFactoryMap.keys.filter { prefix -> prefix != "" }.toList()
     }
 
-
     override fun getResolvableKeys(
         request: ValueResolverOptionRequest,
         @LoggableResource("documentDefinitionName") documentDefinitionName: String
     ): List<ValueResolverOption> {
-        return request.prefixes.fold(emptyList()) { list, prefix ->
+        val prefixes = request.prefixes.ifEmpty { resolverFactoryMap.keys }
+        return prefixes.fold(emptyList()) { list, prefix ->
             val newOptions = resolverFactoryMap[prefix]?.getResolvableKeyOptions(documentDefinitionName) ?: emptyList()
             list + newOptions.filter { option -> request.type.equals(option.type) }
         }
@@ -65,7 +65,8 @@ class ValueResolverServiceImpl(
         @LoggableResource("documentDefinitionName") documentDefinitionName: String,
         caseDefinitionId: CaseDefinitionId
     ): List<ValueResolverOption> {
-        return request.prefixes.fold(emptyList()) { list, prefix ->
+        val prefixes = request.prefixes.ifEmpty { resolverFactoryMap.keys }
+        return prefixes.fold(emptyList()) { list, prefix ->
             val newOptions = resolverFactoryMap[prefix]?.getResolvableKeyOptions(documentDefinitionName, caseDefinitionId) ?: emptyList()
             list + newOptions.filter { option -> request.type.equals(option.type) }
         }

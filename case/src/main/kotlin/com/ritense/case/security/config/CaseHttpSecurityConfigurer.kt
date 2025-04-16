@@ -50,12 +50,6 @@ class CaseHttpSecurityConfigurer : HttpSecurityConfigurer {
                         )
                     ).authenticated() // Deprecated
                     .requestMatchers(antMatcher(GET, "/api/v1/document/{documentId}/tab")).authenticated()
-                    .requestMatchers(
-                        antMatcher(
-                            PATCH,
-                            "/api/v1/case/{caseDefinitionkey}/version/{caseDefinitionVersionTag}/settings"
-                        )
-                    ).hasAuthority(ADMIN) // Deprecated
                     .requestMatchers(antMatcher(POST, "/api/v1/case/{caseDefinitionName}/search")).authenticated()
                     .requestMatchers(
                         antMatcher(

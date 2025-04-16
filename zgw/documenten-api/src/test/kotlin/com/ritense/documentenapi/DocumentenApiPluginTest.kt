@@ -20,10 +20,15 @@ import com.ritense.documentenapi.DocumentenApiPlugin.Companion.DOCUMENT_URL_PROC
 import com.ritense.documentenapi.DocumentenApiPlugin.Companion.RESOURCE_ID_PROCESS_VAR
 import com.ritense.documentenapi.client.CreateDocumentRequest
 import com.ritense.documentenapi.client.CreateDocumentResult
-import com.ritense.documentenapi.client.DocumentStatusType
+import com.ritense.documentenapi.client.DocumentInformatieObject
+import com.ritense.documentenapi.client.DocumentLock
+import com.ritense.documentenapi.client.DocumentStatusType.DEFINITIEF
+import com.ritense.documentenapi.client.DocumentStatusType.IN_BEWERKING
 import com.ritense.documentenapi.client.DocumentenApiClient
+import com.ritense.documentenapi.client.PatchDocumentRequest
 import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.documentenapi.service.DocumentenApiVersionService
+import com.ritense.documentenapi.service.DocumentenApiVersionService.Companion.MINIMUM_VERSION
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
@@ -31,11 +36,13 @@ import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.json.MapperSingleton
+import com.ritense.zgw.Rsin
 import com.ritense.zgw.domain.Vertrouwelijkheid
 import org.apache.commons.io.IOUtils
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
@@ -95,7 +102,8 @@ internal class DocumentenApiPluginTest {
             "returnedFileName",
             1L,
             LocalDateTime.of(2020, 1, 1, 1, 1, 1),
-            listOf()
+            listOf(),
+            null
         )
 
         whenever(executionMock.getVariable("localDocumentVariableName"))
@@ -139,7 +147,7 @@ internal class DocumentenApiPluginTest {
             "storedDocumentVariableName",
             "type",
             "taal",
-            DocumentStatusType.IN_BEWERKING
+            IN_BEWERKING
         )
 
         val apiRequestCaptor = argumentCaptor<CreateDocumentRequest>()
@@ -158,7 +166,7 @@ internal class DocumentenApiPluginTest {
         assertEquals("taal", request.taal)
         assertEquals(content, IOUtils.toString(request.inhoud, Charsets.UTF_8))
         assertEquals("type", request.informatieobjecttype)
-        assertEquals(DocumentStatusType.IN_BEWERKING, request.status)
+        assertEquals(IN_BEWERKING, request.status)
         assertEquals(false, request.indicatieGebruiksrecht)
 
         val emittedEvent = eventCaptor.firstValue
@@ -186,7 +194,8 @@ internal class DocumentenApiPluginTest {
             "returnedFileName",
             1L,
             LocalDateTime.now(),
-            listOf()
+            listOf(),
+            null
         )
 
         whenever(executionMock.getVariable(RESOURCE_ID_PROCESS_VAR))
@@ -255,7 +264,7 @@ internal class DocumentenApiPluginTest {
         assertEquals("taal", request.taal)
         assertEquals(content, IOUtils.toString(request.inhoud, Charsets.UTF_8))
         assertEquals("type", request.informatieobjecttype)
-        assertEquals(DocumentStatusType.IN_BEWERKING, request.status)
+        assertEquals(IN_BEWERKING, request.status)
         assertEquals(false, request.indicatieGebruiksrecht)
         assertEquals(Vertrouwelijkheid.ZAAKVERTROUWELIJK, request.vertrouwelijkheidaanduiding)
     }
@@ -277,7 +286,8 @@ internal class DocumentenApiPluginTest {
             "returnedFileName",
             1L,
             LocalDateTime.now(),
-            listOf()
+            listOf(),
+            null
         )
 
         whenever(executionMock.getVariable(RESOURCE_ID_PROCESS_VAR))
@@ -339,7 +349,7 @@ internal class DocumentenApiPluginTest {
         assertEquals("taal", request.taal)
         assertEquals(content, IOUtils.toString(request.inhoud, Charsets.UTF_8))
         assertEquals("type", request.informatieobjecttype)
-        assertEquals(DocumentStatusType.IN_BEWERKING, request.status)
+        assertEquals(IN_BEWERKING, request.status)
         assertEquals(false, request.indicatieGebruiksrecht)
         assertNull(request.vertrouwelijkheidaanduiding)
     }
@@ -373,5 +383,49 @@ internal class DocumentenApiPluginTest {
 
         assertEquals(informatieObjectUrl, informatieObjectUrlCaptor.firstValue)
         assertEquals(authenticationMock, authorizationCaptor.firstValue)
+    }
+
+    @Test
+    fun `should not modify definitief document when version does not support it`() {
+        val storageService: TemporaryResourceStorageService = mock()
+        val applicationEventPublisher: ApplicationEventPublisher = mock()
+        val authenticationMock = mock<DocumentenApiAuthentication>()
+        val documentenApiVersionService: DocumentenApiVersionService = mock()
+        val informatieObjectUrl = URI("http://some-url/informatie-object/123")
+        val plugin = DocumentenApiPlugin(
+            client,
+            storageService,
+            applicationEventPublisher,
+            MapperSingleton.get(),
+            listOf(),
+            documentenApiVersionService,
+            pluginService
+        )
+        plugin.url = URI("http://some-url")
+        plugin.bronorganisatie = "123456789"
+        plugin.authenticationPluginConfiguration = authenticationMock
+        plugin.apiVersion = "1.0.0"
+        whenever(documentenApiVersionService.getVersionByTag(plugin.apiVersion)).thenReturn(MINIMUM_VERSION)
+        whenever(client.lockInformatieObject(authenticationMock, informatieObjectUrl)).thenReturn(DocumentLock("lock"))
+        whenever( client.getInformatieObject(authenticationMock, informatieObjectUrl)).thenReturn(
+            DocumentInformatieObject(
+                url = informatieObjectUrl,
+                bronorganisatie = Rsin("000000000"),
+                creatiedatum = LocalDate.now(),
+                titel = "titel",
+                auteur = "auteur",
+                taal = "taal",
+                beginRegistratie = LocalDateTime.now(),
+                status = DEFINITIEF
+            )
+        )
+
+        val exception = assertThrows<Exception> {
+            plugin.modifyInformatieObject(
+                informatieObjectUrl,
+                PatchDocumentRequest(LocalDate.now(), "Nieuwe titel", "auteur", DEFINITIEF, "taal")
+            )
+        }
+        assertEquals("InformatieObject 123 with status 'definitief' cannot be updated in Documenten API with '1.0.0'", exception.message)
     }
 }

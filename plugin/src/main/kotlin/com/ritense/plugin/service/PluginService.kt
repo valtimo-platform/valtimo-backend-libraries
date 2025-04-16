@@ -605,9 +605,9 @@ class PluginService(
 
     fun createInstance(pluginConfiguration: PluginConfiguration): Any {
         return withLoggingContext(PluginConfiguration::class, pluginConfiguration.id) {
-            pluginFactories.first {
-                it.canCreate(pluginConfiguration)
-            }.create(pluginConfiguration)
+            val factory = pluginFactories.firstOrNull { it.canCreate(pluginConfiguration) }
+                ?: error { "No PluginFactory found for '${pluginConfiguration.pluginDefinition.fullyQualifiedClassName}'" }
+            factory.create(pluginConfiguration)
         }
     }
 

@@ -25,8 +25,6 @@ import com.ritense.processlink.url.BaseIntegrationTest
 import com.ritense.processlink.url.domain.URLProcessLink
 import com.ritense.processlink.url.web.rest.dto.URLProcessLinkCreateRequestDto
 import com.ritense.processlink.url.web.rest.dto.URLProcessLinkUpdateRequestDto
-import java.nio.charset.StandardCharsets
-import java.util.UUID
 import org.hamcrest.Matchers.hasSize
 import org.hamcrest.Matchers.`in` as inMatcher
 import org.junit.jupiter.api.BeforeEach
@@ -43,6 +41,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
+import java.nio.charset.StandardCharsets
+import java.util.UUID
 
 @Transactional
 internal class URLProcessLinkResourceIntegrationTest @Autowired constructor(
@@ -157,11 +157,11 @@ internal class URLProcessLinkResourceIntegrationTest @Autowired constructor(
             .andExpect(jsonPath("$").isNotEmpty)
             .andExpect(jsonPath("$").isArray)
             .andExpect(jsonPath("$[0].activityId", inMatcher(listOf("start-event", "do-something"))))
-            .andExpect(jsonPath("$[0].activityType", inMatcher(listOf("bpmn:StartEvent:start", "bpmn:UserTask:start"))))
+            .andExpect(jsonPath("$[0].activityType", inMatcher(listOf("bpmn:StartEvent:start", "bpmn:UserTask:create"))))
             .andExpect(jsonPath("$[0].processLinkType").value( "url"))
             .andExpect(jsonPath("$[0].url").value( "https://www.ritense.nl"))
             .andExpect(jsonPath("$[1].activityId", inMatcher(listOf("start-event", "do-something"))))
-            .andExpect(jsonPath("$[1].activityType", inMatcher(listOf("bpmn:StartEvent:start", "bpmn:UserTask:start"))))
+            .andExpect(jsonPath("$[1].activityType", inMatcher(listOf("bpmn:StartEvent:start", "bpmn:UserTask:create"))))
             .andExpect(jsonPath("$[1].processLinkType").value( "url"))
             .andExpect(jsonPath("$[1].url").value( "https://www.ritense.nl"))
     }
