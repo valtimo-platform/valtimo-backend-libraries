@@ -76,6 +76,8 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "com.jayway.jsonpath:json-path-assert:${jaywayJsonpathVersion}"
 
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
+
     implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
 }
 

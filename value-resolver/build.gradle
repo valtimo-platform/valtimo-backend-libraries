@@ -51,6 +51,8 @@ dependencies {
     api "org.camunda.bpm:camunda-engine:${camundaVersion}"
     api "org.zalando:problem-spring-web:${problemSpringWebVersion}"
 
+    implementation "com.flipkart.zjsonpatch:zjsonpatch:${zjsonpatchVersion}"
+
     testImplementation project(':test-utils-common')
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"

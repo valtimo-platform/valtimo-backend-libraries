@@ -18,6 +18,9 @@ package com.ritense.documentenapi.client
 
 import BestandsdelenResult
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.documentenapi.DocumentenApiAuthentication
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey
 import com.ritense.documentenapi.domain.FileUploadPart
@@ -29,6 +32,8 @@ import com.ritense.documentenapi.event.DocumentStored
 import com.ritense.documentenapi.event.DocumentUpdated
 import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
 import com.ritense.outbox.OutboxService
+import com.ritense.resource.authorization.ResourcePermission
+import com.ritense.resource.authorization.ResourcePermissionActionProvider
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.ClientTools.Companion.optionalQueryParam
 import com.ritense.zgw.Page
@@ -52,13 +57,24 @@ class DocumentenApiClient(
     private val restClientBuilder: RestClient.Builder,
     private val outboxService: OutboxService,
     private val objectMapper: ObjectMapper,
-    private val platformTransactionManager: PlatformTransactionManager
+    private val platformTransactionManager: PlatformTransactionManager,
+    private val authorizationService: AuthorizationService,
+    private val authorizationEnabled: Boolean = false,
 ) {
     fun storeDocument(
         authentication: DocumentenApiAuthentication,
         baseUrl: URI,
         request: CreateDocumentRequest
     ): CreateDocumentResult {
+        if (authorizationEnabled) {
+            authorizationService.requirePermission(
+                EntityAuthorizationRequest(
+                    ResourcePermission::class.java,
+                    ResourcePermissionActionProvider.CREATE,
+                    ResourcePermission()
+                )
+            )
+        }
         val result = restClient(authentication)
             .post()
             .uri {
@@ -80,17 +96,16 @@ class DocumentenApiClient(
         baseUrl: URI,
         request: BestandsdelenRequest,
         createDocumentResult: CreateDocumentResult,
-        bestandsnaam: String
     ) {
         // Inside the CreateDocumentResult there is an array of bestandsdelen.
         // Each bestandsdeel needs to be sent separately
         // So the documenten api determines the amount (and size) of chunks, not this application.
-        logger.info { "Starting upload of file $bestandsnaam in ${createDocumentResult.bestandsdelen.size} chunks" }
+        logger.info { "Starting upload of file ${createDocumentResult.bestandsnaam} in ${createDocumentResult.bestandsdelen.size} chunks" }
 
         createDocumentResult.bestandsdelen.forEach { bestandsdeel ->
             logger.debug { "Sending chunk #${bestandsdeel.volgnummer} for a size of ${bestandsdeel.omvang} bytes" }
 
-            val body = FileUploadPart(bestandsdeel, request, bestandsnaam)
+            val body = FileUploadPart(bestandsdeel, request, createDocumentResult.bestandsnaam)
                 .createBody()
 
             restClient(authentication)
@@ -129,6 +144,16 @@ class DocumentenApiClient(
             .retrieve()
             .body<DocumentInformatieObject>()!!
 
+        if (authorizationEnabled) {
+            authorizationService.requirePermission(
+                EntityAuthorizationRequest(
+                    ResourcePermission::class.java,
+                    ResourcePermissionActionProvider.VIEW_LIST,
+                    ResourcePermission()
+                )
+            )
+        }
+
         outboxService.send {
             DocumentInformatieObjectViewed(
                 result.url.toString(),
@@ -149,6 +174,16 @@ class DocumentenApiClient(
         // the only page sizes that are supported are those that can fit n times in the itemsPerPage
         require(ITEMS_PER_PAGE % pageable.pageSize == 0) { "Page size is not supported" }
         requireNotNull(documentSearchRequest.zaakUrl) { "Zaak URL is required" }
+
+        if (authorizationEnabled && !authorizationService.hasPermission(
+            EntityAuthorizationRequest(
+                ResourcePermission::class.java,
+                ResourcePermissionActionProvider.VIEW_LIST,
+                ResourcePermission()
+            )
+        )) {
+            return org.springframework.data.domain.Page.empty(pageable)
+        }
 
         val pageToRequest = ((pageable.pageSize * pageable.pageNumber) / ITEMS_PER_PAGE) + 1
         val result =
@@ -218,6 +253,16 @@ class DocumentenApiClient(
         authentication: DocumentenApiAuthentication,
         objectUrl: URI
     ): InputStream {
+        if (authorizationEnabled) {
+            authorizationService.requirePermission(
+                EntityAuthorizationRequest(
+                    ResourcePermission::class.java,
+                    ResourcePermissionActionProvider.VIEW,
+                    ResourcePermission()
+                )
+            )
+        }
+
         val result = restClient(authentication)
             .get()
             .uri {
@@ -266,6 +311,16 @@ class DocumentenApiClient(
     }
 
     fun deleteInformatieObject(authentication: DocumentenApiAuthentication, url: URI) {
+        if (authorizationEnabled) {
+            authorizationService.requirePermission(
+                EntityAuthorizationRequest(
+                    ResourcePermission::class.java,
+                    ResourcePermissionActionProvider.DELETE,
+                    ResourcePermission()
+                )
+            )
+        }
+
         restClient(authentication)
             .delete()
             .uri(url)
@@ -281,8 +336,14 @@ class DocumentenApiClient(
         patchDocumentRequest: PatchDocumentRequest
     ): DocumentInformatieObject {
 
-        check(getInformatieObject(authentication, documentUrl).status != DocumentStatusType.DEFINITIEF) {
-            "InformatieObject ${documentUrl.path.substringAfterLast("/")} with status 'definitief' cannot be updated!"
+        if (authorizationEnabled) {
+            authorizationService.requirePermission(
+                EntityAuthorizationRequest(
+                    ResourcePermission::class.java,
+                    ResourcePermissionActionProvider.MODIFY,
+                    ResourcePermission()
+                )
+            )
         }
 
         val result = restClient(authentication)

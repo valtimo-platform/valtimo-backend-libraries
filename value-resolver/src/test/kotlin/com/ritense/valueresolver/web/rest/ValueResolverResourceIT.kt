@@ -46,6 +46,27 @@ class ValueResolverResourceIT @Autowired constructor(
     }
 
     @Test
+    fun `should get list of ALL possible value resolvers when prefix is empty`() {
+
+        val prefixes = """[]"""
+
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .post("/api/management/v1/value-resolver/document-definition/{documentDefinitionName}/keys", "x")
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(prefixes)
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$[0]").value("testDoc:1"))
+            .andExpect(jsonPath("$[1]").value("testDoc:2"))
+            .andExpect(jsonPath("$[2]").value("testDoc:3"))
+            .andExpect(jsonPath("$[3]").value("testCase:4"))
+            .andExpect(jsonPath("$[4]").value("testCase:5"))
+            .andExpect(jsonPath("$[5]").value("testCase:6"))
+    }
+
+    @Test
     fun `should get list of possible value resolvers for a single prefix`() {
 
         val prefixes = """["testDoc"]"""
@@ -64,9 +85,9 @@ class ValueResolverResourceIT @Autowired constructor(
     }
 
     @Test
-    fun `should get list of possible value resolvers for a single prefix v2`() {
+    fun `should get list of ALL possible value resolvers when prefixes is empty v2`() {
 
-        val prefixes = """{"prefixes":["testDoc"],"type":"FIELD"}"""
+        val prefixes = """{"prefixes":[],"type":"FIELD"}"""
 
         mockMvc.perform(
             MockMvcRequestBuilders

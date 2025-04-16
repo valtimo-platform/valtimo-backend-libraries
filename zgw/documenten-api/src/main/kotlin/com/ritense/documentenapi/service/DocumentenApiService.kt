@@ -119,7 +119,7 @@ class DocumentenApiService(
         val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
         if (modifyDocumentRequest.trefwoorden?.isNotEmpty() == true) {
             val version = documentenApiVersionService.getVersionByTag(documentApiPlugin.apiVersion)
-            check(version != null && version.supportsTrefwoorden) {
+            check(version.supportsTrefwoorden) {
                 val pluginConfiguration = pluginService.getPluginConfiguration(
                     PluginConfigurationId.existingId(pluginConfigurationId)
                 )

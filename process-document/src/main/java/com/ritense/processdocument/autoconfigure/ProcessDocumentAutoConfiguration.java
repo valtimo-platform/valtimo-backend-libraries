@@ -119,9 +119,13 @@ public class ProcessDocumentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(StartEventFromCallActivityListener.class)
     public StartEventFromCallActivityListenerImpl startEventFromCallActivityListener(
-        ProcessDocumentAssociationService processDocumentAssociationService
+        ProcessDocumentAssociationService processDocumentAssociationService,
+        ProcessDocumentService processDocumentService
     ) {
-        return new StartEventFromCallActivityListenerImpl(processDocumentAssociationService);
+        return new StartEventFromCallActivityListenerImpl(
+            processDocumentAssociationService,
+            processDocumentService
+        );
     }
 
     @Bean

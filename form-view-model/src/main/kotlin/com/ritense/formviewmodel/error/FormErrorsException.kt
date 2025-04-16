@@ -22,5 +22,13 @@ class FormErrorsException(
     data class ComponentError(
         val component: String?,
         val message: String
-    )
+    ) {
+        fun withParent(parent: String): ComponentError {
+            return if(parent.isBlank() || component.isNullOrBlank()) {
+                this
+            } else {
+                copy(component = "$parent.${component}")
+            }
+        }
+    }
 }

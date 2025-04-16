@@ -68,13 +68,13 @@ class ProcessDocumentDeletedEventListenerTest {
         val pdiId = mock<ProcessDocumentInstanceId>()
         whenever(processDocumentInstance.processDocumentInstanceId()).thenReturn(pdiId)
 
-        whenever(runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(documentId.toString()).list())
+        whenever(runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(documentId.toString()).rootProcessInstances().list())
             .thenReturn(listOf(processInstance1, processInstance2))
 
         processDocumentDeletedEventListener!!.handle(DocumentDeletedEvent(documentId))
 
-        verify(runtimeService).deleteProcessInstance("4320f9c0-5568-4ed2-91f9-d2c85fd4ce55", "Document deleted", false, true)
-        verify(runtimeService).deleteProcessInstance("a69cf6c5-5e65-4dc9-81f6-2b64c12e3f0f", "Document deleted", false, true)
+        verify(runtimeService).deleteProcessInstance("4320f9c0-5568-4ed2-91f9-d2c85fd4ce55", "Document deleted", true, true, true, false)
+        verify(runtimeService).deleteProcessInstance("a69cf6c5-5e65-4dc9-81f6-2b64c12e3f0f", "Document deleted", true, true, true, false)
         verify(processDocumentAssociationService, times(2)).deleteProcessDocumentInstance(pdiId)
     }
 
@@ -95,13 +95,13 @@ class ProcessDocumentDeletedEventListenerTest {
 
         whenever(functionResult.isError).thenReturn(true)
 
-        whenever(runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(documentId.toString()).list())
+        whenever(runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(documentId.toString()).rootProcessInstances().list())
             .thenReturn(listOf(processInstance1, processInstance2))
 
         processDocumentDeletedEventListener!!.handle(DocumentDeletedEvent(documentId))
 
-        verify(runtimeService).deleteProcessInstance("4320f9c0-5568-4ed2-91f9-d2c85fd4ce55", "Document deleted", false, true)
-        verify(runtimeService).deleteProcessInstance("a69cf6c5-5e65-4dc9-81f6-2b64c12e3f0f", "Document deleted", false, true)
+        verify(runtimeService).deleteProcessInstance("4320f9c0-5568-4ed2-91f9-d2c85fd4ce55", "Document deleted", true, true, true, false)
+        verify(runtimeService).deleteProcessInstance("a69cf6c5-5e65-4dc9-81f6-2b64c12e3f0f", "Document deleted", true, true, true, false)
         verify(processDocumentAssociationService, never()).deleteProcessDocumentInstance(any())
     }
 }

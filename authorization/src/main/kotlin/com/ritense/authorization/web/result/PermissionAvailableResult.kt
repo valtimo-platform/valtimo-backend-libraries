@@ -21,6 +21,6 @@ import com.ritense.authorization.web.request.PermissionContext
 data class PermissionAvailableResult(
     var resource: String,
     var action: String,
-    var context: PermissionContext,
+    var context: PermissionContext?,
     var available: Boolean
 )
