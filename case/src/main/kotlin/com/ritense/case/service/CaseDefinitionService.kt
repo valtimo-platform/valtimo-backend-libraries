@@ -80,6 +80,69 @@ class CaseDefinitionService(
         )
     )
 
+    fun createCaseDefinitionDraft(
+        request: CaseDefinitionDraftCreateRequest
+    ): CaseDefinition {
+        denyManagementOperation()
+        val caseDefinitionId = request.getCaseDefinitionId()
+        require(!caseDefinitionRepository.existsById(caseDefinitionId)) {
+            "Failed to create case-definition-draft. Case-definition with id: '${caseDefinitionId}' already exists."
+        }
+        val basedOnCaseDefinitionId = request.getBasedOnCaseDefinitionId()
+        val newCaseDefinition = if (basedOnCaseDefinitionId == null) {
+            CaseDefinition(
+                id = caseDefinitionId,
+                name = request.name ?: error("Case definition name cannot be null"),
+                description = request.description,
+                final = false,
+                createdBy = SecurityUtils.getCurrentUserLogin(),
+                createdDate = LocalDateTime.now(),
+                active = true
+            )
+        } else {
+            val basedOnCaseDefinition = getCaseDefinition(basedOnCaseDefinitionId)
+            require(basedOnCaseDefinition.final) {
+                "Failed to create case-definition-draft. Case-definition with id: '$basedOnCaseDefinitionId' is not final."
+            }
+            basedOnCaseDefinition.copy(
+                id = caseDefinitionId,
+                description = request.description ?: basedOnCaseDefinition.description,
+                final = false,
+                createdBy = SecurityUtils.getCurrentUserLogin(),
+                createdDate = LocalDateTime.now(),
+                basedOnVersionTag = basedOnCaseDefinitionId.versionTag,
+                active = false
+            )
+        }
+        val newSavedCaseDefinition = caseDefinitionRepository.save(newCaseDefinition)
+        applicationEventPublisher.publishEvent(
+            CaseDefinitionCreatedEvent(
+                caseDefinitionId = newSavedCaseDefinition.id,
+                basedOnCaseDefinitionId = basedOnCaseDefinitionId,
+                duplicate = basedOnCaseDefinitionId != null
+            )
+        )
+        return newSavedCaseDefinition
+    }
+
+    fun deleteCaseDefinition(caseDefinitionId: CaseDefinitionId) {
+        denyManagementOperation()
+        require(!getCaseDefinition(caseDefinitionId).active) {
+            "Failed to delete case-definition. Case-definition with id: '$caseDefinitionId' is the global active version."
+        }
+        require(!getCaseDefinition(caseDefinitionId).final) {
+            "Failed to delete case-definition. Case-definition with id: '$caseDefinitionId' is final."
+        }
+        applicationEventPublisher.publishEvent(
+            CaseDefinitionPreDeleteEvent(caseDefinitionId)
+        )
+        caseDefinitionRepository.deleteById(caseDefinitionId)
+    }
+
+    fun existsCaseDefinition(caseDefinitionKey: String): Boolean {
+        return caseDefinitionRepository.existsByIdKey(caseDefinitionKey)
+    }
+
     fun getCaseDefinitions(
         caseDefinitionKey: String? = null,
         active: Boolean? = null,
@@ -190,6 +253,12 @@ class CaseDefinitionService(
         }
 
         return caseDefinitionRepository.save(caseDefinition.copy(active = true))
+    }
+
+    fun getCaseDefinitionVersions(caseDefinitionKey: String): List<String> {
+        return caseDefinitionRepository.findVersionsForCaseDefinitionKey(caseDefinitionKey).map {
+            it.toString()
+        }
     }
 
     fun getCaseDefinitionsBasedOnVersion(caseDefinitionKey: String, basedOnVersionTag: Semver): List<CaseDefinition> {

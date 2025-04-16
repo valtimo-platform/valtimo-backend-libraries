@@ -21,6 +21,7 @@ import com.ritense.catalogiapi.CatalogiApiPlugin
 import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -36,12 +37,13 @@ internal class CatalogiServiceTest : BaseTest() {
     val pluginService = mock<PluginService>()
     val catalogiService = CatalogiService(zaaktypeUrlProvider, pluginService)
 
+    val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
+
     @Test
     fun `should get informatieobjecttypes for document definition`() {
-        val documentDefinitionName = "case-name"
         val zaaktypeUrl = URI("http://example.com/zaaktype")
 
-        whenever(zaaktypeUrlProvider.getZaaktypeUrl(documentDefinitionName)).thenReturn(zaaktypeUrl)
+        whenever(zaaktypeUrlProvider.getZaaktypeUrl(caseDefinitionId)).thenReturn(zaaktypeUrl)
 
         val catalogiApiPlugin = mock<CatalogiApiPlugin>()
         whenever(pluginService.createInstance(eq(CatalogiApiPlugin::class.java), any()))
@@ -52,7 +54,7 @@ internal class CatalogiServiceTest : BaseTest() {
         whenever(catalogiApiPlugin.getInformatieobjecttypes(zaaktypeUrl))
             .thenReturn(listOf(informatieobjecttype1, informatieobjecttype2))
 
-        val informatieobjecttypes = catalogiService.getInformatieobjecttypes(documentDefinitionName)
+        val informatieobjecttypes = catalogiService.getInformatieobjecttypes(caseDefinitionId)
 
         assertEquals(informatieobjecttype1, informatieobjecttypes[0])
         assertEquals(informatieobjecttype2, informatieobjecttypes[1])
@@ -60,12 +62,11 @@ internal class CatalogiServiceTest : BaseTest() {
 
     @Test
     fun `should return empty list if no plugin is found for zaak`() {
-        val documentDefinitionName = "case-name"
         val zaaktypeUrl = URI("http://example.com/zaaktype")
 
-        whenever(zaaktypeUrlProvider.getZaaktypeUrl(documentDefinitionName)).thenReturn(zaaktypeUrl)
+        whenever(zaaktypeUrlProvider.getZaaktypeUrl(caseDefinitionId)).thenReturn(zaaktypeUrl)
 
-        val result = catalogiService.getInformatieobjecttypes(documentDefinitionName)
+        val result = catalogiService.getInformatieobjecttypes(caseDefinitionId)
 
         assertEquals(emptyList<Informatieobjecttype>(), result)
     }

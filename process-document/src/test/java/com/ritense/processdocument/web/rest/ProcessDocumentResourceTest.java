@@ -77,7 +77,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 class ProcessDocumentResourceTest extends BaseTest {
-    private static final String PROCESS_DEFINITION_KEY = "definition-id";
     private static final String PROCESS_INSTANCE_ID = UUID.randomUUID().toString();
 
     @MockBean
@@ -138,7 +137,7 @@ class ProcessDocumentResourceTest extends BaseTest {
         );
 
         caseDefinitionId = new CaseDefinitionId("house", "1.0.0");
-        caseDefinition = new CaseDefinition(caseDefinitionId, "house", true, true);
+        caseDefinition = new CaseDefinition(caseDefinitionId, "house", null, null, null, null, false, true, true, true);
         when(activeCaseDefinitionService.getActiveCaseDefinition("house")).thenReturn(caseDefinition);
     }
 

@@ -73,12 +73,6 @@ public interface DocumentDefinitionResource {
         @LoggableResource("documentDefinitionName") @PathVariable String name
     );
 
-    @GetMapping("/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/document-definition")
-    ResponseEntity<? extends DocumentDefinition> getDocumentDefinitionVersion(
-        @LoggableResource("caseDefinitionKey") @PathVariable String caseDefinitionKey,
-        @LoggableResource("caseDefinitionVersionTag") @PathVariable String versionTag
-    );
-
     @GetMapping("/management/v1/document-definition/{name}/version")
     ResponseEntity<DocumentVersionsResult> getDocumentDefinitionVersions(
         @LoggableResource("documentDefinitionName") @PathVariable String name
@@ -86,14 +80,6 @@ public interface DocumentDefinitionResource {
 
     @GetMapping("/v1/document-definition/open/count")
     ResponseEntity<List<UnassignedDocumentCountDto>> getUnassignedDocumentCount();
-
-    @PostMapping(value = {
-        "/v1/document-definition", //Deprecated since v11
-        "/management/v1/document-definition"
-    }, consumes = APPLICATION_JSON_VALUE)
-    ResponseEntity<DeployDocumentDefinitionResult> deployDocumentDefinition(
-        @Valid @RequestBody DocumentDefinitionCreateRequest request
-    );
 
     @DeleteMapping(value = {
         "/v1/document-definition/{name}", //Deprecated since v11

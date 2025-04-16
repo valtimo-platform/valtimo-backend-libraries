@@ -161,25 +161,6 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    void shouldNotDeployNewSystemProcess() {
-        List<Resource> processes = List.of(bpmn);
-        Assertions.assertThrows(ProcessNotDeployableException.class,
-            () -> AuthorizationContext.runWithoutAuthorization(() -> {
-                camundaProcessService.deploy(
-                    CaseDefinitionId.of("deployedProcess", "1.0.0"),
-                    "aProcessName.bpmn",
-                    new ByteArrayInputStream(processes.stream().filter(process -> Objects.equals(process.getFilename(), "shouldNotDeploy.xml"))
-                        .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes()));
-                return null;
-            }
-        ));
-        List<CamundaProcessDefinition> definitions = AuthorizationContext
-            .runWithoutAuthorization(() -> camundaProcessService.getDeployedDefinitions());
-        Assertions.assertFalse(definitions.stream().anyMatch(processDefinition -> processDefinition.getKey().equals("firstProcess")));
-        Assertions.assertFalse(definitions.stream().anyMatch(processDefinition -> processDefinition.getKey().equals("secondProcess")));
-    }
-
-    @Test
     void shouldNotUpdateExistingSystemProcess() throws IOException {
         List<Resource> processes = List.of(bpmn);
         var systemProcessModel = Bpmn.readModelFromStream(new ByteArrayInputStream(processes.stream().filter(process -> Objects.equals(process.getFilename(), "systemProcess.xml"))
