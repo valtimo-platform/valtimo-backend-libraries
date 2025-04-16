@@ -188,10 +188,13 @@ class CaseDefinitionService(
         return caseDefinitionRepository.save(caseDefinition.copy(active = true))
     }
 
-    fun getCaseDefinitionVersions(caseDefinitionKey: String): List<String> {
-        return caseDefinitionRepository.findVersionsForCaseDefinitionKey(caseDefinitionKey).map {
-            it.toString()
+    fun finalizeCaseDefinition(caseDefinitionId: CaseDefinitionId): CaseDefinition {
+        denyManagementOperation()
+        val caseDefinition = getCaseDefinition(caseDefinitionId)
+        require(!caseDefinition.final) {
+            "Failed to finalize case-definition. Case-definition with id: '$caseDefinitionId' is already final."
         }
+        return caseDefinitionRepository.save(caseDefinition.copy(final = true))
     }
 
     fun getCaseDefinitionsBasedOnVersion(caseDefinitionKey: String, basedOnVersionTag: Semver): List<CaseDefinition> {

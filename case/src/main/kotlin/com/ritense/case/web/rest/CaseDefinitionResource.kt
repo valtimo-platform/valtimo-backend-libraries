@@ -136,6 +136,19 @@ class CaseDefinitionResource(
         return ResponseEntity.ok(caseDefinitions.map { CaseVersionDto.of(it) }.content)
     }
 
+    @RunWithoutAuthorization
+    @PostMapping("/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/finalize")
+    fun finalizeCaseDefinition(
+        @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
+        @LoggableResource("versionTag") @PathVariable versionTag: String,
+    ): ResponseEntity<CaseDefinitionResponseDto> {
+        return ResponseEntity.ok(
+            CaseDefinitionResponseDto.of(
+                service.finalizeCaseDefinition(CaseDefinitionId.of(caseDefinitionKey, versionTag))
+            )
+        )
+    }
+
     @GetMapping("/v1/case-definition/{caseDefinitionKey}/settings")
     fun getCaseSettings(
         @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
