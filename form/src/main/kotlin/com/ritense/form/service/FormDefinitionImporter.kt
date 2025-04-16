@@ -21,6 +21,7 @@ import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
 import com.ritense.importer.ValtimoImportTypes.Companion.FORM
+import com.ritense.importer.ValtimoImportTypes.Companion.PROCESS_DEFINITION
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
@@ -29,7 +30,7 @@ class FormDefinitionImporter(
 ) : Importer {
     override fun type(): String = FORM
 
-    override fun dependsOn(): Set<String> = setOf(CASE_DEFINITION)
+    override fun dependsOn(): Set<String> = setOf(CASE_DEFINITION, PROCESS_DEFINITION)
 
     override fun supports(fileName: String): Boolean = fileName.matches(FILENAME_REGEX)
 
