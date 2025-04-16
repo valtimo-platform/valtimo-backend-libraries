@@ -17,6 +17,7 @@
 package com.ritense.valtimo.web.rest
 
 import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
@@ -36,6 +37,9 @@ import org.springframework.web.client.RestTemplate
 @ExtendWith(SpringExtension::class)
 @Tag("security")
 class CamundaCockpitSecurityIntTest {
+
+    @MockBean
+    lateinit var processDefinitionCaseDefinitionLinker: ProcessDefinitionCaseDefinitionLinker
 
     @Nested
     @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = ["valtimo.security.whitelist.hosts=localhost"])
