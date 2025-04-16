@@ -147,7 +147,10 @@ class ProcessDocumentResourceTest extends BaseTest {
             true,
             true,
             true,
-            false
+            false,
+            false,
+            null,
+            null
         );
         when(activeCaseDefinitionService.getActiveCaseDefinition("house")).thenReturn(caseDefinition);
     }

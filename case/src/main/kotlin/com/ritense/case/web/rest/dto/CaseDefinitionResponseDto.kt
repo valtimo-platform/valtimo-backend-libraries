@@ -68,7 +68,7 @@ data class CaseDefinitionResponseDto(
             description = caseDefinition.description,
             createdBy = caseDefinition.createdBy,
             createdDate = caseDefinition.createdDate,
-            basedOnVersionTag = caseDefinition.basedOnVersionTag?.v,
+            basedOnVersionTag = caseDefinition.basedOnVersionTag?.version,
             final = caseDefinition.final,
             active = caseDefinition.active,
 

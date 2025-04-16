@@ -139,23 +139,28 @@ class BaseTest(
     }
 
     fun caseDefinition(
-        caseDefinitionId: CaseDefinitionId = CaseDefinitionId("key", "1.0.0"),
+        id: CaseDefinitionId = CaseDefinitionId("key", "1.0.0"),
         name: String = "name",
+        active: Boolean = true,
         canHaveAssignee: Boolean = false,
         autoAssignTasks: Boolean = false,
-        active: Boolean = true,
+        hasExternalStartForm: Boolean = false,
+        externalStartFormUrl: String? = null,
     ): CaseDefinition {
         return CaseDefinition(
-            id = caseDefinitionId,
+            id = id,
             name = name,
             description = "description",
             createdBy = "system",
             createdDate = LocalDateTime.now(),
             basedOnVersionTag = Semver.parse("1.0.0-SNAPSHOT"),
             final = true,
+            active = active,
+
             canHaveAssignee = canHaveAssignee,
             autoAssignTasks = autoAssignTasks,
-            active = active,
+            hasExternalStartForm = hasExternalStartForm,
+            externalStartFormUrl = externalStartFormUrl,
         )
     }
 
