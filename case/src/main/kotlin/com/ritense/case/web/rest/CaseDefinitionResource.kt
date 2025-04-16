@@ -24,7 +24,6 @@ import com.ritense.case.web.rest.dto.CaseDefinitionResponseDto
 import com.ritense.case.web.rest.dto.CaseDefinitionSettingsResponseDto
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
-import com.ritense.case.web.rest.dto.CaseVersionDto
 import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.exporter.ExportService
@@ -40,8 +39,6 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
-import org.springframework.data.web.SortDefault
-import org.springframework.data.web.SortDefault.SortDefaults
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -69,29 +66,26 @@ class CaseDefinitionResource(
     private val caseDefinitionRepository: CaseDefinitionRepository,
 ) {
 
-    @RunWithoutAuthorization
     @GetMapping("/management/v1/case-definition")
     fun getCaseDefinitions(
-        @RequestParam caseDefinitionKey: String?,
-        @RequestParam active: Boolean?,
-        @SortDefaults(
-            SortDefault(sort = ["name"]),
-            SortDefault(sort = ["active", "id.versionTag"], direction = Sort.Direction.DESC)
-        ) pageable: Pageable
+        @PageableDefault(sort = ["name"], direction = Sort.Direction.ASC) pageable: Pageable
     ): ResponseEntity<Page<CaseDefinitionResponseDto>> {
-        val caseDefinitions = service.getCaseDefinitions(caseDefinitionKey, active, pageable)
-        return ResponseEntity.ok(caseDefinitions.map { CaseDefinitionResponseDto.of(it) })
+        return ResponseEntity.ok(
+            runWithoutAuthorization {
+                service.getCaseDefinitions(pageable).map { CaseDefinitionResponseDto.of(it) }
+            }
+        )
     }
 
-    @RunWithoutAuthorization
     @GetMapping("/management/v1/case-definition/{caseDefinitionKey}/version")
     fun getCaseDefinitionVersions(
         @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
-        @PageableDefault(size = 5, sort = ["active", "id.versionTag"], direction = Sort.Direction.DESC)
-        pageable: Pageable
-    ): ResponseEntity<List<CaseVersionDto>> {
-        val caseDefinitions = service.getCaseDefinitions(caseDefinitionKey, null, pageable)
-        return ResponseEntity.ok(caseDefinitions.map { CaseVersionDto.of(it) }.content)
+    ): ResponseEntity<List<String>> {
+        return ResponseEntity.ok(
+            runWithoutAuthorization {
+                service.getCaseDefinitionVersions(caseDefinitionKey)
+            }
+        )
     }
 
     @GetMapping("/v1/case-definition/{caseDefinitionKey}/settings")
