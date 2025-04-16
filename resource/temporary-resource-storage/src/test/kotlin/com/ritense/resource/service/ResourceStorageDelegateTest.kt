@@ -28,9 +28,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.whenever
-import org.springframework.boot.test.context.SpringBootTest
 
-@SpringBootTest
 class ResourceStorageDelegateTest {
 
     private lateinit var service: TemporaryResourceStorageService

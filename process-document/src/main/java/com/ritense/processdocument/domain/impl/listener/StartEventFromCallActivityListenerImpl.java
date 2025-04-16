@@ -16,50 +16,56 @@
 
 package com.ritense.processdocument.domain.impl.listener;
 
-import com.ritense.authorization.AuthorizationContext;
+import com.ritense.authorization.annotation.RunWithoutAuthorization;
+import com.ritense.document.domain.Document;
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
 import com.ritense.processdocument.domain.listener.StartEventFromCallActivityListener;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
-import java.util.UUID;
+import com.ritense.processdocument.service.ProcessDocumentService;
 import org.camunda.bpm.engine.ActivityTypes;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.ExecutionListener;
 import org.camunda.bpm.extension.reactor.bus.CamundaSelector;
 import org.camunda.bpm.extension.reactor.spring.listener.ReactorExecutionListener;
 import org.camunda.bpm.model.bpmn.impl.instance.ProcessImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @CamundaSelector(type = ActivityTypes.START_EVENT, event = ExecutionListener.EVENTNAME_START)
 public class StartEventFromCallActivityListenerImpl extends ReactorExecutionListener implements StartEventFromCallActivityListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(StartEventFromCallActivityListenerImpl.class);
     private final ProcessDocumentAssociationService processDocumentAssociationService;
+    private final ProcessDocumentService processDocumentService;
 
-    public StartEventFromCallActivityListenerImpl(ProcessDocumentAssociationService processDocumentAssociationService) {
+    public StartEventFromCallActivityListenerImpl(
+        ProcessDocumentAssociationService processDocumentAssociationService,
+        ProcessDocumentService processDocumentService
+    ) {
         this.processDocumentAssociationService = processDocumentAssociationService;
+        this.processDocumentService = processDocumentService;
     }
 
     @Override
+    @RunWithoutAuthorization
     public void notify(DelegateExecution execution) {
-        if (isExecutedFromCallActivity(execution)) {
-            logger.info("Handling process started from CallActivity for process-definition-id - {}", execution.getProcessDefinitionId());
-            final var parentProcessInstanceId = new CamundaProcessInstanceId(execution.getSuperExecution().getProcessInstanceId());
-            AuthorizationContext.runWithoutAuthorization(() -> {
-                processDocumentAssociationService
-                    .findProcessDocumentInstance(parentProcessInstanceId)
-                    .ifPresent(instance -> processDocumentAssociationService.createProcessDocumentInstance(
-                        execution.getProcessInstanceId(), //processInstance from new process
-                        UUID.fromString(instance.processDocumentInstanceId().documentId().toString()),
-                        getProcessNameFrom(execution)
-                    ));
-                return null;
-            });
+        Document.Id documentId = getDocumentId(execution);
+        if (documentId != null) {
+            processDocumentAssociationService.createProcessDocumentInstance(
+                execution.getProcessInstanceId(), //processInstance from new process
+                documentId.getId(),
+                getProcessNameFrom(execution)
+            );
         }
     }
 
-    private boolean isExecutedFromCallActivity(DelegateExecution execution) {
-        return execution.getSuperExecution() != null;
+    private Document.Id getDocumentId(DelegateExecution execution) {
+        if (execution.getSuperExecution() != null) {
+            var processId = new CamundaProcessInstanceId(execution.getSuperExecution().getProcessInstanceId());
+            var documentId = processDocumentService.getDocumentId(processId, execution);
+            if (documentId != null) {
+                return documentId;
+            }
+        }
+        var processId = new CamundaProcessInstanceId(execution.getProcessInstanceId());
+        return processDocumentService.getDocumentId(processId, execution);
     }
 
     private String getProcessNameFrom(DelegateExecution execution) {

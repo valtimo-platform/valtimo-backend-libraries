@@ -31,41 +31,53 @@ data class CaseDefinitionResponseDto(
     val createdDate: LocalDateTime?,
     val basedOnVersionTag: String?,
     val final: Boolean,
+    val active: Boolean,
+
     val canHaveAssignee: Boolean,
     val autoAssignTasks: Boolean,
-    val active: Boolean,
+    val hasExternalStartForm: Boolean? = null,
+    val externalStartFormUrl: String? = null,
+    val externalStartFormDescription: String? = null,
+
     val conflictingVersions: String? = null,
 ) {
     companion object {
         fun of(caseDefinition: CaseDefinition) =
             CaseDefinitionResponseDto(
-                caseDefinition.id.key,
-                caseDefinition.id.versionTag.version,
-                caseDefinition.name,
-                caseDefinition.description,
-                caseDefinition.createdBy,
-                caseDefinition.createdDate,
-                caseDefinition.basedOnVersionTag?.version,
-                caseDefinition.final,
-                caseDefinition.canHaveAssignee,
-                caseDefinition.autoAssignTasks,
-                caseDefinition.active,
+                caseDefinitionKey =  caseDefinition.id.key,
+                caseDefinitionVersionTag =  caseDefinition.id.versionTag.version,
+                name =  caseDefinition.name,
+                description =  caseDefinition.description,
+                createdBy =  caseDefinition.createdBy,
+                createdDate =  caseDefinition.createdDate,
+                basedOnVersionTag =  caseDefinition.basedOnVersionTag?.version,
+                final =  caseDefinition.final,
+                active =  caseDefinition.active,
+
+                canHaveAssignee =  caseDefinition.canHaveAssignee,
+                autoAssignTasks =  caseDefinition.autoAssignTasks,
+                hasExternalStartForm =  caseDefinition.hasExternalStartForm,
+                externalStartFormUrl =  caseDefinition.externalStartFormUrl
             )
 
     fun of(caseDefinition: CaseDefinition, conflictingVersions: String?) =
         CaseDefinitionResponseDto(
-            caseDefinition.id.key,
-            caseDefinition.id.versionTag.version,
-            caseDefinition.name,
-            caseDefinition.description,
-            caseDefinition.createdBy,
-            caseDefinition.createdDate,
-            caseDefinition.basedOnVersionTag?.version,
-            caseDefinition.final,
-            caseDefinition.canHaveAssignee,
-            caseDefinition.autoAssignTasks,
-            caseDefinition.active,
-            conflictingVersions,
+            caseDefinitionKey = caseDefinition.id.key,
+            caseDefinitionVersionTag = caseDefinition.id.versionTag.version,
+            name = caseDefinition.name,
+            description = caseDefinition.description,
+            createdBy = caseDefinition.createdBy,
+            createdDate = caseDefinition.createdDate,
+            basedOnVersionTag = caseDefinition.basedOnVersionTag?.v,
+            final = caseDefinition.final,
+            active = caseDefinition.active,
+
+            canHaveAssignee = caseDefinition.canHaveAssignee,
+            autoAssignTasks = caseDefinition.autoAssignTasks,
+            hasExternalStartForm = caseDefinition.hasExternalStartForm,
+            externalStartFormUrl = caseDefinition.externalStartFormUrl,
+
+            conflictingVersions = conflictingVersions,
         )
     }
 }

@@ -8,6 +8,17 @@
     },
     "components": [
         {
+            "label": "reversedString",
+            "key": "reversedString",
+            "type": "textfield",
+            "input": true,
+            "validate": {
+                "maxLength": 10,
+                "unique": false,
+                "multiple": false
+            }
+        },
+        {
             "label": "Voornaam",
             "key": "test",
             "type": "textfield",

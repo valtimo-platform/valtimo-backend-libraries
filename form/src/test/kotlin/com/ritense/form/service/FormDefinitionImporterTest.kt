@@ -17,17 +17,14 @@
 package com.ritense.form.service
 
 import com.ritense.form.autodeployment.FormDefinitionDeploymentService
-import com.ritense.importer.ImportRequest
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
+import com.ritense.importer.ValtimoImportTypes.Companion.PROCESS_DEFINITION
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.verify
 
 @ExtendWith(MockitoExtension::class)
 class FormDefinitionImporterTest(
@@ -47,7 +44,7 @@ class FormDefinitionImporterTest(
 
     @Test
     fun `should depend on case definition`() {
-        assertThat(importer.dependsOn().toString()).isEqualTo(listOf(CASE_DEFINITION).toString())
+        assertThat(importer.dependsOn().toString()).isEqualTo(listOf(CASE_DEFINITION, PROCESS_DEFINITION).toString())
     }
 
 

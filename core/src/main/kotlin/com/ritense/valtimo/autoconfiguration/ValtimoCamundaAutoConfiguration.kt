@@ -17,6 +17,7 @@
 
 package com.ritense.valtimo.autoconfiguration
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.valtimo.ValtimoApplicationPropertyService
 import com.ritense.valtimo.camunda.authorization.CamundaExecutionProcessDefinitionMapper
@@ -120,13 +121,15 @@ class ValtimoCamundaAutoConfiguration {
         runtimeService: RuntimeService,
         camundaVariableInstanceRepository: CamundaVariableInstanceRepository,
         camundaIdentityLinkRepository: CamundaIdentityLinkRepository,
-        authorizationService: AuthorizationService
+        authorizationService: AuthorizationService,
+        objectMapper: ObjectMapper,
     ): CamundaRuntimeService {
         return CamundaRuntimeService(
             runtimeService,
             camundaVariableInstanceRepository,
             camundaIdentityLinkRepository,
-            authorizationService
+            authorizationService,
+            objectMapper,
         )
     }
 

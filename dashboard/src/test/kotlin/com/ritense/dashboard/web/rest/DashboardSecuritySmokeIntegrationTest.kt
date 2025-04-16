@@ -16,8 +16,13 @@
 
 package com.ritense.dashboard.web.rest
 
+import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker
 import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
+import org.springframework.boot.test.mock.mockito.MockBean
 
 class DashboardSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
     basePackageName = "com.ritense.dashboard"
-)
+) {
+    @MockBean
+    lateinit var processDefinitionCaseDefinitionLinker: ProcessDefinitionCaseDefinitionLinker
+}

@@ -478,6 +478,21 @@ internal class DocumentJsonValueResolverTest {
     }
 
     @Test
+    fun `should support dot notation path`() {
+        whenever(document.content()).thenReturn(JsonDocumentContent("{\"firstname\":\"Peter\"}"))
+
+        documentValueResolver.handleValues(
+            processInstanceId = processInstanceId,
+            variableScope = variableScope,
+            mapOf("person.firstname" to "John")
+        )
+
+        val captor = argumentCaptor<JsonNode>()
+        verify(documentService).modifyDocument(eq(document), captor.capture())
+        assertThat(captor.firstValue).contains(TextNode.valueOf("Peter"))
+    }
+
+    @Test
     fun `should get property names from referenced nested object`() {
         val definitionName = "combined-schema-additional-property-example"
         mockDefinition(definitionName)

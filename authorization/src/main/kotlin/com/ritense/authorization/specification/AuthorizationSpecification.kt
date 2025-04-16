@@ -31,6 +31,7 @@ import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
+import mu.KotlinLogging
 import org.springframework.data.jpa.domain.Specification
 
 abstract class AuthorizationSpecification<T : Any>(
@@ -46,13 +47,11 @@ abstract class AuthorizationSpecification<T : Any>(
     }
 
     private fun isAuthorizedForEntity(entityAuthorizationRequest: EntityAuthorizationRequest<T>): Boolean {
-        if (entityAuthorizationRequest.entities.isEmpty()) {
-            return false
-        }
+        val entities = entityAuthorizationRequest.entities.ifEmpty { listOf(null) }
         val permissions = permissions.filter { permission ->
             entityAuthorizationRequest.resourceType == permission.resourceType && entityAuthorizationRequest.action == permission.action
         }
-        return entityAuthorizationRequest.entities.all { entity ->
+        return entities.all { entity ->
             permissions.any { permission ->
                 permission
                     .appliesTo(
@@ -70,12 +69,19 @@ abstract class AuthorizationSpecification<T : Any>(
     ): Boolean {
 
         if (relatedEntityAuthorizationRequest.resourceType == relatedEntityAuthorizationRequest.relatedResourceType) {
-
+            val entity = try {
+                identifierToEntity(relatedEntityAuthorizationRequest.relatedResourceId)
+            } catch (e: NotImplementedError) {
+                null
+            } catch (e: Throwable) {
+                logger.error { e }
+                null
+            }
             return isAuthorizedForEntity(
                 EntityAuthorizationRequest(
                     relatedEntityAuthorizationRequest.resourceType,
                     relatedEntityAuthorizationRequest.action,
-                    identifierToEntity(relatedEntityAuthorizationRequest.relatedResourceId)
+                    entity
                 ).apply {
                     relatedEntityAuthorizationRequest.context?.let { context -> this.withContext(context) }
                 }
@@ -179,4 +185,8 @@ abstract class AuthorizationSpecification<T : Any>(
         query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 }

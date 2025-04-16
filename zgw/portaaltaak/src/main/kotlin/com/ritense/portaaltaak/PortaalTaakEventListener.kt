@@ -145,10 +145,9 @@ open class PortaalTaakEventListener(
         logger.debug { "Saving data in document for task with id '${task.id}'" }
         if (taakObject.verzondenData.isNotEmpty()) {
             val processInstanceId = CamundaProcessInstanceId(task.getProcessInstanceId())
-            val variableScope = getVariableScope(task)
             val taakObjectData = objectMapper.valueToTree<JsonNode>(taakObject.verzondenData)
             val resolvedValues = getResolvedValues(receiveData, taakObjectData)
-            handleTaakObjectData(processInstanceId, variableScope, resolvedValues)
+            handleTaakObjectData(processInstanceId, task, resolvedValues)
         } else {
             logger.warn { "No data found in taakobject for task with id '${task.id}'" }
         }
@@ -179,12 +178,6 @@ open class PortaalTaakEventListener(
         if (resolvedValues.isNotEmpty()) {
             valueResolverService.handleValues(processInstanceId.toString(), variableScope, resolvedValues)
         }
-    }
-
-    private fun getVariableScope(task: CamundaTask): VariableScope {
-        return runtimeService.createProcessInstanceQuery()
-            .processInstanceId(task.getProcessInstanceId())
-            .singleResult() as VariableScope
     }
 
     internal fun getDocumentenUrls(verzondenData: JsonNode): List<String> {

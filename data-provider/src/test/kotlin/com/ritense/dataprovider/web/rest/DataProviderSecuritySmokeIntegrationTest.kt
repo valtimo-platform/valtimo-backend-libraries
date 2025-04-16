@@ -16,8 +16,13 @@
 
 package com.ritense.dataprovider.web.rest
 
+import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker
 import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
+import org.springframework.boot.test.mock.mockito.MockBean
 
 class DataProviderSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
     basePackageName = "com.ritense.dataprovider"
-)
+) {
+    @MockBean
+    lateinit var processDefinitionCaseDefinitionLinker: ProcessDefinitionCaseDefinitionLinker
+}
