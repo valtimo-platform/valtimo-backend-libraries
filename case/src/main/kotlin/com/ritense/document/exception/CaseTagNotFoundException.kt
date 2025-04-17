@@ -16,9 +16,11 @@
 
 package com.ritense.document.exception
 
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
+
 class CaseTagNotFoundException(
     caseTagKey: String,
-    caseDefinitionName: String
+    caseDefinitionId: CaseDefinitionId
 ) : RuntimeException(
-    "A case tag with key $caseTagKey could not be found for case definition with key $caseDefinitionName"
+    "A case tag with key $caseTagKey could not be found for case definition with key ${caseDefinitionId.key} and version tag ${caseDefinitionId.versionTag}"
 )

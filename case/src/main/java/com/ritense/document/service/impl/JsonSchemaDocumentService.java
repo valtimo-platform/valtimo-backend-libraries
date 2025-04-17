@@ -758,7 +758,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         );
 
         var caseTag = caseTagKey != null ? caseTagService.get(
-            document.definitionId().name(),
+            document.definitionId().caseDefinitionId(),
             caseTagKey
         ) : null;
         document.addCaseTag(caseTag);
@@ -791,7 +791,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         );
 
         var caseTag = caseTagKey != null ? caseTagService.get(
-            document.definitionId().name(),
+            document.definitionId().caseDefinitionId(),
             caseTagKey
         ) : null;
         document.removeCaseTag(caseTag);
