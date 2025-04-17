@@ -301,9 +301,10 @@ class CaseDefinitionResourceTest : BaseTest() {
         verify(service).deleteCaseDefinition(caseDefinitionId)
     }
 
+    @Test
     fun `should get case definitions`() {
         val caseDefinitionId = CaseDefinitionId("key", "1.0.0")
-        val caseDefinition = caseDefinition(caseDefinitionId, "name", true, false)
+        val caseDefinition = caseDefinition(caseDefinitionId)
         whenever(service.getCaseDefinitions(isNull(), isNull(), any())).thenReturn(PageImpl(listOf(caseDefinition)))
 
         mockMvc.perform(
@@ -344,6 +345,23 @@ class CaseDefinitionResourceTest : BaseTest() {
             .andExpect(jsonPath("$.length()").value(1))
             .andExpect(jsonPath("$[0].versionTag").value(caseDefinition.id.versionTag.version))
             .andExpect(jsonPath("$[0].active").value(caseDefinition.active))
+    }
+
+    @Test
+    fun `should finalize case definition`() {
+        val caseDefinition = caseDefinition()
+        whenever(service.finalizeCaseDefinition(caseDefinition.id)).thenReturn(caseDefinition)
+
+        mockMvc.perform(
+            post(
+                "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/finalize",
+                caseDefinition.id.key,
+                caseDefinition.id.versionTag,
+            )
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.final").value(true))
     }
 
     companion object {
