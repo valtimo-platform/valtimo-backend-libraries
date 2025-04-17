@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.connector.web.rest
+package com.ritense.document.exception
 
-import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
-
-class ConnectorSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
-    basePackageName = "com.ritense.connector"
+class CaseTagAlreadyExistsException(
+    caseTagKey: String,
+    caseDefinitionName: String
+) : RuntimeException(
+    "A case tag with key $caseTagKey already exists for case definition with key $caseDefinitionName"
 )

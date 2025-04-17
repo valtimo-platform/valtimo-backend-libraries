@@ -36,6 +36,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.event.DocumentUnassignedEvent;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
+import com.ritense.document.service.CaseTagService;
 import com.ritense.document.service.InternalCaseStatusService;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.outbox.OutboxService;
@@ -75,6 +76,8 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
 
     private InternalCaseStatusService internalCaseStatusService;
 
+    private CaseTagService caseTagService;
+
     private final String documentDefinitionName = "name";
 
     @BeforeEach
@@ -88,6 +91,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         applicationEventPublisher = mock(ApplicationEventPublisher.class);
         outboxService = mock(OutboxService.class);
         internalCaseStatusService = mock();
+        caseTagService = mock();
 
         jsonSchemaDocumentService = spy(new JsonSchemaDocumentService(
             documentRepository,
@@ -99,7 +103,8 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
             applicationEventPublisher,
             outboxService,
             MapperSingleton.INSTANCE.get(),
-            internalCaseStatusService
+            internalCaseStatusService,
+            caseTagService
         ));
 
         var content = new JsonDocumentContent("{\"firstname\": \"aName\"}");

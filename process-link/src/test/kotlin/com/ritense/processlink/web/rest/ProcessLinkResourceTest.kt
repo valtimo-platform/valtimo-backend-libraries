@@ -25,7 +25,6 @@ import com.ritense.processlink.domain.TestProcessLinkMapper
 import com.ritense.processlink.domain.TestProcessLinkUpdateRequestDto
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.service.ProcessLinkService
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.service.CamundaProcessService
 import org.camunda.bpm.engine.RepositoryService

@@ -149,13 +149,19 @@ class ProcessDocumentsAutoConfiguration {
     @ConditionalOnMissingBean(ProcessDocumentsService::class)
     fun processDocumentsService(
         documentService: DocumentService,
-        processDocumentAssociationService: ProcessDocumentAssociationService,
-        camundaProcessService: CamundaProcessService
+        camundaProcessService: CamundaProcessService,
+        associationService: ProcessDocumentAssociationService,
+        processDocumentService: ProcessDocumentService,
+        repositoryService: RepositoryService,
+        camundaRuntimeService: CamundaRuntimeService
     ): ProcessDocumentsService {
         return ProcessDocumentsService(
             documentService,
             camundaProcessService,
-            processDocumentAssociationService
+            associationService,
+            processDocumentService,
+            repositoryService,
+            camundaRuntimeService
         )
     }
 

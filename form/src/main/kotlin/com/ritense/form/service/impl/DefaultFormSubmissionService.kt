@@ -16,9 +16,10 @@
 
 package com.ritense.form.service.impl
 
+import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.JsonNodeFactory
+import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
@@ -124,28 +125,22 @@ class DefaultFormSubmissionService(
             val processVariables = getProcessVariables(taskInstanceId)
             val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId).orElseThrow()
 
-            val categorizedKeyValues = getCategorizedSubmitValues(formDefinition, formData, document)
             val formFields = getFormFields(formDefinition, formData)
-            // Merge the document results from 'legacy' mapping and value-resolvers.
-            val submittedDocumentContent = JsonMerger.merge(
-                getSubmittedDocumentContent(formFields, document),
-                categorizedKeyValues.documentValues
+            preProcessFormFields(formFields, document)
+            val categorizedKeyValues = getCategorizedSubmitValues(formDefinition, formData, document)
+
+            val modifyDocumentWithJsonPatch = getPreJsonPatch(
+                formDefinition, categorizedKeyValues.modifyDocumentWithJsonPatchValues, processVariables, document
             )
-
-            // Merge the process-variable results from 'legacy' mapping and value-resolvers.
-            val formDefinedProcessVariables = formDefinition.extractProcessVars(formData) +
-                categorizedKeyValues.processVariables
-
-            val preJsonPatch = getPreJsonPatch(formDefinition, submittedDocumentContent, processVariables, document)
             val request = getRequest(
                 processLink,
                 document,
                 taskInstanceId,
                 documentDefinitionNameToUse,
                 processDefinition.key,
-                submittedDocumentContent,
-                formDefinedProcessVariables,
-                preJsonPatch
+                categorizedKeyValues.createDocumentWithContent,
+                categorizedKeyValues.withProcessVars,
+                modifyDocumentWithJsonPatch
             )
 
             val externalFormData = getExternalFormData(formDefinition, formData)
@@ -154,7 +149,7 @@ class DefaultFormSubmissionService(
                 formFields,
                 externalFormData,
                 documentDefinitionNameToUse,
-                categorizedKeyValues.otherValues
+                categorizedKeyValues.valueResolverValues
             )
         } catch (notFoundException: DocumentNotFoundException) {
             logger.error("Document could not be found", notFoundException)
@@ -203,8 +198,11 @@ class DefaultFormSubmissionService(
     }
 
     /**
-     * This method categorizes the submitted values which are processed by the value-resolvers.
-     * It preprocesses the values for document and process-variables, and leaves the rest as-is.
+     * This method categorizes the submitted values into 4 categories:
+     * - createDocumentWithContent: A new document is created with this as its JSON content
+     * - withProcessVar: Add this variable to the process
+     * - modifyDocumentWithJsonPatchValue: An existing document is modified with this JSON patch
+     * - valueResolverValue: The case is updated with this valueResolverValue
      */
     private fun getCategorizedSubmitValues(
         formDefinition: FormIoFormDefinition,
@@ -212,35 +210,49 @@ class DefaultFormSubmissionService(
         document: Document?
     ): CategorizedSubmitValues {
         val categorizedMap = formDefinition.inputFields
+            .filter { FormIoFormDefinition.NOT_IGNORED.test(it) }
+            .filter { FormIoFormDefinition.isInputComponent(it) }
             .mapNotNull { field ->
                 getTargetKeyValuePair(field, formData)
+            }
+            .groupBy { it.first.substringBefore("/-/") }
+            .flatMap { (_, groups) ->
+                groups.mapIndexed { i, (targetKey, value) ->
+                    val newTargetKey = if (i == 0) targetKey else targetKey.replace("/-/", "/+/")
+                    newTargetKey to value
+                }
             }.groupBy { (key, _) ->
                 val prefix = key.substringBefore(ValueResolverServiceImpl.DELIMITER, missingDelimiterValue = "")
-                when (prefix) {
-                    DOC_PREFIX -> if (document == null) DOC_PREFIX else OTHER
-                    PV_PREFIX -> PV_PREFIX
-                    else -> OTHER
+                if (prefix == DOC_PREFIX && key.contains("{indexOf")) {
+                    "modifyDocumentWithJsonPatchValue"
+                } else if (prefix == DOC_PREFIX && document == null) {
+                    "createDocumentWithContent"
+                } else if (prefix == PV_PREFIX) {
+                    "withProcessVar"
+                } else {
+                    "valueResolverValue"
                 }
             }.mapValues { it.value.toMap() }
 
         // Preprocess the document paths & values. The result is an ObjectNode.
-        val documentValues = categorizedMap[DOC_PREFIX]
+        val createDocumentWithContent = categorizedMap["createDocumentWithContent"]
             ?.let { valueResolverService.preProcessValuesForNewCase(it)[DOC_PREFIX] as? ObjectNode }
             ?: objectMapper.createObjectNode()
 
         // After pre-processing process-variables we have a key-value map where the prefix is stripped from the keys.
-        val processVariables = categorizedMap[PV_PREFIX]
+        val withProcessVars = categorizedMap["withProcessVar"]
             ?.let { valueResolverService.preProcessValuesForNewCase(it)[PV_PREFIX] as? Map<String, Any> }
             ?: mapOf()
 
         // Do not process/handle other values yet.
-        // This has to be done when we are certain the process and document could be created.
-        val otherValues = categorizedMap[OTHER] ?: mapOf()
+        val valueResolverValues = categorizedMap["valueResolverValue"] ?: mapOf()
+        val modifyDocumentWithJsonPatchValues = categorizedMap["modifyDocumentWithJsonPatchValue"] ?: mapOf()
 
         return CategorizedSubmitValues(
-            documentValues,
-            processVariables,
-            otherValues
+            createDocumentWithContent,
+            withProcessVars,
+            valueResolverValues,
+            modifyDocumentWithJsonPatchValues
         )
     }
 
@@ -248,17 +260,33 @@ class DefaultFormSubmissionService(
         field: ObjectNode,
         formData: JsonNode
     ): Pair<String, Any>? {
-        return FormIoFormDefinition.getTargetKey(field).getOrNull()?.let { targetKey ->
+        return FormIoFormDefinition.resolveTargetKey(field).getOrNull()?.let { targetKey ->
             getFormValue(field, formData)?.let { value -> Pair(targetKey, value) }
-        } ?: FormIoFormDefinition.getSourceKey(field).getOrNull()?.let { sourceKey ->
-            getFormValue(field, formData)?.let { value -> Pair(sourceKey, value) }
         }
     }
 
     private fun getFormValue(field: ObjectNode, formData: JsonNode): Any? {
         return FormIoFormDefinition.getKey(field).getOrNull()?.let { inputKey ->
-            convertNodeValue(formData.at("/$inputKey"))
+            val jsonPointer = JsonPointer.compile("/${inputKey.replace('.', '/')}")
+            if (field.at(FormIoFormDefinition.PROPERTIES_CONTAINER_POINTER).isTextual) {
+                consumeValue(formData, jsonPointer)
+            } else {
+                convertNodeValue(formData.at(jsonPointer))
+            }
         }
+    }
+
+    private fun consumeValue(formData: JsonNode, jsonPointer: JsonPointer): Any? {
+        val valueNode = formData.at(jsonPointer)
+        if (!valueNode.isMissingNode) {
+            val head = jsonPointer.head()
+            if (formData.at(head).isObject) {
+                (formData.at(head) as ObjectNode).remove(jsonPointer.last().matchingProperty)
+            } else if (formData.at(head).isArray) {
+                (formData.at(head) as ArrayNode).remove(jsonPointer.last().matchingProperty.toInt())
+            }
+        }
+        return convertNodeValue(valueNode)
     }
 
     private fun convertNodeValue(node: JsonNode): Any? {
@@ -315,35 +343,35 @@ class DefaultFormSubmissionService(
         formDefinition: FormIoFormDefinition,
         formData: JsonNode
     ): List<FormField> {
-        return formDefinition.getDocumentMappedFieldsFiltered(
-            FormIoFormDefinition.NOT_IGNORED
-                .and { t -> FormIoFormDefinition.getTargetKey(t).isEmpty && FormIoFormDefinition.getSourceKey(t).isEmpty }
-        ).mapNotNull { objectNode -> FormField.getFormField(formData, objectNode, applicationEventPublisher) }
+        return formDefinition.inputFields
+            .filter { FormIoFormDefinition.NOT_IGNORED.test(it) }
+            .mapNotNull { field -> FormField.getFormField(formData, field, applicationEventPublisher) }
     }
 
-    private fun getSubmittedDocumentContent(formFields: List<FormField>, document: Document?): ObjectNode {
-        val submittedDocumentContent = JsonNodeFactory.instance.objectNode()
+    private fun preProcessFormFields(formFields: List<FormField>, document: Document?) {
         formFields.forEach {
             it.preProcess(document)
-            it.appendValueToDocument(submittedDocumentContent)
         }
-        return submittedDocumentContent
     }
 
     private fun getPreJsonPatch(
         formDefinition: FormIoFormDefinition,
-        submittedDocumentContent: JsonNode,
+        jsonPatchValues: Map<String, Any>,
         processVariables: JsonNode?,
         document: Document?
     ): JsonPatch {
+        val jsonPatchNode = objectMapper.valueToTree<JsonNode>(
+            jsonPatchValues.entries.associate { e -> e.key.substringAfter(")}/") to e.value }
+        )
+
         //Note: Pre patch can be refactored into a specific field types that apply itself
         val preJsonPatch = prefillFormService.preSubmissionTransform(
             formDefinition,
-            submittedDocumentContent,
+            jsonPatchNode,
             processVariables ?: objectMapper.createObjectNode(),
             document?.content()?.asJson() ?: objectMapper.createObjectNode()
         )
-        logger.debug { "getContent:$submittedDocumentContent" }
+        logger.debug { "getContent:$jsonPatchValues" }
         return preJsonPatch
     }
 
@@ -368,9 +396,9 @@ class DefaultFormSubmissionService(
         taskInstanceId: String?,
         documentDefinitionName: String,
         processDefinitionKey: String,
-        submittedDocumentContent: JsonNode,
-        formDefinedProcessVariables: Map<String, Any>,
-        preJsonPatch: JsonPatch
+        documentContent: JsonNode,
+        withProcessVars: Map<String, Any>,
+        modifyDocumentWithJsonPatch: JsonPatch
     ): Request {
         return if (processLink.activityType == START_EVENT_START) {
             check(taskInstanceId == null) {
@@ -380,16 +408,16 @@ class DefaultFormSubmissionService(
                 newDocumentAndStartProcessRequest(
                     documentDefinitionName,
                     processDefinitionKey,
-                    submittedDocumentContent,
-                    formDefinedProcessVariables
+                    documentContent,
+                    withProcessVars
                 )
             } else {
                 modifyDocumentAndStartProcessRequest(
                     document,
                     processDefinitionKey,
-                    submittedDocumentContent,
-                    formDefinedProcessVariables,
-                    preJsonPatch
+                    documentContent,
+                    withProcessVars,
+                    modifyDocumentWithJsonPatch
                 )
             }
         } else if (processLink.activityType == USER_TASK_CREATE) {
@@ -399,9 +427,9 @@ class DefaultFormSubmissionService(
             modifyDocumentAndCompleteTaskRequest(
                 document,
                 taskInstanceId,
-                submittedDocumentContent,
-                formDefinedProcessVariables,
-                preJsonPatch
+                documentContent,
+                withProcessVars,
+                modifyDocumentWithJsonPatch
             )
         } else {
             throw UnsupportedOperationException("Cannot handle submission for activity-type '" + processLink.activityType + "'")
@@ -411,48 +439,48 @@ class DefaultFormSubmissionService(
     private fun newDocumentAndStartProcessRequest(
         documentDefinitionName: String,
         processDefinitionKey: String,
-        submittedDocumentContent: JsonNode,
-        formDefinedProcessVariables: Map<String, Any>,
+        documentContent: JsonNode,
+        withProcessVars: Map<String, Any>,
     ): NewDocumentAndStartProcessRequest {
         return NewDocumentAndStartProcessRequest(
             processDefinitionKey,
             NewDocumentRequest(
                 documentDefinitionName,
-                submittedDocumentContent
+                documentContent
             )
-        ).withProcessVars(formDefinedProcessVariables)
+        ).withProcessVars(withProcessVars)
     }
 
     private fun modifyDocumentAndStartProcessRequest(
         document: Document,
         processDefinitionKey: String,
-        submittedDocumentContent: JsonNode,
-        formDefinedProcessVariables: Map<String, Any>,
-        preJsonPatch: JsonPatch
+        documentContent: JsonNode,
+        withProcessVars: Map<String, Any>,
+        withJsonPatch: JsonPatch
     ): ModifyDocumentAndStartProcessRequest {
         return ModifyDocumentAndStartProcessRequest(
             processDefinitionKey,
             ModifyDocumentRequest(
                 document.id().toString(),
-                submittedDocumentContent
-            ).withJsonPatch(preJsonPatch)
-        ).withProcessVars(formDefinedProcessVariables)
+                documentContent
+            ).withJsonPatch(withJsonPatch)
+        ).withProcessVars(withProcessVars)
     }
 
     private fun modifyDocumentAndCompleteTaskRequest(
         document: Document,
         taskInstanceId: String,
-        submittedDocumentContent: JsonNode,
-        formDefinedProcessVariables: Map<String, Any>,
-        preJsonPatch: JsonPatch
+        documentContent: JsonNode,
+        withProcessVars: Map<String, Any>,
+        withJsonPatch: JsonPatch
     ): ModifyDocumentAndCompleteTaskRequest {
         return ModifyDocumentAndCompleteTaskRequest(
             ModifyDocumentRequest(
                 document.id().toString(),
-                submittedDocumentContent
-            ).withJsonPatch(preJsonPatch),
+                documentContent
+            ).withJsonPatch(withJsonPatch),
             taskInstanceId
-        ).withProcessVars(formDefinedProcessVariables)
+        ).withProcessVars(withProcessVars)
     }
 
     private fun dispatchRequest(
@@ -506,13 +534,13 @@ class DefaultFormSubmissionService(
     }
 
     private data class CategorizedSubmitValues(
-        val documentValues: ObjectNode,
-        val processVariables: Map<String, Any>,
-        val otherValues: Map<String, Any>
+        val createDocumentWithContent: ObjectNode,
+        val withProcessVars: Map<String, Any>,
+        val valueResolverValues: Map<String, Any>,
+        val modifyDocumentWithJsonPatchValues: Map<String, Any>
     )
 
     companion object {
         val logger = KotlinLogging.logger {}
-        const val OTHER = "other"
     }
 }

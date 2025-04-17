@@ -137,7 +137,21 @@ class ProcessDocumentResourceTest extends BaseTest {
         );
 
         caseDefinitionId = new CaseDefinitionId("house", "1.0.0");
-        caseDefinition = new CaseDefinition(caseDefinitionId, "house", null, null, null, null, false, true, true, true);
+        caseDefinition = new CaseDefinition(
+            caseDefinitionId,
+            "house",
+            null,
+            null,
+            null,
+            null,
+            true,
+            true,
+            true,
+            false,
+            false,
+            null,
+            null
+        );
         when(activeCaseDefinitionService.getActiveCaseDefinition("house")).thenReturn(caseDefinition);
     }
 

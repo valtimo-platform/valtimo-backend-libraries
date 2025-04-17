@@ -1,0 +1,14 @@
+[
+    {
+        "activityId": "start-event",
+        "activityType": "bpmn:StartEvent:start",
+        "processLinkType": "form",
+        "formDefinitionName": "form-example-various-prefill-fields"
+    },
+    {
+        "activityId": "prefill-task",
+        "activityType": "bpmn:UserTask:create",
+        "processLinkType": "form",
+        "formDefinitionName": "form-example-various-prefill-fields"
+    }
+]

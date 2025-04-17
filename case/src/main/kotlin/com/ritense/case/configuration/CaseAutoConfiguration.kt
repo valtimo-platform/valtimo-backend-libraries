@@ -23,6 +23,7 @@ import com.ritense.case.deployment.CaseTaskListDeploymentService
 import com.ritense.case.domain.BooleanDisplayTypeParameter
 import com.ritense.case.domain.DateFormatDisplayTypeParameter
 import com.ritense.case.domain.EnumDisplayTypeParameter
+import com.ritense.case.domain.TagsDisplayTypeParameter
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseTabDocumentDefinitionMapper
 import com.ritense.case.repository.CaseTabRepository
@@ -256,6 +257,11 @@ class CaseAutoConfiguration {
     @Bean
     fun booleanDisplayTypeParameterType(): NamedType {
         return NamedType(BooleanDisplayTypeParameter::class.java, "boolean")
+    }
+
+    @Bean
+    fun tagsDisplayTypeParameterType(): NamedType {
+        return NamedType(TagsDisplayTypeParameter::class.java, "tags")
     }
 
     @Bean

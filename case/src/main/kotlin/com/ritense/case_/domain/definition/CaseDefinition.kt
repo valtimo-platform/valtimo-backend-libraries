@@ -26,6 +26,7 @@ import jakarta.persistence.Convert
 import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
 import jakarta.persistence.Table
+import org.apache.commons.validator.routines.UrlValidator
 import org.semver4j.Semver
 import org.springframework.data.annotation.CreatedBy
 import org.springframework.data.annotation.CreatedDate
@@ -53,13 +54,19 @@ data class CaseDefinition(
     val basedOnVersionTag: Semver? = null,
     @Column(name = "is_final")
     val final: Boolean = false,
-
-    @Column(name = "can_have_assignee")
-    val canHaveAssignee: Boolean = false,
-    @Column(name = "auto_assign_tasks")
-    val autoAssignTasks: Boolean = false,
     @Column(name = "active")
     val active: Boolean = false,
+
+    @Column(name = "can_have_assignee", nullable = false)
+    val canHaveAssignee: Boolean = false,
+    @Column(name = "auto_assign_tasks", nullable = false)
+    val autoAssignTasks: Boolean = false,
+    @Column(name = "has_external_start_form", nullable = false)
+    val hasExternalStartForm: Boolean = false,
+    @Column(name = "external_start_form_url", nullable = true, length = 512)
+    val externalStartFormUrl: String? = null,
+    @Column(name = "external_start_form_description", nullable = true, length = 512)
+    val externalStartFormDescription: String? = null,
 ) {
     init {
         require(
@@ -68,5 +75,37 @@ data class CaseDefinition(
                 else -> true
             }
         ) { "Case property [autoAssignTasks] can only be true when [canHaveAssignee] is true." }
+        require(
+            when (hasExternalStartForm) {
+                true -> !externalStartFormUrl.isNullOrBlank()
+                else -> true
+            }
+        ) {
+            "Case property [hasExternalStartForm] can only be true when [externalStartFormUrl] is not null or blank."
+        }
+        require(
+            when (hasExternalStartForm) {
+                true -> UrlValidator(arrayOf("http", "https")).isValid(externalStartFormUrl)
+                else -> true
+            }
+        ) {
+            "Case property [externalStartFormUrl] is not a valid URL."
+        }
+        require(
+            when (hasExternalStartForm && !externalStartFormUrl.isNullOrBlank()) {
+                true -> externalStartFormUrl.length <= 512
+                else -> true
+            }
+        ) {
+            "Case property [externalStartFormUrl] exceeds the maximum length of 512 characters."
+        }
+        require(
+            when (hasExternalStartForm && !externalStartFormDescription.isNullOrBlank()) {
+                true -> externalStartFormDescription.length <= 512
+                else -> true
+            }
+        ) {
+            "Case property [externalStartFormDescription] exceeds the maximum length of 512 characters."
+        }
     }
 }

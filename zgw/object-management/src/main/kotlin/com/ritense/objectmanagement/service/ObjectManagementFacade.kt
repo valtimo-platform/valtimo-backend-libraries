@@ -45,6 +45,12 @@ class ObjectManagementFacade(
         return findObjectByUuid(accessObject = accessObject, uuid = uuid)
     }
 
+    fun getObjectByUuidAndIndex(objectName: String, uuid: UUID, index: Int): ObjectRecord {
+        logger.debug { "Get object by UUID and index objectName=$objectName uuid=$uuid index=$index" }
+        val accessObject = getAccessObject(objectName)
+        return findObjectByUuidAndIndex(accessObject = accessObject, uuid = uuid, index = index)
+    }
+
     fun getObjectsByUuids(objectName: String, uuids: List<UUID>): ObjectsList {
         logger.debug { "Get object by UUIDs objectName=$objectName uuids=$uuids" }
         val accessObject = getAccessObject(objectName)
@@ -226,6 +232,14 @@ class ObjectManagementFacade(
 
         logger.trace { "Getting object $objectUrl" }
         return accessObject.objectenApiPlugin.getObject(objectUrl)
+    }
+
+    private fun findObjectByUuidAndIndex(accessObject: ObjectManagementAccessObject, uuid: UUID, index: Int): ObjectRecord {
+        logger.debug { "Find object by uuid and index accessObject=$accessObject uuid=$uuid index=$index" }
+        val objectUrl = accessObject.objectenApiPlugin.getObjectUrl(uuid)
+
+        logger.trace { "Getting object $objectUrl" }
+        return accessObject.objectenApiPlugin.getObjectRecord(objectUrl, index)
     }
 
     private fun findObjectByUri(accessObject: ObjectManagementAccessObject, objectUrl: URI): ObjectWrapper {

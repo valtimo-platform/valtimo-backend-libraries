@@ -24,7 +24,6 @@ include(
     "changelog",
     "command-handling",
     "connector",
-    "contactmoment",
     "contract",
     "core",
     "dashboard",

@@ -20,16 +20,49 @@ import com.ritense.case_.domain.definition.CaseDefinition
 
 data class CaseSettingsDto(
     val canHaveAssignee: Boolean? = null,
-    val autoAssignTasks: Boolean? = null
+    val autoAssignTasks: Boolean? = null,
+    val hasExternalStartForm: Boolean? = null,
+    val externalStartFormUrl: String? = null,
+    val externalStartFormDescription: String? = null,
 ) {
     fun update(currentCaseDefinition: CaseDefinition): CaseDefinition {
         return currentCaseDefinition.copy(
-            canHaveAssignee = getSettingForUpdate(currentCaseDefinition.canHaveAssignee, canHaveAssignee),
-            autoAssignTasks = getSettingForUpdate(currentCaseDefinition.autoAssignTasks, autoAssignTasks)
+            name = currentCaseDefinition.name,
+            canHaveAssignee = getSettingForUpdate(currentCaseDefinition.canHaveAssignee, this.canHaveAssignee) ?: false,
+            autoAssignTasks = when (this.canHaveAssignee) {
+                false -> false
+                else -> getSettingForUpdate(currentCaseDefinition.autoAssignTasks, this.autoAssignTasks) ?: false
+            },
+            hasExternalStartForm = getSettingForUpdate(
+                currentCaseDefinition.hasExternalStartForm,
+                this.hasExternalStartForm
+            ) ?: false,
+            externalStartFormUrl = when (this.hasExternalStartForm) {
+                false -> null
+                else -> getSettingForUpdate(currentCaseDefinition.externalStartFormUrl, this.externalStartFormUrl)
+            },
+            externalStartFormDescription = when (this.hasExternalStartForm) {
+                false -> null
+                else -> getSettingForUpdate(
+                    currentCaseDefinition.externalStartFormUrl,
+                    this.externalStartFormDescription
+                )
+            }
         )
     }
 
     private fun <T> getSettingForUpdate(currentValue: T, newValue: T?): T {
         return newValue ?: currentValue
+    }
+
+    companion object {
+
+        fun from(caseDefinition: CaseDefinition) = CaseSettingsDto(
+            canHaveAssignee = caseDefinition.canHaveAssignee,
+            autoAssignTasks = caseDefinition.autoAssignTasks,
+            hasExternalStartForm = caseDefinition.hasExternalStartForm,
+            externalStartFormUrl = caseDefinition.externalStartFormUrl,
+            externalStartFormDescription = caseDefinition.externalStartFormDescription,
+        )
     }
 }

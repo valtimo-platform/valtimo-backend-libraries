@@ -127,6 +127,7 @@ internal class ZakenApiPluginTest {
         whenever(executionMock.getVariable(DOCUMENT_URL_PROCESS_VAR)).thenReturn("https://document.url")
         whenever(executionMock.getVariable(RESOURCE_ID_PROCESS_VAR)).thenReturn("myResourceId")
         whenever(zaakUrlProvider.getZaakUrl(any())).thenReturn(URI("https://zaak.url"))
+        whenever(zakenApiClient.linkDocument(any(), any(), any())).thenReturn(mock())
         whenever(storageService.getResourceMetadata("myResourceId")).thenReturn(
             mapOf(
                 "title" to "titel",

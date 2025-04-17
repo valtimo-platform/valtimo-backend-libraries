@@ -24,5 +24,6 @@
     <property name="uuidType" value="uuid" dbms="h2,postgresql"/>
 
     <include file="changelog/20221010-create-note-table-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20250213-cascade-document-delete.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

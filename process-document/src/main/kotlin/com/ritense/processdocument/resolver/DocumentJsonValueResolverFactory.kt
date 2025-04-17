@@ -147,15 +147,21 @@ class DocumentJsonValueResolverFactory(
     }
 
     private fun buildJsonPatch(jsonNode: JsonNode, values: Map<String, Any?>) {
-        val jsonPatchBuilder = JsonPatchBuilder()
-
         values.forEach {
-            val path = JsonPointer.valueOf(it.key.substringAfter(":"))
+            val jsonPointer = toJsonPointer(it.key.substringAfter(":"))
             val valueNode = toValueNode(it.value)
-            jsonPatchBuilder.addJsonNodeValue(jsonNode, path, valueNode)
+            val jsonPatchBuilder = JsonPatchBuilder()
+            jsonPatchBuilder.addJsonNodeValue(jsonNode, jsonPointer, valueNode)
+            JsonPatchService.apply(jsonPatchBuilder.build(), jsonNode)
         }
+    }
 
-        JsonPatchService.apply(jsonPatchBuilder.build(), jsonNode)
+    private fun toJsonPointer(path: String): JsonPointer {
+        var newPath: String = path
+        if (!path.startsWith('/')) {
+            newPath = "/${path}"
+        }
+        return JsonPointer.valueOf(newPath.replace('.', '/'))
     }
 
     private fun validateJsonPointer(documentDefinition: JsonSchemaDocumentDefinition, jsonPointer: String) {

@@ -50,10 +50,23 @@ internal class FixedValueResolverTest {
             processInstanceId = processInstanceId,
             variableScope = variableScope
         ).apply(
-            "1337"
+            "1234"
         )
 
-        Assertions.assertThat(resolvedValue).isEqualTo(1337L)
+        Assertions.assertThat(resolvedValue).isEqualTo(1234L)
+    }
+
+    @Test
+    fun `should not resolve long with leading 0`() {
+        val documentInstanceId = UUID.randomUUID().toString()
+
+        val resolvedValue = fixedValueResolver.createResolver(
+            documentId = documentInstanceId,
+        ).apply(
+            "01234"
+        )
+
+        Assertions.assertThat(resolvedValue).isEqualTo("01234")
     }
 
     @Test
@@ -65,10 +78,23 @@ internal class FixedValueResolverTest {
             processInstanceId = processInstanceId,
             variableScope = variableScope
         ).apply(
-            "13.37"
+            "0.1234"
         )
 
-        Assertions.assertThat(resolvedValue).isEqualTo(13.37)
+        Assertions.assertThat(resolvedValue).isEqualTo(0.1234)
+    }
+
+    @Test
+    fun `should not resolve double with leading 0`() {
+        val documentInstanceId = UUID.randomUUID().toString()
+
+        val resolvedValue = fixedValueResolver.createResolver(
+            documentId = documentInstanceId,
+        ).apply(
+            "01.234"
+        )
+
+        Assertions.assertThat(resolvedValue).isEqualTo("01.234")
     }
 
     @Test
