@@ -210,7 +210,7 @@ class ProcessLinkResource(
         @PathVariable("processDefinitionKey") processDefinitionKey: String
     ): ResponseEntity<List<ProcessDefinitionResponseDto>> {
         val definitions = runWithoutAuthorization {
-            camundaProcessService.getUnlinkedDeployedDefinitions(processDefinitionKey)
+            camundaProcessService.getUnlinkedDeployedDefinitionsByKey(processDefinitionKey)
         }
 
         val responseDtos = definitions.map { definition ->

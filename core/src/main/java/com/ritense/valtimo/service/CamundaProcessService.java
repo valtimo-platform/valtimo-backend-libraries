@@ -322,21 +322,24 @@ public class CamundaProcessService {
     public List<CamundaProcessDefinition> getUnlinkedDeployedDefinitions() {
         denyAuthorization();
         return AuthorizationContext.runWithoutAuthorization(() ->
-            camundaRepositoryService.findProcessDefinitions(
-                    byActive(),
-                    Sort.by(NAME)
-                ).stream()
+            camundaRepositoryService.findProcessDefinitions(byActive(), Sort.by(NAME)).stream()
                 .filter(def -> def.getVersionTag() == null || !def.getVersionTag().startsWith("CD:"))
+                .collect(Collectors.groupingBy(
+                    CamundaProcessDefinition::getKey,
+                    Collectors.maxBy(Comparator.comparing(CamundaProcessDefinition::getVersion))
+                ))
+                .values()
+                .stream()
+                .flatMap(Optional::stream)
                 .collect(Collectors.toList())
         );
     }
-
-    // To do
-    public List<CamundaProcessDefinition> getUnlinkedDeployedDefinitionsByKey() {
+    
+    public List<CamundaProcessDefinition> getUnlinkedDeployedDefinitionsByKey(String processDefinitionKey) {
         denyAuthorization();
         return AuthorizationContext.runWithoutAuthorization(() ->
             camundaRepositoryService.findProcessDefinitions(
-                    byActive(),
+                    byActive().and(byKey(processDefinitionKey)),
                     Sort.by(NAME)
                 ).stream()
                 .filter(def -> def.getVersionTag() == null || !def.getVersionTag().startsWith("CD:"))
