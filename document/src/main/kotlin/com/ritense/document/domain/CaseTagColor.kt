@@ -28,6 +28,7 @@ enum class CaseTagColor {
     GRAY,
     COOLGRAY,
     HIGHCONTRAST,
-    OUTLINE
+    OUTLINE,
+    ORANGE
 }
 
