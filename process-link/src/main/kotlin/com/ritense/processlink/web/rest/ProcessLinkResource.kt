@@ -325,7 +325,7 @@ class ProcessLinkResource(
     }
 
     @DeleteMapping(
-        value = ["/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/process-definition/{processDefinitionKey}"],
+        value = ["/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/process-definition/key/{processDefinitionKey}"],
     )
     @Transactional
     fun deleteProcessDefinitionsAndProcessLinks(
@@ -353,7 +353,7 @@ class ProcessLinkResource(
 
     @DeleteMapping("/management/v1/process-definition/key/{processDefinitionKey}")
     @Transactional
-    fun deleteUnlinkedProcessDefinitionsByKeyAndLinks(
+    fun deleteUnlinkedProcessDefinitionsAndLinksByKey(
         @PathVariable("processDefinitionKey") processDefinitionKey: String
     ): ResponseEntity<Any> {
         runWithoutAuthorization {
