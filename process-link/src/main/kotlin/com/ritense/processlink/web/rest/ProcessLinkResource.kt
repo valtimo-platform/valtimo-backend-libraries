@@ -383,8 +383,12 @@ class ProcessLinkResource(
         val deployedProcessDefinitionId: String
         val caseDefinitionId = CaseDefinitionId(caseDefinitionKey, caseDefinitionVersionTag)
 
-        val currentProcessDefinition = runWithoutAuthorization {
-            camundaProcessService.getProcessDefinitionById(processDefinitionId)
+        val currentProcessDefinition = if (processDefinitionId !== null) {
+            runWithoutAuthorization {
+                camundaProcessService.getProcessDefinitionById(processDefinitionId)
+            }
+        } else {
+            null
         }
 
         if (bpmn !== null) {
