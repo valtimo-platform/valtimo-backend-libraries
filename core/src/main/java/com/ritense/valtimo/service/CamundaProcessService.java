@@ -308,6 +308,18 @@ public class CamundaProcessService {
         ));
     }
 
+    public List<CamundaProcessDefinition> getUnlinkedDeployedDefinitions() {
+        denyAuthorization();
+        return AuthorizationContext.runWithoutAuthorization(() ->
+            camundaRepositoryService.findProcessDefinitions(
+                    byActive(),
+                    Sort.by(NAME)
+                ).stream()
+                .filter(def -> def.getVersionTag() == null || !def.getVersionTag().startsWith("CD:"))
+                .collect(Collectors.toList())
+        );
+    }
+
     public List<CamundaProcessDefinition> getDefinitionsByKeyAndCaseDefinition(
         CaseDefinitionId caseDefinitionId,
         String processDefinitionKey
@@ -317,6 +329,15 @@ public class CamundaProcessService {
             byVersionTag("CD:" + caseDefinitionId.toString())
                 .and(byKey(processDefinitionKey))
         ));
+    }
+
+    public List<CamundaProcessDefinition> getDefinitionsByKey(String processDefinitionKey) {
+        denyAuthorization();
+        return AuthorizationContext.runWithoutAuthorization(() ->
+            camundaRepositoryService.findProcessDefinitions(
+                byKey(processDefinitionKey)
+            )
+        );
     }
 
     @Transactional
@@ -441,6 +462,49 @@ public class CamundaProcessService {
             setDecisionsVersionTag(dmnModel, caseDefinitionId);
 
             repositoryService.createDeployment().addModelInstance(fileName, dmnModel).deploy();
+        } else {
+            String[] splitFileName = fileName.split("\\.");
+
+            if (splitFileName.length > 1) {
+                String fileExtension = splitFileName[splitFileName.length - 1];
+                throw new FileExtensionNotSupportedException(fileExtension);
+            } else {
+                throw new NoFileExtensionFoundException(fileName);
+            }
+        }
+    }
+
+    @Transactional
+    public DeploymentWithDefinitions deployUnlinked(
+        String fileName,
+        ByteArrayInputStream fileInput,
+        boolean skipProcessLinksCopy,
+        boolean skipIsDeployableCheck
+    ) throws ProcessNotDeployableException, FileExtensionNotSupportedException, NoFileExtensionFoundException {
+        denyAuthorization();
+
+        if (fileName.endsWith(".bpmn")) {
+            BpmnModelInstance bpmnModel = Bpmn.readModelFromStream(fileInput);
+
+            if (!isDeployable(bpmnModel) && !skipIsDeployableCheck) {
+                throw new ProcessNotDeployableException(fileName);
+            }
+
+            setProcessesExecutable(bpmnModel);
+
+            var deploymentBuilder = repositoryService.createDeployment().addModelInstance(fileName, bpmnModel);
+
+            if (skipProcessLinksCopy) {
+                deploymentBuilder.source(CamundaDeploymentSource.SKIP_PROCESS_LINKS_COPY.toString());
+            }
+
+            return deploymentBuilder.deployWithResult();
+
+        } else if (fileName.endsWith(".dmn")) {
+            DmnModelInstance dmnModel = Dmn.readModelFromStream(fileInput);
+
+            return repositoryService.createDeployment().addModelInstance(fileName, dmnModel).deployWithResult();
+
         } else {
             String[] splitFileName = fileName.split("\\.");
 
