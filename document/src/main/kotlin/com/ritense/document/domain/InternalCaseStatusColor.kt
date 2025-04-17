@@ -28,6 +28,7 @@ enum class InternalCaseStatusColor {
     GRAY,
     COOLGRAY,
     HIGHCONTRAST,
-    OUTLINE
+    OUTLINE,
+    ORANGE
 }
 
