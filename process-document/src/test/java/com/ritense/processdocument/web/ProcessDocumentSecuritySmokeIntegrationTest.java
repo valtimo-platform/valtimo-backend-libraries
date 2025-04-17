@@ -16,10 +16,15 @@
 
 package com.ritense.processdocument.web;
 
+import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker;
 import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import java.util.Set;
 
 public class ProcessDocumentSecuritySmokeIntegrationTest extends SecuritySmokeIntegrationTest {
+    @MockBean
+    private ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker;
+
     public ProcessDocumentSecuritySmokeIntegrationTest() {
         super("com.ritense.processdocument", Set.of());
     }

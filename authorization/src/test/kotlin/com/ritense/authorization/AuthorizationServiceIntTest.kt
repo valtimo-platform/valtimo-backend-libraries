@@ -116,7 +116,38 @@ class AuthorizationServiceIntTest @Autowired constructor(
 
     @Test
     @WithMockUser(authorities = ["test-role"])
-    fun `should fail permission check when entity is null`() {
+    fun `should fail permission check when entity is null AND has container condition`() {
+
+        val role = roleRepository.findByKey("test-role")!!
+        val permissions = listOf(
+            Permission(
+                UUID.randomUUID(),
+                TestEntity::class.java,
+                TestEntityActionProvider.view,
+                ConditionContainer(
+                    listOf(
+                        FieldPermissionCondition(
+                            field = "name",
+                            operator = PermissionConditionOperator.EQUAL_TO,
+                            value = "fail"
+                        )
+                    )
+                ),
+                role
+            )
+        )
+
+        permissionRepository.deleteAll()
+        permissionRepository.saveAllAndFlush(permissions)
+
+        assertThrows<AccessDeniedException> {
+            requirePermission()
+        }
+    }
+
+    @Test
+    @WithMockUser(authorities = ["test-role"])
+    fun `should pass permission check when entity is null AND no container conditions`() {
 
         val role = roleRepository.findByKey("test-role")!!
         val permissions = listOf(
@@ -132,7 +163,7 @@ class AuthorizationServiceIntTest @Autowired constructor(
         permissionRepository.deleteAll()
         permissionRepository.saveAllAndFlush(permissions)
 
-        assertThrows<AccessDeniedException> {
+        assertDoesNotThrow {
             requirePermission()
         }
     }

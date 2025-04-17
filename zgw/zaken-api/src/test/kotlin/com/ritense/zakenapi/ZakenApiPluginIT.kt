@@ -216,6 +216,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         assertTrue(response is NewDocumentAndStartProcessResultSucceeded)
 
         // Check the request that was sent to the open zaak api
+        server.takeRequest()
         val recordedRequest = server.takeRequest()
         val requestString = recordedRequest.body.readUtf8()
         val parsedOutput = objectMapper.readValue(requestString, Map::class.java)
@@ -254,6 +255,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         assertTrue(response is NewDocumentAndStartProcessResultSucceeded)
 
         // Check the request that was sent to the open zaak api
+        server.takeRequest()
         val recordedRequest = server.takeRequest()
         val requestString = recordedRequest.body.readUtf8()
         val parsedOutput = objectMapper.readValue(requestString, Map::class.java)
@@ -276,12 +278,12 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
             @Throws(InterruptedException::class)
             override fun dispatch(request: RecordedRequest): MockResponse {
                 executedRequests.add(request)
-                val path = request.path?.substringBefore('?')
-                val response = when (path) {
-                    "/zaakinformatieobjecten" -> handleZaakInformatieObjectRequest()
-                    "/catalogi/my-zaaktype-id" -> getZaaktypeResponse()
-                    "/zaken/zaken" -> createZaakResponse()
-                    "/catalogi/informatieobjecttypen?status=definitief&page=1" -> MockResponse().setResponseCode(200)
+                val response = when (request.method + " " + request.path?.substringBefore('?')) {
+                    "POST /zaakinformatieobjecten" -> handleZaakInformatieObjectRequest()
+                    "GET /zaakinformatieobjecten" -> mockResponse("[]")
+                    "GET /catalogi/my-zaaktype-id" -> getZaaktypeResponse()
+                    "POST /zaken/zaken" -> createZaakResponse()
+                    "GET /catalogi/informatieobjecttypen?status=definitief&page=1" -> MockResponse().setResponseCode(200)
                     else -> MockResponse().setResponseCode(404)
                 }
                 return response
@@ -421,12 +423,6 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
 
     fun <T> getRequestBody(method: HttpMethod, path: String, clazz: Class<T>): T {
         return objectMapper.readValue(findRequest(method, path)!!.body.readUtf8(), clazz)
-    }
-
-    private fun mockResponse(body: String): MockResponse {
-        return MockResponse()
-            .addHeader("Content-Type", "application/json")
-            .setBody(body)
     }
 
     class TestAuthentication : ZakenApiAuthentication, CatalogiApiAuthentication {

@@ -19,11 +19,15 @@ package com.ritense.valtimo.processlink
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.service.PluginService
+import com.ritense.processlink.repository.ValtimoPluginProcessLinkRepository
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.processlink.mapper.PluginProcessLinkMapper
+import com.ritense.valtimo.processlink.security.config.PluginProcessLinkHttpSecurityConfigurer
 import com.ritense.valtimo.processlink.service.PluginProcessLinkService
 import com.ritense.valtimo.processlink.service.PluginProcessLinkServiceImpl
 import com.ritense.valtimo.processlink.service.PluginSupportedProcessLinksHandler
+import com.ritense.valtimo.processlink.web.rest.PluginProcessLinkResource
+import com.ritense.valtimo.service.CamundaProcessService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -87,10 +91,29 @@ class ProcessLinkAutoConfiguration {
     fun pluginProcessLinkService(
         processLinkService: ProcessLinkService,
         pluginProcessLinkMapper: PluginProcessLinkMapper,
+        pluginProcessLinkRepository: ValtimoPluginProcessLinkRepository,
+        camundaProcessService: CamundaProcessService
     ): PluginProcessLinkService {
         return PluginProcessLinkServiceImpl(
             processLinkService,
-            pluginProcessLinkMapper
+            pluginProcessLinkMapper,
+            pluginProcessLinkRepository,
+            camundaProcessService
         )
+    }
+
+    @Order(270)
+    @Bean
+    @ConditionalOnMissingBean(PluginProcessLinkHttpSecurityConfigurer::class)
+    fun pluginProcessLinkHttpSecurityConfigurer(): PluginProcessLinkHttpSecurityConfigurer {
+        return PluginProcessLinkHttpSecurityConfigurer()
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PluginProcessLinkResource::class)
+    fun pluginProcessLinkResource(
+        pluginProcessLinkService: PluginProcessLinkService
+    ): PluginProcessLinkResource {
+        return PluginProcessLinkResource(pluginProcessLinkService)
     }
 }

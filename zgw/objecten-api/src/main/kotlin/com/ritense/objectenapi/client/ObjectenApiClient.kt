@@ -48,17 +48,36 @@ class ObjectenApiClient(
             .retrieve()
             .body<ObjectWrapper>()!!
 
-        val response = if (result.type.host == HOST_DOCKER_INTERNAL)
-            result.copy(
-                type = URI.create(
-                    result.type.toString().replace(HOST_DOCKER_INTERNAL, "localhost")
-                )
-            ) else result
+        outboxService.send {
+            ObjectViewed(
+                result.url.toString(),
+                objectMapper.valueToTree(result)
+            )
+        }
+        return result
+    }
+
+    fun getObjectRecord(
+        authentication: ObjectenApiAuthentication,
+        objectUrl: URI,
+        index: Int
+    ): ObjectRecord {
+        val recordUrl = UriComponentsBuilder
+            .fromUri(objectUrl)
+            .pathSegment(index.toString())
+            .build()
+            .toUri()
+
+        val result = buildRestClient(authentication)
+            .get()
+            .uri(recordUrl)
+            .retrieve()
+            .body<ObjectRecord>()!!
 
         outboxService.send {
             ObjectViewed(
-                response.url.toString(),
-                objectMapper.valueToTree(response)
+                objectUrl.toString(),
+                objectMapper.valueToTree(result)
             )
         }
         return result
@@ -72,14 +91,9 @@ class ObjectenApiClient(
         ordering: String? = "",
         pageable: Pageable
     ): ObjectsList {
-        val host = if (objecttypesApiUrl.host == "localhost") {
-            HOST_DOCKER_INTERNAL
-        } else {
-            objecttypesApiUrl.host
-        }
         val objectTypeUrl = UriComponentsBuilder.newInstance()
             .uri(objecttypesApiUrl)
-            .host(host)
+            .host(objecttypesApiUrl.host)
             .pathSegment("objecttypes")
             .pathSegment(objectypeId)
             .toUriString()
@@ -115,14 +129,9 @@ class ObjectenApiClient(
         ordering: String? = "",
         pageable: Pageable
     ): ObjectsList {
-        val host = if (objecttypesApiUrl.host == "localhost") {
-            HOST_DOCKER_INTERNAL
-        } else {
-            objecttypesApiUrl.host
-        }
         val objectTypeUrl = UriComponentsBuilder.newInstance()
             .uri(objecttypesApiUrl)
-            .host(host)
+            .host(objecttypesApiUrl.host)
             .pathSegment("objecttypes")
             .pathSegment(objectypeId)
             .toUriString()
@@ -155,24 +164,12 @@ class ObjectenApiClient(
         objectsApiUrl: URI,
         objectRequest: ObjectRequest
     ): ObjectWrapper {
-        val objectRequestCorrectedHost = if (objectRequest.type.host == "localhost") {
-            objectRequest.copy(
-                type = UriComponentsBuilder
-                    .fromUri(objectRequest.type)
-                    .host(HOST_DOCKER_INTERNAL)
-                    .build()
-                    .toUri()
-            )
-        } else {
-            objectRequest
-        }
-
         val result = buildRestClient(authentication, objectsApiUrl.toASCIIString())
             .post()
             .uri("objects")
             .header(ACCEPT_CRS, EPSG_4326)
             .header(CONTENT_CRS, EPSG_4326)
-            .body(objectRequestCorrectedHost)
+            .body(objectRequest)
             .retrieve()
             .body<ObjectWrapper>()!!
 
@@ -190,22 +187,11 @@ class ObjectenApiClient(
         objectUrl: URI,
         objectRequest: ObjectRequest
     ): ObjectWrapper {
-        val objectRequestCorrectedHost = if (objectRequest.type.host == "localhost") {
-            objectRequest.copy(
-                type = UriComponentsBuilder
-                    .fromUri(objectRequest.type)
-                    .host(HOST_DOCKER_INTERNAL)
-                    .build()
-                    .toUri()
-            )
-        } else {
-            objectRequest
-        }
         val result = buildRestClient(authentication)
             .patch()
             .uri(objectUrl)
             .header(CONTENT_CRS, EPSG_4326)
-            .body(objectRequestCorrectedHost)
+            .body(objectRequest)
             .retrieve()
             .body<ObjectWrapper>()!!
 
@@ -223,22 +209,11 @@ class ObjectenApiClient(
         objectUrl: URI,
         objectRequest: ObjectRequest
     ): ObjectWrapper {
-        val objectRequestCorrectedHost = if (objectRequest.type.host == "localhost") {
-            objectRequest.copy(
-                type = UriComponentsBuilder
-                    .fromUri(objectRequest.type)
-                    .host(HOST_DOCKER_INTERNAL)
-                    .build()
-                    .toUri()
-            )
-        } else {
-            objectRequest
-        }
         val result = buildRestClient(authentication)
             .put()
             .uri(objectUrl)
             .header(CONTENT_CRS, EPSG_4326)
-            .body(objectRequestCorrectedHost)
+            .body(objectRequest)
             .retrieve()
             .body<ObjectWrapper>()!!
 
@@ -276,7 +251,6 @@ class ObjectenApiClient(
     }
 
     companion object {
-        private const val HOST_DOCKER_INTERNAL = "host.docker.internal"
         private const val CONTENT_CRS = "Content-Crs"
         private const val ACCEPT_CRS = "Accept-Crs"
         private const val EPSG_4326 = "EPSG:4326"

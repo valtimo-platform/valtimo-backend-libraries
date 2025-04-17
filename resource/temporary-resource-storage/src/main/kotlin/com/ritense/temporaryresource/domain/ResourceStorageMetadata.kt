@@ -27,5 +27,5 @@ class ResourceStorageMetadata(
     @EmbeddedId
     var id: ResourceStorageMetadataId,
     @Column(name="metadata_value")
-    var metadataValue: String
+    var metadataValue: String?
 )

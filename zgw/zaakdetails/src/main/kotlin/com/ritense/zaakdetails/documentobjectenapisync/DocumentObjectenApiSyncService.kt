@@ -157,12 +157,14 @@ class DocumentObjectenApiSyncService(
             ObjectSearchParameter("caseId", EQUAL_TO, document.id().toString())
         )
 
-        return objectenApiPlugin.getObjectsByObjectTypeIdWithSearchParams(
+        val results = objectenApiPlugin.getObjectsByObjectTypeIdWithSearchParams(
             objecttypesApiUrl = objecttypenApiPlugin.url,
             objecttypeId = objectManagementConfiguration.objecttypeId,
             searchString = searchString,
             pageable = PageRequest.of(0, 2)
-        ).results.firstOrNull()
+        ).results
+        require(results.size <= 1) { "Failed to Sync document to Objecten API: Found multiple sync targets" }
+        return results.firstOrNull()
     }
 
     private fun createZaakObjectIfNotExisting(
