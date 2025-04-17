@@ -320,6 +320,18 @@ public class CamundaProcessService {
         );
     }
 
+    public List<CamundaProcessDefinition> getUnlinkedDeployedDefinitionsByKey() {
+        denyAuthorization();
+        return AuthorizationContext.runWithoutAuthorization(() ->
+            camundaRepositoryService.findProcessDefinitions(
+                    byActive(),
+                    Sort.by(NAME)
+                ).stream()
+                .filter(def -> def.getVersionTag() == null || !def.getVersionTag().startsWith("CD:"))
+                .collect(Collectors.toList())
+        );
+    }
+
     public List<CamundaProcessDefinition> getDefinitionsByKeyAndCaseDefinition(
         CaseDefinitionId caseDefinitionId,
         String processDefinitionKey
