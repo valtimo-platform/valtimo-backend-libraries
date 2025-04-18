@@ -14,6 +14,7 @@ import com.ritense.document.web.rest.dto.CaseTagCreateRequestDto
 import com.ritense.document.web.rest.dto.CaseTagUpdateRequestDto
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.valtimo.contract.repository.SemverConverter
 import jakarta.validation.Valid
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -127,7 +128,11 @@ class CaseTagService(
                 caseDefinitionId, caseTagKey
             ) ?: throw CaseTagNotFoundException(caseTagKey, caseDefinitionId)
 
-        if (caseTagRepository.isCaseTagInUse(caseTagKey, caseDefinitionId.key, caseDefinitionId.versionTag)) {
+        if (caseTagRepository.isCaseTagInUse(
+            caseTagKey,
+            caseDefinitionId.key,
+            SemverConverter.convertToDatabaseColumn(caseDefinitionId.versionTag)!!)
+        ) {
             throw CaseTagInUseException(caseTagKey, caseDefinitionId)
         }
 

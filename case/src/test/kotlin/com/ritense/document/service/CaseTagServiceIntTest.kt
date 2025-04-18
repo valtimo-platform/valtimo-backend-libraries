@@ -17,6 +17,7 @@ import jakarta.validation.ConstraintViolationException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.semver4j.Semver
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.test.context.support.WithMockUser
@@ -53,7 +54,7 @@ class CaseTagServiceIntTest @Autowired constructor(
 
         assertNotNull(caseTag)
         assertEquals("house", caseTag.id.caseDefinitionId.key)
-        assertEquals("1.0.0", caseTag.id.caseDefinitionId.versionTag)
+        assertEquals(Semver("1.0.0"), caseTag.id.caseDefinitionId.versionTag)
         assertEquals("some-tag", caseTag.id.key)
         assertEquals("Some Tag", caseTag.title)
         assertEquals(caseTagCount - 1, caseTag.order)
@@ -166,7 +167,7 @@ class CaseTagServiceIntTest @Autowired constructor(
 
             assertNotNull(updatedCaseTag)
             assertEquals("house", updatedCaseTag.id.caseDefinitionId.key)
-            assertEquals("1.0.0", updatedCaseTag.id.caseDefinitionId.versionTag)
+            assertEquals(Semver("1.0.0"), updatedCaseTag.id.caseDefinitionId.versionTag)
             assertEquals("some-tag", updatedCaseTag.id.key)
             assertEquals("New Title", updatedCaseTag.title)
             assertEquals(caseTagCount - 1, updatedCaseTag.order)

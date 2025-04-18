@@ -45,6 +45,6 @@ interface CaseTagRepository : JpaRepository<CaseTag, CaseTagId> {
     fun isCaseTagInUse(
         @Param("caseTagKey") caseTagKey: String,
         @Param("caseDefinitionKey") caseDefinitionKey: String,
-        @Param("caseDefinitionVersionTag") caseDefinitionVersionTag: Semver
+        @Param("caseDefinitionVersionTag") caseDefinitionVersionTag: String
     ): Boolean
 }
