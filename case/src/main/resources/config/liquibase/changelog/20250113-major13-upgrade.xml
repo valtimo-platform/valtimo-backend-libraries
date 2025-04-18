@@ -121,7 +121,7 @@
 
         <createIndex indexName="idx_case_tag_link_case_tag_id" tableName="case_tag_link">
             <column name="case_tag_key"/>
-            <column name="case_definition_name"/>
+            <column name="case_definition_key"/>
             <column name="case_definition_version_tag"/>
         </createIndex>
     </changeSet>
