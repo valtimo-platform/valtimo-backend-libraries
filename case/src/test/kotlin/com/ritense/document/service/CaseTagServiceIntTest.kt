@@ -61,6 +61,52 @@ class CaseTagServiceIntTest @Autowired constructor(
     }
 
     @Test
+    fun `should find all unique case tags`() {
+        val caseDefinitionId = CaseDefinitionId.of("house", "1.0.0")
+
+        val request = CaseTagCreateRequestDto(
+            key = "some-tag",
+            title = "Some Tag",
+            color = CaseTagColor.COOLGRAY
+        )
+
+        val caseDefinitionId2 = CaseDefinitionId.of("house", "1.1.0")
+
+        val request2 = CaseTagCreateRequestDto(
+            key = "some-tag",
+            title = "Some Tag",
+            color = CaseTagColor.COOLGRAY
+        )
+
+        val request3 = CaseTagCreateRequestDto(
+            key = "some-tag-2",
+            title = "Some Tag 2",
+            color = CaseTagColor.PURPLE
+        )
+
+        val caseDefinitionId3 = CaseDefinitionId.of("other-case-type", "1.0.0")
+
+        val request4 = CaseTagCreateRequestDto(
+            key = "some-tag-3",
+            title = "Some Tag",
+            color = CaseTagColor.COOLGRAY
+        )
+
+        AuthorizationContext.runWithoutAuthorization {
+            caseTagService.create(caseDefinitionId, request)
+            caseTagService.create(caseDefinitionId2, request2)
+            caseTagService.create(caseDefinitionId2, request3)
+            caseTagService.create(caseDefinitionId3, request4)
+        }
+
+        val caseTags = caseTagRepository
+            .findDistinctByIdKeyWhereIdCaseDefinitionIdKeyOrderByOrder("house")
+
+        assertNotNull(caseTags)
+        assertEquals(2, caseTags.size)
+    }
+
+    @Test
     fun `should throw error when creating status with invalid key`() {
         val caseDefinitionId = CaseDefinitionId.of("house", "1.0.0")
         AuthorizationContext.runWithoutAuthorization {
@@ -211,7 +257,7 @@ class CaseTagServiceIntTest @Autowired constructor(
     @Test
     @WithMockUser(username = USERNAME, authorities = [ADMIN])
     fun `should add case tag`() {
-        val caseDefinitionId = CaseDefinitionId.of("house", "1.0.0")
+        val caseDefinitionId = CaseDefinitionId.of("house", "1.1.0")
 
         AuthorizationContext.runWithoutAuthorization {
             caseTagService.create(

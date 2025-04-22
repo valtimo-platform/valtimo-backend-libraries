@@ -127,7 +127,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
                 new JsonSchemaDocumentDefinition(
                     JsonSchemaDocumentDefinitionId.of(
                         "house",
-                        CaseDefinitionId.of("house", "1.0.0")
+                        CaseDefinitionId.of("house", "1.1.0")
                     ), schema
                 )
             );

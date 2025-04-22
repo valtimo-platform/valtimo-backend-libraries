@@ -55,6 +55,14 @@ class CaseTagResource(
         return ResponseEntity.ok(caseTags.map { CaseTagResponseDto(it) }.sortedBy { it.order })
     }
 
+    @GetMapping("/v1/case-definition/{caseDefinitionKey}/case-tag")
+    fun getCaseTags(
+        @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
+    ): ResponseEntity<List<CaseTagResponseDto>> {
+        val caseTags = caseTagService.getCaseTags(caseDefinitionKey)
+        return ResponseEntity.ok(caseTags.map { CaseTagResponseDto(it) }.sortedBy { it.order })
+    }
+
     @RunWithoutAuthorization
     @GetMapping("/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/case-tag")
     fun getCaseTagForManagement(

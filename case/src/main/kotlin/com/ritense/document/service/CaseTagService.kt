@@ -34,6 +34,10 @@ class CaseTagService(
         return caseTagRepository.findByIdCaseDefinitionIdOrderByOrder(caseDefinitionId)
     }
 
+    fun getCaseTags(caseDefinitionKey: String): List<CaseTag> {
+        return caseTagRepository.findDistinctByIdKeyWhereIdCaseDefinitionIdKeyOrderByOrder(caseDefinitionKey)
+    }
+
     fun get(caseDefinitionId: CaseDefinitionId, caseTagKey: String): CaseTag {
         return caseTagRepository.getReferenceById(CaseTagId(caseDefinitionId, caseTagKey))
     }
