@@ -29,11 +29,28 @@ class CaseTagHttpSecurityConfigurer : AuthorizeRequestsHttpSecurityConfigurer() 
 
     override fun authorizeHttpRequests(requests: AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry) {
         requests
-            .antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/case-tag").authenticated()
-            .antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionName}/case-tag").hasAuthority(ADMIN)
-            .antMatcher(POST, "/api/management/v1/case-definition/{caseDefinitionName}/case-tag").hasAuthority(ADMIN)
-            .antMatcher(PUT, "/api/management/v1/case-definition/{caseDefinitionName}/case-tag").hasAuthority(ADMIN)
-            .antMatcher(PUT, "/api/management/v1/case-definition/{caseDefinitionName}/case-tag/{caseTagKey}").hasAuthority(ADMIN)
-            .antMatcher(DELETE, "/api/management/v1/case-definition/{caseDefinitionName}/case-tag/{caseTagKey}").hasAuthority(ADMIN)
+            .antMatcher(GET, "/api/v1/case-definition/{caseDefinitionKey}/case-tag").authenticated()
+            .antMatcher(GET, "/api/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/case-tag")
+            .authenticated()
+            .antMatcher(
+                GET,
+                "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/case-tag"
+            ).hasAuthority(ADMIN)
+            .antMatcher(
+                POST,
+                "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/case-tag"
+            ).hasAuthority(ADMIN)
+            .antMatcher(
+                PUT,
+                "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/case-tag"
+            ).hasAuthority(ADMIN)
+            .antMatcher(
+                PUT,
+                "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/case-tag/{caseTagKey}"
+            ).hasAuthority(ADMIN)
+            .antMatcher(
+                DELETE,
+                "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/case-tag/{caseTagKey}"
+            ).hasAuthority(ADMIN)
     }
 }
