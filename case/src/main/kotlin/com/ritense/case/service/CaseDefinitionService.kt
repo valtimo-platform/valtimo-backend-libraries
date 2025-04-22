@@ -181,6 +181,7 @@ class CaseDefinitionService(
 
     fun updateCaseDefinition(caseDefinitionId: CaseDefinitionId, name: String?, description: String?): CaseDefinition {
         denyManagementOperation()
+        caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId)
         val caseDefinition = getCaseDefinition(caseDefinitionId)
         return caseDefinitionRepository.save(
             caseDefinition.copy(
