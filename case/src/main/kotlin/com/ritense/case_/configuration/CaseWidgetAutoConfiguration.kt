@@ -43,6 +43,7 @@ import com.ritense.case_.widget.fields.FieldsCaseWidgetMapper
 import com.ritense.case_.widget.table.TableCaseWidgetDataProvider
 import com.ritense.case_.widget.table.TableCaseWidgetMapper
 import com.ritense.document.service.DocumentService
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.validation.Validator
@@ -71,14 +72,16 @@ class CaseWidgetAutoConfiguration {
         authorizationService: AuthorizationService,
         caseWidgetMappers: List<CaseWidgetMapper<*, *>>,
         caseWidgetDataProviders: List<CaseWidgetDataProvider<*>>,
-        documentService: DocumentService
+        documentService: DocumentService,
+        caseDefinitionChecker: CaseDefinitionChecker,
     ) = CaseWidgetTabService(
         documentService,
         caseWidgetTabRepository,
         caseTabRepository,
         authorizationService,
         caseWidgetMappers as List<CaseWidgetMapper<CaseWidgetTabWidget, CaseWidgetTabWidgetDto>>,
-        caseWidgetDataProviders as List<CaseWidgetDataProvider<CaseWidgetTabWidget>>
+        caseWidgetDataProviders as List<CaseWidgetDataProvider<CaseWidgetTabWidget>>,
+        caseDefinitionChecker,
     )
 
     @ConditionalOnMissingBean(CaseWidgetTabWidgetSpecificationFactory::class)

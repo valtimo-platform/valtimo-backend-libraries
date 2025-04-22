@@ -144,6 +144,12 @@ open class ValtimoImportService(
             }
         }
 
+        importerEntriesList.filter { it.key.partOfCaseDefinition() }.forEach { (importer, entries) ->
+            entries.forEach { entry ->
+                importer.afterImport(ImportRequest(entry.fileName, entry.content, caseDefinitionId))
+            }
+        }
+
     }
 
     @Transactional
@@ -156,6 +162,11 @@ open class ValtimoImportService(
             entries.forEach { entry ->
                 logger.debug { "Importing ${entry.fileName} with importer ${importer.type()}" }
                 importer.import(ImportRequest(entry.fileName, entry.content))
+            }
+        }
+        importerEntriesList.filter { !it.key.partOfCaseDefinition() }.forEach { (importer, entries) ->
+            entries.forEach { entry ->
+                importer.afterImport(ImportRequest(entry.fileName, entry.content))
             }
         }
 
@@ -197,6 +208,12 @@ open class ValtimoImportService(
             entries.forEach { entry ->
                 logger.debug { "Importing ${entry.fileName} with importer ${importer.type()}" }
                 importer.import(ImportRequest(entry.fileName, entry.content))
+            }
+        }
+
+        importerEntriesList.forEach { (importer, entries) ->
+            entries.forEach { entry ->
+                importer.afterImport(ImportRequest(entry.fileName, entry.content))
             }
         }
     }

@@ -40,6 +40,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.findByOrNull
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import jakarta.validation.Valid
 import org.springframework.context.event.EventListener
@@ -60,11 +61,13 @@ class CaseWidgetTabService(
     private val caseTabRepository: CaseTabRepository,
     private val authorizationService: AuthorizationService,
     private val caseWidgetMappers: List<CaseWidgetMapper<CaseWidgetTabWidget, CaseWidgetTabWidgetDto>>,
-    private val caseWidgetDataProviders: List<CaseWidgetDataProvider<CaseWidgetTabWidget>>
+    private val caseWidgetDataProviders: List<CaseWidgetDataProvider<CaseWidgetTabWidget>>,
+    private val caseDefinitionChecker: CaseDefinitionChecker,
 ) {
 
     @EventListener(CaseTabCreatedEvent::class)
     fun handleCaseTabCreatedEvent(event: CaseTabCreatedEvent) {
+        caseDefinitionChecker.assertCanUpdateCaseDefinition(event.tab.id.caseDefinitionId)
         if (event.tab.type == CaseTabType.WIDGETS) {
             caseWidgetTabRepository.save(CaseWidgetTab(event.tab.id))
         }
@@ -102,12 +105,12 @@ class CaseWidgetTabService(
     @Transactional
     fun updateWidgetTab(@Valid tabDto: CaseWidgetTabDto): CaseWidgetTabDto {
         denyAuthorization()
+        val caseDefinitionId = CaseDefinitionId.of(tabDto.caseDefinitionKey!!, tabDto.caseDefinitionVersionTag!!)
+        caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId)
 
         val caseWidgetTab = (
             caseWidgetTabRepository.findByIdOrNull(
-                CaseTabId(CaseDefinitionId.of(
-                    tabDto.caseDefinitionKey!!, tabDto.caseDefinitionVersionTag!!
-                ), tabDto.key)
+                CaseTabId(caseDefinitionId, tabDto.key)
             )
             ?: throw RuntimeException(
                 "Failed to update tab. Tab with key '${tabDto.key}' doesn't exist " +

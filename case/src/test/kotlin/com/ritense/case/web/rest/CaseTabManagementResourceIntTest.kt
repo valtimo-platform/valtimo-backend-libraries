@@ -178,7 +178,7 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
     @Transactional
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should update tab order`() {
-        val caseDefinitionId = CaseDefinitionId.of("test-case-type", "1.0.0")
+        val caseDefinitionId = CaseDefinitionId.of("some-case-type", "0.0.1")
 
         caseTabRepository.saveAll(
             listOf(
@@ -300,7 +300,7 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
     @Transactional
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should get tabs`() {
-        val caseDefinitionId = CaseDefinitionId.of("my-case-type", "1.0.0")
+        val caseDefinitionId = CaseDefinitionId.of("some-case-type", "1.0.0")
 
         val key = "some-key"
         val caseTab = CaseTab(
@@ -333,7 +333,7 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
                 Constants.SYSTEM_ACCOUNT
             ).build()
         )
-        val caseDefinitionId = CaseDefinitionId.of("my-case-type", "1.0.0")
+        val caseDefinitionId = CaseDefinitionId.of("some-case-type", "1.2.3")
 
         val key = "some-key"
         val caseTab = CaseTab(

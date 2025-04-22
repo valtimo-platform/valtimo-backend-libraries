@@ -16,13 +16,15 @@
 
 package com.ritense.valtimo.decision
 
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import mu.KotlinLogging
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.repository.DecisionDefinition
 
 class CamundaDecisionService(
-    private val repositoryService: RepositoryService
+    private val repositoryService: RepositoryService,
+    private val caseDefinitionChecker: CaseDefinitionChecker,
 ) {
 
     fun getDecisionDefinitions(caseDefinitionId: CaseDefinitionId): List<DecisionDefinition> {
@@ -38,6 +40,7 @@ class CamundaDecisionService(
     fun deleteDecisionDefinition(caseDefinitionId: CaseDefinitionId, decisionDefinitionKey: String) {
 
         logger.error { "Deleting decision definition $decisionDefinitionKey for case definition $caseDefinitionId" }
+        caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId)
 
         val decisionDefinition = repositoryService
             .createDecisionDefinitionQuery()

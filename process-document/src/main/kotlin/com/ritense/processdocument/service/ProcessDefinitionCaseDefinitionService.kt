@@ -31,6 +31,7 @@ import com.ritense.processdocument.repository.ProcessDefinitionCaseDefinitionRep
 import com.ritense.valtimo.camunda.authorization.CamundaExecutionActionProvider
 import com.ritense.valtimo.camunda.domain.CamundaExecution
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.camunda.bpm.engine.RuntimeService
 import java.util.UUID
@@ -39,7 +40,8 @@ class ProcessDefinitionCaseDefinitionService(
     private val authorizationService: AuthorizationService,
     private val processDefinitionCaseDefinitionRepository: ProcessDefinitionCaseDefinitionRepository,
     private val documentService: JsonSchemaDocumentService,
-    private val runtimeService: RuntimeService
+    private val runtimeService: RuntimeService,
+    private val caseDefinitionChecker: CaseDefinitionChecker,
 ) {
     fun findById(id: ProcessDefinitionCaseDefinitionId): ProcessDefinitionCaseDefinition? {
         return processDefinitionCaseDefinitionRepository.findById(id).orElse(null)
@@ -113,6 +115,8 @@ class ProcessDefinitionCaseDefinitionService(
 
     fun deleteProcessDocumentDefinition(processDefinitionId: ProcessDefinitionId, caseDefinitionId: CaseDefinitionId) {
         denyAuthorization()
+        caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId)
+
         val id = ProcessDefinitionCaseDefinitionId(
             processDefinitionId,
             caseDefinitionId
@@ -123,6 +127,7 @@ class ProcessDefinitionCaseDefinitionService(
 
     fun createProcessDocumentDefinition(request: ProcessDocumentDefinitionRequest) {
         denyAuthorization()
+        caseDefinitionChecker.assertCanUpdateCaseDefinition(request.caseDefinitionId)
 
         val processDocumentDefinition = ProcessDefinitionCaseDefinition(
             id = ProcessDefinitionCaseDefinitionId(

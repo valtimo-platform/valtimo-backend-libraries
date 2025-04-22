@@ -31,7 +31,7 @@ tasks.register("integrationTesting") {
 
 tasks.register("integrationTestingPostgresql", Test) {
     group = 'verification'
-    systemProperty("spring.profiles.include", "postgresql")
+    systemProperty("spring.profiles.include", "inttest,postgresql")
     useJUnitPlatform {
         includeTags "integration"
         excludeTags "security"
@@ -45,7 +45,7 @@ tasks.register("integrationTestingPostgresql", Test) {
 
 tasks.register("integrationTestingMysql", Test) {
     group = 'verification'
-    systemProperty("spring.profiles.include", "mysql")
+    systemProperty("spring.profiles.include", "inttest,mysql")
     useJUnitPlatform {
         includeTags "integration"
         excludeTags "security"
