@@ -29,7 +29,7 @@ data class InternalCaseStatusId(
     val key: String
 ) : AbstractId<InternalCaseStatusId>() {
     init {
-        require(caseDefinitionKey.isNotBlank()) { "caseDefinitionName was blank!" }
+        require(caseDefinitionKey.isNotBlank()) { "caseDefinitionKey was blank!" }
         require(key.isNotBlank()) { "key was blank!" }
     }
 

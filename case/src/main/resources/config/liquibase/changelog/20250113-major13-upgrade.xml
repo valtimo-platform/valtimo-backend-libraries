@@ -73,4 +73,57 @@
         <dropColumn tableName="json_schema_document_snapshot" columnName="document_definition_version"/>
     </changeSet>
 
+    <changeSet id="9" author="Ritense">
+        <dropIndex tableName="case_tag_link" indexName="idx_case_tag_link_case_tag_id"/>
+        <dropIndex tableName="case_tag_link" indexName="idx_case_tag_link_json_schema_document_id"/>
+        <dropForeignKeyConstraint baseTableName="case_tag_link" constraintName="fk_case_tag_link_case_tag"/>
+        <dropForeignKeyConstraint baseTableName="case_tag_link" constraintName="fk_case_tag_link_json_schema_document_id"/>
+
+        <renameColumn tableName="case_tag_link" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+        <addColumn tableName="case_tag_link">
+            <column name="case_definition_version_tag" type="VARCHAR(256)" defaultValue="1.0.0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <renameColumn tableName="case_tag" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+        <addColumn tableName="case_tag">
+            <column name="case_definition_version_tag" type="VARCHAR(256)" defaultValue="1.0.0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <dropPrimaryKey tableName="case_tag_link"/>
+        <dropPrimaryKey tableName="case_tag"/>
+    </changeSet>
+
+    <changeSet id="10" author="Ritense">
+        <addPrimaryKey tableName="case_tag"
+                       columnNames="case_definition_key, case_definition_version_tag, case_tag_key"/>
+        <addPrimaryKey tableName="case_tag_link"
+                       columnNames="case_tag_key, case_definition_key, case_definition_version_tag, json_schema_document_id"
+                       constraintName="pk_case_tag_link"/>
+
+        <addForeignKeyConstraint baseTableName="case_tag_link"
+                                 baseColumnNames="case_tag_key, case_definition_key, case_definition_version_tag"
+                                 referencedTableName="case_tag"
+                                 referencedColumnNames="case_tag_key, case_definition_key, case_definition_version_tag"
+                                 constraintName="fk_case_tag_link_case_tag"/>
+
+        <addForeignKeyConstraint baseTableName="case_tag_link"
+                                 baseColumnNames="json_schema_document_id"
+                                 referencedTableName="json_schema_document"
+                                 referencedColumnNames="json_schema_document_id"
+                                 constraintName="fk_case_tag_link_json_schema_document_id"/>
+
+        <createIndex indexName="idx_case_tag_link_json_schema_document_id" tableName="case_tag_link">
+            <column name="json_schema_document_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_case_tag_link_case_tag_id" tableName="case_tag_link">
+            <column name="case_tag_key"/>
+            <column name="case_definition_key"/>
+            <column name="case_definition_version_tag"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

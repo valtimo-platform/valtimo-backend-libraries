@@ -18,17 +18,13 @@ package com.ritense.document.autoconfiguration
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
-import com.ritense.document.deployment.CaseTagDeployer
+import com.ritense.case.service.CaseDefinitionService
 import com.ritense.document.exporter.CaseTagExporter
 import com.ritense.document.importer.CaseTagImporter
 import com.ritense.document.repository.CaseTagRepository
 import com.ritense.document.security.CaseTagHttpSecurityConfigurer
 import com.ritense.document.service.CaseTagService
-import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.web.rest.CaseTagResource
-import com.ritense.valtimo.changelog.service.ChangelogDeployer
-import com.ritense.valtimo.changelog.service.ChangelogService
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -57,28 +53,10 @@ class CaseTagAutoConfiguration {
     @ConditionalOnMissingBean(CaseTagService::class)
     fun caseTagService(
         repository: CaseTagRepository,
-        documentDefinitionService: DocumentDefinitionService,
+        caseDefinitionService: CaseDefinitionService,
         authorizationService: AuthorizationService,
     ): CaseTagService {
-        return CaseTagService(repository, documentDefinitionService, authorizationService)
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(CaseTagDeployer::class)
-    fun caseTagDeployer(
-        repository: CaseTagRepository,
-        service: CaseTagService,
-        objectMapper: ObjectMapper,
-        changelogService: ChangelogService,
-        @Value("\${valtimo.changelog.case-tag.clear-tables:false}") clearTables: Boolean
-    ): CaseTagDeployer {
-        return CaseTagDeployer(
-            repository,
-            service,
-            objectMapper,
-            changelogService,
-            clearTables
-        )
+        return CaseTagService(repository, caseDefinitionService, authorizationService)
     }
 
     @Bean
@@ -93,10 +71,10 @@ class CaseTagAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(CaseTagImporter::class)
     fun caseTagImporter(
-        caseTagDeployer: CaseTagDeployer,
-        changelogDeployer: ChangelogDeployer,
+        objectMapper: ObjectMapper,
+        caseTagService: CaseTagService
     ): CaseTagImporter {
-        return CaseTagImporter(caseTagDeployer, changelogDeployer)
+        return CaseTagImporter(objectMapper, caseTagService)
     }
 
 }

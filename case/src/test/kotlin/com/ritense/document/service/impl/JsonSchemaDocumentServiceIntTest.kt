@@ -207,14 +207,14 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
 
         // Adding tags to the database in preparation for the integration test
         val tag1 = CaseTag(
-            CaseTagId("house", "new"),
+            CaseTagId(caseDefinitionId(), "new"),
             "New",
             CaseTagColor.GREEN,
             order = 0
 
         )
         val tag2 = CaseTag(
-            CaseTagId("house", "priority-request"),
+            CaseTagId(caseDefinitionId(), "priority-request"),
             "Priority request",
             CaseTagColor.MAGENTA,
             order = 1
@@ -251,14 +251,14 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         // Adding tags to the database in preparation for the integration test
         val caseTagKey1 = "new"
         val tag1 = CaseTag(
-            CaseTagId("house", caseTagKey1),
+            CaseTagId(caseDefinitionId(), caseTagKey1),
             "New",
             CaseTagColor.GREEN,
             order = 0
         )
         val caseTagKey2 = "priority-request"
         val tag2 = CaseTag(
-            CaseTagId("house", caseTagKey2),
+            CaseTagId(caseDefinitionId(), caseTagKey2),
             "Priority request",
             CaseTagColor.MAGENTA,
             1
