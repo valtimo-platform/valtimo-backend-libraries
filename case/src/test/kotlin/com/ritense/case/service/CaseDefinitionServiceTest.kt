@@ -68,6 +68,7 @@ class CaseDefinitionServiceTest : BaseTest() {
             valueResolverService,
             mock(),
             mock(),
+            mock(),
         )
     }
 

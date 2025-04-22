@@ -59,7 +59,8 @@ class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
         documentDefinitionService = spy(new JsonSchemaDocumentDefinitionService(
             resourceLoader,
             jsonSchemaDocumentDefinitionRepository,
-            mock(AuthorizationService.class)
+            mock(AuthorizationService.class),
+            mock()
         ));
         definition = definitionOfForUnitTests("person");
     }

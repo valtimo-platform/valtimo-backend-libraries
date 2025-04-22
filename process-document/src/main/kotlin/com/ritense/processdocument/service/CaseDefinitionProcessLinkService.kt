@@ -24,13 +24,15 @@ import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcess
 import com.ritense.processdocument.repository.CaseDefinitionProcessLinkRepository
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 open class CaseDefinitionProcessLinkService(
     private val caseDefinitionProcessLinkRepository: CaseDefinitionProcessLinkRepository,
-    private val repositoryService: CamundaRepositoryService
+    private val repositoryService: CamundaRepositoryService,
+    private val caseDefinitionChecker: CaseDefinitionChecker,
 ) {
     fun getDocumentDefinitionProcess(caseDefinitionId: CaseDefinitionId, type: String): CaseDefinitionProcess? {
         val link = caseDefinitionProcessLinkRepository.findByIdCaseDefinitionIdAndType(caseDefinitionId, type)
@@ -56,6 +58,8 @@ open class CaseDefinitionProcessLinkService(
         caseDefinitionId: CaseDefinitionId,
         request: DocumentDefinitionProcessRequest
     ): DocumentDefinitionProcessLinkResponse {
+        caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId)
+
         val processDefinition: CamundaProcessDefinition? = runWithoutAuthorization {
             repositoryService.findLatestProcessDefinition(request.getProcessDefinitionKey())
         }
@@ -91,7 +95,8 @@ open class CaseDefinitionProcessLinkService(
         )
     }
 
-    fun deleteDocumentDefinitionProcess(caseDefinition: CaseDefinitionId, type: String) {
-        caseDefinitionProcessLinkRepository.deleteByIdCaseDefinitionIdAndType(caseDefinition, type)
+    fun deleteDocumentDefinitionProcess(caseDefinitionId: CaseDefinitionId, type: String) {
+        caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId)
+        caseDefinitionProcessLinkRepository.deleteByIdCaseDefinitionIdAndType(caseDefinitionId, type)
     }
 }

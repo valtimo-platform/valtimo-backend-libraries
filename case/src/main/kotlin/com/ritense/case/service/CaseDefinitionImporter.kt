@@ -22,11 +22,13 @@ import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import mu.KotlinLogging
 
 class CaseDefinitionImporter(
     private val objectMapper: ObjectMapper,
-    private val caseDefinitionRepository: CaseDefinitionRepository
+    private val caseDefinitionRepository: CaseDefinitionRepository,
+    private val caseDefinitionChecker: CaseDefinitionChecker,
 ) : Importer {
     override fun type() = CASE_DEFINITION
 
@@ -38,19 +40,33 @@ class CaseDefinitionImporter(
         deploy(request.content.toString(Charsets.UTF_8))
     }
 
-    private fun deploy(fileContent: String) {
-        val caseDefinitionDto = try {
-            objectMapper.readValue(fileContent, CaseDefinitionDto::class.java)
-        } catch (e: Exception) {
-            throw IllegalArgumentException("Failed to parse file content as a valid case definition: ${e.message}", e)
+    override fun afterImport(request: ImportRequest) {
+        val caseDefinitionDto = toCaseDefinitionDto(request.content.toString(Charsets.UTF_8))
+        if (caseDefinitionDto.final) {
+            caseDefinitionRepository.save(caseDefinitionDto.toEntity())
         }
+    }
 
-        val caseDefinition = caseDefinitionDto.toEntity()
+    private fun deploy(fileContent: String) {
+        val caseDefinitionDto = toCaseDefinitionDto(fileContent)
+        val caseDefinitionId = caseDefinitionDto.getCaseDefinitionId()
+
+        caseDefinitionChecker.assertCaseIsNewOrUpdatable(caseDefinitionId)
+
+        val caseDefinition = caseDefinitionDto.toEntity().copy(final = false)
 
         logger.debug { "Deploying case definition with id '${caseDefinition.id}'" }
 
         caseDefinitionRepository.save(caseDefinition)
         logger.debug { "Case definition with id '${caseDefinition.id}' was saved" }
+    }
+
+    private fun toCaseDefinitionDto(fileContent: String): CaseDefinitionDto {
+        return try {
+            objectMapper.readValue(fileContent, CaseDefinitionDto::class.java)
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Failed to parse file content as a valid case definition: ${e.message}", e)
+        }
     }
 
     private companion object {

@@ -62,7 +62,8 @@ internal class FormFlowServiceTest : BaseTest() {
             formFlowDefinitionRepository,
             formFlowInstanceRepository,
             formFlowAdditionalPropertiesSearchRepository,
-            emptyList()
+            emptyList(),
+            mock(),
         )
 
         val expressionProcessorFactory = spy(SpelExpressionProcessorFactory())
