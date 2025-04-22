@@ -21,6 +21,7 @@ import com.fasterxml.jackson.module.kotlin.convertValue
 import com.ritense.BaseTest
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.web.rest.dto.CaseDefinitionDraftCreateRequest
+import com.ritense.case.web.rest.dto.CaseDefinitionUpdateRequest
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.case_.service.ActiveCaseDefinitionService
@@ -362,6 +363,31 @@ class CaseDefinitionResourceTest : BaseTest() {
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.final").value(true))
+    }
+
+    @Test
+    fun `should update case definition`() {
+        val request = CaseDefinitionUpdateRequest(
+            name = "name",
+            description = "description",
+        )
+        val caseDefinition = caseDefinition()
+        whenever(service.updateCaseDefinition(caseDefinition.id, request.name, request.description))
+            .thenReturn(caseDefinition)
+
+        mockMvc.perform(
+            patch(
+                "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}",
+                caseDefinition.id.key,
+                caseDefinition.id.versionTag,
+            )
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(MapperSingleton.get().writeValueAsString(request))
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.name").value(caseDefinition.name))
+            .andExpect(jsonPath("$.description").value(caseDefinition.description))
     }
 
     companion object {
