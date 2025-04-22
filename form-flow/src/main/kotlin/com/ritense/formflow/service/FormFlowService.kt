@@ -76,7 +76,7 @@ class FormFlowService(
 
     fun save(formFlowDefinition: FormFlowDefinition): FormFlowDefinition {
         return withLoggingContext(FormFlowDefinition::class.java.canonicalName to formFlowDefinition.id.toString()) {
-            caseDefinitionChecker.canUpdateCaseDefinition(formFlowDefinition.id.caseDefinitionId)
+            caseDefinitionChecker.assertCanUpdateCaseDefinition(formFlowDefinition.id.caseDefinitionId)
             formFlowDefinitionRepository.save(formFlowDefinition)
         }
     }
@@ -115,12 +115,12 @@ class FormFlowService(
     }
 
     fun deleteByKeyAndsCaseDefinition(definitionKey: String, caseDefinitionId: CaseDefinitionId) {
-        caseDefinitionChecker.canUpdateCaseDefinition(caseDefinitionId)
+        caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId)
         formFlowDefinitionRepository.deleteById(FormFlowDefinitionId.existingId(definitionKey, caseDefinitionId))
     }
 
     fun deleteAllByCaseDefinitionId(caseDefinitionId: CaseDefinitionId) {
-        caseDefinitionChecker.canUpdateCaseDefinition(caseDefinitionId)
+        caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId)
         formFlowDefinitionRepository.deleteAllByIdCaseDefinitionId(caseDefinitionId)
     }
 

@@ -67,7 +67,7 @@ class CaseWidgetTabService(
 
     @EventListener(CaseTabCreatedEvent::class)
     fun handleCaseTabCreatedEvent(event: CaseTabCreatedEvent) {
-        caseDefinitionChecker.canUpdateCaseDefinition(event.tab.id.caseDefinitionId)
+        caseDefinitionChecker.assertCanUpdateCaseDefinition(event.tab.id.caseDefinitionId)
         if (event.tab.type == CaseTabType.WIDGETS) {
             caseWidgetTabRepository.save(CaseWidgetTab(event.tab.id))
         }
@@ -106,7 +106,7 @@ class CaseWidgetTabService(
     fun updateWidgetTab(@Valid tabDto: CaseWidgetTabDto): CaseWidgetTabDto {
         denyAuthorization()
         val caseDefinitionId = CaseDefinitionId.of(tabDto.caseDefinitionKey!!, tabDto.caseDefinitionVersionTag!!)
-        caseDefinitionChecker.canUpdateCaseDefinition(caseDefinitionId)
+        caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId)
 
         val caseWidgetTab = (
             caseWidgetTabRepository.findByIdOrNull(
