@@ -56,7 +56,7 @@ public interface Document {
     @JsonProperty
     String assigneeFullName();
 
-    @JsonProperty
+    @JsonIgnore
     DocumentContent content();
 
     @JsonProperty
