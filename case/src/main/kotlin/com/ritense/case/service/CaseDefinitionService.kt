@@ -179,6 +179,18 @@ class CaseDefinitionService(
         return caseDefinitionRepository.findByActiveIsTrueAndIdKey(caseDefinitionKey)
     }
 
+    fun updateCaseDefinition(caseDefinitionId: CaseDefinitionId, name: String?, description: String?): CaseDefinition {
+        denyManagementOperation()
+        caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId)
+        val caseDefinition = getCaseDefinition(caseDefinitionId)
+        return caseDefinitionRepository.save(
+            caseDefinition.copy(
+                name = name ?: caseDefinition.name,
+                description = description ?: caseDefinition.description
+            )
+        )
+    }
+
     @Throws(UnknownDocumentDefinitionException::class)
     fun setActiveCaseDefinition(caseDefinitionId: CaseDefinitionId): CaseDefinition {
         denyManagementOperation()

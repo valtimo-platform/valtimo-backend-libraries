@@ -16,7 +16,6 @@
 
 package com.ritense.case.web.rest
 
-import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.case.service.CaseDefinitionService
@@ -26,6 +25,7 @@ import com.ritense.case.web.rest.dto.CaseDefinitionSettingsResponseDto
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.case.web.rest.dto.CaseVersionDto
+import com.ritense.case.web.rest.dto.CaseDefinitionUpdateRequest
 import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.exporter.ExportService
@@ -109,6 +109,21 @@ class CaseDefinitionResource(
     ): ResponseEntity<Unit> {
         service.deleteCaseDefinition(CaseDefinitionId.of(caseDefinitionKey, versionTag))
         return ResponseEntity.ok().build()
+    }
+
+    @RunWithoutAuthorization
+    @PatchMapping("/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}")
+    fun updateCaseDefinition(
+        @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
+        @LoggableResource("versionTag") @PathVariable versionTag: String,
+        @RequestBody request: CaseDefinitionUpdateRequest
+    ): ResponseEntity<CaseDefinitionResponseDto> {
+        val caseDefinition = service.updateCaseDefinition(
+            CaseDefinitionId.of(caseDefinitionKey, versionTag),
+            request.name,
+            request.description
+        )
+        return ResponseEntity.ok(CaseDefinitionResponseDto.of(caseDefinition))
     }
 
     @RunWithoutAuthorization
