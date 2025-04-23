@@ -19,6 +19,7 @@ package com.ritense.zaakdetails
 import com.ritense.document.service.DocumentService
 import com.ritense.objectenapi.management.ObjectManagementInfoProvider
 import com.ritense.plugin.service.PluginService
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.zaakdetails.documentobjectenapisync.DocumentObjectenApiSyncManagementResource
 import com.ritense.zaakdetails.documentobjectenapisync.DocumentObjectenApiSyncManagementService
@@ -56,9 +57,11 @@ class ZaakDetailsAutoConfiguration {
     @ConditionalOnMissingBean(DocumentObjectenApiSyncManagementService::class)
     fun documentObjectenApiSyncManagementService(
         documentObjectenApiSyncRepository: DocumentObjectenApiSyncRepository,
+        caseDefinitionChecker: CaseDefinitionChecker,
     ): DocumentObjectenApiSyncManagementService {
         return DocumentObjectenApiSyncManagementService(
             documentObjectenApiSyncRepository = documentObjectenApiSyncRepository,
+            caseDefinitionChecker = caseDefinitionChecker,
         )
     }
 

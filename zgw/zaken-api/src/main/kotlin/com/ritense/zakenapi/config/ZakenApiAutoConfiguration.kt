@@ -34,6 +34,7 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.temporaryresource.repository.ResourceStorageMetadataRepository
 import com.ritense.valtimo.contract.annotation.ProcessBean
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPluginFactory
 import com.ritense.zakenapi.client.ZakenApiClient
@@ -216,11 +217,11 @@ class ZakenApiAutoConfiguration {
     fun zakenApiZaakTypeLinkService(
         zaakTypeLinkRepository: ZaakTypeLinkRepository,
         processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
-        documentDefinitionService: JsonSchemaDocumentDefinitionService
+        caseDefinitionChecker: CaseDefinitionChecker,
     ) = DefaultZaakTypeLinkService(
         zaakTypeLinkRepository,
         processDefinitionCaseDefinitionService,
-        documentDefinitionService
+        caseDefinitionChecker
     )
 
     @Bean

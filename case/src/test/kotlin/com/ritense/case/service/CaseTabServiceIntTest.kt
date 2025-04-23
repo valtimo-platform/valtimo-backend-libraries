@@ -156,7 +156,7 @@ class CaseTabServiceIntTest @Autowired constructor(
             showTasks = true
         )
 
-        val exception = assertThrows<NoSuchElementException> {
+        val exception = assertThrows<IllegalStateException> {
             runWithoutAuthorization {
                 caseTabService.createCaseTab(
                     caseDefinitionId,
@@ -166,6 +166,6 @@ class CaseTabServiceIntTest @Autowired constructor(
         }
 
         Assertions.assertThat(exception.message)
-            .isEqualTo("Case definition with key ${caseDefinitionId.key} and version tag ${caseDefinitionId.versionTag} does not exist!")
+            .isEqualTo("CaseDefinition some-case-type-that-does-not-exist:1.0.0 does not exist.")
     }
 }

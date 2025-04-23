@@ -31,10 +31,11 @@ data class CaseDefinitionDto(
     val canHaveAssignee: Boolean = false,
     val autoAssignTasks: Boolean = false,
 ) {
+    fun getCaseDefinitionId(): CaseDefinitionId = CaseDefinitionId(key, versionTag)
+
     fun toEntity(): CaseDefinition {
-        val id = CaseDefinitionId(key, versionTag)
         return CaseDefinition(
-            id = id,
+            id = getCaseDefinitionId(),
             name = name,
             description = description,
             createdBy = createdBy,

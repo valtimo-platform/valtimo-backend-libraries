@@ -35,7 +35,7 @@ class ZaakTypeLinkServiceIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should create zaakTypeLink`() {
-        val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
+        val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val result = zaakTypeLinkService.createZaakTypeLink(
             caseDefinitionId,
             CreateZaakTypeLinkRequest(zaakUrl)

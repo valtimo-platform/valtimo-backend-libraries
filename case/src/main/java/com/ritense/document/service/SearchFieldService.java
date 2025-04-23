@@ -38,6 +38,7 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import com.ritense.logging.LoggableResource;
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker;
 import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -48,15 +49,18 @@ public class SearchFieldService {
     private final SearchFieldRepository searchFieldRepository;
     private final DocumentDefinitionService documentDefinitionService;
     private final AuthorizationService authorizationService;
+    private final CaseDefinitionChecker caseDefinitionChecker;
 
     public SearchFieldService(
         final SearchFieldRepository searchFieldRepository,
         final DocumentDefinitionService documentDefinitionService,
-        final AuthorizationService authorizationService
+        final AuthorizationService authorizationService,
+        final CaseDefinitionChecker caseDefinitionChecker
     ) {
         this.searchFieldRepository = searchFieldRepository;
         this.documentDefinitionService = documentDefinitionService;
         this.authorizationService = authorizationService;
+        this.caseDefinitionChecker = caseDefinitionChecker;
     }
 
     public void addSearchField(
@@ -64,6 +68,7 @@ public class SearchFieldService {
         SearchField searchField
     ) {
         denyAuthorization();
+        caseDefinitionChecker.assertCanUpdateGlobalConfiguration();
 
         Optional<SearchField> optSearchField = searchFieldRepository
             .findByIdCaseDefinitionKeyAndKey(documentDefinitionName, searchField.getKey());
@@ -99,6 +104,7 @@ public class SearchFieldService {
     public void deleteSearchFields(
         @LoggableResource("documentDefinitionName") String documentDefinitionName
     ) {
+        caseDefinitionChecker.assertCanUpdateGlobalConfiguration();
         searchFieldRepository.deleteAllByIdCaseDefinitionKey(documentDefinitionName);
     }
 
@@ -107,6 +113,7 @@ public class SearchFieldService {
         List<SearchFieldDto> searchFieldDtos
     ) {
         denyAuthorization();
+        caseDefinitionChecker.assertCanUpdateGlobalConfiguration();
 
         searchFieldDtos.forEach(this::validateSearchField);
         searchFieldDtos.forEach(searchFieldDto ->
@@ -120,6 +127,7 @@ public class SearchFieldService {
 
     public void createSearchConfiguration(List<SearchField> searchFields, CaseDefinitionId caseDefinitionId) {
         denyAuthorization();
+        caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId);
 
         searchFields.forEach(searchField -> {
             assert searchField.getId() != null;
@@ -143,6 +151,7 @@ public class SearchFieldService {
 
     public void deleteSearchField(String documentDefinitionName, String key) {
         denyAuthorization();
+        caseDefinitionChecker.assertCanUpdateGlobalConfiguration();
 
         searchFieldRepository.findByIdCaseDefinitionKeyAndKey(documentDefinitionName, key).ifPresent(
             searchFieldRepository::delete);

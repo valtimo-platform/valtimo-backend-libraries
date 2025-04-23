@@ -54,6 +54,7 @@ import com.ritense.document.service.result.DeployDocumentDefinitionResultFailed;
 import com.ritense.document.service.result.DeployDocumentDefinitionResultSucceeded;
 import com.ritense.document.service.result.error.DocumentDefinitionError;
 import com.ritense.logging.LoggableResource;
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker;
 import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import jakarta.validation.ValidationException;
 import java.io.IOException;
@@ -80,15 +81,18 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     private final ResourceLoader resourceLoader;
     private final DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository;
     private final AuthorizationService authorizationService;
+    private final CaseDefinitionChecker caseDefinitionChecker;
 
     public JsonSchemaDocumentDefinitionService(
         ResourceLoader resourceLoader,
         DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository,
-        AuthorizationService authorizationService
+        AuthorizationService authorizationService,
+        CaseDefinitionChecker caseDefinitionChecker
     ) {
         this.resourceLoader = resourceLoader;
         this.documentDefinitionRepository = documentDefinitionRepository;
         this.authorizationService = authorizationService;
+        this.caseDefinitionChecker = caseDefinitionChecker;
     }
 
     @Override
@@ -270,6 +274,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     public DeployDocumentDefinitionResult deploy(JsonSchema jsonSchema, CaseDefinitionId caseDefinitionId) {
         //Authorization check is delegated to the store() method
         try {
+            caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId);
             final var documentDefinitionName = jsonSchema.getSchema().getId().replace(".schema", "");
             return withLoggingContext("documentDefinitionName", documentDefinitionName, () -> {
 
@@ -297,6 +302,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     public void store(JsonSchemaDocumentDefinition documentDefinition) {
         withLoggingContext(JsonSchemaDocumentDefinition.class, documentDefinition.id().toString(), () -> {
             assertArgumentNotNull(documentDefinition, "documentDefinition is required");
+            caseDefinitionChecker.assertCanUpdateCaseDefinition(documentDefinition.id().caseDefinitionId());
 
             JsonSchemaDocumentDefinitionId latestDefinitionId = documentDefinitionRepository.findFirstByIdNameOrderByIdCaseDefinitionIdVersionTagDesc(
                 documentDefinition.id().name()).map(JsonSchemaDocumentDefinition::getId).orElse(null);
@@ -317,6 +323,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     public void removeDocumentDefinition(
         @LoggableResource("documentDefinitionName") String documentDefinitionName
     ) {
+        caseDefinitionChecker.assertCanUpdateGlobalConfiguration();
         findLatestByName(documentDefinitionName).ifPresent(documentDefinition -> authorizationService.requirePermission(
             new EntityAuthorizationRequest<>(
                 JsonSchemaDocumentDefinition.class,
@@ -333,6 +340,8 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         @LoggableResource("documentDefinitionName") String documentDefinitionName,
         CaseDefinitionId caseDefinitionId
     ) {
+        caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId);
+
         findByNameAndCaseDefinitionId(documentDefinitionName, caseDefinitionId).ifPresent(documentDefinition -> {
             authorizationService.requirePermission(
                 new EntityAuthorizationRequest<>(
