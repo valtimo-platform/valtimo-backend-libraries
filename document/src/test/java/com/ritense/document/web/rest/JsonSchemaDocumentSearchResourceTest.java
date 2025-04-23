@@ -159,7 +159,9 @@ class JsonSchemaDocumentSearchResourceTest extends BaseTest {
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isNotEmpty())
-            .andExpect(jsonPath("$.content").doesNotExist());
+            .andExpect(jsonPath("$.content").isArray())
+            .andExpect(jsonPath("$.content.length()").value(1))
+            .andExpect(jsonPath("$.content[0].content").doesNotExist());
     }
 
 }
