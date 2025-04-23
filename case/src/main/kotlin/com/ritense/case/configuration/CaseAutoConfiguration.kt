@@ -30,6 +30,7 @@ import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.repository.CaseTabSpecificationFactory
 import com.ritense.case.repository.TaskListColumnRepository
 import com.ritense.case.security.config.CaseHttpSecurityConfigurer
+import com.ritense.case.service.CaseDefinitionCheckerImpl
 import com.ritense.case.service.CaseDefinitionDeploymentService
 import com.ritense.case.service.CaseDefinitionExporter
 import com.ritense.case.service.CaseDefinitionImporter
@@ -60,6 +61,7 @@ import com.ritense.importer.ValtimoImportService
 import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valueresolver.ValueResolverService
@@ -71,7 +73,9 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Lazy
 import org.springframework.core.Ordered
+import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.annotation.Order
+import org.springframework.core.env.Environment
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 import org.springframework.core.io.support.ResourcePatternResolver
@@ -147,6 +151,7 @@ class CaseAutoConfiguration {
         caseDefinitionRepository: CaseDefinitionRepository,
         valueResolverService: ValueResolverService,
         authorizationService: AuthorizationService,
+        caseDefinitionChecker: CaseDefinitionChecker,
         applicationEventPublisher: ApplicationEventPublisher,
     ): CaseDefinitionService {
         return CaseDefinitionService(
@@ -156,6 +161,21 @@ class CaseAutoConfiguration {
             valueResolverService,
             authorizationService,
             applicationEventPublisher,
+            caseDefinitionChecker,
+        )
+    }
+
+    @ConditionalOnMissingBean(CaseDefinitionChecker::class)
+    @Bean
+    fun caseDefinitionCheckerImpl(
+        caseDefinitionRepository: CaseDefinitionRepository,
+        environment: Environment,
+        @Value("\${valtimo.draft.environments:inttest,dev,test}") draftEnvironments: String,
+    ): CaseDefinitionChecker {
+        return CaseDefinitionCheckerImpl(
+            caseDefinitionRepository,
+            environment,
+            draftEnvironments,
         )
     }
 
@@ -167,7 +187,8 @@ class CaseAutoConfiguration {
         documentDefinitionService: DocumentDefinitionService,
         applicationEventPublisher: ApplicationEventPublisher,
         userManagementService: UserManagementService,
-        documentService: DocumentService
+        documentService: DocumentService,
+        caseDefinitionChecker: CaseDefinitionChecker,
     ): CaseTabService {
         return CaseTabService(
             caseTabRepository,
@@ -175,7 +196,8 @@ class CaseAutoConfiguration {
             authorizationService,
             applicationEventPublisher,
             userManagementService,
-            documentService
+            documentService,
+            caseDefinitionChecker
         )
     }
 
@@ -200,12 +222,14 @@ class CaseAutoConfiguration {
         documentDefinitionService: DocumentDefinitionService,
         valueResolverService: ValueResolverService,
         authorizationService: AuthorizationService,
+        caseDefinitionChecker: CaseDefinitionChecker,
     ): TaskColumnService {
         return TaskColumnService(
             repository,
             documentDefinitionService,
             valueResolverService,
-            authorizationService
+            authorizationService,
+            caseDefinitionChecker
         )
     }
 
@@ -363,13 +387,17 @@ class CaseAutoConfiguration {
         caseDefinitionService
     )
 
+    @Order(HIGHEST_PRECEDENCE)
     @Bean
     @ConditionalOnMissingBean(CaseDefinitionImporter::class)
     fun caseDefinitionSettingsImporter(
         objectMapper: ObjectMapper,
-        caseDefinitionRepository: CaseDefinitionRepository
+        caseDefinitionRepository: CaseDefinitionRepository,
+        caseDefinitionChecker: CaseDefinitionChecker,
     ) = CaseDefinitionImporter(
-        objectMapper, caseDefinitionRepository
+        objectMapper,
+        caseDefinitionRepository,
+        caseDefinitionChecker
     )
 
     @Bean

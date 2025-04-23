@@ -26,6 +26,7 @@ import com.ritense.document.repository.InternalCaseStatusRepository
 import com.ritense.document.security.InternalCaseHttpSecurityConfigurer
 import com.ritense.document.service.InternalCaseStatusService
 import com.ritense.document.web.rest.InternalCaseStatusResource
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -54,8 +55,14 @@ class InternalCaseStatusAutoConfiguration {
         repository: InternalCaseStatusRepository,
         caseDefinitionService: CaseDefinitionService,
         authorizationService: AuthorizationService,
+        caseDefinitionChecker: CaseDefinitionChecker,
     ): InternalCaseStatusService {
-        return InternalCaseStatusService(repository, caseDefinitionService, authorizationService)
+        return InternalCaseStatusService(
+            repository,
+            caseDefinitionService,
+            authorizationService,
+            caseDefinitionChecker,
+        )
     }
 
     @Bean

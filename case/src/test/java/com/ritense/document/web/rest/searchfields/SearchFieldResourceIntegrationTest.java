@@ -47,6 +47,7 @@ import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.web.rest.error.DocumentModuleExceptionTranslator;
 import com.ritense.document.web.rest.impl.SearchFieldMapper;
 import com.ritense.document.web.rest.impl.SearchFieldResource;
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker;
 import com.ritense.valtimo.web.rest.error.WebModuleExceptionTranslator;
 import java.util.List;
 import java.util.Objects;
@@ -77,6 +78,9 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
     private AuthorizationService authorizationService;
 
     @Autowired
+    private CaseDefinitionChecker caseDefinitionChecker;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     private MockMvc mockMvc;
@@ -95,8 +99,11 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
 
     @BeforeEach()
     void setUp() {
-        searchFieldService = new SearchFieldService(searchFieldRepository, documentDefinitionService,
-                authorizationService
+        searchFieldService = new SearchFieldService(
+            searchFieldRepository,
+            documentDefinitionService,
+            authorizationService,
+            caseDefinitionChecker
         );
         searchFieldResource = new SearchFieldResource(searchFieldService);
 

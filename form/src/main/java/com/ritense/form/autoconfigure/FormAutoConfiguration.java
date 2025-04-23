@@ -37,6 +37,7 @@ import com.ritense.form.web.rest.impl.FormIoFormFileResource;
 import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.resource.service.ResourceService;
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
@@ -77,8 +78,10 @@ public class FormAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(FormDefinitionService.class)
-    public FormIoFormDefinitionService formDefinitionService(final FormDefinitionRepository formDefinitionRepository) {
-        return new FormIoFormDefinitionService(formDefinitionRepository);
+    public FormIoFormDefinitionService formDefinitionService(
+        final FormDefinitionRepository formDefinitionRepository,
+        final CaseDefinitionChecker caseDefinitionChecker) {
+        return new FormIoFormDefinitionService(formDefinitionRepository, caseDefinitionChecker);
     }
 
     @Bean

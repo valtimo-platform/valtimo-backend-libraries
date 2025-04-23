@@ -33,6 +33,7 @@ import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.web.rest.error.DocumentModuleExceptionTranslator;
 import com.ritense.document.web.rest.impl.SearchFieldManagementResource;
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,9 @@ class SearchFieldManagementResourceIntegrationTest extends BaseIntegrationTest {
     @Autowired
     private AuthorizationService authorizationService;
 
+    @Autowired
+    private CaseDefinitionChecker caseDefinitionChecker;
+
     private MockMvc mockMvc;
     private SearchFieldManagementResource searchFieldManagementResource;
     private static final String DOCUMENT_DEFINITION_NAME = "house";
@@ -69,8 +73,11 @@ class SearchFieldManagementResourceIntegrationTest extends BaseIntegrationTest {
 
     @BeforeEach()
     void setUp() {
-        searchFieldService = new SearchFieldService(searchFieldRepository, documentDefinitionService,
-                authorizationService
+        searchFieldService = new SearchFieldService(
+            searchFieldRepository,
+            documentDefinitionService,
+            authorizationService,
+            caseDefinitionChecker
         );
         searchFieldManagementResource = new SearchFieldManagementResource(searchFieldService);
 

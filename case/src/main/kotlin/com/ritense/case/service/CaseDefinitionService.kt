@@ -40,6 +40,7 @@ import com.ritense.document.domain.DocumentDefinition
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.event.CaseDefinitionCreatedEvent
 import com.ritense.valtimo.contract.event.CaseDefinitionPreDeleteEvent
@@ -66,6 +67,7 @@ class CaseDefinitionService(
     valueResolverService: ValueResolverService,
     private val authorizationService: AuthorizationService,
     private val applicationEventPublisher: ApplicationEventPublisher,
+    private val caseDefinitionChecker: CaseDefinitionChecker,
 ) {
     var validators: Map<Operation, ListColumnValidator<CaseListColumnDto>> = mapOf(
         Operation.CREATE to CreateCaseListColumnValidator(
@@ -115,6 +117,7 @@ class CaseDefinitionService(
             )
         }
         val newSavedCaseDefinition = caseDefinitionRepository.save(newCaseDefinition)
+        caseDefinitionChecker.assertCanUpdateCaseDefinition(newSavedCaseDefinition.id)
         applicationEventPublisher.publishEvent(
             CaseDefinitionCreatedEvent(
                 caseDefinitionId = newSavedCaseDefinition.id,
@@ -127,6 +130,7 @@ class CaseDefinitionService(
 
     fun deleteCaseDefinition(caseDefinitionId: CaseDefinitionId) {
         denyManagementOperation()
+        caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId)
         require(!getCaseDefinition(caseDefinitionId).active) {
             "Failed to delete case-definition. Case-definition with id: '$caseDefinitionId' is the global active version."
         }
@@ -204,6 +208,7 @@ class CaseDefinitionService(
     @Throws(UnknownDocumentDefinitionException::class)
     fun updateCaseSettings(caseDefinitionId: CaseDefinitionId, newSettings: CaseSettingsDto): CaseDefinition {
         denyManagementOperation()
+        caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId)
 
         val caseDefinition = newSettings.update(
             runWithoutAuthorization { getCaseDefinition(caseDefinitionId) }

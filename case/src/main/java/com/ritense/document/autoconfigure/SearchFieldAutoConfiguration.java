@@ -26,6 +26,7 @@ import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentStatisticService;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.web.rest.impl.SearchFieldResource;
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -66,9 +67,15 @@ public class SearchFieldAutoConfiguration {
     public SearchFieldService searchFieldService(
         SearchFieldRepository searchFieldRepository,
         DocumentDefinitionService documentDefinitionService,
-        AuthorizationService authorizationService
+        AuthorizationService authorizationService,
+        CaseDefinitionChecker caseDefinitionChecker
     ) {
-        return new SearchFieldService(searchFieldRepository, documentDefinitionService, authorizationService);
+        return new SearchFieldService(
+            searchFieldRepository,
+            documentDefinitionService,
+            authorizationService,
+            caseDefinitionChecker
+        );
     }
 
     @Bean

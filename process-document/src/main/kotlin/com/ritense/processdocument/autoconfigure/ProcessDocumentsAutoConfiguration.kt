@@ -59,6 +59,7 @@ import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.annotation.ProcessBean
 import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
@@ -319,13 +320,15 @@ class ProcessDocumentsAutoConfiguration {
         authorizationService: AuthorizationService,
         processDefinitionCaseDefinitionRepository: ProcessDefinitionCaseDefinitionRepository,
         documentService: JsonSchemaDocumentService,
-        runtimeService: RuntimeService
+        runtimeService: RuntimeService,
+        caseDefinitionChecker: CaseDefinitionChecker,
     ): ProcessDefinitionCaseDefinitionService {
         return ProcessDefinitionCaseDefinitionService(
             authorizationService,
             processDefinitionCaseDefinitionRepository,
             documentService,
-            runtimeService
+            runtimeService,
+            caseDefinitionChecker,
         )
     }
 
