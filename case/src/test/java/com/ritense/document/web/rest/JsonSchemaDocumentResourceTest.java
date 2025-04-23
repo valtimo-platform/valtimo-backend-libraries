@@ -95,6 +95,21 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
     }
 
     @Test
+    void shouldReturnDocumentWithoutContent() throws Exception {
+        when(documentService.findBy(any()))
+            .thenReturn(Optional.of(document));
+
+        mockMvc.perform(get("/api/v1/document/{id}", UUID.randomUUID().toString())
+                .accept(APPLICATION_JSON_VALUE)
+                .contentType(APPLICATION_JSON_VALUE)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.content").doesNotExist());
+    }
+
+    @Test
     void shouldReturnDocumentWithAssignee() throws Exception {
         when(documentService.findBy(any()))
             .thenReturn(Optional.of(document));
