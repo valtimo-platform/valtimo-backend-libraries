@@ -73,6 +73,9 @@ class ActuatorSecurityFilterChainFactory {
             }
             .authenticationManager(actuatorAuthenticationManager(passwordEncoder, username, password))
             .httpBasic { it.realmName(ACTUATOR_REALM) }
+            .csrf {
+                csrfConfigurer -> csrfConfigurer.ignoringRequestMatchers("${webEndpointProperties.basePath}/loggers/**")
+            }
 
         return http.build()
     }
