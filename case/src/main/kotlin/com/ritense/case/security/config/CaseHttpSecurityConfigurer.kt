@@ -38,6 +38,7 @@ class CaseHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(antMatcher(PUT, LIST_COLUMN_URL)).hasAuthority(ADMIN) // Deprecated
                     .requestMatchers(antMatcher(DELETE, "$LIST_COLUMN_URL/{columnKey}"))
                     .hasAuthority(ADMIN) // Deprecated
+                    .requestMatchers(antMatcher(GET, "/api/v1/case-definition")).authenticated()
                     .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionName}/version"))
                     .hasAuthority(ADMIN)

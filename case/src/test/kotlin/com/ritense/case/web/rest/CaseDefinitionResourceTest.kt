@@ -237,6 +237,27 @@ class CaseDefinitionResourceTest {
         whenever(service.getCaseDefinitions(isNull(), isNull(), any())).thenReturn(PageImpl(listOf(caseDefinition)))
 
         mockMvc.perform(
+            get("/api/v1/case-definition")
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.length()").value(1))
+            .andExpect(jsonPath("$[0].caseDefinitionKey").value(caseDefinition.id.key))
+            .andExpect(jsonPath("$[0].caseDefinitionVersionTag").value(caseDefinition.id.versionTag.version))
+            .andExpect(jsonPath("$[0].name").value(caseDefinition.name))
+            .andExpect(jsonPath("$[0].canHaveAssignee").value(caseDefinition.canHaveAssignee))
+            .andExpect(jsonPath("$[0].autoAssignTasks").value(caseDefinition.autoAssignTasks))
+            .andExpect(jsonPath("$[0].active").value(caseDefinition.active))
+
+    }
+
+    @Test
+    fun `should get case definitions for management`() {
+        val caseDefinitionId = CaseDefinitionId("key", "1.0.0")
+        val caseDefinition = CaseDefinition(caseDefinitionId, "name", true, false)
+        whenever(service.getCaseDefinitions(isNull(), isNull(), any())).thenReturn(PageImpl(listOf(caseDefinition)))
+
+        mockMvc.perform(
             get("/api/management/v1/case-definition")
         )
             .andDo(print())
