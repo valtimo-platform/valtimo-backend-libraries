@@ -1,4 +1,1 @@
-com.ritense.openzaak.autoconfigure.OpenZaakAutoConfiguration
 com.ritense.openzaak.autoconfigure.OpenZaakLiquibaseAutoConfiguration
-com.ritense.openzaak.autoconfigure.OpenZaakSecurityAutoConfiguration
-com.ritense.openzaak.catalogi.CatalogiAutoConfiguration

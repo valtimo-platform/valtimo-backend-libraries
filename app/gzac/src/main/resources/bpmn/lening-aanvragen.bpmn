@@ -30,7 +30,7 @@
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_1j5xjoe" sourceRef="akkoord-op-lening-task" targetRef="burger-controleer-lening-task" />
     <bpmn:sequenceFlow id="Flow_1uqnsqd" sourceRef="create-product-straatverlichting-task" targetRef="generate-pdf" />
-    <bpmn:serviceTask id="create-product-straatverlichting-task" name="Create product: straatverlichting" camunda:asyncBefore="true" camunda:asyncAfter="true" camunda:expression="${connectorFluentBuilder.builder().withConnector('ObjectsApi-ConnectorInstance').put(execution.processBusinessKey, 'height', '/height').executeCreateObjectRequest()}">
+    <bpmn:serviceTask id="create-product-straatverlichting-task" name="Create product: straatverlichting" camunda:asyncBefore="true" camunda:asyncAfter="true" camunda:expression="${null}">
       <bpmn:incoming>Flow_1t6wrhx</bpmn:incoming>
       <bpmn:outgoing>Flow_1uqnsqd</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -40,7 +40,7 @@
         <camunda:properties>
           <camunda:property name="taak:voornaam" value="doc:/voornaam" />
         </camunda:properties>
-        <camunda:taskListener expression="${connectorService.loadByName(&quot;TaakConnector&quot;).createTask(task, &quot;test-form&quot;)}" event="create" />
+        <camunda:taskListener expression="${null}" event="create" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1j5xjoe</bpmn:incoming>
       <bpmn:outgoing>Flow_1t6wrhx</bpmn:outgoing>

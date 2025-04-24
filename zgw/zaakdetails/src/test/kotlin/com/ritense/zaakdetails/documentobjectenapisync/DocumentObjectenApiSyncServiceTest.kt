@@ -28,7 +28,6 @@ import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.client.ObjectsList
 import com.ritense.objectenapi.management.ObjectManagementInfo
 import com.ritense.objectenapi.management.ObjectManagementInfoProvider
-import com.ritense.objectsapi.service.ObjectSyncService
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.service.PluginService
 import com.ritense.zaakdetails.domain.ZaakdetailsObject
@@ -48,7 +47,8 @@ import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import java.net.URI
-import java.util.*
+import java.util.Optional
+import java.util.UUID
 
 internal class DocumentObjectenApiSyncServiceTest {
     lateinit var service: DocumentObjectenApiSyncService
@@ -56,7 +56,6 @@ internal class DocumentObjectenApiSyncServiceTest {
     lateinit var objectObjectManagementInfoProvider: ObjectManagementInfoProvider
     lateinit var documentService: DocumentService
     lateinit var pluginService: PluginService
-    lateinit var objectSyncService: ObjectSyncService
     lateinit var zaakUrlProvider: ZaakUrlProvider
     lateinit var zaakdetailsObjectService: ZaakdetailsObjectService
     lateinit var documentObjectenApiSyncManagementService: DocumentObjectenApiSyncManagementService
@@ -75,7 +74,6 @@ internal class DocumentObjectenApiSyncServiceTest {
         objectObjectManagementInfoProvider = mock()
         documentService = mock()
         pluginService = mock()
-        objectSyncService = mock()
         zaakUrlProvider = mock()
         zaakdetailsObjectService = mock()
         documentObjectenApiSyncManagementService = mock()
