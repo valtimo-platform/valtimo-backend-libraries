@@ -17,7 +17,6 @@
 package com.ritense.document.exporter
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.document.deployment.CaseTagChangeset
 import com.ritense.document.deployment.CaseTagDto
 import com.ritense.document.service.CaseTagService
 import com.ritense.exporter.ExportFile
@@ -26,7 +25,6 @@ import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import org.springframework.transaction.annotation.Transactional
-import java.time.Instant
 
 @Transactional(readOnly = true)
 class CaseTagExporter(
@@ -37,25 +35,25 @@ class CaseTagExporter(
     override fun supports() = DocumentDefinitionExportRequest::class.java
 
     override fun export(request: DocumentDefinitionExportRequest): ExportResult {
-        val caseTags = caseStatusService.getCaseTags(request.name)
+        val caseTags = caseStatusService.getCaseTags(request.caseDefinitionId)
 
         if (caseTags.isEmpty()) {
             return ExportResult()
         }
 
-        val caseTagChangeset = CaseTagChangeset(
-            "${request.name}.case-tag.${Instant.now().toEpochMilli()}",
-            caseTags.map(CaseTagDto::of)
-        )
+        val formattedCaseDefinitionVersion = request.caseDefinitionId.versionTag.let {
+            "${it.major}-${it.minor}-${it.patch}"
+        }
+
         val caseTagExport = ExportFile(
-            PATH.format(request.name),
-            objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(caseTagChangeset)
+            PATH.format(request.caseDefinitionId.key, formattedCaseDefinitionVersion, request.name),
+            objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(caseTags.map(CaseTagDto::of))
         )
 
         return ExportResult(caseTagExport)
     }
 
     companion object {
-        private const val PATH = "config/case-tag/%s.case-tag.json"
+        private const val PATH = "config/case/%s/%s/case/tag/%s.case-tag.json"
     }
 }

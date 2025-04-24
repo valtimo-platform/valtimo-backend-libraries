@@ -26,53 +26,62 @@ import java.util.regex.Pattern
 
 @Converter
 class SemverConverter: AttributeConverter<Semver?, String?> {
-    private val maxInt = BigInteger.valueOf(Int.MAX_VALUE.toLong())
-    private val parsePattern = Pattern.compile("(\\d{1,6})\\.(\\d{1,6})\\.(\\d{1,6})(.*)")
-
     override fun convertToDatabaseColumn(attribute: Semver?): String? {
-        return attribute?.let {
-            var resultVersion = String.format(
-                Locale.ROOT, "%06d.%06d.%06d",
-                it.major,
-                it.minor,
-                it.patch
-            )
-            if (it.preRelease.isNotEmpty()) {
-                resultVersion = "$resultVersion-${java.lang.String.join(".", it.preRelease)}"
-            }
-
-            if (it.build.isNotEmpty()) {
-                resultVersion = "$resultVersion+${java.lang.String.join(".", it.build)}"
-            }
-
-            return resultVersion
-        }
+        return SemverConverter.convertToDatabaseColumn(attribute)
     }
 
     override fun convertToEntityAttribute(dbData: String?): Semver? {
-
-        return dbData?.let { parse(it) }
+        return SemverConverter.convertToEntityAttribute(dbData)
     }
 
-    fun parse(version: String): Semver {
-        val matcher = parsePattern.matcher(version)
-        if (!matcher.matches()) {
-            throw SemverException(String.format(Locale.ROOT, "Version [%s] is not valid semver.", version))
-        } else {
-            val major = parseInt(matcher.group(1))
-            val minor = parseInt(matcher.group(2))
-            val patch = parseInt(matcher.group(3))
-            val preReleaseAndBuild = matcher.group(4)
-            return Semver(String.format(Locale.ROOT, "$major.$minor.$patch$preReleaseAndBuild"))
+    companion object {
+        private val maxInt = BigInteger.valueOf(Int.MAX_VALUE.toLong())
+        private val parsePattern = Pattern.compile("(\\d{1,6})\\.(\\d{1,6})\\.(\\d{1,6})(.*)")
+
+        fun convertToDatabaseColumn(attribute: Semver?): String? {
+            return attribute?.let {
+                var resultVersion = String.format(
+                    Locale.ROOT, "%06d.%06d.%06d",
+                    it.major,
+                    it.minor,
+                    it.patch
+                )
+                if (it.preRelease.isNotEmpty()) {
+                    resultVersion = "$resultVersion-${java.lang.String.join(".", it.preRelease)}"
+                }
+
+                if (it.build.isNotEmpty()) {
+                    resultVersion = "$resultVersion+${java.lang.String.join(".", it.build)}"
+                }
+
+                return resultVersion
+            }
         }
-    }
 
-    private fun parseInt(maybeInt: String): Int {
-        val secureNumber = BigInteger(maybeInt)
-        if (maxInt.compareTo(secureNumber) < 0) {
-            throw SemverException(String.format(Locale.ROOT, "Value [%s] is too big.", maybeInt))
-        } else {
-            return secureNumber.toInt()
+        fun convertToEntityAttribute(dbData: String?): Semver? {
+            return dbData?.let { parse(it) }
+        }
+
+        fun parse(version: String): Semver {
+            val matcher = parsePattern.matcher(version)
+            if (!matcher.matches()) {
+                throw SemverException(String.format(Locale.ROOT, "Version [%s] is not valid semver.", version))
+            } else {
+                val major = parseInt(matcher.group(1))
+                val minor = parseInt(matcher.group(2))
+                val patch = parseInt(matcher.group(3))
+                val preReleaseAndBuild = matcher.group(4)
+                return Semver(String.format(Locale.ROOT, "$major.$minor.$patch$preReleaseAndBuild"))
+            }
+        }
+
+        private fun parseInt(maybeInt: String): Int {
+            val secureNumber = BigInteger(maybeInt)
+            if (maxInt.compareTo(secureNumber) < 0) {
+                throw SemverException(String.format(Locale.ROOT, "Value [%s] is too big.", maybeInt))
+            } else {
+                return secureNumber.toInt()
+            }
         }
     }
 }

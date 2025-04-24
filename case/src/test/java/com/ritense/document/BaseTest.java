@@ -79,7 +79,7 @@ public abstract class BaseTest {
     }
 
     protected CaseDefinitionId caseDefinitionId() {
-        return CaseDefinitionId.of("house", "1.0.0");
+        return CaseDefinitionId.of("house", "1.1.0");
     }
 
     protected JsonSchemaDocument createDocument() {

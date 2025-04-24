@@ -16,30 +16,67 @@
 
 package com.ritense.document.importer
 
-import com.ritense.document.deployment.CaseTagDeployer
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.authorization.AuthorizationContext
+import com.ritense.document.deployment.CaseTagDto
+import com.ritense.document.service.CaseTagService
+import com.ritense.document.web.rest.dto.CaseTagCreateRequestDto
+import com.ritense.document.web.rest.dto.CaseTagUpdateRequestDto
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
+import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_TAG
-import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
-import com.ritense.valtimo.changelog.service.ChangelogDeployer
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 class CaseTagImporter(
-    private val caseTagDeployer: CaseTagDeployer,
-    private val changelogDeployer: ChangelogDeployer
+    private val objectMapper: ObjectMapper,
+    private val caseTagService: CaseTagService,
 ) : Importer {
     override fun type() = CASE_TAG
 
-    override fun dependsOn() = setOf(DOCUMENT_DEFINITION)
+    override fun dependsOn() = setOf(CASE_DEFINITION)
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
-        changelogDeployer.deploy(caseTagDeployer, request.fileName, request.content.toString(Charsets.UTF_8))
+        val caseTags = objectMapper.readValue(
+            request.content.toString(Charsets.UTF_8),
+            object : TypeReference<List<CaseTagDto>>() {})
+        deploy(caseTags)
+    }
+
+    private fun deploy(caseTags: List<CaseTagDto>) {
+        AuthorizationContext.runWithoutAuthorization {
+            caseTags.forEach {
+                val caseDefinitionId = CaseDefinitionId.of(it.caseDefinitionKey, it.caseDefinitionVersionTag)
+                if (!caseTagService.exists(caseDefinitionId, it.key)) {
+                    caseTagService.create(
+                        caseDefinitionId,
+                        CaseTagCreateRequestDto(
+                            it.key,
+                            it.title,
+                            it.color
+                        )
+                    )
+                } else {
+                    caseTagService.update(
+                        caseDefinitionId,
+                        it.key,
+                        CaseTagUpdateRequestDto(
+                            it.key,
+                            it.title,
+                            it.color
+                        )
+                    )
+                }
+            }
+        }
     }
 
     private companion object {
-        val FILENAME_REGEX = """config/case-tag/([^/]+)\.case-tag\.json""".toRegex()
+        val FILENAME_REGEX = """/case/tag/([^/]+)\.case-tag\.json""".toRegex()
     }
 }
