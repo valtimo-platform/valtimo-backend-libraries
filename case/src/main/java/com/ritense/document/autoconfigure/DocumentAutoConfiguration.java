@@ -228,9 +228,15 @@ public class DocumentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DocumentResource.class)
     public JsonSchemaDocumentResource documentResource(
-        DocumentService documentService
+        DocumentService documentService,
+        final OutboxService outboxService,
+        final ObjectMapper objectMapper
     ) {
-        return new JsonSchemaDocumentResource(documentService);
+        return new JsonSchemaDocumentResource(
+            documentService,
+            outboxService,
+            objectMapper
+        );
     }
 
     @Bean

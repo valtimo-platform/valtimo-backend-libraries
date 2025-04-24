@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -35,12 +34,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.document.BaseIntegrationTest;
-import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.request.AssignToDocumentsRequest;
-import com.ritense.document.exception.DocumentNotFoundException;
-import com.ritense.document.repository.DocumentRepository;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
 import com.ritense.outbox.domain.BaseEvent;
 import com.ritense.valtimo.contract.event.DocumentDeletedEvent;
@@ -80,7 +76,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         document = result.resultingDocument().orElseThrow();
         documentRepository.save(document);
 
-        jsonSchemaDocumentResource = new JsonSchemaDocumentResource(documentService);
+        jsonSchemaDocumentResource = new JsonSchemaDocumentResource(documentService, outboxService, objectMapper);
         mockMvc = MockMvcBuilders
             .standaloneSetup(jsonSchemaDocumentResource)
             .build();
