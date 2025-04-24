@@ -91,12 +91,6 @@ public class JsonSchemaDocumentResource implements DocumentResource {
         @LoggableResource(resourceType = JsonSchemaDocument.class) @PathVariable(name = "id") UUID id) {
         var document = documentService.findBy(JsonSchemaDocumentId.existingId(id)).orElse(null);
         if (document != null) {
-            outboxService.send(() ->
-                new DocumentContentViewed(
-                    document.id().toString(),
-                    objectMapper.valueToTree(document.content())
-                )
-            );
             return ResponseEntity.ok(document);
         } else {
             return ResponseEntity.notFound().build();
@@ -111,6 +105,13 @@ public class JsonSchemaDocumentResource implements DocumentResource {
         if(documentContentEndpointEnabled) {
             var document = documentService.findBy(JsonSchemaDocumentId.existingId(documentId)).orElse(null);
             if (document != null) {
+                outboxService.send(() ->
+                    new DocumentContentViewed(
+                        document.id().toString(),
+                        objectMapper.valueToTree(document.content())
+                    )
+                );
+
                 return ResponseEntity.ok(document.content());
             } else {
                 return ResponseEntity.notFound().build();
