@@ -116,7 +116,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
                 return ResponseEntity.notFound().build();
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
 
