@@ -45,13 +45,12 @@ class CaseTagImporter(
         val caseTags = objectMapper.readValue(
             request.content.toString(Charsets.UTF_8),
             object : TypeReference<List<CaseTagDto>>() {})
-        deploy(caseTags)
+        deploy(caseTags, request.caseDefinitionId!!)
     }
 
-    private fun deploy(caseTags: List<CaseTagDto>) {
+    private fun deploy(caseTags: List<CaseTagDto>, caseDefinitionId: CaseDefinitionId) {
         AuthorizationContext.runWithoutAuthorization {
             caseTags.forEach {
-                val caseDefinitionId = CaseDefinitionId.of(it.caseDefinitionKey, it.caseDefinitionVersionTag)
                 if (!caseTagService.exists(caseDefinitionId, it.key)) {
                     caseTagService.create(
                         caseDefinitionId,

@@ -1,15 +1,11 @@
 [
     {
         "key": "test1",
-        "caseDefinitionKey": "bezwaar",
-        "caseDefinitionVersionTag": "1.0.0",
         "title": "Test tag 1",
         "color": "GRAY"
     },
     {
         "key": "test2",
-        "caseDefinitionKey": "bezwaar",
-        "caseDefinitionVersionTag": "1.0.0",
         "title": "Test tag 2",
         "color": "TEAL"
     }
