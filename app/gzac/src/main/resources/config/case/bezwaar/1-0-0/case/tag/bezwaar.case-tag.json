@@ -1,17 +1,12 @@
-{
-    "changesetId": "bezwaar-case-tag",
-    "caseTags": [
-        {
-            "key": "test1",
-            "caseDefinitionName": "bezwaar",
-            "title": "Test tag 1",
-            "color": "GRAY"
-        },
-        {
-            "key": "test2",
-            "caseDefinitionName": "bezwaar",
-            "title": "Test tag 2",
-            "color": "TEAL"
-        }
-    ]
-}
+[
+    {
+        "key": "test1",
+        "title": "Test tag 1",
+        "color": "GRAY"
+    },
+    {
+        "key": "test2",
+        "title": "Test tag 2",
+        "color": "TEAL"
+    }
+]
