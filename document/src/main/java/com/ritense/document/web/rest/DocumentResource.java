@@ -17,6 +17,7 @@
 package com.ritense.document.web.rest;
 
 import com.ritense.document.domain.Document;
+import com.ritense.document.domain.DocumentContent;
 import com.ritense.document.domain.impl.request.AssignToDocumentsRequest;
 import com.ritense.document.domain.impl.request.GetDocumentCandidateUsersRequest;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
@@ -33,6 +34,8 @@ import org.springframework.http.ResponseEntity;
 public interface DocumentResource {
 
     ResponseEntity<? extends Document> getDocument(UUID id);
+
+    ResponseEntity<? extends DocumentContent> getDocumentContent(UUID documentId);
 
     ResponseEntity<CreateDocumentResult> createNewDocument(@Valid NewDocumentRequest request);
 

@@ -16,6 +16,7 @@
 
 package com.ritense.document.security.config;
 
+import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.DEVELOPER;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -33,6 +34,7 @@ public class DocumentHttpSecurityConfigurer implements HttpSecurityConfigurer {
         try {
             http.authorizeHttpRequests(requests ->
                 requests.requestMatchers(antMatcher(GET, "/api/v1/document/{id}")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/document/{id}/content")).hasAuthority(DEVELOPER)
                 .requestMatchers(antMatcher(DELETE, "/api/v1/document/{id}")).authenticated()
                 .requestMatchers(antMatcher(POST, "/api/v1/document")).authenticated()
                 .requestMatchers(antMatcher(PUT, "/api/v1/document")).authenticated()

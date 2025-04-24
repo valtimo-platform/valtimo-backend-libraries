@@ -18,7 +18,9 @@ package com.ritense.document.web.rest.impl;
 
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.document.domain.Document;
+import com.ritense.document.domain.DocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.request.AssignToDocumentsRequest;
@@ -26,12 +28,14 @@ import com.ritense.document.domain.impl.request.GetDocumentCandidateUsersRequest
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.impl.request.UpdateAssigneeRequest;
+import com.ritense.document.event.DocumentContentViewed;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.DocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
 import com.ritense.document.web.rest.DocumentResource;
 import com.ritense.logging.LoggableResource;
+import com.ritense.outbox.OutboxService;
 import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import jakarta.validation.Valid;
@@ -40,6 +44,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -62,8 +67,21 @@ public class JsonSchemaDocumentResource implements DocumentResource {
 
     private final DocumentService documentService;
 
-    public JsonSchemaDocumentResource(final DocumentService documentService) {
+    private final OutboxService outboxService;
+
+    private final ObjectMapper objectMapper;
+
+    @Value("${valtimo.featureToggles.documentContentEndpoint.enabled:false}")
+    private boolean documentContentEndpointEnabled;
+
+    public JsonSchemaDocumentResource(
+        final DocumentService documentService,
+        OutboxService outboxService,
+        ObjectMapper objectMapper
+    ) {
         this.documentService = documentService;
+        this.outboxService = outboxService;
+        this.objectMapper = objectMapper;
     }
 
     @Transactional
@@ -73,9 +91,32 @@ public class JsonSchemaDocumentResource implements DocumentResource {
         @LoggableResource(resourceType = JsonSchemaDocument.class) @PathVariable(name = "id") UUID id) {
         var document = documentService.findBy(JsonSchemaDocumentId.existingId(id)).orElse(null);
         if (document != null) {
+            outboxService.send(() ->
+                new DocumentContentViewed(
+                    document.id().toString(),
+                    objectMapper.valueToTree(document.content())
+                )
+            );
             return ResponseEntity.ok(document);
         } else {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @Transactional
+    @Override
+    @GetMapping("/v1/document/{documentId}/content")
+    public ResponseEntity<? extends DocumentContent> getDocumentContent(
+        @LoggableResource(resourceType = JsonSchemaDocument.class) @PathVariable(name = "documentId") UUID documentId) {
+        if(documentContentEndpointEnabled) {
+            var document = documentService.findBy(JsonSchemaDocumentId.existingId(documentId)).orElse(null);
+            if (document != null) {
+                return ResponseEntity.ok(document.content());
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
