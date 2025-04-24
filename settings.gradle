@@ -52,7 +52,6 @@ include(
     "mail:wordpress-mail",
     "milestones",
     "notes",
-    "openzaak",
     "outbox",
     "outbox:outbox-rabbitmq",
     "plugin",

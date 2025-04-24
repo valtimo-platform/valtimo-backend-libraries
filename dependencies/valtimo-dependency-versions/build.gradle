@@ -74,7 +74,6 @@ dependencies {
         api(project(":plugin-authentication:notificaties-api-authentication"))
         api(project(":plugin-authentication:objecten-api-authentication"))
         api(project(":plugin-authentication:openzaak-plugin-authentication"))
-        api(project(":openzaak"))
 
         api(project(":zgw"))
         api(project(":zgw:portaaltaak"))
