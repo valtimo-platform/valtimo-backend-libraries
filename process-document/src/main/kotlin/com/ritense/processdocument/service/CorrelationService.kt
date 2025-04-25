@@ -16,6 +16,7 @@
 
 package com.ritense.processdocument.service
 
+import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.runtime.MessageCorrelationResult
 
 interface CorrelationService {
@@ -36,4 +37,6 @@ interface CorrelationService {
     fun sendCatchEventMessageToAll(message: String, businessKey: String, vararg variables: Any?): List<MessageCorrelationResult>
     fun sendCatchEventMessageToAll(message: String, businessKey: String, variables: Map<String, Any?>?): List<MessageCorrelationResult>
 
+    fun sendMessage(message: String, execution: DelegateExecution): MessageCorrelationResult
+    fun sendMessageToAll(message: String, execution: DelegateExecution): List<MessageCorrelationResult>
 }
