@@ -114,15 +114,13 @@ class ProcessVariableValueResolverFactory(
     }
 
     private fun buildJsonPatch(jsonNode: JsonNode, values: Map<String, Any?>) {
-        val jsonPatchBuilder = JsonPatchBuilder()
-
         values.forEach {
             val jsonPointer = toJsonPointer(it.key.substringAfter(":"))
             val valueNode = objectMapper.valueToTree<JsonNode>(it.value)
+            val jsonPatchBuilder = JsonPatchBuilder()
             jsonPatchBuilder.addJsonNodeValue(jsonNode, jsonPointer, valueNode)
+            JsonPatch.applyInPlace(jsonPatchBuilder.build().toJson(), jsonNode)
         }
-
-        JsonPatch.applyInPlace(jsonPatchBuilder.build().toJson(), jsonNode)
     }
 
     private fun getValue(valueNode: JsonNode): Any? {
