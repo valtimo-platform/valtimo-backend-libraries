@@ -281,4 +281,21 @@ internal class ProcessVariableValueResolverTest {
             )
         )
     }
+
+    @Test
+    fun `should add property to object in a single handleValues`() {
+        val processInstanceId = UUID.randomUUID().toString()
+
+        processVariableValueResolver.handleValues(
+            processInstanceId, null, mapOf(
+                "person.info" to mapOf("firstName" to "John"),
+                "person.info.lastName" to "Doe"
+            )
+        )
+
+        verify(runtimeService).setVariables(
+            processInstanceId,
+            mapOf("person" to mapOf("info" to mapOf("firstName" to "John", "lastName" to "Doe")))
+        )
+    }
 }
