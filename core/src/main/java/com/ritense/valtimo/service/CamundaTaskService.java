@@ -340,8 +340,6 @@ public class CamundaTaskService {
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
                 mergeVariables(mergedVariables, variables);
                 formService.submitTaskForm(task.getId(), FormUtils.createTypedVariableMap(mergedVariables));
-                task.getExecution().getVariableInstances().forEach(it -> entityManager.refresh(it));
-                entityManager.detach(task);
                 outboxService.send(() -> new TaskCompleted(taskId, objectMapper.valueToTree(task)));
             }
         } catch (FormFieldValidationException ex) {

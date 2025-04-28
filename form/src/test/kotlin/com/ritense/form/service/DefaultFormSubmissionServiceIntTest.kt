@@ -32,6 +32,7 @@ import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byProcessInstanceId
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
+import org.camunda.bpm.engine.RuntimeService
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.BeforeEach
@@ -53,6 +54,7 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
     private val processService: CamundaProcessService,
     private val testValueResolverFactory: TestValueResolverFactory,
     private val objectMapper: ObjectMapper,
+    private val runtimeService: RuntimeService,
 ) : BaseIntegrationTest() {
 
     @BeforeEach
@@ -194,9 +196,7 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
         assertThat(json, hasNoJsonPath("""${'$'}.containerProperty3"""))
         assertThat(json, hasJsonPath("""${'$'}.aanvrager.geslacht""", equalTo("M")))
         assertThat(json, hasJsonPath("""${'$'}.aanvrager.persoonsgegevens.voornaam""", equalTo("Henk")))
-        val pv = runWithoutAuthorization {
-            processService.getProcessInstanceVariables(processInstanceId, listOf("object"))
-        }
+        val pv = runtimeService.getVariables(processInstanceId) as Map<*, *>
         assertThat(pv["object"], equalTo(mapOf("property1" to "value1", "property2" to "value2")))
     }
 
