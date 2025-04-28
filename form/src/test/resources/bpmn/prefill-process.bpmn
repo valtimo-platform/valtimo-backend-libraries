@@ -6,19 +6,24 @@
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="sequence-flow-1" sourceRef="start-event" targetRef="do-something" />
     <bpmn:endEvent id="end-event">
-      <bpmn:incoming>sequence-flow-2</bpmn:incoming>
+      <bpmn:incoming>sequence-flow-3</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="sequence-flow-2" sourceRef="do-something" targetRef="end-event" />
+    <bpmn:sequenceFlow id="sequence-flow-2" sourceRef="do-something" targetRef="do-something-2" />
     <bpmn:userTask id="do-something" name="Do something" camunda:candidateGroups="ROLE_USER">
       <bpmn:incoming>sequence-flow-1</bpmn:incoming>
       <bpmn:outgoing>sequence-flow-2</bpmn:outgoing>
     </bpmn:userTask>
+    <bpmn:userTask id="do-something-2" name="Do something 2" camunda:candidateGroups="ROLE_USER">
+      <bpmn:incoming>sequence-flow-2</bpmn:incoming>
+      <bpmn:outgoing>sequence-flow-3</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="sequence-flow-3" sourceRef="do-something-2" targetRef="end-event" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="prefill-process">
       <bpmndi:BPMNEdge id="SequenceFlow_1gkaz89_di" bpmnElement="sequence-flow-2">
         <di:waypoint x="400" y="120" />
-        <di:waypoint x="491" y="120" />
+        <di:waypoint x="470" y="120" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_0obzkuw_di" bpmnElement="sequence-flow-1">
         <di:waypoint x="209" y="120" />
@@ -28,11 +33,19 @@
         <dc:Bounds x="173" y="102" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_0hzhcsl_di" bpmnElement="end-event">
-        <dc:Bounds x="491" y="102" width="36" height="36" />
+        <dc:Bounds x="662" y="102" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="UserTask_0flb6n1_di" bpmnElement="do-something">
         <dc:Bounds x="300" y="80" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0goitfv" bpmnElement="do-something-2">
+        <dc:Bounds x="470" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1l4ukjs_di" bpmnElement="sequence-flow-3">
+        <di:waypoint x="570" y="120" />
+        <di:waypoint x="662" y="120" />
+      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>
