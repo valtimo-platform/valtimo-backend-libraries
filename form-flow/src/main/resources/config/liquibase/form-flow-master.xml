@@ -33,5 +33,6 @@
     <include file="changelog/20230823-temporary-submission-data.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20240820-add-form-flow-step-instance-submission-order.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20240823-add-form-flow-step-title.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20250307-add-form-flow-to-case-definition.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

@@ -37,8 +37,8 @@ dockerCompose {
 
 dependencies {
     implementation project(':authorization')
+    implementation project(':case')
     implementation project(':contract')
-    implementation project(':document')
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"

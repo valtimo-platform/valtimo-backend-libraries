@@ -342,7 +342,7 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = [AuthoritiesConstants.USER])
     fun shouldReturnMoreThan10Results() {
-        val definition2 = definition("notahouse")
+        val definition2 = definition("task")
         createDocumentAndTwoProcesses("Funenpark1", definition2.id().name())
         createDocumentAndTwoProcesses("Funenpark2", definition2.id().name())
         createDocumentAndTwoProcesses("Funenpark3", definition2.id().name())
@@ -383,7 +383,7 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
             camundaProcessJsonSchemaDocumentService.startProcessForDocument(
                 StartProcessForDocumentRequest(
                     document.resultingDocument().orElseThrow().id(),
-                    "loan-process-demo",
+                    "loan-process-demo-3",
                     mapOf()
                 )
             )
@@ -393,7 +393,7 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
             camundaProcessJsonSchemaDocumentService.startProcessForDocument(
                 StartProcessForDocumentRequest(
                     document.resultingDocument().orElseThrow().id(),
-                    "loan-process-demo",
+                    "loan-process-demo-3",
                     mapOf()
                 )
             )

@@ -1,0 +1,7 @@
+{
+    "key": "simple",
+    "name": "Simple",
+    "versionTag": "1.0.0",
+    "canHaveAssignee": true,
+    "autoAssignTasks": true
+}

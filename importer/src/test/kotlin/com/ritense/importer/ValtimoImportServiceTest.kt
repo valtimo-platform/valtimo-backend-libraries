@@ -64,7 +64,7 @@ class ValtimoImportServiceTest {
         )
 
         //Should not throw TooManyImportCandidatesException, since 'other' is filtered out
-        service.import(createZipInputStream(1))
+        service.import(createZipInputStream(1), emptyList())
 
         verify(filteredImporter, never()).supports(any())
     }
@@ -81,7 +81,7 @@ class ValtimoImportServiceTest {
                 )
             )
 
-            service.import(createZipInputStream(1))
+            service.import(createZipInputStream(1), emptyList())
         }
 
         assertThat(exception.importerTypes).isEqualTo(setOf("test1", "test2"))
@@ -106,7 +106,7 @@ class ValtimoImportServiceTest {
     fun `should throw InvalidImportZipException`() {
         val importService = ValtimoImportService(setOf())
         assertThrows<InvalidImportZipException> {
-            importService.import("123456".byteInputStream(Charsets.UTF_8))
+            importService.import("123456".byteInputStream(Charsets.UTF_8), emptyList())
         }
     }
 
@@ -127,10 +127,10 @@ class ValtimoImportServiceTest {
 
         val importService = ValtimoImportService(importers.shuffled().toSet())
 
-        // do no create file "3"
+        // do not create file "3"
         val skip = 3
         val inputStream = createZipInputStream(fileCount, skip)
-        importService.import(inputStream)
+        importService.import(inputStream, emptyList())
 
         // Verify the importers are called in the correct order
         val inOrder = inOrder(*importers.toTypedArray())

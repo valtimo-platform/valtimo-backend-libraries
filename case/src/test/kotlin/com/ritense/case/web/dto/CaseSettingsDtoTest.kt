@@ -1,7 +1,8 @@
 package com.ritense.case.web.dto
 
-import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.web.rest.dto.CaseSettingsDto
+import com.ritense.case_.domain.definition.CaseDefinition
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -11,35 +12,31 @@ class CaseSettingsDtoTest {
 
     @Test
     fun `should update case settings when value is not null`() {
-        val currentCaseSettings = CaseDefinitionSettings(
-            name = "name"
-        )
-        assertThat(currentCaseSettings.canHaveAssignee).isFalse()
+        val currentCaseWithSettings = CaseDefinition(CaseDefinitionId("key", "1.0.0"), "name")
+        assertThat(currentCaseWithSettings.canHaveAssignee).isFalse()
 
         val caseSettingsDto = CaseSettingsDto(
             canHaveAssignee = true
         )
         assertThat(caseSettingsDto.canHaveAssignee!!).isTrue()
 
-        val updatedCaseSettings = caseSettingsDto.update(currentCaseSettings)
+        val updatedCaseSettings = caseSettingsDto.update(currentCaseWithSettings)
         assertThat(updatedCaseSettings.canHaveAssignee).isTrue()
     }
 
     @Test
     fun `should update case setting 'hasExternalStartForm' when url value is not null`() {
         val externalFormUrl = "https://example.com/create-case-form"
-        val currentCaseSettings = CaseDefinitionSettings(
-            name = "name"
-        )
+        val currentCaseWithSettings = CaseDefinition(CaseDefinitionId("key", "1.0.0"), "name")
 
-        assertThat(currentCaseSettings.hasExternalStartForm).isFalse()
-        assertThat(currentCaseSettings.externalStartFormUrl).isNull()
+        assertThat(currentCaseWithSettings.hasExternalStartForm).isFalse()
+        assertThat(currentCaseWithSettings.externalStartFormUrl).isNull()
 
         val caseSettingsDto = CaseSettingsDto(
             hasExternalStartForm = true,
             externalStartFormUrl = externalFormUrl
         )
-        val updatedCaseSettings = caseSettingsDto.update(currentCaseSettings)
+        val updatedCaseSettings = caseSettingsDto.update(currentCaseWithSettings)
 
         assertThat(updatedCaseSettings.hasExternalStartForm).isTrue()
         assertThat(updatedCaseSettings.externalStartFormUrl).isEqualTo(externalFormUrl)
@@ -47,11 +44,9 @@ class CaseSettingsDtoTest {
 
     @Test
     fun `should throw IllegalArgumentException when updating case setting 'hasExternalStartForm' and url value is blank`() {
-        val currentCaseSettings = CaseDefinitionSettings(
-            name = "name"
-        )
-        assertThat(currentCaseSettings.hasExternalStartForm).isFalse()
-        assertThat(currentCaseSettings.externalStartFormUrl).isNull()
+        val currentCaseWithSettings = CaseDefinition(CaseDefinitionId("key", "1.0.0"), "name")
+        assertThat(currentCaseWithSettings.hasExternalStartForm).isFalse()
+        assertThat(currentCaseWithSettings.externalStartFormUrl).isNull()
 
         val caseSettingsDto = CaseSettingsDto(
             hasExternalStartForm = true,
@@ -61,7 +56,7 @@ class CaseSettingsDtoTest {
         assertThat(caseSettingsDto.externalStartFormUrl).isBlank()
 
         assertThrows<IllegalArgumentException> {
-            caseSettingsDto.update(currentCaseSettings)
+            caseSettingsDto.update(currentCaseWithSettings)
         }.let { exception ->
             assertThat(exception.message)
                 .isEqualTo("Case property [hasExternalStartForm] can only be true when [externalStartFormUrl] is not null or blank.")
@@ -70,11 +65,9 @@ class CaseSettingsDtoTest {
 
     @Test
     fun `should throw IllegalArgumentException when updating case setting 'hasExternalStartForm' is not a valid url`() {
-        val currentCaseSettings = CaseDefinitionSettings(
-            name = "name"
-        )
-        assertThat(currentCaseSettings.hasExternalStartForm).isFalse()
-        assertThat(currentCaseSettings.externalStartFormUrl).isNull()
+        val currentCaseWithSettings = CaseDefinition(CaseDefinitionId("key", "1.0.0"), "name")
+        assertThat(currentCaseWithSettings.hasExternalStartForm).isFalse()
+        assertThat(currentCaseWithSettings.externalStartFormUrl).isNull()
 
         val caseSettingsDto = CaseSettingsDto(
             hasExternalStartForm = true,
@@ -84,7 +77,7 @@ class CaseSettingsDtoTest {
         assertThat(caseSettingsDto.externalStartFormUrl).isNotBlank()
 
         assertThrows<IllegalArgumentException> {
-            caseSettingsDto.update(currentCaseSettings)
+            caseSettingsDto.update(currentCaseWithSettings)
         }.let { exception ->
             assertThat(exception.message)
                 .isEqualTo("Case property [externalStartFormUrl] is not a valid URL.")
@@ -93,11 +86,9 @@ class CaseSettingsDtoTest {
 
     @Test
     fun `should throw IllegalArgumentException when updating case setting 'hasExternalStartForm' exceeds 512 characters`() {
-        val currentCaseSettings = CaseDefinitionSettings(
-            name = "name"
-        )
-        assertThat(currentCaseSettings.hasExternalStartForm).isFalse()
-        assertThat(currentCaseSettings.externalStartFormUrl).isNull()
+        val currentCaseWithSettings = CaseDefinition(CaseDefinitionId("key", "1.0.0"), "name")
+        assertThat(currentCaseWithSettings.hasExternalStartForm).isFalse()
+        assertThat(currentCaseWithSettings.externalStartFormUrl).isNull()
 
         val caseSettingsDto = CaseSettingsDto(
             hasExternalStartForm = true,
@@ -107,7 +98,7 @@ class CaseSettingsDtoTest {
         assertThat(caseSettingsDto.externalStartFormUrl).isNotBlank()
 
         assertThrows<IllegalArgumentException> {
-            caseSettingsDto.update(currentCaseSettings)
+            caseSettingsDto.update(currentCaseWithSettings)
         }.let { exception ->
             assertThat(exception.message)
                 .isEqualTo("Case property [externalStartFormUrl] exceeds the maximum length of 512 characters.")
@@ -116,36 +107,35 @@ class CaseSettingsDtoTest {
 
     @Test
     fun `should not update case settings when value is null`() {
-        val currentCaseSettings = CaseDefinitionSettings(
-            name = "name"
-        )
-        assertFalse(currentCaseSettings.canHaveAssignee)
+        val currentCaseWithSettings = CaseDefinition(CaseDefinitionId("key", "1.0.0"), "name")
+        assertFalse(currentCaseWithSettings.canHaveAssignee)
 
         val caseSettingsDto = CaseSettingsDto()
         assertThat(caseSettingsDto.canHaveAssignee).isNull()
         assertThat(caseSettingsDto.hasExternalStartForm).isNull()
 
-        val updatedCaseSettings = caseSettingsDto.update(currentCaseSettings)
+        val updatedCaseSettings = caseSettingsDto.update(currentCaseWithSettings)
         assertThat(updatedCaseSettings.canHaveAssignee).isFalse()
         assertThat(updatedCaseSettings.hasExternalStartForm).isFalse()
     }
 
     @Test
     fun `should set autoAssignTasks to false when canHaveAssignee is set to false`() {
-        val currentCaseSettings = CaseDefinitionSettings(
-            name = "case-name",
+        val currentCaseWithSettings = CaseDefinition(
+            id = CaseDefinitionId("key", "1.0.0"),
+            name = "name",
             canHaveAssignee = true,
             autoAssignTasks = true
         )
-        assertThat(currentCaseSettings.autoAssignTasks).isTrue()
-        assertThat(currentCaseSettings.canHaveAssignee).isTrue()
+        assertThat(currentCaseWithSettings.autoAssignTasks).isTrue()
+        assertThat(currentCaseWithSettings.canHaveAssignee).isTrue()
 
         val caseSettingsDto = CaseSettingsDto(
             canHaveAssignee = false
         )
         assertThat(caseSettingsDto.autoAssignTasks).isNull()
 
-        val updatedCaseSettings = caseSettingsDto.update(currentCaseSettings)
+        val updatedCaseSettings = caseSettingsDto.update(currentCaseWithSettings)
         assertThat(updatedCaseSettings.canHaveAssignee).isFalse()
         assertThat(updatedCaseSettings.autoAssignTasks).isFalse()
     }

@@ -31,6 +31,7 @@ import com.ritense.note.service.NoteActionProvider.Companion.VIEW_LIST
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
+import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker
 import jakarta.inject.Inject
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -46,6 +47,9 @@ import java.util.UUID
 @ExtendWith(SpringExtension::class, LiquibaseRunnerExtension::class)
 @Tag("integration")
 abstract class BaseIntegrationTest {
+
+    @MockBean
+    lateinit var processDefinitionCaseDefinitionLinker: ProcessDefinitionCaseDefinitionLinker
 
     @MockBean
     lateinit var userManagementService: UserManagementService

@@ -33,7 +33,7 @@ class ZakenApiEventListener(
     @Order(0)
     @EventListener(DocumentCreatedEvent::class)
     fun handle(event: DocumentCreatedEvent) {
-        val zaakTypeLink = zaakTypeLinkService.get(event.definitionId().name())
+        val zaakTypeLink = zaakTypeLinkService.get(event.definitionId().caseDefinitionId())
         zaakTypeLink?.let {
             if (it.createWithDossier && it.zakenApiPluginConfigurationId != null) {
                 val zakenApiPlugin = pluginService.createInstance(it.zakenApiPluginConfigurationId!!) as ZakenApiPlugin

@@ -28,6 +28,7 @@ import com.ritense.logging.LoggableResource
 import com.ritense.plugin.service.PluginConfigurationSearchParameters
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
@@ -41,10 +42,10 @@ class CatalogiService(
     val pluginService: PluginService
 ) {
     fun getInformatieobjecttypes(
-        @LoggableResource("documentDefinitionName") documentDefinitionName: String
+        @LoggableResource("caseDefinitionId") caseDefinitionId: CaseDefinitionId
     ): List<Informatieobjecttype> {
-        logger.debug { "Getting documenttypes for document definition $documentDefinitionName" }
-        val zaakTypeUrl = getZaaktypeUrlByDocumentDefinitionName(documentDefinitionName) ?: return emptyList()
+        logger.debug { "Getting documenttypes for case definition with id $caseDefinitionId" }
+        val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionId(caseDefinitionId) ?: return emptyList()
         val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
 
         return catalogiApiPluginInstance.getInformatieobjecttypes(zaakTypeUrl)
@@ -58,50 +59,50 @@ class CatalogiService(
     }
 
     fun getRoltypes(
-        @LoggableResource("documentDefinitionName") caseDefinitionName: String
+        @LoggableResource("caseDefinitionId") caseDefinitionId: CaseDefinitionId
     ): List<Roltype> {
-        logger.debug { "Getting roltypes for case definition $caseDefinitionName" }
-        val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionName(caseDefinitionName) ?: return emptyList()
+        logger.debug { "Getting roltypes for case definition with id $caseDefinitionId" }
+        val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionId(caseDefinitionId) ?: return emptyList()
         val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
 
         return catalogiApiPluginInstance.getRoltypes(zaakTypeUrl)
     }
 
     fun getStatustypen(
-        @LoggableResource("documentDefinitionName") caseDefinitionName: String
+        @LoggableResource("caseDefinitionId") caseDefinitionId: CaseDefinitionId
     ): List<Statustype> {
-        logger.debug { "Getting statustypen for case definition $caseDefinitionName" }
-        val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionName(caseDefinitionName) ?: return emptyList()
+        logger.debug { "Getting statustypen for case definition with id $caseDefinitionId" }
+        val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionId(caseDefinitionId) ?: return emptyList()
         val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
 
         return catalogiApiPluginInstance.getStatustypen(zaakTypeUrl)
     }
 
     fun getResultaattypen(
-        @LoggableResource("documentDefinitionName") caseDefinitionName: String
+        @LoggableResource("caseDefinitionId") caseDefinitionId: CaseDefinitionId
     ): List<Resultaattype> {
-        logger.debug { "Getting resultaattypen for case definition $caseDefinitionName" }
-        val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionName(caseDefinitionName) ?: return emptyList()
+        logger.debug { "Getting resultaattypen for case definition with id $caseDefinitionId" }
+        val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionId(caseDefinitionId) ?: return emptyList()
         val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
 
         return catalogiApiPluginInstance.getResultaattypen(zaakTypeUrl)
     }
 
     fun getBesluittypen(
-        @LoggableResource("documentDefinitionName") caseDefinitionName: String
+        @LoggableResource("caseDefinitionId") caseDefinitionId: CaseDefinitionId
     ): List<Besluittype> {
-        logger.debug { "Getting besluittypen for case definition $caseDefinitionName" }
-        val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionName(caseDefinitionName) ?: return emptyList()
+        logger.debug { "Getting besluittypen for case definition with id $caseDefinitionId" }
+        val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionId(caseDefinitionId) ?: return emptyList()
         val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
 
         return catalogiApiPluginInstance.getBesluittypen(zaakTypeUrl)
     }
 
     fun getEigenschappen(
-        @LoggableResource("documentDefinitionName") caseDefinitionName: String
+        @LoggableResource("caseDefinitionId") caseDefinitionId: CaseDefinitionId
     ): List<Eigenschap> {
-        logger.debug { "Getting zgw eigenschappen for case definition $caseDefinitionName" }
-        val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionName(caseDefinitionName) ?: return emptyList()
+        logger.debug { "Getting zgw eigenschappen for case definition with id $caseDefinitionId" }
+        val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionId(caseDefinitionId) ?: return emptyList()
         val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
 
         return catalogiApiPluginInstance.getEigenschappen(zaakTypeUrl)
@@ -136,18 +137,9 @@ class CatalogiService(
         return catalogiApiPluginInstance
     }
 
-    private fun getZaaktypeUrlByDocumentDefinitionName(documentDefinitionName: String): URI? {
+    private fun getZaaktypeUrlByCaseDefinitionId(caseDefinitionId: CaseDefinitionId): URI? {
         return try {
-            zaaktypeUrlProvider.getZaaktypeUrl(documentDefinitionName)
-        } catch (e: ZaakTypeLinkNotFoundException) {
-            logger.error { e }
-            null
-        }
-    }
-
-    private fun getZaaktypeUrlByCaseDefinitionName(caseDefinitionName: String): URI? {
-        return try {
-            zaaktypeUrlProvider.getZaaktypeUrlByCaseDefinitionName(caseDefinitionName)
+            zaaktypeUrlProvider.getZaaktypeUrl(caseDefinitionId)
         } catch (e: ZaakTypeLinkNotFoundException) {
             logger.error { e }
             null

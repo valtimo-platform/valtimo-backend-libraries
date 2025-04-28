@@ -17,6 +17,7 @@
 package com.ritense.case
 
 import com.ritense.case.configuration.CaseAutoConfiguration
+import com.ritense.case_.TestResolverFactory
 import com.ritense.resource.service.ResourceService
 import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
 import com.ritense.valueresolver.ValueResolverFactory

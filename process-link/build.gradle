@@ -34,12 +34,13 @@ dockerCompose {
 }
 
 dependencies {
+    implementation project(":case")
     implementation project(":contract")
     implementation project(":core")
     implementation project(":exporter")
     implementation project(":importer")
     implementation project(":logging")
-    implementation project(":document")
+    implementation project(":process-document")
     implementation project(":web")
 
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"

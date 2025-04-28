@@ -39,11 +39,15 @@ class CaseListExporter(
             return ExportResult()
         }
 
+        val formattedCaseDefinitionVersion = request.caseDefinitionId.versionTag.let {
+            "${it.major}-${it.minor}-${it.patch}"
+        }
+
         val exportFile = ByteArrayOutputStream().use {
             mapper.writer(ExportPrettyPrinter()).writeValue(it, listColumns)
 
             ExportFile(
-                PATH.format(request.name),
+                PATH.format(request.caseDefinitionId.key, formattedCaseDefinitionVersion, request.name),
                 it.toByteArray()
             )
         }
@@ -52,6 +56,6 @@ class CaseListExporter(
     }
 
     companion object {
-        private const val PATH = "config/case/list/%s.json"
+        private const val PATH = "config/case/%s/%s/case/list/%s.json"
     }
 }

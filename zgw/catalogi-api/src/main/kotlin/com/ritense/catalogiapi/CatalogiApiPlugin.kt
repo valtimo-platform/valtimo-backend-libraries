@@ -92,7 +92,7 @@ class CatalogiApiPlugin(
             } else {
                 val document =
                     AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
-                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
+                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().caseDefinitionId())
                 getStatustypeByOmschrijving(zaaktypeUrl, statustype).url!!.toASCIIString()
             }
 
@@ -122,7 +122,7 @@ class CatalogiApiPlugin(
             } else {
                 val document =
                     AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
-                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
+                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().caseDefinitionId())
                 getResultaattypeByOmschrijving(zaaktypeUrl, resultaattype).url!!.toASCIIString()
             }
 
@@ -152,7 +152,7 @@ class CatalogiApiPlugin(
             } else {
                 val document =
                     AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
-                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
+                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().caseDefinitionId())
                 getBesluittypeByOmschrijving(zaaktypeUrl, besluittype).url!!.toASCIIString()
             }
 
@@ -181,7 +181,7 @@ class CatalogiApiPlugin(
             } else {
                 val document =
                     AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
-                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
+                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().caseDefinitionId())
 
                 getEigenschapByName(zaaktypeUrl, eigenschap).url!!.toASCIIString()
             }

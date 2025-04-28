@@ -30,6 +30,7 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.DEVELOPER
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -79,8 +80,14 @@ class CaseWidgetTabResourceIntTest @Autowired constructor(
         val tabKey = "my-tab"
         val widgetKey = "my-widget"
         val documentId = runWithoutAuthorization {
-            createCaseWidgetTab(caseDefinitionName, tabKey, widgetKey)
-            documentService.createDocument(NewDocumentRequest(caseDefinitionName, MapperSingleton.get().createObjectNode())).resultingDocument().get().id()
+            val document = documentService.createDocument(
+                NewDocumentRequest(
+                    caseDefinitionName,
+                    MapperSingleton.get().createObjectNode()
+                )
+            ).resultingDocument().get()
+            createCaseWidgetTab(document.definitionId().caseDefinitionId(), tabKey, widgetKey)
+            document.id()
         }
         mockMvc.perform(
             get("/api/v1/document/{documentId}/widget-tab/{tabKey}", documentId, tabKey)
@@ -96,15 +103,22 @@ class CaseWidgetTabResourceIntTest @Autowired constructor(
         val tabKey = "my-tab"
         val widgetKey = "my-widget"
         val documentId = runWithoutAuthorization {
-            createCaseWidgetTab(caseDefinitionName, tabKey, widgetKey)
-            documentService.createDocument(NewDocumentRequest(caseDefinitionName, MapperSingleton.get().createObjectNode())).resultingDocument().get().id()
+            val document = documentService.createDocument(
+                NewDocumentRequest(
+                    caseDefinitionName,
+                    MapperSingleton.get().createObjectNode()
+                )
+            ).resultingDocument().get()
+            createCaseWidgetTab(document.definitionId().caseDefinitionId(), tabKey, widgetKey)
+            document.id
         }
         mockMvc.perform(
             get("/api/v1/document/{documentId}/widget-tab/{tabKey}", documentId, tabKey)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andDo(print())
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.caseDefinitionName").value(caseDefinitionName))
+            .andExpect(jsonPath("$.caseDefinitionKey").value(caseDefinitionName))
+            .andExpect(jsonPath("$.caseDefinitionVersionTag").value("1.2.3"))
             .andExpect(jsonPath("$.key").value(tabKey))
             .andExpect(jsonPath("$.widgets").exists())
             .andExpect(jsonPath("$.widgets[0].type").value("test"))
@@ -120,8 +134,14 @@ class CaseWidgetTabResourceIntTest @Autowired constructor(
         val tabKey = "my-tab"
         val widgetKey = "my-widget"
         val documentId = runWithoutAuthorization {
-            createCaseWidgetTab(caseDefinitionName, tabKey, widgetKey)
-            documentService.createDocument(NewDocumentRequest(caseDefinitionName, MapperSingleton.get().createObjectNode())).resultingDocument().get().id()
+            val document = documentService.createDocument(
+                NewDocumentRequest(
+                    caseDefinitionName,
+                    MapperSingleton.get().createObjectNode()
+                )
+            ).resultingDocument().get()
+            createCaseWidgetTab(document.definitionId().caseDefinitionId(), tabKey, widgetKey)
+            document.id
         }
         mockMvc.perform(
             get("/api/v1/document/{documentId}/widget-tab/{tabKey}/widget/{widgetKey}", documentId, tabKey, widgetKey)
@@ -137,8 +157,14 @@ class CaseWidgetTabResourceIntTest @Autowired constructor(
         val tabKey = "my-tab"
         val widgetKey = "my-widget"
         val documentId = runWithoutAuthorization {
-            createCaseWidgetTab(caseDefinitionName, tabKey, widgetKey)
-            documentService.createDocument(NewDocumentRequest(caseDefinitionName, MapperSingleton.get().createObjectNode())).resultingDocument().get().id()
+            val document = documentService.createDocument(
+                NewDocumentRequest(
+                    caseDefinitionName,
+                    MapperSingleton.get().createObjectNode()
+                )
+            ).resultingDocument().get()
+            createCaseWidgetTab(document.definitionId().caseDefinitionId(), tabKey, widgetKey)
+            document.id
         }
         mockMvc.perform(
             get("/api/v1/document/{documentId}/widget-tab/{tabKey}/widget/{widgetKey}", documentId, tabKey, widgetKey)
@@ -149,14 +175,20 @@ class CaseWidgetTabResourceIntTest @Autowired constructor(
     }
 
     private fun createCaseWidgetTab(
-        caseDefinitionName: String,
+        caseDefinitionId: CaseDefinitionId,
         tabKey: String,
         widgetKey: String
     ): CaseWidgetTabDto {
-        tabService.createCaseTab(caseDefinitionName, CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-"))
+        tabService.createCaseTab(
+            caseDefinitionId,
+            CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-")
+        )
         return widgetTabService.updateWidgetTab(
             CaseWidgetTabDto(
-                caseDefinitionName, tabKey, widgets = listOf(
+                caseDefinitionKey = caseDefinitionId.key,
+                caseDefinitionVersionTag = caseDefinitionId.versionTag.version,
+                tabKey,
+                widgets = listOf(
                     TestCaseWidgetTabWidgetDto(
                         widgetKey,
                         "My widget",

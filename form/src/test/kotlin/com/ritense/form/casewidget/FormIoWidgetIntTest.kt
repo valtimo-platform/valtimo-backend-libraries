@@ -26,6 +26,7 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.form.BaseIntegrationTest
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -100,10 +101,11 @@ class FormIoWidgetIntTest @Autowired constructor(
         tabKey: String,
         widgetKey: String
     ): CaseWidgetTabDto {
-        tabService.createCaseTab(caseDefinitionName, CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-"))
+        tabService.createCaseTab(CaseDefinitionId.of(caseDefinitionName, "1.0.0"), CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-"))
         return widgetTabService.updateWidgetTab(
             CaseWidgetTabDto(
-                caseDefinitionName = caseDefinitionName,
+                caseDefinitionKey = caseDefinitionName,
+                caseDefinitionVersionTag = "1.0.0",
                 key = tabKey,
                 widgets = listOf(
                     FormIoCaseWidgetDto(

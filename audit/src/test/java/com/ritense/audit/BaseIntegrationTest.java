@@ -22,6 +22,7 @@ import com.ritense.audit.service.AuditSearchService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.mail.MailSender;
+import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -45,6 +46,9 @@ public abstract class BaseIntegrationTest extends AbstractTestHelper {
 
     @Inject
     protected AuditSearchService auditSearchService;
+
+    @MockBean
+    protected ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker;
 
     @MockBean
     protected UserManagementService userManagementService;

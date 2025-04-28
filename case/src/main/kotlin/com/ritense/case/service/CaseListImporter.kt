@@ -16,16 +16,27 @@
 
 package com.ritense.case.service
 
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_LIST
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
 import com.ritense.logging.withLoggingContext
+import org.everit.json.schema.loader.SchemaLoader
+import org.json.JSONArray
+import org.json.JSONObject
+import org.json.JSONTokener
+import org.springframework.core.io.Resource
+import org.springframework.core.io.support.ResourcePatternResolver
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 class CaseListImporter(
-    private val caseListDeploymentService: CaseListDeploymentService
+    private val resourcePatternResolver: ResourcePatternResolver,
+    private val objectMapper: ObjectMapper,
+    private val caseDefinitionService: CaseDefinitionService
 ) : Importer {
     override fun type() = CASE_LIST
 
@@ -36,11 +47,41 @@ class CaseListImporter(
     override fun import(request: ImportRequest) {
         val caseDefinitionName = FILENAME_REGEX.matchEntire(request.fileName)!!.groupValues[1]
         withLoggingContext("jsonSchemaDocumentName" to caseDefinitionName) {
-            caseListDeploymentService.deployColumns(caseDefinitionName, request.content.toString(Charsets.UTF_8))
+            deployColumns(caseDefinitionName, request.content.toString(Charsets.UTF_8))
         }
     }
 
+    fun deployColumns(caseDefinitionName: String, jsonContent: String) {
+        validate(jsonContent)
+
+        val existingColumns = caseDefinitionService.getListColumns(caseDefinitionName)
+
+        val formFlowDefinitionConfig = objectMapper.readValue(jsonContent,
+            object : TypeReference<List<CaseListColumnDto>>() {})
+
+        caseDefinitionService.updateListColumns(caseDefinitionName, formFlowDefinitionConfig)
+
+        val keysToLoad = formFlowDefinitionConfig.map { it.key }
+        val columnsToDelete = existingColumns.filterNot { keysToLoad.contains(it.key) }
+
+        columnsToDelete.forEach {
+            caseDefinitionService.deleteCaseListColumn(caseDefinitionName, it.key)
+        }
+    }
+
+    private fun validate(json: String) {
+        val definitionJsonObject = JSONArray(JSONTokener(json))
+
+        val schema = SchemaLoader.load(JSONObject(JSONTokener(loadCaseListSchemaResource().inputStream)))
+        schema.validate(definitionJsonObject)
+    }
+
+    private fun loadCaseListSchemaResource(): Resource {
+        return resourcePatternResolver.getResource(CASE_LIST_SCHEMA_PATH)
+    }
+
     private companion object {
-        val FILENAME_REGEX = """config/case/list/([^/]+)\.json""".toRegex()
+        const val CASE_LIST_SCHEMA_PATH = "classpath:config/case/schema/case-list.schema.json"
+        val FILENAME_REGEX = """/case/list/([^/]+)\.json""".toRegex()
     }
 }

@@ -32,8 +32,8 @@ dockerCompose {
 dependencies {
     api project(":mail")
     implementation project(":authorization")
+    implementation project(":case")
     implementation project(":connector")
-    implementation project(":document")
     implementation project(":resource")
 
     api "org.springframework.security:spring-security-core"

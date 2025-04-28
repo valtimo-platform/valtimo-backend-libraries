@@ -17,7 +17,6 @@
 package com.ritense.processdocument.listener
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
@@ -48,27 +47,29 @@ open class CaseAssigneeTaskCreatedListener(
         }
 
         document?.run {
-            val caseSettings: CaseDefinitionSettings = runWithoutAuthorization {
-                caseDefinitionService.getCaseSettings(
-                    this.definitionId().name()
+            val caseDefinition = runWithoutAuthorization {
+                caseDefinitionService.getCaseDefinition(
+                    document.definitionId().caseDefinitionId()
                 )
             }
 
-            if (
-                caseSettings.canHaveAssignee
-                && caseSettings.autoAssignTasks
-                && !this.assigneeId().isNullOrEmpty()
-            ) {
-                val assignee = userManagementService.findByUserIdentifier(this.assigneeId())
+            if (caseDefinition != null) {
+                if (
+                    caseDefinition.canHaveAssignee
+                    && caseDefinition.autoAssignTasks
+                    && !this.assigneeId().isNullOrEmpty()
+                ) {
+                    val assignee = userManagementService.findByUserIdentifier(this.assigneeId())
 
-                taskService
-                    .setAssignee(
-                        delegateTask.id,
-                        assignee.userIdentifier
-                    )
-                    .also {
-                        logger.debug { "Setting assignee for task with id ${delegateTask.id}" }
-                    }
+                    taskService
+                        .setAssignee(
+                            delegateTask.id,
+                            assignee.userIdentifier
+                        )
+                        .also {
+                            logger.debug { "Setting assignee for task with id ${delegateTask.id}" }
+                        }
+                }
             }
         }
     }

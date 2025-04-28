@@ -16,21 +16,23 @@
 
 package com.ritense.case.service
 
-import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.domain.CaseListColumn
 import com.ritense.case.domain.CaseListColumnId
 import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DisplayType
 import com.ritense.case.domain.EmptyDisplayTypeParameter
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
+import com.ritense.case_.domain.definition.CaseDefinition
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.search.SearchWithConfigRequest
 import com.ritense.document.service.DocumentSearchService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valueresolver.ValueResolverService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.springframework.data.domain.PageImpl
@@ -66,11 +68,16 @@ class CaseInstanceServiceTest {
         )
 
         whenever(DOCUMENT.id()).thenReturn(JsonSchemaDocumentId.newId(UUID.randomUUID()))
-        whenever(caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAsc(CASE_DEFINITION_NAME))
+        whenever(caseDefinitionListColumnRepository.findByIdCaseDefinitionKeyOrderByOrderAsc(CASE_DEFINITION_NAME))
             .thenReturn(listOf(FIRST_NAME_CASE_LIST_COLUMN))
         whenever(valueResolverService.resolveValues(DOCUMENT.id().id.toString(), listOf("doc:firstName")))
             .thenReturn(mapOf("doc:firstName" to "John"))
-        whenever(DOCUMENT.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.newId(CASE_DEFINITION_NAME))
+        whenever(DOCUMENT.definitionId()).thenReturn(
+            JsonSchemaDocumentDefinitionId.existingId(
+                CASE_DEFINITION_NAME,
+                CaseDefinitionId.of("bName", "1.0.2")
+            )
+        )
     }
 
     @Test
@@ -79,8 +86,14 @@ class CaseInstanceServiceTest {
         val pageable = Pageable.ofSize(10)
         whenever(documentSearchService.search(CASE_DEFINITION_NAME, searchRequest, pageable))
             .thenReturn(PageImpl(listOf(DOCUMENT)))
-        whenever(caseDefinitionService.getCaseSettings(CASE_DEFINITION_NAME))
-            .thenReturn(CaseDefinitionSettings(CASE_DEFINITION_NAME, false))
+        whenever(caseDefinitionService.findCaseDefinition(any()))
+            .thenReturn(
+                CaseDefinition(
+                    CaseDefinitionId.of(CASE_DEFINITION_NAME, "1.0.0"),
+                    CASE_DEFINITION_NAME,
+                    false
+                )
+            )
 
         val documentsPage = service.search(CASE_DEFINITION_NAME, searchRequest, pageable)
 
@@ -96,8 +109,14 @@ class CaseInstanceServiceTest {
         val pageable = PageRequest.of(0, 1, Sort.by("\$.some.jsonPath"))
         whenever(documentSearchService.search(CASE_DEFINITION_NAME, searchRequest, pageable))
             .thenReturn(PageImpl(listOf(DOCUMENT)))
-        whenever(caseDefinitionService.getCaseSettings(CASE_DEFINITION_NAME))
-            .thenReturn(CaseDefinitionSettings(CASE_DEFINITION_NAME, false))
+        whenever(caseDefinitionService.findCaseDefinition(any()))
+            .thenReturn(
+                CaseDefinition(
+                    CaseDefinitionId.of(CASE_DEFINITION_NAME, "1.0.0"),
+                    CASE_DEFINITION_NAME,
+                    false
+                )
+            )
 
         val documentsPage = service.search(CASE_DEFINITION_NAME, searchRequest, pageable)
 

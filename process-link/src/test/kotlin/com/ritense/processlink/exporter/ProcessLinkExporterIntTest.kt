@@ -25,6 +25,7 @@ import com.ritense.processlink.autodeployment.ProcessLinkDeploymentApplicationRe
 import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -50,7 +51,12 @@ class ProcessLinkExporterIntTest @Autowired constructor(
         val processDefinitionKey = "auto-deploy-process-link-with-long-key"
         val processDefinitionId = getProcessDefinitionId(processDefinitionKey)
 
-        val result = processLinkExporter.export(ProcessDefinitionExportRequest(processDefinitionId))
+        val result = processLinkExporter.export(
+            ProcessDefinitionExportRequest(
+                processDefinitionId,
+                CaseDefinitionId.of("something", "1.0.0")
+            )
+        )
 
         assertThat(result.exportFiles).isNotEmpty()
 

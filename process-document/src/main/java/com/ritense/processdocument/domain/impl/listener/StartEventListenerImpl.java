@@ -26,13 +26,14 @@ import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.impl.request.DocumentRelationRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.relation.DocumentRelationType;
-import com.ritense.processdocument.domain.ProcessDefinitionKey;
+import com.ritense.document.service.DocumentDefinitionService;
+import com.ritense.processdocument.domain.ProcessDefinitionId;
 import com.ritense.processdocument.domain.ProcessInstanceId;
-import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
 import com.ritense.processdocument.domain.impl.event.NextJsonSchemaDocumentRelationAvailableEvent;
 import com.ritense.processdocument.domain.impl.request.NewDocumentForRunningProcessRequest;
 import com.ritense.processdocument.domain.listener.StartEventListener;
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
 import java.io.IOException;
@@ -53,17 +54,23 @@ public class StartEventListenerImpl extends ReactorExecutionListener implements 
     private static final Logger logger = LoggerFactory.getLogger(StartEventListenerImpl.class);
     private final ProcessDocumentService processDocumentService;
     private final ProcessDocumentAssociationService processDocumentAssociationService;
+    private final ProcessDefinitionCaseDefinitionService processDefinitionCaseDefinitionService;
+    private final DocumentDefinitionService documentDefinitionService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final ObjectMapper objectMapper;
 
     public StartEventListenerImpl(
         ProcessDocumentService processDocumentService,
         ProcessDocumentAssociationService processDocumentAssociationService,
+        ProcessDefinitionCaseDefinitionService processDefinitionCaseDefinitionService,
+        DocumentDefinitionService documentDefinitionService,
         ApplicationEventPublisher applicationEventPublisher,
         ObjectMapper objectMapper
     ) {
         this.processDocumentService = processDocumentService;
         this.processDocumentAssociationService = processDocumentAssociationService;
+        this.processDefinitionCaseDefinitionService = processDefinitionCaseDefinitionService;
+        this.documentDefinitionService = documentDefinitionService;
         this.applicationEventPublisher = applicationEventPublisher;
         this.objectMapper = objectMapper;
     }
@@ -74,16 +81,16 @@ public class StartEventListenerImpl extends ReactorExecutionListener implements 
             logger.info("Start event listener with source relation");
             final var sourceProcessInstanceId = new CamundaProcessInstanceId(getStringValue(execution, SOURCE_PROCESS_INSTANCE_ID));
             final var documentRelationType = (DocumentRelationType) execution.getVariable(RELATION_TYPE);
-            final var processDefinitionKey = ProcessDefinitionKey.fromExecution(execution, CamundaProcessDefinitionKey.class);
+            final var processDefinitionId = new ProcessDefinitionId(execution.getProcessDefinitionId());
             final var processInstanceId = ProcessInstanceId.fromExecution(execution, CamundaProcessInstanceId.class);
 
             AuthorizationContext.runWithoutAuthorization(() -> {
-                final var documentDefinitionId = processDocumentAssociationService.findProcessDocumentDefinition(
-                        processDefinitionKey)
-                    .map(definition -> definition.processDocumentDefinitionId().documentDefinitionId())
-                    .orElse(null);
+                final var caseDefinitionId = processDefinitionCaseDefinitionService.findByProcessDefinitionId(processDefinitionId)
+                    .getId().getCaseDefinitionId();
 
-                if (documentDefinitionId != null) {
+                final var documentDefinition = documentDefinitionService.findByCaseDefinitionId(caseDefinitionId);
+
+                if (documentDefinition.isPresent()) {
                     final var jsonData = extractJsonDocumentData(execution);
 
                     final var sourceDocumentId = processDocumentAssociationService.findProcessDocumentInstance(
@@ -93,14 +100,14 @@ public class StartEventListenerImpl extends ReactorExecutionListener implements 
 
                     if (sourceDocumentId != null) {
                         var newDocumentRequest = new NewDocumentRequest(
-                            documentDefinitionId.name(),
+                            documentDefinition.get().id().name(),
                             jsonData
                         ).withDocumentRelation(new DocumentRelationRequest(UUID.fromString(sourceDocumentId.toString()),
                             documentRelationType
                         ));
 
                         final var request = new NewDocumentForRunningProcessRequest(
-                            processDefinitionKey.toString(),
+                            processDefinitionId.getId(),
                             processInstanceId.toString(),
                             newDocumentRequest
                         );
@@ -113,9 +120,11 @@ public class StartEventListenerImpl extends ReactorExecutionListener implements 
                                 )
                             ), () -> {
                                 throw new RuntimeException(String.format(
-                                    "Unable to create new document %s for process %s",
-                                    documentDefinitionId,
-                                    processDefinitionKey
+                                    "Unable to create new document %s for process %s of definition %s as part of a case of definition %s",
+                                    documentDefinition.get().id(),
+                                    processInstanceId,
+                                    processDefinitionId.getId(),
+                                    caseDefinitionId
                                 ));
                             }
                         );

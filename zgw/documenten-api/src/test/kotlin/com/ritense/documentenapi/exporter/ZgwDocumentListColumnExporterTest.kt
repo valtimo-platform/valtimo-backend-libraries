@@ -26,6 +26,7 @@ import com.ritense.documentenapi.domain.DocumentenApiColumnId
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -41,6 +42,8 @@ class ZgwDocumentListColumnExporterTest(
 
     private lateinit var exporter: ZgwDocumentListColumnExporter
 
+    private val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
+
     @BeforeEach
     fun before() {
         exporter = ZgwDocumentListColumnExporter(documentenApiColumnRepository, jacksonObjectMapper())
@@ -48,7 +51,7 @@ class ZgwDocumentListColumnExporterTest(
 
     @Test
     fun `should not export changeset when no documentlist columns are configured`() {
-        val export = exporter.export(DocumentDefinitionExportRequest("test", 1L))
+        val export = exporter.export(DocumentDefinitionExportRequest("test", caseDefinitionId))
 
         assertThat(export.exportFiles).isEmpty()
     }
@@ -64,7 +67,7 @@ class ZgwDocumentListColumnExporterTest(
             )
         )
 
-        val export = exporter.export(DocumentDefinitionExportRequest(name, 1L))
+        val export = exporter.export(DocumentDefinitionExportRequest(name, caseDefinitionId))
 
         assertThat(export.exportFiles).hasSize(1)
         val file = export.exportFiles.first()

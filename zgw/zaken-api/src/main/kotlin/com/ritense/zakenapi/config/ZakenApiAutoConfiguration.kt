@@ -21,10 +21,13 @@ import com.ritense.authorization.AuthorizationService
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.document.service.DocumentService
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.documentenapi.service.DocumentenApiVersionService
 import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
+import com.ritense.processdocument.importer.ZaakTypeLinkImporter
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.TemporaryResourceStorageService
@@ -211,10 +214,12 @@ class ZakenApiAutoConfiguration {
     @Bean
     fun zakenApiZaakTypeLinkService(
         zaakTypeLinkRepository: ZaakTypeLinkRepository,
-        processDocumentAssociationService: ProcessDocumentAssociationService
+        processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
+        documentDefinitionService: JsonSchemaDocumentDefinitionService
     ) = DefaultZaakTypeLinkService(
         zaakTypeLinkRepository,
-        processDocumentAssociationService
+        processDefinitionCaseDefinitionService,
+        documentDefinitionService
     )
 
     @Bean
@@ -287,4 +292,16 @@ class ZakenApiAutoConfiguration {
         zaakDocumentService,
         pluginService
     )
+
+    @Bean
+    @ConditionalOnMissingBean(ZaakTypeLinkImporter::class)
+    fun zaakTypeLinkImporter(
+        objectMapper: ObjectMapper,
+        zaakTypeLinkService: ZaakTypeLinkService
+    ): ZaakTypeLinkImporter {
+        return ZaakTypeLinkImporter(
+            objectMapper,
+            zaakTypeLinkService
+        )
+    }
 }

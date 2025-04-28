@@ -20,6 +20,7 @@ import com.ritense.outbox.OutboxService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.mail.MailSender;
 import com.ritense.valtimo.repository.CamundaSearchProcessInstanceRepository;
+import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker;
 import jakarta.inject.Inject;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
@@ -47,6 +48,9 @@ public abstract class BaseIntegrationTest {
 
     @MockBean
     public MailSender mailSender;
+
+    @MockBean
+    public ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker;
 
     @SpyBean
     public OutboxService outboxService;

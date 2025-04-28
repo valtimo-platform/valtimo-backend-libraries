@@ -24,8 +24,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import mu.KotlinLogging
-import org.springframework.boot.context.event.ApplicationReadyEvent
-import org.springframework.context.event.EventListener
 import org.springframework.core.env.Environment
 import org.springframework.transaction.annotation.Transactional
 import java.util.TreeMap
@@ -46,7 +44,6 @@ class ChangelogDeployer(
         .configure(SerializationFeature.INDENT_OUTPUT, false)
         .build()
 
-    @EventListener(ApplicationReadyEvent::class)
     fun deployAll() {
         logger.info { "Running deployer" }
 

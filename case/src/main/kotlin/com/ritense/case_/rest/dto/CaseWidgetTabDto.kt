@@ -24,7 +24,8 @@ import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 
 data class CaseWidgetTabDto(
-    @field:NotBlank val caseDefinitionName: String,
+    val caseDefinitionKey: String? = null,
+    val caseDefinitionVersionTag: String? = null,
     @field:NotBlank val key: String,
     @field:Valid val widgets: List<@Valid CaseWidgetTabWidgetDto> = listOf(),
 ) {
@@ -36,7 +37,8 @@ data class CaseWidgetTabDto(
             permissionCheck: (CaseWidgetTabWidget) -> Boolean
         ): CaseWidgetTabDto {
             return CaseWidgetTabDto(
-                tab.id.caseDefinitionName,
+                tab.id.caseDefinitionId.key,
+                tab.id.caseDefinitionId.versionTag.version,
                 tab.id.key,
                 widgets = tab.widgets
                     .filter { permissionCheck(it) }
@@ -56,7 +58,8 @@ data class CaseWidgetTabDto(
             document: JsonSchemaDocument
         ): CaseWidgetTabDto {
             return CaseWidgetTabDto(
-                tab.id.caseDefinitionName,
+                tab.id.caseDefinitionId.key,
+                tab.id.caseDefinitionId.versionTag.version,
                 tab.id.key,
                 widgets = tab.widgets
                     .filter { permissionCheck(it, document) }

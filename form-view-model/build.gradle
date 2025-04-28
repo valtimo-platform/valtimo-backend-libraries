@@ -30,10 +30,10 @@ dockerCompose {
 
 dependencies {
     implementation project(":authorization")
+    implementation project(":case")
     implementation project(":command-handling")
     implementation project(":contract")
     implementation project(":core")
-    implementation project(":document")
     implementation project(":form")
     implementation project(":process-document")
     implementation project(":process-link")

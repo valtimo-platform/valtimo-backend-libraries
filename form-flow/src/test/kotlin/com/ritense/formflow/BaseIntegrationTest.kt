@@ -17,9 +17,14 @@
 package com.ritense.formflow
 
 import com.ritense.formflow.expression.FormFlowBeanTestHelper
+import com.ritense.outbox.OutboxService
+import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.contract.mail.MailSender
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.context.annotation.Import
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
@@ -27,4 +32,16 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @Import(FormFlowBeanTestHelper::class)
 @ExtendWith(SpringExtension::class)
 @Tag("integration")
-class BaseIntegrationTest : BaseTest()
+class BaseIntegrationTest : BaseTest() {
+
+    @MockBean
+    lateinit var mailSender: MailSender
+
+    @MockBean
+    lateinit var userManagementService: UserManagementService
+
+    @SpyBean
+    lateinit var outboxService: OutboxService
+}
+
+

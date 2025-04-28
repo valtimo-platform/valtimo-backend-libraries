@@ -18,7 +18,7 @@ package com.ritense.processdocument;
 
 import com.ritense.audit.service.impl.AuditServiceImpl;
 import com.ritense.authorization.specification.impl.NoopAuthorizationSpecificationFactory;
-import com.ritense.processdocument.repository.ProcessDocumentDefinitionRepository;
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService;
 import com.ritense.resource.service.ResourceService;
@@ -32,7 +32,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @SpringBootTest
@@ -50,6 +49,9 @@ public abstract class BaseIntegrationTest extends BaseTest {
     protected CamundaProcessJsonSchemaDocumentService camundaProcessJsonSchemaDocumentService;
 
     @Inject
+    protected ProcessDefinitionCaseDefinitionService processDefinitionCaseDefinitionService;
+
+    @Inject
     protected CamundaTaskService camundaTaskService;
 
     @MockBean
@@ -57,9 +59,6 @@ public abstract class BaseIntegrationTest extends BaseTest {
 
     @MockBean
     protected ResourceService resourceService;
-
-    @SpyBean
-    protected ProcessDocumentDefinitionRepository processDocumentDefinitionRepository;
 
     @Autowired
     public NoopAuthorizationSpecificationFactory noopAuthorizationSpecificationFactory;

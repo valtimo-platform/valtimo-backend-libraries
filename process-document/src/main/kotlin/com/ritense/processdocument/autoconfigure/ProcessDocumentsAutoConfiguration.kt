@@ -21,6 +21,7 @@ import com.ritense.authorization.AuthorizationService
 import com.ritense.case.repository.TaskListColumnRepository
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository
+import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.processdocument.camunda.authorization.CamundaTaskDocumentMapper
@@ -29,14 +30,17 @@ import com.ritense.processdocument.exporter.ProcessDocumentLinkExporter
 import com.ritense.processdocument.importer.ProcessDocumentLinkImporter
 import com.ritense.processdocument.listener.CaseAssigneeListener
 import com.ritense.processdocument.listener.CaseAssigneeTaskCreatedListener
+import com.ritense.processdocument.repository.ProcessDefinitionCaseDefinitionRepository
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository
+import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
 import com.ritense.processdocument.service.CaseTaskListSearchService
 import com.ritense.processdocument.service.CorrelationService
 import com.ritense.processdocument.service.CorrelationServiceImpl
+import com.ritense.processdocument.service.DefaultProcessDefinitionCaseDefinitionLinker
 import com.ritense.processdocument.service.DocumentDelegateService
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentDeletedEventListener
-import com.ritense.processdocument.service.ProcessDocumentDeploymentService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.ProcessDocumentsService
 import com.ritense.processdocument.service.ValueResolverDelegateService
@@ -44,6 +48,7 @@ import com.ritense.processdocument.tasksearch.TaskListSearchFieldV2Mapper
 import com.ritense.processdocument.tasksearch.TaskSearchFieldDeployer
 import com.ritense.processdocument.tasksearch.TaskSearchFieldExporter
 import com.ritense.processdocument.tasksearch.TaskSearchFieldImporter
+import com.ritense.processdocument.web.CaseDefinitionProcessManagementResource
 import com.ritense.processdocument.web.TaskListResource
 import com.ritense.search.repository.SearchFieldV2Repository
 import com.ritense.search.service.SearchFieldV2Service
@@ -56,6 +61,7 @@ import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.persistence.EntityManager
 import org.camunda.bpm.engine.RepositoryService
@@ -197,22 +203,28 @@ class ProcessDocumentsAutoConfiguration {
     fun processDocumentLinkExporter(
         objectMapper: ObjectMapper,
         camundaRepositoryService: CamundaRepositoryService,
-        processDocumentAssociationService: ProcessDocumentAssociationService
+        processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService
     ): ProcessDocumentLinkExporter {
         return ProcessDocumentLinkExporter(
             objectMapper,
             camundaRepositoryService,
-            processDocumentAssociationService
+            processDefinitionCaseDefinitionService
         )
     }
 
     @Bean
     @ConditionalOnMissingBean(ProcessDocumentLinkImporter::class)
     fun processDocumentLinkImporter(
-        processDocumentDeploymentService: ProcessDocumentDeploymentService
+        processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
+        documentDefinitionService: DocumentDefinitionService,
+        objectMapper: ObjectMapper,
+        repositoryService: RepositoryService
     ): ProcessDocumentLinkImporter {
         return ProcessDocumentLinkImporter(
-            processDocumentDeploymentService,
+            processDefinitionCaseDefinitionService,
+            documentDefinitionService,
+            objectMapper,
+            repositoryService
         )
     }
 
@@ -301,6 +313,22 @@ class ProcessDocumentsAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(ProcessDefinitionCaseDefinitionService::class)
+    fun processDefinitionCaseDefinitionService(
+        authorizationService: AuthorizationService,
+        processDefinitionCaseDefinitionRepository: ProcessDefinitionCaseDefinitionRepository,
+        documentService: JsonSchemaDocumentService,
+        runtimeService: RuntimeService
+    ): ProcessDefinitionCaseDefinitionService {
+        return ProcessDefinitionCaseDefinitionService(
+            authorizationService,
+            processDefinitionCaseDefinitionRepository,
+            documentService,
+            runtimeService
+        )
+    }
+
+    @Bean
     @ConditionalOnMissingBean(ProcessDocumentDeletedEventListener::class)
     @Order(100)
     fun processDocumentDeletedEventListener(
@@ -311,5 +339,23 @@ class ProcessDocumentsAutoConfiguration {
             runtimeService,
             processDocumentAssociationService
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessDefinitionCaseDefinitionLinker::class)
+    fun defaultProcessDefinitionCaseDefinitionLinker(
+        processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService
+    ): ProcessDefinitionCaseDefinitionLinker{
+        return DefaultProcessDefinitionCaseDefinitionLinker(
+            processDefinitionCaseDefinitionService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CaseDefinitionProcessManagementResource::class)
+    fun caseDefinitionProcessManagementResource(
+        caseDefinitionProcessLinkService: CaseDefinitionProcessLinkService
+    ): CaseDefinitionProcessManagementResource {
+        return CaseDefinitionProcessManagementResource(caseDefinitionProcessLinkService)
     }
 }

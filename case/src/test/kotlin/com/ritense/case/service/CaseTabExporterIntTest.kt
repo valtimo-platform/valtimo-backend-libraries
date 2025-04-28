@@ -23,6 +23,7 @@ import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthor
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import com.ritense.exporter.request.FormDefinitionExportRequest
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -44,26 +45,19 @@ class CaseTabExporterIntTest @Autowired constructor(
     fun `should export tabs for case definition`(): Unit = runWithoutAuthorization {
         val caseDefinitionName = "some-case-type"
 
-        val request = DocumentDefinitionExportRequest(caseDefinitionName, 1)
+        val caseDefinitionId = CaseDefinitionId("some-case-type", "1.2.3")
+
+        val request = DocumentDefinitionExportRequest(caseDefinitionName, caseDefinitionId)
         val exportResult = caseTabExportService.export(request)
 
-        val path = PATH.format(caseDefinitionName)
+        val path = PATH.format(caseDefinitionId.key, "1-2-3", caseDefinitionName)
         val caseTabsExport = exportResult.exportFiles.singleOrNull {
             it.path == path
         }
         requireNotNull(caseTabsExport)
         val exportJson = objectMapper.readTree(caseTabsExport.content)
-
-        //Check if the changesetId ends with a timestamp
-        val changesetIdField = "changesetId"
-        val changesetRegex = """(some-case-type\.case-tabs)\.\d+""".toRegex()
-        val matchResult = changesetRegex.matchEntire(exportJson.get(changesetIdField).textValue())
-        assertThat(matchResult).isNotNull
-
-        //Remove the timestamp from the changesetId, so we can compare it as usual
-        (exportJson as ObjectNode).set<TextNode>(changesetIdField, TextNode(matchResult!!.groupValues[1]))
         val expectedJson = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
-            .getResource("classpath:${PATH.format(caseDefinitionName)}")
+            .getResource("classpath:${PATH.format(caseDefinitionName, "1-2-3", caseDefinitionName)}")
             .inputStream
             .use { inputStream ->
                 StreamUtils.copyToString(inputStream, Charsets.UTF_8)
@@ -75,11 +69,11 @@ class CaseTabExporterIntTest @Autowired constructor(
         )
 
         assertThat(exportResult.relatedRequests).contains(
-            FormDefinitionExportRequest("test-form")
+            FormDefinitionExportRequest("test-form", CaseDefinitionId("some-case-type", "1.2.3"))
         )
     }
 
     companion object {
-        private const val PATH = "config/case-tabs/%s.case-tabs.json"
+        private const val PATH = "config/case/%s/%s/case/tab/%s.case-tabs.json"
     }
 }

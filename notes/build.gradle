@@ -37,8 +37,8 @@ dependencies {
 
     implementation project(":audit")
     implementation project(":authorization")
+    implementation project(":case")
     implementation project(":contract")
-    implementation project(":document")
     implementation project(":web")
     implementation project(":outbox")
 

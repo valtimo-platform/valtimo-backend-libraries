@@ -17,6 +17,7 @@ package com.ritense.processdocument.listener
 
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.case.service.CaseDefinitionService
+import com.ritense.case_.domain.definition.CaseDefinition
 import com.ritense.document.event.DocumentAssigneeChangedEvent
 import com.ritense.document.event.DocumentUnassignedEvent
 import com.ritense.document.service.DocumentService
@@ -43,9 +44,11 @@ class CaseAssigneeListener(
     @EventListener(DocumentAssigneeChangedEvent::class)
     fun updateAssigneeOnTasks(event: DocumentAssigneeChangedEvent) {
         val document = documentService[event.documentId.toString()]
-        val caseSettings = caseDefinitionService.getCaseSettings(document.definitionId().name())
+        val caseDefinition: CaseDefinition = caseDefinitionService.getCaseDefinition(
+            document.definitionId().caseDefinitionId()
+        )
 
-        if (caseSettings.canHaveAssignee && caseSettings.autoAssignTasks) {
+        if (caseDefinition.canHaveAssignee && caseDefinition.autoAssignTasks) {
             val assignee = userManagementService.findByUserIdentifier(document.assigneeId())
             val tasks = camundaTaskService.findTasks(
                 byProcessInstanceBusinessKey(document.id().toString())
@@ -62,9 +65,10 @@ class CaseAssigneeListener(
     @EventListener(DocumentUnassignedEvent::class)
     fun removeAssigneeFromTasks(event: DocumentUnassignedEvent) {
         val document = documentService[event.documentId.toString()]
-        val caseSettings = caseDefinitionService.getCaseSettings(document.definitionId().name())
-
-        if (caseSettings.canHaveAssignee && caseSettings.autoAssignTasks) {
+        val caseDefinition: CaseDefinition = caseDefinitionService.getCaseDefinition(
+            document.definitionId().caseDefinitionId()
+        )
+        if (caseDefinition.canHaveAssignee && caseDefinition.autoAssignTasks) {
             val tasks = camundaTaskService.findTasks(
                 byProcessInstanceBusinessKey(document.id().toString())
                     .and(byAssigned())

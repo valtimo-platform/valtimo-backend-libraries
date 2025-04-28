@@ -110,7 +110,7 @@ class VerzoekPluginEventListener(
             logger.info { "Received verzoek notification. Verzoek objectUrl: ${event.resourceUrl}" }
             val document = createDocument(verzoekTypeProperties, verzoekObject)
             withLoggingContext(JsonSchemaDocument::class, document.id()) {
-                val zaakTypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
+                val zaakTypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().caseDefinitionId())
                 val initiatorType = if (verzoekObjectData.has("kvk")) {
                     "kvk"
                 } else if (verzoekObjectData.has("bsn")) {
@@ -148,9 +148,10 @@ class VerzoekPluginEventListener(
         return if (path.startsWith("object:")) {
             verzoekObject.at(path.substringAfterLast("object:"))
         } else {
-            val verzoekDataData = verzoekObject["record"]["data"]["data"] ?: throw NotificatiesNotificationEventException(
-                "VerzoekObject /record/data/data cannot be found! For verzoek with type '${verzoekObject["type"]}'"
-            )
+            val verzoekDataData =
+                verzoekObject["record"]["data"]["data"] ?: throw NotificatiesNotificationEventException(
+                    "VerzoekObject /record/data/data cannot be found! For verzoek with type '${verzoekObject["type"]}'"
+                )
             verzoekDataData.at(path)
         }
     }

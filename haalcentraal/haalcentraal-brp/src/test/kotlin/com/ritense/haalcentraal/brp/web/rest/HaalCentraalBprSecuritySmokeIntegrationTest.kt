@@ -16,8 +16,13 @@
 
 package com.ritense.haalcentraal.brp.web.rest
 
+import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker
 import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
+import org.springframework.boot.test.mock.mockito.MockBean
 
 class HaalCentraalBprSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
     basePackageName = "com.ritense.haalcentraal"
-)
+) {
+    @MockBean
+    lateinit var processDefinitionCaseDefinitionLinker: ProcessDefinitionCaseDefinitionLinker
+}

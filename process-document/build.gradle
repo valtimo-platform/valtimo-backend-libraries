@@ -39,7 +39,6 @@ dependencies {
     implementation project(":changelog")
     implementation project(":contract")
     implementation project(":core")
-    implementation project(":document")
     implementation project(":exporter")
     implementation project(":importer")
     implementation project(":resource")

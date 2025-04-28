@@ -15,9 +15,9 @@
  */
 
 dependencies {
+    implementation project(':case')
     implementation project(':contract')
     implementation project(':core')
-    implementation project(':document')
     implementation project(':process-document')
     implementation project(':resource')
 

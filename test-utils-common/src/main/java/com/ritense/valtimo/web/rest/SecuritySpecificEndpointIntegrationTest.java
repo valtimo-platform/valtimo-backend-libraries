@@ -22,6 +22,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.mail.MailSender;
+import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,9 @@ public abstract class SecuritySpecificEndpointIntegrationTest {
 
     @MockBean
     private UserManagementService userManagementService;
+
+    @MockBean
+    public ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker;
 
     @MockBean
     public MailSender mailSender;

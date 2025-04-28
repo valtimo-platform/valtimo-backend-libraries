@@ -24,4 +24,6 @@ interface Importer {
     fun supports(fileName: String) : Boolean
 
     fun import(request: ImportRequest)
+
+    fun partOfCaseDefinition() : Boolean = true
 }

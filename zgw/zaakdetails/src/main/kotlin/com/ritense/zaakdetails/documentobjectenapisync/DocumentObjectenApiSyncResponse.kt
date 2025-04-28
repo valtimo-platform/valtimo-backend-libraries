@@ -17,6 +17,7 @@
 package com.ritense.zaakdetails.documentobjectenapisync
 
 import com.ritense.objectenapi.management.ObjectManagementInfo
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import java.util.UUID
 
 class DocumentObjectenApiSyncResponse(
@@ -26,10 +27,9 @@ class DocumentObjectenApiSyncResponse(
     val enabled: Boolean = true
 ) {
 
-    fun toEntity(documentDefinitionName: String, documentDefinitionVersion: Long): DocumentObjectenApiSync =
+    fun toEntity(caseDefinitionId: CaseDefinitionId): DocumentObjectenApiSync =
         DocumentObjectenApiSync(
-            documentDefinitionName = documentDefinitionName,
-            documentDefinitionVersion = documentDefinitionVersion,
+            caseDefinitionId = caseDefinitionId,
             objectManagementConfigurationId = objectManagementConfigurationId,
             enabled = enabled,
         )

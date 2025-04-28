@@ -16,15 +16,20 @@
 
 package com.ritense.importer
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
 import com.ritense.importer.exception.CyclicImporterDependencyException
 import com.ritense.importer.exception.DuplicateImporterTypeException
 import com.ritense.importer.exception.InvalidImportZipException
 import com.ritense.importer.exception.TooManyImportCandidatesException
-import java.io.InputStream
-import java.util.zip.ZipInputStream
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import mu.KLogger
 import mu.KotlinLogging
+import org.springframework.core.io.Resource
 import org.springframework.transaction.annotation.Transactional
+import java.io.InputStream
+import java.util.zip.ZipInputStream
 
 open class ValtimoImportService(
     importers: Set<Importer>
@@ -105,11 +110,90 @@ open class ValtimoImportService(
     }
 
     @Transactional
-    override fun import(inputStream: InputStream) {
-        val entries = readZipEntries(inputStream)
-        val importerEntriesMap = getEntriesByImporter(entries)
+    open fun importCaseDefinition(
+        resources: List<Pair<String, Resource>>,
+        caseDefinitionIdList: List<CaseDefinitionId>
+    ) {
+        // If case definition is already imported, don't import the rest of the files for the case definition
+        // (so a skip)
 
-        importerEntriesMap.forEach { (importer, entries) ->
+        val importerEntriesList = getEntriesByImporter(getEntriesFromResources(resources))
+        val caseDefinitionId: CaseDefinitionId?
+        val caseDefinitionEntries = importerEntriesList
+            .filter { it.key.type() == CASE_DEFINITION }
+            .let {
+                it[it.keys.first()]
+            }
+        val caseDefinitionContent = caseDefinitionEntries?.firstOrNull()?.content ?:
+            throw IllegalStateException("No case definition file found in the provided resources")
+        val caseDefinitionMap: Map<String, Any> = jacksonObjectMapper()
+            .readValue(caseDefinitionContent)
+        caseDefinitionId = CaseDefinitionId(
+            caseDefinitionMap["key"] as String,
+            caseDefinitionMap["versionTag"] as String
+        )
+
+        if (caseDefinitionIdList.contains(caseDefinitionId)) {
+            return
+        }
+
+        importerEntriesList.filter { it.key.partOfCaseDefinition() }.forEach { (importer, entries) ->
+            entries.forEach { entry ->
+                logger.debug { "Importing ${entry.fileName} with importer ${importer.type()}" }
+                importer.import(ImportRequest(entry.fileName, entry.content, caseDefinitionId))
+            }
+        }
+
+    }
+
+    @Transactional
+    open fun importGlobalDefinitions(
+        resources: List<Pair<String, Resource>>
+    ) {
+        val importerEntriesList = getEntriesByImporter(getEntriesFromResources(resources))
+
+        importerEntriesList.filter { !it.key.partOfCaseDefinition() }.forEach { (importer, entries) ->
+            entries.forEach { entry ->
+                logger.debug { "Importing ${entry.fileName} with importer ${importer.type()}" }
+                importer.import(ImportRequest(entry.fileName, entry.content))
+            }
+        }
+
+    }
+
+    @Transactional
+    override fun import(inputStream: InputStream, caseDefinitionIdList: List<CaseDefinitionId>) {
+        val entries = readZipEntries(inputStream)
+        val importerEntriesList = getEntriesByImporter(entries).ifEmpty { return }
+        val caseDefinitionId: CaseDefinitionId?
+        val filteredImporterEntriesList = importerEntriesList
+            .filter { it.key.type() == CASE_DEFINITION }
+
+        if (filteredImporterEntriesList.isNotEmpty()) {
+            val caseDefinitionEntries = filteredImporterEntriesList.let {
+                it[it.keys.first()]
+            }
+            val caseDefinitionMap: Map<String, Any> = jacksonObjectMapper()
+                .readValue(caseDefinitionEntries?.first()?.content!!) // TODO: Throw proper error message
+            caseDefinitionId = CaseDefinitionId(
+                caseDefinitionMap["key"] as String,
+                caseDefinitionMap["versionTag"] as String
+            )
+
+            if (caseDefinitionIdList.contains(caseDefinitionId)) {
+                return
+            }
+
+            importerEntriesList.filter { it.key.partOfCaseDefinition() }.forEach { (importer, entries) ->
+                entries.forEach { entry ->
+                    logger.debug { "Importing ${entry.fileName} with importer ${importer.type()}" }
+                    importer.import(ImportRequest(entry.fileName, entry.content, caseDefinitionId))
+                }
+            }
+
+        }
+
+        importerEntriesList.filter { !it.key.partOfCaseDefinition() }.forEach { (importer, entries) ->
             entries.forEach { entry ->
                 logger.debug { "Importing ${entry.fileName} with importer ${importer.type()}" }
                 importer.import(ImportRequest(entry.fileName, entry.content))
@@ -135,6 +219,13 @@ open class ValtimoImportService(
         }
     }
 
+    private fun getEntriesFromResources(resources: List<Pair<String, Resource>>): List<ZipFileEntry> {
+        return resources.map {
+            ZipFileEntry(it.first, it.second.contentAsByteArray)
+        }
+    }
+
+    // change entries to be nested
     /**
      * Maps all entries by a supporting importer.
      * When no files are provided, an empty list value is mapped.
@@ -194,6 +285,7 @@ open class ValtimoImportService(
             val fileName: String,
             val content: ByteArray
         ) {
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) return true
                 if (javaClass != other?.javaClass) return false

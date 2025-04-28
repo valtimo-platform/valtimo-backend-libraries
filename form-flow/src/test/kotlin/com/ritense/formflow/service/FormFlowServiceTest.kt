@@ -31,6 +31,7 @@ import com.ritense.formflow.expression.spel.SpelExpressionProcessorFactory
 import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -132,6 +133,7 @@ internal class FormFlowServiceTest : BaseTest() {
         onOpen: List<String>? = null,
         onComplete: List<String>? = null
     ): FormFlowInstance {
+        val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
         val step = FormFlowStep(
             FormFlowStepId("start-step"),
             listOf(),
@@ -141,7 +143,7 @@ internal class FormFlowServiceTest : BaseTest() {
             type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
         val definition = FormFlowDefinition(
-            FormFlowDefinitionId("test", 1L), "start-step", setOf(step)
+            FormFlowDefinitionId("test", caseDefinitionId), "start-step", setOf(step)
         )
         val formFlowInstance = FormFlowInstance(
             formFlowDefinition = definition

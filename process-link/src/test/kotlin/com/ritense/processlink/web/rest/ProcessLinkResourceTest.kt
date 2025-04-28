@@ -17,6 +17,7 @@
 package com.ritense.processlink.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.TestProcessLink
 import com.ritense.processlink.domain.TestProcessLinkCreateRequestDto
@@ -26,6 +27,7 @@ import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.service.CamundaProcessService
+import org.camunda.bpm.engine.RepositoryService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -54,14 +56,24 @@ internal class ProcessLinkResourceTest {
     lateinit var processLinkResource: ProcessLinkResource
     lateinit var objectMapper: ObjectMapper
     lateinit var camdunaProcessService: CamundaProcessService
+    lateinit var processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService
+    lateinit var repositoryService: RepositoryService
 
     @BeforeEach
     fun init() {
         objectMapper = MapperSingleton.get()
         processLinkService = mock()
         camdunaProcessService = mock()
+        processDefinitionCaseDefinitionService = mock()
+        repositoryService = mock()
         processLinkMappers = listOf(TestProcessLinkMapper(objectMapper))
-        processLinkResource = ProcessLinkResource(processLinkService, processLinkMappers, camdunaProcessService)
+        processLinkResource = ProcessLinkResource(
+            processLinkService,
+            processLinkMappers,
+            camdunaProcessService,
+            processDefinitionCaseDefinitionService,
+            repositoryService
+        )
 
         val mappingJackson2HttpMessageConverter = MappingJackson2HttpMessageConverter()
         mappingJackson2HttpMessageConverter.objectMapper = objectMapper
@@ -135,7 +147,10 @@ internal class ProcessLinkResourceTest {
             .andDo(print())
             .andExpect(status().isNoContent)
 
-        verify(processLinkService).createProcessLink(processLinkDto)
+        verify(processLinkService).createProcessLink(
+            processLinkDto,
+            null
+        )
     }
 
     @Test
@@ -154,7 +169,10 @@ internal class ProcessLinkResourceTest {
             .andDo(print())
             .andExpect(status().isNoContent)
 
-        verify(processLinkService).updateProcessLink(processLinkDto)
+        verify(processLinkService).updateProcessLink(
+            processLinkDto,
+            null
+        )
     }
 
     @Test

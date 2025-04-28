@@ -1,0 +1,80 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright 2015-2024 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet id="1" author="Ritense">
+        <renameColumn tableName="case_list_column" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+    </changeSet>
+
+    <changeSet id="2" author="Ritense">
+        <dropForeignKeyConstraint baseTableName="case_widget_tab" constraintName="fk_case_widget_tab_case_tab"/>
+        <dropForeignKeyConstraint baseTableName="case_widget_tab_widget" constraintName="fk_case_widget_tab_name_key"/>
+    </changeSet>
+
+    <changeSet id="3" author="Ritense">
+        <renameColumn tableName="case_tab" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+        <addColumn tableName="case_tab">
+            <column name="case_definition_version_tag" type="VARCHAR(256)" defaultValue="1.0.0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <dropPrimaryKey tableName="case_tab"/>
+
+        <renameColumn tableName="case_widget_tab" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+        <addColumn tableName="case_widget_tab">
+            <column name="case_definition_version_tag" type="VARCHAR(256)" defaultValue="1.0.0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <dropPrimaryKey tableName="case_widget_tab"/>
+
+        <renameColumn tableName="case_widget_tab_widget" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+        <addColumn tableName="case_widget_tab_widget">
+            <column name="case_definition_version_tag" type="VARCHAR(256)" defaultValue="1.0.0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <dropPrimaryKey tableName="case_widget_tab_widget"/>
+    </changeSet>
+
+    <changeSet id="4" author="Ritense">
+        <addPrimaryKey tableName="case_tab" columnNames="case_definition_key, case_definition_version_tag, tab_key"/>
+        <addPrimaryKey tableName="case_widget_tab" columnNames="case_definition_key, case_definition_version_tag, tab_key"/>
+        <addPrimaryKey tableName="case_widget_tab_widget" columnNames="case_definition_key, case_definition_version_tag, key, tab_key"/>
+    </changeSet>
+
+    <changeSet id="6" author="Ritense">
+        <addForeignKeyConstraint
+            baseTableName="case_widget_tab"
+            baseColumnNames="case_definition_key, case_definition_version_tag, tab_key"
+            constraintName="fk_case_widget_tab_case_tab"
+            referencedTableName="case_tab"
+            referencedColumnNames="case_definition_key, case_definition_version_tag, tab_key"
+            onDelete="CASCADE"/>
+        <addForeignKeyConstraint
+            baseTableName="case_widget_tab_widget"
+            baseColumnNames="case_definition_key, case_definition_version_tag, tab_key"
+            constraintName="fk_case_widget_tab_name_key"
+            referencedTableName="case_widget_tab"
+            referencedColumnNames="case_definition_key, case_definition_version_tag, tab_key"
+            onDelete="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>

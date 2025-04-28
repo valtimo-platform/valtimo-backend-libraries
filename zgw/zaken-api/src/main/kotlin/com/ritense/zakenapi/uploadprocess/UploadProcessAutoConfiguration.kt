@@ -17,8 +17,9 @@
 package com.ritense.zakenapi.uploadprocess
 
 import com.ritense.authorization.AuthorizationService
+import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.document.service.DocumentService
-import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
+import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import org.springframework.beans.factory.annotation.Value
@@ -62,21 +63,24 @@ class UploadProcessAutoConfiguration {
     fun uploadProcessService(
         documentService: DocumentService,
         processDocumentService: ProcessDocumentService,
-        documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
+        caseDefinitionProcessLinkService: CaseDefinitionProcessLinkService,
+        activeCaseDefinitionService: ActiveCaseDefinitionService,
     ): UploadProcessService {
         return UploadProcessService(
             documentService,
             processDocumentService,
-            documentDefinitionProcessLinkService,
+            caseDefinitionProcessLinkService,
+            activeCaseDefinitionService,
         )
     }
 
     @Bean
     @ConditionalOnMissingBean(UploadProcessResource::class)
     fun uploadProcessResource(
-        documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService
+        activeCaseDefinitionService: ActiveCaseDefinitionService,
+        caseDefinitionProcessLinkService: CaseDefinitionProcessLinkService
     ): UploadProcessResource {
-        return UploadProcessResource(documentDefinitionProcessLinkService)
+        return UploadProcessResource(activeCaseDefinitionService, caseDefinitionProcessLinkService)
     }
 
     @Order(360)

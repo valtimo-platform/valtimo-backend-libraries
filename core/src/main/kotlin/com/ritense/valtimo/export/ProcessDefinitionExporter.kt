@@ -22,6 +22,7 @@ import com.ritense.exporter.Exporter
 import com.ritense.exporter.request.DecisionDefinitionExportRequest
 import com.ritense.exporter.request.ProcessDefinitionExportRequest
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.model.bpmn.Bpmn
 import org.camunda.bpm.model.bpmn.BpmnModelInstance
@@ -44,7 +45,7 @@ class ProcessDefinitionExporter(
             Bpmn.readModelFromStream(inputStream)
         }
 
-        val subProcessDefinitionExportRequests = getCallActivityProcessDefinitionExportRequests(bpmnModelInstance)
+        val subProcessDefinitionExportRequests = getCallActivityProcessDefinitionExportRequests(bpmnModelInstance, request.caseDefinitionId)
         val decisionExportRequests = getDecisionExportRequests(bpmnModelInstance)
 
         val exportFile = ByteArrayOutputStream().use {
@@ -60,7 +61,7 @@ class ProcessDefinitionExporter(
         )
     }
 
-    private fun getCallActivityProcessDefinitionExportRequests(bpmnModelInstance: BpmnModelInstance): Set<ProcessDefinitionExportRequest> {
+    private fun getCallActivityProcessDefinitionExportRequests(bpmnModelInstance: BpmnModelInstance, caseDefinitionId: CaseDefinitionId): Set<ProcessDefinitionExportRequest> {
         return bpmnModelInstance.getModelElementsByType(CallActivity::class.java)
             .mapNotNull { it.calledElement }
             .distinct()
@@ -68,7 +69,7 @@ class ProcessDefinitionExporter(
                 val processDefinitionId = checkNotNull(camundaRepositoryService.findLatestProcessDefinition(key)) {
                     "Process definition with key '$key' could not be found!"
                 }.id
-                ProcessDefinitionExportRequest(processDefinitionId)
+                ProcessDefinitionExportRequest(processDefinitionId, caseDefinitionId)
             }.toSet()
     }
 

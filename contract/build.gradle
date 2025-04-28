@@ -47,6 +47,7 @@ dependencies {
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
     api "jakarta.inject:jakarta.inject-api:${jakartaInjectVersion}"
+    api "org.semver4j:semver4j:${semver4jVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"

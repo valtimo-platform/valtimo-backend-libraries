@@ -16,10 +16,15 @@
 
 package com.ritense.valtimo.milestones.web.rest;
 
+import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker;
 import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import java.util.Set;
 
 public class MilestoneSecuritySmokeIntegrationTest extends SecuritySmokeIntegrationTest {
+    @MockBean
+    private ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker;
+
     public MilestoneSecuritySmokeIntegrationTest() {
         super("com.ritense.valtimo.milestones", Set.of());
     }

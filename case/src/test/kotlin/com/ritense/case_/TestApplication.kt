@@ -17,7 +17,6 @@
 package com.ritense.case_
 
 import com.ritense.case.TestFormExporter
-import com.ritense.case.TestResolverFactory
 import com.ritense.case.configuration.CaseAutoConfiguration
 import com.ritense.case_.configuration.CaseWidgetAutoConfiguration
 import com.ritense.case_.widget.TestCaseWidgetDataProvider
