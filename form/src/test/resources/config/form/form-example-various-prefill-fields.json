@@ -227,6 +227,12 @@
                             "input": true
                         }
                     ]
+                },
+                {
+                    "label": "PV object property 2",
+                    "key": "pv.object.property2",
+                    "type": "textfield",
+                    "input": true
                 }
             ]
         },
