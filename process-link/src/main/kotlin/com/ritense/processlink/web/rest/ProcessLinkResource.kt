@@ -487,7 +487,8 @@ class ProcessLinkResource(
 
             try {
                 val deployment = runWithoutAuthorization {
-                    camundaProcessService.deployUnlinked(
+                    camundaProcessService.deploy(
+                        null,
                         bpmn.originalFilename,
                         ByteArrayInputStream(bpmn.bytes),
                         true,
