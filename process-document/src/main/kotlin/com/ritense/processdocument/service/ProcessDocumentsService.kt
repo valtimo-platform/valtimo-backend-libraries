@@ -17,7 +17,6 @@
 package com.ritense.processdocument.service
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
@@ -33,7 +32,6 @@ import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.stereotype.Service
 import java.util.UUID
-import kotlin.jvm.optionals.getOrNull
 
 @Service
 @SkipComponentScan
@@ -46,7 +44,6 @@ class ProcessDocumentsService(
     private val camundaRuntimeService: CamundaRuntimeService,
 ) {
 
-    @RunWithoutAuthorization
     fun deleteAllProcessInstancesForThisDocument(execution: DelegateExecution, reason: String) {
         val thisProcessInstanceId = CamundaProcessInstanceId(execution.processInstanceId)
         val documentId = processDocumentService.getDocumentId(thisProcessInstanceId, execution)
