@@ -1955,8 +1955,6 @@
 
 * * *
 
-**207.** **Group:** org.glassfish.hk2.external **Name:** jakarta.inject **Version:** 2.6.1
-
 **Manifest Project URL:** `[http://www.oracle.com](http://www.oracle.com)`
 
 **POM License: EPL 2.0** - [http://www.eclipse.org/legal/epl-2.0](http://www.eclipse.org/legal/epl-2.0)
@@ -1966,9 +1964,6 @@
 **POM License: GNU General Public License, version 2 with the GNU Classpath Exception** - [https://www.gnu.org/software/classpath/license.html](https://www.gnu.org/software/classpath/license.html)
 
 **POM License: GPL2 w/ CPE** - [https://www.gnu.org/software/classpath/license.html](https://www.gnu.org/software/classpath/license.html)
-
-**Embedded license files:** [jakarta.inject-2.6.1.jar/META-INF/LICENSE.md](jakarta.inject-2.6.1.jar/META-INF/LICENSE.md)  
-[jakarta.inject-2.6.1.jar/META-INF/NOTICE.md](jakarta.inject-2.6.1.jar/META-INF/NOTICE.md)
 
 * * *
 

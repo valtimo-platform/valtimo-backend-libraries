@@ -1,13 +1,13 @@
 package com.ritense.mail.flowmailer.connector
 
 import com.ritense.mail.flowmailer.BaseIntegrationTest
-import jakarta.inject.Inject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 
 internal class FlowmailerConnectorPropertiesIntTest : BaseIntegrationTest() {
 
-    @Inject
+    @Autowired
     lateinit var flowmailerConnectorProperties: FlowmailerConnectorProperties
 
     @Test

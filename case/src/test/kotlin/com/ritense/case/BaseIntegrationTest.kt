@@ -25,9 +25,9 @@ import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.core.io.support.ResourcePatternResolver
+import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest
@@ -35,22 +35,22 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @Tag("integration")
 class BaseIntegrationTest {
 
-    @MockBean
+    @MockitoBean
     lateinit var userManagementService: UserManagementService
 
-    @MockBean
+    @MockitoBean
     lateinit var mailSender: MailSender
 
-    @MockBean
+    @MockitoBean
     lateinit var processDefinitionCaseDefinitionLinker: ProcessDefinitionCaseDefinitionLinker
 
-    @SpyBean
+    @MockitoSpyBean
     lateinit var resourcePatternResolver: ResourcePatternResolver
 
-    @SpyBean
+    @MockitoSpyBean
     lateinit var caseTabImporter: CaseTabImporter
 
-    @SpyBean
+    @MockitoSpyBean
     lateinit var caseTaskListDeploymentService: CaseTaskListDeploymentService
 }
 

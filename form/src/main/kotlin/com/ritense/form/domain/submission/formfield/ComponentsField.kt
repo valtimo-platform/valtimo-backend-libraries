@@ -19,10 +19,9 @@ package com.ritense.form.domain.submission.formfield
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.ContainerNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.document.domain.Document
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 
 data class ComponentsField(

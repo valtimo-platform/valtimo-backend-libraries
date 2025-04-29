@@ -24,10 +24,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ritense.form.BaseIntegrationTest;
-import jakarta.inject.Inject;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -36,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 class FormIoFormDefinitionResourceIntTest extends BaseIntegrationTest {
 
-    @Inject
+    @Autowired
     private FormDefinitionResource resource;
     private MockMvc mockMvc;
 

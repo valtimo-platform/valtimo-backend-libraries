@@ -45,10 +45,10 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -58,7 +58,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @WebAppConfiguration
 public class ProcessDocumentAuditResourceTest extends BaseTest {
 
-    @MockBean
+    @MockitoBean
     private ProcessDocumentAuditService processDocumentAuditService;
     private ProcessDocumentAuditResource processDocumentAuditResource;
     private MockMvc mockMvc;

@@ -26,12 +26,12 @@ import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.request.RelatedEntityAuthorizationRequest
 import com.ritense.authorization.role.Role
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
-import mu.KotlinLogging
 import org.springframework.data.jpa.domain.Specification
 
 abstract class AuthorizationSpecification<T : Any>(

@@ -15,9 +15,9 @@
  */
 
 
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
 plugins {
     id "idea"
@@ -99,8 +99,6 @@ allprojects {
             }
             dependencies {
                 dependency "org.hibernate.orm:hibernate-core:${hibernateCoreVersion}"
-                dependency "org.yaml:snakeyaml:${snakeYamlVersionOverride}"
-                dependency "io.netty:netty-codec:${nettyCodecVersionOverride}"
                 dependency "org.liquibase:liquibase-core:${liquibaseVersion}"
                 dependency "com.rabbitmq:amqp-client:${amqpCLientVersion}"
             }
@@ -161,7 +159,7 @@ subprojects { subproject ->
         ext.kotlinSubProjectPath = subproject.projectDir.getAbsolutePath() + "/src/main/kotlin"
         if (new File(ext.kotlinSubProjectPath).exists() && !new File(ext.javaSubProjectPath).exists()) {
             tasks.getByName('javadocJar') {
-                from dokkaJavadoc
+                from dokkaGenerate
             }
         }
 

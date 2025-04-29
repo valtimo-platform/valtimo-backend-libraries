@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.impl.JsonSchemaDocumentService
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

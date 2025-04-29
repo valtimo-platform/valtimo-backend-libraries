@@ -22,7 +22,7 @@ import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.data.repository.findByIdOrNull
 
 class CaseDefinitionImporter(

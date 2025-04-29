@@ -37,7 +37,7 @@ import com.ritense.zaakdetails.service.ZaakdetailsObjectService
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPlugin
 import com.ritense.zakenapi.link.ZaakInstanceLinkNotFoundException
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service

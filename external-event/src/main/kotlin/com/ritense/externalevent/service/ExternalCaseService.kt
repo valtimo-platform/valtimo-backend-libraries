@@ -31,7 +31,7 @@ import com.ritense.externalevent.messaging.out.UpdatePortalCaseMessage
 import com.ritense.externalevent.messaging.out.UpdateStatusPortalCaseMessage
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.transaction.annotation.Transactional

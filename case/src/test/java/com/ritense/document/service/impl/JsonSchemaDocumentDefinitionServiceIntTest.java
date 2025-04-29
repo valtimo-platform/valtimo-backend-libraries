@@ -30,15 +30,12 @@ import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider;
-import com.ritense.valtimo.contract.case_.CaseDefinitionId;
-import jakarta.inject.Inject;
-import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -48,7 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationTest {
 
-    @Inject
+    @Autowired
     private ResourceLoader resourceLoader;
 
     @Test

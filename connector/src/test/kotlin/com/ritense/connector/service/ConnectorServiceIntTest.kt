@@ -28,7 +28,6 @@ import com.ritense.connector.impl.ObjectApiProperties
 import com.ritense.connector.repository.ConnectorTypeRepository
 import com.ritense.connector.web.rest.request.ModifyConnectorInstanceRequest
 import com.ritense.connector.web.rest.result.CreateConnectorInstanceResultFailed
-import jakarta.inject.Inject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeAll
@@ -36,6 +35,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.domain.Pageable
 import org.springframework.transaction.annotation.Transactional
@@ -45,16 +45,16 @@ import java.util.UUID
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ConnectorServiceIntTest : BaseIntegrationTest() {
 
-    @Inject
+    @Autowired
     lateinit var connectorService: ConnectorService
 
-    @Inject
+    @Autowired
     lateinit var connectorDeploymentService: ConnectorDeploymentService
 
-    @Inject
+    @Autowired
     lateinit var connectorTypeRepository: ConnectorTypeRepository
 
-    @Inject
+    @Autowired
     @Qualifier("test-connector")
     lateinit var connector: Connector
 

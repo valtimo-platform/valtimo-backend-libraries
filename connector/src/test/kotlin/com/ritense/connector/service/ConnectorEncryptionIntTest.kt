@@ -7,12 +7,12 @@ import com.ritense.connector.impl.ObjectApiProperties
 import com.ritense.valtimo.contract.json.MapperSingleton
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.converter.json.SpringHandlerInstantiator
-import jakarta.inject.Inject
 
 internal class ConnectorEncryptionIntTest : BaseIntegrationTest() {
 
-    @Inject
+    @Autowired
     lateinit var handlerInstantiator: SpringHandlerInstantiator
 
     @Test
