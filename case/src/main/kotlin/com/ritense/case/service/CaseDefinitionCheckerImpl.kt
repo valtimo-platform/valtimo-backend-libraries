@@ -19,6 +19,7 @@ package com.ritense.case.service
 import com.ritense.case.repository.CaseDefinitionSpecificationHelper.Companion.byActive
 import com.ritense.case.repository.CaseDefinitionSpecificationHelper.Companion.byCaseDefinitionKey
 import com.ritense.case_.repository.CaseDefinitionRepository
+import com.ritense.importer.ImportContext
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
@@ -55,6 +56,9 @@ class CaseDefinitionCheckerImpl(
     }
 
     override fun canUpdateGlobalConfiguration(): Boolean {
+        if (ImportContext.isImporting()) {
+            return true
+        }
         return draftEnvironments.split(',').any { draftEnvironment ->
             environment.activeProfiles.any { it == draftEnvironment }
         }
@@ -77,11 +81,9 @@ class CaseDefinitionCheckerImpl(
         }
     }
 
-    override fun assertCaseIsNewOrUpdatable(caseDefinitionId: CaseDefinitionId?) {
+    override fun assertCanCreateOrUpdateCaseDefinition(caseDefinitionId: CaseDefinitionId) {
         assertCanUpdateGlobalConfiguration()
-        val caseDefinition = caseDefinitionId?.let{
-            caseDefinitionRepository.findById(caseDefinitionId).orElse(null)
-        }
+        val caseDefinition = caseDefinitionRepository.findById(caseDefinitionId).orElse(null)
         require(caseDefinition == null || !caseDefinition.final) {
             "Failed to update CaseDefinition $caseDefinitionId. This case definition is final."
         }

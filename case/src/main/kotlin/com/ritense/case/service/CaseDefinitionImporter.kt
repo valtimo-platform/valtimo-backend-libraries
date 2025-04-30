@@ -51,7 +51,7 @@ class CaseDefinitionImporter(
         val caseDefinitionDto = toCaseDefinitionDto(fileContent)
         val caseDefinitionId = caseDefinitionDto.getCaseDefinitionId()
 
-        caseDefinitionChecker.assertCaseIsNewOrUpdatable(caseDefinitionId)
+        caseDefinitionChecker.assertCanCreateOrUpdateCaseDefinition(caseDefinitionId)
 
         val caseDefinition = caseDefinitionDto.toEntity().copy(final = false)
 
