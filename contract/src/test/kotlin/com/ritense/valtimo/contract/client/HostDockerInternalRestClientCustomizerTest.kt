@@ -42,7 +42,7 @@ class HostDockerInternalRestClientCustomizerTest {
         environment = mock()
         whenever(environment.activeProfiles).thenReturn(arrayOf("dev"))
         hostDockerInternalRestClientCustomizer = HostDockerInternalRestClientCustomizer(
-            dockerPorts = listOf("8001", "8010", "8011"),
+            dockerPorts = listOf("8001", "8002", "8010", "8011"),
             rewriteRequestHost = false,
         )
     }
@@ -135,6 +135,49 @@ class HostDockerInternalRestClientCustomizerTest {
     }
 
     @Test
+    fun `should replace request body when request-uri is docker container`() {
+        val request = MockClientHttpRequest()
+        request.headers.contentType = APPLICATION_JSON
+        request.uri = URI("http://localhost:8002/api/v1/abonnement")
+        val requestBody = """
+            {
+                "callbackUrl": "http://localhost:8080/api/v1/notificatiesapi/callback",
+                "auth": "aaa=",
+                "kanalen": [
+                    {
+                        "filters": {},
+                        "naam": "objecten"
+                    }
+                ]
+            }
+        """.trimIndent().toByteArray()
+        val execution = mock<ClientHttpRequestExecution>()
+        val response = MockClientHttpResponse()
+        response.headers.contentType = APPLICATION_JSON
+        whenever(execution.execute(any(), any())).thenReturn(response)
+
+        hostDockerInternalRestClientCustomizer.intercept(request, requestBody, execution)
+
+        val captor = argumentCaptor<ByteArray>()
+        verify(execution).execute(any(), captor.capture())
+        assertEquals(
+            """
+            {
+                "callbackUrl": "http://host.docker.internal:8080/api/v1/notificatiesapi/callback",
+                "auth": "aaa=",
+                "kanalen": [
+                    {
+                        "filters": {},
+                        "naam": "objecten"
+                    }
+                ]
+            }
+        """.trimIndent(),
+            captor.firstValue.decodeToString()
+        )
+    }
+
+    @Test
     fun `should replace response body`() {
         val request = MockClientHttpRequest()
         request.headers.contentType = APPLICATION_JSON
@@ -166,8 +209,6 @@ class HostDockerInternalRestClientCustomizerTest {
 
         val result = hostDockerInternalRestClientCustomizer.intercept(request, requestBody, execution)
 
-        val captor = argumentCaptor<ByteArray>()
-        verify(execution).execute(any(), captor.capture())
         assertEquals(
             """
             {
