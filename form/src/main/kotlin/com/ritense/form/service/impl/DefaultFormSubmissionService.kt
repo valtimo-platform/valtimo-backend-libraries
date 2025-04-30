@@ -27,6 +27,7 @@ import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.AuthorizationResourceContext
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.request.RelatedEntityAuthorizationRequest
+import com.ritense.case.service.CaseDefinitionService
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
@@ -52,7 +53,6 @@ import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndStartPro
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.domain.request.Request
 import com.ritense.processdocument.exception.ProcessDocumentDefinitionNotFoundException
-import com.ritense.processdocument.resolver.DocumentJsonValueResolverFactory.Companion.PREFIX as DOC_PREFIX
 import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.domain.ActivityTypeWithEventName.START_EVENT_START
@@ -66,13 +66,12 @@ import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
-import com.ritense.valtimo.contract.json.JsonMerger
 import com.ritense.valtimo.contract.json.patch.JsonPatch
 import com.ritense.valtimo.contract.result.OperationError
 import com.ritense.valtimo.contract.result.OperationError.FromException
 import com.ritense.valtimo.service.CamundaTaskService
-import com.ritense.valueresolver.ProcessVariableValueResolverFactory.Companion.PREFIX as PV_PREFIX
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.valueresolver.ValueResolverServiceImpl
 import mu.KotlinLogging
@@ -81,6 +80,8 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
+import com.ritense.processdocument.resolver.DocumentJsonValueResolverFactory.Companion.PREFIX as DOC_PREFIX
+import com.ritense.valueresolver.ProcessVariableValueResolverFactory.Companion.PREFIX as PV_PREFIX
 
 @Service
 @SkipComponentScan
@@ -97,6 +98,7 @@ class DefaultFormSubmissionService(
     private val prefillFormService: PrefillFormService,
     private val authorizationService: AuthorizationService,
     private val valueResolverService: ValueResolverService,
+    private val caseDefinitionService: CaseDefinitionService,
     private val objectMapper: ObjectMapper,
 ) : FormSubmissionService {
 
@@ -138,6 +140,7 @@ class DefaultFormSubmissionService(
                 taskInstanceId,
                 documentDefinitionNameToUse,
                 processDefinition.key,
+                processDefinition.getCaseDefinitionId(),
                 categorizedKeyValues.createDocumentWithContent,
                 categorizedKeyValues.withProcessVars,
                 modifyDocumentWithJsonPatch
@@ -396,6 +399,7 @@ class DefaultFormSubmissionService(
         taskInstanceId: String?,
         documentDefinitionName: String,
         processDefinitionKey: String,
+        caseDefinitionId: CaseDefinitionId?,
         documentContent: JsonNode,
         withProcessVars: Map<String, Any>,
         modifyDocumentWithJsonPatch: JsonPatch
@@ -404,10 +408,12 @@ class DefaultFormSubmissionService(
             check(taskInstanceId == null) {
                 "Process link configuration error: START_EVENT_START shouldn't be linked to a user-task. For process-definition: '${processLink.processDefinitionId}' with activity-id: '${processLink.activityId}'"
             }
+
             if (document == null) {
                 newDocumentAndStartProcessRequest(
                     documentDefinitionName,
                     processDefinitionKey,
+                    caseDefinitionId,
                     documentContent,
                     withProcessVars
                 )
@@ -439,6 +445,7 @@ class DefaultFormSubmissionService(
     private fun newDocumentAndStartProcessRequest(
         documentDefinitionName: String,
         processDefinitionKey: String,
+        caseDefinitionId: CaseDefinitionId?,
         documentContent: JsonNode,
         withProcessVars: Map<String, Any>,
     ): NewDocumentAndStartProcessRequest {
@@ -446,6 +453,8 @@ class DefaultFormSubmissionService(
             processDefinitionKey,
             NewDocumentRequest(
                 documentDefinitionName,
+                caseDefinitionId?.key,
+                caseDefinitionId?.versionTag?.version,
                 documentContent
             )
         ).withProcessVars(withProcessVars)

@@ -482,6 +482,8 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
             documentService.createDocument(
                 NewDocumentRequest(
                     documentDefinition.id().name(),
+                    documentDefinition.id().caseDefinitionId().key,
+                    documentDefinition.id().caseDefinitionId().versionTag.version,
                     content.asJson()
                 )
             )
@@ -494,6 +496,8 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
             documentService.createDocument(
                 NewDocumentRequest(
                     documentDefinition.id().name(),
+                    documentDefinition.id().caseDefinitionId().key,
+                    documentDefinition.id().caseDefinitionId().versionTag.version,
                     content.asJson()
                 )
             )

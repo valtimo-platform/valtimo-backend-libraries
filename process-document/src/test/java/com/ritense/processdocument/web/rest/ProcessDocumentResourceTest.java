@@ -224,6 +224,8 @@ class ProcessDocumentResourceTest extends BaseTest {
         final JsonNode jsonContent = objectMapper.readTree("{\"street\": \"Funenparks\"}");
         var newDocumentRequest = new NewDocumentRequest(
             "house",
+            "house",
+            "1.0.0",
             jsonContent
         );
         var request = new NewDocumentAndStartProcessRequest("some-key", newDocumentRequest);

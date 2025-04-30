@@ -424,6 +424,7 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
         return runWithoutAuthorization(() -> camundaProcessService.startProcess(
             processDefinitionKey,
             document.id().toString(),
+            document.definitionId().caseDefinitionId(),
             processVars
         ));
     }

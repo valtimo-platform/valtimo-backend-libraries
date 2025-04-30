@@ -61,7 +61,12 @@ class ZaakStatusValueResolverValueIT @Autowired constructor(
     fun `should prefill form with status data from the Zaken API`() {
         runWithoutAuthorization {
             val documentId = documentService.createDocument(
-                NewDocumentRequest("profile", objectMapper.createObjectNode())
+                NewDocumentRequest(
+                    "profile",
+                    "profile",
+                    "1.0.0",
+                    objectMapper.createObjectNode()
+                )
             ).resultingDocument().get().id.id
 
             val formDefinition = formDefinitionRepository.findByName("form-with-zaak-fields").get()
