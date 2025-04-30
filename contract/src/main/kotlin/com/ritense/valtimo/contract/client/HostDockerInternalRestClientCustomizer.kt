@@ -123,7 +123,9 @@ class HostDockerInternalRestClientCustomizer(
     private fun replaceLocalhost(stringContainingLocalhost: String, requestPort: String): String {
         return stringContainingLocalhost.replace(Regex("""http://localhost:([0-9]{4,5})""")) { match ->
             val port = match.groupValues[1]
-            if ((rewriteRequestHost || port != requestPort) && dockerPorts.contains(port)) {
+            if ((rewriteRequestHost || port != requestPort)
+                && (dockerPorts.contains(port) || dockerPorts.contains(requestPort))
+            ) {
                 "$HTTP_HOST_DOCKER_INTERNAL:$port"
             } else {
                 match.value
