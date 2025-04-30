@@ -43,6 +43,8 @@ class DocumentDefinitionCaseEventListener(
             service.findAllBy(event.basedOnCaseDefinitionId!!).forEach { documentDefinition ->
                 service.deploy(documentDefinition.schema().toString(), event.caseDefinitionId)
             }
+        } else {
+            service.deploy(getEmptyDocumentDefinitionSchema(event), event.caseDefinitionId)
         }
     }
 
@@ -53,5 +55,21 @@ class DocumentDefinitionCaseEventListener(
         service.findAllBy(event.caseDefinitionId).forEach { documentDefinition ->
             service.removeDocumentDefinition(documentDefinition.id().name(), documentDefinition.id().caseDefinitionId())
         }
+    }
+
+    private fun getEmptyDocumentDefinitionSchema(event: CaseDefinitionCreatedEvent): String {
+        val documentDefinitionName = event.caseDefinitionId.key
+        val schemaTitle = event.caseDefinitionName
+        return """
+            {
+                "${'$'}id": "$documentDefinitionName.schema",
+                "${'$'}schema": "http://json-schema.org/draft-07/schema#",
+                "title": "$schemaTitle",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                }
+            }
+        """.trimIndent()
     }
 }

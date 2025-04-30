@@ -131,12 +131,13 @@ class CaseDefinitionResource(
     fun getCaseDefinitions(
         @RequestParam caseDefinitionKey: String?,
         @RequestParam active: Boolean?,
+        @RequestParam final: Boolean?,
         @SortDefaults(
             SortDefault(sort = ["name"]),
             SortDefault(sort = ["active", "id.versionTag"], direction = Sort.Direction.DESC)
         ) pageable: Pageable
     ): ResponseEntity<Page<CaseDefinitionResponseDto>> {
-        val caseDefinitions = service.getCaseDefinitions(caseDefinitionKey, active, pageable)
+        val caseDefinitions = service.getCaseDefinitions(caseDefinitionKey, active, final, pageable)
         return ResponseEntity.ok(caseDefinitions.map { CaseDefinitionResponseDto.of(it) })
     }
 
@@ -147,7 +148,7 @@ class CaseDefinitionResource(
         @PageableDefault(size = 5, sort = ["active", "id.versionTag"], direction = Sort.Direction.DESC)
         pageable: Pageable
     ): ResponseEntity<List<CaseVersionDto>> {
-        val caseDefinitions = service.getCaseDefinitions(caseDefinitionKey, null, pageable)
+        val caseDefinitions = service.getCaseDefinitions(caseDefinitionKey, null, null, pageable)
         return ResponseEntity.ok(caseDefinitions.map { CaseVersionDto.of(it) }.content)
     }
 
