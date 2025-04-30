@@ -474,7 +474,9 @@ public class CamundaProcessService {
         } else if (fileName.endsWith(".dmn")) {
             DmnModelInstance dmnModel = Dmn.readModelFromStream(fileInput);
 
-            setDecisionsVersionTag(dmnModel, caseDefinitionId);
+            if (caseDefinitionId != null) {
+                setDecisionsVersionTag(dmnModel, caseDefinitionId);
+            }
 
             repositoryService.createDeployment().addModelInstance(fileName, dmnModel).deploy();
         } else {

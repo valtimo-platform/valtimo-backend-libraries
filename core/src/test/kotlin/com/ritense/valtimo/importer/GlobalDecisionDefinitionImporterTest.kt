@@ -31,38 +31,38 @@ import org.mockito.kotlin.verify
 import java.io.ByteArrayInputStream
 
 @ExtendWith(MockitoExtension::class)
-class CamundaDecisionDefinitionImporterTest(
+class GlobalDecisionDefinitionImporterTest(
     @Mock private val camundaProcessService: CamundaProcessService
 ) {
-    private lateinit var importer: CamundaDecisionDefinitionImporter
+    private lateinit var importer: GlobalDecisionDefinitionImporter
 
     @BeforeEach
     fun before() {
-        importer = CamundaDecisionDefinitionImporter(camundaProcessService)
+        importer = GlobalDecisionDefinitionImporter(camundaProcessService)
     }
 
     @Test
     fun `should be of type 'caselist'`() {
-        assertThat(importer.type()).isEqualTo("decisiondefinition")
+        assertThat(importer.type()).isEqualTo("globaldecisiondefinition")
     }
 
     @Test
     fun `should not depend on any type`() {
-        assertThat(importer.dependsOn()).isEqualTo(setOf(CASE_DEFINITION))
+        assertThat(importer.dependsOn()).isEqualTo(emptySet<String>())
     }
 
     @Test
     fun `should support decision definition fileName`() {
-        assertThat(importer.supports("/dmn/mydecision.dmn")).isTrue()
-        assertThat(importer.supports("/dmn/x/test.dmn")).isTrue()
+        assertThat(importer.supports("/global/dmn/mydecision.dmn")).isTrue()
+        assertThat(importer.supports("/global/dmn/nested/mydecision.dmn")).isTrue()
     }
 
     @Test
     fun `should not support non-dmn fileName`() {
-        assertThat(importer.supports("/bpmn/test.json")).isFalse()
-        assertThat(importer.supports("/bpmn/x/test.dmn")).isFalse()
-        assertThat(importer.supports("/dmn/test.json")).isFalse()
-        assertThat(importer.supports("/dmn/test-dmn")).isFalse()
+        assertThat(importer.supports("/global/dmn/test.json")).isFalse()
+        assertThat(importer.supports("/global/bpmn/x/test.dmn")).isFalse()
+        assertThat(importer.supports("/global/dmn/test.json")).isFalse()
+        assertThat(importer.supports("/global/dmn/test-dmn")).isFalse()
     }
 
     @Test
@@ -80,12 +80,12 @@ class CamundaDecisionDefinitionImporterTest(
             contentCaptor.capture()
         )
 
-        assertThat(nameCaptor.firstValue).isEqualTo("mydecision.dmn")
+        assertThat(nameCaptor.firstValue).isEqualTo("dmn-global-sample.dmn")
         val contentValue = contentCaptor.firstValue.readAllBytes().toString(Charsets.UTF_8)
         assertThat(contentValue).isEqualTo(dmnContent)
     }
 
     private companion object {
-        const val FILENAME = "/dmn/mydecision.dmn"
+        const val FILENAME = "/global/dmn/dmn-global-sample.dmn"
     }
 }

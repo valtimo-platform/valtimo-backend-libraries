@@ -41,6 +41,6 @@ class CamundaDecisionDefinitionImporter(
     }
 
     private companion object {
-        val FILENAME_REGEX = """/dmn/([^/]+)\.dmn""".toRegex()
+        val FILENAME_REGEX = """/dmn/(?:.*/)?(.+)\.dmn""".toRegex()
     }
 }

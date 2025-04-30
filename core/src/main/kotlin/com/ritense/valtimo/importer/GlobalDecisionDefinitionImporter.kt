@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2024 Ritense BV, the Netherlands.
+ * Copyright 2015-2025 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,32 +18,30 @@ package com.ritense.valtimo.importer
 
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
-import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
-import com.ritense.importer.ValtimoImportTypes.Companion.PROCESS_DEFINITION
+import com.ritense.importer.ValtimoImportTypes.Companion.GLOBAL_DECISION_DEFINITION
 import com.ritense.valtimo.service.CamundaProcessService
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
-class CamundaProcessDefinitionImporter(
+class GlobalDecisionDefinitionImporter(
     private val camundaProcessService: CamundaProcessService
 ) : Importer {
-    override fun type() = PROCESS_DEFINITION
+    override fun type() = GLOBAL_DECISION_DEFINITION
 
-    override fun dependsOn(): Set<String> = setOf(CASE_DEFINITION)
+    override fun dependsOn(): Set<String> = emptySet()
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
+        val fileName = request.fileName.substringAfterLast("/")
         request.content.inputStream().use {
-            camundaProcessService.deploy(request.caseDefinitionId, fileNameWithoutPath(request.fileName), it)
+            camundaProcessService.deploy(null, fileName, it)
         }
     }
 
-    private fun fileNameWithoutPath(fileName: String): String {
-        return fileName.substringAfterLast('/')
-    }
+    override fun partOfCaseDefinition(): Boolean = false
 
     private companion object {
-        val FILENAME_REGEX = """/bpmn/(?:.*/)?(.+)\.bpmn""".toRegex()
+        val FILENAME_REGEX = """/global/dmn/(?:.*/)?(.+)\.dmn""".toRegex()
     }
 }

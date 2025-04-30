@@ -18,15 +18,15 @@ package com.ritense.valtimo.importer
 
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
-import com.ritense.importer.ValtimoImportTypes.Companion.SYSTEM_PROCESS_DEFINITION
+import com.ritense.importer.ValtimoImportTypes.Companion.GLOBAL_PROCESS_DEFINITION
 import com.ritense.valtimo.service.CamundaProcessService
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
-class SystemProcessDefinitionImporter(
+class GlobalProcessDefinitionImporter(
     private val camundaProcessService: CamundaProcessService
 ) : Importer {
-    override fun type() = SYSTEM_PROCESS_DEFINITION
+    override fun type() = GLOBAL_PROCESS_DEFINITION
 
     override fun dependsOn(): Set<String> = emptySet()
 
@@ -45,6 +45,6 @@ class SystemProcessDefinitionImporter(
     }
 
     private companion object {
-        val FILENAME_REGEX = """/global/bpmn/([^/]+)\.bpmn""".toRegex()
+        val FILENAME_REGEX = """/global/bpmn/(?:.*/)?(.+)\.bpmn""".toRegex()
     }
 }
