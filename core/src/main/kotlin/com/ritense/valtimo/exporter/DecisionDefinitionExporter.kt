@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.export
+package com.ritense.valtimo.exporter
 
 import com.ritense.exporter.ExportFile
 import com.ritense.exporter.ExportResult
