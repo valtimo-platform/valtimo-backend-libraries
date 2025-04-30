@@ -25,6 +25,7 @@ import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSpecificationHelper.Companion.byActive
 import com.ritense.case.repository.CaseDefinitionSpecificationHelper.Companion.byCaseDefinitionKey
+import com.ritense.case.repository.CaseDefinitionSpecificationHelper.Companion.byFinal
 import com.ritense.case.repository.CaseDefinitionSpecificationHelper.Companion.query
 import com.ritense.case.service.validations.CreateCaseListColumnValidator
 import com.ritense.case.service.validations.ListColumnValidator
@@ -121,6 +122,7 @@ class CaseDefinitionService(
         applicationEventPublisher.publishEvent(
             CaseDefinitionCreatedEvent(
                 caseDefinitionId = newSavedCaseDefinition.id,
+                caseDefinitionName = newSavedCaseDefinition.name,
                 basedOnCaseDefinitionId = basedOnCaseDefinitionId,
                 duplicate = basedOnCaseDefinitionId != null
             )
@@ -150,9 +152,10 @@ class CaseDefinitionService(
     fun getCaseDefinitions(
         caseDefinitionKey: String? = null,
         active: Boolean? = null,
+        final: Boolean? = null,
         pageable: Pageable,
     ): Page<CaseDefinition> {
-        if (active == null || active == false) {
+        if (active == null || !active) {
             denyManagementOperation()
         }
 
@@ -162,6 +165,9 @@ class CaseDefinitionService(
         }
         if (active != null) {
             spec = spec.and(byActive(active))
+        }
+        if (final != null) {
+            spec = spec.and(byFinal(final))
         }
         return caseDefinitionRepository.findAll(spec, pageable)
     }
