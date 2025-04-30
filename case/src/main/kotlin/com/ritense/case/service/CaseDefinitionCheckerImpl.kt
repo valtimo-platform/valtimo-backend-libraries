@@ -86,4 +86,10 @@ class CaseDefinitionCheckerImpl(
             "Failed to update CaseDefinition $caseDefinitionId. This case definition is final."
         }
     }
+
+    override fun assertCanUpdateGlobalConfiguration() {
+        require(canUpdateGlobalConfiguration()) {
+            "Failed to update configuration. This Valtimo environment does not support drafts. Missing one of the following Spring profiles: [$draftEnvironments]"
+        }
+    }
 }
