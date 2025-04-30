@@ -326,8 +326,8 @@ class CaseDefinitionResourceTest : BaseTest() {
     @Test
     fun `should get case definitions for management`() {
         val caseDefinitionId = CaseDefinitionId("key", "1.0.0")
-        val caseDefinition = CaseDefinition(caseDefinitionId, "name", true, false)
-        whenever(service.getCaseDefinitions(isNull(), isNull(), any())).thenReturn(PageImpl(listOf(caseDefinition)))
+        val caseDefinition = caseDefinition(caseDefinitionId)
+        whenever(service.getCaseDefinitions(isNull(), isNull(), isNull(), any())).thenReturn(PageImpl(listOf(caseDefinition)))
 
         mockMvc.perform(
             get("/api/management/v1/case-definition")
