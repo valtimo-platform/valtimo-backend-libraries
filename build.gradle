@@ -29,7 +29,7 @@ plugins {
     id "org.jetbrains.kotlin.plugin.spring" version "${kotlinVersion}"
     id "org.jetbrains.kotlin.plugin.jpa" version "${kotlinVersion}"
     id "org.jetbrains.kotlin.plugin.allopen" version "${kotlinVersion}"
-    id "org.jetbrains.dokka" version "${dokkaPluginVersion}"
+    id "org.jetbrains.dokka-javadoc" version "${dokkaPluginVersion}"
     id "com.github.ben-manes.versions" version "${versionsPluginVersion}"
     id "org.sonarqube" version "${sonarqubePluginVersion}"
     id "checkstyle"
@@ -137,7 +137,7 @@ subprojects { subproject ->
         apply plugin: "kotlin-jpa"
         apply from: "$rootProject.projectDir/gradle/test.gradle"
         apply plugin: "com.avast.gradle.docker-compose"
-        apply plugin: "org.jetbrains.dokka"
+        apply plugin: "org.jetbrains.dokka-javadoc"
         apply plugin: "maven-publish"
         apply plugin: "org.owasp.dependencycheck"
 
