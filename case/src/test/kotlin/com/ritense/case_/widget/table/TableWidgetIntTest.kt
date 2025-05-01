@@ -73,6 +73,8 @@ class TableWidgetIntTest @Autowired constructor(
             val document = documentService.createDocument(
                 NewDocumentRequest(
                     caseDefinitionName,
+                    caseDefinitionName,
+                    "1.2.3",
                     MapperSingleton.get().createObjectNode()
                 )
             ).resultingDocument().get()
@@ -110,6 +112,8 @@ class TableWidgetIntTest @Autowired constructor(
             val document = documentService.createDocument(
                 NewDocumentRequest(
                     caseDefinitionName,
+                    caseDefinitionName,
+                    "1.2.3",
                     MapperSingleton.get().createObjectNode()
                 )
             ).resultingDocument().get()

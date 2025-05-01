@@ -54,7 +54,12 @@ class ValueResolverDelegateServiceIntTest : BaseIntegrationTest() {
             processDocumentService.newDocumentAndStartProcess(
                 NewDocumentAndStartProcessRequest(
                     processDefinitionKey,
-                    NewDocumentRequest(documentDefinitionName, documentContent)
+                    NewDocumentRequest(
+                        documentDefinitionName,
+                        "additional-properties",
+                        "1.0.0",
+                        documentContent
+                    )
                 ).withProcessVars(processVars)
             )
         }

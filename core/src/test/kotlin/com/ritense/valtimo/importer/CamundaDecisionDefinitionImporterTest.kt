@@ -54,6 +54,7 @@ class CamundaDecisionDefinitionImporterTest(
     @Test
     fun `should support decision definition fileName`() {
         assertThat(importer.supports("/dmn/mydecision.dmn")).isTrue()
+        assertThat(importer.supports("/dmn/x/test.dmn")).isTrue()
     }
 
     @Test
@@ -61,7 +62,6 @@ class CamundaDecisionDefinitionImporterTest(
         assertThat(importer.supports("/bpmn/test.json")).isFalse()
         assertThat(importer.supports("/bpmn/x/test.dmn")).isFalse()
         assertThat(importer.supports("/dmn/test.json")).isFalse()
-        assertThat(importer.supports("/dmn/x/test.dmn")).isFalse()
         assertThat(importer.supports("/dmn/test-dmn")).isFalse()
     }
 

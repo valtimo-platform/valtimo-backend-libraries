@@ -98,6 +98,8 @@ internal class LostUpdateIntTest : BaseIntegrationTest() {
                             CaseDefinitionId.of("allows-all", "1.0.0")
                         )
                     ).id().name(),
+                    "allows-all",
+                    "1.0.0",
                     JsonDocumentContent(content).asJson()
                 )
             )

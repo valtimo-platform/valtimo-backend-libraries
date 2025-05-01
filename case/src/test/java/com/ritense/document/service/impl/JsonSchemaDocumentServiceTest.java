@@ -42,6 +42,7 @@ import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.outbox.OutboxService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.valtimo.contract.resource.Resource;
 import java.time.LocalDateTime;
@@ -108,7 +109,8 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         ));
 
         var content = new JsonDocumentContent("{\"firstname\": \"aName\"}");
-        jsonSchemaDocument = createDocument(definitionOfForUnitTests("person"), content).resultingDocument().orElseThrow();
+        jsonSchemaDocument = createDocument(definitionOfForUnitTests("person"), content).resultingDocument()
+            .orElseThrow();
     }
 
     @Test
@@ -116,11 +118,16 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         final var content = new JsonDocumentContent("{\"addresses\" : [{\"streetName\" : \"Funenpark\"}]}");
         NewDocumentRequest documentRequest = new NewDocumentRequest(
             "document-definition",
+            "case-definition",
+            "1.0.0",
             content.asJson()
         );
 
         JsonSchemaDocumentDefinition definition = definitionOfForUnitTests("referenced-array");
-        when(documentDefinitionService.findLatestByName(eq("document-definition"))).thenReturn(Optional.of(definition));
+        when(documentDefinitionService.findByCaseDefinitionId(eq(CaseDefinitionId.of(
+            "case-definition",
+            "1.0.0"
+        )))).thenReturn(Optional.of(definition));
         when(documentSequenceGeneratorService.next(definition.id())).thenReturn(123L);
 
         CreateDocumentResult result = jsonSchemaDocumentService.createDocument(documentRequest);
@@ -151,12 +158,17 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
 
         NewDocumentRequest documentRequest = new NewDocumentRequest(
             "document-definition",
+            "case-definition",
+            "1.0.0",
             content.asJson()
         );
         documentRequest.withResources(Set.of(resource));
 
         JsonSchemaDocumentDefinition definition = definitionOfForUnitTests("referenced-array");
-        when(documentDefinitionService.findLatestByName(eq("document-definition"))).thenReturn(Optional.of(definition));
+        when(documentDefinitionService.findByCaseDefinitionId(eq(CaseDefinitionId.of(
+            "case-definition",
+            "1.0.0"
+        )))).thenReturn(Optional.of(definition));
         when(documentSequenceGeneratorService.next(definition.id())).thenReturn(123L);
 
         CreateDocumentResult result = jsonSchemaDocumentService.createDocument(documentRequest);

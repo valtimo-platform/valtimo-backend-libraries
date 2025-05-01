@@ -209,6 +209,8 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
             documentService.createDocument(
                 NewDocumentRequest(
                     "profile",
+                    "profile",
+                    "1.0.0",
                     objectMapper.readTree("{}")
                 )
             ).resultingDocument().get()
@@ -306,6 +308,8 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
                     "formflow-one-task-process",
                     NewDocumentRequest(
                         "profile",
+                        "profile",
+                        "1.0.0",
                         objectMapper.readTree("{}")
                     )
                 )

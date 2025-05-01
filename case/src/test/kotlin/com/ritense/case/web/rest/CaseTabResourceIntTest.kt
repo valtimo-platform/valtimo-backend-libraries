@@ -135,6 +135,8 @@ class CaseTabResourceIntTest : BaseIntegrationTest() {
             documentService.createDocument(
                 NewDocumentRequest(
                     documentDefinitionName,
+                    documentDefinitionName,
+                    "1.2.3",
                     JsonDocumentContent(content).asJson()
                 )
             ).resultingDocument().orElseThrow()
