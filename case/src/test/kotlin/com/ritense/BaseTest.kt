@@ -90,7 +90,7 @@ class BaseTest(
     }
 
     protected fun caseDefinitionId(): CaseDefinitionId {
-        return of("house", "1.0.0")
+        return of("house", "1.1.0")
     }
 
     protected fun createDocument(): JsonSchemaDocument {

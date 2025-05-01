@@ -127,8 +127,17 @@ class CaseDefinitionResource(
     }
 
     @RunWithoutAuthorization
-    @GetMapping("/management/v1/case-definition")
+    @GetMapping("/v1/case-definition")
     fun getCaseDefinitions(
+        @RequestParam active: Boolean?
+    ): ResponseEntity<List<CaseDefinitionResponseDto>> {
+        val caseDefinitions = service.getCaseDefinitions(active = active, pageable = Pageable.unpaged())
+        return ResponseEntity.ok(caseDefinitions.content.map { CaseDefinitionResponseDto.of(it) })
+    }
+
+    @RunWithoutAuthorization
+    @GetMapping("/management/v1/case-definition")
+    fun getCaseDefinitionsForManagement(
         @RequestParam caseDefinitionKey: String?,
         @RequestParam active: Boolean?,
         @RequestParam final: Boolean?,

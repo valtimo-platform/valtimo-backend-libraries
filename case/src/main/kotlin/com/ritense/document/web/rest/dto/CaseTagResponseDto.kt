@@ -21,14 +21,16 @@ import com.ritense.document.domain.CaseTagColor
 
 data class CaseTagResponseDto(
     val key: String,
-    val caseDefinitionName: String,
+    val caseDefinitionKey: String,
+    val caseDefinitionVersionTag: String,
     val title: String,
     val color: CaseTagColor,
     val order: Int
 ) {
     constructor(caseTag: CaseTag) : this(
         caseTag.id.key,
-        caseTag.id.caseDefinitionName,
+        caseTag.id.caseDefinitionId.key,
+        caseTag.id.caseDefinitionId.versionTag.version,
         caseTag.title,
         caseTag.color,
         caseTag.order

@@ -16,9 +16,11 @@
 
 package com.ritense.document.exception
 
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
+
 class CaseTagAlreadyExistsException(
     caseTagKey: String,
-    caseDefinitionName: String
+    caseDefinitionId: CaseDefinitionId
 ) : RuntimeException(
-    "A case tag with key $caseTagKey already exists for case definition with key $caseDefinitionName"
+    "A case tag with key $caseTagKey already exists for case definition $caseDefinitionId"
 )

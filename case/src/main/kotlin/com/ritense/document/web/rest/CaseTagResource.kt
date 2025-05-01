@@ -24,6 +24,7 @@ import com.ritense.document.web.rest.dto.CaseTagResponseDto
 import com.ritense.document.web.rest.dto.CaseTagUpdateRequestDto
 import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.domain.ValtimoMediaType
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -45,34 +46,45 @@ class CaseTagResource(
     private val caseTagService: CaseTagService
 ) {
 
-    @GetMapping("/v1/case-definition/{caseDefinitionName}/case-tag")
+    @GetMapping("/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/case-tag")
     fun getCaseTags(
-        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String
+        @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
+        @LoggableResource("caseDefinitionVersionTag") @PathVariable caseDefinitionVersionTag: String,
     ): ResponseEntity<List<CaseTagResponseDto>> {
-        val caseTags = caseTagService.getCaseTags(caseDefinitionName)
+        val caseTags = caseTagService.getCaseTags(CaseDefinitionId.of(caseDefinitionKey, caseDefinitionVersionTag))
+        return ResponseEntity.ok(caseTags.map { CaseTagResponseDto(it) }.sortedBy { it.order })
+    }
+
+    @GetMapping("/v1/case-definition/{caseDefinitionKey}/case-tag")
+    fun getCaseTags(
+        @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
+    ): ResponseEntity<List<CaseTagResponseDto>> {
+        val caseTags = caseTagService.getCaseTags(caseDefinitionKey)
         return ResponseEntity.ok(caseTags.map { CaseTagResponseDto(it) }.sortedBy { it.order })
     }
 
     @RunWithoutAuthorization
-    @GetMapping("/management/v1/case-definition/{caseDefinitionName}/case-tag")
+    @GetMapping("/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/case-tag")
     fun getCaseTagForManagement(
-        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String
+        @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
+        @LoggableResource("caseDefinitionVersionTag") @PathVariable caseDefinitionVersionTag: String,
     ): ResponseEntity<List<CaseTagResponseDto>> {
-        val caseTags = caseTagService.getCaseTags(caseDefinitionName)
+        val caseTags = caseTagService.getCaseTags(CaseDefinitionId.of(caseDefinitionKey, caseDefinitionVersionTag))
         return ResponseEntity.ok(caseTags.map { CaseTagResponseDto(it) }.sortedBy { it.order })
     }
 
     @RunWithoutAuthorization
-    @PostMapping("/management/v1/case-definition/{caseDefinitionName}/case-tag")
+    @PostMapping("/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/case-tag")
     fun createCaseTag(
-        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
+        @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
+        @LoggableResource("caseDefinitionVersionTag") @PathVariable caseDefinitionVersionTag: String,
         @Valid @RequestBody caseTagCreateRequestDto: CaseTagCreateRequestDto
     ): ResponseEntity<CaseTagResponseDto> {
         return try {
             ResponseEntity.ok(
                 CaseTagResponseDto(
                     caseTagService.create(
-                        caseDefinitionName,
+                        CaseDefinitionId.of(caseDefinitionKey, caseDefinitionVersionTag),
                         caseTagCreateRequestDto
                     )
                 )
@@ -83,34 +95,37 @@ class CaseTagResource(
     }
 
     @RunWithoutAuthorization
-    @PutMapping("/management/v1/case-definition/{caseDefinitionName}/case-tag")
+    @PutMapping("/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/case-tag")
     fun editCaseTags(
-        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
+        @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
+        @LoggableResource("caseDefinitionVersionTag") @PathVariable caseDefinitionVersionTag: String,
         @Valid @RequestBody requestDtos: List<CaseTagUpdateRequestDto>
     ): ResponseEntity<List<CaseTagResponseDto>> {
-        val caseTags = caseTagService.update(caseDefinitionName, requestDtos)
+        val caseTags = caseTagService.update(CaseDefinitionId.of(caseDefinitionKey, caseDefinitionVersionTag), requestDtos)
         return ResponseEntity.ok(caseTags.map { CaseTagResponseDto(it) }.sortedBy { it.order })
     }
 
     @RunWithoutAuthorization
-    @PutMapping("/management/v1/case-definition/{caseDefinitionName}/case-tag/{caseTagKey}")
+    @PutMapping("/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/case-tag/{caseTagKey}")
     fun updateCaseTag(
-        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
+        @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
+        @LoggableResource("caseDefinitionVersionTag") @PathVariable caseDefinitionVersionTag: String,
         @PathVariable caseTagKey: String,
         @Valid @RequestBody requestDto: CaseTagUpdateRequestDto
     ): ResponseEntity<Unit> {
-        caseTagService.update(caseDefinitionName, caseTagKey, requestDto)
+        caseTagService.update(CaseDefinitionId.of(caseDefinitionKey, caseDefinitionVersionTag), caseTagKey, requestDto)
         return ResponseEntity.noContent().build()
     }
 
     @RunWithoutAuthorization
-    @DeleteMapping("/management/v1/case-definition/{caseDefinitionName}/case-tag/{caseTagKey}")
+    @DeleteMapping("/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/case-tag/{caseTagKey}")
     fun deleteCaseTag(
-        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
+        @LoggableResource("caseDefinitionKey") @PathVariable caseDefinitionKey: String,
+        @LoggableResource("caseDefinitionVersionTag") @PathVariable caseDefinitionVersionTag: String,
         @PathVariable caseTagKey: String,
     ) {
         try {
-            caseTagService.delete(caseDefinitionName, caseTagKey)
+            caseTagService.delete(CaseDefinitionId.of(caseDefinitionKey, caseDefinitionVersionTag), caseTagKey)
         } catch (ex: CaseTagInUseException) {
             throw ResponseStatusException(
                 HttpStatus.CONFLICT,
