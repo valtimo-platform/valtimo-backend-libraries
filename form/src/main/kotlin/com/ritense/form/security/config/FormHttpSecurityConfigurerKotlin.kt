@@ -62,12 +62,13 @@ class FormHttpSecurityConfigurerKotlin : HttpSecurityConfigurer {
                             GET,
                             "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form/{name}/exists"
                         ),
-                        antMatcher(
-                            GET,
-                            "/api/v1/form-management"
-                        ),
-
-                        ).hasAuthority(ADMIN)
+                        antMatcher(GET, "/api/v1/form-management"),
+                        antMatcher(GET, "/api/v1/form-management/{formDefinitionId}"),
+                        antMatcher(POST, "/api/v1/form-management"),
+                        antMatcher(PUT, "/api/v1/form-management"),
+                        antMatcher(DELETE, "/api/v1/form-management/{formDefinitionId}"),
+                        antMatcher(GET, "/api/v1/form-management/exists/{name}")
+                    ).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
