@@ -65,6 +65,8 @@ internal class FormProcessLinkActivityHandlerIntTest : BaseIntegrationTest() {
             documentService.createDocument(
                 NewDocumentRequest(
                     "person",
+                    "person",
+                    "1.0.0",
                     objectMapper.readTree(getDocument())
                 )
             ).resultingDocument().get().id()

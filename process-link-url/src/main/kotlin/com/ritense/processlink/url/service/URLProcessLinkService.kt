@@ -31,7 +31,6 @@ import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndStartPro
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.domain.request.Request
 import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
-import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
@@ -43,6 +42,7 @@ import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.service.CamundaTaskService
 import java.util.UUID
 
@@ -79,7 +79,8 @@ class URLProcessLinkService(
             document,
             taskInstanceId,
             documentDefinitionNameToUse,
-            processDefinition.key
+            processDefinition.key,
+            processDefinition.getCaseDefinitionId()
         )
 
         return dispatchRequest(
@@ -123,17 +124,19 @@ class URLProcessLinkService(
         taskInstanceId: String?,
         documentDefinitionName: String,
         processDefinitionKey: String,
+        caseDefinitionId: CaseDefinitionId?
     ): Request {
         return if (processLink.activityType == ActivityTypeWithEventName.START_EVENT_START) {
             if (document == null) {
                 newDocumentAndStartProcessRequest(
                     documentDefinitionName,
-                    processDefinitionKey
+                    processDefinitionKey,
+                    caseDefinitionId
                 )
             } else {
                 modifyDocumentAndStartProcessRequest(
                     document,
-                    processDefinitionKey
+                    processDefinitionKey,
                 )
             }
         } else if (processLink.activityType == ActivityTypeWithEventName.USER_TASK_CREATE) {
@@ -149,11 +152,14 @@ class URLProcessLinkService(
     private fun newDocumentAndStartProcessRequest(
         documentDefinitionName: String,
         processDefinitionKey: String,
+        caseDefinitionId: CaseDefinitionId?,
     ): NewDocumentAndStartProcessRequest {
         return NewDocumentAndStartProcessRequest(
             processDefinitionKey,
             NewDocumentRequest(
                 documentDefinitionName,
+                caseDefinitionId?.key,
+                caseDefinitionId?.versionTag?.version,
                 objectMapper.createObjectNode()
             )
         )
@@ -187,7 +193,7 @@ class URLProcessLinkService(
 
     private fun dispatchRequest(
         request: Request
-    ) : URLSubmissionResult {
+    ): URLSubmissionResult {
         val result = processDocumentService.dispatch(request)
         return if (result.errors().isNotEmpty()) {
             URLSubmissionResult(result.errors().map { it.asString() }, "")
