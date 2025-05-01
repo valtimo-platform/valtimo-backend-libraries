@@ -44,6 +44,6 @@ class CamundaProcessDefinitionImporter(
     }
 
     private companion object {
-        val FILENAME_REGEX = """/bpmn/([^/]+)\.bpmn""".toRegex()
+        val FILENAME_REGEX = """/bpmn/(?:.*/)?(.+)\.bpmn""".toRegex()
     }
 }

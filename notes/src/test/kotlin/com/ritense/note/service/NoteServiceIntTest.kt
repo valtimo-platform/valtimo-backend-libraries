@@ -52,7 +52,12 @@ class NoteServiceIntTest() : BaseIntegrationTest() {
     fun beforeEach() {
         documentId = AuthorizationContext.runWithoutAuthorization {
             documentService.createDocument(
-                NewDocumentRequest(PROFILE_DOCUMENT_DEFINITION_NAME, objectMapper.createObjectNode())
+                NewDocumentRequest(
+                    PROFILE_DOCUMENT_DEFINITION_NAME,
+                    "profile",
+                    "1.0.0",
+                    objectMapper.createObjectNode()
+                )
             ).resultingDocument().get().id()!!.id
         }
 

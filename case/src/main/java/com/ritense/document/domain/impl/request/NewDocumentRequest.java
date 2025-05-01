@@ -32,6 +32,13 @@ public class NewDocumentRequest {
 
     @JsonProperty
     @NotNull
+    private final String caseDefinitionKey;
+
+    @JsonProperty
+    private final String caseDefinitionVersionTag;
+
+    @JsonProperty
+    @NotNull
     private final JsonNode content;
 
     private DocumentRelationRequest documentRelation;
@@ -41,9 +48,13 @@ public class NewDocumentRequest {
     @JsonCreator
     public NewDocumentRequest(
         @JsonProperty(value = "definition", required = true) String documentDefinitionName,
+        @JsonProperty(value = "caseDefinitionKey") String caseDefinitionKey,
+        @JsonProperty(value = "caseDefinitionVersionTag") String caseDefinitionVersionTag,
         @JsonProperty(value = "content", required = true) JsonNode content
     ) {
         this.documentDefinitionName = documentDefinitionName;
+        this.caseDefinitionKey = caseDefinitionKey;
+        this.caseDefinitionVersionTag = caseDefinitionVersionTag;
         this.content = content;
     }
 
@@ -53,6 +64,14 @@ public class NewDocumentRequest {
 
     public JsonNode content() {
         return content;
+    }
+
+    public String caseDefinitionKey() {
+        return caseDefinitionKey;
+    }
+
+    public String caseDefinitionVersionTag() {
+        return caseDefinitionVersionTag;
     }
 
     public NewDocumentRequest withDocumentRelation(DocumentRelationRequest documentRelation) {

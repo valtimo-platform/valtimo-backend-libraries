@@ -101,6 +101,8 @@ public class StartEventListenerImpl extends ReactorExecutionListener implements 
                     if (sourceDocumentId != null) {
                         var newDocumentRequest = new NewDocumentRequest(
                             documentDefinition.get().id().name(),
+                            documentDefinition.get().id().caseDefinitionId().getKey(),
+                            documentDefinition.get().id().caseDefinitionId().getVersionTag().getVersion(),
                             jsonData
                         ).withDocumentRelation(new DocumentRelationRequest(UUID.fromString(sourceDocumentId.toString()),
                             documentRelationType

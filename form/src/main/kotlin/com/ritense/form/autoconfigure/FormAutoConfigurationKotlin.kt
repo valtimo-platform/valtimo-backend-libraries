@@ -19,6 +19,7 @@ package com.ritense.form.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
+import com.ritense.case.service.CaseDefinitionService
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
@@ -104,6 +105,7 @@ class FormAutoConfigurationKotlin {
         prefillFormService: PrefillFormService,
         authorizationService: AuthorizationService,
         valueResolverService: ValueResolverService,
+        caseDefinitionService: CaseDefinitionService,
         objectMapper: ObjectMapper,
     ) = DefaultFormSubmissionService(
         processLinkService,
@@ -118,6 +120,7 @@ class FormAutoConfigurationKotlin {
         prefillFormService,
         authorizationService,
         valueResolverService,
+        caseDefinitionService,
         objectMapper,
     )
 
