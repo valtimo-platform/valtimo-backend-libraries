@@ -34,7 +34,7 @@ class GlobalProcessDefinitionImporter(
 
     override fun import(request: ImportRequest) {
         request.content.inputStream().use {
-            camundaProcessService.deploy(null, fileNameWithoutPath(request.fileName), it)
+            camundaProcessService.deploy(null, fileNameWithoutPath(request.fileName), it, false, true)
         }
     }
 
