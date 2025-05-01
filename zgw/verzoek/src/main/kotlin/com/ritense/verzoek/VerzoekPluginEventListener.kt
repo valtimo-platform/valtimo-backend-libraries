@@ -209,6 +209,8 @@ class VerzoekPluginEventListener(
             documentService.createDocument(
                 NewDocumentRequest(
                     verzoekTypeProperties.caseDefinitionName,
+                    null, // TODO: Fix this, we always want a case definition key and version tag
+                    null,
                     getDocumentContent(verzoekTypeProperties, verzoekObject)
                 )
             )

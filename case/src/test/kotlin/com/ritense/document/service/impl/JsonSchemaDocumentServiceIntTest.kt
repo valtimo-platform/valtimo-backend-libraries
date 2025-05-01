@@ -515,6 +515,8 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
             documentService.createDocument(
                 NewDocumentRequest(
                     definition().id().name(),
+                    definition().id().caseDefinitionId().key,
+                    definition().id().caseDefinitionId().versionTag.version,
                     JsonDocumentContent(content).asJson()
                 )
             )

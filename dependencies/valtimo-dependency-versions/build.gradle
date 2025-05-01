@@ -34,7 +34,6 @@ dependencies {
         api(project(":dashboard"))
         api(project(":data-provider"))
         api(project(":document-generation"))
-        api(project(":external-event"))
         api(project(":exporter"))
         api(project(":mail:flowmailer"))
         api(project(":form"))

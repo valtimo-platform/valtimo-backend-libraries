@@ -102,7 +102,10 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
         testDocument = runWithoutAuthorization {
             documentService.createDocument(
                 NewDocumentRequest(
-                    "house", objectMapper.readTree(documentJson)
+                    "house",
+                    "house",
+                    "1.0.0",
+                    objectMapper.readTree(documentJson)
                 )
             ).resultingDocument().orElseThrow()
         }

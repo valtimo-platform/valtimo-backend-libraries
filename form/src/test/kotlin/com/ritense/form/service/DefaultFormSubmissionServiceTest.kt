@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.AuthorizationSupportedHelper
+import com.ritense.case.service.CaseDefinitionService
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchema
 import com.ritense.document.domain.impl.JsonSchemaDocument
@@ -88,6 +89,7 @@ class DefaultFormSubmissionServiceTest {
     lateinit var documentSequenceGeneratorService: DocumentSequenceGeneratorService
     lateinit var authorizationService: AuthorizationService
     lateinit var valueResolverService: ValueResolverService
+    lateinit var caseDefinitionService: CaseDefinitionService
 
     lateinit var formProcessLink: FormProcessLink
     lateinit var processDefinition: CamundaProcessDefinition
@@ -108,6 +110,7 @@ class DefaultFormSubmissionServiceTest {
         prefillFormService = mock()
         authorizationService = mock()
         valueResolverService = mock()
+        caseDefinitionService = mock()
         mockkObject(AuthorizationSupportedHelper)
         defaultFormSubmissionService = DefaultFormSubmissionService(
             processLinkService,
@@ -122,6 +125,7 @@ class DefaultFormSubmissionServiceTest {
             prefillFormService,
             authorizationService,
             valueResolverService,
+            caseDefinitionService,
             MapperSingleton.get()
         )
 

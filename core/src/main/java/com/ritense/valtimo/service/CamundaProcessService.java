@@ -201,10 +201,34 @@ public class CamundaProcessService {
     }
 
     public ProcessInstanceWithDefinition startProcess(
-        String processDefinitionKey, String businessKey, Map<String, Object> variables
+        String processDefinitionKey,
+        String businessKey,
+        Map<String, Object> variables
+    ) {
+        return startProcess(processDefinitionKey, businessKey, null, variables);
+    }
+
+    public ProcessInstanceWithDefinition startProcess(
+        String processDefinitionKey,
+        String businessKey,
+        CaseDefinitionId caseDefinitionId,
+        Map<String, Object> variables
     ) {
         final CamundaProcessDefinition processDefinition = AuthorizationContext
-            .runWithoutAuthorization(() -> camundaRepositoryService.findLatestProcessDefinition(processDefinitionKey));
+            .runWithoutAuthorization(() -> {
+                if (caseDefinitionId == null) {
+                    return camundaRepositoryService.findLatestProcessDefinition(processDefinitionKey);
+                } else {
+                    // TODO: What to do if we're working on a global process definition? Currently taking latest
+                    CamundaProcessDefinition procDef = camundaRepositoryService.findProcessDefinition(
+                        byKey(processDefinitionKey).and(byVersionTag("CD:" + caseDefinitionId))
+                    );
+                    if (procDef == null) {
+                        procDef = camundaRepositoryService.findLatestProcessDefinition(processDefinitionKey);
+                    }
+                    return procDef;
+                }
+            });
         if (processDefinition == null) {
             throw new IllegalStateException("No process definition found with key: '" + processDefinitionKey + "'");
         }
@@ -450,7 +474,9 @@ public class CamundaProcessService {
         } else if (fileName.endsWith(".dmn")) {
             DmnModelInstance dmnModel = Dmn.readModelFromStream(fileInput);
 
-            setDecisionsVersionTag(dmnModel, caseDefinitionId);
+            if (caseDefinitionId != null) {
+                setDecisionsVersionTag(dmnModel, caseDefinitionId);
+            }
 
             repositoryService.createDeployment().addModelInstance(fileName, dmnModel).deploy();
         } else {

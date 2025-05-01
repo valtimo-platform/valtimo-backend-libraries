@@ -31,7 +31,6 @@ include(
     "document-generation",
     "document-generation:local-document-generation",
     "document-generation:smartdocuments",
-    "external-event",
     "exact-plugin",
     "exporter",
     "form",

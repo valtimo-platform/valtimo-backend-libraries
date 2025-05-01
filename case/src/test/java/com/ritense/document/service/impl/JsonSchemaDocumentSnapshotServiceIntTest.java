@@ -142,6 +142,8 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
         return runWithoutAuthorization(() -> documentService.createDocument(
             new NewDocumentRequest(
                 definition.id().name(),
+                definition.id().caseDefinitionId().getKey(),
+                definition.id().caseDefinitionId().getVersionTag().getVersion(),
                 new JsonDocumentContent(content).asJson()
             )
         )).resultingDocument().orElseThrow();

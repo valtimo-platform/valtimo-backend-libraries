@@ -153,6 +153,8 @@ public abstract class BaseIntegrationTest extends BaseTest {
                 () -> documentService.createDocument(
                     new NewDocumentRequest(
                         documentDefinition.id().name(),
+                        documentDefinition.id().caseDefinitionId().getKey(),
+                        documentDefinition.id().caseDefinitionId().getVersionTag().getVersion(),
                         new JsonDocumentContent(content).asJson()
                     )
                 ).resultingDocument().orElseThrow()

@@ -100,6 +100,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
             var result = documentService.createDocument(
                 new NewDocumentRequest(
                     definition.id().name(),
+                    definition.id().caseDefinitionId().getKey(),
+                    definition.id().caseDefinitionId().getVersionTag().getVersion(),
                     content.asJson()
                 )
             );
@@ -113,6 +115,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
             var result = documentService.createDocument(
                 new NewDocumentRequest(
                     definition.id().name(),
+                    definition.id().caseDefinitionId().getKey(),
+                    definition.id().caseDefinitionId().getVersionTag().getVersion(),
                     content2.asJson()
                 )
             );
@@ -135,6 +139,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
             documentService.createDocument(
                 new NewDocumentRequest(
                     definition.id().name(),
+                    definition.id().caseDefinitionId().getKey(),
+                    definition.id().caseDefinitionId().getVersionTag().getVersion(),
                     new JsonDocumentContent("{\"street\": \"Kalverstraat\",\"place\": \"Amsterdam\"}").asJson()
                 )
             );
@@ -1397,6 +1403,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
             () -> documentService.createDocument(
                 new NewDocumentRequest(
                     definition.id().name(),
+                    definition.id().caseDefinitionId().getKey(),
+                    definition.id().caseDefinitionId().getVersionTag().getVersion(),
                     documentContent.asJson()
                 )
             )
