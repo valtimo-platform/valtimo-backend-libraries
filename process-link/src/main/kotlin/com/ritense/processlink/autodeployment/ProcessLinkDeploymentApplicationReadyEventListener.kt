@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.importer.ImportContext.Companion.runImporter
 import com.ritense.importer.ImportRequest
 import com.ritense.processlink.importer.ProcessLinkImporter
 import java.io.IOException
@@ -56,7 +57,9 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
 
                 val importRequest = ImportRequest(fileName, objectMapper.writeValueAsBytes(resolvedProcessLinkNode))
 
-                processLinkImporter.import(importRequest)
+                runImporter {
+                    processLinkImporter.import(importRequest)
+                }
             } catch (e: Exception) {
                 logger.error(e) { "Error while deploying process-link: '${resource.filename}'" }
             }
