@@ -30,7 +30,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-@JsonFilter("documentContentFilter")
 public interface Document {
 
     @JsonProperty
