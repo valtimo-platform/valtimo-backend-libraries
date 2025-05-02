@@ -204,8 +204,13 @@ class ValtimoCamundaAutoConfiguration {
     fun camundaDecisionService(
         repositoryService: RepositoryService,
         caseDefinitionChecker: CaseDefinitionChecker,
+        camundaByteArrayService: CamundaByteArrayService,
     ): CamundaDecisionService {
-        return CamundaDecisionService(repositoryService, caseDefinitionChecker)
+        return CamundaDecisionService(
+            repositoryService,
+            caseDefinitionChecker,
+            camundaByteArrayService,
+        )
     }
 
     @Bean

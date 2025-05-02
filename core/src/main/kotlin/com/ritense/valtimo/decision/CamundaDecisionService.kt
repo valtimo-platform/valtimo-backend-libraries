@@ -18,6 +18,7 @@ package com.ritense.valtimo.decision
 
 import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.valtimo.service.CamundaByteArrayService
 import mu.KotlinLogging
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.repository.DecisionDefinition
@@ -25,6 +26,7 @@ import org.camunda.bpm.engine.repository.DecisionDefinition
 class CamundaDecisionService(
     private val repositoryService: RepositoryService,
     private val caseDefinitionChecker: CaseDefinitionChecker,
+    private val camundaByteArrayService: CamundaByteArrayService,
 ) {
 
     fun getDecisionDefinitions(caseDefinitionId: CaseDefinitionId): List<DecisionDefinition> {
@@ -71,6 +73,13 @@ class CamundaDecisionService(
         } else {
             repositoryService.deleteDeployment(decisionDefinition.deploymentId)
         }
+    }
+
+    fun getDmnModel(decisionDefinition: DecisionDefinition): ByteArray {
+        return camundaByteArrayService.getByNameAndDeploymentId(
+            decisionDefinition.resourceName,
+            decisionDefinition.deploymentId
+        ).bytes!!
     }
 
     companion object {

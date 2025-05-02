@@ -30,6 +30,7 @@ import com.ritense.processdocument.exporter.ProcessDocumentLinkExporter
 import com.ritense.processdocument.importer.ProcessDocumentLinkImporter
 import com.ritense.processdocument.listener.CaseAssigneeListener
 import com.ritense.processdocument.listener.CaseAssigneeTaskCreatedListener
+import com.ritense.processdocument.listener.DecisionCaseEventListener
 import com.ritense.processdocument.listener.ProcessDefinitionCaseEventListener
 import com.ritense.processdocument.repository.ProcessDefinitionCaseDefinitionRepository
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository
@@ -61,6 +62,7 @@ import com.ritense.valtimo.contract.annotation.ProcessBean
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import com.ritense.valtimo.decision.CamundaDecisionService
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker
@@ -370,5 +372,14 @@ class ProcessDocumentsAutoConfiguration {
         associationService: ProcessDefinitionCaseDefinitionService,
     ): ProcessDefinitionCaseEventListener {
         return ProcessDefinitionCaseEventListener(processService, associationService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DecisionCaseEventListener::class)
+    fun decisionCaseEventListener(
+        decisionService: CamundaDecisionService,
+        processService: CamundaProcessService,
+    ): DecisionCaseEventListener {
+        return DecisionCaseEventListener(decisionService, processService)
     }
 }
