@@ -24,6 +24,7 @@ import com.ritense.valueresolver.ValueResolverService
 import com.ritense.valueresolver.ValueResolverServiceImpl
 import com.ritense.valueresolver.security.config.ValueResolverHttpSecurityConfigurer
 import com.ritense.valueresolver.web.rest.ValueResolverResource
+import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
@@ -66,9 +67,10 @@ class ValueResolverAutoConfiguration {
     @ConditionalOnMissingBean(ProcessVariableValueResolverFactory::class)
     fun processVariableValueResolver(
         runtimeService: RuntimeService,
+        historyService: HistoryService,
         objectMapper: ObjectMapper,
     ): ValueResolverFactory {
-        return ProcessVariableValueResolverFactory(runtimeService, objectMapper)
+        return ProcessVariableValueResolverFactory(runtimeService, historyService, objectMapper)
     }
 
     @Bean
