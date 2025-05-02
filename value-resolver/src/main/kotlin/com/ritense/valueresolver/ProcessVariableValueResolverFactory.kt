@@ -23,8 +23,8 @@ import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.flipkart.zjsonpatch.JsonPatch
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import org.camunda.bpm.engine.RuntimeService
+import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.delegate.VariableScope
-import org.camunda.bpm.engine.impl.context.Context
 import java.util.function.Function
 
 /**
@@ -34,6 +34,7 @@ import java.util.function.Function
  */
 class ProcessVariableValueResolverFactory(
     private val runtimeService: RuntimeService,
+    private val historicService: HistoryService,
     private val objectMapper: ObjectMapper,
 ) : ValueResolverFactory {
 
@@ -62,7 +63,7 @@ class ProcessVariableValueResolverFactory(
     }
 
     override fun createResolver(documentId: String): Function<String, Any?> {
-        val processInstanceIds = runtimeService.createProcessInstanceQuery()
+        val processInstanceIds = historicService.createHistoricProcessInstanceQuery()
             .processInstanceBusinessKey(documentId)
             .list()
             .map { it.id }
@@ -70,7 +71,7 @@ class ProcessVariableValueResolverFactory(
 
         return Function { requestedValue ->
             val jsonPointer = toJsonPointer(requestedValue)
-            val values = runtimeService.createVariableInstanceQuery()
+            val values = historicService.createHistoricVariableInstanceQuery()
                 .processInstanceIdIn(*processInstanceIds)
                 .variableName(jsonPointer.matchingProperty)
                 .list()
