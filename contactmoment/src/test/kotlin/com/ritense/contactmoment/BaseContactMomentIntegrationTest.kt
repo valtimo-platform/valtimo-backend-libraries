@@ -73,6 +73,7 @@ class BaseContactMomentIntegrationTest : BaseIntegrationTest() {
     ): ManageableUser {
         val user = ValtimoUser()
         user.id = id
+        user.username = email
         user.email = email
         user.lastName = lastName
         whenever(userManagementService.currentUser).thenReturn(user)
