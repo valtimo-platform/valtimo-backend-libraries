@@ -18,7 +18,9 @@ package com.ritense.valtimo
 
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.config.ValtimoProperties
+import com.ritense.valtimo.domain.ValtimoApplicationProperty
 import com.ritense.valtimo.repository.ValtimoApplicationPropertyRepository
+import jakarta.annotation.PostConstruct
 import org.springframework.stereotype.Service
 
 @Service
@@ -26,4 +28,11 @@ import org.springframework.stereotype.Service
 class ValtimoApplicationPropertyService(
     val repository: ValtimoApplicationPropertyRepository,
     val valtimoProperties: ValtimoProperties
-)
+) {
+
+    @Deprecated("Since 13.0.0")
+    @PostConstruct
+    fun databaseValidation() {
+        repository.save(ValtimoApplicationProperty("identifierField", "username"))
+    }
+}

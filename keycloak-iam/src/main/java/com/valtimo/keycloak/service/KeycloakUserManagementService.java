@@ -53,9 +53,7 @@ public class KeycloakUserManagementService implements UserManagementService {
     private static final Logger logger = LoggerFactory.getLogger(KeycloakUserManagementService.class);
     protected static final int MAX_USERS = 1000;
     private static final String MAX_USERS_WARNING_MESSAGE = "Maximum number of users retrieved from keycloak: " + MAX_USERS + ".";
-    private static final ValtimoUser SYSTEM_VALTIMO_USER = new ValtimoUserBuilder().id(SYSTEM_ACCOUNT)
-        .lastName(SYSTEM_ACCOUNT)
-        .build();
+    private static final ValtimoUser SYSTEM_VALTIMO_USER = new ValtimoUserBuilder().id(SYSTEM_ACCOUNT).lastName(SYSTEM_ACCOUNT).build();
 
     private final KeycloakService keycloakService;
     private final String clientName;
@@ -158,7 +156,7 @@ public class KeycloakUserManagementService implements UserManagementService {
             (identifier) -> {
                 UserRepresentation user = null;
                 try (Keycloak keycloak = keycloakService.keycloak()) {
-                    var users = keycloakService.usersResource(keycloak).search(userIdentifier);
+                    var users = keycloakService.usersResource(keycloak).searchByUsername(userIdentifier, true);
                     if (!users.isEmpty()) {
                         user = users.get(0);
                     }
@@ -177,7 +175,7 @@ public class KeycloakUserManagementService implements UserManagementService {
             (identifier) -> {
                 UserRepresentation user = null;
                 try (Keycloak keycloak = keycloakService.keycloak()) {
-                    var users = keycloakService.usersResource(keycloak).search(username);
+                    var users = keycloakService.usersResource(keycloak).searchByUsername(username, true);
                     if (!users.isEmpty()) {
                         user = users.get(0);
                     }
@@ -271,13 +269,9 @@ public class KeycloakUserManagementService implements UserManagementService {
         try (Keycloak keycloak = keycloakService.keycloak()) {
             userList = keycloakService
                 .usersResource(keycloak)
-                .search(null, null, null, email, 0, 1, true, true);
+                .searchByEmail(email, true);
         }
-        if (userList.isEmpty() || !Objects.equals(userList.get(0).getEmail(), email)) {
-            return Optional.empty();
-        } else {
-            return Optional.of(userList.get(0));
-        }
+        return userList.stream().findFirst();
     }
 
     private List<UserRepresentation> findUserRepresentationByRole(String authority) {

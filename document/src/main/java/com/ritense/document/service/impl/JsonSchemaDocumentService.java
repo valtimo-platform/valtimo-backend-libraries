@@ -891,8 +891,8 @@ public class JsonSchemaDocumentService implements DocumentService {
             logger.debug("Cannot set assignee for the invalid user id {}", assigneeId);
             throw new IllegalArgumentException("Cannot set assignee for the invalid user id " + assigneeId);
         }
-        var assigneeIdentifier = assignee.getUsername();
-        if (assigneeIdentifier.equals(userManagementService.getCurrentUser().getUsername())) {
+        var assigneeUsername = assignee.getUsername();
+        if (assigneeUsername.equals(userManagementService.getCurrentUser().getUsername())) {
             documents.forEach(document -> {
                 try {
                     authorizationService.requirePermission(
@@ -919,7 +919,7 @@ public class JsonSchemaDocumentService implements DocumentService {
                     );
                 }
 
-                document.setAssignee(assigneeIdentifier, assignee.getFullName());
+                document.setAssignee(assigneeUsername, assignee.getFullName());
             });
         } else {
             authorizationService.requirePermission(
@@ -933,12 +933,12 @@ public class JsonSchemaDocumentService implements DocumentService {
                 new DelegateUserEntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
                     ASSIGNABLE,
-                    assigneeIdentifier,
+                    assigneeUsername,
                     documents
                 )
             );
 
-            documents.forEach(document -> document.setAssignee(assigneeIdentifier, assignee.getFullName()));
+            documents.forEach(document -> document.setAssignee(assigneeUsername, assignee.getFullName()));
         }
         documentRepository.saveAll(documents);
 

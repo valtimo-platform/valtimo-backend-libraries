@@ -16,7 +16,6 @@
 
 package com.valtimo.keycloak.liquibase.changelog
 
-import com.ritense.valtimo.contract.config.ValtimoProperties
 import liquibase.database.Database
 import liquibase.database.jvm.JdbcConnection
 import okhttp3.mockwebserver.Dispatcher
@@ -35,11 +34,11 @@ import org.springframework.mock.env.MockEnvironment
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 
-internal class ChangeLog20240116MigrateTaskAssigneeEmailToUserIdTest {
+internal class ChangeLog20250506MigrateToKeycloakUsernameTest {
 
     lateinit var server: MockWebServer
 
-    lateinit var changeLog: ChangeLog20240116MigrateTaskAssigneeEmailToUserId
+    lateinit var changeLog: ChangeLog20250506MigrateToKeycloakUsername
     lateinit var environment: MockEnvironment
 
 
@@ -56,9 +55,9 @@ internal class ChangeLog20240116MigrateTaskAssigneeEmailToUserIdTest {
             this.setProperty("keycloak.credentials.secret", "example-secret")
         }
 
-        ChangeLog20240116MigrateTaskAssigneeEmailToUserId().postProcessEnvironment(environment, mock())
+        ChangeLog20250506MigrateToKeycloakUsername().postProcessEnvironment(environment, mock())
 
-        changeLog = ChangeLog20240116MigrateTaskAssigneeEmailToUserId()
+        changeLog = ChangeLog20250506MigrateToKeycloakUsername()
     }
 
     @AfterEach
@@ -131,8 +130,8 @@ internal class ChangeLog20240116MigrateTaskAssigneeEmailToUserIdTest {
             override fun dispatch(request: RecordedRequest): MockResponse {
                 val response = when (request.requestLine) {
                     "POST /realms/example-realm/protocol/openid-connect/token HTTP/1.1" -> handleTokenRequest()
-                    "GET /admin/realms/example-realm/users?email=user%40ritense.com&first=0&max=1&enabled=true&briefRepresentation=true HTTP/1.1" -> handleUserSearchRequest()
-                    "GET /admin/realms/example-realm/users?email=notfound%40ritense.com&first=0&max=1&enabled=true&briefRepresentation=true HTTP/1.1" -> handleUserSearchRequestEmpty()
+                    "GET /admin/realms/example-realm/users?email=user%40ritense.com&exact=true HTTP/1.1" -> handleUserSearchRequest()
+                    "GET /admin/realms/example-realm/users?email=notfound%40ritense.com&exact=true HTTP/1.1" -> handleUserSearchRequestEmpty()
                     else -> MockResponse().setResponseCode(404)
                 }
                 return response
