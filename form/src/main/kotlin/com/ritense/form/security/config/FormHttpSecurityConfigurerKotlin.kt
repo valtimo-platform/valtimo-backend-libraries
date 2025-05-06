@@ -38,7 +38,7 @@ class FormHttpSecurityConfigurerKotlin : HttpSecurityConfigurer {
                         antMatcher(DELETE, INTERMEDIATE_BASE_URL)
                     ).authenticated()
                     .requestMatchers(
-      antMatcher(GET, "/api/management/v1/form-option"),
+                        antMatcher(GET, "/api/management/v1/form-option"),
                         antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form-option"),
                         antMatcher(
                             GET,
