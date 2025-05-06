@@ -187,9 +187,9 @@ public class CamundaTaskService {
         } else if (EmailValidator.getInstance().isValid(assignee)) {
             throw new IllegalStateException("Task assignee must be an ID. Not an email: '" + assignee + "'");
         } else {
-            String assigneeIdentifier = userManagementService.findById(assignee).getUserIdentifier();
+            String assigneeUsername = userManagementService.findById(assignee).getUsername();
             final CamundaTask task = runWithoutAuthorization(() -> findTaskById(taskId));
-            final String currentUser = userManagementService.getCurrentUser().getUserIdentifier();
+            final String currentUser = userManagementService.getCurrentUser().getUsername();
             if (assignee.equals(currentUser)) {
                 try {
                     requirePermission(task, CLAIM);
@@ -203,16 +203,16 @@ public class CamundaTaskService {
                     new DelegateUserEntityAuthorizationRequest<>(
                         CamundaTask.class,
                         ASSIGNABLE,
-                        assigneeIdentifier,
+                        assigneeUsername,
                         task
                     )
                 );
             }
             final String currentAssignee = task.getAssignee();
             try {
-                taskService.setAssignee(task.getId(), assigneeIdentifier);
+                taskService.setAssignee(task.getId(), assigneeUsername);
                 entityManager.refresh(task);
-                publishTaskAssignedEvent(task, currentAssignee, assigneeIdentifier);
+                publishTaskAssignedEvent(task, currentAssignee, assigneeUsername);
                 outboxService.send(() -> new TaskAssigned(task.getId(), objectMapper.valueToTree(task)));
             } catch (AuthorizationException ex) {
                 throw new IllegalStateException("Cannot assign task: the user has no permission.", ex);
@@ -627,8 +627,8 @@ public class CamundaTaskService {
         var filterSpec = all();
 
         if (taskFilter == TaskFilter.MINE) {
-            String currentUserId = userManagementService.getCurrentUser().getUserIdentifier();
-            return filterSpec.and(byAssignee(currentUserId));
+            String currentUsername = userManagementService.getCurrentUser().getUsername();
+            return filterSpec.and(byAssignee(currentUsername));
         } else if (taskFilter == TaskFilter.ALL) {
             return filterSpec;
         } else if (taskFilter == TaskFilter.OPEN) {
@@ -639,9 +639,9 @@ public class CamundaTaskService {
     }
 
     private ValtimoUser getValtimoUser(String assigneeId) {
-        return Optional.ofNullable(userManagementService.findByUserIdentifier(assigneeId)).map(user ->
+        return Optional.ofNullable(userManagementService.findByUsername(assigneeId)).map(user ->
                 new ValtimoUserBuilder()
-                    .id(user.getUserIdentifier())
+                    .id(user.getUsername())
                     .firstName(user.getFirstName())
                     .lastName(user.getLastName())
                     .build())

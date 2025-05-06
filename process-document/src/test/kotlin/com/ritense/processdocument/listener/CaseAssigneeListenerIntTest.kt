@@ -117,10 +117,10 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
     fun `should set assignee when task is created and autoAssignTasks is on`() {
 
         whenever(userManagementService.findById(any())).thenReturn(testUser)
-        whenever(userManagementService.findByUserIdentifier(any())).thenReturn(testUser)
+        whenever(userManagementService.findByUsername(any())).thenReturn(testUser)
         whenever(userManagementService.currentUser).thenReturn(testUser)
 
-        runWithoutAuthorization { documentService.assignUserToDocument(testDocument.id().id, testUser.userIdentifier) }
+        runWithoutAuthorization { documentService.assignUserToDocument(testDocument.id().id, testUser.username) }
         val processInstance = runtimeService.startProcessInstanceByKey(
             "parent-process",
             testDocument.id().toString()
@@ -136,7 +136,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
         val task = runWithoutAuthorization {
             taskService.findTask(byName("child process user task"))
         }
-        assertEquals(task.assignee, testUser.userIdentifier)
+        assertEquals(task.assignee, testUser.username)
     }
 
     @Test
@@ -152,11 +152,11 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
         }
 
         whenever(userManagementService.findById(any())).thenReturn(testUser)
-        whenever(userManagementService.findByUserIdentifier(any())).thenReturn(testUser)
+        whenever(userManagementService.findByUsername(any())).thenReturn(testUser)
         whenever(userManagementService.currentUser).thenReturn(testUser)
 
         val task = runWithoutAuthorization {
-            documentService.assignUserToDocument(testDocument.id().id, testUser.userIdentifier)
+            documentService.assignUserToDocument(testDocument.id().id, testUser.username)
             val processInstance = runtimeService.startProcessInstanceByKey(
                 "parent-process",
                 testDocument.id().toString()
@@ -177,11 +177,11 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
     fun `should should update task assignee when document assignee is changed`() {
 
         whenever(userManagementService.findById(any())).thenReturn(testUser)
-        whenever(userManagementService.findByUserIdentifier(any())).thenReturn(testUser, testUser2)
+        whenever(userManagementService.findByUsername(any())).thenReturn(testUser, testUser2)
         whenever(userManagementService.currentUser).thenReturn(testUser)
 
         val updatedTask = runWithoutAuthorization {
-            documentService.assignUserToDocument(testDocument.id().id, testUser.userIdentifier)
+            documentService.assignUserToDocument(testDocument.id().id, testUser.username)
             val processInstance = runtimeService.startProcessInstanceByKey(
                 "parent-process",
                 testDocument.id().toString()
@@ -193,11 +193,11 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
                 "parent process"
             )
 
-            documentService.assignUserToDocument(testDocument.id().id, testUser2.userIdentifier)
+            documentService.assignUserToDocument(testDocument.id().id, testUser2.username)
 
             taskService.findTask(byName("child process user task"))
         }
-        assertEquals(updatedTask.assignee, testUser2.userIdentifier)
+        assertEquals(updatedTask.assignee, testUser2.username)
     }
 
     @Test
@@ -205,11 +205,11 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
     fun `should should remove task assignee when document assignee is removed`() {
 
         whenever(userManagementService.findById(any())).thenReturn(testUser)
-        whenever(userManagementService.findByUserIdentifier(any())).thenReturn(testUser)
+        whenever(userManagementService.findByUsername(any())).thenReturn(testUser)
         whenever(userManagementService.currentUser).thenReturn(testUser)
 
         val task = runWithoutAuthorization {
-            documentService.assignUserToDocument(testDocument.id().id, testUser.userIdentifier)
+            documentService.assignUserToDocument(testDocument.id().id, testUser.username)
             val processInstance = runtimeService.startProcessInstanceByKey(
                 "parent-process",
                 testDocument.id().toString()

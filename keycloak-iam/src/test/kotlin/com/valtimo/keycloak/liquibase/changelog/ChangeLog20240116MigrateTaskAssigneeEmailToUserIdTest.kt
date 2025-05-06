@@ -67,29 +67,7 @@ internal class ChangeLog20240116MigrateTaskAssigneeEmailToUserIdTest {
     }
 
     @Test
-    fun `should execute changelog for USERID`() {
-        val database = mock<Database>()
-        val connection = mock<JdbcConnection>(defaultAnswer = RETURNS_DEEP_STUBS)
-        val resultSet = mock<ResultSet>()
-        val updateTaskTable = mock<PreparedStatement>()
-        whenever(database.connection).thenReturn(connection)
-        whenever(connection.prepareStatement("SELECT id_,assignee_ FROM act_ru_task").executeQuery())
-            .thenReturn(resultSet)
-        whenever(resultSet.next()).thenReturn(true).thenReturn(false)
-        whenever(resultSet.getString("id_")).thenReturn("my-task-id-1")
-        whenever(resultSet.getString("assignee_")).thenReturn("user@ritense.com")
-        whenever(connection.prepareStatement("UPDATE act_ru_task SET assignee_ = ? WHERE id_ = ?"))
-            .thenReturn(updateTaskTable)
-
-        changeLog.execute(database)
-
-        verify(updateTaskTable).setString(1, "user-id-1")
-        verify(updateTaskTable).setString(2, "my-task-id-1")
-    }
-
-    @Test
     fun `should execute changelog for USERNAME`() {
-        environment.setProperty("valtimo.oauth.identifier-field", ValtimoProperties.IdentifierField.USERNAME.toString())
         val database = mock<Database>()
         val connection = mock<JdbcConnection>(defaultAnswer = RETURNS_DEEP_STUBS)
         val resultSet = mock<ResultSet>()

@@ -21,7 +21,6 @@ import static java.util.Comparator.comparing;
 import static java.util.Comparator.naturalOrder;
 import static java.util.Comparator.nullsLast;
 
-import com.ritense.valtimo.contract.OauthConfigHolder;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
@@ -54,7 +53,9 @@ public class KeycloakUserManagementService implements UserManagementService {
     private static final Logger logger = LoggerFactory.getLogger(KeycloakUserManagementService.class);
     protected static final int MAX_USERS = 1000;
     private static final String MAX_USERS_WARNING_MESSAGE = "Maximum number of users retrieved from keycloak: " + MAX_USERS + ".";
-    private static final ValtimoUser SYSTEM_VALTIMO_USER = new ValtimoUserBuilder().id(SYSTEM_ACCOUNT).lastName(SYSTEM_ACCOUNT).build();
+    private static final ValtimoUser SYSTEM_VALTIMO_USER = new ValtimoUserBuilder().id(SYSTEM_ACCOUNT)
+        .lastName(SYSTEM_ACCOUNT)
+        .build();
 
     private final KeycloakService keycloakService;
     private final String clientName;
@@ -150,22 +151,35 @@ public class KeycloakUserManagementService implements UserManagementService {
     }
 
     @Override
-    public ValtimoUser findByUserIdentifier(String userIdentifier) {
+    public ValtimoUser findByIdentifier(String userIdentifier) {
         return userCache.get(
             CacheType.USER_IDENTIFIER,
             userIdentifier,
             (identifier) -> {
                 UserRepresentation user = null;
                 try (Keycloak keycloak = keycloakService.keycloak()) {
-                    switch (OauthConfigHolder.getCurrentInstance().getIdentifierField()) {
-                        case USERID ->
-                            user = keycloakService.usersResource(keycloak).get(userIdentifier).toRepresentation();
-                        case USERNAME -> {
-                            var users = keycloakService.usersResource(keycloak).search(userIdentifier);
-                            if (!users.isEmpty()) {
-                                user = users.get(0);
-                            }
-                        }
+                    var users = keycloakService.usersResource(keycloak).search(userIdentifier);
+                    if (!users.isEmpty()) {
+                        user = users.get(0);
+                    }
+                }
+                Boolean isUserEnabled = user != null ? user.isEnabled() : null;
+                return Boolean.TRUE.equals(isUserEnabled) ? toValtimoUserByRetrievingRoles(user) : null;
+            }
+        );
+    }
+
+    @Override
+    public ValtimoUser findByUsername(String username) {
+        return userCache.get(
+            CacheType.USER_IDENTIFIER,
+            username,
+            (identifier) -> {
+                UserRepresentation user = null;
+                try (Keycloak keycloak = keycloakService.keycloak()) {
+                    var users = keycloakService.usersResource(keycloak).search(username);
+                    if (!users.isEmpty()) {
+                        user = users.get(0);
                     }
                 }
                 Boolean isUserEnabled = user != null ? user.isEnabled() : null;

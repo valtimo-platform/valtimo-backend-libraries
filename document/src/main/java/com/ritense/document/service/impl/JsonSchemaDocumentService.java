@@ -584,7 +584,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         }
         var assignee = userManagementService.getCurrentUser();
 
-        document.setAssignee(assignee.getUserIdentifier(), assignee.getFullName());
+        document.setAssignee(assignee.getUsername(), assignee.getFullName());
         documentRepository.save(document);
 
         // Publish an event to update the audit log
@@ -614,7 +614,7 @@ public class JsonSchemaDocumentService implements DocumentService {
             logger.debug("Cannot set assignee for the invalid user id {}", assigneeId);
             throw new IllegalArgumentException("Cannot set assignee for the invalid user id " + assigneeId);
         }
-        if (assignee.getUserIdentifier().equals(userManagementService.getCurrentUser().getUserIdentifier())) {
+        if (assignee.getUsername().equals(userManagementService.getCurrentUser().getUsername())) {
             try {
                 authorizationService.requirePermission(
                     new EntityAuthorizationRequest<>(
@@ -651,13 +651,13 @@ public class JsonSchemaDocumentService implements DocumentService {
                 new DelegateUserEntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
                     ASSIGNABLE,
-                    assignee.getUserIdentifier(),
+                    assignee.getUsername(),
                     document
                 )
             );
         }
 
-        document.setAssignee(assignee.getUserIdentifier(), assignee.getFullName());
+        document.setAssignee(assignee.getUsername(), assignee.getFullName());
         documentRepository.save(document);
 
         // Publish an event to update the audit log
@@ -891,8 +891,8 @@ public class JsonSchemaDocumentService implements DocumentService {
             logger.debug("Cannot set assignee for the invalid user id {}", assigneeId);
             throw new IllegalArgumentException("Cannot set assignee for the invalid user id " + assigneeId);
         }
-        var assigneeIdentifier = assignee.getUserIdentifier();
-        if (assigneeIdentifier.equals(userManagementService.getCurrentUser().getUserIdentifier())) {
+        var assigneeIdentifier = assignee.getUsername();
+        if (assigneeIdentifier.equals(userManagementService.getCurrentUser().getUsername())) {
             documents.forEach(document -> {
                 try {
                     authorizationService.requirePermission(

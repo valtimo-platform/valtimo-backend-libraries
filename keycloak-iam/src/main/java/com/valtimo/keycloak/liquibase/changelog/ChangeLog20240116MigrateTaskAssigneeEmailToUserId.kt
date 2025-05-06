@@ -16,9 +16,6 @@
 
 package com.valtimo.keycloak.liquibase.changelog
 
-import com.ritense.valtimo.contract.config.ValtimoProperties.IdentifierField
-import com.ritense.valtimo.contract.config.ValtimoProperties.IdentifierField.USERID
-import com.ritense.valtimo.contract.config.ValtimoProperties.IdentifierField.USERNAME
 import liquibase.change.custom.CustomTaskChange
 import liquibase.database.Database
 import liquibase.database.jvm.JdbcConnection
@@ -36,8 +33,6 @@ import org.springframework.core.env.ConfigurableEnvironment
 import org.springframework.core.env.Environment
 
 class ChangeLog20240116MigrateTaskAssigneeEmailToUserId : CustomTaskChange, EnvironmentPostProcessor {
-
-    private val identifierField by lazy { IdentifierField.fromString(environment.getProperty("valtimo.oauth.identifier-field", USERID.toString())) }
 
     override fun postProcessEnvironment(environment: ConfigurableEnvironment, application: SpringApplication) {
         Companion.environment = environment
@@ -61,11 +56,13 @@ class ChangeLog20240116MigrateTaskAssigneeEmailToUserId : CustomTaskChange, Envi
                         val assigneeValue = getKeycloakUserIdByEmail(taskAssigneeEmail)
                         updateTaskInDatabase(connection, taskId, assigneeValue)
                     } catch (_: KeycloakUserNotFoundException) {
-                        logger.error { "Could not find user for task '$taskId'. Unknown email: '$taskAssigneeEmail'." +
-                            "Unassigning user from task." }
+                        logger.error {
+                            "Could not find user for task '$taskId'. Unknown email: '$taskAssigneeEmail'." +
+                                "Unassigning user from task."
+                        }
                         updateTaskInDatabase(connection, taskId, null)
                     } catch (ex: Exception) {
-                        logger.error(ex) { "Something went wrong when updating assignee for task '$taskId'. Aborting task update."}
+                        logger.error(ex) { "Something went wrong when updating assignee for task '$taskId'. Aborting task update." }
                     }
                 }
             }
@@ -95,14 +92,11 @@ class ChangeLog20240116MigrateTaskAssigneeEmailToUserId : CustomTaskChange, Envi
                 .search(null, null, null, email, 0, 1, true, true)
         }.firstOrNull { it.email == email }
 
-        if(user == null) {
+        if (user == null) {
             throw KeycloakUserNotFoundException(email)
         }
 
-        return when(identifierField) {
-            USERID -> user.id
-            USERNAME -> user.username
-        }
+        return user.username
     }
 
     private fun keycloak(): Keycloak {

@@ -125,11 +125,11 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
-    void shouldFindAssignedTasksByUserIdentifier() {
+    void shouldFindAssignedTasksByUsername() {
         ManageableUser user = mock();
-        when(user.getUserIdentifier()).thenReturn("user+1@ritense.com");
+        when(user.getUsername()).thenReturn("user+1@ritense.com");
         when(userManagementService.getCurrentUser()).thenReturn(user);
-        startProcessAndModifyTask(task1 -> task1.setAssignee(user.getUserIdentifier()));
+        startProcessAndModifyTask(task1 -> task1.setAssignee(user.getUsername()));
 
         var pagedTasks = camundaTaskService.findTasksFiltered(
             CamundaTaskService.TaskFilter.MINE,
@@ -138,7 +138,7 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
         assertThat(pagedTasks.getTotalElements()).isEqualTo(1);
         var task = pagedTasks.get().findFirst().orElseThrow();
-        assertThat(task.getAssignee()).isEqualTo(user.getUserIdentifier());
+        assertThat(task.getAssignee()).isEqualTo(user.getUsername());
         assertThat(task.getBusinessKey()).isEqualTo(businessKey);
         assertThat(task.getProcessDefinitionKey()).isEqualTo(processDefinitionKey);
         assertThat(task.getContext()).isNull();

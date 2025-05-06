@@ -46,7 +46,7 @@ class CaseAssigneeListener(
         val caseSettings = caseDefinitionService.getCaseSettings(document.definitionId().name())
 
         if (caseSettings.canHaveAssignee && caseSettings.autoAssignTasks) {
-            val assignee = userManagementService.findByUserIdentifier(document.assigneeId())
+            val assignee = userManagementService.findByUsername(document.assigneeId())
             val tasks = camundaTaskService.findTasks(
                 byProcessInstanceBusinessKey(document.id().toString())
                     .and(byCandidateGroups(assignee.roles))

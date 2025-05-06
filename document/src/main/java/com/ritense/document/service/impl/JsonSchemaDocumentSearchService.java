@@ -350,7 +350,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
     private Predicate getAssigneeFilterPredicate(CriteriaBuilder cb, Root<JsonSchemaDocument> documentRoot, AssigneeFilter assigneeFilter) {
         var caseAssigneeIdColumn = documentRoot.get(ASSIGNEE_ID);
-        var userId = userManagementService.getCurrentUser().getUserIdentifier();
+        var userId = userManagementService.getCurrentUser().getUsername();
 
         return switch (assigneeFilter) {
             case MINE -> cb.equal(caseAssigneeIdColumn, userId);

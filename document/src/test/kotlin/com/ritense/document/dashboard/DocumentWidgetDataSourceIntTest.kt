@@ -49,8 +49,8 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
         whenever(userManagementService.currentUser.email)
             .thenReturn(mockedUserEmail)
 
-        whenever(userManagementService.currentUser.userIdentifier)
-            .thenReturn(mockedUserIdentifier)
+        whenever(userManagementService.currentUser.username)
+            .thenReturn(mockedUsername)
     }
 
     @Test
@@ -438,7 +438,7 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
 
         val definition = definition()
 
-        createDocument(definition, "", mockedUserIdentifier)
+        createDocument(definition, "", mockedUsername)
 
         val documentDefinitionName = definition.id().name()
 
@@ -448,7 +448,7 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
                 QueryCondition(
                     "doc:userInfo",
                     ExpressionOperator.EQUAL_TO,
-                    "\${currentUserIdentifier}"
+                    "\${currentUsername}"
                 ),
             )
         )
@@ -459,7 +459,7 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
                 QueryCondition(
                     "doc:userInfo",
                     ExpressionOperator.NOT_EQUAL_TO,
-                    "\${currentUserIdentifier}"
+                    "\${currentUsername}"
                 ),
             )
         )
@@ -503,6 +503,6 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
     companion object {
         private val mockedUserId = "mockUserId"
         private val mockedUserEmail = "mockUserEmail"
-        private val mockedUserIdentifier = "mockUserIdentifier"
+        private val mockedUsername = "mockUsername"
     }
 }
