@@ -38,6 +38,7 @@ import com.ritense.form.service.PrefillFormService
 import com.ritense.form.service.impl.DefaultFormSubmissionService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.form.validation.FormDefinitionExistsValidator
+import com.ritense.form.web.rest.FormOptionResource
 import com.ritense.form.web.rest.FormResource
 import com.ritense.form.web.rest.IntermediateSubmissionResource
 import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
@@ -169,5 +170,13 @@ class FormAutoConfigurationKotlin {
         intermediateSubmissionService: IntermediateSubmissionService
     ) = IntermediateSubmissionResource(
         intermediateSubmissionService
+    )
+
+    @Bean
+    @ConditionalOnMissingBean(FormOptionResource::class)
+    fun formOptionResource(
+        formDefinitionService: FormDefinitionService
+    ) = FormOptionResource(
+        formDefinitionService
     )
 }

@@ -48,8 +48,16 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     }
 
     @Override
-    public List<FormOption> getAllFormOptions() {
-        return formDefinitionRepository.findAllByOrderByNameAsc()
+    public List<FormOption> getUnlinkedFormOptions() {
+        return formDefinitionRepository.findAllByCaseDefinitionIdIsNullOrderByNameAsc()
+            .stream()
+            .map(formIoFormDefinition -> new FormOption(formIoFormDefinition.getId(), formIoFormDefinition.getName()))
+            .toList();
+    }
+
+    @Override
+    public List<FormOption> getFormOptionsForCaseDefinition(CaseDefinitionId caseDefinitionId) {
+        return formDefinitionRepository.findAllByCaseDefinitionIdOrderByNameAsc(caseDefinitionId)
             .stream()
             .map(formIoFormDefinition -> new FormOption(formIoFormDefinition.getId(), formIoFormDefinition.getName()))
             .toList();
