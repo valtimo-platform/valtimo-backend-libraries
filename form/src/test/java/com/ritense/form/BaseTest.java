@@ -52,7 +52,11 @@ public abstract class BaseTest {
     }
 
     protected FormIoFormDefinition formDefinition(UUID id, String formName) {
-        return new FormIoFormDefinition(id, formName, "{}", CaseDefinitionId.of("person", "1.0.0"), false);
+        return formDefinition(id, formName, CaseDefinitionId.of("person", "1.0.0"));
+    }
+
+    protected FormIoFormDefinition formDefinition(UUID id, String formName, CaseDefinitionId caseDefinitionId) {
+        return new FormIoFormDefinition(id, formName, "{}", caseDefinitionId, false);
     }
 
     protected FormIoFormDefinition formDefinitionOf(String formDefinitionId) throws IOException {

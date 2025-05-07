@@ -29,10 +29,8 @@ import com.ritense.form.service.FormLoaderService;
 import com.ritense.form.service.PrefillFormService;
 import com.ritense.form.service.impl.FormIoFormDefinitionService;
 import com.ritense.form.service.impl.FormIoFormLoaderService;
-import com.ritense.form.web.rest.FormDefinitionResource;
 import com.ritense.form.web.rest.FormFileResource;
 import com.ritense.form.web.rest.FormManagementResource;
-import com.ritense.form.web.rest.impl.FormIoFormDefinitionResource;
 import com.ritense.form.web.rest.impl.FormIoFormFileResource;
 import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
@@ -110,12 +108,6 @@ public class FormAutoConfiguration {
     @ConditionalOnMissingBean(FormManagementResource.class)
     public FormManagementResource formManagementResource(FormDefinitionService formDefinitionService) {
         return new FormManagementResource(formDefinitionService);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(FormDefinitionResource.class)
-    public FormDefinitionResource formDefinitionResource(FormDefinitionService formDefinitionService) {
-        return new FormIoFormDefinitionResource(formDefinitionService);
     }
 
     @Bean("formSpringContextHelper")

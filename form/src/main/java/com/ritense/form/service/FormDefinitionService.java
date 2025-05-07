@@ -31,7 +31,9 @@ public interface FormDefinitionService {
 
     Page<? extends FormDefinition> getAll(Pageable pageable);
 
-    List<FormOption> getAllFormOptions();
+    List<FormOption> getUnlinkedFormOptions();
+
+    List<FormOption> getFormOptionsForCaseDefinition(CaseDefinitionId caseDefinitionId);
 
     Page<? extends FormDefinition> queryFormDefinitions(String searchTerm, Pageable pageable);
 
