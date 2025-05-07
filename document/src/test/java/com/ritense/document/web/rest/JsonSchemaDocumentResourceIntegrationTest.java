@@ -95,7 +95,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         when(userManagementService.findById(user.getId())).thenReturn(user);
         when(userManagementService.getCurrentUser()).thenReturn(loggedInUser);
 
-        var postContent = "{ \"assigneeId\": \"" + user.getUsername() + "\"}";
+        var postContent = "{ \"assigneeId\": \"" + user.getId() + "\"}";
 
         mockMvc.perform(
                 post("/api/v1/document/{documentId}/assign", document.id().getId().toString())
