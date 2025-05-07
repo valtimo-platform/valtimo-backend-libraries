@@ -18,6 +18,7 @@ package com.ritense.document.service.impl;
 
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
 import static com.ritense.logging.LoggingContextKt.withLoggingContext;
+import static com.ritense.valtimo.contract.database.ExpressionHelper.cast;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
 
@@ -457,7 +458,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         AdvancedSearchRequest.OtherFilter searchCriteria
     ) {
         var documentColumnName = searchCriteria.getPath().substring(CASE_PREFIX.length());
-        return documentRoot.get(documentColumnName).as(searchCriteria.getDataType());
+        return cast(documentRoot.get(documentColumnName), searchCriteria.getDataType());
     }
 
     @SuppressWarnings("unchecked")
@@ -500,7 +501,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
     private <T extends Comparable<? super T>> Predicate searchGreaterThanOrEqualTo(CriteriaBuilder cb, Expression<T> documentValue, T rangeFrom) {
         if (rangeFrom instanceof TemporalAccessor) {
-            var documentValueTimestamp = documentValue.as(java.util.Date.class);
+            var documentValueTimestamp = cast(documentValue, java.util.Date.class);
             return cb.greaterThanOrEqualTo(documentValueTimestamp, toJavaUtilDate(rangeFrom));
         } else {
             return cb.greaterThanOrEqualTo(documentValue, cb.literal(rangeFrom));
@@ -509,7 +510,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
     private <T extends Comparable<? super T>> Predicate searchLessThanOrEqualTo(CriteriaBuilder cb, Expression<T> documentValue, T rangeTo) {
         if (rangeTo instanceof TemporalAccessor) {
-            var documentValueTimestamp = documentValue.as(java.util.Date.class);
+            var documentValueTimestamp = cast(documentValue, java.util.Date.class);
             return cb.lessThanOrEqualTo(documentValueTimestamp, toJavaUtilDate(rangeTo));
         } else {
             return cb.lessThanOrEqualTo(documentValue, cb.literal(rangeTo));
@@ -518,7 +519,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
     private <T extends Comparable<? super T>> Predicate searchBetween(CriteriaBuilder cb, Expression<T> documentValue, T rangeFrom, T rangeTo) {
         if (rangeFrom instanceof TemporalAccessor) {
-            var documentValueTimestamp = documentValue.as(java.util.Date.class);
+            var documentValueTimestamp = cast(documentValue, java.util.Date.class);
             return cb.between(documentValueTimestamp, toJavaUtilDate(rangeFrom), toJavaUtilDate(rangeTo));
         } else {
             return cb.between(documentValue, cb.literal(rangeFrom), cb.literal(rangeTo));

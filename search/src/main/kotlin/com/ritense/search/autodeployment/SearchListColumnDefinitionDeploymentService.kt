@@ -21,7 +21,7 @@ import com.ritense.search.domain.SearchListColumn
 import com.ritense.search.domain.SearchListColumnConfigurationAutoDeploymentFinishedEvent
 import com.ritense.search.service.SearchListColumnService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.event.EventListener

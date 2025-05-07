@@ -55,7 +55,6 @@ import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker;
-import jakarta.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -67,9 +66,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.event.ApplicationEvents;
 import org.springframework.test.context.event.RecordApplicationEvents;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -80,43 +79,43 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @RecordApplicationEvents
 public abstract class BaseIntegrationTest extends BaseTest {
 
-    @Inject
+    @Autowired
     protected DocumentDefinitionService documentDefinitionService;
 
-    @Inject
+    @Autowired
     protected DocumentService documentService;
 
-    @SpyBean
+    @MockitoSpyBean
     protected JsonSchemaDocumentRepository documentRepository;
 
-    @Inject
+    @Autowired
     protected DocumentSearchService documentSearchService;
 
-    @Inject
+    @Autowired
     protected SearchFieldService searchFieldService;
 
-    @Inject
+    @Autowired
     protected SearchFieldRepository searchFieldRepository;
 
-    @Inject
+    @Autowired
     protected RoleRepository roleRepository;
 
-    @Inject
+    @Autowired
     protected PermissionRepository permissionRepository;
 
-    @MockBean
+    @MockitoBean
     public ResourceService resourceService;
 
-    @MockBean(answer = Answers.RETURNS_DEEP_STUBS)
+    @MockitoBean(answers = Answers.RETURNS_DEEP_STUBS)
     protected UserManagementService userManagementService;
 
-    @MockBean
+    @MockitoBean
     public SimpleApplicationEventMulticaster applicationEventMulticaster;
 
-    @MockBean
+    @MockitoBean
     public ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker;
 
-    @SpyBean
+    @MockitoSpyBean
     protected OutboxService outboxService;
 
     @Autowired

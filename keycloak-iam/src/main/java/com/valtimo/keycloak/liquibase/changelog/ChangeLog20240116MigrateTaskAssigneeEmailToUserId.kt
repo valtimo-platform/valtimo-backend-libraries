@@ -19,12 +19,12 @@ package com.valtimo.keycloak.liquibase.changelog
 import com.ritense.valtimo.contract.config.ValtimoProperties.IdentifierField
 import com.ritense.valtimo.contract.config.ValtimoProperties.IdentifierField.USERID
 import com.ritense.valtimo.contract.config.ValtimoProperties.IdentifierField.USERNAME
+import io.github.oshai.kotlinlogging.KotlinLogging
 import liquibase.change.custom.CustomTaskChange
 import liquibase.database.Database
 import liquibase.database.jvm.JdbcConnection
 import liquibase.exception.ValidationErrors
 import liquibase.resource.ResourceAccessor
-import mu.KotlinLogging
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl
 import org.keycloak.OAuth2Constants.CLIENT_CREDENTIALS
 import org.keycloak.admin.client.Keycloak

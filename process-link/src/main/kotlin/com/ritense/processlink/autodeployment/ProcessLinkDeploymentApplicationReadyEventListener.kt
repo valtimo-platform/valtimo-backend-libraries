@@ -23,9 +23,7 @@ import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.importer.ImportRequest
 import com.ritense.processlink.importer.ProcessLinkImporter
-import java.io.IOException
-import mu.KLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.core.Ordered
@@ -34,6 +32,7 @@ import org.springframework.core.env.Environment
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
+import java.io.IOException
 
 open class ProcessLinkDeploymentApplicationReadyEventListener(
     private val resourceLoader: ResourceLoader,
@@ -106,7 +105,7 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
     }
 
     companion object {
-        private val logger: KLogger = KotlinLogging.logger {}
+        private val logger = KotlinLogging.logger {}
         const val PATH = "classpath*:**/*.processlink.json"
     }
 }

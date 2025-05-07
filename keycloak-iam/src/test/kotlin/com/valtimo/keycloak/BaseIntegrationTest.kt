@@ -23,11 +23,11 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpStatus.OK
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.oauth2.client.registration.ClientRegistrations
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.client.ExpectedCount
 import org.springframework.test.web.client.MockRestServiceServer
@@ -45,13 +45,13 @@ import kotlin.reflect.jvm.isAccessible
 @Tag("integration")
 abstract class BaseIntegrationTest {
 
-    @MockBean
+    @MockitoBean
     lateinit var processDefinitionCaseDefinitionLinker: ProcessDefinitionCaseDefinitionLinker
 
-    @MockBean
+    @MockitoBean
     lateinit var mailSender: MailSender
 
-    @MockBean
+    @MockitoBean
     lateinit var userManagementService: UserManagementService
 
     companion object {

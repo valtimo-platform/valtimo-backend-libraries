@@ -26,8 +26,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.event.EventListener;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @Tag("integration")
 class ProcessInstanceEventHandlerIntTest extends BaseIntegrationTest {
@@ -35,7 +35,7 @@ class ProcessInstanceEventHandlerIntTest extends BaseIntegrationTest {
     @Autowired
     private RuntimeService runtimeService;
 
-    @MockBean
+    @MockitoBean
     private AuditEventListener auditEventListener;
 
     @Test

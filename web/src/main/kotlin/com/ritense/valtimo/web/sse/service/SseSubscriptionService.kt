@@ -22,7 +22,7 @@ import com.ritense.valtimo.web.sse.domain.Subscriber
 import com.ritense.valtimo.web.sse.domain.SubscriberHandler
 import com.ritense.valtimo.web.sse.event.BaseSseEvent
 import com.ritense.valtimo.web.sse.event.EstablishedConnectionSseEvent
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.time.Duration
 import java.util.UUID
 

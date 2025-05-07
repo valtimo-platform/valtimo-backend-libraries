@@ -29,3 +29,6 @@ spring-actuator:
 valtimo:
     plugin:
         encryption-secret: "abcdefghijklmnop"
+logging:
+    level:
+        org.hibernate.orm.jdbc.bind: trace

@@ -19,15 +19,12 @@ package com.ritense.formflow
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.formflow.json.MapperSingleton
 import com.ritense.resource.service.ResourceService
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.runApplication
 import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Bean
-import java.util.function.Supplier
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 
 @SpringBootApplication
 class TestApplication {
@@ -39,7 +36,7 @@ class TestApplication {
     @TestConfiguration
     class TestConfig {
 
-        @MockBean
+        @MockitoBean
         lateinit var resourceService: ResourceService
 
         @Bean

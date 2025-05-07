@@ -1093,6 +1093,36 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
+    void shouldNotThrowErrorWhenDateIsNull() {
+        documentRepository.deleteAllInBatch();
+
+        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"1999-10-23\"}").resultingDocument()
+            .orElseThrow();
+        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": null}").resultingDocument()
+            .orElseThrow();
+        createDocument("{\"street\": \"Funenpark\"}, \"registrationDate\": \"\"").resultingDocument()
+            .orElseThrow();
+        createDocument("{\"street\": \"Funenpark\"}").resultingDocument()
+            .orElseThrow();
+
+        var searchRequest = new AdvancedSearchRequest()
+            .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
+                .addValue(LocalDate.of(1999, 10, 23))
+                .searchType(EQUAL)
+                .path("doc:registrationDate"));
+
+        var result = documentSearchService.search(
+            definition.id().name(),
+            searchRequest,
+            PageRequest.of(0, 10, Sort.by(Direction.DESC, "doc:street"))
+        );
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTotalElements()).isEqualTo(1);
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldSearchWithSearchRequestWithIn() {
         documentRepository.deleteAllInBatch();
 

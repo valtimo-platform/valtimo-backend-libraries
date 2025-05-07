@@ -22,7 +22,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.kotlin.OngoingStubbingKt.whenever;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -66,9 +65,9 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -79,10 +78,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 class ProcessDocumentResourceTest extends BaseTest {
     private static final String PROCESS_INSTANCE_ID = UUID.randomUUID().toString();
 
-    @MockBean
+    @MockitoBean
     private CamundaProcessJsonSchemaDocumentService processDocumentService;
 
-    @MockBean
+    @MockitoBean
     private CamundaProcessJsonSchemaDocumentAssociationService processDocumentAssociationService;
 
     private MockMvc mockMvc;
