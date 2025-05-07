@@ -209,10 +209,6 @@ valtimo:
                     - "*"
             paths:
                 - "/**"
-    openklant:
-        url: "http://localhost:8006"
-        clientId: "valtimo_client"
-        rsin: "051845623"
 
     genericTemplateName: "template-name"
     besluitDocumentRequired: true
