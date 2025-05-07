@@ -17,12 +17,12 @@
 package com.ritense.resource.web.rest
 
 import com.ritense.resource.BaseIntegrationTest
+import com.ritense.resource.domain.TemporaryResourceUploadedEvent
+import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.temporaryresource.domain.ResourceStorageMetadata
 import com.ritense.temporaryresource.domain.ResourceStorageMetadataId
-import com.ritense.resource.domain.TemporaryResourceUploadedEvent
 import com.ritense.temporaryresource.domain.getEnumFromKey
 import com.ritense.temporaryresource.repository.ResourceStorageMetadataRepository
-import com.ritense.resource.service.TemporaryResourceStorageService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -32,13 +32,12 @@ import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.event.EventListener
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.MediaType
 import org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
@@ -54,10 +53,10 @@ internal class TemporaryResourceStorageResourceIT @Autowired constructor(
     private val temporaryResourceStorageService: TemporaryResourceStorageService,
 ) : BaseIntegrationTest() {
 
-    @MockBean
+    @MockitoBean
     private lateinit var resourceStorageMetadataRepository: ResourceStorageMetadataRepository
 
-    @MockBean
+    @MockitoBean
     private lateinit var myEventListener: MyEventListener
 
     lateinit var mockMvc: MockMvc

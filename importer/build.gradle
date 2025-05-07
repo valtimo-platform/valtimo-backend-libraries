@@ -21,7 +21,7 @@ dependencies {
     implementation "org.springframework:spring-tx"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
-    implementation "io.github.microutils:kotlin-logging:$kotlinLoggingVersion"
+    implementation "io.github.oshai:kotlin-logging:$kotlinLoggingVersion"
 
 
     testImplementation project(":case")

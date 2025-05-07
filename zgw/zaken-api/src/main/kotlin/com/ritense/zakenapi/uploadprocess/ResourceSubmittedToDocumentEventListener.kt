@@ -17,7 +17,7 @@
 package com.ritense.zakenapi.uploadprocess
 
 import com.ritense.resource.domain.TemporaryResourceSubmittedEvent
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.event.EventListener
 
 class ResourceSubmittedToDocumentEventListener(

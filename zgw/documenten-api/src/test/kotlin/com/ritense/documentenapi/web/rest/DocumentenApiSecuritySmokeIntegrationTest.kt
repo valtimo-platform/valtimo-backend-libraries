@@ -16,8 +16,14 @@
 
 package com.ritense.documentenapi.web.rest
 
+import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 
 class DocumentenApiSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
     basePackageName = "com.ritense.documentenapi"
-)
+) {
+
+    @MockitoBean
+    lateinit var zaaktypeUrlProvider: ZaaktypeUrlProvider
+}

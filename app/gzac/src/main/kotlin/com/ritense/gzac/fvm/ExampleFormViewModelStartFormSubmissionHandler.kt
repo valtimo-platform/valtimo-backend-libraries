@@ -18,8 +18,7 @@ package com.ritense.gzac.fvm
 
 import com.ritense.formviewmodel.submission.FormViewModelStartFormSubmissionHandler
 import com.ritense.processlink.domain.ProcessLink
-import mu.KLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
@@ -41,6 +40,6 @@ class ExampleFormViewModelStartFormSubmissionHandler : FormViewModelStartFormSub
     }
 
     companion object {
-        private val logger: KLogger = KotlinLogging.logger {}
+        private val logger = KotlinLogging.logger {}
     }
 }
