@@ -72,6 +72,9 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
     }
 
     private fun migrateJsonSchemaDocument(connection: JdbcConnection) {
+        if (!checkTableExists(connection, "json_schema_document")) {
+            return
+        }
         val result = connection.prepareStatement("SELECT json_schema_document_id,assignee_Id FROM json_schema_document")
             .executeQuery()
 
@@ -107,6 +110,9 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
     }
 
     private fun migrateActRuTask(connection: JdbcConnection) {
+        if (!checkTableExists(connection, "act_ru_task")) {
+            return
+        }
         val result = connection.prepareStatement("SELECT id_,assignee_ FROM act_ru_task").executeQuery()
 
         while (result.next()) {
@@ -134,6 +140,9 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
     }
 
     private fun migrateNote(connection: JdbcConnection) {
+        if (!checkTableExists(connection, "note")) {
+            return
+        }
         val result = connection.prepareStatement("SELECT id,created_by_user_id FROM note").executeQuery()
 
         while (result.next()) {
@@ -161,6 +170,9 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
     }
 
     private fun migrateActHiTask(connection: JdbcConnection) {
+        if (!checkTableExists(connection, "act_hi_taskinst")) {
+            return
+        }
         val result = connection.prepareStatement("SELECT id_,assignee_ FROM act_hi_taskinst").executeQuery()
 
         while (result.next()) {
@@ -185,6 +197,9 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
     }
 
     private fun migrateUserSettings(connection: JdbcConnection) {
+        if (!checkTableExists(connection, "user_settings")) {
+            return
+        }
         val result = connection.prepareStatement("SELECT user_id,settings FROM user_settings").executeQuery()
 
         while (result.next()) {
@@ -205,8 +220,11 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
     }
 
     private fun migrateIntermediateSubmission(connection: JdbcConnection) {
-        val result =
-            connection.prepareStatement("SELECT id,created_by,edited_by FROM intermediate_submission").executeQuery()
+        if (!checkTableExists(connection, "intermediate_submission")) {
+            return
+        }
+        val result = connection.prepareStatement("SELECT id,created_by,edited_by FROM intermediate_submission")
+            .executeQuery()
 
         while (result.next()) {
             val id = result.getObject("id")
@@ -233,6 +251,33 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
                 logger.error(ex) { "Failed to migrate intermediate_submission '$id' for creator '$creator' and editor '$editor'. Aborting intermediate_submission update." }
             }
         }
+    }
+
+    private fun checkTableExists(connection: JdbcConnection, tableName: String): Boolean {
+        val schemaOrDatabaseName = if (connection.databaseProductName == "PostgreSQL") {
+            getDatabaseSchema(connection)
+        } else {
+            connection.catalog
+        }
+
+        val result = connection.prepareStatement(
+            """
+            SELECT EXISTS (
+                SELECT 1
+                FROM information_schema.tables
+                WHERE table_schema = '$schemaOrDatabaseName'
+                  AND table_name = '$tableName'
+            );
+        """.trimIndent()
+        ).executeQuery()
+        result.next()
+        return result.getBoolean(1)
+    }
+
+    private fun getDatabaseSchema(connection: JdbcConnection): String {
+        val result = connection.prepareStatement("SELECT current_schema()").executeQuery()
+        result.next()
+        return result.getString(1)
     }
 
     private fun executeUpdate(connection: JdbcConnection, sql: String, vararg params: Any?): Int {
