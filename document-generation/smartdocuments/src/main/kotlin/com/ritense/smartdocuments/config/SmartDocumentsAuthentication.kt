@@ -14,21 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.connector.web.rest.result
+package com.ritense.smartdocuments.config
 
-import com.ritense.connector.domain.ConnectorInstance
-import com.ritense.valtimo.contract.result.OperationError
-
-@Deprecated("Since 12.0.0")
-class CreateConnectorInstanceResultFailed(
-    val errors: List<OperationError>
-) : CreateConnectorInstanceResult {
-
-    override fun connectorTypeInstance(): ConnectorInstance? {
-        return null
-    }
-
-    override fun errors(): List<OperationError> {
-        return errors
-    }
-}
+data class SmartDocumentsAuthentication(
+    var url: String,
+    var username: String,
+    var password: String,
+)

@@ -19,7 +19,6 @@ dependencies {
     api(project(":authorization"))
     api(project(":case"))
     api(project(":changelog"))
-    api(project(":connector"))
     api(project(":contract"))
     api(project(":core"))
     api(project(":dashboard"))

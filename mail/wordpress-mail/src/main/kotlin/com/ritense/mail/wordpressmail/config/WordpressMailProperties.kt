@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2024 Ritense BV, the Netherlands.
+ * Copyright 2015-2025 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.ritense.mail.wordpressmail.config
 
-package com.ritense.connector.config
+import org.springframework.boot.context.properties.ConfigurationProperties
 
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory
-import org.springframework.http.converter.json.SpringHandlerInstantiator
-
-@Deprecated("Since 12.0.0")
-class SpringHandlerInstantiatorImpl(beanFactory: AutowireCapableBeanFactory) : SpringHandlerInstantiator(beanFactory)
+@ConfigurationProperties(prefix = "valtimo.wordpressmail")
+data class WordpressMailProperties(
+    val url: String
+)
