@@ -28,7 +28,6 @@ dependencies {
         api(project(":authorization"))
         api(project(":case"))
         api(project(":changelog"))
-        api(project(":connector"))
         api(project(":contract"))
         api(project(":core"))
         api(project(":dashboard"))
@@ -72,16 +71,9 @@ dependencies {
         api(project(":mail:wordpress-mail"))
 
         //GZAC
-        api(project(":besluit"))
-        api(project(":contactmoment"))
-        api(project(":haalcentraal:haalcentraal-brp"))
-        api(project(":klant"))
         api(project(":plugin-authentication:notificaties-api-authentication"))
         api(project(":plugin-authentication:objecten-api-authentication"))
         api(project(":plugin-authentication:openzaak-plugin-authentication"))
-        api(project(":objects-api"))
-        api(project(":openzaak"))
-        api(project(":resource:openzaak-resource"))
 
         api(project(":zgw"))
         api(project(":zgw:portaaltaak"))
