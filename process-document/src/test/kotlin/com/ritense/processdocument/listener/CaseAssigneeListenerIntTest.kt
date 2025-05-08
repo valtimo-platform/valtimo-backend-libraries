@@ -72,6 +72,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
     fun init() {
         testUser = ValtimoUserBuilder()
             .id("AAAA-1111")
+            .username("test1")
             .firstName("Test")
             .lastName("User")
             .email("test@valtimo.nl")
@@ -80,6 +81,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
 
         testUser2 = ValtimoUserBuilder()
             .id("BBBB-2222")
+            .username("test2")
             .firstName("Test")
             .lastName("User 2")
             .email("test2@valtimo.nl")
