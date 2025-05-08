@@ -87,7 +87,7 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
                     if (assignee != assigneeUsername) {
                         executeUpdate(
                             connection,
-                            "UPDATE json_schema_document_id SET assignee_Id = ? WHERE json_schema_document_id = ?",
+                            "UPDATE json_schema_document SET assignee_Id = ? WHERE json_schema_document_id = ?",
                             assigneeUsername,
                             documentId
                         )
@@ -98,7 +98,7 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
                     }
                     executeUpdate(
                         connection,
-                        "UPDATE json_schema_document_id SET assignee_Id = ? WHERE json_schema_document_id = ?",
+                        "UPDATE json_schema_document SET assignee_Id = ? WHERE json_schema_document_id = ?",
                         null,
                         documentId
                     )
@@ -234,16 +234,16 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
                 val creatorUsername = try {
                     getKeycloakUsername(creator)
                 } catch (_: KeycloakUserNotFoundException) {
-                    logger.error { "Failed to migrate intermediate_submission. Unknown creator: '$creator'. Aborting intermediate_submission update." }
+                    logger.error { "Failed to migrate intermediate_submission '$id'. Unknown creator: '$creator'. Aborting intermediate_submission update." }
                 }
                 val editorUsername = try {
                     getKeycloakUsername(editor)
                 } catch (_: KeycloakUserNotFoundException) {
-                    logger.error { "Failed to migrate intermediate_submission. Unknown editor: '$editor'. Aborting intermediate_submission update." }
+                    logger.error { "Failed to migrate intermediate_submission '$id'. Unknown editor: '$editor'. Aborting intermediate_submission update." }
                 }
                 if (creator != creatorUsername || editor != editorUsername) {
                     executeUpdate(
-                        connection, "UPDATE intermediate_submission SET created_by = ?, edited_by = ? WHERE id_ = ?",
+                        connection, "UPDATE intermediate_submission SET created_by = ?, edited_by = ? WHERE id = ?",
                         creatorUsername, editorUsername, id
                     )
                 }
