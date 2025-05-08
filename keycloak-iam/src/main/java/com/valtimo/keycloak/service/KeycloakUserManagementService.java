@@ -269,9 +269,13 @@ public class KeycloakUserManagementService implements UserManagementService {
         try (Keycloak keycloak = keycloakService.keycloak()) {
             userList = keycloakService
                 .usersResource(keycloak)
-                .searchByEmail(email, true);
+                .search(null, null, null, email, 0, 1, true, true);
         }
-        return userList.stream().findFirst();
+        if (userList.isEmpty() || !Objects.equals(userList.get(0).getEmail(), email)) {
+            return Optional.empty();
+        } else {
+            return Optional.of(userList.get(0));
+        }
     }
 
     private List<UserRepresentation> findUserRepresentationByRole(String authority) {
