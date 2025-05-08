@@ -24,6 +24,7 @@ import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpe
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byNotLinkedToCaseDefinition;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byVersionTag;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersionTag;
 
 import com.fasterxml.jackson.core.JsonPointer;
 import com.ritense.authorization.Action;
@@ -225,7 +226,7 @@ public class CamundaProcessService {
                 } else {
                     // TODO: What to do if we're working on a global process definition? Currently taking latest
                     CamundaProcessDefinition procDef = camundaRepositoryService.findProcessDefinition(
-                        byKey(processDefinitionKey).and(byVersionTag("CD:" + caseDefinitionId))
+                        byKey(processDefinitionKey).and(byLatestVersionTag("CD:" + caseDefinitionId))
                     );
                     if (procDef == null) {
                         procDef = camundaRepositoryService.findLatestProcessDefinition(processDefinitionKey);
@@ -342,8 +343,7 @@ public class CamundaProcessService {
         String versionTag = CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.toString();
         return AuthorizationContext.runWithoutAuthorization(() -> camundaRepositoryService.findProcessDefinitions(
             byActive()
-                .and(byVersionTag(versionTag))
-                .and(byLatestVersion(versionTag)),
+                .and(byLatestVersionTag(versionTag)),
             Sort.by(NAME)
         ));
     }
@@ -395,7 +395,7 @@ public class CamundaProcessService {
         return AuthorizationContext.runWithoutAuthorization(() -> camundaRepositoryService.findProcessDefinition(
             byVersionTag(versionTag)
                 .and(byKey(processDefinitionKey))
-                .and(byLatestVersion(versionTag))
+                .and(byLatestVersionTag(versionTag))
         ));
     }
 

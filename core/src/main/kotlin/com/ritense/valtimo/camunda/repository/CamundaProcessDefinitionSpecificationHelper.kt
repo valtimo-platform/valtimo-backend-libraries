@@ -79,7 +79,7 @@ class CamundaProcessDefinitionSpecificationHelper {
         }
 
         @JvmStatic
-        fun byLatestVersion(versionTag: String) = Specification<CamundaProcessDefinition> { root, query, cb ->
+        fun byLatestVersionTag(versionTag: String) = Specification<CamundaProcessDefinition> { root, query, cb ->
             val sub = query.subquery(Long::class.java)
             val subRoot = sub.from(CamundaProcessDefinition::class.java)
             sub.select(cb.max(subRoot.get(VERSION)))
