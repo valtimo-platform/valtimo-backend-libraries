@@ -30,12 +30,12 @@ import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.repository.DocumentSnapshotRepository;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSnapshotService;
-import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -48,11 +48,11 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
 
     private JsonSchemaDocumentDefinition definition;
     private JsonSchemaDocument document;
-    @Inject
+    @Autowired
     private DocumentDefinitionService documentDefinitionService;
-    @Inject
+    @Autowired
     private DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository;
-    @Inject
+    @Autowired
     protected DocumentSnapshotService documentSnapshotService;
 
     @BeforeEach
@@ -144,6 +144,8 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
         return runWithoutAuthorization(() -> documentService.createDocument(
             new NewDocumentRequest(
                 definition.id().name(),
+                definition.id().caseDefinitionId().getKey(),
+                definition.id().caseDefinitionId().getVersionTag().getVersion(),
                 new JsonDocumentContent(content).asJson()
             )
         )).resultingDocument().orElseThrow();

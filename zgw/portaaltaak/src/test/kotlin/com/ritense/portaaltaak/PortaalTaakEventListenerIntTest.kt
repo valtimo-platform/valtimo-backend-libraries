@@ -38,6 +38,7 @@ import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byActive
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byProcessInstanceId
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.service.CamundaTaskService
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -71,6 +72,7 @@ import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
+// TODO: Fix all portaal taak related things
 @Transactional
 internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
 
@@ -176,9 +178,17 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
 
         val processDefinitionKeyCaptor = argumentCaptor<String>()
         val businessKeyCaptor = argumentCaptor<String>()
+        val caseDefinitionIdCaptor = argumentCaptor<CaseDefinitionId>()
         val processVariableCaptor = argumentCaptor<Map<String, Any>>()
 
-        verify(camundaProcessService, times(2)).startProcess(
+        verify(camundaProcessService, times(1)).startProcess(
+            processDefinitionKeyCaptor.capture(),
+            businessKeyCaptor.capture(),
+            caseDefinitionIdCaptor.capture(),
+            processVariableCaptor.capture()
+        )
+
+        verify(camundaProcessService, times(1)).startProcess(
             processDefinitionKeyCaptor.capture(),
             businessKeyCaptor.capture(),
             processVariableCaptor.capture()
@@ -405,7 +415,12 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
     private fun startPortaalTaakProcess(content: String): CamundaTask {
         return runWithoutAuthorization {
             val newDocumentRequest =
-                NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.readTree(content))
+                NewDocumentRequest(
+                    DOCUMENT_DEFINITION_KEY,
+                    "profile",
+                    "1.0.0",
+                    objectMapper.readTree(content)
+                )
             val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             val processResult = processDocumentService.newDocumentAndStartProcess(request)
             documentId = processResult.resultingDocument().get().id().id

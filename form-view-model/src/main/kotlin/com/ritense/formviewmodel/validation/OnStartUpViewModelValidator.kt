@@ -26,7 +26,7 @@ import com.ritense.formviewmodel.submission.FormViewModelUserTaskSubmissionHandl
 import com.ritense.formviewmodel.viewmodel.FormViewModelLoader
 import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.formviewmodel.viewmodel.ViewModelLoader
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import kotlin.reflect.KClass

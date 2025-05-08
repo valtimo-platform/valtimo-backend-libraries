@@ -25,8 +25,7 @@ import com.ritense.importer.exception.DuplicateImporterTypeException
 import com.ritense.importer.exception.InvalidImportZipException
 import com.ritense.importer.exception.TooManyImportCandidatesException
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
-import mu.KLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.core.io.Resource
 import org.springframework.transaction.annotation.Transactional
 import java.io.InputStream
@@ -284,7 +283,7 @@ open class ValtimoImportService(
     }
 
     private companion object {
-        val logger: KLogger = KotlinLogging.logger {}
+        val logger = KotlinLogging.logger {}
 
         class WrappedImporter(
 

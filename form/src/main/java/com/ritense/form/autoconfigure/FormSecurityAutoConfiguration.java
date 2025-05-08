@@ -19,9 +19,8 @@ package com.ritense.form.autoconfigure;
 import com.ritense.form.security.config.FormFileHttpSecurityConfigurer;
 import com.ritense.form.security.config.FormFileJwtHttpSecurityConfigurer;
 import com.ritense.form.security.config.FormHttpSecurityConfigurer;
-import com.ritense.form.security.config.FormManagementHttpSecurityConfigurer;
-import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationService;
 import com.ritense.valtimo.contract.security.config.oauth2.NoOAuth2ClientsConfiguredCondition;
+import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationService;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -36,13 +35,6 @@ public class FormSecurityAutoConfiguration {
     @ConditionalOnMissingBean(FormHttpSecurityConfigurer.class)
     public FormHttpSecurityConfigurer formHttpSecurityConfigurer() {
         return new FormHttpSecurityConfigurer();
-    }
-
-    @Order(270)
-    @Bean
-    @ConditionalOnMissingBean(FormManagementHttpSecurityConfigurer.class)
-    public FormManagementHttpSecurityConfigurer formManagementHttpSecurityConfigurer() {
-        return new FormManagementHttpSecurityConfigurer();
     }
 
     @Order(271)

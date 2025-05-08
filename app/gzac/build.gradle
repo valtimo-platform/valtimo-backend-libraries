@@ -8,7 +8,7 @@ dependencies {
     implementation(project(":zgw:portaaltaak"))
     implementation(project(":outbox:outbox-rabbitmq"))
 
-    implementation("io.github.microutils:kotlin-logging")
+    implementation("io.github.oshai:kotlin-logging")
 
 
     // Spring cloud stream RabbitMQ

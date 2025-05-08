@@ -73,43 +73,6 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
 
     private CaseDefinitionId caseDefinitionId = new CaseDefinitionId("house", "1.0.0");
 
-    @BeforeAll
-    public void setup() {
-        runWithoutAuthorization(() -> {
-            String oldDocumentDefinitionVersion = """
-                {
-                    "$id": "some-test.schema",
-                    "$schema": "http://json-schema.org/draft-07/schema#",
-                    "title": "some-test",
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            "type": "string"
-                        }
-                    }
-                }
-            """;
-            oldDocumentDefinition = documentDefinitionService.deploy(oldDocumentDefinitionVersion, caseDefinitionId).documentDefinition();
-
-            String newDocumentDefinitionVersion = """
-                {
-                    "$id": "some-test.schema",
-                    "$schema": "http://json-schema.org/draft-07/schema#",
-                    "title": "some-test",
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            "type": "integer"
-                        }
-                    }
-                }
-            """;
-            newDocumentDefinition = documentDefinitionService.deploy(newDocumentDefinitionVersion, caseDefinitionId).documentDefinition();
-
-            return null;
-        });
-    }
-
     @Test
     @WithMockUser(username = "john@ritense.com", authorities = ADMIN)
     public void shouldStartMainProcessAndAssociateCallActivityCalledProcess() throws JsonProcessingException {
@@ -118,10 +81,14 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
         final JsonNode jsonContent = objectMapper.readTree("{\"street\": \"Funenparks\"}");
         var newDocumentRequest = new NewDocumentRequest(
             DOCUMENT_DEFINITION_NAME,
+            "house",
+            "1.0.0",
             jsonContent
         );
         var newDocumentRequest2 = new NewDocumentRequest(
             DOCUMENT_DEFINITION_NAME2,
+            "notahouse",
+            "1.0.0",
             jsonContent
         );
         runWithoutAuthorization(() -> {
@@ -176,10 +143,12 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
         String processDocumentDefinitionKey = "embedded-subprocess-example";
 
         runWithoutAuthorization(() -> {
-            
+
             final JsonNode jsonContent = objectMapper.readTree("{\"street\": \"Funenparks\"}");
             var newDocumentRequest = new NewDocumentRequest(
                 DOCUMENT_DEFINITION_NAME,
+                "house",
+                "1.0.0",
                 jsonContent
             );
             var request = new NewDocumentAndStartProcessRequest(processDocumentDefinitionKey, newDocumentRequest);

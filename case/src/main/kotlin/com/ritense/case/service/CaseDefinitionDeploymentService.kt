@@ -21,7 +21,7 @@ import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.importer.ValtimoImportService
 import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.apache.commons.lang3.StringUtils
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener

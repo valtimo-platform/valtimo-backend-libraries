@@ -30,11 +30,11 @@ import com.ritense.authorization.permission.condition.PermissionConditionOperato
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider;
-import jakarta.inject.Inject;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -45,7 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationTest {
 
-    @Inject
+    @Autowired
     private ResourceLoader resourceLoader;
 
     @Test

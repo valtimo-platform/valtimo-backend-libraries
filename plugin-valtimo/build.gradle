@@ -43,7 +43,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-security"
 
-    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "io.github.oshai:kotlin-logging:${kotlinLoggingVersion}"
 
     testImplementation project(":test-utils-common")
     testImplementation "org.springframework.boot:spring-boot-starter-test"

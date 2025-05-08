@@ -16,12 +16,13 @@
 
 package com.ritense.connector
 
+import com.ritense.connector.autodeployment.ConnectorApplicationReadyEventListener
 import com.ritense.connector.domain.Connector
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest
@@ -29,6 +30,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @Tag("integration")
 abstract class BaseIntegrationTest {
 
-    @MockBean(name = "test-connector")
+    @MockitoBean(name = "test-connector")
     lateinit var testConnector: Connector
+
+    @MockitoBean
+    lateinit var connectorApplicationReadyEventListener: ConnectorApplicationReadyEventListener
 }

@@ -33,8 +33,7 @@ import com.ritense.processdocument.domain.config.ProcessDocumentLinkConfigItem
 import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.service.CamundaProcessService
-import mu.KLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
@@ -123,6 +122,6 @@ class ProcessDocumentLinkImporter(
 
     companion object {
         private val FILENAME_REGEX = """/process-document-link/([^/]+)\.json""".toRegex()
-        private val logger: KLogger = KotlinLogging.logger {}
+        private val logger = KotlinLogging.logger {}
     }
 }

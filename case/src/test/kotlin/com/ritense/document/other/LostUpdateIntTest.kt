@@ -26,11 +26,11 @@ import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
-import mu.KotlinLogging
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -94,6 +94,8 @@ internal class LostUpdateIntTest : BaseIntegrationTest() {
                             CaseDefinitionId.of("allows-all", "1.0.0")
                         )
                     ).id().name(),
+                    "allows-all",
+                    "1.0.0",
                     JsonDocumentContent(content).asJson()
                 )
             )

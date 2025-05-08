@@ -117,6 +117,8 @@ open class ValtimoFormFlow(
             documentService.createDocument(
                 NewDocumentRequest(
                     documentDefinitionName,
+                    formFlowInstance.formFlowDefinition.id.caseDefinitionId.key,
+                    formFlowInstance.formFlowDefinition.id.caseDefinitionId.versionTag.version,
                     submittedByType["doc"] as JsonNode
                 )
             )

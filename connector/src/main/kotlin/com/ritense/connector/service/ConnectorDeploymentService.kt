@@ -20,7 +20,7 @@ import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.domain.ConnectorTypeId
 import com.ritense.connector.repository.ConnectorTypeRepository
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.util.UUID
 
 @Deprecated("Since 12.0.0")

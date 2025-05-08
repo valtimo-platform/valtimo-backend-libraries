@@ -22,7 +22,7 @@ import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
 import com.ritense.importer.ValtimoImportTypes.Companion.ZGW_DOCUMENT_LIST_COLUMN
 import com.ritense.valtimo.changelog.service.ChangelogDeployer
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 class ZgwDocumentListColumnImporter(
     private val deployer: ZgwDocumentListColumnDeploymentService,

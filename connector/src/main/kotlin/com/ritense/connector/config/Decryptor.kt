@@ -20,7 +20,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonNode
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import javax.crypto.IllegalBlockSizeException
 
 @Deprecated("Since 12.0.0")

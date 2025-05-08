@@ -22,8 +22,9 @@ import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
+import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.data.repository.findByIdOrNull
 import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
-import mu.KotlinLogging
 
 class CaseDefinitionImporter(
     private val objectMapper: ObjectMapper,
