@@ -58,6 +58,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
@@ -67,7 +68,17 @@ import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.model.bpmn.Bpmn;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
+import org.camunda.bpm.model.bpmn.instance.CallActivity;
+import org.camunda.bpm.model.bpmn.instance.EndEvent;
+import org.camunda.bpm.model.bpmn.instance.ExtensionElements;
+import org.camunda.bpm.model.bpmn.instance.IntermediateThrowEvent;
+import org.camunda.bpm.model.bpmn.instance.MessageEventDefinition;
 import org.camunda.bpm.model.bpmn.instance.Process;
+import org.camunda.bpm.model.bpmn.instance.SendTask;
+import org.camunda.bpm.model.bpmn.instance.ServiceTask;
+import org.camunda.bpm.model.bpmn.instance.TimeDuration;
+import org.camunda.bpm.model.bpmn.instance.TimerEventDefinition;
+import org.camunda.bpm.model.bpmn.instance.camunda.CamundaIn;
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties;
 import org.camunda.bpm.model.dmn.Dmn;
 import org.camunda.bpm.model.dmn.DmnModelInstance;
@@ -149,6 +160,14 @@ public class CamundaProcessService {
             .createProcessInstanceQuery()
             .processInstanceId(processInstanceId)
             .singleResult());
+    }
+
+    public List<ProcessInstance> findProcessInstancesByIds(Set<String> processInstanceIds) {
+        denyAuthorization();
+        return runtimeService
+            .createProcessInstanceQuery()
+            .processInstanceIds(processInstanceIds)
+            .list();
     }
 
     public ProcessDefinition getProcessDefinitionByDeploymentId(String deploymentId) {
@@ -339,6 +358,11 @@ public class CamundaProcessService {
             }
 
             setProcessesExecutable(bpmnModel);
+            setToNullWhenServiceTaskExpressionIsEmpty(bpmnModel);
+            setToNullWhenSendTaskExpressionIsEmpty(bpmnModel);
+            setToCorrelateAllWhenMessageSendEventExpressionIsEmpty(bpmnModel);
+            setToPropagateBusinessKeyWhenCallActivityIsNew(bpmnModel);
+            setTo60SecondsWhenTimerIsEmpty(bpmnModel);
 
             var deploymentBuilder = repositoryService.createDeployment().addModelInstance(fileName, bpmnModel);
 
@@ -411,6 +435,75 @@ public class CamundaProcessService {
         bpmnModel.getDefinitions().getChildElementsByType(Process.class).forEach(
             process -> process.setExecutable(true)
         );
+    }
+
+    private void setToNullWhenServiceTaskExpressionIsEmpty(BpmnModelInstance bpmnModel) {
+        bpmnModel.getModelElementsByType(ServiceTask.class).forEach(task -> {
+            if (task.getCamundaType() == null
+                && task.getCamundaClass() == null
+                && task.getCamundaExpression() == null
+                && task.getCamundaDelegateExpression() == null) {
+                task.setCamundaExpression("${null}");
+                task.setCamundaAsyncAfter(true);
+            }
+        });
+    }
+
+    private void setToNullWhenSendTaskExpressionIsEmpty(BpmnModelInstance bpmnModel) {
+        bpmnModel.getModelElementsByType(SendTask.class).forEach(task -> {
+            if (task.getCamundaType() == null
+                && task.getCamundaClass() == null
+                && task.getCamundaExpression() == null
+                && task.getCamundaDelegateExpression() == null) {
+                task.setCamundaExpression("${null}");
+                task.setCamundaAsyncAfter(true);
+            }
+        });
+    }
+
+    private void setToCorrelateAllWhenMessageSendEventExpressionIsEmpty(BpmnModelInstance bpmnModel) {
+        Stream.of(IntermediateThrowEvent.class, EndEvent.class)
+            .flatMap(sendEventClass -> bpmnModel.getModelElementsByType(sendEventClass).stream())
+            .filter(sendEvent -> sendEvent.getId().matches("Event_[a-z0-9]{6,8}"))
+            .flatMap(sendEvent -> sendEvent.getChildElementsByType(MessageEventDefinition.class).stream())
+            .forEach(event -> {
+                if (event.getCamundaType() == null
+                    && event.getCamundaClass() == null
+                    && event.getCamundaExpression() == null
+                    && event.getCamundaDelegateExpression() == null) {
+                    String messageName = event.getMessage() == null ? "MY_MESSAGE" : event.getMessage().getName();
+                    event.setCamundaExpression(
+                        "${correlationService.sendMessageToAll(\"" + messageName + "\", execution)}"
+                    );
+                }
+            });
+    }
+
+    private void setToPropagateBusinessKeyWhenCallActivityIsNew(BpmnModelInstance bpmnModel) {
+        bpmnModel.getModelElementsByType(CallActivity.class).forEach(callActivity -> {
+            if (callActivity.getId().matches("Activity_[a-z0-9]{6,8}")
+                && callActivity.getCalledElement() != null
+                && callActivity.getChildElementsByType(ExtensionElements.class).isEmpty()) {
+                ExtensionElements extensionElement = bpmnModel.newInstance(ExtensionElements.class);
+                callActivity.addChildElement(extensionElement);
+                CamundaIn businessKeyIn = bpmnModel.newInstance(CamundaIn.class);
+                businessKeyIn.setCamundaBusinessKey("#{execution.processBusinessKey}");
+                extensionElement.addChildElement(businessKeyIn);
+                callActivity.setCamundaAsyncAfter(true);
+            }
+        });
+    }
+
+    private void setTo60SecondsWhenTimerIsEmpty(BpmnModelInstance bpmnModel) {
+        bpmnModel.getModelElementsByType(TimerEventDefinition.class).forEach(timerEvent -> {
+            if (timerEvent.getTimeDate() == null
+                && timerEvent.getTimeDuration() == null
+                && timerEvent.getTimeCycle() == null) {
+                TimeDuration timeDuration = bpmnModel.newInstance(TimeDuration.class);
+                timeDuration.setTextContent("PT60S");
+                timerEvent.addChildElement(timeDuration);
+            }
+        });
     }
 
     private boolean isDeployable(BpmnModelInstance model) {
