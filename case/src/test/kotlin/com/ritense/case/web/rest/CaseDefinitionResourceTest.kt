@@ -27,6 +27,7 @@ import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.exporter.ExportService
 import com.ritense.importer.ImportService
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.utils.TestUtil
@@ -63,6 +64,7 @@ class CaseDefinitionResourceTest : BaseTest() {
     lateinit var exportService: ExportService
     lateinit var importService: ImportService
     lateinit var caseDefinitionRepository: CaseDefinitionRepository
+    lateinit var caseDefinitionChecker: CaseDefinitionChecker
     lateinit var mapper: ObjectMapper
 
     @BeforeEach
@@ -72,12 +74,14 @@ class CaseDefinitionResourceTest : BaseTest() {
         exportService = mock()
         importService = mock()
         caseDefinitionRepository = mock()
+        caseDefinitionChecker = mock()
         resource = CaseDefinitionResource(
             service,
             activeCaseDefinitionService,
             exportService,
             importService,
-            caseDefinitionRepository
+            caseDefinitionRepository,
+            caseDefinitionChecker,
         )
 
         mapper = MapperSingleton.get()
@@ -410,6 +414,18 @@ class CaseDefinitionResourceTest : BaseTest() {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.name").value(caseDefinition.name))
             .andExpect(jsonPath("$.description").value(caseDefinition.description))
+    }
+
+    @Test
+    fun `should check case definition`() {
+        whenever(caseDefinitionChecker.canUpdateGlobalConfiguration()).thenReturn(true)
+
+        mockMvc.perform(
+            get("/api/management/v1/case-definition/check")
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.canUpdateGlobalConfiguration").value(true))
     }
 
     companion object {
