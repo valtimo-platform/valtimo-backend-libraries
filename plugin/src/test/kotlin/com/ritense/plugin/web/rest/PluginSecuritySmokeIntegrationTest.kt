@@ -17,7 +17,12 @@
 package com.ritense.plugin.web.rest
 
 import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
+import org.camunda.bpm.engine.HistoryService
+import org.springframework.boot.test.mock.mockito.MockBean
 
 class PluginSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
     basePackageName = "com.ritense.plugin"
-)
+) {
+    @MockBean
+    lateinit var historyService: HistoryService
+}

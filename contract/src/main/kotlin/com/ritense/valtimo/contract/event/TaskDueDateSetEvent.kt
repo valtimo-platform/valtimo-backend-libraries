@@ -76,7 +76,7 @@ class TaskDueDateSetEvent @JsonCreator constructor(
         }
     }
 
-    @SuppressWarnings("squid:S2097", "java:S2097")
+    @SuppressWarnings("squid:S2097", "kotlin:S2097")
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is TaskAssignedEvent) return false
