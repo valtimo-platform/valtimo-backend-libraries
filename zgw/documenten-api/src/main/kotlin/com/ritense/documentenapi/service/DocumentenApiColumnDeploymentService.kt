@@ -28,8 +28,7 @@ import com.ritense.documentenapi.domain.DocumentenApiColumnKey.INFORMATIEOBJECTT
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.TITEL
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import mu.KLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -71,6 +70,6 @@ class DocumentenApiColumnDeploymentService(
     }
 
     companion object {
-        private val logger: KLogger = KotlinLogging.logger {}
+        private val logger = KotlinLogging.logger {}
     }
 }

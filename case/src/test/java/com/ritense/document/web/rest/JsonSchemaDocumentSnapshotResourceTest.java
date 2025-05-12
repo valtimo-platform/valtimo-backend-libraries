@@ -111,7 +111,7 @@ public class JsonSchemaDocumentSnapshotResourceTest extends BaseTest {
             any())
         ).thenReturn(documentSnapshotPage);
 
-        mockMvc.perform(get("/api/v1/document-snapshot/")
+        mockMvc.perform(get("/api/v1/document-snapshot")
             .param("definitionName", document.definitionId().name())
             .param("documentId", document.id().toString())
             .param("fromDateTime", fromDateTime.toString())

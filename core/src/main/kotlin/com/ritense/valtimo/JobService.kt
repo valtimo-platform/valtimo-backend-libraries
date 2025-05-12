@@ -18,7 +18,7 @@
 package com.ritense.valtimo
 
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.camunda.bpm.engine.ManagementService
 import org.camunda.bpm.engine.ProcessEngineException
 import org.camunda.bpm.engine.delegate.DelegateExecution

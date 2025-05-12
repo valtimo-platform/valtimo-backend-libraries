@@ -34,7 +34,6 @@ dependencies {
         api(project(":dashboard"))
         api(project(":data-provider"))
         api(project(":document-generation"))
-        api(project(":external-event"))
         api(project(":exporter"))
         api(project(":mail:flowmailer"))
         api(project(":form"))
@@ -102,12 +101,9 @@ dependencies {
 
         api("de.codecentric:spring-boot-admin-starter-client:${springBootAdminStarterClientVersion}")
         api "org.json:json:${orgJsonJsonVersion}"
-        api("org.yaml:snakeyaml:${snakeYamlVersionOverride}")
-        api("io.netty:netty-codec:${nettyCodecVersionOverride}")
 
         api("com.rabbitmq:amqp-client:${amqpCLientVersion}")
-        api("jakarta.inject:jakarta.inject-api:${jakartaInjectVersion}")
-        api("io.github.microutils:kotlin-logging:${kotlinLoggingVersion}")
+        api("io.github.oshai:kotlin-logging:${kotlinLoggingVersion}")
     }
 }
 

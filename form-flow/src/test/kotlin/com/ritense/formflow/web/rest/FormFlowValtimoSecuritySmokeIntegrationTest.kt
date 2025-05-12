@@ -18,11 +18,11 @@ package com.ritense.formflow.web.rest
 
 import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker
 import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
-import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 
 class FormFlowValtimoSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
     basePackageName = "com.ritense.formflow"
 ) {
-    @MockBean
+    @MockitoBean
     lateinit var processDefinitionCaseDefinitionLinker: ProcessDefinitionCaseDefinitionLinker
 }

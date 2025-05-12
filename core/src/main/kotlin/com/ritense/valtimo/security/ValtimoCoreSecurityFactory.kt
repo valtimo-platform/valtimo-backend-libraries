@@ -17,8 +17,7 @@
 package com.ritense.valtimo.security
 
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
-import mu.KLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
@@ -47,7 +46,7 @@ class ValtimoCoreSecurityFactory(
 
 
     private companion object {
-        val logger: KLogger = KotlinLogging.logger {}
+        val logger = KotlinLogging.logger {}
     }
 
 }

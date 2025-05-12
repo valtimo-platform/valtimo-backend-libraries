@@ -74,6 +74,8 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
             val result: CreateDocumentResult = documentService.createDocument(
                 NewDocumentRequest(
                     definition!!.id().name(),
+                    definition!!.id.caseDefinitionId().key,
+                    definition!!.id.caseDefinitionId().versionTag.version,
                     content.asJson()
                 )
             )
@@ -86,6 +88,8 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
             val result: CreateDocumentResult = documentService.createDocument(
                 NewDocumentRequest(
                     definition!!.id().name(),
+                    definition!!.id.caseDefinitionId().key,
+                    definition!!.id.caseDefinitionId().versionTag.version,
                     content2.asJson()
                 )
             )
@@ -276,6 +280,8 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
             val result: CreateDocumentResult = documentService.createDocument(
                 NewDocumentRequest(
                     museumDefinition!!.id().name(),
+                    museumDefinition!!.id.caseDefinitionId().key,
+                    museumDefinition!!.id.caseDefinitionId().versionTag.version,
                     content.asJson()
                 )
             )
@@ -373,6 +379,8 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
             val result: CreateDocumentResult = documentService.createDocument(
                 NewDocumentRequest(
                     documentName,
+                    documentName,
+                    "1.0.0",
                     content2.asJson()
                 )
             )

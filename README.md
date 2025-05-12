@@ -25,7 +25,7 @@ Starting up the Valtimo platform requires two steps:
 
 ### Starting the Valtimo backend libraries from source
 #### Prerequisites
-- Java 17
+- Java 21
 - [Docker (Desktop)](https://www.docker.com/products/docker-desktop/)
 - (Optional) An IDE like [IntelliJ](https://www.jetbrains.com/idea/download/) or [Eclipse](https://www.eclipse.org/downloads/)
 

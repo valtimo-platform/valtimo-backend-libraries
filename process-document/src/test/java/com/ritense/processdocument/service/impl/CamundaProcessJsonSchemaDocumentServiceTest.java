@@ -123,7 +123,7 @@ class CamundaProcessJsonSchemaDocumentServiceTest {
 
         ProcessInstanceWithDefinition processInstanceWithDefinition = new ProcessInstanceWithDefinition(processInstance,
             processDefinition);
-        when(camundaProcessService.startProcess("test-name", documentUuid.toString(), processVars))
+        when(camundaProcessService.startProcess("test-name", documentUuid.toString(), caseDefinitionId, processVars))
             .thenReturn(processInstanceWithDefinition);
 
         StartProcessForDocumentRequest request = new StartProcessForDocumentRequest(
@@ -139,6 +139,7 @@ class CamundaProcessJsonSchemaDocumentServiceTest {
         verify(camundaProcessService).startProcess(
             "test-name",
             documentUuid.toString(),
+            caseDefinitionId,
             processVars
         );
 

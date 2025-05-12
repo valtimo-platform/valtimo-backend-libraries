@@ -259,6 +259,8 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
             documentService.createDocument(
                 NewDocumentRequest(
                     caseDefinitionId.key,
+                    caseDefinitionId.key,
+                    caseDefinitionId.versionTag.version,
                     JsonDocumentContent(content).asJson()
                 )
             ).resultingDocument().orElseThrow()

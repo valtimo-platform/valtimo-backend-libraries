@@ -24,8 +24,7 @@ import com.ritense.processdocument.domain.ProcessDocumentInstance
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstanceId
 import com.ritense.valtimo.contract.event.DocumentDeletedEvent
-import mu.KLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.camunda.bpm.engine.RuntimeService
 import org.springframework.context.event.EventListener
 
@@ -69,6 +68,6 @@ class ProcessDocumentDeletedEventListener(
     }
 
     companion object {
-        private val logger: KLogger = KotlinLogging.logger {}
+        private val logger = KotlinLogging.logger {}
     }
 }

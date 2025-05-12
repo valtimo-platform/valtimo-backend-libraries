@@ -80,6 +80,8 @@ class ResourceSubmittedToDocumentSseEventMapperIT @Autowired constructor(
             documentService.createDocument(
                 NewDocumentRequest(
                     DOCUMENT_DEFINITION_KEY,
+                    "profile",
+                    "1.0.0",
                     objectMapper.createObjectNode()
                 )
             ).resultingDocument().get().id!!.id

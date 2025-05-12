@@ -38,18 +38,14 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
 import java.io.IOException;
 import java.util.UUID;
-import org.camunda.bpm.engine.ActivityTypes;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
-import org.camunda.bpm.engine.delegate.ExecutionListener;
 import org.camunda.bpm.engine.variable.value.StringValue;
-import org.camunda.bpm.extension.reactor.bus.CamundaSelector;
-import org.camunda.bpm.extension.reactor.spring.listener.ReactorExecutionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 
-@CamundaSelector(type = ActivityTypes.START_EVENT, event = ExecutionListener.EVENTNAME_START)
-public class StartEventListenerImpl extends ReactorExecutionListener implements StartEventListener {
+public class StartEventListenerImpl implements StartEventListener {
 
     private static final Logger logger = LoggerFactory.getLogger(StartEventListenerImpl.class);
     private final ProcessDocumentService processDocumentService;
@@ -75,7 +71,9 @@ public class StartEventListenerImpl extends ReactorExecutionListener implements 
         this.objectMapper = objectMapper;
     }
 
-    @Override
+    @EventListener(condition = "#execution.bpmnModelElementInstance != null " +
+        "&& #execution.bpmnModelElementInstance.elementType.typeName == T(org.camunda.bpm.engine.ActivityTypes).START_EVENT " +
+        "&& #execution.eventName == T(org.camunda.bpm.engine.delegate.ExecutionListener).EVENTNAME_START")
     public void notify(DelegateExecution execution) {
         if (execution.hasVariable(SOURCE_PROCESS_INSTANCE_ID)) {
             logger.info("Start event listener with source relation");
@@ -101,6 +99,8 @@ public class StartEventListenerImpl extends ReactorExecutionListener implements 
                     if (sourceDocumentId != null) {
                         var newDocumentRequest = new NewDocumentRequest(
                             documentDefinition.get().id().name(),
+                            documentDefinition.get().id().caseDefinitionId().getKey(),
+                            documentDefinition.get().id().caseDefinitionId().getVersionTag().getVersion(),
                             jsonData
                         ).withDocumentRelation(new DocumentRelationRequest(UUID.fromString(sourceDocumentId.toString()),
                             documentRelationType

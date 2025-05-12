@@ -38,6 +38,8 @@ class FormHttpSecurityConfigurerKotlin : HttpSecurityConfigurer {
                         antMatcher(DELETE, INTERMEDIATE_BASE_URL)
                     ).authenticated()
                     .requestMatchers(
+                        antMatcher(GET, "/api/management/v1/form-option"),
+                        antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form-option"),
                         antMatcher(
                             GET,
                             "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form"
@@ -62,12 +64,13 @@ class FormHttpSecurityConfigurerKotlin : HttpSecurityConfigurer {
                             GET,
                             "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/form/{name}/exists"
                         ),
-                        antMatcher(
-                            GET,
-                            "/api/v1/form-management"
-                        ),
-
-                        ).hasAuthority(ADMIN)
+                        antMatcher(GET, "/api/management/v1/form"),
+                        antMatcher(GET, "/api/management/v1/form/{formDefinitionId}"),
+                        antMatcher(POST, "/api/management/v1/form"),
+                        antMatcher(PUT, "/api/management/v1/form"),
+                        antMatcher(DELETE, "/api/management/v1/form/{formDefinitionId}"),
+                        antMatcher(GET, "/api/management/v1/form/exists/{name}")
+                    ).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

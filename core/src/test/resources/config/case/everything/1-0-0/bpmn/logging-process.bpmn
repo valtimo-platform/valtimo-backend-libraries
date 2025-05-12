@@ -5,11 +5,6 @@
       <bpmn:outgoing>SequenceFlow_0obzkuw</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:serviceTask id="Activity_1cyu113" name="Log first message" camunda:expression="${loggingTestBean.logSomething()}">
-      <bpmn:extensionElements>
-        <camunda:properties>
-          <camunda:property name="systemProcess" value="true" />
-        </camunda:properties>
-      </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_0obzkuw</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1gkaz89</bpmn:outgoing>
     </bpmn:serviceTask>

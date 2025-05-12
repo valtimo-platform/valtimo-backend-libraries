@@ -24,14 +24,13 @@ import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocument
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.service.CamundaTaskService;
-import jakarta.inject.Inject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @SpringBootTest
@@ -39,25 +38,25 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 public abstract class BaseIntegrationTest extends BaseTest {
 
-    @MockBean
+    @MockitoBean
     protected UserManagementService userManagementService;
 
-    @Inject
+    @Autowired
     protected CamundaProcessJsonSchemaDocumentAssociationService camundaProcessJsonSchemaDocumentAssociationService;
 
-    @Inject
+    @Autowired
     protected CamundaProcessJsonSchemaDocumentService camundaProcessJsonSchemaDocumentService;
 
-    @Inject
+    @Autowired
     protected ProcessDefinitionCaseDefinitionService processDefinitionCaseDefinitionService;
 
-    @Inject
+    @Autowired
     protected CamundaTaskService camundaTaskService;
 
-    @MockBean
+    @MockitoBean
     protected AuditServiceImpl auditService;
 
-    @MockBean
+    @MockitoBean
     protected ResourceService resourceService;
 
     @Autowired

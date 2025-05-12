@@ -21,7 +21,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-security"
 
-    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "io.github.oshai:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.apache.tika:tika-core:${apacheTikaVersion}"
     implementation "org.apache.tika:tika-parser-microsoft-module:${apacheTikaVersion}"
 

@@ -46,7 +46,6 @@ dependencies {
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "jakarta.inject:jakarta.inject-api:${jakartaInjectVersion}"
     api "org.semver4j:semver4j:${semver4jVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
@@ -67,7 +66,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
-    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "io.github.oshai:kotlin-logging:${kotlinLoggingVersion}"
     implementation "io.github.classgraph:classgraph:${classgraphVersion}"
 
     testImplementation project(":test-utils-common")

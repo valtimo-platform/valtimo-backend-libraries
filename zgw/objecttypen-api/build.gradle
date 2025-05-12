@@ -34,7 +34,7 @@ dependencies {
     implementation project(':plugin')
     implementation project(':logging')
 
-    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "io.github.oshai:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
 
     testImplementation project(':test-utils-common')

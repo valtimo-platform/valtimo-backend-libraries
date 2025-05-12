@@ -58,10 +58,10 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Answers
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.context.event.SimpleApplicationEventMulticaster
 import org.springframework.core.io.support.ResourcePatternResolver
+import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.context.event.ApplicationEvents
 import org.springframework.test.context.event.RecordApplicationEvents
 import org.springframework.test.context.junit.jupiter.SpringExtension
@@ -75,34 +75,34 @@ import java.util.UUID
 @Tag("integration")
 class BaseIntegrationTest: BaseTest() {
 
-    @MockBean(answer = Answers.RETURNS_DEEP_STUBS)
+    @MockitoBean(answers = Answers.RETURNS_DEEP_STUBS)
     lateinit var userManagementService: UserManagementService
 
-    @MockBean
+    @MockitoBean
     lateinit var applicationEventMulticaster: SimpleApplicationEventMulticaster
 
-    @MockBean
+    @MockitoBean
     lateinit var resourceService: ResourceService
 
-    @MockBean
+    @MockitoBean
     lateinit var mailSender: MailSender
 
-    @MockBean
+    @MockitoBean
     lateinit var processDefinitionCaseDefinitionLinker: ProcessDefinitionCaseDefinitionLinker
 
-    @SpyBean
+    @MockitoSpyBean
     lateinit var resourcePatternResolver: ResourcePatternResolver
 
-    @SpyBean
+    @MockitoSpyBean
     lateinit var caseTabImporter: CaseTabImporter
 
-    @SpyBean
+    @MockitoSpyBean
     lateinit var caseTaskListDeploymentService: CaseTaskListDeploymentService
 
-    @SpyBean
+    @MockitoSpyBean
     lateinit var outboxService: OutboxService
 
-    @SpyBean
+    @MockitoSpyBean
     lateinit var documentRepository: JsonSchemaDocumentRepository
 
     @Autowired
@@ -152,6 +152,8 @@ class BaseIntegrationTest: BaseTest() {
             documentService.createDocument(
                 NewDocumentRequest(
                     documentDefinition.id().name(),
+                    documentDefinition.id().name(),
+                    "1.0.0",
                     JsonDocumentContent(content).asJson()
                 )
             ).resultingDocument().orElseThrow()

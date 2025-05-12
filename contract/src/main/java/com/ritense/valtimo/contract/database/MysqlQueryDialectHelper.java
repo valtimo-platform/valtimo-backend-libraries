@@ -16,6 +16,8 @@
 
 package com.ritense.valtimo.contract.database;
 
+import static com.ritense.valtimo.contract.database.ExpressionHelper.cast;
+
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Path;
@@ -42,7 +44,7 @@ public class MysqlQueryDialectHelper implements QueryDialectHelper {
             // Booleans extracted from JSON can be true/false while MySQL only accepts 1/0.
             return cb.function("IF", type, jsonValue, cb.literal(1), cb.literal(0));
         } else {
-            return jsonValue.as(type);
+            return cast(jsonValue, type);
         }
     }
 

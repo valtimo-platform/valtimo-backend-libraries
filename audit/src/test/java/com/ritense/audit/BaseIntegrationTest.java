@@ -23,14 +23,14 @@ import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.mail.MailSender;
 import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker;
-import jakarta.inject.Inject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @SpringBootTest
@@ -38,25 +38,25 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 public abstract class BaseIntegrationTest extends AbstractTestHelper {
 
-    @Inject
+    @Autowired
     protected AuditRecordRepository auditRecordRepository;
 
-    @Inject
+    @Autowired
     protected AuditEventProcessor auditEventProcessor;
 
-    @Inject
+    @Autowired
     protected AuditSearchService auditSearchService;
 
-    @MockBean
+    @MockitoBean
     protected ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker;
 
-    @MockBean
+    @MockitoBean
     protected UserManagementService userManagementService;
 
-    @MockBean
+    @MockitoBean
     protected ResourceService resourceService;
 
-    @MockBean
+    @MockitoBean
     protected MailSender mailSender;
 
 

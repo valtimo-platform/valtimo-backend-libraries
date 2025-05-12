@@ -17,7 +17,7 @@
 package com.valtimo.keycloak.service
 
 import com.ritense.valtimo.contract.annotation.AllOpen
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 @AllOpen
 class RequestScopeUserCache(

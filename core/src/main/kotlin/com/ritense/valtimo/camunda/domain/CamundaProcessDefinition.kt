@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.camunda.domain
 
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
@@ -92,6 +93,15 @@ class CamundaProcessDefinition(
         var result = id.hashCode()
         result = 31 * result + (revision ?: 0)
         return result
+    }
+
+    fun getCaseDefinitionId(): CaseDefinitionId? {
+        return if (versionTag != null && versionTag.startsWith("CD:")) {
+            val caseDefinitionIdAsArray = versionTag.substringAfter("CD:").split(":")
+            CaseDefinitionId.of(caseDefinitionIdAsArray[0], caseDefinitionIdAsArray[1])
+        } else {
+            null
+        }
     }
 
 

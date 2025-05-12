@@ -21,7 +21,7 @@ import com.ritense.notificatiesapi.event.NotificatiesApiNotificationReceivedEven
 import com.ritense.notificatiesapi.exception.AuthorizationException
 import com.ritense.notificatiesapi.repository.NotificatiesApiAbonnementLinkRepository
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 

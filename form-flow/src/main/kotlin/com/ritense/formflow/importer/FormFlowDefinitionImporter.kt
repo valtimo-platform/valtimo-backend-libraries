@@ -25,9 +25,9 @@ import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.FORM
 import com.ritense.importer.ValtimoImportTypes.Companion.FORM_FLOW
+import com.ritense.logging.withLoggingContext
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
-import mu.KotlinLogging
-import mu.withLoggingContext
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.everit.json.schema.loader.SchemaLoader
 import org.json.JSONObject
 import org.json.JSONTokener

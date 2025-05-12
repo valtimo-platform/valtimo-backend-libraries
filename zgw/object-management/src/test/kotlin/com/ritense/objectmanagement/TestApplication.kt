@@ -21,7 +21,7 @@ import com.ritense.zakenapi.ZaakUrlProvider
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 
 @SpringBootApplication
 class TestApplication {
@@ -33,10 +33,10 @@ class TestApplication {
     @TestConfiguration
     class TestConfig {
 
-        @MockBean
+        @MockitoBean
         lateinit var zaaktypeUrlProvider: ZaaktypeUrlProvider
 
-        @MockBean
+        @MockitoBean
         lateinit var zaakUrlProvider: ZaakUrlProvider
     }
 }

@@ -72,7 +72,6 @@ import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
-import org.camunda.bpm.extension.reactor.spring.EnableCamundaEventBus;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -87,7 +86,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @AutoConfiguration
 @EnableConfigurationProperties(ValtimoProperties.class)
 @EnableJpaAuditing(dateTimeProviderRef = "customDateTimeProvider")
-@EnableCamundaEventBus
 @EnableJpaRepositories(basePackageClasses = {ProcessDefinitionPropertiesRepository.class, UserSettingsRepository.class})
 @EntityScan("com.ritense.valtimo.domain.*")
 public class ValtimoAutoConfiguration {
