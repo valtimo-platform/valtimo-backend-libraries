@@ -34,6 +34,10 @@ public interface FormDefinitionRepository extends JpaRepository<FormIoFormDefini
 
     List<FormIoFormDefinition> findAllByOrderByNameAsc();
 
+    List<FormIoFormDefinition> findAllByCaseDefinitionIdIsNullOrderByNameAsc();
+
+    List<FormIoFormDefinition> findAllByCaseDefinitionIdOrderByNameAsc(CaseDefinitionId caseDefinitionId);
+
     Page<FormIoFormDefinition> findByCaseDefinitionIdIsNull(Pageable pageable);
 
     Optional<FormIoFormDefinition> findByName(String name);

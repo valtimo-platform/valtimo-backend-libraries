@@ -19,6 +19,7 @@ package com.ritense.form.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
+import com.ritense.case.service.CaseDefinitionService
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
@@ -38,6 +39,7 @@ import com.ritense.form.service.PrefillFormService
 import com.ritense.form.service.impl.DefaultFormSubmissionService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.form.validation.FormDefinitionExistsValidator
+import com.ritense.form.web.rest.FormOptionResource
 import com.ritense.form.web.rest.FormResource
 import com.ritense.form.web.rest.IntermediateSubmissionResource
 import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
@@ -105,6 +107,7 @@ class FormAutoConfigurationKotlin {
         prefillFormService: PrefillFormService,
         authorizationService: AuthorizationService,
         valueResolverService: ValueResolverService,
+        caseDefinitionService: CaseDefinitionService,
         objectMapper: ObjectMapper,
     ) = DefaultFormSubmissionService(
         processLinkService,
@@ -119,6 +122,7 @@ class FormAutoConfigurationKotlin {
         prefillFormService,
         authorizationService,
         valueResolverService,
+        caseDefinitionService,
         objectMapper,
     )
 
@@ -167,6 +171,14 @@ class FormAutoConfigurationKotlin {
         intermediateSubmissionService: IntermediateSubmissionService
     ) = IntermediateSubmissionResource(
         intermediateSubmissionService
+    )
+
+    @Bean
+    @ConditionalOnMissingBean(FormOptionResource::class)
+    fun formOptionResource(
+        formDefinitionService: FormDefinitionService
+    ) = FormOptionResource(
+        formDefinitionService
     )
 
     @Bean

@@ -79,7 +79,7 @@ class CamundaProcessDefinitionSpecificationHelper {
         }
 
         @JvmStatic
-        fun byLatestVersion(versionTag: String) = Specification<CamundaProcessDefinition> { root, query, cb ->
+        fun byLatestVersionTag(versionTag: String) = Specification<CamundaProcessDefinition> { root, query, cb ->
             val sub = query.subquery(Long::class.java)
             val subRoot = sub.from(CamundaProcessDefinition::class.java)
             sub.select(cb.max(subRoot.get(VERSION)))
@@ -102,5 +102,22 @@ class CamundaProcessDefinitionSpecificationHelper {
             cb.equal(root.get<Any>(SUSPENSION_STATE), SuspensionState.ACTIVE.stateCode)
         }
 
+        @JvmStatic
+        fun byNotLinkedToCaseDefinition() = Specification<CamundaProcessDefinition> { root, _, cb ->
+            cb.or(
+                cb.isNull(root.get<Any>(VERSION_TAG)),
+                cb.not(
+                    cb.equal(
+                        cb.function(
+                            "left",
+                            String::class.java,
+                            root.get<String>(VERSION_TAG),
+                            cb.literal(3)
+                        ),
+                        "CD:"
+                    )
+                )
+            )
+        }
     }
 }

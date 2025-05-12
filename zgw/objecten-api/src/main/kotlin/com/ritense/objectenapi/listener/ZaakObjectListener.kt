@@ -26,13 +26,11 @@ import com.ritense.objectenapi.service.ZaakObjectConstants
 import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
-import mu.KLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.event.EventListener
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
-import kotlin.math.log
 
 class ZaakObjectListener(
     private val pluginService: PluginService,
@@ -128,6 +126,6 @@ class ZaakObjectListener(
     }
 
     companion object {
-        private val logger: KLogger = KotlinLogging.logger {}
+        private val logger = KotlinLogging.logger {}
     }
 }

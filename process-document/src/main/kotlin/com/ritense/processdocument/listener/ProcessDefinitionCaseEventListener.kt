@@ -24,7 +24,7 @@ import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.event.CaseDefinitionCreatedEvent
 import com.ritense.valtimo.contract.event.CaseDefinitionPreDeleteEvent
 import com.ritense.valtimo.service.CamundaProcessService
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -53,6 +53,7 @@ class ProcessDefinitionCaseEventListener(
                         oldProcessDefinition.resourceName,
                         processService.getBpmnModel(oldProcessDefinition).inputStream()
                     )
+                        ?.id
                         ?: error { "Failed to duplicate process definition ${oldProcessDefinition.key} for ${event.caseDefinitionId}" }
 
                     val processDefinition = processService.getProcessDefinitionByDeploymentId(deploymentId)

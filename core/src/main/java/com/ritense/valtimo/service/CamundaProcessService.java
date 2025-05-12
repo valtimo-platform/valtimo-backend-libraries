@@ -22,7 +22,9 @@ import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpe
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byActive;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byNotLinkedToCaseDefinition;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byVersionTag;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersionTag;
 
 import com.fasterxml.jackson.core.JsonPointer;
 import com.ritense.authorization.Action;
@@ -204,10 +206,34 @@ public class CamundaProcessService {
     }
 
     public ProcessInstanceWithDefinition startProcess(
-        String processDefinitionKey, String businessKey, Map<String, Object> variables
+        String processDefinitionKey,
+        String businessKey,
+        Map<String, Object> variables
+    ) {
+        return startProcess(processDefinitionKey, businessKey, null, variables);
+    }
+
+    public ProcessInstanceWithDefinition startProcess(
+        String processDefinitionKey,
+        String businessKey,
+        CaseDefinitionId caseDefinitionId,
+        Map<String, Object> variables
     ) {
         final CamundaProcessDefinition processDefinition = AuthorizationContext
-            .runWithoutAuthorization(() -> camundaRepositoryService.findLatestProcessDefinition(processDefinitionKey));
+            .runWithoutAuthorization(() -> {
+                if (caseDefinitionId == null) {
+                    return camundaRepositoryService.findLatestProcessDefinition(processDefinitionKey);
+                } else {
+                    // TODO: What to do if we're working on a global process definition? Currently taking latest
+                    CamundaProcessDefinition procDef = camundaRepositoryService.findProcessDefinition(
+                        byKey(processDefinitionKey).and(byLatestVersionTag("CD:" + caseDefinitionId))
+                    );
+                    if (procDef == null) {
+                        procDef = camundaRepositoryService.findLatestProcessDefinition(processDefinitionKey);
+                    }
+                    return procDef;
+                }
+            });
         if (processDefinition == null) {
             throw new IllegalStateException("No process definition found with key: '" + processDefinitionKey + "'");
         }
@@ -317,10 +343,36 @@ public class CamundaProcessService {
         String versionTag = CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.toString();
         return AuthorizationContext.runWithoutAuthorization(() -> camundaRepositoryService.findProcessDefinitions(
             byActive()
-                .and(byVersionTag(versionTag))
-                .and(byLatestVersion(versionTag)),
+                .and(byLatestVersionTag(versionTag)),
             Sort.by(NAME)
         ));
+    }
+
+    public List<CamundaProcessDefinition> getUnlinkedDeployedDefinitions() {
+        denyAuthorization();
+        return AuthorizationContext.runWithoutAuthorization(() ->
+            camundaRepositoryService.findProcessDefinitions(byActive().and(byNotLinkedToCaseDefinition()), Sort.by(NAME)).stream()
+                .collect(Collectors.groupingBy(
+                    CamundaProcessDefinition::getKey,
+                    Collectors.maxBy(Comparator.comparing(CamundaProcessDefinition::getVersion))
+                ))
+                .values()
+                .stream()
+                .flatMap(Optional::stream)
+                .collect(Collectors.toList())
+        );
+    }
+
+    public List<CamundaProcessDefinition> getUnlinkedDeployedDefinitionsByKey(String processDefinitionKey) {
+        denyAuthorization();
+        return AuthorizationContext.runWithoutAuthorization(() ->
+            camundaRepositoryService.findProcessDefinitions(
+                    byActive().and(byKey(processDefinitionKey)),
+                    Sort.by(NAME)
+                ).stream()
+                .filter(def -> def.getVersionTag() == null || !def.getVersionTag().startsWith("CD:"))
+                .collect(Collectors.toList())
+        );
     }
 
     public List<CamundaProcessDefinition> getDefinitionsByKeyAndCaseDefinition(
@@ -343,7 +395,7 @@ public class CamundaProcessService {
         return AuthorizationContext.runWithoutAuthorization(() -> camundaRepositoryService.findProcessDefinition(
             byVersionTag(versionTag)
                 .and(byKey(processDefinitionKey))
-                .and(byLatestVersion(versionTag))
+                .and(byLatestVersionTag(versionTag))
         ));
     }
 
@@ -352,6 +404,15 @@ public class CamundaProcessService {
             camundaProcessDefinition.getResourceName(),
             camundaProcessDefinition.getDeploymentId()
         ).getBytes();
+    }
+
+    public List<CamundaProcessDefinition> getDefinitionsByKey(String processDefinitionKey) {
+        denyAuthorization();
+        return AuthorizationContext.runWithoutAuthorization(() ->
+            camundaRepositoryService.findProcessDefinitions(
+                byKey(processDefinitionKey)
+            )
+        );
     }
 
     @Transactional
@@ -400,26 +461,37 @@ public class CamundaProcessService {
                 throw new ProcessNotDeployableException(fileName);
             }
 
-            setProcessesExecutable(bpmnModel);
-            setProcessesVersionTag(bpmnModel, caseDefinitionId);
+            if (isProcessDefinitionPreviouslyDeployed(fileName, bpmnModel)) {
+                return null;
+            }
 
-            var deploymentBuilder = repositoryService.createDeployment().addModelInstance(fileName, bpmnModel);
+            if (caseDefinitionId != null) {
+                setProcessesVersionTag(bpmnModel, caseDefinitionId);
+            }
+            setProcessesExecutable(bpmnModel);
+
+            var deploymentBuilder = repositoryService.createDeployment()
+                .addModelInstance(fileName, bpmnModel);
 
             if (skipProcessLinksCopy) {
                 deploymentBuilder.source(CamundaDeploymentSource.SKIP_PROCESS_LINKS_COPY.toString());
             }
 
             DeploymentWithDefinitions deployment = deploymentBuilder.deployWithResult();
-            processDefinitionCaseDefinitionLinker.link(
-                caseDefinitionId,
-                deployment.getDeployedProcessDefinitions().get(0).getId()
-            );
+            if (caseDefinitionId != null) {
+                processDefinitionCaseDefinitionLinker.link(
+                    caseDefinitionId,
+                    deployment.getDeployedProcessDefinitions().get(0).getId()
+                );
+            }
 
             return deployment;
         } else if (fileName.endsWith(".dmn")) {
             DmnModelInstance dmnModel = Dmn.readModelFromStream(fileInput);
 
-            setDecisionsVersionTag(dmnModel, caseDefinitionId);
+            if (caseDefinitionId != null) {
+                setDecisionsVersionTag(dmnModel, caseDefinitionId);
+            }
 
             return repositoryService.createDeployment().addModelInstance(fileName, dmnModel).deployWithResult();
         } else {
@@ -434,62 +506,19 @@ public class CamundaProcessService {
         }
     }
 
-    //TODO: double check this after merge
     @Transactional
-    @Nullable
-    public String deploy(
+    public DeploymentWithDefinitions deploy(
         CaseDefinitionId caseDefinitionId,
         String fileName,
         ByteArrayInputStream fileInput
     ) throws ProcessNotDeployableException, FileExtensionNotSupportedException, NoFileExtensionFoundException {
-
-        denyAuthorization();
-
-        if (fileName.endsWith(".bpmn")) {
-            BpmnModelInstance bpmnModel = Bpmn.readModelFromStream(fileInput);
-
-            if (caseDefinitionId != null) {
-                setProcessesVersionTag(bpmnModel, caseDefinitionId);
-            }
-
-            setProcessesExecutable(bpmnModel);
-
-            if (isProcessDefinitionPreviouslyDeployed(fileName, bpmnModel)) {
-                return null;
-            }
-
-            if (!isDeployable(bpmnModel)) {
-                throw new ProcessNotDeployableException(fileName);
-            }
-
-            DeploymentWithDefinitions deployment = repositoryService.createDeployment()
-                .addModelInstance(fileName, bpmnModel)
-                .deployWithResult();
-
-            if (caseDefinitionId != null) {
-                processDefinitionCaseDefinitionLinker.link(
-                    caseDefinitionId,
-                    deployment.getDeployedProcessDefinitions().get(0).getId()
-                );
-                return deployment.getId();
-            }
-        } else if (fileName.endsWith(".dmn")) {
-            DmnModelInstance dmnModel = Dmn.readModelFromStream(fileInput);
-
-            setDecisionsVersionTag(dmnModel, caseDefinitionId);
-
-            return repositoryService.createDeployment().addModelInstance(fileName, dmnModel).deploy().getId();
-        } else {
-            String[] splitFileName = fileName.split("\\.");
-
-            if (splitFileName.length > 1) {
-                String fileExtension = splitFileName[splitFileName.length - 1];
-                throw new FileExtensionNotSupportedException(fileExtension);
-            } else {
-                throw new NoFileExtensionFoundException(fileName);
-            }
-        }
-        return null;
+        return deploy(
+            caseDefinitionId,
+            fileName,
+            fileInput,
+            false,
+            false
+        );
     }
 
     private boolean isProcessDefinitionPreviouslyDeployed(String fileName, BpmnModelInstance bpmnModel) throws

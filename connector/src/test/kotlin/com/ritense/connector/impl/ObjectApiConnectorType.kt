@@ -19,7 +19,7 @@ package com.ritense.connector.impl
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.connector.domain.meta.ConnectorType
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 @ConnectorType(name = "aTypeName")
 open class ObjectApiConnectorType(

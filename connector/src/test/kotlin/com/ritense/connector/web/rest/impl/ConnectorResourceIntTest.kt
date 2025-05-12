@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.anyString
 import org.mockito.Mockito.`when`
-import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -43,6 +43,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -54,20 +55,19 @@ import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder
 import org.springframework.transaction.annotation.Transactional
 import java.nio.charset.StandardCharsets
 import java.util.UUID
-import jakarta.inject.Inject
 
 @Transactional
 internal class ConnectorResourceIntTest : BaseIntegrationTest() {
 
     lateinit var mockMvc: MockMvc
 
-    @MockBean
+    @MockitoBean
     lateinit var connectorService: ConnectorService
 
-    @Inject
+    @Autowired
     lateinit var connectorResource: ConnectorResource
 
-    @Inject
+    @Autowired
     lateinit var springHandlerInstantiatorImpl: SpringHandlerInstantiatorImpl
 
     lateinit var mapper: ObjectMapper

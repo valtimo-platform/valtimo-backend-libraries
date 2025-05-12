@@ -16,7 +16,6 @@
 
 package com.ritense.connector
 
-import com.ritense.connector.autodeployment.ConnectorApplicationReadyEventListener
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.connector.impl.DummyDependency
@@ -27,7 +26,6 @@ import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Scope
 
@@ -40,9 +38,6 @@ class ConnectorTestConfiguration {
 
     @TestConfiguration
     class TestConfig { //Beans extra
-
-        @MockBean
-        lateinit var connectorApplicationReadyEventListener: ConnectorApplicationReadyEventListener
 
         @Bean
         @Scope(BeanDefinition.SCOPE_PROTOTYPE)

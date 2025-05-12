@@ -17,7 +17,7 @@
 package com.ritense.outbox.publisher
 
 import com.ritense.outbox.OutboxMessage
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 // TODO: Remove this MessagePublisher when Valtimo has another MessagePublisher out of the box.
 open class LoggingMessagePublisher : MessagePublisher {

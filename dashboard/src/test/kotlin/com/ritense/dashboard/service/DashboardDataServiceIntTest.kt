@@ -23,15 +23,15 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.cache.CacheManager
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 
 class DashboardDataServiceIntTest @Autowired constructor(
     private val dashboardDataService: DashboardDataService,
     private val objectMapper: ObjectMapper,
-    @SpyBean private val widgetConfigurationRepository: WidgetConfigurationRepository,
-    @SpyBean private val testDataSource: TestDataSource,
-    @SpyBean private val dashboardService: DashboardService,
+    @MockitoSpyBean private val widgetConfigurationRepository: WidgetConfigurationRepository,
+    @MockitoSpyBean private val testDataSource: TestDataSource,
+    @MockitoSpyBean private val dashboardService: DashboardService,
     val cacheManager: CacheManager
 ): BaseIntegrationTest() {
 
