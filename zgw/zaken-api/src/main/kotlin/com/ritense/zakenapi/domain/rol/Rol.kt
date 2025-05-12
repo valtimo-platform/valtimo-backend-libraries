@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import java.net.URI
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -43,7 +44,9 @@ data class Rol(
         property = "betrokkeneType",
         visible = true
     )
-    val betrokkeneIdentificatie: BetrokkeneIdentificatie?
+    val betrokkeneIdentificatie: BetrokkeneIdentificatie?,
+    val beginGeldigheid: LocalDate? = null,
+    val eindeGeldigheid: LocalDate? = null,
 ) {
     val indicatieMachtiging = indicatieMachtigingString?.let {indicatieMachtiging ->
         IndicatieMachtiging.values().find {it.key == indicatieMachtiging}
