@@ -98,13 +98,15 @@ class CaseAutoConfiguration {
         importService: ImportService,
         activeCaseDefinitionService: ActiveCaseDefinitionService,
         caseDefinitionRepository: CaseDefinitionRepository,
+        caseDefinitionChecker: CaseDefinitionChecker,
     ): CaseDefinitionResource {
         return CaseDefinitionResource(
             service,
             activeCaseDefinitionService,
             exportService,
             importService,
-            caseDefinitionRepository
+            caseDefinitionRepository,
+            caseDefinitionChecker,
         )
     }
 

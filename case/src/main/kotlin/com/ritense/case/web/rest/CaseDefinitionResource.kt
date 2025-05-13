@@ -19,13 +19,14 @@ package com.ritense.case.web.rest
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.case.service.CaseDefinitionService
+import com.ritense.case.web.rest.dto.CaseDefinitionCheckResponse
 import com.ritense.case.web.rest.dto.CaseDefinitionDraftCreateRequest
 import com.ritense.case.web.rest.dto.CaseDefinitionResponseDto
 import com.ritense.case.web.rest.dto.CaseDefinitionSettingsResponseDto
+import com.ritense.case.web.rest.dto.CaseDefinitionUpdateRequest
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.case.web.rest.dto.CaseVersionDto
-import com.ritense.case.web.rest.dto.CaseDefinitionUpdateRequest
 import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.exporter.ExportService
@@ -34,6 +35,7 @@ import com.ritense.importer.ImportService
 import com.ritense.importer.exception.ImportServiceException
 import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -68,6 +70,7 @@ class CaseDefinitionResource(
     private val exportService: ExportService,
     private val importService: ImportService,
     private val caseDefinitionRepository: CaseDefinitionRepository,
+    private val caseDefinitionChecker: CaseDefinitionChecker,
 ) {
 
     @RunWithoutAuthorization
@@ -333,6 +336,16 @@ class CaseDefinitionResource(
             logger.info(exception) { "Import failed" }
             ResponseEntity.badRequest().build()
         }
+    }
+
+    @RunWithoutAuthorization
+    @GetMapping("/management/v1/case-definition/check")
+    fun checkCaseDefinition(): ResponseEntity<CaseDefinitionCheckResponse> {
+        return ResponseEntity.ok(
+            CaseDefinitionCheckResponse(
+                canUpdateGlobalConfiguration = caseDefinitionChecker.canUpdateGlobalConfiguration(),
+            )
+        )
     }
 
     companion object {
