@@ -17,7 +17,6 @@
 package com.ritense.document.exporter
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.document.importer.InternalCaseStatusDeploymentDto
 import com.ritense.document.importer.InternalCaseStatusDto
 import com.ritense.document.service.InternalCaseStatusService
 import com.ritense.exporter.ExportFile
