@@ -37,7 +37,7 @@
                       newColumnName="case_definition_key"
                       columnDataType="VARCHAR(256)"/>
         <addColumn tableName="case_tab">
-            <column name="case_definition_version_tag" type="VARCHAR(256)" defaultValue="1.0.0">
+            <column name="case_definition_version_tag" type="VARCHAR(200)" defaultValue="1.0.0">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
@@ -48,7 +48,7 @@
                       newColumnName="case_definition_key"
                       columnDataType="VARCHAR(256)"/>
         <addColumn tableName="case_widget_tab">
-            <column name="case_definition_version_tag" type="VARCHAR(256)" defaultValue="1.0.0">
+            <column name="case_definition_version_tag" type="VARCHAR(200)" defaultValue="1.0.0">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
@@ -59,7 +59,7 @@
                       newColumnName="case_definition_key"
                       columnDataType="VARCHAR(256)"/>
         <addColumn tableName="case_widget_tab_widget">
-            <column name="case_definition_version_tag" type="VARCHAR(256)" defaultValue="1.0.0">
+            <column name="case_definition_version_tag" type="VARCHAR(200)" defaultValue="1.0.0">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
@@ -67,6 +67,13 @@
     </changeSet>
 
     <changeSet id="4" author="Ritense">
+        <modifyDataType tableName="case_tab" columnName="tab_key" newDataType="VARCHAR(156)"/>
+        <modifyDataType tableName="case_widget_tab" columnName="tab_key" newDataType="VARCHAR(156)"/>
+        <modifyDataType tableName="case_widget_tab_widget" columnName="key" newDataType="VARCHAR(156)"/>
+        <modifyDataType tableName="case_widget_tab_widget" columnName="tab_key" newDataType="VARCHAR(156)"/>
+    </changeSet>
+
+    <changeSet id="5" author="Ritense">
         <addPrimaryKey tableName="case_tab" columnNames="case_definition_key, case_definition_version_tag, tab_key"/>
         <addPrimaryKey tableName="case_widget_tab" columnNames="case_definition_key, case_definition_version_tag, tab_key"/>
         <addPrimaryKey tableName="case_widget_tab_widget" columnNames="case_definition_key, case_definition_version_tag, key, tab_key"/>

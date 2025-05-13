@@ -20,7 +20,8 @@ dependencies {
     implementation "com.rabbitmq:amqp-client:$amqpCLientVersion"
 
     // Database
-    implementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion
+    implementation "org.postgresql:postgresql:$postgresqlDriverVersion"
+    implementation "com.mysql:mysql-connector-j:$mysqlDriverVersion"
 
     if (System.getProperty("os.arch") == "aarch64") {
         runtimeOnly("io.netty:netty-resolver-dns-native-macos:4.1.105.Final:osx-aarch_64")
