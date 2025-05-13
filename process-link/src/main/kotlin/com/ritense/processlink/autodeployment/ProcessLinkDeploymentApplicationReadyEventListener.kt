@@ -23,8 +23,7 @@ import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.importer.ImportRequest
 import com.ritense.processlink.importer.ProcessLinkImporter
-import mu.KLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.apache.commons.lang3.StringUtils
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
@@ -36,6 +35,7 @@ import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
 import java.io.IOException
 
+// TODO: MOVE THIS TO TEST
 open class ProcessLinkDeploymentApplicationReadyEventListener(
     private val resourceLoader: ResourceLoader,
     private val processLinkImporter: ProcessLinkImporter,
@@ -111,7 +111,7 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
     }
 
     companion object {
-        private val logger: KLogger = KotlinLogging.logger {}
+        private val logger = KotlinLogging.logger {}
         const val PATH = "classpath*:**/case/*/*/process-link/*.process-link.json"
         private const val CASE_DEFINITION_FOLDER_STRUCTURE = "/config/case"
     }

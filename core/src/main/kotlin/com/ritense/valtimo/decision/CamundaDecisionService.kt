@@ -17,7 +17,7 @@
 package com.ritense.valtimo.decision
 
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.repository.DecisionDefinition
 

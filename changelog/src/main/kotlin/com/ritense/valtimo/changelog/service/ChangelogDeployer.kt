@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.core.env.Environment
 import org.springframework.transaction.annotation.Transactional
 import java.util.TreeMap

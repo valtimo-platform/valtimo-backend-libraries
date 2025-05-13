@@ -83,5 +83,22 @@ class CamundaProcessDefinitionSpecificationHelper {
             cb.equal(root.get<Any>(SUSPENSION_STATE), SuspensionState.ACTIVE.stateCode)
         }
 
+        @JvmStatic
+        fun byNotLinkedToCaseDefinition() = Specification<CamundaProcessDefinition> { root, _, cb ->
+            cb.or(
+                cb.isNull(root.get<Any>(VERSION_TAG)),
+                cb.not(
+                    cb.equal(
+                        cb.function(
+                            "left",
+                            String::class.java,
+                            root.get<String>(VERSION_TAG),
+                            cb.literal(3)
+                        ),
+                        "CD:"
+                    )
+                )
+            )
+        }
     }
 }

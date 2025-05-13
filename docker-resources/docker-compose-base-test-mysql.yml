@@ -8,6 +8,7 @@ services:
             --innodb-flush-method=O_DIRECT
             --lower-case-table-names=1
             --sql-mode=NO_ENGINE_SUBSTITUTION
+            --transaction-isolation=READ-COMMITTED
         #ports:
            # - "5432:5432" #needs overriding "XXXX:5432" XXXX=your-own-port-per-module-test
         environment:

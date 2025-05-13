@@ -25,7 +25,7 @@ import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
 import com.ritense.importer.ValtimoImportTypes.Companion.ZGW_DOCUMENT_TREFWOORD
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.data.domain.Pageable
 import org.springframework.transaction.annotation.Transactional
 

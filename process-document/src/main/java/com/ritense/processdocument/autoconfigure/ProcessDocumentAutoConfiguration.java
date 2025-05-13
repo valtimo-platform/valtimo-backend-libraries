@@ -48,7 +48,6 @@ import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valueresolver.ValueResolverFactory;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
-import org.camunda.bpm.extension.reactor.spring.EnableCamundaEventBus;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -59,7 +58,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @AutoConfiguration
 @EnableJpaRepositories(basePackages = "com.ritense.processdocument.repository")
 @EntityScan("com.ritense.processdocument.domain")
-@EnableCamundaEventBus
 public class ProcessDocumentAutoConfiguration {
 
     @Bean

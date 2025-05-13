@@ -24,7 +24,7 @@ import com.ritense.exporter.ExportPrettyPrinter
 import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 class ZgwDocumentListColumnExporter(
     private val documentenApiColumnRepository: DocumentenApiColumnRepository,

@@ -27,6 +27,7 @@ import com.ritense.mail.domain.webhook.MandrillWebhookRequest;
 import com.ritense.valtimo.contract.basictype.EmailAddress;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -35,7 +36,6 @@ import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Base64Utils;
 import org.springframework.util.MultiValueMap;
 
 public class WebhookService {
@@ -62,7 +62,7 @@ public class WebhookService {
             .map(key -> String.join("", key + body.getFirst(key)))
             .collect(Collectors.joining());
 
-        final String base64Signature = Base64Utils.encodeToString(
+        final String base64Signature = Base64.getEncoder().encodeToString(
             new HmacUtils(HmacAlgorithms.HMAC_SHA_1, mandrillProperties.getWebhookAuthenticationKey()).hmac(urlWithQueryParams)
         );
         return base64Signature.equals(authenticationKey);

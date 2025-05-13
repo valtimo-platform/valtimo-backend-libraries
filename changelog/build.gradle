@@ -39,7 +39,7 @@ dependencies {
 
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
 
-    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "io.github.oshai:kotlin-logging:${kotlinLoggingVersion}"
 
     implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
 

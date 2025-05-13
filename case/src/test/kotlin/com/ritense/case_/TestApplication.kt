@@ -27,8 +27,8 @@ import org.mockito.kotlin.spy
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Bean
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 
 @SpringBootApplication(
     scanBasePackageClasses = [LiquibaseRunnerAutoConfiguration::class, CaseAutoConfiguration::class, CaseWidgetAutoConfiguration::class],
@@ -51,7 +51,7 @@ class TestApplication {
         @Bean
         fun testFormExporter() = TestFormExporter()
 
-        @MockBean
+        @MockitoBean
         lateinit var resourceService: ResourceService
 
         @Bean

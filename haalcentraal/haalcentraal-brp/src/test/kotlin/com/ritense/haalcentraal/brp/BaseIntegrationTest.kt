@@ -26,7 +26,6 @@ import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpProperties
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
 import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker
-import java.util.UUID
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -37,8 +36,9 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import java.util.UUID
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
@@ -60,13 +60,13 @@ class BaseIntegrationTest : BaseTest() {
     @Autowired
     lateinit var connectorDeploymentService: ConnectorDeploymentService
 
-    @MockBean
+    @MockitoBean
     lateinit var processDefinitionCaseDefinitionLinker: ProcessDefinitionCaseDefinitionLinker
 
-    @MockBean
+    @MockitoBean
     lateinit var userManagementService: UserManagementService
 
-    @MockBean
+    @MockitoBean
     lateinit var mailSender: MailSender
 
     lateinit var server: MockWebServer
