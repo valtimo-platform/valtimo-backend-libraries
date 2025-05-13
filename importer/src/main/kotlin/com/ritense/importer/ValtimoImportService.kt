@@ -35,6 +35,7 @@ import java.util.zip.ZipInputStream
 open class ValtimoImportService(
     importers: Set<Importer>,
     private val environment: Environment,
+    val whitelistedEnvironmentProperties: List<Regex>
 ) : ImportService {
 
     private val orderedImporters = distinctImporters(importers).let {
@@ -235,9 +236,11 @@ open class ValtimoImportService(
             .map { it.groupValues }
             .forEach { (placeholder, placeholderValue) ->
                 try {
-                    val resolvedValue = environment.getProperty(placeholderValue)
-                    if (!resolvedValue.isNullOrBlank()) {
-                        resolvedContent = resolvedContent.replace(placeholder, resolvedValue)
+                    whitelistedEnvironmentProperties.firstOrNull { it.matches(placeholderValue) }?.let {
+                        val resolvedValue = environment.getProperty(placeholderValue)
+                        if (!resolvedValue.isNullOrBlank()) {
+                            resolvedContent = resolvedContent.replace(placeholder, resolvedValue)
+                        }
                     }
                 } catch (e: Exception) {
                     // ignored

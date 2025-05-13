@@ -38,7 +38,6 @@ import org.mockito.kotlin.whenever
 class ZgwDocumentListColumnExporterTest(
     @Mock private val documentenApiColumnRepository: DocumentenApiColumnRepository
 ) {
-
     private lateinit var exporter: ZgwDocumentListColumnExporter
 
     private val caseDefinitionId = CaseDefinitionId("test", "1.0.0")

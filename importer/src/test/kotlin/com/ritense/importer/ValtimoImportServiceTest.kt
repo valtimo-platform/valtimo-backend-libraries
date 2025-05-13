@@ -47,7 +47,8 @@ class ValtimoImportServiceTest {
                     TestImporter(),
                     TestImporter()
                 ),
-                mock()
+                mock(),
+                emptyList()
             )
         }
 
@@ -63,7 +64,8 @@ class ValtimoImportServiceTest {
             setOf(
                 filteredImporter
             ),
-            mock()
+            mock(),
+            emptyList()
         )
 
         //Should not throw TooManyImportCandidatesException, since 'other' is filtered out
@@ -82,7 +84,8 @@ class ValtimoImportServiceTest {
                     TestImporter("test2"),
                     TestImporter("test3", supportsFunction = { false })
                 ),
-                mock()
+                mock(),
+                emptyList()
             )
 
             service.import(createZipInputStream(1), emptyList())
@@ -99,7 +102,8 @@ class ValtimoImportServiceTest {
                     TestImporter("2", dependsOn = setOf("2")),
                     TestImporter("1"),
                 ),
-                mock()
+                mock(),
+                emptyList()
             )
         }
 
@@ -109,7 +113,7 @@ class ValtimoImportServiceTest {
 
     @Test
     fun `should throw InvalidImportZipException`() {
-        val importService = ValtimoImportService(setOf(), mock())
+        val importService = ValtimoImportService(setOf(), mock(), emptyList())
         assertThrows<InvalidImportZipException> {
             importService.import("123456".byteInputStream(Charsets.UTF_8), emptyList())
         }
@@ -130,7 +134,7 @@ class ValtimoImportServiceTest {
                 ))
             }
 
-        val importService = ValtimoImportService(importers.shuffled().toSet(), mock())
+        val importService = ValtimoImportService(importers.shuffled().toSet(), mock(), emptyList())
 
         // do not create file "3"
         val skip = 3

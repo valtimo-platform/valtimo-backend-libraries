@@ -21,6 +21,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.documentenapi.BaseIntegrationTest
+import com.ritense.documentenapi.repository.DocumentenApiUploadFieldRepository
+import com.ritense.exporter.Exporter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions
@@ -37,7 +39,8 @@ import org.springframework.util.StreamUtils
 class ZgwDocumentTrefwoordExporterIntTest @Autowired constructor(
     private val objectMapper: ObjectMapper,
     private val resourceLoader: ResourceLoader,
-    private val zgwDocumentTrefwoordExporter: ZgwDocumentTrefwoordExporter
+    private val zgwDocumentTrefwoordExporter: ZgwDocumentTrefwoordExporter,
+    private val zgwDocumentUploadFieldRepository: DocumentenApiUploadFieldRepository
 ) : BaseIntegrationTest() {
 
     private val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
@@ -50,7 +53,7 @@ class ZgwDocumentTrefwoordExporterIntTest @Autowired constructor(
         val exportFiles = zgwDocumentTrefwoordExporter.export(request).exportFiles
 
         val path = PATH.format(caseDefinitionName)
-        val trefwoordenExport = exportFiles.singleOrNull {
+        val  trefwoordenExport = exportFiles.singleOrNull {
             it.path == path
         }
 
