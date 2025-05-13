@@ -57,7 +57,7 @@ public abstract class BaseTest {
 
     protected FormIoFormDefinition formDefinitionOf(String formDefinitionId) throws IOException {
         var s = IOUtils.toString(
-            Thread.currentThread().getContextClassLoader().getResourceAsStream("config/case/person/1-0-0/form/" + formDefinitionId + ".json"),
+            Thread.currentThread().getContextClassLoader().getResourceAsStream("config/case/person/1-0-0/form/" + formDefinitionId + ".form.json"),
             StandardCharsets.UTF_8
         );
         return new FormIoFormDefinition(UUID.randomUUID(), "form-example", s, CaseDefinitionId.of("person", "1.0.0"), false);
@@ -70,6 +70,6 @@ public abstract class BaseTest {
     }
 
     public URI path(String name) {
-        return URI.create(String.format("config/case/person/1-0-0/document/definition/%s.json", name + ".schema"));
+        return URI.create(String.format("config/case/person/1-0-0/document/definition/%s.json", name + ".schema.document-definition"));
     }
 }

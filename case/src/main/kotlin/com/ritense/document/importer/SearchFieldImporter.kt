@@ -100,7 +100,7 @@ class SearchFieldImporter(
     }
 
     private companion object {
-        val FILENAME_REGEX = """/search/([^/]*)\.json""".toRegex()
+        val FILENAME_REGEX = """/case/search-field/([^/]*)\.case-search-field\.json""".toRegex()
         const val SEARCH_SCHEMA_PATH = "classpath:config/search/schema/search.schema.json"
         val logger = KotlinLogging.logger {}
     }

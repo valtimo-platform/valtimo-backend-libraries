@@ -356,22 +356,9 @@ class DefaultFormSubmissionServiceTest {
     }
 
     private fun rawFormDefinition(formDefinitionId: String): String {
-        return requireNotNull(Thread.currentThread().contextClassLoader.getResourceAsStream("config/case/person/1-0-0/form/$formDefinitionId.json"))
+        return requireNotNull(Thread.currentThread().contextClassLoader.getResourceAsStream("config/case/person/1-0-0/form/$formDefinitionId.form.json"))
             .bufferedReader().use { it.readText() }
     }
-
-//    private fun processDocumentDefinition(documentDefinitionName: String, canInitializeDocument: Boolean = false): CamundaProcessJsonSchemaDocumentDefinition {
-//        return CamundaProcessJsonSchemaDocumentDefinition(
-//            CamundaProcessJsonSchemaDocumentDefinitionId.newId(
-//                CamundaProcessDefinitionId(
-//                    PROCESS_DEFINITION_KEY
-//                ),
-//                JsonSchemaDocumentDefinitionId.existingId(documentDefinitionName, 1)
-//            ),
-//            canInitializeDocument,
-//            false
-//        )
-//    }
 
     private fun definition(caseDefinitionId: CaseDefinitionId): JsonSchemaDocumentDefinition {
         val jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.of("person", caseDefinitionId)
@@ -392,7 +379,7 @@ class DefaultFormSubmissionServiceTest {
     }
 
     private fun path(name: String): URI? {
-        return URI.create(String.format("config/case/person/1-0-0/document/definition/%s.json", "$name.schema"))
+        return URI.create(String.format("config/case/person/1-0-0/document/definition/%s.document-definition.json", "$name.schema"))
     }
 
     private fun formData(): ObjectNode {

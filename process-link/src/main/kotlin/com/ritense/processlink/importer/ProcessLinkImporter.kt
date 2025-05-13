@@ -90,6 +90,6 @@ class ProcessLinkImporter(
     }
 
     private companion object {
-        val FILENAME_REGEX = """(?:.*\/)?(.+)\.processlink\.json""".toRegex()
+        val FILENAME_REGEX = """/process-link/(?:.*\/)?(.+)\.process-link\.json""".toRegex()
     }
 }

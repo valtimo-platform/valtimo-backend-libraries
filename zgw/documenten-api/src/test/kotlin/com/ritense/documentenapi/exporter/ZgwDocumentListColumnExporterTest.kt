@@ -19,7 +19,6 @@ package com.ritense.documentenapi.exporter
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.documentenapi.deployment.ZgwDocumentListColumn
-import com.ritense.documentenapi.deployment.ZgwDocumentListColumnChangeset
 import com.ritense.documentenapi.domain.ColumnDefaultSort.ASC
 import com.ritense.documentenapi.domain.DocumentenApiColumn
 import com.ritense.documentenapi.domain.DocumentenApiColumnId
@@ -71,13 +70,9 @@ class ZgwDocumentListColumnExporterTest(
 
         assertThat(export.exportFiles).hasSize(1)
         val file = export.exportFiles.first()
-        assertThat(file.path).isEqualTo("config/case/zgw-document-list-columns/test.zgw-document-list-column.json")
-        val value = jacksonObjectMapper().readValue<ZgwDocumentListColumnChangeset>(file.content)
-        assertThat(value.changesetId).matches("""test\.zgw-document-list-column\.\d+""")
-        assertThat(value.caseDefinitions).hasSize(1)
-        val columnCollection = value.caseDefinitions.first()
-        assertThat(columnCollection.key).isEqualTo(name)
-        assertThat(columnCollection.columns).containsExactly(
+        assertThat(file.path).isEqualTo("config/case/test/1-0-0/zgw/document-list-column/test.zgw-document-list-column.json")
+        val columns = jacksonObjectMapper().readValue<List<ZgwDocumentListColumn>>(file.content)
+        assertThat(columns).containsExactly(
             ZgwDocumentListColumn(DocumentenApiColumnKey.AUTEUR, ASC),
             ZgwDocumentListColumn(DocumentenApiColumnKey.BESTANDSNAAM, null),
         )

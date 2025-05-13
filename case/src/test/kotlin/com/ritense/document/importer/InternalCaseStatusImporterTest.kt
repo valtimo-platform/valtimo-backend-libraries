@@ -60,11 +60,11 @@ class InternalCaseStatusImporterTest(
 
     @Test
     fun `should not support non-internalCaseStatus fileName`() {
-        assertThat(importer.supports("/internal-case-status/x/test.json")).isFalse()
-        assertThat(importer.supports("/internal-case-status/test-json")).isFalse()
+        assertThat(importer.supports("/case/internal-status/x/test.json")).isFalse()
+        assertThat(importer.supports("/case/internal-status/test-json")).isFalse()
     }
 
     private companion object {
-        const val FILENAME = "/internal-case-status/my-doc-def.internal-case-status.json"
+        const val FILENAME = "/case/internal-status/my-doc-def.internal-case-status.json"
     }
 }

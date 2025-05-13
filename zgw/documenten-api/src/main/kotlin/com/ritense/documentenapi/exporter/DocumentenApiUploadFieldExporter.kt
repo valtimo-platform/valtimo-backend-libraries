@@ -17,9 +17,7 @@
 package com.ritense.documentenapi.exporter
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.documentenapi.deployment.ZgwDocumentCaseDefinitionUploadFields
 import com.ritense.documentenapi.deployment.ZgwDocumentUploadField
-import com.ritense.documentenapi.deployment.ZgwDocumentUploadFieldsChangeset
 import com.ritense.documentenapi.repository.DocumentenApiUploadFieldRepository
 import com.ritense.exporter.ExportFile
 import com.ritense.exporter.ExportPrettyPrinter
@@ -27,7 +25,6 @@ import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import mu.KotlinLogging
-import java.time.Instant
 
 class DocumentenApiUploadFieldExporter(
     private val documentenApiUploadFieldRepository: DocumentenApiUploadFieldRepository,
@@ -41,23 +38,23 @@ class DocumentenApiUploadFieldExporter(
             .map { ZgwDocumentUploadField(it.id.key, it.defaultValue, it.visible, it.readonly) }
 
         if (fields.isEmpty()) {
-            return ExportResult(null)
+            return ExportResult()
         }
 
-        val changeset = ZgwDocumentUploadFieldsChangeset(
-            "${request.name}.zgw-document-upload-fields.${Instant.now().toEpochMilli()}",
-            caseDefinitions = listOf(ZgwDocumentCaseDefinitionUploadFields(key = request.name, fields = fields))
-        )
+        val formattedCaseDefinitionVersion = request.caseDefinitionId.versionTag.let {
+            "${it.major}-${it.minor}-${it.patch}"
+        }
 
         return ExportResult(
             ExportFile(
-                "config/case/zgw-document-upload-fields/${request.name}.zgw-document-upload-fields.json",
-                objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(changeset)
+                PATH.format(request.caseDefinitionId.key, formattedCaseDefinitionVersion, request.name),
+                objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(fields)
             )
         )
     }
 
     companion object {
         private val logger = KotlinLogging.logger {}
+        private const val PATH = "config/case/%s/%s/zgw/document-upload-fields/%s.zgw-document-upload-field.json"
     }
 }

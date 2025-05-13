@@ -16,33 +16,37 @@
 
 package com.ritense.documentenapi.service
 
-import com.ritense.documentenapi.deployment.ZgwDocumentTrefwoordDeploymentService
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.documentenapi.repository.ZgwDocumentTrefwoordRepository
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
-import com.ritense.valtimo.changelog.service.ChangelogDeployer
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 
 @ExtendWith(MockitoExtension::class)
 class ZgwDocumentTrefwoordImporterTest(
-    @Mock private val zgwDocumentTrefwoordDeploymentService: ZgwDocumentTrefwoordDeploymentService,
-    @Mock private val changelogDeployer: ChangelogDeployer
+    @Mock private val zgwDocumentTrefwoordRepository: ZgwDocumentTrefwoordRepository,
+    @Mock private val zgwDocumentTrefwoordService: ZgwDocumentTrefwoordService,
+    @Mock private val objectMapper: ObjectMapper
 ) {
     private lateinit var importer: ZgwDocumentTrefwoordImporter
 
     @BeforeEach
     fun before() {
-        importer = ZgwDocumentTrefwoordImporter(zgwDocumentTrefwoordDeploymentService, changelogDeployer)
+        importer =
+            ZgwDocumentTrefwoordImporter(zgwDocumentTrefwoordRepository, zgwDocumentTrefwoordService, objectMapper)
     }
 
     @Test
     fun `should be of type 'zgw-document-trefwoord'`() {
-        assertThat(importer.type()).isEqualTo("zgw-document-trefwoord")
+        assertThat(importer.type()).isEqualTo("zgwdocumenttrefwoord")
     }
 
     @Test
@@ -61,16 +65,7 @@ class ZgwDocumentTrefwoordImporterTest(
         assertThat(importer.supports("config/case/trefwoorden/my-zgw-document-trefwoorden.json")).isFalse()
     }
 
-    @Test
-    fun `should call deploy method for import with correct parameters`() {
-        val jsonContent = "{}"
-
-        importer.import(ImportRequest(FILENAME, jsonContent.toByteArray()))
-
-        verify(changelogDeployer).deploy(zgwDocumentTrefwoordDeploymentService, FILENAME, jsonContent)
-    }
-
     private companion object {
-        const val FILENAME = "config/case/trefwoorden/my-case.zgw-document-trefwoorden.json"
+        const val FILENAME = "/zgw/trefwoord/my-case.zgw-document-trefwoord.json"
     }
 }

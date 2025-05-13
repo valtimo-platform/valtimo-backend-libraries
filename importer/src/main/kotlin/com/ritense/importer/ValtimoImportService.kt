@@ -26,13 +26,15 @@ import com.ritense.importer.exception.TooManyImportCandidatesException
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import mu.KLogger
 import mu.KotlinLogging
+import org.springframework.core.env.Environment
 import org.springframework.core.io.Resource
 import org.springframework.transaction.annotation.Transactional
 import java.io.InputStream
 import java.util.zip.ZipInputStream
 
 open class ValtimoImportService(
-    importers: Set<Importer>
+    importers: Set<Importer>,
+    private val environment: Environment,
 ) : ImportService {
 
     private val orderedImporters = distinctImporters(importers).let {
@@ -221,8 +223,27 @@ open class ValtimoImportService(
 
     private fun getEntriesFromResources(resources: List<Pair<String, Resource>>): List<ZipFileEntry> {
         return resources.map {
-            ZipFileEntry(it.first, it.second.contentAsByteArray)
+            val resolvedContent = resolveProperties(it.second.getContentAsString(Charsets.UTF_8))
+
+            ZipFileEntry(it.first, resolvedContent.toByteArray(Charsets.UTF_8))
         }
+    }
+
+    private fun resolveProperties(content: String): String {
+        var resolvedContent = content
+        Regex("\\$\\{([^\\}]+)\\}").findAll(content)
+            .map { it.groupValues }
+            .forEach { (placeholder, placeholderValue) ->
+                try {
+                    val resolvedValue = environment.getProperty(placeholderValue)
+                    if (!resolvedValue.isNullOrBlank()) {
+                        resolvedContent = resolvedContent.replace(placeholder, resolvedValue)
+                    }
+                } catch (e: Exception) {
+                    // ignored
+                }
+            }
+        return resolvedContent
     }
 
     // change entries to be nested

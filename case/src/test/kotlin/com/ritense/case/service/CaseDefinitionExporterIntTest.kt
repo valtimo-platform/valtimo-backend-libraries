@@ -66,7 +66,7 @@ class CaseDefinitionExporterIntTest @Autowired constructor(
         requireNotNull(caseTabsExport)
         val exportJson = caseTabsExport.content.toString(Charsets.UTF_8)
         val expectedJson = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
-            .getResource("classpath:config/case/$caseDefinitionKey/1-2-3/case/definition/$caseDefinitionKey.json")
+            .getResource("classpath:config/case/$caseDefinitionKey/1-2-3/case/definition/$caseDefinitionKey.case-definition.json")
             .inputStream
             .use { inputStream ->
                 StreamUtils.copyToString(inputStream, Charsets.UTF_8)
@@ -79,6 +79,6 @@ class CaseDefinitionExporterIntTest @Autowired constructor(
     }
 
     companion object {
-        private const val PATH = "config/case/%s/1-2-3/case/definition/%s.json"
+        private const val PATH = "config/case/%s/1-2-3/case/definition/%s.case-definition.json"
     }
 }

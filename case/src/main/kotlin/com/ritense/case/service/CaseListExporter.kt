@@ -56,6 +56,6 @@ class CaseListExporter(
     }
 
     companion object {
-        private const val PATH = "config/case/%s/%s/case/list/%s.json"
+        private const val PATH = "config/case/%s/%s/case/list/%s.case-list.json"
     }
 }

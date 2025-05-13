@@ -90,7 +90,7 @@ public abstract class BaseTest {
     }
 
     public URI path(String name) {
-        return URI.create(String.format("config/case/%s/1-0-0/document/definition/%s.json", name, name + ".schema"));
+        return URI.create(String.format("config/case/%s/1-0-0/document/definition/%s.json", name, name + ".schema.document-definition"));
     }
 
 }

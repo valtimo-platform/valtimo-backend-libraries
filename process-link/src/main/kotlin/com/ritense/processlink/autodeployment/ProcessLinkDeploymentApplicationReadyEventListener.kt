@@ -23,9 +23,9 @@ import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.importer.ImportRequest
 import com.ritense.processlink.importer.ProcessLinkImporter
-import java.io.IOException
 import mu.KLogger
 import mu.KotlinLogging
+import org.apache.commons.lang3.StringUtils
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.core.Ordered
@@ -34,6 +34,7 @@ import org.springframework.core.env.Environment
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
+import java.io.IOException
 
 open class ProcessLinkDeploymentApplicationReadyEventListener(
     private val resourceLoader: ResourceLoader,
@@ -48,7 +49,11 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
         logger.info { "Deploying all process links from $PATH" }
         loadResources().forEach { resource ->
             try {
-                val fileName = requireNotNull(resource.filename)
+                val relativePath = resource.url.path.substringAfter(CASE_DEFINITION_FOLDER_STRUCTURE)
+                val substring = relativePath.substring(0, StringUtils.ordinalIndexOf(relativePath, "/", 3))
+                val fileName =
+                    resource.url.path.substringAfter(CASE_DEFINITION_FOLDER_STRUCTURE).substring(substring.length)
+
                 logger.info { "Deploying process link from file '${fileName}'" }
 
                 val processLinkNode = objectMapper.readValue<ArrayNode>(resource.inputStream)
@@ -107,6 +112,7 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
 
     companion object {
         private val logger: KLogger = KotlinLogging.logger {}
-        const val PATH = "classpath*:**/*.processlink.json"
+        const val PATH = "classpath*:**/case/*/*/process-link/*.process-link.json"
+        private const val CASE_DEFINITION_FOLDER_STRUCTURE = "/config/case"
     }
 }

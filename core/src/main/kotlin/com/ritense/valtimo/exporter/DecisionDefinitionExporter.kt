@@ -31,12 +31,20 @@ class DecisionDefinitionExporter(
     override fun export(request: DecisionDefinitionExportRequest): ExportResult {
         val decisionDefinition = repositoryService.getDecisionDefinition(request.decisionDefinitionId)
 
+        val formattedCaseDefinitionVersion = request.caseDefinitionId!!.versionTag.let {
+            "${it.major}-${it.minor}-${it.patch}"
+        }
+
         val exportFile = repositoryService.getDecisionModel(decisionDefinition.id).use {inputStream ->
             ExportFile(
-                "dmn/${decisionDefinition.key}.dmn",
+                PATH.format(request.caseDefinitionId!!.key, formattedCaseDefinitionVersion, decisionDefinition.key),
                 IOUtils.toByteArray(inputStream)
             )
         }
         return ExportResult(exportFile)
+    }
+
+    companion object {
+        private const val PATH = "config/case/%s/%s/dmn/%s.dmn"
     }
 }

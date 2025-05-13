@@ -22,15 +22,17 @@ import com.ritense.importer.ValtimoImportService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.core.env.Environment
 
 @AutoConfiguration
 class ImportAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ImportService::class)
-    fun importService(importers: Set<Importer>): ImportService {
+    fun importService(importers: Set<Importer>, environment: Environment): ImportService {
         return ValtimoImportService(
-            importers
+            importers,
+            environment
         )
     }
 }

@@ -33,4 +33,6 @@ interface SearchFieldV2Repository : JpaRepository<SearchFieldV2, UUID> {
     fun findAllByOwnerTypeAndOwnerIdOrderByOrder(ownerType: String?, ownerId: String): List<SearchFieldV2>
 
     fun deleteAllByOwnerType(ownerType: String)
+
+    fun deleteAllByOwnerTypeAndOwnerId(ownerType: String, ownerId: String)
 }

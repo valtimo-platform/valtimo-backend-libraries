@@ -40,7 +40,7 @@ class ZgwDocumentTrefwoordExporterIntTest @Autowired constructor(
     private val zgwDocumentTrefwoordExporter: ZgwDocumentTrefwoordExporter
 ) : BaseIntegrationTest() {
 
-    private val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
+    private val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
 
     @Test
     fun `should export zgw document trefwoorden for case definition`(): Unit = AuthorizationContext.runWithoutAuthorization {
@@ -56,17 +56,8 @@ class ZgwDocumentTrefwoordExporterIntTest @Autowired constructor(
 
         val jsonTree = objectMapper.readTree(requireNotNull(trefwoordenExport).content)
 
-        //Check if the changesetId ends with a timestamp
-        val changesetIdField = "changesetId"
-        val changesetRegex = """(profile\.zgw-document-trefwoorden)\.\d+""".toRegex()
-        val matchResult = changesetRegex.matchEntire(jsonTree.get(changesetIdField).textValue())
-        Assertions.assertThat(matchResult).isNotNull
-
-        //Remove the timestamp from the changesetId, so we can compare it as usual
-        (jsonTree as ObjectNode).set<TextNode>(changesetIdField, TextNode(matchResult!!.groupValues[1]))
-
         val expectedJson = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
-            .getResource("classpath:config/case/trefwoorden/$caseDefinitionName.zgw-document-trefwoorden.json")
+            .getResource("classpath:config/case/profile/1-0-0/zgw/trefwoord/$caseDefinitionName.zgw-document-trefwoord.json")
             .inputStream
             .use { inputStream ->
                 StreamUtils.copyToString(inputStream, Charsets.UTF_8)
@@ -79,7 +70,7 @@ class ZgwDocumentTrefwoordExporterIntTest @Autowired constructor(
     }
 
     companion object {
-        private const val PATH = "config/case/trefwoorden/%s.zgw-document-trefwoorden.json"
+        private const val PATH = "config/case/profile/1-0-0/zgw/trefwoord/%s.zgw-document-trefwoord.json"
 
     }
 }

@@ -57,11 +57,11 @@ class CaseTabImporterTest(
 
     @Test
     fun `should not support non-caseTab fileName`() {
-        assertThat(importer.supports("/case/tab/x/test.json")).isFalse()
-        assertThat(importer.supports("/case/tab/test-json")).isFalse()
+        assertThat(importer.supports("/case/tab/x/test.case-tab.json")).isFalse()
+        assertThat(importer.supports("/case/tab/test.case-tab-json")).isFalse()
     }
 
     private companion object {
-        const val FILENAME = "/case/tab/my-doc-def.case-tabs.json"
+        const val FILENAME = "/case/tab/my-doc-def.case-tab.json"
     }
 }
