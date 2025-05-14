@@ -26,7 +26,7 @@
             </column>
         </addColumn>
         <addColumn tableName="form_io_form_definition">
-            <column name="case_definition_version_tag" type="VARCHAR(256)">
+            <column name="case_definition_version_tag" type="VARCHAR(200)">
                 <constraints nullable="true"/>
             </column>
         </addColumn>

@@ -29,7 +29,10 @@
     </changeSet>
 
     <changeSet id="2" author="Ritense">
-        <renameColumn tableName="process_link" oldColumnName="form_flow_definition_id" newColumnName="form_flow_definition_key"/>
+        <renameColumn tableName="process_link"
+                      oldColumnName="form_flow_definition_id"
+                      newColumnName="form_flow_definition_key"
+                      columnDataType="VARCHAR(512)"/>
     </changeSet>
 
 </databaseChangeLog>
