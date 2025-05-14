@@ -34,7 +34,6 @@ import com.ritense.valtimo.camunda.domain.CamundaExecution
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.camunda.bpm.engine.RuntimeService
-import org.semver4j.Semver
 import java.util.UUID
 
 class ProcessDefinitionCaseDefinitionService(
