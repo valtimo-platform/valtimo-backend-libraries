@@ -67,7 +67,7 @@ class CaseTabImporter(
     }
 
     private companion object {
-        private val FILENAME_REGEX = """/case/tab/([^/]+)\.case-tabs\.json""".toRegex()
+        private val FILENAME_REGEX = """/case/tab/([^/]+)\.case-tab\.json""".toRegex()
 
         private val STANDARD_CASE_TABS = listOf(
             CaseTabDto("summary", null, CaseTabType.STANDARD, "summary"),

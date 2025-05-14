@@ -64,7 +64,7 @@ class FormFlowResourceTest : BaseTest() {
         whenever(formFlowService.getTypeProperties(any())).thenReturn(
             FormTypeProperties(
                 MapperSingleton.get().readTree(
-                    readFileAsString("/config/case/profile/1.0.0/form/user-task-lening-aanvragen.json")
+                    readFileAsString("/config/case/profile/1-0-0/form/user-task-lening-aanvragen.form.json")
                 )
             )
         )

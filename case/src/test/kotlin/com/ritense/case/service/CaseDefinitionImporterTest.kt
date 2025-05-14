@@ -59,11 +59,11 @@ class CaseDefinitionImporterTest(
 
     @Test
     fun `should not support non-caselist fileName`() {
-        assertThat(importer.supports("config/case/definition/x/test.json")).isFalse()
-        assertThat(importer.supports("config/case/definition/test-json")).isFalse()
+        assertThat(importer.supports("/case/definition/x/test.case-definition.json")).isFalse()
+        assertThat(importer.supports("/case/definition/test.case-definition-json")).isFalse()
     }
 
     private companion object {
-        const val FILENAME = "/case/definition/my-case-list.json"
+        const val FILENAME = "/case/definition/my-case-list.case-definition.json"
     }
 }

@@ -42,11 +42,15 @@ class SearchFieldExporter(
             return ExportResult()
         }
 
+        val formattedCaseDefinitionVersion = request.caseDefinitionId.versionTag.let {
+            "${it.major}-${it.minor}-${it.patch}"
+        }
+
         val exportFile = ByteArrayOutputStream().use {
             objectMapper.writer(ExportPrettyPrinter()).writeValue(it, SearchConfigurationDto(searchFields))
 
             ExportFile(
-                PATH.format(request.name),
+                PATH.format(request.caseDefinitionId.key, formattedCaseDefinitionVersion, request.name),
                 it.toByteArray()
             )
         }
@@ -55,6 +59,6 @@ class SearchFieldExporter(
     }
 
     companion object {
-        private const val PATH = "config/search/%s.json"
+        private const val PATH = "config/case/%s/%s/case/search-field/%s.schema.case-search-field.json"
     }
 }

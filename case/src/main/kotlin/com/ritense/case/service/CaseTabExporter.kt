@@ -72,6 +72,6 @@ class CaseTabExporter(
     }
 
     companion object {
-        private const val PATH = "config/case/%s/%s/case/tab/%s.case-tabs.json"
+        private const val PATH = "config/case/%s/%s/case/tab/%s.case-tab.json"
     }
 }

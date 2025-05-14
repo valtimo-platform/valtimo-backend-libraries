@@ -106,7 +106,7 @@ class SearchFieldExporterTest {
 
         val result = testExporter.export(request)
 
-        val path = testExporter.getPath(request.name)
+        val path = testExporter.getPath(request)
         val ownerTypeKey = testExporter.ownerTypeKey()
         val caseTaskListExport = result.exportFiles.singleOrNull {
             it.path == path
@@ -133,7 +133,7 @@ class SearchFieldExporterTest {
         objectMapper: ObjectMapper,
         searchFieldService: SearchFieldV2Service,
     ) : SearchFieldExporter(objectMapper, searchFieldService) {
-        override fun getPath(documentDefinitionName: String): String = "some/$documentDefinitionName/path"
+        override fun getPath(request: DocumentDefinitionExportRequest): String = "some/$request/path"
 
         override fun ownerTypeKey(): String = "some-owner-type"
     }

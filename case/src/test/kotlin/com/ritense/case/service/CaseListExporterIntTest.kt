@@ -54,7 +54,7 @@ class CaseListExporterIntTest @Autowired constructor(
         (jsonTree.at("/1") as ObjectNode).remove("order")
 
         val expectedJson = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
-            .getResource("classpath:config/case/$caseDefinitionName/1-0-0/case/list/$caseDefinitionName.json")
+            .getResource("classpath:config/case/$caseDefinitionName/1-0-0/case/list/$caseDefinitionName.case-list.json")
             .inputStream
             .use { inputStream ->
                 StreamUtils.copyToString(inputStream, Charsets.UTF_8)
@@ -67,6 +67,6 @@ class CaseListExporterIntTest @Autowired constructor(
     }
 
     companion object {
-        private const val PATH = "config/case/%s/%s/case/list/%s.json"
+        private const val PATH = "config/case/%s/%s/case/list/%s.case-list.json"
     }
 }

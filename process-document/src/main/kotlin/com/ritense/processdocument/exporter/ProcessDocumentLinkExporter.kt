@@ -73,7 +73,8 @@ class ProcessDocumentLinkExporter(
             relatedRequests
         )
     }
+
     companion object {
-        private const val PATH = "config/case/%s/%s/process-document-link/%s.json"
+        private const val PATH = "config/case/%s/%s/process-document-link/%s.process-document-link.json"
     }
 }

@@ -123,7 +123,7 @@ class ProcessDocumentLinkImporter(
     }
 
     companion object {
-        private val FILENAME_REGEX = """/process-document-link/([^/]+)\.json""".toRegex()
+        private val FILENAME_REGEX = """/process-document-link/([^/]+)\.process-document-link\.json""".toRegex()
         private val logger = KotlinLogging.logger {}
     }
 }
