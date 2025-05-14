@@ -38,8 +38,12 @@ class JsonSchemaDocumentDefinitionExporter(
         DocumentDefinitionExportRequest::class.java
 
     override fun export(request: DocumentDefinitionExportRequest): ExportResult {
-        val documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId(request.name, request.caseDefinitionId)
-        val documentDefinition = documentDefinitionService.findBy(documentDefinitionId).orElseThrow()
+        val documentDefinition = if (request.name != "") {
+            val documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId(request.name, request.caseDefinitionId)
+            documentDefinitionService.findBy(documentDefinitionId).orElseThrow()
+        } else {
+            documentDefinitionService.findByCaseDefinitionId(request.caseDefinitionId).orElseThrow()
+        }
 
         val formattedCaseDefinitionVersion = request.caseDefinitionId.versionTag.let {
             "${it.major}-${it.minor}-${it.patch}"
@@ -60,7 +64,13 @@ class JsonSchemaDocumentDefinitionExporter(
 
         return ExportResult(
             exportFile,
-            setOf(FormDefinitionExportRequest(request.name + ".summary", request.caseDefinitionId, false))
+            setOf(
+                FormDefinitionExportRequest(
+                    documentDefinition.id.name() + ".summary",
+                    request.caseDefinitionId,
+                    false
+                )
+            )
         )
     }
 

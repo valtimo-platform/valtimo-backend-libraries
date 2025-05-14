@@ -70,7 +70,6 @@ class ProcessLinkExporter(
         return requireNotNull(
             repositoryService.findProcessDefinition(
                 CamundaProcessDefinitionSpecificationHelper.byId(processDefinitionId)
-                    .and(CamundaProcessDefinitionSpecificationHelper.byLatestVersion())
             )
         ).key
     }
