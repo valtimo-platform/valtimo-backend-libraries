@@ -69,6 +69,6 @@ class ProcessDocumentLinkExporterIntTest @Autowired constructor(
     }
 
     companion object {
-        private const val PATH = "config/case/house/1-0-0/process-document-link/%s.json";
+        private const val PATH = "config/case/house/1-0-0/process-document-link/%s.process-document-link.json";
     }
 }

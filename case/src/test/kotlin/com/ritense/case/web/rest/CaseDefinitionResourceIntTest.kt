@@ -1103,7 +1103,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
         val caseDefinitionVersion = 1
         val result = mockMvc.perform(
             get(
-                "/api/management/v1/case/{caseDefinitionName}/{caseDefinitionVersion}/export",
+                "/api/management/v1/case/{caseDefinitionName}/version/{caseDefinitionVersion}/export",
                 caseDefinitionName, caseDefinitionVersion
             )
         ).andExpect(status().isOk)

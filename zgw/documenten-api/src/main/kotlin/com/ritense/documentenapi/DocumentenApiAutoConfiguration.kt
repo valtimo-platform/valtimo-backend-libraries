@@ -24,8 +24,6 @@ import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.documentenapi.client.DocumentenApiClient
-import com.ritense.documentenapi.deployment.ZgwDocumentListColumnDeploymentService
-import com.ritense.documentenapi.deployment.ZgwDocumentUploadFieldsDeploymentService
 import com.ritense.documentenapi.domain.DocumentenApiVersion
 import com.ritense.documentenapi.exporter.DocumentenApiUploadFieldExporter
 import com.ritense.documentenapi.exporter.ZgwDocumentListColumnExporter
@@ -45,8 +43,6 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
-import com.ritense.valtimo.changelog.service.ChangelogDeployer
-import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valtimo.processlink.service.PluginProcessLinkService
 import com.ritense.valueresolver.ValueResolverService
@@ -175,42 +171,6 @@ class DocumentenApiAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(ZgwDocumentListColumnDeploymentService::class)
-    fun zgwDocumentListColumnColumnDeploymentService(
-        objectMapper: ObjectMapper,
-        documentenApiColumnRepository: DocumentenApiColumnRepository,
-        documentenApiService: DocumentenApiService,
-        changelogService: ChangelogService,
-        @Value("\${valtimo.changelog.zgw-document-list-column.clear-tables:false}") clearTables: Boolean
-    ): ZgwDocumentListColumnDeploymentService {
-        return ZgwDocumentListColumnDeploymentService(
-            objectMapper,
-            documentenApiColumnRepository,
-            documentenApiService,
-            changelogService,
-            clearTables
-        )
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(ZgwDocumentUploadFieldsDeploymentService::class)
-    fun zgwDocumentUploadFieldsDeploymentService(
-        objectMapper: ObjectMapper,
-        documentenApiUploadFieldRepository: DocumentenApiUploadFieldRepository,
-        documentenApiService: DocumentenApiService,
-        changelogService: ChangelogService,
-        @Value("\${valtimo.changelog.zgw-document-upload-fields.clear-tables:false}") clearTables: Boolean
-    ): ZgwDocumentUploadFieldsDeploymentService {
-        return ZgwDocumentUploadFieldsDeploymentService(
-            objectMapper,
-            documentenApiUploadFieldRepository,
-            documentenApiService,
-            changelogService,
-            clearTables
-        )
-    }
-
-    @Bean
     @ConditionalOnMissingBean(DocumentenApiResource::class)
     fun documentenApiResource(
         documentenApiService: DocumentenApiService,
@@ -250,9 +210,11 @@ class DocumentenApiAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ZgwDocumentListColumnImporter::class)
     fun zgwDocumentListColumnImporter(
-        deployer: ZgwDocumentListColumnDeploymentService,
-        changelogDeployer: ChangelogDeployer
-    ): ZgwDocumentListColumnImporter = ZgwDocumentListColumnImporter(deployer, changelogDeployer)
+        objectMapper: ObjectMapper,
+        documentenApiColumnRepository: DocumentenApiColumnRepository,
+        documentenApiService: DocumentenApiService,
+    ): ZgwDocumentListColumnImporter =
+        ZgwDocumentListColumnImporter(objectMapper, documentenApiColumnRepository, documentenApiService)
 
     @Bean
     @ConditionalOnMissingBean(ZgwDocumentListColumnExporter::class)
@@ -264,11 +226,11 @@ class DocumentenApiAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DocumentenApiUploadFieldImporter::class)
     fun documentenApiUploadFieldImporter(
-        deployer: ZgwDocumentUploadFieldsDeploymentService,
-        changelogDeployer: ChangelogDeployer
+        objectMapper: ObjectMapper,
+        documentenApiService: DocumentenApiService,
     ): DocumentenApiUploadFieldImporter = DocumentenApiUploadFieldImporter(
-        deployer,
-        changelogDeployer
+        objectMapper,
+        documentenApiService
     )
 
     @Bean

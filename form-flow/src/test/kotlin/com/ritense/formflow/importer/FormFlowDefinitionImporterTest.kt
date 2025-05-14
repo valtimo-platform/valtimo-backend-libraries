@@ -62,11 +62,11 @@ class FormFlowDefinitionImporterTest(
 
     @Test
     fun `should not support non-formflow fileName`() {
-        assertThat(formFlowDefinitionImporter.supports("/form-flow/not-supported/test.json")).isFalse()
-        assertThat(formFlowDefinitionImporter.supports("/form-flow/test-json")).isFalse()
+        assertThat(formFlowDefinitionImporter.supports("/form-flow/not-supported/test.form-flow.json")).isFalse()
+        assertThat(formFlowDefinitionImporter.supports("/form-flow/test.form-flow-json")).isFalse()
     }
 
     private companion object {
-        const val FILENAME = "/form-flow/my-form.json"
+        const val FILENAME = "/form-flow/my-form.form-flow.json"
     }
 }

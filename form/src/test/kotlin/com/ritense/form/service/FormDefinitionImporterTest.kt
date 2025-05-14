@@ -55,12 +55,12 @@ class FormDefinitionImporterTest(
 
     @Test
     fun `should not support non-form fileName`() {
-        assertThat(importer.supports("config/case/person/1-0-0/form/not/test.json")).isFalse()
-        assertThat(importer.supports("config/form/test.json")).isFalse()
-        assertThat(importer.supports("config/case/person/1-0-0/form/test-json")).isFalse()
+        assertThat(importer.supports("config/case/person/1-0-0/form/not/test.form.json")).isFalse()
+        assertThat(importer.supports("config/form/test.form.json")).isFalse()
+        assertThat(importer.supports("config/case/person/1-0-0/form/test.form-json")).isFalse()
     }
 
     private companion object {
-        const val FILENAME = "/form/my-form.json"
+        const val FILENAME = "/form/my-form.form.json"
     }
 }

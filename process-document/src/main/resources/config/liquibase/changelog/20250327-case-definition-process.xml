@@ -26,9 +26,10 @@
     <changeSet id="2" author="Ritense">
         <renameColumn tableName="case_definition_process_link"
                       oldColumnName="document_definition_name"
-                      newColumnName="case_definition_key"/>
+                      newColumnName="case_definition_key"
+                      columnDataType="VARCHAR(50)"/>
         <addColumn tableName="case_definition_process_link">
-            <column name="case_definition_version_tag" type="VARCHAR(256)"/>
+            <column name="case_definition_version_tag" type="VARCHAR(200)"/>
         </addColumn>
     </changeSet>
 

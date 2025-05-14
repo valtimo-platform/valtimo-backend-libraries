@@ -557,6 +557,6 @@ internal class DocumentJsonValueResolverTest {
     }
 
     private fun path(name: String): URI {
-        return URI.create(String.format("config/case/%s/1-0-0/document/definition/%s.json", name, "$name.schema"))
+        return URI.create(String.format("config/case/%s/1-0-0/document/definition/%s.document-definition.json", name, "$name.schema"))
     }
 }

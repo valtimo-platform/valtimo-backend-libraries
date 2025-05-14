@@ -69,6 +69,6 @@ class FormFlowDefinitionExporterIntTest @Autowired constructor(
     }
 
     companion object {
-        private const val PATH = "config/case/profile/1.0.0/form-flow/%s.json"
+        private const val PATH = "config/case/profile/1-0-0/form-flow/%s.form-flow.json"
     }
 }

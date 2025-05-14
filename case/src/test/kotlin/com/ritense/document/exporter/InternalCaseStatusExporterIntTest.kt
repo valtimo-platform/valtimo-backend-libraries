@@ -68,6 +68,6 @@ class InternalCaseStatusExporterIntTest @Autowired constructor(
     }
 
     companion object {
-        private const val PATH = "config/case/person/1-0-0/internal-case-status/%s.internal-case-status.json"
+        private const val PATH = "config/case/person/1-0-0/case/internal-status/%s.internal-case-status.json"
     }
 }

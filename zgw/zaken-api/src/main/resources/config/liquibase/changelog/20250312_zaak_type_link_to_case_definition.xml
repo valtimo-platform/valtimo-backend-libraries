@@ -30,7 +30,7 @@
                       columnDataType="VARCHAR(50)"/>
 
         <addColumn tableName="zaak_type_link">
-            <column name="case_definition_version_tag" type="VARCHAR(50)">
+            <column name="case_definition_version_tag" type="VARCHAR(200)">
                 <constraints nullable="true"/>
             </column>
         </addColumn>

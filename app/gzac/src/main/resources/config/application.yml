@@ -227,16 +227,6 @@ valtimo:
     changelog:
         pbac:
             clear-tables: false
-        case-tabs:
-            clear-tables: false
-        case-tag:
-            clear-tables: false
-        internal-case-status:
-            clear-tables: false
-        zgw-document-list-column:
-            clear-tables: false
-        task-search-fields:
-            clear-tables: false
 
     outbox:
         enabled: true

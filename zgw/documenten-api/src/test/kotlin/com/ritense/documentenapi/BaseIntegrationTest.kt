@@ -17,7 +17,6 @@
 package com.ritense.documentenapi
 
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
-import com.ritense.documentenapi.deployment.ZgwDocumentListColumnDeploymentService
 import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.service.PluginService
@@ -58,9 +57,6 @@ class BaseIntegrationTest {
 
     @MockitoBean
     lateinit var zaaktypeUrlProvider: ZaaktypeUrlProvider
-
-    @MockitoSpyBean
-    lateinit var zgwDocumentListColumnDeploymentService: ZgwDocumentListColumnDeploymentService
 
     @TestComponent
     class Consumer {

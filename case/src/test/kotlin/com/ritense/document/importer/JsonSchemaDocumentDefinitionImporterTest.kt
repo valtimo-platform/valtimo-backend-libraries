@@ -77,6 +77,6 @@ class JsonSchemaDocumentDefinitionImporterTest(
     }
 
     private companion object {
-        const val FILENAME = "/document/definition/my-definition.json"
+        const val FILENAME = "/document/definition/my-definition.document-definition.json"
     }
 }

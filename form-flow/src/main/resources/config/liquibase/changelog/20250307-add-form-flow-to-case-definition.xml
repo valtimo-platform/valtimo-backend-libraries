@@ -38,7 +38,7 @@
             <column name="case_definition_key" type="VARCHAR(256)">
                 <constraints nullable="false"/>
             </column>
-            <column name="case_definition_version_tag" type="VARCHAR(256)">
+            <column name="case_definition_version_tag" type="VARCHAR(200)">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
@@ -50,7 +50,7 @@
             <column name="case_definition_key" type="VARCHAR(256)">
                 <constraints nullable="false"/>
             </column>
-            <column name="case_definition_version_tag" type="VARCHAR(256)">
+            <column name="case_definition_version_tag" type="VARCHAR(200)">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
@@ -62,7 +62,7 @@
             <column name="case_definition_key" type="VARCHAR(256)">
                 <constraints nullable="false"/>
             </column>
-            <column name="case_definition_version_tag" type="VARCHAR(256)">
+            <column name="case_definition_version_tag" type="VARCHAR(200)">
                 <constraints nullable="false"/>
             </column>
         </addColumn>

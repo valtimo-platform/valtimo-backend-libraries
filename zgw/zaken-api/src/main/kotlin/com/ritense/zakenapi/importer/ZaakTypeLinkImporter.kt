@@ -58,6 +58,6 @@ class ZaakTypeLinkImporter(
     }
 
     companion object {
-        private val FILENAME_REGEX = """/zaak-type-link/([^/]+)\.json""".toRegex()
+        private val FILENAME_REGEX = """/zgw/zaak-type-link/([^/]+)\.zaak-type-link\.json""".toRegex()
     }
 }

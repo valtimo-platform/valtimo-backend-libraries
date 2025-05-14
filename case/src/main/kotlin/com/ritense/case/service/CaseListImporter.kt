@@ -82,6 +82,6 @@ class CaseListImporter(
 
     private companion object {
         const val CASE_LIST_SCHEMA_PATH = "classpath:config/case/schema/case-list.schema.json"
-        val FILENAME_REGEX = """/case/list/([^/]+)\.json""".toRegex()
+        val FILENAME_REGEX = """/case/list/([^/]+)\.case-list\.json""".toRegex()
     }
 }
