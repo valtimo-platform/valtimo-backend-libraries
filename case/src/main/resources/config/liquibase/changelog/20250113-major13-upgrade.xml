@@ -33,23 +33,32 @@
 <!--        <dropForeignKeyConstraint baseTableName="zgw_document_upload_field" constraintName="zgw_document_upload_field_case_definition_name_fk"/>-->
 <!--    </changeSet>-->
     <changeSet id="3" author="Ritense">
-        <renameColumn tableName="search_field" oldColumnName="document_definition_name" newColumnName="case_definition_key"/>
+        <renameColumn tableName="search_field"
+                      oldColumnName="document_definition_name"
+                      newColumnName="case_definition_key"
+                      columnDataType="varchar(50)"/>
     </changeSet>
 
     <changeSet id="4" author="Ritense">
-        <renameColumn tableName="internal_case_status" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+        <renameColumn tableName="internal_case_status"
+                      oldColumnName="case_definition_name"
+                      newColumnName="case_definition_key"
+                      columnDataType="varchar(50)"/>
     </changeSet>
 
     <changeSet id="5" author="Ritense">
         <renameColumn tableName="json_schema_document_snapshot" oldColumnName="case_definition_name"
-                      newColumnName="ics_case_definition_key"/>
+                      newColumnName="ics_case_definition_key"
+                      columnDataType="VARCHAR(256)"/>
     </changeSet>
 
     <changeSet id="6" author="Ritense">
-        <renameColumn tableName="json_schema_document" oldColumnName="case_definition_name"
-                      newColumnName="case_definition_key"/>
+        <renameColumn tableName="json_schema_document"
+                      oldColumnName="case_definition_name"
+                      newColumnName="case_definition_key"
+                      columnDataType="VARCHAR(256)"/>
         <addColumn tableName="json_schema_document">
-            <column name="case_definition_version_tag" type="VARCHAR(256)" defaultValue="1.0.0">
+            <column name="case_definition_version_tag" type="VARCHAR(200)" defaultValue="1.0.0">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
@@ -65,7 +74,7 @@
             <column name="case_definition_key" type="VARCHAR(256)"/>
         </addColumn>
         <addColumn tableName="json_schema_document_snapshot">
-            <column name="case_definition_version_tag" type="VARCHAR(256)"/>
+            <column name="case_definition_version_tag" type="VARCHAR(200)"/>
         </addColumn>
     </changeSet>
 
@@ -74,21 +83,27 @@
     </changeSet>
 
     <changeSet id="9" author="Ritense">
-        <dropIndex tableName="case_tag_link" indexName="idx_case_tag_link_case_tag_id"/>
-        <dropIndex tableName="case_tag_link" indexName="idx_case_tag_link_json_schema_document_id"/>
         <dropForeignKeyConstraint baseTableName="case_tag_link" constraintName="fk_case_tag_link_case_tag"/>
         <dropForeignKeyConstraint baseTableName="case_tag_link" constraintName="fk_case_tag_link_json_schema_document_id"/>
+        <dropIndex tableName="case_tag_link" indexName="idx_case_tag_link_case_tag_id"/>
+        <dropIndex tableName="case_tag_link" indexName="idx_case_tag_link_json_schema_document_id"/>
 
-        <renameColumn tableName="case_tag_link" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+        <renameColumn tableName="case_tag_link"
+                      oldColumnName="case_definition_name"
+                      newColumnName="case_definition_key"
+                      columnDataType="VARCHAR(256)"/>
         <addColumn tableName="case_tag_link">
-            <column name="case_definition_version_tag" type="VARCHAR(256)" defaultValue="1.0.0">
+            <column name="case_definition_version_tag" type="VARCHAR(200)" defaultValue="1.0.0">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
 
-        <renameColumn tableName="case_tag" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+        <renameColumn tableName="case_tag"
+                      oldColumnName="case_definition_name"
+                      newColumnName="case_definition_key"
+                      columnDataType="VARCHAR(256)"/>
         <addColumn tableName="case_tag">
-            <column name="case_definition_version_tag" type="VARCHAR(256)" defaultValue="1.0.0">
+            <column name="case_definition_version_tag" type="VARCHAR(200)" defaultValue="1.0.0">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
@@ -98,10 +113,20 @@
 
     <changeSet id="10" author="Ritense">
         <addPrimaryKey tableName="case_tag"
-                       columnNames="case_definition_key, case_definition_version_tag, case_tag_key"/>
+                       columnNames="case_tag_key, case_definition_key, case_definition_version_tag"/>
         <addPrimaryKey tableName="case_tag_link"
                        columnNames="case_tag_key, case_definition_key, case_definition_version_tag, json_schema_document_id"
                        constraintName="pk_case_tag_link"/>
+
+        <createIndex indexName="idx_case_tag_link_json_schema_document_id" tableName="case_tag_link">
+            <column name="json_schema_document_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_case_tag_link_case_tag_id" tableName="case_tag_link">
+            <column name="case_tag_key"/>
+            <column name="case_definition_key"/>
+            <column name="case_definition_version_tag"/>
+        </createIndex>
 
         <addForeignKeyConstraint baseTableName="case_tag_link"
                                  baseColumnNames="case_tag_key, case_definition_key, case_definition_version_tag"
@@ -114,16 +139,6 @@
                                  referencedTableName="json_schema_document"
                                  referencedColumnNames="json_schema_document_id"
                                  constraintName="fk_case_tag_link_json_schema_document_id"/>
-
-        <createIndex indexName="idx_case_tag_link_json_schema_document_id" tableName="case_tag_link">
-            <column name="json_schema_document_id"/>
-        </createIndex>
-
-        <createIndex indexName="idx_case_tag_link_case_tag_id" tableName="case_tag_link">
-            <column name="case_tag_key"/>
-            <column name="case_definition_key"/>
-            <column name="case_definition_version_tag"/>
-        </createIndex>
     </changeSet>
 
 </databaseChangeLog>

@@ -20,7 +20,10 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
     <changeSet id="1" author="Ritense">
-        <renameColumn tableName="case_list_column" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+        <renameColumn tableName="case_list_column"
+                      oldColumnName="case_definition_name"
+                      newColumnName="case_definition_key"
+                      columnDataType="VARCHAR(256)"/>
     </changeSet>
 
     <changeSet id="2" author="Ritense">
@@ -29,25 +32,34 @@
     </changeSet>
 
     <changeSet id="3" author="Ritense">
-        <renameColumn tableName="case_tab" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+        <renameColumn tableName="case_tab"
+                      oldColumnName="case_definition_name"
+                      newColumnName="case_definition_key"
+                      columnDataType="VARCHAR(256)"/>
         <addColumn tableName="case_tab">
-            <column name="case_definition_version_tag" type="VARCHAR(256)" defaultValue="1.0.0">
+            <column name="case_definition_version_tag" type="VARCHAR(200)" defaultValue="1.0.0">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
         <dropPrimaryKey tableName="case_tab"/>
 
-        <renameColumn tableName="case_widget_tab" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+        <renameColumn tableName="case_widget_tab"
+                      oldColumnName="case_definition_name"
+                      newColumnName="case_definition_key"
+                      columnDataType="VARCHAR(256)"/>
         <addColumn tableName="case_widget_tab">
-            <column name="case_definition_version_tag" type="VARCHAR(256)" defaultValue="1.0.0">
+            <column name="case_definition_version_tag" type="VARCHAR(200)" defaultValue="1.0.0">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
         <dropPrimaryKey tableName="case_widget_tab"/>
 
-        <renameColumn tableName="case_widget_tab_widget" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+        <renameColumn tableName="case_widget_tab_widget"
+                      oldColumnName="case_definition_name"
+                      newColumnName="case_definition_key"
+                      columnDataType="VARCHAR(256)"/>
         <addColumn tableName="case_widget_tab_widget">
-            <column name="case_definition_version_tag" type="VARCHAR(256)" defaultValue="1.0.0">
+            <column name="case_definition_version_tag" type="VARCHAR(200)" defaultValue="1.0.0">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
@@ -55,6 +67,13 @@
     </changeSet>
 
     <changeSet id="4" author="Ritense">
+        <modifyDataType tableName="case_tab" columnName="tab_key" newDataType="VARCHAR(156)"/>
+        <modifyDataType tableName="case_widget_tab" columnName="tab_key" newDataType="VARCHAR(156)"/>
+        <modifyDataType tableName="case_widget_tab_widget" columnName="key" newDataType="VARCHAR(156)"/>
+        <modifyDataType tableName="case_widget_tab_widget" columnName="tab_key" newDataType="VARCHAR(156)"/>
+    </changeSet>
+
+    <changeSet id="5" author="Ritense">
         <addPrimaryKey tableName="case_tab" columnNames="case_definition_key, case_definition_version_tag, tab_key"/>
         <addPrimaryKey tableName="case_widget_tab" columnNames="case_definition_key, case_definition_version_tag, tab_key"/>
         <addPrimaryKey tableName="case_widget_tab_widget" columnNames="case_definition_key, case_definition_version_tag, key, tab_key"/>
