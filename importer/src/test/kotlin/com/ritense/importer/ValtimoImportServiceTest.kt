@@ -28,6 +28,7 @@ import java.util.zip.ZipOutputStream
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.inOrder
@@ -45,7 +46,9 @@ class ValtimoImportServiceTest {
                 setOf(
                     TestImporter(),
                     TestImporter()
-                )
+                ),
+                mock(),
+                emptyList()
             )
         }
 
@@ -60,7 +63,9 @@ class ValtimoImportServiceTest {
             // Create two importers that both accept the provided file
             setOf(
                 filteredImporter
-            )
+            ),
+            mock(),
+            emptyList()
         )
 
         //Should not throw TooManyImportCandidatesException, since 'other' is filtered out
@@ -78,7 +83,9 @@ class ValtimoImportServiceTest {
                     TestImporter("test1"),
                     TestImporter("test2"),
                     TestImporter("test3", supportsFunction = { false })
-                )
+                ),
+                mock(),
+                emptyList()
             )
 
             service.import(createZipInputStream(1), emptyList())
@@ -94,7 +101,9 @@ class ValtimoImportServiceTest {
                 linkedSetOf(
                     TestImporter("2", dependsOn = setOf("2")),
                     TestImporter("1"),
-                )
+                ),
+                mock(),
+                emptyList()
             )
         }
 
@@ -104,7 +113,7 @@ class ValtimoImportServiceTest {
 
     @Test
     fun `should throw InvalidImportZipException`() {
-        val importService = ValtimoImportService(setOf())
+        val importService = ValtimoImportService(setOf(), mock(), emptyList())
         assertThrows<InvalidImportZipException> {
             importService.import("123456".byteInputStream(Charsets.UTF_8), emptyList())
         }
@@ -125,7 +134,7 @@ class ValtimoImportServiceTest {
                 ))
             }
 
-        val importService = ValtimoImportService(importers.shuffled().toSet())
+        val importService = ValtimoImportService(importers.shuffled().toSet(), mock(), emptyList())
 
         // do not create file "3"
         val skip = 3

@@ -72,6 +72,6 @@ class CaseDefinitionImporter(
 
     private companion object {
         val logger = KotlinLogging.logger {}
-        val FILENAME_REGEX = """/case/definition/([^/]+)\.json""".toRegex()
+        val FILENAME_REGEX = """/case/definition/([^/]+)\.case-definition\.json""".toRegex()
     }
 }

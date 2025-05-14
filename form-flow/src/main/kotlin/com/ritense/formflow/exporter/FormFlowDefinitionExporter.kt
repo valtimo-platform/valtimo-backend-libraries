@@ -52,9 +52,13 @@ class FormFlowDefinitionExporter(
                 FormDefinitionExportRequest(formDefinitionName, request.caseDefinitionId)
             }.toSet()
 
+            val formattedCaseDefinitionVersion = request.caseDefinitionId.versionTag.let {
+                "${it.major}-${it.minor}-${it.patch}"
+            }
+
             ExportResult(
                 ExportFile(
-                    PATH.format(request.caseDefinitionId.key, request.caseDefinitionId.versionTag, definition.id.key),
+                    PATH.format(request.caseDefinitionId.key, formattedCaseDefinitionVersion, definition.id.key),
                     objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(FormFlowDefinition.fromEntity(definition))
                 ),
                 relatedRequests
@@ -63,6 +67,6 @@ class FormFlowDefinitionExporter(
     }
 
     companion object {
-        private const val PATH = "config/case/%s/%s/form-flow/%s.json"
+        private const val PATH = "config/case/%s/%s/form-flow/%s.form-flow.json"
     }
 }

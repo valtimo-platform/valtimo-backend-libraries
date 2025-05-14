@@ -53,21 +53,29 @@ class ProcessLinkExporter(
 
         val processDefinitionKey = getProcessDefinitionKey(request.processDefinitionId)
 
+        val formattedCaseDefinitionVersion = request.caseDefinitionId.versionTag.let {
+            "${it.major}-${it.minor}-${it.patch}"
+        }
+
         return ExportResult(
             ExportFile(
-                "config/processlink/${processDefinitionKey}.processlink.json",
+                PATH.format(request.caseDefinitionId.key, formattedCaseDefinitionVersion, processDefinitionKey),
                 objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(createDtos)
             ),
             relatedRequests
         )
     }
 
-    fun getProcessDefinitionKey(processDefinitionId: String): String {
+    private fun getProcessDefinitionKey(processDefinitionId: String): String {
         return requireNotNull(
             repositoryService.findProcessDefinition(
                 CamundaProcessDefinitionSpecificationHelper.byId(processDefinitionId)
                     .and(CamundaProcessDefinitionSpecificationHelper.byLatestVersion())
             )
         ).key
+    }
+
+    companion object {
+        private const val PATH = "config/case/%s/%s/process-link/%s.process-link.json"
     }
 }

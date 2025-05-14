@@ -64,6 +64,6 @@ class CaseDefinitionExporter(
     }
 
     companion object {
-        private const val PATH = "config/case/%s/%s/case/definition/%s.json"
+        private const val PATH = "config/case/%s/%s/case/definition/%s.case-definition.json"
     }
 }

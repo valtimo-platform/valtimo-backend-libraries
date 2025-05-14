@@ -19,6 +19,7 @@ package com.ritense.valtimo.exporter
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.exporter.request.DecisionDefinitionExportRequest
 import com.ritense.valtimo.BaseIntegrationTest
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.model.dmn.Dmn
@@ -37,12 +38,17 @@ class DecisionDefinitionExporterIntTest @Autowired constructor(
     fun `should export process definition`(): Unit = runWithoutAuthorization {
         val decisionDefinitionKey = "dmn-sample"
         val decisionDefinitionId = getDecisionDefinitionId(decisionDefinitionKey)
-        val result = decisionDefinitionExporter.export(DecisionDefinitionExportRequest(decisionDefinitionId))
+        val result = decisionDefinitionExporter.export(
+            DecisionDefinitionExportRequest(
+                decisionDefinitionId,
+                CaseDefinitionId.of("everything", "1.0.0")
+            )
+        )
 
         assertThat(result.exportFiles).isNotEmpty()
 
         val dmnExportFile = result.exportFiles.singleOrNull {
-            it.path == "dmn/$decisionDefinitionKey.dmn"
+            it.path == "config/case/everything/1-0-0/dmn/$decisionDefinitionKey.dmn"
         }
 
         requireNotNull(dmnExportFile)
@@ -52,7 +58,7 @@ class DecisionDefinitionExporterIntTest @Autowired constructor(
         assertThat(dmnModelInstance).isNotNull
     }
 
-    fun getDecisionDefinitionId(decisionDefinitionKey:String): String {
+    fun getDecisionDefinitionId(decisionDefinitionKey: String): String {
         return repositoryService.createDecisionDefinitionQuery()
             .decisionDefinitionKey(decisionDefinitionKey)
             .latestVersion()

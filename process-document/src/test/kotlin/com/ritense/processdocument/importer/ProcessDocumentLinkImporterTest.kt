@@ -166,6 +166,6 @@ class ProcessDocumentLinkImporterTest(
     }
 
     private companion object {
-        const val FILENAME = "/process-document-link/my-process-document-link.json"
+        const val FILENAME = "/process-document-link/my-process-document-link.process-document-link.json"
     }
 }

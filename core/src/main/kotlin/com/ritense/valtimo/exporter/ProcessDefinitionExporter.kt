@@ -45,13 +45,17 @@ class ProcessDefinitionExporter(
             Bpmn.readModelFromStream(inputStream)
         }
 
+        val formattedCaseDefinitionVersion = request.caseDefinitionId.versionTag.let {
+            "${it.major}-${it.minor}-${it.patch}"
+        }
+
         val subProcessDefinitionExportRequests = getCallActivityProcessDefinitionExportRequests(bpmnModelInstance, request.caseDefinitionId)
-        val decisionExportRequests = getDecisionExportRequests(bpmnModelInstance)
+        val decisionExportRequests = getDecisionExportRequests(request.caseDefinitionId, bpmnModelInstance)
 
         val exportFile = ByteArrayOutputStream().use {
             Bpmn.writeModelToStream(it, bpmnModelInstance)
             ExportFile(
-                "bpmn/${processDefinition.key}.bpmn",
+                PATH.format(request.caseDefinitionId.key, formattedCaseDefinitionVersion, processDefinition.key),
                 it.toByteArray()
             )
         }
@@ -73,7 +77,7 @@ class ProcessDefinitionExporter(
             }.toSet()
     }
 
-    private fun getDecisionExportRequests(bpmnModelInstance: BpmnModelInstance): Set<DecisionDefinitionExportRequest> {
+    private fun getDecisionExportRequests(caseDefinitionId: CaseDefinitionId, bpmnModelInstance: BpmnModelInstance): Set<DecisionDefinitionExportRequest> {
         return bpmnModelInstance.getModelElementsByType(BusinessRuleTask::class.java)
             .mapNotNull { it.camundaDecisionRef }
             .distinct()
@@ -82,7 +86,11 @@ class ProcessDefinitionExporter(
                     .decisionDefinitionKey(ref)
                     .latestVersion()
                     .singleResult()) { "Decision definition with reference '$ref' could not be found!" }
-                DecisionDefinitionExportRequest(decisionDefinition.id)
+                DecisionDefinitionExportRequest(decisionDefinition.id, caseDefinitionId)
             }.toSet()
+    }
+
+    companion object {
+        private const val PATH = "config/case/%s/%s/bpmn/%s.bpmn"
     }
 }

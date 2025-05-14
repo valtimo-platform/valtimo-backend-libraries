@@ -44,14 +44,14 @@ class ProcessDefinitionExporterIntTest @Autowired constructor(
     fun `should export process definition with DMN reference`(): Unit = runWithoutAuthorization {
         val processDefinitionKey = "dmn-sample"
         val processDefinitionId = getProcessDefinitionId(processDefinitionKey)
-        val caseDefinitionId = CaseDefinitionId("dmn-sample", "1.0.0")
+        val caseDefinitionId = CaseDefinitionId("everything", "1.0.0")
         val result =
             processDefinitionExporter.export(ProcessDefinitionExportRequest(processDefinitionId, caseDefinitionId))
 
         assertThat(result.exportFiles).isNotEmpty()
 
         val bpmnExportFile = result.exportFiles.singleOrNull {
-            it.path == "bpmn/$processDefinitionKey.bpmn"
+            it.path == "config/case/everything/1-0-0/bpmn/$processDefinitionKey.bpmn"
         }
 
         requireNotNull(bpmnExportFile)
@@ -61,7 +61,10 @@ class ProcessDefinitionExporterIntTest @Autowired constructor(
         assertThat(bpmnModelInstance).isNotNull
 
         assertThat(result.relatedRequests).contains(
-            DecisionDefinitionExportRequest(getDecisionDefinitionId("dmn-sample"))
+            DecisionDefinitionExportRequest(
+                getDecisionDefinitionId("dmn-sample"),
+                CaseDefinitionId.of("everything", "1.0.0")
+            )
         )
 
         assertThat(result.relatedRequests).contains(
@@ -75,13 +78,14 @@ class ProcessDefinitionExporterIntTest @Autowired constructor(
     fun `should export process definition without DMN reference`(): Unit = runWithoutAuthorization {
         val processDefinitionKey = "test-process"
         val processDefinitionId = getProcessDefinitionId(processDefinitionKey)
-        val caseDefinitionId = CaseDefinitionId("test-process", "1.0.0")
-        val result = processDefinitionExporter.export(ProcessDefinitionExportRequest(processDefinitionId, caseDefinitionId))
+        val caseDefinitionId = CaseDefinitionId("everything", "1.0.0")
+        val result =
+            processDefinitionExporter.export(ProcessDefinitionExportRequest(processDefinitionId, caseDefinitionId))
 
         assertThat(result.exportFiles).isNotEmpty()
 
         val bpmnExportFile = result.exportFiles.singleOrNull {
-            it.path == "bpmn/$processDefinitionKey.bpmn"
+            it.path == "config/case/everything/1-0-0/bpmn/$processDefinitionKey.bpmn"
         }
 
         requireNotNull(bpmnExportFile)

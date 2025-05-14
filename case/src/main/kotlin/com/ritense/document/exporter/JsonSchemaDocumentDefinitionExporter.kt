@@ -41,11 +41,19 @@ class JsonSchemaDocumentDefinitionExporter(
         val documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId(request.name, request.caseDefinitionId)
         val documentDefinition = documentDefinitionService.findBy(documentDefinitionId).orElseThrow()
 
+        val formattedCaseDefinitionVersion = request.caseDefinitionId.versionTag.let {
+            "${it.major}-${it.minor}-${it.patch}"
+        }
+
         val exportFile = ByteArrayOutputStream().use {
             objectMapper.writer(ExportPrettyPrinter()).writeValue(it, documentDefinition.schema.asJson())
 
             ExportFile(
-                PATH.format(documentDefinition.id!!.name()),
+                PATH.format(
+                    request.caseDefinitionId.key,
+                    formattedCaseDefinitionVersion,
+                    documentDefinition.id!!.name()
+                ),
                 it.toByteArray()
             )
         }
@@ -57,6 +65,6 @@ class JsonSchemaDocumentDefinitionExporter(
     }
 
     companion object {
-        private const val PATH = "config/document/definition/%s.schema.json"
+        private const val PATH = "config/case/%s/%s/document/definition/%s.schema.document-definition.json"
     }
 }
