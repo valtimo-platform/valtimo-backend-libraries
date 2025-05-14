@@ -336,9 +336,11 @@ class CaseAutoConfiguration {
     fun caseDefinitionSettingsExporter(
         objectMapper: ObjectMapper,
         caseDefinitionService: CaseDefinitionService,
+        documentDefinitionService: DocumentDefinitionService
     ) = CaseDefinitionExporter(
         objectMapper,
-        caseDefinitionService
+        caseDefinitionService,
+        documentDefinitionService
     )
 
     @Bean
