@@ -30,9 +30,12 @@
     </changeSet>
 
     <changeSet id="3" author="Ritense">
-        <renameColumn tableName="case_definition" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+        <renameColumn tableName="case_definition"
+                      oldColumnName="case_definition_name"
+                      newColumnName="case_definition_key"
+                      columnDataType="varchar(256)"/>
         <addColumn tableName="case_definition">
-            <column name="case_definition_version_tag" type="VARCHAR(256)" defaultValue="1.0.0">
+            <column name="case_definition_version_tag" type="VARCHAR(200)" defaultValue="1.0.0">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
@@ -77,7 +80,7 @@
 
     <changeSet id="7" author="Ritense">
         <addColumn tableName="task_list_column">
-            <column name="case_definition_version_tag" type="VARCHAR(256)" defaultValue="1.0.0">
+            <column name="case_definition_version_tag" type="VARCHAR(200)" defaultValue="1.0.0">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
@@ -99,7 +102,7 @@
             </column>
         </addColumn>
         <addColumn tableName="json_schema_document_definition">
-            <column name="case_definition_version_tag" type="VARCHAR(256)">
+            <column name="case_definition_version_tag" type="VARCHAR(200)">
                 <constraints nullable="true"/>
             </column>
         </addColumn>
@@ -107,8 +110,14 @@
             <column name="case_definition_key" valueComputed="document_definition_name"/>
             <column name="case_definition_version_tag" value="1.0.0"/>
         </update>
-        <addNotNullConstraint tableName="json_schema_document_definition" columnName="case_definition_key"/>
-        <addNotNullConstraint tableName="json_schema_document_definition" columnName="case_definition_version_tag"/>
+        <addNotNullConstraint
+            tableName="json_schema_document_definition"
+            columnName="case_definition_key"
+            columnDataType="VARCHAR(256)"/>
+        <addNotNullConstraint
+            tableName="json_schema_document_definition"
+            columnName="case_definition_version_tag"
+            columnDataType="VARCHAR(200)"/>
     </changeSet>
 
     <changeSet id="13" author="Ritense">
