@@ -130,10 +130,10 @@ class BaseTest(
             "-" + caseDefinitionVersion.patch
         return URI.create(
             String.format(
-                "config/case/%s/%s/document/definition/%s.json",
+                "config/case/%s/%s/document/definition/%s.schema.document-definition.json",
                 caseDefinitionId.key,
                 formattedCaseDefinitionVersion,
-                "$name.schema"
+                name
             )
         )
     }

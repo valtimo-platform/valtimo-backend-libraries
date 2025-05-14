@@ -22,7 +22,6 @@ import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.permission.PermissionRepository
 import com.ritense.authorization.role.Role
 import com.ritense.authorization.role.RoleRepository
-import com.ritense.case.deployment.CaseTaskListDeploymentService
 import com.ritense.case.service.CaseTabImporter
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.DocumentDefinition
@@ -95,9 +94,6 @@ class BaseIntegrationTest: BaseTest() {
 
     @MockitoSpyBean
     lateinit var caseTabImporter: CaseTabImporter
-
-    @MockitoSpyBean
-    lateinit var caseTaskListDeploymentService: CaseTaskListDeploymentService
 
     @MockitoSpyBean
     lateinit var outboxService: OutboxService
