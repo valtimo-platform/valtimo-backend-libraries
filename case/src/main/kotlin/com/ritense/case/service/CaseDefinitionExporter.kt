@@ -18,17 +18,21 @@ package com.ritense.case.service
 
 import CaseDefinitionDto
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.exporter.ExportFile
 import com.ritense.exporter.ExportPrettyPrinter
 import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
 import com.ritense.exporter.request.CaseDefinitionExportRequest
+import com.ritense.exporter.request.DocumentDefinitionExportRequest
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional(readOnly = true)
 class CaseDefinitionExporter(
     private val objectMapper: ObjectMapper,
-    private val caseDefinitionService: CaseDefinitionService
+    private val caseDefinitionService: CaseDefinitionService,
+    private val documentDefinitionService: DocumentDefinitionService,
 ) : Exporter<CaseDefinitionExportRequest> {
 
     override fun supports() = CaseDefinitionExportRequest::class.java
@@ -55,7 +59,16 @@ class CaseDefinitionExporter(
                 )
         )
 
-        return ExportResult(caseDefinitionExport) // TODO: Add other files that should be exported too
+        return ExportResult(caseDefinitionExport, createDocumentDefinitionExportRequest(caseDefinition.id))
+    }
+
+    private fun createDocumentDefinitionExportRequest(caseDefinitionId: CaseDefinitionId): Set<DocumentDefinitionExportRequest>  {
+        val documentDefinition = documentDefinitionService.findByCaseDefinitionId(caseDefinitionId)
+        return if (documentDefinition.isPresent) {
+            setOf(DocumentDefinitionExportRequest(documentDefinition.get().id().name(), caseDefinitionId))
+        } else {
+            emptySet()
+        }
     }
 
     companion object {
