@@ -331,6 +331,7 @@ class CaseDefinitionResource(
     ): ResponseEntity<Unit> {
         return try {
             importService.import(file.inputStream, caseDefinitionRepository.findAll().map { it.id })
+            service.setLatestToActiveIfNoneIsActive()
             ResponseEntity.ok().build()
         } catch (exception: ImportServiceException) {
             logger.info(exception) { "Import failed" }

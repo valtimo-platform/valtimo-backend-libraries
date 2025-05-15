@@ -59,9 +59,7 @@ class CaseDefinitionCheckerImpl(
         if (ImportContext.isImporting()) {
             return true
         }
-        return draftEnvironments.split(',').any { draftEnvironment ->
-            environment.activeProfiles.any { it == draftEnvironment }
-        }
+        return isDraftEnvironment()
     }
 
     override fun assertCaseDefinitionExists(caseDefinitionId: CaseDefinitionId) {
@@ -81,17 +79,26 @@ class CaseDefinitionCheckerImpl(
         }
     }
 
-    override fun assertCanCreateOrUpdateCaseDefinition(caseDefinitionId: CaseDefinitionId) {
-        assertCanUpdateGlobalConfiguration()
-        val caseDefinition = caseDefinitionRepository.findById(caseDefinitionId).orElse(null)
-        require(caseDefinition == null || !caseDefinition.final) {
-            "Failed to update CaseDefinition $caseDefinitionId. This case definition is final."
+    override fun assertCanCreateOrUpdateCaseDefinition(caseDefinitionId: CaseDefinitionId, final: Boolean) {
+        val isDraftEnvironment = isDraftEnvironment()
+        if (!final && !isDraftEnvironment) {
+            error("Failed to create/update CaseDefinition $caseDefinitionId. This Valtimo environment does not support drafts. Missing one of the following Spring profiles: [$draftEnvironments]")
+        }
+        val existingCaseDefinition = caseDefinitionRepository.findById(caseDefinitionId).orElse(null)
+        if (existingCaseDefinition != null && existingCaseDefinition.final) {
+            error("Failed to update CaseDefinition $caseDefinitionId. This case definition is final.")
         }
     }
 
     override fun assertCanUpdateGlobalConfiguration() {
         require(canUpdateGlobalConfiguration()) {
             "Failed to update configuration. This Valtimo environment does not support drafts. Missing one of the following Spring profiles: [$draftEnvironments]"
+        }
+    }
+
+    private fun isDraftEnvironment(): Boolean {
+        return draftEnvironments.split(',').any { draftEnvironment ->
+            environment.activeProfiles.any { it == draftEnvironment }
         }
     }
 }

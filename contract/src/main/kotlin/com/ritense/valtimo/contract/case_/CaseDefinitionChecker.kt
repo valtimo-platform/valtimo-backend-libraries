@@ -42,7 +42,7 @@ interface CaseDefinitionChecker {
         require(canUpdateGlobalConfiguration()) { "Configuration can't be updated. Missing case library" }
     }
 
-    fun assertCanCreateOrUpdateCaseDefinition(caseDefinitionId: CaseDefinitionId) {
+    fun assertCanCreateOrUpdateCaseDefinition(caseDefinitionId: CaseDefinitionId, final: Boolean) {
         require(canUpdateGlobalConfiguration()) { "Case can't be updated. Missing case library" }
     }
 }

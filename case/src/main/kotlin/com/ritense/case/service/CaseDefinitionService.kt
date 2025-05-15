@@ -296,6 +296,16 @@ class CaseDefinitionService(
         }
     }
 
+    fun setLatestToActiveIfNoneIsActive() {
+        caseDefinitionRepository.findAll()
+            .groupBy { it.id.key }
+            .map { it.value }
+            .filter { caseDefinitions -> caseDefinitions.none { caseDefinition -> caseDefinition.active } }
+            .map { caseDefinitions -> caseDefinitions.maxBy { it.id.versionTag } }
+            .map { caseDefinition -> caseDefinition.copy(active = true) }
+            .forEach { caseDefinition -> caseDefinitionRepository.save(caseDefinition) }
+    }
+
     private fun denyManagementOperation() {
         authorizationService.requirePermission(
             EntityAuthorizationRequest(
