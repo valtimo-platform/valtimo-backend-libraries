@@ -365,9 +365,11 @@ class CaseAutoConfiguration {
     fun caseDefinitionSettingsExporter(
         objectMapper: ObjectMapper,
         caseDefinitionService: CaseDefinitionService,
+        documentDefinitionService: DocumentDefinitionService
     ) = CaseDefinitionExporter(
         objectMapper,
-        caseDefinitionService
+        caseDefinitionService,
+        documentDefinitionService
     )
 
     @Order(HIGHEST_PRECEDENCE)
