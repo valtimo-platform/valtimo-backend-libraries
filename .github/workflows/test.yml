@@ -1,0 +1,40 @@
+name: Run tests
+on:
+    pull_request:
+        types: [synchronize, opened]
+
+jobs:
+    unit-testing:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            - name: Run Unit Tests
+              run: ./gradlew clean test
+    integration-testing:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            - name: Run Unit Tests
+              run: ./gradlew clean integrationTesting
+    security-testing:
+        if: |
+            github.ref_type == 'branch' && (
+              startsWith(github.ref_name, 'development/') ||
+              startsWith(github.ref_name, 'rc/') ||
+              startsWith(github.ref_name, 'release/') ||
+              github.ref_name == 'next-minor' ||
+              github.ref_name == 'next-major' ||
+              (
+                github.actor != 'github-actions[bot]' &&
+                !startsWith(github.ref_name, 'PR-') &&
+                !startsWith(github.ref_name, 'poc/')
+              )
+            )
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            - name: Run Security Tests
+              run: ./gradlew clean securityTesting
