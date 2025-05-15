@@ -78,7 +78,7 @@ class ProcessCaseManagementResourceIT(
         )
 
         mockMvc.perform(
-            put("/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/process/{processDefinitionId}",
+            put("/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/process/{processDefinitionId}/properties",
                 caseDefinitionKey, caseDefinitionVersionTag, processDefinitionId
             )
                 .content(ObjectMapper().writeValueAsString(updateRequest))

@@ -71,7 +71,7 @@ public class ProcessDocumentHttpSecurityConfigurer implements HttpSecurityConfig
                 .hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(
                     PUT,
-                    "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/process/{processDefinitionId}"
+                    "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/process/{processDefinitionId}/properties"
                 )).hasAuthority(ADMIN)
             );
         } catch (Exception e) {

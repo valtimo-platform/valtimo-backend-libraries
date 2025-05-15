@@ -20,7 +20,6 @@ import com.ritense.processdocument.domain.ProcessDefinitionCaseDefinition
 import com.ritense.processdocument.domain.ProcessDefinitionCaseDefinitionId
 import com.ritense.processdocument.domain.ProcessDefinitionId
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
-import org.semver4j.Semver
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
@@ -30,6 +29,10 @@ interface ProcessDefinitionCaseDefinitionRepository:
     JpaRepository<ProcessDefinitionCaseDefinition, ProcessDefinitionCaseDefinitionId> {
     fun findByIdCaseDefinitionId(caseDefinitionId: CaseDefinitionId): List<ProcessDefinitionCaseDefinition>
     fun findByIdProcessDefinitionId(processDefinitionId: ProcessDefinitionId): ProcessDefinitionCaseDefinition
+    fun findAllByIdCaseDefinitionIdAndIdProcessDefinitionIdId(
+        caseDefinitionId: CaseDefinitionId,
+        processDefinitionId: String
+    ): List<ProcessDefinitionCaseDefinition>
 
     @Query(
         ("SELECT  pdcd " +
@@ -44,16 +47,4 @@ interface ProcessDefinitionCaseDefinitionRepository:
         @Nullable @Param("canInitializeDocument") canInitializeDocument: Boolean?
     ): List<ProcessDefinitionCaseDefinition>
 
-    @Query(
-        """
-    SELECT pdcd
-    FROM ProcessDefinitionCaseDefinition pdcd
-    WHERE pdcd.id.caseDefinitionId = :caseDefinitionId
-      AND pdcd.id.processDefinitionId.id = :processDefinitionId
-    """
-    )
-    fun findByCaseDefinitionIdAndProcessDefinitionId(
-        @Param("caseDefinitionId") caseDefinitionId: CaseDefinitionId,
-        @Param("processDefinitionId") processDefinitionId: String
-    ): List<ProcessDefinitionCaseDefinition>
 }

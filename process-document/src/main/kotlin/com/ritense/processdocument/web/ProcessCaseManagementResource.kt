@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController
 class ProcessCaseManagementResource(
     private val processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService
 ) {
-    @PutMapping("/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/process/{processDefinitionId}")
+    @PutMapping("/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/process/{processDefinitionId}/properties")
     fun updateProcessDefinitionCaseDefinition(
         @PathVariable caseDefinitionKey: String,
         @PathVariable caseDefinitionVersionTag: String,

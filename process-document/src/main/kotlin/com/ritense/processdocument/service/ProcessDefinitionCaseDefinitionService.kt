@@ -149,13 +149,13 @@ class ProcessDefinitionCaseDefinitionService(
     ) {
         val caseDefinitionId = CaseDefinitionId(caseDefinitionKey, caseDefinitionVersionTag)
 
-        val processDefinitionCaseDefinition = processDefinitionCaseDefinitionRepository.findByCaseDefinitionIdAndProcessDefinitionId(
+        val processDefinitionCaseDefinition = processDefinitionCaseDefinitionRepository.findAllByIdCaseDefinitionIdAndIdProcessDefinitionIdId(
             caseDefinitionId = caseDefinitionId,
             processDefinitionId = processDefinitionId
         )
 
         val originalProcessDefinitionCaseDefinition = processDefinitionCaseDefinition.firstOrNull()
-            ?: throw IllegalArgumentException("No ProcessDefinitionCaseDefinition found for case definition key '$caseDefinitionKey', case definition version tag '$caseDefinitionVersionTag', and process definition id '$processDefinitionId'.")
+            ?: error("No ProcessDefinitionCaseDefinition found for case definition key '$caseDefinitionKey', case definition version tag '$caseDefinitionVersionTag', and process definition id '$processDefinitionId'.")
 
         val updated = ProcessDefinitionCaseDefinition(
             ProcessDefinitionCaseDefinitionId(
