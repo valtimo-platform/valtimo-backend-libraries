@@ -19,6 +19,7 @@ package com.ritense.zaakdetails.documentobjectenapisync
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.logging.LoggableResource
+import com.ritense.objectsapi.service.ObjectSyncService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.zaakdetails.documentobjectenapisync.DocumentObjectenApiSyncService.Companion.logger
 import org.springframework.context.event.EventListener
@@ -30,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional
 @SkipComponentScan
 class DocumentObjectenApiSyncManagementService(
     private val documentObjectenApiSyncRepository: DocumentObjectenApiSyncRepository,
+    private val objectSyncService: ObjectSyncService,
 ) {
 
     @EventListener(DocumentDefinitionDeployedEvent::class)
@@ -68,6 +70,10 @@ class DocumentObjectenApiSyncManagementService(
                 enabled = sync.enabled
             )
             ?: sync
+
+        // Remove old connector configuration
+        objectSyncService.getObjectSyncConfig(sync.documentDefinitionName).content
+            .forEach { objectSyncService.removeObjectSyncConfig(it.id.id) }
 
         documentObjectenApiSyncRepository.save(modifiedSync)
     }

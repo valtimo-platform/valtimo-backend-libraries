@@ -1,0 +1,21 @@
+152f9cbd - Updated version to 9.26.0.RELEASE
+698db208 - Merge branch 'main' into rc/9.26.0.204.RC
+59e0b365 - Updated version to 9.26.0.204.RC-SNAPSHOT
+23f0a1df - Add constraint to process definition id in view config table (#419)
+b7c99f04 - Initialized document definition for test (#416)
+1074fbee - Added case settings endpoints and autodeployment of configuration from a file (#414)
+6c859527 - #37539 show number of unassigned cases (#413)
+0bdc640f - fix: Unwanted SQL UPDATEs of connectors (#411)
+706c0a2d - Fixed AesEncryption concurrency issues (#410)
+271efdd0 - fix: change Transactionals (#408)
+2b4ce5fe - fix: too many stacktraces in logs about connector instance that can't be found (#407)
+c5f43955 - Bugfix: the modifyDocument method can block the whole application when a query hangs indefinitely. Added a timeout on the transaction which will rollback on every type of exception. (#406)
+e852dc1f - updated Gradle config to make use of convenience methods 'withSourcesJar' + 'withJavadocJar' (#401)
+b566642a - #37415 Filter cases on assignee (#405)
+8fe77afb - #42785 [BE] Resolve value of all process link properties (#402)
+db0111b5 - Hotfix: retrieving a list of connectors results in unexpected update queries and db locking (#404)
+2acaff52 - Added more details to the error message in case something can't be found while submitting a form. (#400)
+48207ac1 - - Fix valtimo-core (#398)
+d6906697 - feature/story-41815-improve-logs-smart-documents (#399)
+5906bba9 - #37490 Start not-associated process for existing case (#393)
+03a3f4f9 - Fix case search on postgres DB (#396)

@@ -21,11 +21,11 @@ import com.ritense.smartdocuments.domain.DocumentFormatOption.DOCX
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest.Selection
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest.SmartDocument
+import java.util.Base64
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
-import java.util.Base64
 
 internal class SmartDocumentsClientIntTest : BaseSmartDocumentsIntegrationTest() {
 
@@ -38,9 +38,8 @@ internal class SmartDocumentsClientIntTest : BaseSmartDocumentsIntegrationTest()
             emptyMap(),
             SmartDocument(Selection("templateGroup", "template"))
         )
-        val authentication = getSmartDocumentsAuthentication()
 
-        val response = smartDocumentsClient.generateDocumentStream(authentication, request, DOCX)
+        val response = smartDocumentsClient.generateDocumentStream(request, DOCX)
 
         val docxAsBytes = response.documentData.readAllBytes()
         assertThat(docxAsBytes).hasSize(12284)
@@ -52,8 +51,7 @@ internal class SmartDocumentsClientIntTest : BaseSmartDocumentsIntegrationTest()
             emptyMap(),
             SmartDocument(Selection("templateGroup", "template"))
         )
-        val authentication = getSmartDocumentsAuthentication()
-        val response = smartDocumentsClient.generateDocument(authentication, request)
+        val response = smartDocumentsClient.generateDocument(request)
         val docxResponse = response.file.first { it.outputFormat == "DOCX" }
 
         val exception = assertThrows<IllegalArgumentException> {

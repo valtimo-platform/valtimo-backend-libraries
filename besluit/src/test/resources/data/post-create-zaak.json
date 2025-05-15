@@ -1,0 +1,63 @@
+{
+    "url": "http://example.com/zaken/api/v1/zaken/7413e298-c78b-4ab8-8e8a-a825faed0e7f",
+    "uuid": "7413e298-c78b-4ab8-8e8a-a825faed0e7f",
+    "identificatie": "string",
+    "bronorganisatie": "string",
+    "omschrijving": "string",
+    "toelichting": "string",
+    "zaaktype": "http://some-url/catalogi/api/v1/zaaktypen/4e9c2359-83ac-4e3b-96b6-3f278f1fc773",
+    "registratiedatum": "2019-08-24",
+    "verantwoordelijkeOrganisatie": "string",
+    "startdatum": "2019-08-24",
+    "einddatum": "2019-08-24",
+    "einddatumGepland": "2019-08-24",
+    "uiterlijkeEinddatumAfdoening": "2019-08-24",
+    "publicatiedatum": "2019-08-24",
+    "communicatiekanaal": "http://example.com",
+    "productenOfDiensten": [
+        "http://example.com"
+    ],
+    "vertrouwelijkheidaanduiding": "openbaar",
+    "betalingsindicatie": "nvt",
+    "betalingsindicatieWeergave": "string",
+    "laatsteBetaaldatum": "2019-08-24T14:15:22Z",
+    "zaakgeometrie": {
+        "type": "Point",
+        "coordinates": [
+            0,
+            0
+        ]
+    },
+    "verlenging": {
+        "reden": "string",
+        "duur": "string"
+    },
+    "opschorting": {
+        "indicatie": true,
+        "reden": "string"
+    },
+    "selectielijstklasse": "http://example.com",
+    "hoofdzaak": null,
+    "deelzaken": [
+    ],
+    "relevanteAndereZaken": [
+        {
+            "url": "http://example.com",
+            "aardRelatie": "vervolg"
+        }
+    ],
+    "eigenschappen": [
+        "http://example.com"
+    ],
+    "status": "http://example.com",
+    "kenmerken": [
+        {
+            "kenmerk": "string",
+            "bron": "string"
+        }
+    ],
+    "archiefnominatie": "blijvend_bewaren",
+    "archiefstatus": "nog_te_archiveren",
+    "archiefactiedatum": "2019-08-24",
+    "resultaat": "http://example.com"
+}

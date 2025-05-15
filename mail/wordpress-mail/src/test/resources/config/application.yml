@@ -42,5 +42,5 @@ spring-actuator:
     password: test
 
 valtimo:
-    wordpressmail:
-        url: https://example.com/
+    connector-encryption:
+        secret: "0123456789101112"

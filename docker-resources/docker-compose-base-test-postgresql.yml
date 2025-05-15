@@ -12,14 +12,20 @@ services:
 #   url: jdbc:postgresql://localhost:3302/form-test-link
 #   url: jdbc:postgresql://localhost:3303/document-test
 #   url: jdbc:postgresql://localhost:3304/core-test
+#   url: jdbc:postgresql://localhost:3305/connector-test
 #   url: jdbc:postgresql://localhost:3307/audit-test
+#   url: jdbc:postgresql://localhost:3308/objects-api-test
+#   url: jdbc:postgresql://localhost:3309/openzaak-test
 #   url: jdbc:postgresql://localhost:3310/process-document-test
 #   url: jdbc:postgresql://localhost:3311/s3-resource-test
 #   url: jdbc:postgresql://localhost:3312/reporting-cloud-test
 #   url: jdbc:postgresql://localhost:3313/milestones-test
 #   url: jdbc:postgresql://localhost:3314/mail-test
+#   url: jdbc:postgresql://localhost:3315/contactmoment-test
 #   url: jdbc:postgresql://localhost:3316/wordpress-mail-test
 #   url: jdbc:postgresql://localhost:3317/smartdocuments-test
+#   url: jdbc:postgresql://localhost:3318/besluit-test
+#   url: jdbc:postgresql://localhost:3319/haalcentraal-brp-test
 #   url: jdbc:postgresql://localhost:3320/form-flow-valtimo-test
 #   url: jdbc:postgresql://localhost:3321/form-flow-test
 #   url: jdbc:postgresql://localhost:3322/plugin-test
@@ -27,6 +33,7 @@ services:
 #   url: jdbc:postgresql://localhost:3324/documenten-api-test
 #   url: jdbc:postgresql://localhost:3325/zaken-api-test
 #   url: jdbc:postgresql://localhost:3326/notes-test
+#   url: jdbc:postgresql://localhost:3327/klant-test
 #   url: jdbc:postgresql://localhost:3328/objecten-api-authentication-test
 #   url: jdbc:postgresql://localhost:3329/objecttypen-api-test
 #   url: jdbc:postgresql://localhost:3330/objecten-api-test
@@ -54,4 +61,3 @@ services:
 #   url: jdbc:postgresql://localhost:3354/keycloak-iam-test
 #   url: jdbc:postgresql://localhost:3355/logging-test
 #   url: localhost:55672 <--rabbitmq
-#   url: localhost:55673 <--rabbitmq

@@ -16,6 +16,7 @@
 
 dependencies {
     api(project(":dependencies:valtimo-dependencies"))
+    api(project(":haalcentraal:haalcentraal-brp"))
     api(project(":plugin-authentication:notificaties-api-authentication"))
     api(project(":plugin-authentication:objecten-api-authentication"))
     api(project(":plugin-authentication:openzaak-plugin-authentication"))

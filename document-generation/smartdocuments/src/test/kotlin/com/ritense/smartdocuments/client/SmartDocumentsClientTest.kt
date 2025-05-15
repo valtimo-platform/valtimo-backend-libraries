@@ -18,10 +18,11 @@ package com.ritense.smartdocuments.client
 
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.BaseTest
-import com.ritense.smartdocuments.config.SmartDocumentsAuthentication
+import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import com.ritense.smartdocuments.domain.SmartDocumentsTemplateData
+import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
 import com.ritense.temporaryresource.repository.ResourceStorageMetadataRepository
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
@@ -53,7 +54,6 @@ internal class SmartDocumentsClientTest : BaseTest() {
     private lateinit var client: SmartDocumentsClient
     private lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
     private lateinit var repository: ResourceStorageMetadataRepository
-    private lateinit var authentication: SmartDocumentsAuthentication
 
     @BeforeAll
     fun setUp() {
@@ -61,10 +61,8 @@ internal class SmartDocumentsClientTest : BaseTest() {
         mockDocumentenApi.start()
 
         repository = mock()
-        authentication = SmartDocumentsAuthentication(
-            url = mockDocumentenApi.url("/").toString(),
-            username = "username",
-            password = "password"
+        val properties = SmartDocumentsConnectorProperties(
+            url = mockDocumentenApi.url("/").toString()
         )
 
         temporaryResourceStorageService = spy(
@@ -77,6 +75,7 @@ internal class SmartDocumentsClientTest : BaseTest() {
 
         client = spy(
             SmartDocumentsClient(
+                properties,
                 RestClient.builder(),
                 5,
                 temporaryResourceStorageService,
@@ -95,7 +94,7 @@ internal class SmartDocumentsClientTest : BaseTest() {
     }
 
     @Test
-    fun `200 ok response should return FilesResponse when client is used`() {
+    fun `200 ok response should return FilesResponse when connector is used`() {
         val responseBody = """
             {
                 "file": [
@@ -113,7 +112,6 @@ internal class SmartDocumentsClientTest : BaseTest() {
         mockDocumentenApi.enqueue(mockResponse(responseBody))
 
         val response = client.generateDocument(
-            authentication,
             SmartDocumentsRequest(
                 emptyMap(),
                 SmartDocumentsRequest.SmartDocument(
@@ -132,7 +130,7 @@ internal class SmartDocumentsClientTest : BaseTest() {
     }
 
     @Test
-    fun `401 Unauthorized response should throw exception when client is used`() {
+    fun `401 Unauthorized response should throw exception when connector is used`() {
         val responseBody = """
             <!doctype html>
             <html lang="en">
@@ -159,7 +157,6 @@ internal class SmartDocumentsClientTest : BaseTest() {
 
         val exception = assertThrows(HttpClientErrorException::class.java) {
             client.generateDocument(
-                authentication,
                 SmartDocumentsRequest(
                     emptyMap(),
                     SmartDocumentsRequest.SmartDocument(
@@ -176,7 +173,7 @@ internal class SmartDocumentsClientTest : BaseTest() {
     }
 
     @Test
-    fun `400 Bad Request response should throw exception when client is used`() {
+    fun `400 Bad Request response should throw exception when connector is used`() {
         val responseBody = """
             <!doctype html>
             <html lang="en">
@@ -204,7 +201,6 @@ internal class SmartDocumentsClientTest : BaseTest() {
 
         val exception = assertThrows(HttpClientErrorException::class.java) {
             client.generateDocument(
-                authentication,
                 SmartDocumentsRequest(
                     emptyMap(),
                     SmartDocumentsRequest.SmartDocument(
@@ -238,7 +234,6 @@ internal class SmartDocumentsClientTest : BaseTest() {
         mockDocumentenApi.enqueue(mockResponse(responseBody))
 
         val documentResult = client.generateDocumentStream(
-            authentication,
             SmartDocumentsRequest(
                 emptyMap(),
                 SmartDocumentsRequest.SmartDocument(
@@ -261,7 +256,6 @@ internal class SmartDocumentsClientTest : BaseTest() {
 
         val exception = assertThrows(HttpClientErrorException::class.java) {
             client.generateDocumentStream(
-                authentication,
                 SmartDocumentsRequest(
                     emptyMap(),
                     SmartDocumentsRequest.SmartDocument(
@@ -288,7 +282,7 @@ internal class SmartDocumentsClientTest : BaseTest() {
 
         // when
         val response = client.getSmartDocumentsTemplateData(
-            SmartDocumentsAuthentication(
+            SmartDocumentsPropertiesDto(
                 username = "username",
                 password = "password",
                 url = mockDocumentenApi.url("").toString()

@@ -1,0 +1,59 @@
+{
+    "count":1,
+    "results": [
+        {
+            "url": "http://some-url/catalogi/api/v1/zaaktypen/4e9c2359-83ac-4e3b-96b6-3f278f1fc773",
+            "identificatie": "example-case",
+            "omschrijving": "Example case",
+            "omschrijvingGeneriek": "Example case",
+            "vertrouwelijkheidaanduiding": "zaakvertrouwelijk",
+            "doel": "For test purposes.",
+            "aanleiding": "aanleiding",
+            "toelichting": "toelichting",
+            "indicatieInternOfExtern": "extern",
+            "handelingInitiator": "Indienen",
+            "onderwerp": "Example",
+            "handelingBehandelaar": "Case",
+            "doorlooptijd": "P84D",
+            "servicenorm": null,
+            "opschortingEnAanhoudingMogelijk": false,
+            "verlengingMogelijk": true,
+            "verlengingstermijn": "P42D",
+            "trefwoorden": [
+                "example"
+            ],
+            "publicatieIndicatie": false,
+            "publicatietekst": "",
+            "verantwoordingsrelatie": [],
+            "productenOfDiensten": [
+                "https://github.com/valtimo-platform/valtimo-platform"
+            ],
+            "selectielijstProcestype": "https://ritense.com",
+            "referentieproces": {
+                "naam": "Example case",
+                "link": "http://ritense.com"
+            },
+            "catalogus": "http://localhost/catalogi/api/v1/catalogussen/8225508a-6840-413e-acc9-6422af120db1",
+            "statustypen": [
+                "http://localhost/catalogi/api/v1/statustypen/12345678-3f25-4716-5432-49ea8e954fd0"
+            ],
+            "resultaattypen": [],
+            "eigenschappen": [
+                "http://localhost/catalogi/api/v1/eigenschappen/12345678-b04b-424b-ab02-c4102b562633"
+            ],
+            "informatieobjecttypen": [
+                "http://localhost/catalogi/api/v1/informatieobjecttypen/12345678-be3b-4bad-9e3c-49a6219c92ad"
+            ],
+            "roltypen": [
+                "http://localhost/catalogi/api/v1/roltypen/12345678-c38d-47b8-bed5-994db88ead61"
+            ],
+            "besluittypen": [],
+            "deelzaaktypen": [],
+            "gerelateerdeZaaktypen": [],
+            "beginGeldigheid": "2021-01-01",
+            "eindeGeldigheid": null,
+            "versiedatum": "2021-01-01",
+            "concept": false
+        }
+    ]
+}

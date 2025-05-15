@@ -15,8 +15,6 @@
  */
 
 dependencies {
-    api project(':inbox')
-
     implementation project(':contract')
     implementation project(':logging')
 

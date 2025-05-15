@@ -1,0 +1,15 @@
+b8d40928 - Updated version to 9.24.0.RELEASE
+b6f43921 - Updated version to 9.24.0.189.RC-SNAPSHOT
+4016dbf6 - fix: Shouln't create search field with same key (#373)
+65841a2a - Merge branch 'main' into development
+77316985 - Exact plugin (#345)
+a9e932c5 - fix save (#371)
+edc90746 - fixed domain model (#370)
+146169c1 - search fields: Add DELETE security configuration (#369)
+eecc9554 - bugfix 37577 - Changed the authority required for the GET mapping of search fields (#368)
+14e18618 - Rc 9.23.0.187 to development (#367)
+97234762 - Feature/37581 api endpoint to delete case search field (#362)
+8fbaac33 - Feature/37580 api endpoint to edit case search field (#360)
+33ee0f46 - #37575 Autodeployment of case search fields (#359)
+74a29294 - Feature/37577 load case search field (#358)
+86146178 - feature 37577 - Added SearchField entity and ability to store an entity (#357)

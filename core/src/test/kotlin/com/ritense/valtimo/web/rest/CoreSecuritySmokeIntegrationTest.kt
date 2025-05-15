@@ -18,8 +18,6 @@ package com.ritense.valtimo.web.rest
 
 class CoreSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
     ignoredPathPatterns = setOf(
-        "GET /api/v1/ping",
-        "GET /api/v1/sse",
-        "GET /api/v1/sse/{subscriptionId}"
+        "GET /api/v1/ping"
     )
 )

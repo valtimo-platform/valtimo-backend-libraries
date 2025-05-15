@@ -1,0 +1,20 @@
+0e89b38 - Updated version to 9.15.0.RELEASE
+0852f68 - Merge branch 'main' into rc/9.15.0.131.RC
+e5cbdbd - Updated version to 9.15.0.131.RC-SNAPSHOT
+e1dd5db - Fix error: 'Expected single result but found' (#224)
+d8e27ec - bugfix form association error: 'Expected single result but found: 0' (#222)
+676702f - #35792 Implementatie SmartDocuments plugin (#221)
+839d557 - Bugfix/too many form link results are ignored (#220)
+b3beaed - Bugfix/remove class from reponse (#219)
+5aace85 - Renamed plugin configuration liquibase changeset
+22467dd - Added plugin configurations (#217)
+b8f6d8e - Added security configuration for action endpoint (#218)
+98e27df - Added endpoint to get plugin actions (#216)
+f342f07 - #35682 Sort parameter bij ophalen user taken (#215)
+4d7ce0b - Made controller bean definition conditional (#214)
+6b914ef - Deploying plugin actions at startup (#211)
+dacc85a - Feature/oa prefix (#212)
+700a093 - Feature/35315 rest api plugin definitions (#210)
+1cf98f5 - Added liquibase configuration for plugin (#213)
+de8e9cf - Load plugins on startup (#209)
+6164a7b - #35682 Sort parameter bij ophalen user taken (#208)

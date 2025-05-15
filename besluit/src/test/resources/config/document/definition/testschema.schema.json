@@ -1,0 +1,13 @@
+{
+    "$id": "testschema.schema",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "testschema",
+    "type": "object",
+    "properties": {
+        "voornaam": {
+            "type": "string",
+            "description": "Voornaam",
+            "maxLength": 10
+        }
+    }
+}
