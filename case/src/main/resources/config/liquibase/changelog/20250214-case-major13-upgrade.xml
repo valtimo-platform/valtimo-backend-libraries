@@ -37,33 +37,127 @@
                       newColumnName="case_definition_key"
                       columnDataType="VARCHAR(256)"/>
         <addColumn tableName="case_tab">
-            <column name="case_definition_version_tag" type="VARCHAR(200)" defaultValue="1.0.0">
-                <constraints nullable="false"/>
+            <column name="case_definition_version_tag" type="VARCHAR(200)">
+                <constraints nullable="true"/>
             </column>
         </addColumn>
         <dropPrimaryKey tableName="case_tab"/>
+
+        <sql>
+            insert into case_tab
+            (
+                case_definition_key,
+                case_definition_version_tag,
+                tab_key,
+                name,
+                tab_order,
+                type,
+                content_key,
+                created_by,
+                created_on,
+                show_tasks
+            )
+            select
+                ct.case_definition_key,
+                cd.case_definition_version_tag,
+                ct.tab_key,
+                ct.name,
+                ct.tab_order,
+                ct.type,
+                ct.content_key,
+                ct.created_by,
+                ct.created_on,
+                ct.show_tasks
+            from case_tab ct
+                     join case_definition cd
+                          on cd.case_definition_key = ct.case_definition_key
+        </sql>
 
         <renameColumn tableName="case_widget_tab"
                       oldColumnName="case_definition_name"
                       newColumnName="case_definition_key"
                       columnDataType="VARCHAR(256)"/>
         <addColumn tableName="case_widget_tab">
-            <column name="case_definition_version_tag" type="VARCHAR(200)" defaultValue="1.0.0">
-                <constraints nullable="false"/>
+            <column name="case_definition_version_tag" type="VARCHAR(200)">
+                <constraints nullable="true"/>
             </column>
         </addColumn>
         <dropPrimaryKey tableName="case_widget_tab"/>
+
+        <sql>
+            insert into case_widget_tab
+            (
+                case_definition_key,
+                case_definition_version_tag,
+                tab_key
+            )
+            select
+                ct.case_definition_key,
+                ct.case_definition_version_tag,
+                cwt.tab_key
+            from case_widget_tab cwt
+            join case_tab ct
+                on cwt.case_definition_key = ct.case_definition_key and cwt.tab_key = ct.tab_key
+                and ct.case_definition_version_tag is not null
+        </sql>
 
         <renameColumn tableName="case_widget_tab_widget"
                       oldColumnName="case_definition_name"
                       newColumnName="case_definition_key"
                       columnDataType="VARCHAR(256)"/>
         <addColumn tableName="case_widget_tab_widget">
-            <column name="case_definition_version_tag" type="VARCHAR(200)" defaultValue="1.0.0">
-                <constraints nullable="false"/>
+            <column name="case_definition_version_tag" type="VARCHAR(200)">
+                <constraints nullable="true"/>
             </column>
         </addColumn>
         <dropPrimaryKey tableName="case_widget_tab_widget"/>
+
+        <sql>
+            insert into case_widget_tab_widget
+            (
+             key,
+             title,
+             case_widget_type,
+             case_definition_key,
+             case_definition_version_tag,
+             tab_key,
+             sort_order,
+             width,
+             high_contrast,
+             properties,
+             actions
+            )
+            select
+                cwtw.key,
+                cwtw.title,
+                cwtw.case_widget_type,
+                cwtw.case_definition_key,
+                cwt.case_definition_version_tag,
+                cwtw.tab_key,
+                cwtw.sort_order,
+                cwtw.width,
+                cwtw.high_contrast,
+                cwtw.properties,
+                cwtw.actions
+            from case_widget_tab_widget cwtw
+            join case_widget_tab cwt on cwtw.case_definition_key = cwt.case_definition_key and cwtw.tab_key = cwt.tab_key
+            where cwt.case_definition_version_tag is not null
+        </sql>
+
+        <sql>
+            delete from case_widget_tab_widget
+            where case_definition_version_tag is null
+        </sql>
+
+        <sql>
+            delete from case_widget_tab
+            where case_definition_version_tag is null
+        </sql>
+
+        <sql>
+            delete from case_tab
+            where case_definition_version_tag is null
+        </sql>
     </changeSet>
 
     <changeSet id="4" author="Ritense">

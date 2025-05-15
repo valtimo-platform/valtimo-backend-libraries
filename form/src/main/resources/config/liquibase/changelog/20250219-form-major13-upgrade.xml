@@ -40,11 +40,12 @@
                 columnNames="case_definition_key, case_definition_version_tag, name"/>
     </changeSet>
 
-    <!--    TODO: Add migration script for form definitions
-
-      <changeSet id="99" author="Ritense">
-           <addNotNullConstraint tableName="form_io_form_definition" columnName="case_definition_key"/>
-           <addNotNullConstraint tableName="form_io_form_definition" columnName="case_definition_version_tag"/>
-       </changeSet>-->
+<!--    <changeSet id="11" author="Ritense">
+        <sql>
+            INSERT INTO form_io_form_definition
+                (id, name, form_definition, read_only, case_definition_key, form_io_form_definition)
+            SELECT
+        </sql>
+    </changeSet>-->
 
 </databaseChangeLog>

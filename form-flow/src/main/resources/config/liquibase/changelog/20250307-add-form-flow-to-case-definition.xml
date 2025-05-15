@@ -36,44 +36,52 @@
     <changeSet id="4" author="Ritense">
         <addColumn tableName="form_flow_definition">
             <column name="case_definition_key" type="VARCHAR(256)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="case_definition_version_tag" type="VARCHAR(200)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
         </addColumn>
-        <dropColumn tableName="form_flow_definition" columnName="form_flow_definition_version"/>
+        <!--<dropColumn tableName="form_flow_definition" columnName="form_flow_definition_version"/>-->
     </changeSet>
 
     <changeSet id="5" author="Ritense">
         <addColumn tableName="form_flow_instance">
             <column name="case_definition_key" type="VARCHAR(256)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="case_definition_version_tag" type="VARCHAR(200)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
         </addColumn>
-        <dropColumn tableName="form_flow_instance" columnName="form_flow_definition_version"/>
+        <!--<dropColumn tableName="form_flow_instance" columnName="form_flow_definition_version"/>-->
     </changeSet>
 
     <changeSet id="6" author="Ritense">
         <addColumn tableName="form_flow_step">
             <column name="case_definition_key" type="VARCHAR(256)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="case_definition_version_tag" type="VARCHAR(200)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
         </addColumn>
-        <dropColumn tableName="form_flow_step" columnName="form_flow_definition_version"/>
+        <!--<dropColumn tableName="form_flow_step" columnName="form_flow_definition_version"/>-->
     </changeSet>
 
-    <changeSet id="7" author="Ritense">
-        <addPrimaryKey tableName="form_flow_definition" columnNames="form_flow_definition_key,case_definition_key,case_definition_version_tag"/>
-    </changeSet>
+<!--    <changeSet id="7" author="Ritense">
+        <sql>
+            UPDATE form_flow_definition ffd
+            JOIN case_definition cd ON ffd.form_flow_definition_key = cd.case_definition_name
+            SET ffd.case_definition_key = (
+                SELECT cd.case_definition_key
+                FROM case_definition cd
+                WHERE cd.case_definition_name = form_flow_definition.form_flow_definition_key
+            );
+        </sql>
+    </changeSet>-->
 
-    <changeSet id="8" author="Ritense">
+<!--    <changeSet id="8" author="Ritense">
         <addForeignKeyConstraint baseTableName="form_flow_instance"
                                  baseColumnNames="form_flow_definition_key,case_definition_key,case_definition_version_tag"
                                  constraintName="fk_form_flow_definition_instance"
@@ -87,6 +95,15 @@
                                  constraintName="fk_form_flow_definition_step"
                                  referencedTableName="form_flow_definition"
                                  referencedColumnNames="form_flow_definition_key,case_definition_key,case_definition_version_tag"/>
-    </changeSet>
+    </changeSet>-->
+
+
+    <!--
+    select *
+from process_link pl
+join act_re_procdef pd on pl.process_definition_id = pd.id_
+where pl.process_link_type = 'form-flow'
+
+    -->
 
 </databaseChangeLog>

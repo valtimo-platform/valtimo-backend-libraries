@@ -19,54 +19,181 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
-<!--    <changeSet id="1" author="Ritense">-->
-<!--        <preConditions>-->
-<!--            <foreignKeyConstraintExists foreignKeyName="zgw_document_trefwoord_case_definition_name_fk"/>-->
-<!--        </preConditions>-->
-<!--        <dropForeignKeyConstraint baseTableName="zgw_document_trefwoord" constraintName="zgw_document_trefwoord_case_definition_name_fk"/>-->
-<!--    </changeSet>-->
-
-<!--    <changeSet id="2" author="Ritense">-->
-<!--        <preConditions>-->
-<!--            <foreignKeyConstraintExists foreignKeyName="zgw_document_upload_field_case_definition_name_fk"/>-->
-<!--        </preConditions>-->
-<!--        <dropForeignKeyConstraint baseTableName="zgw_document_upload_field" constraintName="zgw_document_upload_field_case_definition_name_fk"/>-->
-<!--    </changeSet>-->
-    <changeSet id="3" author="Ritense">
-        <renameColumn tableName="search_field"
-                      oldColumnName="document_definition_name"
-                      newColumnName="case_definition_key"
-                      columnDataType="varchar(50)"/>
+    <changeSet id="1" author="Ritense">
+        <addColumn tableName="json_schema_document_definition">
+            <column name="case_definition_key" type="VARCHAR(256)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="json_schema_document_definition">
+            <column name="case_definition_version_tag" type="VARCHAR(256)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
     </changeSet>
 
-    <changeSet id="4" author="Ritense">
-        <renameColumn tableName="internal_case_status"
-                      oldColumnName="case_definition_name"
-                      newColumnName="case_definition_key"
-                      columnDataType="varchar(50)"/>
+    <changeSet id="111.1" author="Ritense">
+        <dropForeignKeyConstraint baseTableName="task_list_column"
+                                  constraintName="fk_task_list_column_case_definition"/>
+        <!--TODO: add this back based on the new information-->
     </changeSet>
 
-    <changeSet id="5" author="Ritense">
-        <renameColumn tableName="json_schema_document_snapshot" oldColumnName="case_definition_name"
-                      newColumnName="ics_case_definition_key"
-                      columnDataType="VARCHAR(256)"/>
+    <changeSet id="1.12" author="Ritense">
+        <preConditions>
+            <foreignKeyConstraintExists foreignKeyName="zgw_document_trefwoord_case_definition_name_fk"/>
+        </preConditions>
+        <dropForeignKeyConstraint baseTableName="zgw_document_trefwoord" constraintName="zgw_document_trefwoord_case_definition_name_fk"/>
+    </changeSet>
+
+    <changeSet id="2.1" author="Ritense">
+        <preConditions>
+            <foreignKeyConstraintExists foreignKeyName="zgw_document_upload_field_case_definition_name_fk"/>
+        </preConditions>
+        <dropForeignKeyConstraint baseTableName="zgw_document_upload_field" constraintName="zgw_document_upload_field_case_definition_name_fk"/>
+    </changeSet>
+
+    <changeSet id="1.13" author="Ritense">
+        <dropPrimaryKey tableName="case_definition"/>
+    </changeSet>
+
+    <changeSet id="1.2" author="Ritense">
+        <renameColumn tableName="case_definition" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+        <addColumn tableName="case_definition">
+            <column name="case_definition_version_tag" type="VARCHAR(256)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="case_definition">
+            <column name="case_definition_name" type="VARCHAR(256)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1.3" author="Ritense">
+        <sql splitStatements="false">
+            insert into case_definition (
+                case_definition_name,
+                can_have_assignee,
+                auto_assign_tasks,
+                has_external_start_form,
+                external_start_form_url,
+                external_start_form_description,
+                case_definition_key,
+                case_definition_version_tag
+            )
+            select
+                mdd.json_schema->>'title',
+                cd.can_have_assignee,
+                cd.auto_assign_tasks,
+                cd.has_external_start_form,
+                cd.external_start_form_url,
+                cd.external_start_form_description,
+                mdd.document_definition_name,
+                '000000.' || LPAD(mdd.document_definition_version::text, 6, '0') || '.000000-${environmentName}'
+            from (
+                     select distinct dd.*
+                     from json_schema_document_definition dd
+                          join json_schema_document jd
+                               on jd.document_definition_name = dd.document_definition_name
+                               and jd.document_definition_version = dd.document_definition_version
+
+                     union
+
+                     select dd1.*
+                     from json_schema_document_definition dd1
+                     where dd1.document_definition_version = (
+                         select max(dd2.document_definition_version)
+                         from json_schema_document_definition dd2
+                         where dd1.document_definition_name = dd2.document_definition_name
+                     )
+                 ) as mdd
+                     left join case_definition cd
+                               on mdd.document_definition_name = cd.case_definition_key
+        </sql>
+    </changeSet>
+
+    <changeSet id="1.4" author="Ritense">
+        <sql>
+            update json_schema_document_definition as ddu
+            set case_definition_version_tag = '000000.' || LPAD(mdd.document_definition_version::text, 6, '0') || '.000000-${environmentName}',
+                case_definition_key = ddu.document_definition_name
+            from (
+                 select distinct dd.*
+                 from json_schema_document_definition dd
+                      join json_schema_document jd
+                           on jd.document_definition_name = dd.document_definition_name
+                           and jd.document_definition_version = dd.document_definition_version
+
+                 union
+
+                 select dd1.*
+                 from json_schema_document_definition dd1
+                 where dd1.document_definition_version = (
+                     select max(dd2.document_definition_version)
+                     from json_schema_document_definition dd2
+                     where dd1.document_definition_name = dd2.document_definition_name
+                 )
+             ) as mdd
+            where ddu.document_definition_name = mdd.document_definition_name
+            and ddu.document_definition_version = mdd.document_definition_version
+            and ddu.case_definition_version_tag is null
+        </sql>
     </changeSet>
 
     <changeSet id="6" author="Ritense">
         <renameColumn tableName="json_schema_document"
                       oldColumnName="case_definition_name"
-                      newColumnName="case_definition_key"
-                      columnDataType="VARCHAR(256)"/>
+                      newColumnName="case_definition_key"/>
         <addColumn tableName="json_schema_document">
-            <column name="case_definition_version_tag" type="VARCHAR(200)" defaultValue="1.0.0">
-                <constraints nullable="false"/>
+            <column name="case_definition_version_tag" type="VARCHAR(256)">
+                <constraints nullable="true"/>
             </column>
         </addColumn>
 
         <addColumn tableName="json_schema_document">
-            <column name="ics_case_definition_key" type="VARCHAR(256)">
-            </column>
+            <column name="ics_case_definition_key" type="VARCHAR(256)" />
         </addColumn>
+    </changeSet>
+
+    <changeSet id="1.5" author="Ritense">
+        <sql>
+            update json_schema_document as jd
+            set case_definition_version_tag = dd.case_definition_version_tag,
+                case_definition_key = dd.case_definition_key
+            from json_schema_document_definition dd
+                where dd.case_definition_key = jd.document_definition_name
+                and dd.document_definition_version = jd.document_definition_version
+        </sql>
+    </changeSet>
+
+    <changeSet id="1.6" author="Ritense">
+        <sql>
+            delete from case_definition as cd
+            where cd.case_definition_version_tag is null
+        </sql>
+    </changeSet>
+
+    <changeSet id="1.15" author="Ritense">
+        <addPrimaryKey tableName="case_definition" columnNames="case_definition_key, case_definition_version_tag"/>
+    </changeSet>
+
+<!--    <changeSet id="1.1" author="Ritense">
+        <addNotNullConstraint tableName="json_schema_document_definition" columnName="case_definition_key"/>
+        <addNotNullConstraint tableName="json_schema_document_definition" columnName="case_definition_version_tag"/>
+    </changeSet>-->
+
+    <changeSet id="3" author="Ritense">
+        <renameColumn tableName="search_field" oldColumnName="document_definition_name" newColumnName="case_definition_key"/>
+    </changeSet>
+
+    <changeSet id="4" author="Ritense">
+        <renameColumn tableName="internal_case_status" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+    </changeSet>
+
+    <changeSet id="5" author="Ritense">
+        <renameColumn tableName="json_schema_document_snapshot" oldColumnName="case_definition_name"
+                      newColumnName="ics_case_definition_key"/>
     </changeSet>
 
     <changeSet id="7" author="Ritense">
@@ -74,7 +201,7 @@
             <column name="case_definition_key" type="VARCHAR(256)"/>
         </addColumn>
         <addColumn tableName="json_schema_document_snapshot">
-            <column name="case_definition_version_tag" type="VARCHAR(200)"/>
+            <column name="case_definition_version_tag" type="VARCHAR(256)"/>
         </addColumn>
     </changeSet>
 
@@ -83,50 +210,69 @@
     </changeSet>
 
     <changeSet id="9" author="Ritense">
-        <dropForeignKeyConstraint baseTableName="case_tag_link" constraintName="fk_case_tag_link_case_tag"/>
-        <dropForeignKeyConstraint baseTableName="case_tag_link" constraintName="fk_case_tag_link_json_schema_document_id"/>
         <dropIndex tableName="case_tag_link" indexName="idx_case_tag_link_case_tag_id"/>
         <dropIndex tableName="case_tag_link" indexName="idx_case_tag_link_json_schema_document_id"/>
+        <dropForeignKeyConstraint baseTableName="case_tag_link" constraintName="fk_case_tag_link_case_tag"/>
+        <dropForeignKeyConstraint baseTableName="case_tag_link" constraintName="fk_case_tag_link_json_schema_document_id"/>
 
-        <renameColumn tableName="case_tag_link"
-                      oldColumnName="case_definition_name"
-                      newColumnName="case_definition_key"
-                      columnDataType="VARCHAR(256)"/>
-        <addColumn tableName="case_tag_link">
-            <column name="case_definition_version_tag" type="VARCHAR(200)" defaultValue="1.0.0">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
-
-        <renameColumn tableName="case_tag"
-                      oldColumnName="case_definition_name"
-                      newColumnName="case_definition_key"
-                      columnDataType="VARCHAR(256)"/>
-        <addColumn tableName="case_tag">
-            <column name="case_definition_version_tag" type="VARCHAR(200)" defaultValue="1.0.0">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
         <dropPrimaryKey tableName="case_tag_link"/>
         <dropPrimaryKey tableName="case_tag"/>
+
+        <renameColumn tableName="case_tag_link" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+        <addColumn tableName="case_tag_link">
+            <column name="case_definition_version_tag" type="VARCHAR(256)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <renameColumn tableName="case_tag" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+        <addColumn tableName="case_tag">
+            <column name="case_definition_version_tag" type="VARCHAR(256)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <sql>
+            insert into case_tag
+            (
+                case_tag_key,
+                case_definition_key,
+                case_definition_version_tag,
+                case_tag_title,
+                case_tag_color,
+                case_tag_order
+            )
+            select
+                ct.case_tag_key,
+                ct.case_definition_key,
+                cd.case_definition_version_tag,
+                ct.case_tag_title,
+                ct.case_tag_color,
+                ct.case_tag_order
+            from case_tag ct
+            join case_definition cd on cd.case_definition_key = ct.case_definition_key
+        </sql>
+
+        <sql>
+            update case_tag_link ctl
+            set case_definition_version_tag = d.case_definition_version_tag
+            from json_schema_document d
+            where ctl.json_schema_document_id = d.json_schema_document_id
+        </sql>
+
+        <sql>
+            delete from case_tag
+            where case_definition_version_tag is null
+        </sql>
+
     </changeSet>
 
     <changeSet id="10" author="Ritense">
         <addPrimaryKey tableName="case_tag"
-                       columnNames="case_tag_key, case_definition_key, case_definition_version_tag"/>
+                       columnNames="case_definition_key, case_definition_version_tag, case_tag_key"/>
         <addPrimaryKey tableName="case_tag_link"
                        columnNames="case_tag_key, case_definition_key, case_definition_version_tag, json_schema_document_id"
                        constraintName="pk_case_tag_link"/>
-
-        <createIndex indexName="idx_case_tag_link_json_schema_document_id" tableName="case_tag_link">
-            <column name="json_schema_document_id"/>
-        </createIndex>
-
-        <createIndex indexName="idx_case_tag_link_case_tag_id" tableName="case_tag_link">
-            <column name="case_tag_key"/>
-            <column name="case_definition_key"/>
-            <column name="case_definition_version_tag"/>
-        </createIndex>
 
         <addForeignKeyConstraint baseTableName="case_tag_link"
                                  baseColumnNames="case_tag_key, case_definition_key, case_definition_version_tag"
@@ -139,6 +285,16 @@
                                  referencedTableName="json_schema_document"
                                  referencedColumnNames="json_schema_document_id"
                                  constraintName="fk_case_tag_link_json_schema_document_id"/>
+
+        <createIndex indexName="idx_case_tag_link_json_schema_document_id" tableName="case_tag_link">
+            <column name="json_schema_document_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_case_tag_link_case_tag_id" tableName="case_tag_link">
+            <column name="case_tag_key"/>
+            <column name="case_definition_key"/>
+            <column name="case_definition_version_tag"/>
+        </createIndex>
     </changeSet>
 
 </databaseChangeLog>

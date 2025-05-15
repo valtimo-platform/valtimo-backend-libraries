@@ -597,6 +597,7 @@ public class CamundaProcessService {
             throw new ProcessNotDeployableException("No resources found for deployment ID: " + deploymentId);
         }
 
+        // TODO: for old deployments where the whole resource folder was deployed, this might not be correct.
         String fileName = resourceNames.get(0);
 
         try (ByteArrayInputStream fileInput = new ByteArrayInputStream(

@@ -75,6 +75,8 @@ dependencies {
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
 
+    implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
+
     implementation "org.hibernate.orm:hibernate-core:${hibernateCoreVersion}"
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
