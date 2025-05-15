@@ -15,9 +15,13 @@
  */
 package com.ritense.processdocument.web
 
+import com.ritense.processdocument.domain.UpdateProcessDefinitionCaseDefinitionRequest
 import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -27,4 +31,18 @@ import org.springframework.web.bind.annotation.RestController
 class ProcessCaseManagementResource(
     private val processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService
 ) {
+    @PutMapping("/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/process/{processDefinitionId}/properties")
+    fun updateProcessDefinitionCaseDefinition(
+        @PathVariable caseDefinitionKey: String,
+        @PathVariable caseDefinitionVersionTag: String,
+        @PathVariable processDefinitionId: String,
+        @RequestBody request: UpdateProcessDefinitionCaseDefinitionRequest
+    ) {
+        processDefinitionCaseDefinitionService.updateProcessDefinitionCaseDefinition(
+            caseDefinitionKey,
+            caseDefinitionVersionTag,
+            processDefinitionId,
+            request
+        )
+    }
 }

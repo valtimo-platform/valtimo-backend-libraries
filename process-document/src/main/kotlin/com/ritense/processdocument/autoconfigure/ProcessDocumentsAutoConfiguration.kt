@@ -50,6 +50,7 @@ import com.ritense.processdocument.tasksearch.TaskListSearchFieldV2Mapper
 import com.ritense.processdocument.tasksearch.TaskSearchFieldExporter
 import com.ritense.processdocument.tasksearch.TaskSearchFieldImporter
 import com.ritense.processdocument.web.CaseDefinitionProcessManagementResource
+import com.ritense.processdocument.web.ProcessCaseManagementResource
 import com.ritense.processdocument.web.TaskListResource
 import com.ritense.search.repository.SearchFieldV2Repository
 import com.ritense.search.service.SearchFieldV2Service
@@ -341,6 +342,14 @@ class ProcessDocumentsAutoConfiguration {
         caseDefinitionProcessLinkService: CaseDefinitionProcessLinkService
     ): CaseDefinitionProcessManagementResource {
         return CaseDefinitionProcessManagementResource(caseDefinitionProcessLinkService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessCaseManagementResource::class)
+    fun processCaseManagementResource(
+        processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService
+    ): ProcessCaseManagementResource {
+        return ProcessCaseManagementResource(processDefinitionCaseDefinitionService)
     }
 
     @Bean

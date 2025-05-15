@@ -26,6 +26,7 @@ import com.ritense.processdocument.domain.ProcessDefinitionCaseDefinition
 import com.ritense.processdocument.domain.ProcessDefinitionCaseDefinitionId
 import com.ritense.processdocument.domain.ProcessDefinitionId
 import com.ritense.processdocument.domain.ProcessDocumentDefinitionRequest
+import com.ritense.processdocument.domain.UpdateProcessDefinitionCaseDefinitionRequest
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.repository.ProcessDefinitionCaseDefinitionRepository
 import com.ritense.valtimo.camunda.authorization.CamundaExecutionActionProvider
@@ -68,8 +69,8 @@ class ProcessDefinitionCaseDefinitionService(
         startableByUser: Boolean?,
         canInitializeDocument: Boolean?
     ): List<ProcessDefinitionCaseDefinition> {
-        val definitions = processDefinitionCaseDefinitionRepository.
-            findAll(caseDefinitionId, startableByUser, canInitializeDocument)
+        val definitions =
+            processDefinitionCaseDefinitionRepository.findAll(caseDefinitionId, startableByUser, canInitializeDocument)
 
         return definitions
             .filter {
@@ -91,8 +92,11 @@ class ProcessDefinitionCaseDefinitionService(
     ): List<ProcessDefinitionCaseDefinition> {
 
         val document = documentService.get(documentId.toString())
-        val definitions = processDefinitionCaseDefinitionRepository.
-        findAll(document.definitionId().caseDefinitionId(), startableByUser, canInitializeDocument)
+        val definitions = processDefinitionCaseDefinitionRepository.findAll(
+            document.definitionId().caseDefinitionId(),
+            startableByUser,
+            canInitializeDocument
+        )
 
         return definitions
             .filter {
@@ -139,6 +143,35 @@ class ProcessDefinitionCaseDefinitionService(
         )
 
         processDefinitionCaseDefinitionRepository.save(processDocumentDefinition)
+    }
+
+
+    fun updateProcessDefinitionCaseDefinition(
+        caseDefinitionKey: String,
+        caseDefinitionVersionTag: String,
+        processDefinitionId: String,
+        updateRequest: UpdateProcessDefinitionCaseDefinitionRequest
+    ) {
+        val caseDefinitionId = CaseDefinitionId(caseDefinitionKey, caseDefinitionVersionTag)
+
+        val processDefinitionCaseDefinition = processDefinitionCaseDefinitionRepository.findAllByIdCaseDefinitionIdAndIdProcessDefinitionIdId(
+            caseDefinitionId = caseDefinitionId,
+            processDefinitionId = processDefinitionId
+        )
+
+        val originalProcessDefinitionCaseDefinition = processDefinitionCaseDefinition.firstOrNull()
+            ?: error("No ProcessDefinitionCaseDefinition found for case definition key '$caseDefinitionKey', case definition version tag '$caseDefinitionVersionTag', and process definition id '$processDefinitionId'.")
+
+        val updated = ProcessDefinitionCaseDefinition(
+            ProcessDefinitionCaseDefinitionId(
+                ProcessDefinitionId(processDefinitionId),
+                caseDefinitionId
+            ),
+            updateRequest.canInitializeDocument ?: originalProcessDefinitionCaseDefinition.canInitializeDocument,
+            updateRequest.startableByUser ?: originalProcessDefinitionCaseDefinition.startableByUser
+        )
+
+        processDefinitionCaseDefinitionRepository.save(updated)
     }
 
     private fun denyAuthorization() {
