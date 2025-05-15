@@ -1,7 +1,7 @@
 name: Run tests
 on:
     pull_request:
-        types: [opened, synchronize]
+        types: [synchronize, opened]
 
 jobs:
     unit-testing:
