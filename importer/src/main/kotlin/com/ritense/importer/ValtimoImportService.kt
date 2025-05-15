@@ -25,6 +25,7 @@ import com.ritense.importer.exception.InvalidImportZipException
 import com.ritense.importer.exception.TooManyImportCandidatesException
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.apache.commons.lang3.StringUtils
 import org.springframework.core.env.Environment
 import org.springframework.core.io.Resource
 import org.springframework.transaction.annotation.Transactional
@@ -209,7 +210,7 @@ open class ValtimoImportService(
             ZipInputStream(inputStream).use { stream ->
                 generateSequence { stream.nextEntry }
                     .filter { !it.isDirectory }
-                    .map { ZipFileEntry(it.name, stream.readBytes()) }
+                    .map { ZipFileEntry(prepareFilePath(it.name), stream.readBytes()) }
                     .toMutableList()
             }
         } catch (ex: Exception) {
@@ -218,6 +219,20 @@ open class ValtimoImportService(
             if (this.isEmpty()) {
                 throw InvalidImportZipException("Archive was empty or not a zip")
             }
+        }
+    }
+
+    private fun prepareFilePath(path: String): String {
+        return if (path.startsWith("config/case")) {
+            val relativePath = path.substringAfter("config/case")
+            val subStringStartIndex = StringUtils.ordinalIndexOf(relativePath, "/", 3)
+            if (subStringStartIndex > -1) {
+                relativePath.substring(subStringStartIndex)
+            } else {
+                path
+            }
+        } else {
+            path
         }
     }
 
