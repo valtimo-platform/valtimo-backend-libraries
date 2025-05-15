@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.event;
 
+import com.ritense.valtimo.camunda.domain.CamundaDeploymentSource;
 import jakarta.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -29,11 +30,19 @@ public class ProcessDefinitionDeployedEvent {
     private final String processDefinitionId;
     private final String processDefinitionKey;
     private final BpmnModelInstance processDefinitionModelInstance;
+    private final String source;
 
     public ProcessDefinitionDeployedEvent(DeploymentEntity deployment, ProcessDefinitionEntity processDefinition) {
         this.previousProcessDefinitionId = processDefinition.getPreviousProcessDefinitionId();
         this.processDefinitionId = processDefinition.getId();
         this.processDefinitionKey = processDefinition.getKey();
+        String deploymentSource = deployment.getSource();
+
+        if (deploymentSource != null) {
+            this.source = resolveSource(deploymentSource);
+        } else {
+            this.source = "";
+        }
 
         var processDefinitionResource = deployment.getResource(processDefinition.getResourceName());
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(processDefinitionResource.getBytes())) {
@@ -41,6 +50,15 @@ public class ProcessDefinitionDeployedEvent {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String resolveSource(String source) {
+        for (CamundaDeploymentSource deploymentSource : CamundaDeploymentSource.getEntries()) {
+            if (deploymentSource.getValue().equals(source)) {
+                return source;
+            }
+        }
+        return "";
     }
 
     @Nullable
@@ -54,6 +72,10 @@ public class ProcessDefinitionDeployedEvent {
 
     public String getProcessDefinitionKey() {
         return processDefinitionKey;
+    }
+
+    public String getSource() {
+        return source;
     }
 
     public BpmnModelInstance getProcessDefinitionModelInstance() {

@@ -75,6 +75,7 @@ import org.camunda.bpm.engine.delegate.DelegateTask;
 import org.camunda.bpm.engine.delegate.VariableScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
 public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentService {
@@ -357,7 +358,10 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
         }
     }
 
-    public JsonSchemaDocumentId getDocumentId(ProcessInstanceId processInstanceId, VariableScope variableScope) {
+    public JsonSchemaDocumentId getDocumentId(
+        ProcessInstanceId processInstanceId,
+        @Nullable VariableScope variableScope
+    ) {
         denyAuthorization();
         var processDocumentInstance = processDocumentAssociationService
             .findProcessDocumentInstance(processInstanceId)

@@ -30,7 +30,9 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
+import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
@@ -157,6 +159,55 @@ internal class ProcessLinkResourceIT @Autowired constructor(
             .andExpect(jsonPath("$[0].activityType").value("bpmn:ServiceTask:start"))
             .andExpect(jsonPath("$[0].processLinkType").value("test"))
             .andExpect(jsonPath("$[0].someValue").value("changed"))
+    }
+
+    @Test
+    fun `should deploy process definition and process links`() {
+        val bpmnFile = MockMultipartFile(
+            "file",
+            "test-process.bpmn",
+            MediaType.APPLICATION_XML_VALUE,
+            """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                     xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd"
+                     targetNamespace="http://camunda.org/examples">
+            <process id="test-process" name="Test Process">
+                <startEvent id="start" />
+                <endEvent id="end" />
+            </process>
+        </definitions>
+        """.trimIndent().toByteArray()
+        )
+
+        val processLinks = listOf(
+            TestProcessLinkCreateRequestDto(
+                processDefinitionId = "test-process",
+                activityId = "start",
+                activityType = SERVICE_TASK_START
+            )
+        )
+
+        val processLinksJson = ObjectMapper().writeValueAsString(processLinks)
+
+        mockMvc.perform(
+            MockMvcRequestBuilders.multipart("/api/v1/process/definition/deployment/process-link")
+                .file(bpmnFile)
+                .file(
+                    MockMultipartFile(
+                        "processLinks",
+                        "processLinks.json",
+                        MediaType.APPLICATION_JSON_VALUE,
+                        processLinksJson.toByteArray()
+                    )
+                )
+                .param("processDefinitionId", PROCESS_DEF_ID)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(print())
+            .andExpect(status().isNoContent)
     }
 
     private fun createProcessLink(): UUID {

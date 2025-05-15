@@ -25,6 +25,7 @@ import com.ritense.processlink.domain.TestProcessLinkUpdateRequestDto
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.contract.json.MapperSingleton
+import com.ritense.valtimo.service.CamundaProcessService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -52,13 +53,15 @@ internal class ProcessLinkResourceTest {
     lateinit var processLinkMappers: List<ProcessLinkMapper>
     lateinit var processLinkResource: ProcessLinkResource
     lateinit var objectMapper: ObjectMapper
+    lateinit var camdunaProcessService: CamundaProcessService
 
     @BeforeEach
     fun init() {
         objectMapper = MapperSingleton.get()
         processLinkService = mock()
+        camdunaProcessService = mock()
         processLinkMappers = listOf(TestProcessLinkMapper(objectMapper))
-        processLinkResource = ProcessLinkResource(processLinkService, processLinkMappers)
+        processLinkResource = ProcessLinkResource(processLinkService, processLinkMappers, camdunaProcessService)
 
         val mappingJackson2HttpMessageConverter = MappingJackson2HttpMessageConverter()
         mappingJackson2HttpMessageConverter.objectMapper = objectMapper

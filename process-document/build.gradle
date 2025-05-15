@@ -45,6 +45,7 @@ dependencies {
     implementation project(":resource")
     implementation project(":value-resolver")
     implementation project(":search")
+    implementation project(":web")
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"

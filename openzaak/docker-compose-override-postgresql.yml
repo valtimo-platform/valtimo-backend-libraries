@@ -1,6 +1,0 @@
-services:
-    db:
-        ports:
-            - "3309:5432"
-        environment:
-            - POSTGRES_DB=openzaak-test

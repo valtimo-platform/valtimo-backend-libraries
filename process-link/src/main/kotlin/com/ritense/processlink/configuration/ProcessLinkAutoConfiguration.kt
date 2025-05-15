@@ -120,8 +120,9 @@ class ProcessLinkAutoConfiguration {
     fun processLinkProcessLinkResource(
         processLinkService: ProcessLinkService,
         processLinkMappers: List<ProcessLinkMapper>,
+        camundaProcessService: CamundaProcessService
     ): ProcessLinkResource {
-        return ProcessLinkResource(processLinkService, processLinkMappers)
+        return ProcessLinkResource(processLinkService, processLinkMappers, camundaProcessService)
     }
 
     @Bean
