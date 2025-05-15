@@ -1,5 +1,5 @@
 name: Auto-update PRs when their target branch is updated
-on: push # Triggers on all branches
+on: push # Triggers on all branches. So any time a PR's target branch updates, the PR gets updated as well
 jobs:
     autoupdate:
         name: autoupdate
