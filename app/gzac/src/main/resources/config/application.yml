@@ -174,7 +174,6 @@ valtimo:
         reminderTemplate: bpc-task-reminder
     oauth:
         tokenValidityInSeconds: 3600 # Token is valid 1 hour
-        identifier-field: username
 
     hardening:
         allowStacktraceOnIps:

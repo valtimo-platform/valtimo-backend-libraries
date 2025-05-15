@@ -173,10 +173,10 @@ class CamundaTaskServiceTest {
         doReturn(task).when(camundaTaskService).findTaskById(TASK_ID);
 
         ManageableUser manageableUser = mock();
-        when(manageableUser.getUserIdentifier()).thenReturn(ASSIGNEE);
+        when(manageableUser.getUsername()).thenReturn(ASSIGNEE);
         when(userManagementService.findById(ASSIGNEE)).thenReturn(manageableUser);
         ManageableUser currentUser = mock();
-        when(currentUser.getUserIdentifier()).thenReturn("TEST");
+        when(currentUser.getUsername()).thenReturn("TEST");
         when(userManagementService.getCurrentUser()).thenReturn(currentUser);
 
         when(runtimeService.createProcessInstanceQuery()).thenReturn(processInstanceQueryMock);
@@ -241,10 +241,10 @@ class CamundaTaskServiceTest {
         doReturn(task).when(camundaTaskService).findTaskById(TASK_ID);
 
         ManageableUser manageableUser = mock();
-        when(manageableUser.getUserIdentifier()).thenReturn(ASSIGNEE);
+        when(manageableUser.getUsername()).thenReturn(ASSIGNEE);
         when(userManagementService.findById(ASSIGNEE)).thenReturn(manageableUser);
         ManageableUser currentUser = mock();
-        when(currentUser.getUserIdentifier()).thenReturn("TEST");
+        when(currentUser.getUsername()).thenReturn("TEST");
         when(userManagementService.getCurrentUser()).thenReturn(currentUser);
 
         assertThrows(IllegalStateException.class, () -> camundaTaskService.assign(TASK_ID, ASSIGNEE));
@@ -256,10 +256,10 @@ class CamundaTaskServiceTest {
         when(camundaTaskRepository.findById(any())).thenReturn(Optional.of(
             task));
         ManageableUser manageableUser = mock();
-        when(manageableUser.getUserIdentifier()).thenReturn(ASSIGNEE);
+        when(manageableUser.getUsername()).thenReturn(ASSIGNEE);
         when(userManagementService.findById(ASSIGNEE)).thenReturn(manageableUser);
         ManageableUser currentUser = mock();
-        when(currentUser.getUserIdentifier()).thenReturn("TEST");
+        when(currentUser.getUsername()).thenReturn("TEST");
         when(userManagementService.getCurrentUser()).thenReturn(currentUser);
         doThrow(new AuthorizationException("some reason")).when(taskService).setAssignee(eq(TASK_ID), eq(ASSIGNEE));
         assertThrows(IllegalStateException.class, () -> camundaTaskService.assign(TASK_ID, ASSIGNEE));

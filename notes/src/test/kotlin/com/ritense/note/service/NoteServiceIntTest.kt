@@ -61,7 +61,7 @@ class NoteServiceIntTest() : BaseIntegrationTest() {
         admin.username = USERNAME
         admin.roles = listOf(USER, ADMIN)
         whenever(userManagementService.currentUser).thenReturn(admin)
-        whenever(userManagementService.findByUserIdentifier(USERNAME)).thenReturn(admin)
+        whenever(userManagementService.findByUsername(USERNAME)).thenReturn(admin)
     }
 
     @Test

@@ -138,6 +138,7 @@ public abstract class BaseIntegrationTest extends BaseTest {
     protected ManageableUser mockUser(String firstName, String lastName) {
         return new ValtimoUserBuilder()
             .id(UUID.randomUUID().toString())
+            .username(firstName.toLowerCase())
             .firstName(firstName)
             .lastName(lastName)
             .roles(List.of(FULL_ACCESS_ROLE))

@@ -59,12 +59,12 @@ open class CaseAssigneeTaskCreatedListener(
                 && caseSettings.autoAssignTasks
                 && !this.assigneeId().isNullOrEmpty()
             ) {
-                val assignee = userManagementService.findByUserIdentifier(this.assigneeId())
+                val assignee = userManagementService.findByUsername(this.assigneeId())
 
                 taskService
                     .setAssignee(
                         delegateTask.id,
-                        assignee.userIdentifier
+                        assignee.username
                     )
                     .also {
                         logger.debug { "Setting assignee for task with id ${delegateTask.id}" }
