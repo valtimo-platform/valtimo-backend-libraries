@@ -48,21 +48,31 @@ public class ProcessDocumentHttpSecurityConfigurer implements HttpSecurityConfig
                 .authenticated()
                 .requestMatchers(antMatcher(POST, "/api/v1/process-document/operation/new-document-and-start-process"))
                 .authenticated()
-                .requestMatchers(antMatcher(POST, "/api/v1/process-document/operation/modify-document-and-complete-task"))
+                .requestMatchers(antMatcher(
+                    POST,
+                    "/api/v1/process-document/operation/modify-document-and-complete-task"
+                ))
                 .authenticated()
-                .requestMatchers(antMatcher(POST, "/api/v1/process-document/operation/modify-document-and-start-process"))
+                .requestMatchers(antMatcher(
+                    POST,
+                    "/api/v1/process-document/operation/modify-document-and-start-process"
+                ))
                 .authenticated()
                 .requestMatchers(antMatcher(POST, "/api/v3/task"))
                 .authenticated()
                 .requestMatchers(antMatcher(POST, "/api/v1/document-definition/{caseDefinitionName}/task/search"))
                 .authenticated()
                 //admin endpoints
-                .requestMatchers(antMatcher(GET, FEATURE_PROCESS_URL+"/{type}"))
+                .requestMatchers(antMatcher(GET, FEATURE_PROCESS_URL + "/{type}"))
                 .hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(PUT, FEATURE_PROCESS_URL))
                 .hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(DELETE, FEATURE_PROCESS_URL+"/{type}"))
+                .requestMatchers(antMatcher(DELETE, FEATURE_PROCESS_URL + "/{type}"))
                 .hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(
+                    PUT,
+                    "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/process/{processDefinitionId}/properties"
+                )).hasAuthority(ADMIN)
             );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
