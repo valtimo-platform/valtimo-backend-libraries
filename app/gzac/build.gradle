@@ -6,13 +6,13 @@ dependencies {
     implementation(project(":document-generation:smartdocuments"))
     implementation(project(":logging"))
     implementation(project(":zgw:portaaltaak"))
-    implementation(project(":outbox:outbox-rabbitmq"))
 
     implementation("io.github.microutils:kotlin-logging")
 
-    // Spring cloud stream RabbitMQ
-    implementation "org.springframework.cloud:spring-cloud-starter-stream-rabbit:${springCloudStreamVersion}"
-    implementation "com.rabbitmq:amqp-client:$amqpCLientVersion"
+    compileOnly(project(":besluit"))
+    compileOnly(project(":openzaak"))
+    compileOnly(project(":contactmoment"))
+    compileOnly(project(":objects-api"))
 
     // Database
     implementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion

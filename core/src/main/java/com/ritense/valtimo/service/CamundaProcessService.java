@@ -29,7 +29,6 @@ import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.valtimo.camunda.authorization.CamundaExecutionActionProvider;
-import com.ritense.valtimo.camunda.domain.CamundaDeploymentSource;
 import com.ritense.valtimo.camunda.domain.CamundaExecution;
 import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
@@ -47,7 +46,6 @@ import com.ritense.valtimo.service.util.FormUtils;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -63,8 +61,6 @@ import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState;
-import org.camunda.bpm.engine.repository.DeploymentWithDefinitions;
-import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.model.bpmn.Bpmn;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
@@ -168,22 +164,6 @@ public class CamundaProcessService {
             .createProcessInstanceQuery()
             .processInstanceIds(processInstanceIds)
             .list();
-    }
-
-    public ProcessDefinition getProcessDefinitionByDeploymentId(String deploymentId) {
-        denyAuthorization();
-
-        return AuthorizationContext.runWithoutAuthorization(() -> {
-            var processDefinition = repositoryService.createProcessDefinitionQuery()
-                .deploymentId(deploymentId)
-                .singleResult();
-
-            if (processDefinition == null) {
-                throw new ProcessDefinitionNotFoundException("No process definition found for deployment ID: " + deploymentId);
-            }
-
-            return processDefinition;
-        });
     }
 
     @Nullable
@@ -334,26 +314,17 @@ public class CamundaProcessService {
     }
 
     @Transactional
-    public DeploymentWithDefinitions deploy(
+    public void deploy(
         String fileName,
         ByteArrayInputStream fileInput
     ) throws ProcessNotDeployableException, FileExtensionNotSupportedException, NoFileExtensionFoundException {
-        return deploy(fileName, fileInput, false, false);
-    }
 
-    @Transactional
-    public DeploymentWithDefinitions deploy(
-        String fileName,
-        ByteArrayInputStream fileInput,
-        boolean skipProcessLinksCopy,
-        boolean skipIsDeployableCheck
-    ) throws ProcessNotDeployableException, FileExtensionNotSupportedException, NoFileExtensionFoundException {
         denyAuthorization();
 
         if (fileName.endsWith(".bpmn")) {
             BpmnModelInstance bpmnModel = Bpmn.readModelFromStream(fileInput);
 
-            if (!isDeployable(bpmnModel) && !skipIsDeployableCheck) {
+            if (!isDeployable(bpmnModel)) {
                 throw new ProcessNotDeployableException(fileName);
             }
 
@@ -364,17 +335,11 @@ public class CamundaProcessService {
             setToPropagateBusinessKeyWhenCallActivityIsNew(bpmnModel);
             setTo60SecondsWhenTimerIsEmpty(bpmnModel);
 
-            var deploymentBuilder = repositoryService.createDeployment().addModelInstance(fileName, bpmnModel);
-
-            if (skipProcessLinksCopy) {
-                deploymentBuilder.source(CamundaDeploymentSource.SKIP_PROCESS_LINKS_COPY.toString());
-            }
-
-            return deploymentBuilder.deployWithResult();
+            repositoryService.createDeployment().addModelInstance(fileName, bpmnModel).deploy();
         } else if (fileName.endsWith(".dmn")) {
             DmnModelInstance dmnModel = Dmn.readModelFromStream(fileInput);
 
-            return repositoryService.createDeployment().addModelInstance(fileName, dmnModel).deployWithResult();
+            repositoryService.createDeployment().addModelInstance(fileName, dmnModel).deploy();
         } else {
             String[] splitFileName = fileName.split("\\.");
 
@@ -385,50 +350,6 @@ public class CamundaProcessService {
                 throw new NoFileExtensionFoundException(fileName);
             }
         }
-    }
-
-    @Transactional
-    public DeploymentWithDefinitions duplicateProcessDefinitionById(
-        String processDefinitionId,
-        boolean skipProcessLinksCopy,
-        boolean skipIsDeployableCheck
-    )
-        throws ProcessNotDeployableException, FileExtensionNotSupportedException, NoFileExtensionFoundException {
-        denyAuthorization();
-
-        ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
-            .processDefinitionId(processDefinitionId)
-            .singleResult();
-
-        if (processDefinition == null) {
-            throw new ProcessDefinitionNotFoundException("No process definition found for ID: " + processDefinitionId);
-        }
-
-        String deploymentId = processDefinition.getDeploymentId();
-
-        if (deploymentId == null) {
-            throw new ProcessDefinitionNotFoundException(
-                "No deployment ID found for process definition ID: " + processDefinitionId
-            );
-        }
-
-        List<String> resourceNames = repositoryService.getDeploymentResourceNames(deploymentId);
-
-        if (resourceNames.isEmpty()) {
-            throw new ProcessNotDeployableException("No resources found for deployment ID: " + deploymentId);
-        }
-
-        String fileName = resourceNames.get(0);
-
-        try (ByteArrayInputStream fileInput = new ByteArrayInputStream(
-            repositoryService.getResourceAsStream(deploymentId, fileName).readAllBytes())) {
-            return deploy(fileName, fileInput, skipProcessLinksCopy, skipIsDeployableCheck);
-
-        } catch (IOException e) {
-            logger.error("Error reading resource stream for file: {}", fileName, e);
-            throw new ProcessNotDeployableException("Error reading resource stream for file: " + fileName);
-        }
-
     }
 
     private void setProcessesExecutable(BpmnModelInstance bpmnModel) {

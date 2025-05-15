@@ -1,0 +1,24 @@
+{
+  "url": "http://localhost:8006/contactmomenten/api/v1/contactmomenten/4e517f3f-1f2c-41cb-bf11-75c86c7ca51b",
+  "vorigContactmoment": null,
+  "volgendContactmoment": null,
+  "bronorganisatie": "051845623",
+  "registratiedatum": "2019-08-24T14:15:22Z",
+  "kanaal": "MAIL",
+  "voorkeurskanaal": "string",
+  "voorkeurstaal": "str",
+  "tekst": "content-2",
+  "onderwerpLinks": [
+    "http://example.com"
+  ],
+  "initiatiefnemer": "gemeente",
+  "medewerker": "http://example.com",
+  "medewerkerIdentificatie": {
+    "identificatie": "string",
+    "achternaam": "Miller",
+    "voorletters": "string",
+    "voorvoegselAchternaam": "string"
+  },
+  "klantcontactmomenten": [],
+  "objectcontactmomenten": []
+}

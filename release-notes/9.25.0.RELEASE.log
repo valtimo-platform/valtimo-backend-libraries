@@ -1,0 +1,21 @@
+45dc634b - Merge branch 'rc/9.25.0.193.RC'
+f00cc4cc - Updated version to 9.25.0.RELEASE
+68258669 - help the poor developer who wants to contribute (#415)
+65760fd9 - Updated version to 9.25.0.193.RC-SNAPSHOT
+a0f689f5 - fix: boolean search queries on MYSQL (#395)
+9082b0aa - Bugfix/case search fixes (#394)
+b3db1f27 - Merge branch 'main' into development
+601bd5a9 - search field add title property (#392)
+4a61173a - #37574 extend document search possibilities (#383)
+bea16307 - Add order column to search field (#386)
+5efa6757 - Bugfix/fix integration tests (#385)
+20320795 - Bugfix: NullPointerException when GET /candidate-user (#387)
+21acd2a3 - Bugfix/exact json type post (#388)
+45f2bfbe - Improved performance of document definition list endpoint. (#384)
+44d2793c - Improve error handling and logging for unsupported JWT tokens. (#377)
+300a4b65 - Made changes so that disabled fields in formio forms are only ignored when submitted. (#382)
+800b65af - fix for search field not mapping properties to camelCase (#381)
+15fe5ef5 - fix for search field auto configuration (#378)
+ade9043b - fix: integration tests by removing the @SpringBootApplication 'exclude' lists (#376)
+fe353ba4 - Feature/disabled input forms filter (#363)
+d5878e16 - added shedlock to Valtimo (#374)

@@ -1,0 +1,12 @@
+4fa0f0d - Updated version to 9.13.0.RELEASE
+f97eb21 - Updated version to 9.13.0.120.RC-SNAPSHOT
+0b92bcb - Merge branch 'main' into development
+367b70d - #35375 Weergave takenlijst klopt niet (#203)
+b9cc97e - Fix lening aanvragen (#202)
+6a6adec - #34170 File-based configuratie process-document (#201)
+670ab70 - Removed demo endpoint (#200)
+3005215 - Bugfix/smart documents max file size (#199)
+e47b77a - bugfix Smart documents memory exceptions (#198)
+b97ec81 - #35343 Creating the validator can take up to 5 seconds on some environments. (#197)
+4b4ccce - #34170 Added file based ProcessDocument configuration (#196)
+6d82c2d - Merge branch 'main' into development

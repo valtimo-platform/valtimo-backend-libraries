@@ -26,15 +26,6 @@
     ],
     "queues": [
         {
-            "name": "valtimo-inbox",
-            "vhost": "/",
-            "durable": true,
-            "auto_delete": false,
-            "arguments": {
-                "x-queue-type": "stream"
-            }
-        },
-        {
             "name": "valtimo-audit",
             "vhost": "/",
             "durable": true,
@@ -60,14 +51,6 @@
             "source": "valtimo-events",
             "vhost": "/",
             "destination": "valtimo-audit",
-            "destination_type": "queue",
-            "routing_key": "",
-            "arguments": {}
-        },
-        {
-            "source": "valtimo-events",
-            "vhost": "/",
-            "destination": "valtimo-inbox",
             "destination_type": "queue",
             "routing_key": "",
             "arguments": {}

@@ -16,7 +16,7 @@
 
 package com.ritense.mail.wordpressmail.service
 
-import com.ritense.mail.wordpressmail.config.WordpressMailProperties
+import com.ritense.mail.wordpressmail.connector.WordpressMailConnectorProperties
 import com.ritense.mail.wordpressmail.domain.EmailSendRequest
 import com.ritense.mail.wordpressmail.domain.EmailSendResponse
 import com.ritense.mail.wordpressmail.domain.EmailTemplateResponse
@@ -28,7 +28,7 @@ import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 
 class WordpressMailClient(
-    private var wordpressMailProperties: WordpressMailProperties,
+    private var wordpressMailConnectorProperties: WordpressMailConnectorProperties,
     private val wordpressMailRestClientBuilder: RestClient.Builder
 ) {
 
@@ -67,10 +67,14 @@ class WordpressMailClient(
         return result
     }
 
+    fun setProperties(wordpressMailConnectorProperties: WordpressMailConnectorProperties) {
+        this.wordpressMailConnectorProperties = wordpressMailConnectorProperties
+    }
+
     private fun restClient(): RestClient {
         return wordpressMailRestClientBuilder
             .clone()
-            .baseUrl(wordpressMailProperties.url)
+            .baseUrl(wordpressMailConnectorProperties.url!!)
             .build()
     }
 

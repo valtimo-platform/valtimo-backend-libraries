@@ -20,12 +20,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.outbox.domain.BaseEvent
 
 class DocumentAssigned(documentId: String, documentContent: ObjectNode) : BaseEvent(
-    type = TYPE,
+    type = "com.ritense.valtimo.document.assigned",
     resultType = "com.ritense.document.domain.impl.JsonSchemaDocument",
     resultId = documentId,
     result = documentContent
-) {
-    companion object {
-        const val TYPE = "com.ritense.valtimo.document.assigned"
-    }
-}
+)

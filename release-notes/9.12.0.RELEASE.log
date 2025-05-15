@@ -1,0 +1,23 @@
+4737519 - Updated version to 9.12.0.RELEASE
+d0a6287 - Merge branch 'main' into rc/9.12.0.113.RC
+66fc37d - Cherry picked smart documents fix for max file size
+28121df - Updated version to 9.12.0.113.RC-SNAPSHOT
+839cc13 - Merge branch 'main' into development
+c1ced67 - #35377 [Ticket 34650] Document aangemaakt door: 'automatisch gegenereerd' (#195)
+5d42de0 - Merge branch 'main' into development
+19505c6 - Fixed a problem where the not all "FormFlowBean" beans are created. (#194)
+6e2833d - Fix: creating duplicate formLinks on redeployment (#192)
+a3e17d6 - #35020 Fix submissionData (#191)
+2a49f0c - Set up form flow test config for gzac app (#190)
+393f3ba - Fixed property to find form flow by for task (#189)
+85ece84 - #No-tp should send objects to objectsapi (#188)
+a60f424 - #35298 form flow back (#187)
+fa77350 - #34900 array nodes ondersteunen bij genereren document met smart documents (#186)
+ea350b2 - Feature/35017 endpoint retrieve task impl (#185)
+df8e570 - #35016 prefill form in form flow with previously submitted data (#180)
+1ec3007 - #35020 verwerken ingezonden formulier voor taken van type form flow (#184)
+580cb4e - Merge FormFlowResource's (#182)
+a7def25 - 35029 - Created endpoint to retrieve form flow state (#179)
+fd3fccc - Feature/add form flow mock endpoints (#181)
+982d6f4 - 34952 fixed equals inconsistencies: (#178)
+488402c - Merge branch 'main' into development

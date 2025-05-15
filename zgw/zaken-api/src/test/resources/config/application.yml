@@ -35,6 +35,8 @@ valtimo:
     authorization:
         zgwDocuments:
             enabled: true
+    connector-encryption:
+        secret: "abcdefghijklmnop"
     plugin:
         encryption-secret: "abcdefghijklmnop"
 

@@ -1,0 +1,31 @@
+ee79421a - Removed release notes
+c047d023 - Added release notes file
+572d423e - Merge branch 'rc/10.1.0.212.RC'
+a68fb154 - Updated version to 10.1.0.RELEASE
+27dd442c - Added release notes file
+56fe3cd2 - Merge branch 'rc/10.1.0.212.RC'
+85d38b39 - Updated version to 10.1.0.RELEASE
+d75e7525 - Bugfix: bring back /demo endpoints because they are still used by frontend (#471)
+955c451e - Merge remote-tracking branch 'origin/rc/10.1.0.212.RC' into rc/10.1.0.212.RC
+e1ee4011 - Fixed changeset with boolean default value
+84952f3b - Update README.md (#490)
+e78e1903 - Added release notes file
+1e64cf5f - Updated version to 10.1.0.RELEASE
+7cb6158f - solving merge conflicts
+63ea9970 - Update README.md
+033883c6 - Updated version to 10.1.0.212.RC-SNAPSHOT
+cde531f6 - created the object management module (#446)
+254e6302 - feat: 46732 notificaties api plugin base (#445)
+77f9c80d - Override versions for snakeyaml and netty-codec because of vulnerabilities (#444)
+3864fb32 - Feature/major10 43541 api endpoint to delete case list column (#440)
+a958b36e - Added postgres driver to milestones tests (#443)
+c6e42e6d - #45858 Form_flow_store_submission_data_when_moving_to_the_previous_step (#442)
+f0cead68 - feat: 46692 notificaties api module (#439)
+ea387d85 - Merged major 10 changed
+f56b066a - Merge branch 'main' into development
+1fee818c - #42596 FormFlowInstanceId available in step (#428)
+9ec97f6d - #42594: Prevent creation of duplicate form flow instances (#426)
+debcca7b - Feature/42594 form flow instance should be created at task open if not already exists (#421)
+f964a12c - Added log/notification that the application has started. (#423)
+f219e047 - Improve smartDocuments error logging (#422)
+7649ee03 - #42595 Form Flow bean for completing the task (#417)

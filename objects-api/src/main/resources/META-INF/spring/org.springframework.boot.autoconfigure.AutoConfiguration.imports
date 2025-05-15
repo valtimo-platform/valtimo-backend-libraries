@@ -1,0 +1,6 @@
+com.ritense.objectsapi.autoconfigure.ObjectsApiAutoConfiguration
+com.ritense.objectsapi.autoconfigure.ObjectsApiLiquibaseAutoConfiguration
+com.ritense.objectsapi.autoconfigure.ObjectsApiSecurityAutoConfiguration
+com.ritense.objectsapi.opennotificaties.OpenNotificatieAutoConfiguration
+com.ritense.objectsapi.productaanvraag.ProductAanvraagAutoConfiguration
+com.ritense.objectsapi.taak.TaakObjectAutoConfiguration
