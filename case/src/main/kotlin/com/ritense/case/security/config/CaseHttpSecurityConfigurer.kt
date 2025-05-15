@@ -93,7 +93,7 @@ class CaseHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(
                         antMatcher(
                             GET,
-                            "/api/management/v1/case/{caseDefinitionName}/{caseDefinitionVersion}/export"
+                            "/api/management/v1/case/{caseDefinitionName}/version/{caseDefinitionVersion}/export"
                         )
                     ).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(POST, "/api/management/v1/case/import")).hasAuthority(ADMIN)
