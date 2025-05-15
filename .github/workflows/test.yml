@@ -38,3 +38,4 @@ jobs:
               uses: actions/checkout@v4
             - name: Run Security Tests
               run: ./gradlew clean securityTesting
+
