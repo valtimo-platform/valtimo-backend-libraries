@@ -70,7 +70,7 @@ class WordpressMailClient(
     private fun restClient(): RestClient {
         return wordpressMailRestClientBuilder
             .clone()
-            .baseUrl(wordpressMailProperties.url)
+            .baseUrl(wordpressMailProperties.url!!)
             .build()
     }
 
