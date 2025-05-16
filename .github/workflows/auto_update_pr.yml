@@ -5,6 +5,14 @@ jobs:
         name: autoupdate
         runs-on: ubuntu-22.04
         steps:
+            - name: Generate token as GitHub App
+              id: generate_token
+              uses: tibdex/github-app-token@v2
+              with:
+                  app_id: ${{ secrets.VALTIMO_PLATFORM_APP_CLIENTID }}
+                  private_key: ${{ secrets.VALTIMO_PLATFORM_APP_PRIVATE_KEY }}
             - uses: docker://chinthakagodawita/autoupdate-action:v1
+              with:
+                  include_drafts: true
               env:
-                  GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+                  GITHUB_TOKEN: "${{ steps.generate_token.outputs.token }}"
