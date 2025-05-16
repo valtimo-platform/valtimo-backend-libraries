@@ -9,7 +9,7 @@ jobs:
               id: generate_token
               uses: tibdex/github-app-token@v2
               with:
-                  app_id: ${{ secrets.VALTIMO_PLATFORM_APP_CLIENTID }}
+                  app_id: ${{ secrets.VALTIMO_PLATFORM_APP_APPID }}
                   private_key: ${{ secrets.VALTIMO_PLATFORM_APP_PRIVATE_KEY }}
             - uses: docker://chinthakagodawita/autoupdate-action:v1
               with:
