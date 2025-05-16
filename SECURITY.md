@@ -1,5 +1,6 @@
 # Security Policy
 
+
 # Have you discovered a security issue in Valtimo? Let us know! 
 Ritense is strongly committed to responding to disclosed security-related issues.  Security is of the essence for all users of this software stack. Keeping software secure is complex job - we value all suggestions to keep the software secure. 
 
