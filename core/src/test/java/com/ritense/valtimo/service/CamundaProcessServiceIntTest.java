@@ -262,14 +262,6 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
             );
             return null;
         });
-        AuthorizationContext.runWithoutAuthorization(() -> {
-            camundaProcessService.deploy(
-                null,
-                "aProcessName.bpmn",
-                getFileStream("double.xml", processes)
-            );
-            return null;
-        });
     }
 
     @Test
