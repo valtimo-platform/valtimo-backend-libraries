@@ -1,0 +1,10 @@
+0d7bd19 - Updated version to 9.19.0.RELEASE
+1fdf164 - Merge branch 'main' into rc/9.19.0.158.RC
+4928f09 - Updated version to 9.19.0.158.RC-SNAPSHOT
+e6045c5 - feature 36775 - Fixed the search repository query (#289)
+27dff4e - added onBack to form flow steps (#288)
+0b63619 - feature 36775 - Added a new request param to /api/plugin/configuration (#282)
+3091d8b - Feature/36310 zaakobjecten (#286)
+611af74 - provide sql param type (#285)
+f082e9b - Added support for resource roles (#274)
+ccde31d - Rename bean name to make sure its unique (#280)

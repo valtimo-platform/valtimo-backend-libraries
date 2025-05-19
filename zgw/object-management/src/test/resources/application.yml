@@ -28,6 +28,8 @@ spring-actuator:
   password: test
 
 valtimo:
+    connector-encryption:
+        secret: "abcdefghijklmnop"
     plugin:
         encryption-secret: "abcdefghijklmnop"
 

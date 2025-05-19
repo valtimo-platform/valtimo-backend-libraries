@@ -1,0 +1,23 @@
+35bfebf3 - Updated version to 9.23.0.RELEASE
+632f99ed - Updated version to 9.23.0.1000.RC-SNAPSHOT
+5a99e93e - fixed issues with postgres and form flow by introducing separate repositories for mysql and postgres (#364)
+eaeda50c - Updated version to 9.23.0.187.RC-SNAPSHOT
+1d388535 - Merge branch 'main' into development
+c659e600 - Feature/unassign assignee from case (#354)
+ea9b929b - Bugfix: duplicate user in case assignee candidates (#353)
+b0d7f23f - feature 37421 - Assignee now showing in Audit log (#352)
+c25856e9 - Fix integration tests (#351)
+42fc0a50 - #37532 Add to SecurityConfigurer (#350)
+387b6484 - #37411 Set case assignee from process (#346)
+0dc44052 - #37531 get current user that has a full name (#349)
+ee20935c - Make form flow available for postgres (#343)
+0c231362 - Feature/37417 retrieve available users for case assignee (#344)
+ae3238e7 - Feature/37421 assign assignee (#339)
+c89ee1b9 - added config for postgres database on the valtimo app (#338)
+e19c52a4 - Added max gradle workers property. (#340)
+372e50f1 - feat: implement get notes endpoint (#337)
+da5f3782 - 37408 change to fullname (#336)
+536387c3 - #37531 API for adding notes (#333)
+dc91929d - Added catch for race condition (#335)
+2efd46d8 - #37409 Include assignee when retrieving one case (#334)
+4d8f49ba - Feature/allow nested keys in external form field (#330)

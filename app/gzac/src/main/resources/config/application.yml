@@ -105,21 +105,22 @@ spring:
         exclude:
             - org.springframework.boot.actuate.autoconfigure.metrics.web.tomcat.TomcatMetricsAutoConfiguration
     cloud:
-        function:
-            definition: kotlinInboxCloudEventConsumer
         stream:
+            function:
+                definition: createExternalCaseConsumer;completeTaskConsumer;updatedExternalIdConsumer;externalDomainMessageSupplier
             bindings:
-                kotlinInboxCloudEventConsumer-in-0:
-                    destination: valtimo-events
-                    group: valtimo-inbox
+                createExternalCaseConsumer-in-0:
+                    destination: create-external-case
                     binder: rabbit
-            rabbit:
-                bindings:
-                    kotlinInboxCloudEventConsumer-in-0:
-                        consumer:
-                            bindQueue: false
-                            declareExchange: false
-                            queueNameGroupOnly: true
+                    group: Q1
+                completeTaskConsumer-in-0:
+                    destination: complete-task
+                    binder: rabbit
+                    group: Q2
+                updatedExternalIdConsumer-in-0:
+                    destination: external-id-portal-case-updated
+                    binder: rabbit
+                    group: Q3
             binders:
                 rabbit:
                     type: rabbit
@@ -131,6 +132,7 @@ spring:
                                 username: guest
                                 password: guest
                                 virtual-host: /
+            source: externalDomainMessageSupplier
     rabbitmq:
         host: localhost
         port: 5672
@@ -208,6 +210,10 @@ valtimo:
                     - "*"
             paths:
                 - "/**"
+    openklant:
+        url: "http://localhost:8006"
+        clientId: "valtimo_client"
+        rsin: "051845623"
 
     genericTemplateName: "template-name"
     besluitDocumentRequired: true
@@ -238,9 +244,9 @@ valtimo:
         publisher:
             cloudevent-source: "com.ritense.gzac"
             rabbitmq:
-                exchange: valtimo-events
+                routing-key: valtimo-audit
                 delivery-timeout: "PT0.5S"
-            polling.rate: "PT1S"
+            polling.rate: "PT1M"
 
     authorization:
         dashboard:

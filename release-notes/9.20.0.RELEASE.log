@@ -1,0 +1,15 @@
+205a00f - Updated version to 9.20.0.RELEASE
+a2f1d0e - Updated version to 9.20.0.162.RC-SNAPSHOT
+6a5566f - Feature/37237 find by resource role (#299)
+3c07241 - Feature/contract deps (#298)
+ea0cc8e - Merge branch 'main' into development
+cb0e434 - Delete process link -endpoint (#297)
+75276ea - Load prefilled form for zaakobject (#295)
+084a436 - 37210 - Added auto configuration for missing plugin resources. (#296)
+dd8422d - Feature/36311 task form to zaakobject (#293)
+7dd9eb7 - Removed document-api dependency from klant (#294)
+842f98a - m2m service for retrieving documents (#292)
+a805c46 - Updated the Keycloak dependencies to resolve CVE-2022-1245 (#281)
+4a3e714 - Feature/36311 resolve zaakobject variables in form (#290)
+89e2968 - Merge branch 'main' into development
+562376a - Merge branch 'main' into development

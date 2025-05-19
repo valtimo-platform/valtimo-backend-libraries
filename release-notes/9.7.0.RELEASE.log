@@ -1,0 +1,22 @@
+7073041 - Updated version to 9.7.0.RELEASE
+c03d64d - Merge branch 'main' into rc/9.7.0.76.RC
+aba8af9 - catalogusUrl
+3cca481 - catalogusUrl
+5df967b - Updated version to 9.7.0.76.RC-SNAPSHOT
+1b01c26 - #no-TP remove liquibase.gradle (#131)
+2f09aac - Feature/main into dev (#132)
+a765e1d - #34292 Module voor form flow (#128)
+5b1a334 - Security test should permit GET /api/ping because its public (#129)
+fa15f26 - #33902 Add Catalogi URL to OpenZaakConnector (#125)
+983788c - Feature/33690 klant360 (#127)
+eb0a273 - Added a new /api/ping endpoint that always returns a HTTP status code 200, regardless of the authentication. (#126)
+8924f13 - #besluit document required default value false (#124)
+b942340 - Feature/33690 klant360 (#123)
+219a7d5 - #33903 zaakbesluiten (#117)
+f21b269 - Bugfix: repo's defined in @EnableJpaRepositories are not allowed to have the same base-package (#122)
+71ae8b4 - Bugfix/jpa managed entities (#119)
+85da9a4 -  TaakObjectListener improve logging and refactor (#121)
+b151fd6 - fix for invalid JWT parsing (when handling async code) (#120)
+a3b266c - Bugfix/mail is not exported (#118)
+73db066 - #33764: GZAC - claims van medewerker doorsturen naar Open Zaak (#116)
+ed43f73 - Configure default document roles + default form links (#115)

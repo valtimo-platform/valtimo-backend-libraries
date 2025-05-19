@@ -1,0 +1,6 @@
+services:
+    db:
+        ports:
+            - "3319:5432"
+        environment:
+            - POSTGRES_DB=haalcentraal-brp-test

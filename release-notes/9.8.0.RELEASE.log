@@ -1,0 +1,5 @@
+ab9d389 - Updated version to 9.8.0.RELEASE
+58aec5b - something went wrong resolving the merge conflicts
+f68dc19 - Merge branch 'main' into rc/9.8.0.85.RC
+85d52d1 - fix spring4shell (#162)
+0f3bba6 - Updated version to 9.8.0.85.RC-SNAPSHOT

@@ -88,6 +88,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -334,7 +335,11 @@ public class CamundaTaskService {
             } else {
                 final CamundaTask task = runWithoutAuthorization(() -> findTaskById(taskId));
                 requirePermission(task, COMPLETE);
-                formService.submitTaskForm(task.getId(), FormUtils.createTypedVariableMap(variables));
+                var mergedVariables = task.getVariables().entrySet().stream()
+                    .filter(entry -> variables.containsKey(entry.getKey()))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                mergeVariables(mergedVariables, variables);
+                formService.submitTaskForm(task.getId(), FormUtils.createTypedVariableMap(mergedVariables));
                 outboxService.send(() -> new TaskCompleted(taskId, objectMapper.valueToTree(task)));
             }
         } catch (FormFieldValidationException ex) {
@@ -594,6 +599,22 @@ public class CamundaTaskService {
                 businessKey
             )
         );
+    }
+
+    private Map<String, Object> mergeVariables(Map<String, Object> baseVariables, Map<String, Object> setVariables) {
+        setVariables.forEach((key, setValue) -> {
+            var baseValue = baseVariables.get(key);
+            if (baseValue instanceof Map baseValueMap && setValue instanceof Map setValueMap) {
+                if (!(baseValueMap instanceof HashMap)) {
+                    baseValueMap = new HashMap(baseValueMap);
+                    baseVariables.put(key, baseValueMap);
+                }
+                mergeVariables(baseValueMap, setValueMap);
+            } else {
+                baseVariables.put(key, setValue);
+            }
+        });
+        return baseVariables;
     }
 
     private void publishTaskDueDateSetEvent(CamundaTask task, LocalDateTime formerDueDate, LocalDateTime newDueDate) {

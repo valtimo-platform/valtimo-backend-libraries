@@ -1,0 +1,6 @@
+services:
+    db:
+        ports:
+            - "3318:5432"
+        environment:
+            - POSTGRES_DB=besluit-test

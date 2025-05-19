@@ -20,14 +20,20 @@ services:
 #   url: jdbc:mysql://localhost:3302/form-test-link
 #   url: jdbc:mysql://localhost:3303/document-test
 #   url: jdbc:mysql://localhost:3304/core-test
+#   url: jdbc:mysql://localhost:3305/connector-test
 #   url: jdbc:mysql://localhost:3307/audit-test
+#   url: jdbc:mysql://localhost:3308/objects-api-test
+#   url: jdbc:mysql://localhost:3309/openzaak-test
 #   url: jdbc:mysql://localhost:3310/process-document-test
 #   url: jdbc:mysql://localhost:3311/s3-resource-test
 #   url: jdbc:mysql://localhost:3312/reporting-cloud-test
 #   url: jdbc:mysql://localhost:3313/milestones-test
 #   url: jdbc:mysql://localhost:3314/mail-test
+#   url: jdbc:mysql://localhost:3315/contactmoment-test
 #   url: jdbc:mysql://localhost:3316/wordpress-mail-test
 #   url: jdbc:mysql://localhost:3317/smartdocuments-test
+#   url: jdbc:mysql://localhost:3318/besluit-test
+#   url: jdbc:mysql://localhost:3319/haalcentraal-brp-test
 #   url: jdbc:mysql://localhost:3320/form-flow-valtimo-test
 #   url: jdbc:mysql://localhost:3321/form-flow-test
 #   url: jdbc:mysql://localhost:3322/plugin-test
@@ -35,6 +41,7 @@ services:
 #   url: jdbc:mysql://localhost:3324/documenten-api-test
 #   url: jdbc:mysql://localhost:3325/zaken-api-test
 #   url: jdbc:mysql://localhost:3326/notes-test
+#   url: jdbc:mysql://localhost:3327/klant-test
 #   url: jdbc:mysql://localhost:3328/objecten-api-authentication-test
 #   url: jdbc:mysql://localhost:3329/objecttypen-api-test
 #   url: jdbc:mysql://localhost:3330/objecten-api-test
@@ -62,5 +69,4 @@ services:
 #   url: jdbc:mysql://localhost:3354/keycloak-iam-test
 #   url: jdbc:mysql://localhost:3355/logging-test
 #   url: jdbc:mysql://localhost:3356/process-link-url-test
-#   url: localhost:55672 <--outbox rabbitmq
-#   url: localhost:55673 <--inbox rabbitmq
+#   url: localhost:55672 <--rabbitmq

@@ -35,6 +35,7 @@ import org.camunda.bpm.engine.repository.DecisionDefinition;
 import org.camunda.bpm.model.bpmn.Bpmn;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
 import org.camunda.bpm.model.bpmn.instance.Process;
+import org.camunda.bpm.model.bpmn.instance.ServiceTask;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -86,6 +87,10 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
                 .findFirst()
                 .orElseThrow();
             assertThat(processModel.isExecutable()).isTrue();
+            ServiceTask serviceTask = model.getModelElementsByType(ServiceTask.class).stream()
+                .findFirst()
+                .orElseThrow();
+            assertThat(serviceTask.getCamundaExpression()).isEqualTo("${null}");
         }
     }
 
