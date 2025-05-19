@@ -54,7 +54,7 @@ class RabbitMessagePublisherIntTest : BaseIntegrationTest() {
     @Nested
     @ActiveProfiles("exchange")
     inner class Exchange @Autowired constructor(
-        val springCloudMessagePublisher: RabbitMessagePublisher,
+        val messagePublisher: RabbitMessagePublisher,
         val rabbitTemplate: RabbitTemplate,
         val configurationProperties: RabbitOutboxConfigurationProperties,
         val rabbitAdmin: RabbitAdmin
@@ -67,7 +67,7 @@ class RabbitMessagePublisherIntTest : BaseIntegrationTest() {
             rabbitAdmin.purgeQueue("valtimo-audit")
 
             val uuid = UUID.randomUUID().toString()
-            springCloudMessagePublisher.publish(
+            messagePublisher.publish(
                 OutboxMessage(message = uuid)
             )
 
@@ -79,13 +79,13 @@ class RabbitMessagePublisherIntTest : BaseIntegrationTest() {
     @Nested
     @ActiveProfiles("invalidrouting")
     inner class InvalidRouting @Autowired constructor(
-        val springCloudMessagePublisher: RabbitMessagePublisher
+        val messagePublisher: RabbitMessagePublisher
     ) : BaseIntegrationTest() {
         @Test
         fun `should not send message to rabbitmq`() {
             val uuid = UUID.randomUUID().toString()
             val ex = assertThrows<MessagePublishingFailed> {
-                springCloudMessagePublisher.publish(
+                messagePublisher.publish(
                     OutboxMessage(message = uuid)
                 )
             }

@@ -20,26 +20,22 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.valtimo.contract.json.MapperSingleton
-import java.time.LocalDate
-import java.util.UUID
 import org.assertj.core.api.Assertions
 import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.engine.impl.context.Context
-import org.camunda.bpm.engine.impl.interceptor.CommandContext
-import org.camunda.bpm.engine.variable.impl.value.ObjectValueImpl
-import org.camunda.bpm.engine.variable.impl.value.builder.SerializedObjectValueBuilderImpl
-import org.camunda.community.mockito.delegate.DelegateCaseVariableInstanceFake
 import org.camunda.bpm.engine.history.HistoricProcessInstance
 import org.camunda.bpm.engine.history.HistoricVariableInstance
+import org.camunda.bpm.engine.impl.context.Context
+import org.camunda.bpm.engine.impl.interceptor.CommandContext
 import org.camunda.community.mockito.delegate.DelegateTaskFake
-import org.camunda.community.mockito.process.ProcessInstanceFake
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.time.LocalDate
+import java.util.UUID
 
 internal class ProcessVariableValueResolverTest {
     private val runtimeService: RuntimeService = mock(defaultAnswer = RETURNS_DEEP_STUBS)

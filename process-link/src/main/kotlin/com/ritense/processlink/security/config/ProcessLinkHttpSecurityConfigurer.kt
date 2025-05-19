@@ -37,6 +37,8 @@ class ProcessLinkHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(antMatcher(PUT, PROCESS_LINK_URL)).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "$PROCESS_LINK_URL/export")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(DELETE, "$PROCESS_LINK_URL/{processLinkId}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/v1/process/definition/deployment/process-link"))
+                    .hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "/api/v2/process-link/task/{taskId}")).authenticated()
                     .requestMatchers(antMatcher(GET, "/api/v1/process-definition/{processDefinitionId}/start-form"))
                     .authenticated()

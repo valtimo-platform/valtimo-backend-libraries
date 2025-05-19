@@ -17,11 +17,12 @@
 package com.ritense.processlink.service
 
 import com.ritense.processlink.repository.ProcessLinkRepository
+import com.ritense.valtimo.camunda.domain.CamundaDeploymentSource
 import com.ritense.valtimo.event.ProcessDefinitionDeployedEvent
-import java.util.UUID
 import mu.KotlinLogging
 import org.camunda.bpm.model.bpmn.instance.FlowNode
 import org.springframework.context.event.EventListener
+import java.util.UUID
 
 class CopyProcessLinkOnProcessDeploymentListener(
     private val processLinkRepository: ProcessLinkRepository
@@ -29,6 +30,10 @@ class CopyProcessLinkOnProcessDeploymentListener(
 
     @EventListener(ProcessDefinitionDeployedEvent::class)
     fun copyProcessLinks(event: ProcessDefinitionDeployedEvent) {
+        if (event.source == CamundaDeploymentSource.SKIP_PROCESS_LINKS_COPY.toString()) {
+            return
+        }
+
         val previousProcessDefinitionId = event.previousProcessDefinitionId
 
         if (previousProcessDefinitionId != null) {
