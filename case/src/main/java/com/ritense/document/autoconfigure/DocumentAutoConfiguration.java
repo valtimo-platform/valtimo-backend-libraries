@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.config.DocumentSpringContextHelper;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
-import com.ritense.document.domain.impl.listener.ApplicationReadyEventListenerImpl;
 import com.ritense.document.domain.impl.listener.DocumentRelatedFileSubmittedEventListenerImpl;
 import com.ritense.document.domain.impl.listener.RelatedJsonSchemaDocumentAvailableEventListenerImpl;
 import com.ritense.document.domain.impl.sequence.JsonSchemaDocumentDefinitionSequenceRecord;
@@ -183,14 +182,6 @@ public class DocumentAutoConfiguration {
             outboxService,
             objectMapper
         );
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(ApplicationReadyEventListenerImpl.class)
-    public ApplicationReadyEventListenerImpl applicationReadyEventListenerImpl(
-        final DocumentDefinitionService documentDefinitionService
-    ) {
-        return new ApplicationReadyEventListenerImpl(documentDefinitionService);
     }
 
     @Bean

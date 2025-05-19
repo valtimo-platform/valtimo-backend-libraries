@@ -26,6 +26,7 @@ import com.ritense.valtimo.camunda.authorization.CamundaIdentityLinkSpecificatio
 import com.ritense.valtimo.camunda.authorization.CamundaProcessDefinitionSpecificationFactory
 import com.ritense.valtimo.camunda.authorization.CamundaTaskSpecificationFactory
 import com.ritense.valtimo.camunda.repository.CamundaBytearrayRepository
+import com.ritense.valtimo.camunda.repository.CamundaDecisionDefinitionRepository
 import com.ritense.valtimo.camunda.repository.CamundaExecutionRepository
 import com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceRepository
 import com.ritense.valtimo.camunda.repository.CamundaHistoricTaskInstanceRepository
@@ -70,6 +71,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
         CamundaHistoricVariableInstanceRepository::class,
         CamundaIdentityLinkRepository::class,
         CamundaProcessDefinitionRepository::class,
+        CamundaDecisionDefinitionRepository::class,
         CamundaTaskRepository::class,
         CamundaVariableInstanceRepository::class
     ]
@@ -104,11 +106,13 @@ class ValtimoCamundaAutoConfiguration {
     @ConditionalOnMissingBean(CamundaRepositoryService::class)
     fun camundaRepositoryService(
         camundaProcessDefinitionRepository: CamundaProcessDefinitionRepository,
+        camundaDecisionDefinitionRepository: CamundaDecisionDefinitionRepository,
         authorizationService: AuthorizationService,
         repositoryService: RepositoryService,
     ): CamundaRepositoryService {
         return CamundaRepositoryService(
             camundaProcessDefinitionRepository,
+            camundaDecisionDefinitionRepository,
             authorizationService,
             repositoryService
         )

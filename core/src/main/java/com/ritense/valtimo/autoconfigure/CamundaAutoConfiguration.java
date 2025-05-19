@@ -88,7 +88,7 @@ public class CamundaAutoConfiguration {
         final ProcessDefinitionDeployedEventPublisher processDefinitionDeployedEventPublisher,
         final CamundaBpmProperties camundaBpmProperties
     ) {
-        camundaBpmProperties.setAutoDeploymentEnabled(false); // TODO: Deployment for BPMNs and DMNs. What to do with BPMN and DMN files located outside a case folder?
+        camundaBpmProperties.setAutoDeploymentEnabled(false);
         return new CamundaConfiguration(valtimoSchemaOperationsCommand, repositoryService, processDefinitionDeployedEventPublisher);
     }
 
