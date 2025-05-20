@@ -33,6 +33,7 @@ import java.util.Objects;
 import java.util.Optional;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.repository.DecisionDefinition;
+import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.model.bpmn.Bpmn;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
 import org.camunda.bpm.model.bpmn.instance.Process;
@@ -70,8 +71,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
             camundaProcessService.deploy(
                 CaseDefinitionId.of("deployedProcess", "1.0.0"),
                 "aProcessName.bpmn",
-                new ByteArrayInputStream(processes.stream().filter(process -> Objects.equals(process.getFilename(), "shouldDeploy.xml"))
-                    .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes())
+                getFileStream("shouldDeploy.xml", processes)
             );
             return null;
         });
@@ -107,8 +107,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
             camundaProcessService.deploy(
                 CaseDefinitionId.of("deployedProcess", "1.0.0"),
                 "aDmnName.dmn",
-                new ByteArrayInputStream(tables.stream().filter(table -> Objects.equals(table.getFilename(), "sampleDecisionTable.xml"))
-                    .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes())
+                getFileStream("sampleDecisionTable.xml", tables)
             );
             return null;
         });
@@ -125,8 +124,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
                 camundaProcessService.deploy(
                     CaseDefinitionId.of("deployedProcess", "1.0.0"),
                     textFileName,
-                    new ByteArrayInputStream(testFiles.stream().filter(testFile -> Objects.equals(testFile.getFilename(), "sampleTextFile.txt"))
-                            .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes())
+                    getFileStream("sampleTextFile.txt", testFiles)
                 );
                 return null;
             }
@@ -147,8 +145,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
                 camundaProcessService.deploy(
                     CaseDefinitionId.of("deployedProcess", "1.0.0"),
                     sampleFileName,
-                    new ByteArrayInputStream(testFiles.stream().filter(testFile -> Objects.equals(testFile.getFilename(), "sampleTestFile"))
-                            .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes())
+                    getFileStream("sampleTextFile", testFiles)
                 );
                 return null;
                 }
@@ -163,8 +160,8 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
     @Test
     void shouldNotUpdateExistingSystemProcess() throws IOException {
         List<Resource> processes = List.of(bpmn);
-        var systemProcessModel = Bpmn.readModelFromStream(new ByteArrayInputStream(processes.stream().filter(process -> Objects.equals(process.getFilename(), "systemProcess.xml"))
-                .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes()));
+        var stream = getFileStream("systemProcess.xml", processes);
+        var systemProcessModel = Bpmn.readModelFromStream(stream);
         repositoryService.createDeployment().addModelInstance("systemProcess.bpmn", systemProcessModel).deploy();
         List<CamundaProcessDefinition> definitions = AuthorizationContext
             .runWithoutAuthorization(() -> camundaProcessService.getDeployedDefinitions());
@@ -182,5 +179,118 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
         ));
         Assertions.assertFalse(definitions.stream().anyMatch(processDefinition -> processDefinition.getKey().equals("firstProcess")));
         Assertions.assertTrue(definitions.stream().anyMatch(processDefinition -> processDefinition.getKey().equals("secondProcess")));
+    }
+
+    @Test
+    void shouldDeploySameFileForDifferentCasedefinitions() throws IOException {
+        List<Resource> processes = List.of(bpmn);
+        AuthorizationContext.runWithoutAuthorization(() -> {
+            camundaProcessService.deploy(
+                CaseDefinitionId.of("some-case-definition-1", "1.0.0"),
+                "aProcessName.bpmn",
+                getFileStream("shouldDeploy.xml", processes)
+            );
+            return null;
+        });
+        AuthorizationContext.runWithoutAuthorization(() -> {
+            camundaProcessService.deploy(
+                CaseDefinitionId.of("some-case-definition-2", "1.0.0"),
+                "aProcessName.bpmn",
+                getFileStream("shouldDeploy.xml", processes)
+            );
+            return null;
+        });
+    }
+
+    @Test
+    void whenDeployingSameFileShouldNotDeployAgain() throws IOException {
+        List<Resource> processes = List.of(bpmn);
+        AuthorizationContext.runWithoutAuthorization(() -> {
+            camundaProcessService.deploy(
+                CaseDefinitionId.of("some-case-definition-1", "1.0.0"),
+                "aProcessName.bpmn",
+                getFileStream("uniqueProcess.xml", processes)
+            );
+            return null;
+        });
+        AuthorizationContext.runWithoutAuthorization(() -> {
+            camundaProcessService.deploy(
+                CaseDefinitionId.of("some-case-definition-1", "1.0.0"),
+                "aProcessName.bpmn",
+                getFileStream("uniqueProcess.xml", processes)
+            );
+            return null;
+        });
+
+        List<ProcessDefinition> processDefinitions = repositoryService
+            .createProcessDefinitionQuery()
+            .processDefinitionKey("uniqueProcess")
+            .list();
+
+        Assertions.assertEquals(1, processDefinitions.size());
+    }
+
+    @Test
+    void shouldDeploySameFileForCasedefinitionAndUnlinked() throws IOException {
+        List<Resource> processes = List.of(bpmn);
+        AuthorizationContext.runWithoutAuthorization(() -> {
+            camundaProcessService.deploy(
+                CaseDefinitionId.of("some-case-definition-1", "1.0.0"),
+                "aProcessName.bpmn",
+                getFileStream("shouldDeploy.xml", processes)
+            );
+            return null;
+        });
+        AuthorizationContext.runWithoutAuthorization(() -> {
+            camundaProcessService.deploy(
+                null,
+                "aProcessName.bpmn",
+                getFileStream("shouldDeploy.xml", processes)
+            );
+            return null;
+        });
+    }
+
+    @Test
+    void shouldDeployFileWithMultipleProcessDefinitions() throws IOException {
+        List<Resource> processes = List.of(bpmn);
+        AuthorizationContext.runWithoutAuthorization(() -> {
+            camundaProcessService.deploy(
+                CaseDefinitionId.of("some-case-definition-1", "1.0.0"),
+                "aProcessName.bpmn",
+                getFileStream("double.xml", processes)
+            );
+            return null;
+        });
+    }
+
+    @Test
+    void shouldDeployDifferentProcessesWithSameFilenameForSameCasedefinitions() throws IOException {
+        List<Resource> processes = List.of(bpmn);
+        AuthorizationContext.runWithoutAuthorization(() -> {
+            camundaProcessService.deploy(
+                CaseDefinitionId.of("some-case-definition-1", "1.0.0"),
+                "aProcessName.bpmn",
+                getFileStream("shouldDeploy.xml", processes)
+            );
+            return null;
+        });
+        AuthorizationContext.runWithoutAuthorization(() -> {
+            camundaProcessService.deploy(
+                CaseDefinitionId.of("some-case-definition-1", "1.0.0"),
+                "aProcessName.bpmn",
+                getFileStream("uniqueProcess.xml", processes)
+            );
+            return null;
+        });
+    }
+
+    private ByteArrayInputStream getFileStream(String filename, List<Resource> source) throws IOException {
+        return new ByteArrayInputStream(source.stream()
+            .filter(resource -> Objects.equals(resource.getFilename(), filename))
+            .findFirst()
+            .orElseGet(() -> new ByteArrayResource(new byte[]{}))
+            .getInputStream()
+            .readAllBytes());
     }
 }
