@@ -525,21 +525,7 @@ public class CamundaProcessService {
         CaseDefinitionId caseDefinitionId,
         BpmnModelInstance bpmnModel
     ) throws ProcessNotDeployableException {
-        String processDefinitionKey = bpmnModel.getModelElementsByType(Process.class).stream()
-            .map(Process::getId)
-            .findFirst().orElseThrow();
-
-        var query = repositoryService
-            .createProcessDefinitionQuery()
-            .processDefinitionKey(processDefinitionKey)
-            .latestVersion()
-            .active();
-        if (caseDefinitionId != null) {
-            query = query.versionTag(CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId);
-        } else {
-            query = query.versionTag("");
-        }
-        ProcessDefinition latestProcessDefinition = query.singleResult();
+        ProcessDefinition latestProcessDefinition = getExistingProcessForFile(caseDefinitionId, bpmnModel);
 
         if (latestProcessDefinition != null) {
             try {
@@ -560,10 +546,31 @@ public class CamundaProcessService {
                 outputStream.close();
 
             } catch (IOException e) {
-                throw new ProcessNotDeployableException(caseDefinitionId + " and process: " + processDefinitionKey);
+                throw new ProcessNotDeployableException(caseDefinitionId + " and process: " + latestProcessDefinition.getKey());
             }
         }
         return false;
+    }
+
+    public ProcessDefinition getExistingProcessForFile(
+        CaseDefinitionId caseDefinitionId,
+        BpmnModelInstance bpmnModel
+    ) {
+        String processDefinitionKey = bpmnModel.getModelElementsByType(Process.class).stream()
+            .map(Process::getId)
+            .findFirst().orElseThrow();
+
+        var query = repositoryService
+            .createProcessDefinitionQuery()
+            .processDefinitionKey(processDefinitionKey)
+            .latestVersion()
+            .active();
+        if (caseDefinitionId != null) {
+            query = query.versionTag(CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId);
+        } else {
+            query = query.withoutVersionTag();
+        }
+        return query.singleResult();
     }
 
     private void setProcessesVersionTag(BpmnModelInstance bpmnModel, CaseDefinitionId caseDefinitionId) {
