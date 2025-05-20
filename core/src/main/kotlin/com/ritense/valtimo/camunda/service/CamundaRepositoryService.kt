@@ -27,8 +27,9 @@ import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionRepository
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byId
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersion
+import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersionTag
+import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byNotLinkedToCaseDefinition
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byVersion
-import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byVersionTag
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.model.bpmn.instance.CallActivity
@@ -119,9 +120,10 @@ class CamundaRepositoryService(
                 val spec = byKey(it.calledElement)
                 when (it.camundaCalledElementBinding) {
                     "version" -> findProcessDefinition(spec.and(byVersion(it.camundaCalledElementVersion.toInt())))
-                    "versionTag" -> findProcessDefinition(spec.and(byVersionTag(it.camundaCalledElementVersionTag)))
+                    "versionTag" -> findProcessDefinition(spec.and(byLatestVersionTag(it.camundaCalledElementVersionTag)))
+                        ?: findProcessDefinition(spec.and(byNotLinkedToCaseDefinition()))
                     "deployment" -> null
-                    else -> findProcessDefinition(spec.and(byLatestVersion()))
+                    else /* latest */ -> findProcessDefinition(spec.and(byLatestVersion())) // TODO: Support case definition version
                 }
             }
             .filter { found -> !linkedProcessDefinitions.any { linked -> linked.id == found.id  } }

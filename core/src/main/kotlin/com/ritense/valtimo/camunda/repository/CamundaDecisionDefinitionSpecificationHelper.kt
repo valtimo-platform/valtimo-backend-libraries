@@ -17,6 +17,8 @@
 package com.ritense.valtimo.camunda.repository
 
 import com.ritense.valtimo.camunda.domain.CamundaDecisionDefinition
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.valtimo.service.CamundaProcessService.CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX
 import org.springframework.data.jpa.domain.Specification
 
 class CamundaDecisionDefinitionSpecificationHelper {
@@ -54,8 +56,12 @@ class CamundaDecisionDefinitionSpecificationHelper {
         }
 
         @JvmStatic
-        fun byVersionTag(versionTag: String) = Specification<CamundaDecisionDefinition> { root, _, cb ->
-            cb.equal(root.get<Any>(VERSION_TAG), versionTag)
+        fun byVersionTag(versionTag: String?) = Specification<CamundaDecisionDefinition> { root, _, cb ->
+            if (versionTag == null) {
+                root.get<Any>(VERSION_TAG).isNull
+            } else {
+                cb.equal(root.get<Any>(VERSION_TAG), versionTag)
+            }
         }
 
         @JvmStatic
@@ -66,6 +72,37 @@ class CamundaDecisionDefinitionSpecificationHelper {
             sub.where(
                 cb.and(
                     cb.equal(subRoot.get<Any>(KEY), root.get<Any>(KEY)),
+                    cb.or(
+                        cb.equal(subRoot.get<Any>(TENANT_ID), root.get<Any>(TENANT_ID)),
+                        cb.and(subRoot.get<Any>(TENANT_ID).isNull, root.get<Any>(TENANT_ID).isNull)
+                    )
+                )
+            )
+            sub.groupBy(subRoot.get<Any>(TENANT_ID), subRoot.get<Any>(KEY))
+            cb.equal(root.get<Any>(VERSION), sub)
+        }
+
+        @JvmStatic
+        fun byLinkedToCaseDefinitionId(caseDefinitionId: CaseDefinitionId) = Specification { root, query, cb ->
+            byVersionTag(CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId)
+                .toPredicate(root, query, cb)
+        }
+
+        @JvmStatic
+        fun byLatestVersionAndLinkedToCaseDefinitionId(caseDefinitionId: CaseDefinitionId) = Specification { root, query, cb ->
+            byLatestVersionTag(CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId)
+                .toPredicate(root, query, cb)
+        }
+
+        @JvmStatic
+        fun byLatestVersionTag(versionTag: String?) = Specification { root, query, cb ->
+            val sub = query.subquery(Long::class.java)
+            val subRoot = sub.from(CamundaDecisionDefinition::class.java)
+            sub.select(cb.max(subRoot.get(VERSION)))
+            sub.where(
+                cb.and(
+                    cb.equal(subRoot.get<Any>(KEY), root.get<Any>(KEY)),
+                    byVersionTag(versionTag).toPredicate(root, query, cb),
                     cb.or(
                         cb.equal(subRoot.get<Any>(TENANT_ID), root.get<Any>(TENANT_ID)),
                         cb.and(subRoot.get<Any>(TENANT_ID).isNull, root.get<Any>(TENANT_ID).isNull)

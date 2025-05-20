@@ -16,9 +16,9 @@
 
 package com.ritense.valtimo.service;
 
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ritense.authorization.AuthorizationContext;
 import com.ritense.valtimo.BaseIntegrationTest;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.contract.case_.CaseDefinitionId;
@@ -67,7 +67,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
         var latestDeploymentId = findLatestProcessDefinitionDeployedProcess("deployedProcess")
             .map(CamundaProcessDefinition::getDeploymentId);
         List<Resource> processes = List.of(bpmn);
-        AuthorizationContext.runWithoutAuthorization(() -> {
+        runWithoutAuthorization(() -> {
             camundaProcessService.deploy(
                 CaseDefinitionId.of("deployedProcess", "1.0.0"),
                 "aProcessName.bpmn",
@@ -93,8 +93,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
 
     @NotNull
     private Optional<CamundaProcessDefinition> findLatestProcessDefinitionDeployedProcess(String processName) {
-        return AuthorizationContext
-            .runWithoutAuthorization(() -> camundaProcessService.getDeployedDefinitions())
+        return runWithoutAuthorization(() -> camundaProcessService.getDeployedDefinitions())
             .stream()
             .filter(processDefinition -> processDefinition.getKey().equals(processName))
             .findFirst();
@@ -103,7 +102,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
     @Test
     void shouldDeployNewDmn() {
         List<Resource> tables = List.of(dmn);
-        AuthorizationContext.runWithoutAuthorization(() -> {
+        runWithoutAuthorization(() -> {
             camundaProcessService.deploy(
                 CaseDefinitionId.of("deployedProcess", "1.0.0"),
                 "aDmnName.dmn",
@@ -120,7 +119,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
         List<Resource> testFiles = List.of(test);
         String textFileName = "aTextFile.txt";
         Assertions.assertThrows(FileExtensionNotSupportedException.class,
-            () -> AuthorizationContext.runWithoutAuthorization(() -> {
+            () -> runWithoutAuthorization(() -> {
                 camundaProcessService.deploy(
                     CaseDefinitionId.of("deployedProcess", "1.0.0"),
                     textFileName,
@@ -130,8 +129,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
             }
         ));
         List<DecisionDefinition> dmnDefinitions = repositoryService.createDecisionDefinitionQuery().list();
-        List<CamundaProcessDefinition> bpmnDefinitions = AuthorizationContext
-                .runWithoutAuthorization(() -> camundaProcessService.getDeployedDefinitions());
+        List<CamundaProcessDefinition> bpmnDefinitions = runWithoutAuthorization(() -> camundaProcessService.getDeployedDefinitions());
         Assertions.assertFalse(dmnDefinitions.stream().anyMatch(dmnDefinition -> dmnDefinition.getResourceName().equals(textFileName)));
         Assertions.assertFalse(bpmnDefinitions.stream().anyMatch(bpmnDefinition -> bpmnDefinition.getResourceName().equals(textFileName)));
     }
@@ -141,7 +139,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
         List<Resource> testFiles = List.of(test);
         String sampleFileName = "aFileName";
         Assertions.assertThrows(NoFileExtensionFoundException.class,
-            () -> AuthorizationContext.runWithoutAuthorization(() -> {
+            () -> runWithoutAuthorization(() -> {
                 camundaProcessService.deploy(
                     CaseDefinitionId.of("deployedProcess", "1.0.0"),
                     sampleFileName,
@@ -151,8 +149,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
                 }
             ));
         List<DecisionDefinition> dmnDefinitions = repositoryService.createDecisionDefinitionQuery().list();
-        List<CamundaProcessDefinition> bpmnDefinitions = AuthorizationContext
-                .runWithoutAuthorization(() -> camundaProcessService.getDeployedDefinitions());
+        List<CamundaProcessDefinition> bpmnDefinitions = runWithoutAuthorization(() -> camundaProcessService.getDeployedDefinitions());
         Assertions.assertFalse(dmnDefinitions.stream().anyMatch(dmnDefinition -> dmnDefinition.getResourceName().equals(sampleFileName)));
         Assertions.assertFalse(bpmnDefinitions.stream().anyMatch(bpmnDefinition -> bpmnDefinition.getResourceName().equals(sampleFileName)));
     }
@@ -163,12 +160,11 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
         var stream = getFileStream("systemProcess.xml", processes);
         var systemProcessModel = Bpmn.readModelFromStream(stream);
         repositoryService.createDeployment().addModelInstance("systemProcess.bpmn", systemProcessModel).deploy();
-        List<CamundaProcessDefinition> definitions = AuthorizationContext
-            .runWithoutAuthorization(() -> camundaProcessService.getDeployedDefinitions());
+        List<CamundaProcessDefinition> definitions = runWithoutAuthorization(() -> camundaProcessService.getDeployedDefinitions());
         Assertions.assertTrue(definitions.stream().anyMatch(processDefinition -> processDefinition.getKey().equals("secondProcess")));
 
         Assertions.assertThrows(ProcessNotDeployableException.class,
-            () -> AuthorizationContext.runWithoutAuthorization(() -> {
+            () -> runWithoutAuthorization(() -> {
                 camundaProcessService.deploy(
                     CaseDefinitionId.of("deployedProcess", "1.0.0"),
                     "aProcessName.bpmn",
@@ -184,7 +180,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
     @Test
     void shouldDeploySameFileForDifferentCasedefinitions() throws IOException {
         List<Resource> processes = List.of(bpmn);
-        AuthorizationContext.runWithoutAuthorization(() -> {
+        runWithoutAuthorization(() -> {
             camundaProcessService.deploy(
                 CaseDefinitionId.of("some-case-definition-1", "1.0.0"),
                 "aProcessName.bpmn",
@@ -192,7 +188,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
             );
             return null;
         });
-        AuthorizationContext.runWithoutAuthorization(() -> {
+        runWithoutAuthorization(() -> {
             camundaProcessService.deploy(
                 CaseDefinitionId.of("some-case-definition-2", "1.0.0"),
                 "aProcessName.bpmn",
@@ -205,7 +201,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
     @Test
     void whenDeployingSameFileShouldNotDeployAgain() throws IOException {
         List<Resource> processes = List.of(bpmn);
-        AuthorizationContext.runWithoutAuthorization(() -> {
+        runWithoutAuthorization(() -> {
             camundaProcessService.deploy(
                 CaseDefinitionId.of("some-case-definition-1", "1.0.0"),
                 "aProcessName.bpmn",
@@ -213,7 +209,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
             );
             return null;
         });
-        AuthorizationContext.runWithoutAuthorization(() -> {
+        runWithoutAuthorization(() -> {
             camundaProcessService.deploy(
                 CaseDefinitionId.of("some-case-definition-1", "1.0.0"),
                 "aProcessName.bpmn",
@@ -233,7 +229,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
     @Test
     void shouldDeploySameFileForCasedefinitionAndUnlinked() throws IOException {
         List<Resource> processes = List.of(bpmn);
-        AuthorizationContext.runWithoutAuthorization(() -> {
+        runWithoutAuthorization(() -> {
             camundaProcessService.deploy(
                 CaseDefinitionId.of("some-case-definition-1", "1.0.0"),
                 "aProcessName.bpmn",
@@ -241,7 +237,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
             );
             return null;
         });
-        AuthorizationContext.runWithoutAuthorization(() -> {
+        runWithoutAuthorization(() -> {
             camundaProcessService.deploy(
                 null,
                 "aProcessName.bpmn",
@@ -254,7 +250,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
     @Test
     void shouldDeployFileWithMultipleProcessDefinitions() throws IOException {
         List<Resource> processes = List.of(bpmn);
-        AuthorizationContext.runWithoutAuthorization(() -> {
+        runWithoutAuthorization(() -> {
             camundaProcessService.deploy(
                 CaseDefinitionId.of("some-case-definition-1", "1.0.0"),
                 "aProcessName.bpmn",
@@ -267,7 +263,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
     @Test
     void shouldDeployDifferentProcessesWithSameFilenameForSameCasedefinitions() throws IOException {
         List<Resource> processes = List.of(bpmn);
-        AuthorizationContext.runWithoutAuthorization(() -> {
+        runWithoutAuthorization(() -> {
             camundaProcessService.deploy(
                 CaseDefinitionId.of("some-case-definition-1", "1.0.0"),
                 "aProcessName.bpmn",
@@ -275,12 +271,59 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
             );
             return null;
         });
-        AuthorizationContext.runWithoutAuthorization(() -> {
+        runWithoutAuthorization(() -> {
             camundaProcessService.deploy(
                 CaseDefinitionId.of("some-case-definition-1", "1.0.0"),
                 "aProcessName.bpmn",
                 getFileStream("uniqueProcess.xml", processes)
             );
+            return null;
+        });
+    }
+
+    @Test
+    void shouldGetAllVersionsForAProcessDefinitionForASingleCaseDefinitionButNotFromOtherCaseDefinitions() throws IOException {
+        runWithoutAuthorization(() -> {
+            var caseDefinitionId = new CaseDefinitionId("everything", "1.0.0");
+            var userTaskProcessString = getFileAsString("config/case/everything/1-0-0/bpmn/user-task-process.bpmn")
+                .replace("name=\"User task process\"", "name=\"Updated User task process\"");
+            camundaProcessService.deploy(
+                caseDefinitionId,
+                "user-task-process.bpmn",
+                new ByteArrayInputStream(userTaskProcessString.getBytes())
+            );
+
+            var definitions = camundaProcessService.getDefinitionsByKeyAndCaseDefinition(
+                caseDefinitionId,
+                "user-task-process"
+            );
+
+            assertThat(definitions.size()).isEqualTo(2);
+            assertThat(definitions.stream().anyMatch(it -> "User task process".equals(it.getName()))).isTrue();
+            assertThat(definitions.stream().anyMatch(it -> "Updated User task process".equals(it.getName()))).isTrue();
+            assertThat(definitions.stream().anyMatch(it -> "Other User task process".equals(it.getName()))).isFalse();
+            return null;
+        });
+    }
+
+    @Test
+    void shouldGetLatestVersionForAProcessDefinitionForASingleCaseDefinition() throws IOException {
+        runWithoutAuthorization(() -> {
+            var caseDefinitionId = new CaseDefinitionId("everything", "1.0.0");
+            var userTaskProcessString = getFileAsString("config/case/everything/1-0-0/bpmn/user-task-process.bpmn")
+                .replace("name=\"User task process\"", "name=\"Updated User task process\"");
+            camundaProcessService.deploy(
+                caseDefinitionId,
+                "user-task-process.bpmn",
+                new ByteArrayInputStream(userTaskProcessString.getBytes())
+            );
+
+            var definition = camundaProcessService.getLatestDefinitionByKeyAndCaseDefinition(
+                caseDefinitionId,
+                "user-task-process"
+            );
+
+            assertThat(definition.getName()).isEqualTo("Updated User task process");
             return null;
         });
     }

@@ -22,9 +22,10 @@ import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpe
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byActive;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
-import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byNotLinkedToCaseDefinition;
-import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byVersionTag;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersionAndLinkedToCaseDefinitionId;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersionTag;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLinkedToCaseDefinitionId;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byNotLinkedToCaseDefinition;
 
 import com.fasterxml.jackson.core.JsonPointer;
 import com.ritense.authorization.Action;
@@ -381,7 +382,7 @@ public class CamundaProcessService {
     ) {
         denyAuthorization();
         return AuthorizationContext.runWithoutAuthorization(() -> camundaRepositoryService.findProcessDefinitions(
-            byVersionTag(CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.toString())
+            byLinkedToCaseDefinitionId(caseDefinitionId)
                 .and(byKey(processDefinitionKey))
         ));
     }
@@ -391,11 +392,9 @@ public class CamundaProcessService {
         String processDefinitionKey
     ) {
         denyAuthorization();
-        String versionTag = CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.toString();
         return AuthorizationContext.runWithoutAuthorization(() -> camundaRepositoryService.findProcessDefinition(
-            byVersionTag(versionTag)
+            byLatestVersionAndLinkedToCaseDefinitionId(caseDefinitionId)
                 .and(byKey(processDefinitionKey))
-                .and(byLatestVersionTag(versionTag))
         ));
     }
 

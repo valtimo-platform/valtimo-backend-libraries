@@ -33,9 +33,12 @@ import org.mockito.Answers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import java.io.IOException;
 
 @SpringBootTest(properties = {"valtimo.outbox.enabled=true"}, classes = {CoreTestConfiguration.class})
 @ExtendWith(SpringExtension.class)
@@ -66,6 +69,9 @@ public abstract class BaseIntegrationTest {
     @MockitoSpyBean
     public TaskService camundaTaskService;
 
+    @Autowired
+    public ResourceLoader resourceLoader;
+
     @BeforeAll
     static void beforeAll() {
     }
@@ -81,6 +87,14 @@ public abstract class BaseIntegrationTest {
     public interface AuditEventListener {
         @EventListener(classes = AuditEvent.class)
         void handle(AuditEvent auditEvent);
+    }
+
+    protected String getFileAsString(String path) throws IOException {
+        return new String(
+            ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
+            .getResource("classpath:" + path)
+            .getInputStream().readAllBytes()
+        );
     }
 
 }
