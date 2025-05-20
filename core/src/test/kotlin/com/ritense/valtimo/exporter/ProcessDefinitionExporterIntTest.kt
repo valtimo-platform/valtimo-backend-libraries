@@ -69,21 +69,6 @@ class ProcessDefinitionExporterIntTest @Autowired constructor(
                 CaseDefinitionId.of("everything", "1.0.0")
             )
         )
-
-        val dmnGlobalSample = getDecisionDefinition("dmn-global-sample")
-        assertThat(dmnGlobalSample.versionTag).isNull()
-        assertThat(result.relatedRequests).contains(
-            DecisionDefinitionExportRequest(
-                dmnGlobalSample.id,
-                CaseDefinitionId.of("everything", "1.0.0")
-            )
-        )
-
-        assertThat(result.relatedRequests).contains(
-            ProcessDefinitionExportRequest(
-                getProcessDefinitionId("test-process"), caseDefinitionId
-            )
-        )
     }
 
     @Test
@@ -105,30 +90,6 @@ class ProcessDefinitionExporterIntTest @Autowired constructor(
         assertThat(result.relatedRequests).contains(
             DecisionDefinitionExportRequest(
                 secondDecisionDefinitionId,
-                CaseDefinitionId.of("everything", "1.0.0")
-            )
-        )
-    }
-
-    @Test
-    fun `should export process definition with reference to overridden DMN`(): Unit = runWithoutAuthorization {
-        val globalDecisionDefinitionId = getDecisionDefinitionId("dmn-global-sample")
-        val processDefinitionKey = "dmn-sample"
-        val processDefinitionId = getProcessDefinitionId(processDefinitionKey)
-        val caseDefinitionId = CaseDefinitionId("everything", "1.0.0")
-        val newDmnString = getFileAsString("config/global/dmn/dmn-global-sample.dmn")
-            .replace("name=\"Decision 1\"", "name=\"Global Sample Decision\"")
-        val deployment = camundaProcessService.deploy(caseDefinitionId, "dmn-global-sample.dmn", newDmnString.byteInputStream())
-        val caseDecisionDefinitionId = deployment.deployedDecisionDefinitions.first().id
-
-        val result =
-            processDefinitionExporter.export(ProcessDefinitionExportRequest(processDefinitionId, caseDefinitionId))
-
-        assertThat(result.exportFiles).isNotEmpty()
-        assertThat(globalDecisionDefinitionId).isNotEqualTo(caseDecisionDefinitionId)
-        assertThat(result.relatedRequests).contains(
-            DecisionDefinitionExportRequest(
-                caseDecisionDefinitionId,
                 CaseDefinitionId.of("everything", "1.0.0")
             )
         )

@@ -56,7 +56,7 @@ class CamundaProcessDefinitionSpecificationHelperIntTest @Autowired constructor(
 
         val resultIds = definitionRepository.findAll(
             CamundaProcessDefinitionSpecificationHelper.byKey(USER_TASK_PROCESS)
-                .and(CamundaProcessDefinitionSpecificationHelper.byVersion(2))
+                .and(CamundaProcessDefinitionSpecificationHelper.byVersion(deployedProcessDefinition.version))
         ).map { it.id }
 
         Assertions.assertThat(resultIds).contains(deployedProcessDefinition.id)

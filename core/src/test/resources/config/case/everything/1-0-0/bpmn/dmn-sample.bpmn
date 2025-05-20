@@ -8,7 +8,7 @@
     <bpmn:endEvent id="endEvent">
       <bpmn:incoming>Flow_1u3af6x</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:businessRuleTask id="dmnTask" name="DMN task" camunda:decisionRef="dmn-global-sample">
+    <bpmn:businessRuleTask id="dmnTask" name="DMN task" camunda:decisionRef="dmn-sample">
       <bpmn:incoming>Flow_1rc1m35</bpmn:incoming>
       <bpmn:outgoing>Flow_0axe6y3</bpmn:outgoing>
     </bpmn:businessRuleTask>

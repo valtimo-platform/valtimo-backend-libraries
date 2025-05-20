@@ -123,7 +123,7 @@ class CamundaRepositoryService(
                     "versionTag" -> findProcessDefinition(spec.and(byLatestVersionTag(it.camundaCalledElementVersionTag)))
                         ?: findProcessDefinition(spec.and(byNotLinkedToCaseDefinition()))
                     "deployment" -> null
-                    else /* latest */ -> findProcessDefinition(spec.and(byLatestVersion())) // TODO: Support case definition version
+                    else /* latest */ -> findProcessDefinition(spec.and(byLatestVersion()))
                 }
             }
             .filter { found -> !linkedProcessDefinitions.any { linked -> linked.id == found.id  } }

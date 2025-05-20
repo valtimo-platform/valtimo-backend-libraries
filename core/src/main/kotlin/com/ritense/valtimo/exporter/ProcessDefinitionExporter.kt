@@ -23,9 +23,8 @@ import com.ritense.exporter.request.DecisionDefinitionExportRequest
 import com.ritense.exporter.request.ProcessDefinitionExportRequest
 import com.ritense.valtimo.camunda.repository.CamundaDecisionDefinitionSpecificationHelper
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
-import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersionAndLinkedToCaseDefinitionId
+import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersion
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersionTag
-import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byNotLinkedToCaseDefinition
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byVersion
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
@@ -79,10 +78,8 @@ class ProcessDefinitionExporter(
                     when (it.camundaCalledElementBinding) {
                         "version" -> camundaRepositoryService.findProcessDefinition(spec.and(byVersion(it.camundaCalledElementVersion.toInt())))
                         "versionTag" -> camundaRepositoryService.findProcessDefinition(spec.and(byLatestVersionTag(it.camundaCalledElementVersionTag)))
-                            ?: camundaRepositoryService.findProcessDefinition(spec.and(byNotLinkedToCaseDefinition()))
                         "deployment" -> null
-                        else /* latest */ -> camundaRepositoryService.findProcessDefinition(spec.and(byLatestVersionAndLinkedToCaseDefinitionId(caseDefinitionId)))
-                            ?: camundaRepositoryService.findProcessDefinition(spec.and(byNotLinkedToCaseDefinition()))
+                        else /* latest */ -> camundaRepositoryService.findProcessDefinition(spec.and(byLatestVersion()))
                     }
                 ) {
                     "Process definition with key '${it.calledElement}' could not be found!"
@@ -102,10 +99,8 @@ class ProcessDefinitionExporter(
                     when (it.camundaDecisionRefBinding) {
                         "version" -> camundaRepositoryService.findDecisionDefinition(spec.and(CamundaDecisionDefinitionSpecificationHelper.byVersion(it.camundaDecisionRefVersion.toInt())))
                         "versionTag" -> camundaRepositoryService.findDecisionDefinition(spec.and(CamundaDecisionDefinitionSpecificationHelper.byLatestVersionTag(it.camundaDecisionRefVersionTag)))
-                            ?: camundaRepositoryService.findDecisionDefinition(spec.and(CamundaDecisionDefinitionSpecificationHelper.byNotLinkedToCaseDefinition()))
                         "deployment" -> null
-                        else /* latest */ -> camundaRepositoryService.findDecisionDefinition(spec.and(CamundaDecisionDefinitionSpecificationHelper.byLatestVersionAndLinkedToCaseDefinitionId(caseDefinitionId)))
-                            ?: camundaRepositoryService.findDecisionDefinition(spec.and(CamundaDecisionDefinitionSpecificationHelper.byNotLinkedToCaseDefinition()))
+                        else /* latest */ -> camundaRepositoryService.findDecisionDefinition(spec.and(CamundaDecisionDefinitionSpecificationHelper.byLatestVersion()))
                     }
                 ) {
                     "Decision definition with reference '${it.camundaDecisionRef}' could not be found!"
