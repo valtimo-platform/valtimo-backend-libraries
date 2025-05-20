@@ -26,6 +26,7 @@ class CaseDefinitionSpecificationHelper {
 
         const val KEY: String = "key"
         const val ACTIVE: String = "active"
+        const val FINAL: String = "final"
 
         @JvmStatic
         fun query() = Specification<CaseDefinition> { _, _, cb ->
@@ -35,6 +36,11 @@ class CaseDefinitionSpecificationHelper {
         @JvmStatic
         fun byActive(active: Boolean = true) = Specification<CaseDefinition> { root, _, cb ->
             cb.equal(root.get<Any>(ACTIVE), active)
+        }
+
+        @JvmStatic
+        fun byFinal(final: Boolean = true) = Specification<CaseDefinition> { root, _, cb ->
+            cb.equal(root.get<Any>(FINAL), final)
         }
 
         @JvmStatic

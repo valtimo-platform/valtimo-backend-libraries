@@ -17,10 +17,8 @@
 package com.ritense.case.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.databind.node.TextNode
+import com.ritense.BaseIntegrationTest
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.case.BaseIntegrationTest
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import com.ritense.exporter.request.FormDefinitionExportRequest
 import com.ritense.valtimo.contract.case_.CaseDefinitionId

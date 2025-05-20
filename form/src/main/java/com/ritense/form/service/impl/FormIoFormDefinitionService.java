@@ -26,6 +26,7 @@ import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.form.web.rest.dto.FormOption;
 import com.ritense.logging.LoggableResource;
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker;
 import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import java.util.List;
 import java.util.Optional;
@@ -37,9 +38,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class FormIoFormDefinitionService implements FormDefinitionService {
 
     private final FormDefinitionRepository formDefinitionRepository;
+    private final CaseDefinitionChecker caseDefinitionChecker;
 
-    public FormIoFormDefinitionService(final FormDefinitionRepository formDefinitionRepository) {
+    public FormIoFormDefinitionService(
+        final FormDefinitionRepository formDefinitionRepository,
+        final CaseDefinitionChecker caseDefinitionChecker
+    ) {
         this.formDefinitionRepository = formDefinitionRepository;
+        this.caseDefinitionChecker = caseDefinitionChecker;
     }
 
     @Override
@@ -78,6 +84,11 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
             caseDefinitionId,
             searchTerm, pageable
         );
+    }
+
+    @Override
+    public List<FormIoFormDefinition> getFormDefinitions(CaseDefinitionId caseDefinitionId) {
+        return formDefinitionRepository.findAllByCaseDefinitionId(caseDefinitionId);
     }
 
     @Override
@@ -122,6 +133,7 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
         CreateFormDefinitionRequest request
     ) {
         return withLoggingContext("formDefinitionName", request.getName(), () -> {
+            caseDefinitionChecker.assertCanUpdateGlobalConfiguration();
             if (formDefinitionRepository.findByName(request.getName())
                 .isPresent()) {
                 throw new IllegalArgumentException("Duplicate name for new form: " + request.getName());
@@ -145,6 +157,7 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
         CreateFormDefinitionRequest request
     ) {
         return withLoggingContext("formDefinitionName", request.getName(), () -> {
+            caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId);
             if (formDefinitionRepository.findByNameAndCaseDefinitionId(request.getName(), caseDefinitionId)
                 .isPresent()) {
                 throw new IllegalArgumentException("Duplicate name for new form: " + request.getName());
@@ -165,6 +178,7 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     @Transactional
     public FormIoFormDefinition modifyFormDefinition(ModifyFormDefinitionRequest request) {
         return withLoggingContext("formDefinitionName", request.getName(), () -> {
+            caseDefinitionChecker.assertCanUpdateGlobalConfiguration();
             if (!formDefinitionRepository.existsById(request.getId())) {
                 throw new RuntimeException("Form definition not found with id " + request.getId().toString());
             }
@@ -182,6 +196,7 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     @Transactional
     public FormDefinition modifyFormDefinition(CaseDefinitionId caseDefinitionId, ModifyFormDefinitionRequest request) {
         return withLoggingContext("formDefinitionName", request.getName(), () -> {
+            caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId);
             if (!formDefinitionRepository.existsById(request.getId())) {
                 throw new RuntimeException("Form definition not found with id " + request.getId().toString());
             }
@@ -203,6 +218,7 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
         String definition,
         Boolean readOnly
     ) {
+        caseDefinitionChecker.assertCanUpdateGlobalConfiguration();
         return formDefinitionRepository
             .findById(id)
             .map(
@@ -223,13 +239,22 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     public void deleteFormDefinition(
         @LoggableResource(resourceType = FormIoFormDefinition.class) UUID formDefinitionId
     ) {
+        caseDefinitionChecker.assertCanUpdateGlobalConfiguration();
         formDefinitionRepository.deleteById(formDefinitionId);
     }
 
     @Override
     @Transactional
     public void deleteFormDefinition(CaseDefinitionId caseDefinitionId, UUID formDefinitionId) {
+        caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId);
         formDefinitionRepository.deleteById(formDefinitionId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllFormDefinitions(CaseDefinitionId caseDefinitionId) {
+        caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId);
+        formDefinitionRepository.deleteAllByCaseDefinitionId(caseDefinitionId);
     }
 
     @Override

@@ -17,8 +17,8 @@
 package com.ritense.case.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.BaseIntegrationTest
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.domain.CaseTab
 import com.ritense.case.domain.CaseTabId
 import com.ritense.case.domain.CaseTabType
@@ -27,7 +27,6 @@ import com.ritense.case.repository.CaseTabSpecificationHelper
 import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateOrderDto
-import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.Constants
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
@@ -55,7 +54,6 @@ import kotlin.jvm.optionals.getOrNull
 class CaseTabManagementResourceIntTest @Autowired constructor(
     private val webApplicationContext: WebApplicationContext,
     private val caseTabRepository: CaseTabRepository,
-    private val documentDefinitionService: DocumentDefinitionService
 ) : BaseIntegrationTest() {
 
     @Autowired
@@ -180,7 +178,7 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
     @Transactional
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should update tab order`() {
-        val caseDefinitionId = CaseDefinitionId.of("test-case-type", "1.0.0")
+        val caseDefinitionId = CaseDefinitionId.of("some-case-type", "0.0.1")
 
         caseTabRepository.saveAll(
             listOf(
@@ -302,7 +300,7 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
     @Transactional
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should get tabs`() {
-        val caseDefinitionId = CaseDefinitionId.of("my-case-type", "1.0.0")
+        val caseDefinitionId = CaseDefinitionId.of("some-case-type", "1.0.0")
 
         val key = "some-key"
         val caseTab = CaseTab(
@@ -335,7 +333,7 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
                 Constants.SYSTEM_ACCOUNT
             ).build()
         )
-        val caseDefinitionId = CaseDefinitionId.of("my-case-type", "1.0.0")
+        val caseDefinitionId = CaseDefinitionId.of("some-case-type", "1.2.3")
 
         val key = "some-key"
         val caseTab = CaseTab(

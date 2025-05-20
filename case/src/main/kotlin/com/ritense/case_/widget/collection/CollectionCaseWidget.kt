@@ -42,4 +42,14 @@ class CollectionCaseWidget(
     val properties: CollectionWidgetProperties
 ) : CaseWidgetTabWidget(
     id, title, order, width, highContrast, actions
-)
+) {
+    override fun copy(id: CaseWidgetTabWidgetId) = CollectionCaseWidget(
+        id = id,
+        title = title,
+        order = order,
+        width = width,
+        highContrast = highContrast,
+        actions = actions,
+        properties = properties
+    )
+}

@@ -52,26 +52,15 @@ class CaseHttpSecurityConfigurer : HttpSecurityConfigurer {
                     ).authenticated() // Deprecated
                     .requestMatchers(antMatcher(GET, "/api/v1/document/{documentId}/tab")).authenticated()
                     .requestMatchers(antMatcher(POST, "/api/v1/case/{caseDefinitionName}/search")).authenticated()
-                    .requestMatchers(
-                        antMatcher(
-                            GET,
-                            "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/settings"
-                        )
-                    ).hasAuthority(ADMIN)
-                    .requestMatchers(
-                        antMatcher(
-                            PATCH,
-                            "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/settings"
-                        )
-                    ).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionKey}"))
-                    .hasAuthority(ADMIN)
-                    .requestMatchers(
-                        antMatcher(
-                            POST,
-                            "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/active"
-                        )
-                    ).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/settings")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PATCH, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/settings")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionKey}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/active")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition/{key}/version/{version}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, "/api/management/v1/case-definition/{key}/version/{version}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PATCH, "/api/management/v1/case-definition/{key}/version/{version}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/management/v1/case-definition/draft")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/management/v1/case-definition/{key}/version/{version}/finalize")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, MANAGEMENT_CASE_LIST_COLUMN_URL)).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(POST, MANAGEMENT_CASE_LIST_COLUMN_URL)).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(PUT, MANAGEMENT_CASE_LIST_COLUMN_URL)).hasAuthority(ADMIN)
@@ -97,6 +86,7 @@ class CaseHttpSecurityConfigurer : HttpSecurityConfigurer {
                         )
                     ).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(POST, "/api/management/v1/case/import")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition/check")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "$MANAGEMENT_WIDGET_TAB_URL/{tabKey}")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(POST, "$MANAGEMENT_WIDGET_TAB_URL/{tabKey}")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "$DOCUMENT_WIDGET_TAB_URL/{tabKey}")).hasAuthority(USER)
