@@ -461,14 +461,14 @@ public class CamundaProcessService {
                 throw new ProcessNotDeployableException(fileName);
             }
 
-            if (isProcessDefinitionPreviouslyDeployed(caseDefinitionId, bpmnModel)) {
-                return null;
-            }
-
             if (caseDefinitionId != null) {
                 setProcessesVersionTag(bpmnModel, caseDefinitionId);
             }
             setProcessesExecutable(bpmnModel);
+
+            if (isProcessDefinitionPreviouslyDeployed(caseDefinitionId, bpmnModel)) {
+                return null;
+            }
 
             var deploymentBuilder = repositoryService.createDeployment()
                 .addModelInstance(fileName, bpmnModel);
