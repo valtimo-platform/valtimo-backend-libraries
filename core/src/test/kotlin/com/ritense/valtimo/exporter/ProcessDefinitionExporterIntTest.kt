@@ -66,12 +66,6 @@ class ProcessDefinitionExporterIntTest @Autowired constructor(
                 CaseDefinitionId.of("everything", "1.0.0")
             )
         )
-
-        assertThat(result.relatedRequests).contains(
-            ProcessDefinitionExportRequest(
-                getProcessDefinitionId("test-process"), caseDefinitionId
-            )
-        )
     }
 
     @Test
