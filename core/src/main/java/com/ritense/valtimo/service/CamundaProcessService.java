@@ -437,7 +437,7 @@ public class CamundaProcessService {
                 throw new ProcessNotDeployableException(fileName);
             }
 
-            if (isProcessDefinitionPreviouslyDeployed(fileName, bpmnModel)) {
+            if (isProcessDefinitionPreviouslyDeployed(caseDefinitionId, bpmnModel)) {
                 return null;
             }
 
@@ -497,21 +497,31 @@ public class CamundaProcessService {
         );
     }
 
-    private boolean isProcessDefinitionPreviouslyDeployed(String fileName, BpmnModelInstance bpmnModel) throws
-        ProcessNotDeployableException {
-        ProcessDefinition latestProcessDefinition =
-            repositoryService
-                .createProcessDefinitionQuery()
-                .processDefinitionResourceName(fileName)
-                .latestVersion()
-                .active()
-                .singleResult();
+    private boolean isProcessDefinitionPreviouslyDeployed(
+        CaseDefinitionId caseDefinitionId,
+        BpmnModelInstance bpmnModel
+    ) throws ProcessNotDeployableException {
+        String processDefinitionKey = bpmnModel.getModelElementsByType(Process.class).stream()
+            .map(Process::getId)
+            .findFirst().orElseThrow();
+
+        var query = repositoryService
+            .createProcessDefinitionQuery()
+            .processDefinitionKey(processDefinitionKey)
+            .latestVersion()
+            .active();
+        if (caseDefinitionId != null) {
+            query = query.versionTag(CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId);
+        } else {
+            query = query.versionTag("");
+        }
+        ProcessDefinition latestProcessDefinition = query.singleResult();
 
         if (latestProcessDefinition != null) {
             try {
                 byte[] savedBytes = repositoryService.getResourceAsStream(
                         latestProcessDefinition.getDeploymentId(),
-                        fileName
+                        latestProcessDefinition.getResourceName()
                     )
                     .readAllBytes();
 
@@ -526,7 +536,7 @@ public class CamundaProcessService {
                 outputStream.close();
 
             } catch (IOException e) {
-                throw new ProcessNotDeployableException(fileName);
+                throw new ProcessNotDeployableException(caseDefinitionId + " and process: " + processDefinitionKey);
             }
         }
         return false;
