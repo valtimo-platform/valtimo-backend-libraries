@@ -59,7 +59,7 @@ class CaseTabImporter(
                 tabOrder = index,
                 type = tab.type,
                 contentKey = tab.contentKey,
-                showTasks = true // TODO: expand import DTO to allow showTasks to be configured
+                showTasks = tab.showTasks
             )
         }
 
