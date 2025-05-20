@@ -19,7 +19,7 @@ package com.ritense.document.domain.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.ritense.document.BaseTest;
+import com.ritense.BaseTest;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 

@@ -100,6 +100,9 @@ class CamundaProcessServiceTest {
     @Mock
     private ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker;
 
+    @Mock
+    private CamundaByteArrayService camundaByteArrayService;
+
     private CamundaHistoryService historyService = mock(CamundaHistoryService.class, RETURNS_DEEP_STUBS);
 
     @BeforeEach
@@ -109,8 +112,19 @@ class CamundaProcessServiceTest {
 
     @Test
     void getAllActiveContextProcessesStartedByCurrentUserTestExpectAll() {
-        camundaProcessService = new CamundaProcessService(runtimeService, camundaRuntimeService, repositoryService, camundaRepositoryService, formService, historyService, processPropertyService, valtimoProperties, authorizationService,
-                camundaExecutionRepository, processDefinitionCaseDefinitionLinker
+        camundaProcessService = new CamundaProcessService(
+            runtimeService,
+            camundaRuntimeService,
+            repositoryService,
+            camundaRepositoryService,
+            formService,
+            historyService,
+            processPropertyService,
+            valtimoProperties,
+            authorizationService,
+            camundaExecutionRepository,
+            processDefinitionCaseDefinitionLinker,
+            camundaByteArrayService
         );
 
         //when
@@ -143,8 +157,19 @@ class CamundaProcessServiceTest {
 
     @Test
     void getAllActiveContextProcessesStartedByCurrentUserTestExpectTwo() {
-        camundaProcessService = new CamundaProcessService(runtimeService, camundaRuntimeService, repositoryService, camundaRepositoryService, formService, historyService, processPropertyService, valtimoProperties, authorizationService,
-                camundaExecutionRepository, processDefinitionCaseDefinitionLinker
+        camundaProcessService = new CamundaProcessService(
+            runtimeService,
+            camundaRuntimeService,
+            repositoryService,
+            camundaRepositoryService,
+            formService,
+            historyService,
+            processPropertyService,
+            valtimoProperties,
+            authorizationService,
+            camundaExecutionRepository,
+            processDefinitionCaseDefinitionLinker,
+            camundaByteArrayService
         );
 
         //when

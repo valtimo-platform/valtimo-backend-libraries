@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.case_
+package com.ritense
 
 import com.ritense.case.TestFormExporter
-import com.ritense.case.configuration.CaseAutoConfiguration
-import com.ritense.case_.configuration.CaseWidgetAutoConfiguration
+import com.ritense.case_.TestResolverFactory
 import com.ritense.case_.widget.TestCaseWidgetDataProvider
 import com.ritense.case_.widget.TestCaseWidgetMapper
-import com.ritense.resource.service.ResourceService
-import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
 import org.mockito.kotlin.spy
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -30,9 +27,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 
-@SpringBootApplication(
-    scanBasePackageClasses = [LiquibaseRunnerAutoConfiguration::class, CaseAutoConfiguration::class, CaseWidgetAutoConfiguration::class],
-)
+@SpringBootApplication
 class TestApplication {
 
     fun main(args: Array<String>) {
@@ -50,9 +45,6 @@ class TestApplication {
 
         @Bean
         fun testFormExporter() = TestFormExporter()
-
-        @MockitoBean
-        lateinit var resourceService: ResourceService
 
         @Bean
         fun testCaseWidgetMapper() = TestCaseWidgetMapper()

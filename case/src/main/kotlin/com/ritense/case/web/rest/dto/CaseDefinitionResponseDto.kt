@@ -16,31 +16,68 @@
 
 package com.ritense.case.web.rest.dto
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.ritense.case_.domain.definition.CaseDefinition
+import java.time.LocalDateTime
 
+@JsonInclude(Include.NON_EMPTY)
 data class CaseDefinitionResponseDto(
     val caseDefinitionKey: String,
     val caseDefinitionVersionTag: String,
     val name: String,
+    val description: String?,
+    val createdBy: String?,
+    val createdDate: LocalDateTime?,
+    val basedOnVersionTag: String?,
+    val final: Boolean,
     val active: Boolean,
+
     val canHaveAssignee: Boolean,
     val autoAssignTasks: Boolean,
     val hasExternalStartForm: Boolean? = null,
     val externalStartFormUrl: String? = null,
     val externalStartFormDescription: String? = null,
+
+    val conflictingVersions: String? = null,
 ) {
     companion object {
         fun of(caseDefinition: CaseDefinition) =
             CaseDefinitionResponseDto(
-                caseDefinition.id.key,
-                caseDefinition.id.versionTag.version,
-                caseDefinition.name,
-                caseDefinition.active,
-                caseDefinition.canHaveAssignee,
-                caseDefinition.autoAssignTasks,
-                caseDefinition.hasExternalStartForm,
-                caseDefinition.externalStartFormUrl,
-                caseDefinition.externalStartFormDescription
+                caseDefinitionKey =  caseDefinition.id.key,
+                caseDefinitionVersionTag =  caseDefinition.id.versionTag.version,
+                name =  caseDefinition.name,
+                description =  caseDefinition.description,
+                createdBy =  caseDefinition.createdBy,
+                createdDate =  caseDefinition.createdDate,
+                basedOnVersionTag =  caseDefinition.basedOnVersionTag?.version,
+                final =  caseDefinition.final,
+                active =  caseDefinition.active,
+
+                canHaveAssignee =  caseDefinition.canHaveAssignee,
+                autoAssignTasks =  caseDefinition.autoAssignTasks,
+                hasExternalStartForm =  caseDefinition.hasExternalStartForm,
+                externalStartFormUrl =  caseDefinition.externalStartFormUrl
             )
+
+    fun of(caseDefinition: CaseDefinition, conflictingVersions: String?) =
+        CaseDefinitionResponseDto(
+            caseDefinitionKey = caseDefinition.id.key,
+            caseDefinitionVersionTag = caseDefinition.id.versionTag.version,
+            name = caseDefinition.name,
+            description = caseDefinition.description,
+            createdBy = caseDefinition.createdBy,
+            createdDate = caseDefinition.createdDate,
+            basedOnVersionTag = caseDefinition.basedOnVersionTag?.version,
+            final = caseDefinition.final,
+            active = caseDefinition.active,
+
+            canHaveAssignee = caseDefinition.canHaveAssignee,
+            autoAssignTasks = caseDefinition.autoAssignTasks,
+            hasExternalStartForm = caseDefinition.hasExternalStartForm,
+            externalStartFormUrl = caseDefinition.externalStartFormUrl,
+
+            conflictingVersions = conflictingVersions,
+        )
     }
 }

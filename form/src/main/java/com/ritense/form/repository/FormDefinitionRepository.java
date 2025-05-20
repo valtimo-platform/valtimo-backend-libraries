@@ -49,6 +49,10 @@ public interface FormDefinitionRepository extends JpaRepository<FormIoFormDefini
 
     Optional<FormIoFormDefinition> findByNameAndCaseDefinitionId(String name, CaseDefinitionId caseDefinitionId);
 
+    List<FormIoFormDefinition> findAllByCaseDefinitionId(CaseDefinitionId caseDefinitionId);
+
+    void deleteAllByCaseDefinitionId(CaseDefinitionId caseDefinitionId);
+
     Optional<FormIoFormDefinition> findByNameIgnoreCase(String name);
 
     @Query("SELECT f FROM FormIoFormDefinition f WHERE upper(f.name) LIKE upper(concat('%', :name, '%'))")

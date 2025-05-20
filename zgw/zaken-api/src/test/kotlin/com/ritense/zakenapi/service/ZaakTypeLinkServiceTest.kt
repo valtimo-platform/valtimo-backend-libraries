@@ -16,10 +16,6 @@
 
 package com.ritense.zakenapi.service
 
-import com.ritense.document.domain.impl.JsonSchema
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
-import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.processdocument.domain.ProcessDefinitionCaseDefinition
 import com.ritense.processdocument.domain.ProcessDefinitionCaseDefinitionId
 import com.ritense.processdocument.domain.ProcessDefinitionId
@@ -29,14 +25,13 @@ import com.ritense.zakenapi.domain.ZaakTypeLink
 import com.ritense.zakenapi.domain.ZaakTypeLinkId
 import com.ritense.zakenapi.repository.ZaakTypeLinkRepository
 import com.ritense.zakenapi.web.rest.request.CreateZaakTypeLinkRequest
-import jakarta.validation.ConstraintViolationException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.net.URI
 import java.util.Optional
@@ -57,9 +52,6 @@ class ZaakTypeLinkServiceTest {
     @Mock
     lateinit var processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService
 
-    @Mock
-    lateinit var documentDefinitionService: JsonSchemaDocumentDefinitionService
-
     val zaakTypeUrl = URI.create("http//example.com")
     val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
 
@@ -70,7 +62,7 @@ class ZaakTypeLinkServiceTest {
         zaakTypeLinkService = DefaultZaakTypeLinkService(
             zaakTypeLinkRepository,
             processDefinitionCaseDefinitionService,
-            documentDefinitionService
+            mock()
         )
         zaakTypeLinkId = ZaakTypeLinkId.newId(UUID.randomUUID())
 
@@ -123,33 +115,6 @@ class ZaakTypeLinkServiceTest {
                     ),
                     true,
                     false
-                )
-            )
-
-        whenever(
-            documentDefinitionService.findByCaseDefinitionId(
-                caseDefinitionId
-            )
-        )
-            .thenReturn(
-                Optional.of(
-                    JsonSchemaDocumentDefinition(
-                        JsonSchemaDocumentDefinitionId.of(
-                            "123",
-                            caseDefinitionId
-                        ),
-                        JsonSchema.fromString(
-                            """
-                                {
-                                    "${'$'}id": "123.schema",
-                                    "${'$'}schema": "http://json-schema.org/draft-07/schema#",
-                                    "title": "additional-property-example",
-                                    "type": "object",
-                                    "additionalProperties": true
-                                }
-                            """.trimIndent()
-                        )
-                    )
                 )
             )
 

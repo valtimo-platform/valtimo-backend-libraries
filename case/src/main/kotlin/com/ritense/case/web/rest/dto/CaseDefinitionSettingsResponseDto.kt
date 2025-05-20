@@ -21,7 +21,7 @@ import com.ritense.case_.domain.definition.CaseDefinition
 data class CaseDefinitionSettingsResponseDto(
     val caseDefinitionKey: String,
     val caseDefinitionVersionTag: String,
-    val active: Boolean,
+
     val canHaveAssignee: Boolean,
     val autoAssignTasks: Boolean,
     val hasExternalStartForm: Boolean? = null,
@@ -33,7 +33,6 @@ data class CaseDefinitionSettingsResponseDto(
             CaseDefinitionSettingsResponseDto(
                 caseDefinition.id.key,
                 caseDefinition.id.versionTag.version,
-                caseDefinition.active,
                 caseDefinition.canHaveAssignee,
                 caseDefinition.autoAssignTasks,
                 caseDefinition.hasExternalStartForm,

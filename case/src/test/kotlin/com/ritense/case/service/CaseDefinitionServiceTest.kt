@@ -16,6 +16,7 @@
 
 package com.ritense.case.service
 
+import com.ritense.BaseTest
 import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DisplayType
 import com.ritense.case.domain.EnumDisplayTypeParameter
@@ -25,7 +26,6 @@ import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.case.web.rest.mapper.CaseListColumnMapper
-import com.ritense.case_.domain.definition.CaseDefinition
 import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.exception.UnknownDocumentDefinitionException
@@ -41,16 +41,14 @@ import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.springframework.data.repository.findByIdOrNull
 import java.util.Optional
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class CaseDefinitionServiceTest {
+class CaseDefinitionServiceTest : BaseTest() {
     lateinit var caseDefinitionRepository: CaseDefinitionRepository
     lateinit var caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository
     lateinit var service: CaseDefinitionService
@@ -68,28 +66,26 @@ class CaseDefinitionServiceTest {
             documentDefinitionService,
             caseDefinitionRepository,
             valueResolverService,
-            mock()
+            mock(),
+            mock(),
+            mock(),
         )
     }
 
     @Test
     fun `should get case definition by id`() {
-        val caseDefinitionName = "name"
-        val caseDefinitionId = CaseDefinitionId.of("name", "1.0.0")
         val externalFormUrl = "https://www.example.com/external-form"
-        val caseDefinition = CaseDefinition(
-            id = caseDefinitionId,
-            name = caseDefinitionName,
+        val caseDefinition = caseDefinition(
             canHaveAssignee = true,
             hasExternalStartForm = true,
             externalStartFormUrl = externalFormUrl
         )
 
-        whenever(caseDefinitionRepository.findById(caseDefinitionId)).thenReturn(Optional.of(caseDefinition))
+        whenever(caseDefinitionRepository.findById(caseDefinition.id)).thenReturn(Optional.of(caseDefinition))
 
-        val foundCaseDefinitionSettings = service.getCaseDefinition(caseDefinitionId)
+        val foundCaseDefinitionSettings = service.getCaseDefinition(caseDefinition.id)
 
-        assertEquals(caseDefinitionName, foundCaseDefinitionSettings.name)
+        assertEquals(caseDefinition.name, foundCaseDefinitionSettings.name)
         assertTrue(foundCaseDefinitionSettings.canHaveAssignee)
     }
 
@@ -104,24 +100,23 @@ class CaseDefinitionServiceTest {
 
     @Test
     fun `should update case settings`() {
-        val caseDefinitionId = CaseDefinitionId.of("name", "1.0.0")
-        val currentCaseDefinition = CaseDefinition(
-            id = caseDefinitionId,
-            name = "name",
+        val currentCaseDefinition = caseDefinition(
             canHaveAssignee = true
         )
-        val updatedCaseDefinition = CaseDefinition(
-            id = caseDefinitionId,
-            name = "name",
+        val updatedCaseDefinition = caseDefinition(
             canHaveAssignee = false
         )
         val caseSettingsDto: CaseSettingsDto = mock()
-        whenever(caseDefinitionRepository.findById(eq(caseDefinitionId))).thenReturn(Optional.of(currentCaseDefinition))
+        whenever(caseDefinitionRepository.findById(eq(currentCaseDefinition.id))).thenReturn(
+            Optional.of(
+                currentCaseDefinition
+            )
+        )
         whenever(caseDefinitionRepository.save(updatedCaseDefinition)).thenReturn(
             updatedCaseDefinition
         )
         whenever(caseSettingsDto.update(currentCaseDefinition)).thenReturn(updatedCaseDefinition)
-        val returnedCaseDefinitionSettings = service.updateCaseSettings(caseDefinitionId, caseSettingsDto)
+        val returnedCaseDefinitionSettings = service.updateCaseSettings(currentCaseDefinition.id, caseSettingsDto)
 
         assertEquals("name", returnedCaseDefinitionSettings.name)
         assertFalse(returnedCaseDefinitionSettings.canHaveAssignee)

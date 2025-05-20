@@ -43,6 +43,8 @@ public interface FormDefinitionService {
         Pageable pageable
     );
 
+    List<? extends FormDefinition> getFormDefinitions(CaseDefinitionId caseDefinitionId);
+
     Optional<? extends FormDefinition> getFormDefinitionById(UUID id);
 
     Optional<? extends FormDefinition> getFormDefinitionById(CaseDefinitionId caseDefinitionId, UUID id);
@@ -66,6 +68,8 @@ public interface FormDefinitionService {
     void deleteFormDefinition(UUID id);
 
     void deleteFormDefinition(CaseDefinitionId caseDefinitionId, UUID id);
+
+    void deleteAllFormDefinitions(CaseDefinitionId caseDefinitionId);
 
     boolean formDefinitionExistsById(UUID id);
 

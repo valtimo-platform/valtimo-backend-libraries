@@ -17,6 +17,7 @@
 package com.ritense.zakenapi.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.case_.listener.ZaakTypeLinkCaseEventListener
 import com.ritense.authorization.AuthorizationService
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
@@ -33,6 +34,7 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.temporaryresource.repository.ResourceStorageMetadataRepository
 import com.ritense.valtimo.contract.annotation.ProcessBean
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPluginFactory
 import com.ritense.zakenapi.client.ZakenApiClient
@@ -215,11 +217,11 @@ class ZakenApiAutoConfiguration {
     fun zakenApiZaakTypeLinkService(
         zaakTypeLinkRepository: ZaakTypeLinkRepository,
         processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
-        documentDefinitionService: JsonSchemaDocumentDefinitionService
+        caseDefinitionChecker: CaseDefinitionChecker,
     ) = DefaultZaakTypeLinkService(
         zaakTypeLinkRepository,
         processDefinitionCaseDefinitionService,
-        documentDefinitionService
+        caseDefinitionChecker
     )
 
     @Bean
@@ -302,6 +304,16 @@ class ZakenApiAutoConfiguration {
         return ZaakTypeLinkImporter(
             objectMapper,
             zaakTypeLinkService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ZaakTypeLinkCaseEventListener::class)
+    fun zaakTypeLinkCaseEventListener(
+        zaakTypeLinkService: ZaakTypeLinkService,
+    ): ZaakTypeLinkCaseEventListener {
+        return ZaakTypeLinkCaseEventListener(
+            zaakTypeLinkService,
         )
     }
 }

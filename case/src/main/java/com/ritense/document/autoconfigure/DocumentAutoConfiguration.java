@@ -25,6 +25,7 @@ import com.ritense.document.domain.impl.listener.RelatedJsonSchemaDocumentAvaila
 import com.ritense.document.domain.impl.sequence.JsonSchemaDocumentDefinitionSequenceRecord;
 import com.ritense.document.exporter.JsonSchemaDocumentDefinitionExporter;
 import com.ritense.document.importer.JsonSchemaDocumentDefinitionImporter;
+import com.ritense.document.listener.DocumentDefinitionCaseEventListener;
 import com.ritense.document.repository.DocumentDefinitionRepository;
 import com.ritense.document.repository.DocumentDefinitionSequenceRepository;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
@@ -53,6 +54,7 @@ import com.ritense.document.web.rest.impl.JsonSchemaDocumentSearchResource;
 import com.ritense.outbox.OutboxService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import jakarta.persistence.EntityManager;
 import java.util.List;
@@ -107,12 +109,14 @@ public class DocumentAutoConfiguration {
     public JsonSchemaDocumentDefinitionService documentDefinitionService(
         final ResourceLoader resourceLoader,
         final DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository,
-        final AuthorizationService authorizationService
+        final AuthorizationService authorizationService,
+        final CaseDefinitionChecker caseDefinitionChecker
     ) {
         return new JsonSchemaDocumentDefinitionService(
             resourceLoader,
             documentDefinitionRepository,
-            authorizationService
+            authorizationService,
+            caseDefinitionChecker
         );
     }
 
@@ -251,6 +255,16 @@ public class DocumentAutoConfiguration {
     ) {
         return new DocumentModuleExceptionTranslator(
             adviceTraits.get(0)
+        );
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DocumentDefinitionCaseEventListener.class)
+    public DocumentDefinitionCaseEventListener documentDefinitionCaseEventListener(
+        DocumentDefinitionService documentDefinitionService
+    ) {
+        return new DocumentDefinitionCaseEventListener(
+            documentDefinitionService
         );
     }
 }

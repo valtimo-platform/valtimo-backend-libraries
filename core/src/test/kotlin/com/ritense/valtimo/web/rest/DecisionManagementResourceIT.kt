@@ -58,6 +58,9 @@ class DecisionManagementResourceIT(
 
     @BeforeEach
     fun setup() {
+        repositoryService.createDeploymentQuery().list().forEach { deployment ->
+            repositoryService.deleteDeployment(deployment.id, true, false, false)
+        }
         testDecisionId = deployExampleDmn("test", caseDefinitionId)
         deployExampleDmn("test-version", caseDefinitionId)
         deployExampleDmn("test-other", caseDefinitionId)

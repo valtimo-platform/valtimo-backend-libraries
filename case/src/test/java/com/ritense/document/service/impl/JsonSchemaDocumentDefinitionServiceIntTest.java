@@ -22,11 +22,11 @@ import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.U
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.ritense.BaseIntegrationTest;
 import com.ritense.authorization.permission.ConditionContainer;
 import com.ritense.authorization.permission.Permission;
 import com.ritense.authorization.permission.condition.FieldPermissionCondition;
 import com.ritense.authorization.permission.condition.PermissionConditionOperator;
-import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider;

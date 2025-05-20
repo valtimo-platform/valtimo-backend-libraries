@@ -19,6 +19,7 @@ package com.ritense.zaakdetails.documentobjectenapisync
 import com.ritense.case_.domain.definition.CaseDefinition
 import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.zaakdetails.documentobjectenapisync.DocumentObjectenApiSyncService.Companion.logger
 import org.springframework.stereotype.Service
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional
 @SkipComponentScan
 class DocumentObjectenApiSyncManagementService(
     private val documentObjectenApiSyncRepository: DocumentObjectenApiSyncRepository,
+    private val caseDefinitionChecker: CaseDefinitionChecker,
 ) {
     fun getSyncConfiguration(
         @LoggableResource(resourceType = CaseDefinition ::class) caseDefinitionId: CaseDefinitionId
@@ -39,6 +41,7 @@ class DocumentObjectenApiSyncManagementService(
 
     fun saveSyncConfiguration(sync: DocumentObjectenApiSync) {
         logger.info { "Save sync configuration caseDefinitionId=${sync.caseDefinitionId}" }
+        caseDefinitionChecker.assertCanUpdateCaseDefinition(sync.caseDefinitionId)
         val modifiedSync = getSyncConfiguration(sync.caseDefinitionId)
             ?.copy(
                 objectManagementConfigurationId = sync.objectManagementConfigurationId,
@@ -55,6 +58,7 @@ class DocumentObjectenApiSyncManagementService(
         logger.info {
             "Delete sync configuration caseDefinitionId=$caseDefinitionId"
         }
+        caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId)
         documentObjectenApiSyncRepository.deleteByCaseDefinitionId(caseDefinitionId)
     }
 }

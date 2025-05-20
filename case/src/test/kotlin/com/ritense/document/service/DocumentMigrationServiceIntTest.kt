@@ -16,8 +16,8 @@
 
 package com.ritense.document.service
 
+import com.ritense.BaseIntegrationTest
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.document.BaseIntegrationTest
 import com.ritense.document.domain.DocumentMigrationPatch
 import com.ritense.document.domain.DocumentMigrationRequest
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId

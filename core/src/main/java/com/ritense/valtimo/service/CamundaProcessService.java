@@ -24,6 +24,7 @@ import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpe
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byNotLinkedToCaseDefinition;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byVersionTag;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersionTag;
 
 import com.fasterxml.jackson.core.JsonPointer;
 import com.ritense.authorization.Action;
@@ -101,6 +102,7 @@ public class CamundaProcessService {
     private final ValtimoProperties valtimoProperties;
     private final AuthorizationService authorizationService;
     private final ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker;
+    private final CamundaByteArrayService camundaByteArrayService;
 
     private final CamundaExecutionRepository camundaExecutionRepository;
 
@@ -115,7 +117,8 @@ public class CamundaProcessService {
         ValtimoProperties valtimoProperties,
         AuthorizationService authorizationService,
         CamundaExecutionRepository camundaExecutionRepository,
-        ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker
+        ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker,
+        CamundaByteArrayService camundaByteArrayService
     ) {
         this.runtimeService = runtimeService;
         this.camundaRuntimeService = camundaRuntimeService;
@@ -128,6 +131,7 @@ public class CamundaProcessService {
         this.authorizationService = authorizationService;
         this.camundaExecutionRepository = camundaExecutionRepository;
         this.processDefinitionCaseDefinitionLinker = processDefinitionCaseDefinitionLinker;
+        this.camundaByteArrayService = camundaByteArrayService;
     }
 
     public CamundaProcessDefinition findProcessDefinitionById(String processDefinitionId) {
@@ -222,7 +226,7 @@ public class CamundaProcessService {
                 } else {
                     // TODO: What to do if we're working on a global process definition? Currently taking latest
                     CamundaProcessDefinition procDef = camundaRepositoryService.findProcessDefinition(
-                        byKey(processDefinitionKey).and(byVersionTag("CD:" + caseDefinitionId))
+                        byKey(processDefinitionKey).and(byLatestVersionTag("CD:" + caseDefinitionId))
                     );
                     if (procDef == null) {
                         procDef = camundaRepositoryService.findLatestProcessDefinition(processDefinitionKey);
@@ -336,10 +340,10 @@ public class CamundaProcessService {
 
     public List<CamundaProcessDefinition> getDeployedDefinitions(CaseDefinitionId caseDefinitionId) {
         denyAuthorization();
+        String versionTag = CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.toString();
         return AuthorizationContext.runWithoutAuthorization(() -> camundaRepositoryService.findProcessDefinitions(
             byActive()
-                .and(byVersionTag("CD:" + caseDefinitionId.toString()))
-                .and(byLatestVersion()),
+                .and(byLatestVersionTag(versionTag)),
             Sort.by(NAME)
         ));
     }
@@ -377,9 +381,29 @@ public class CamundaProcessService {
     ) {
         denyAuthorization();
         return AuthorizationContext.runWithoutAuthorization(() -> camundaRepositoryService.findProcessDefinitions(
-            byVersionTag("CD:" + caseDefinitionId.toString())
+            byVersionTag(CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.toString())
                 .and(byKey(processDefinitionKey))
         ));
+    }
+
+    public CamundaProcessDefinition getLatestDefinitionByKeyAndCaseDefinition(
+        CaseDefinitionId caseDefinitionId,
+        String processDefinitionKey
+    ) {
+        denyAuthorization();
+        String versionTag = CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.toString();
+        return AuthorizationContext.runWithoutAuthorization(() -> camundaRepositoryService.findProcessDefinition(
+            byVersionTag(versionTag)
+                .and(byKey(processDefinitionKey))
+                .and(byLatestVersionTag(versionTag))
+        ));
+    }
+
+    public byte[] getBpmnModel(CamundaProcessDefinition camundaProcessDefinition) {
+        return camundaByteArrayService.getByNameAndDeploymentId(
+            camundaProcessDefinition.getResourceName(),
+            camundaProcessDefinition.getDeploymentId()
+        ).getBytes();
     }
 
     public List<CamundaProcessDefinition> getDefinitionsByKey(String processDefinitionKey) {
@@ -483,12 +507,12 @@ public class CamundaProcessService {
     }
 
     @Transactional
-    public void deploy(
+    public DeploymentWithDefinitions deploy(
         CaseDefinitionId caseDefinitionId,
         String fileName,
         ByteArrayInputStream fileInput
     ) throws ProcessNotDeployableException, FileExtensionNotSupportedException, NoFileExtensionFoundException {
-        deploy(
+        return deploy(
             caseDefinitionId,
             fileName,
             fileInput,
