@@ -161,7 +161,7 @@ public class KeycloakUserManagementService implements UserManagementService {
                         case USERID ->
                             user = keycloakService.usersResource(keycloak).get(userIdentifier).toRepresentation();
                         case USERNAME -> {
-                            var users = keycloakService.usersResource(keycloak).search(userIdentifier);
+                            var users = keycloakService.usersResource(keycloak).searchByUsername(userIdentifier, true);
                             if (!users.isEmpty()) {
                                 user = users.get(0);
                             }

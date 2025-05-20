@@ -205,12 +205,12 @@ class KeycloakUserManagementServiceTest {
     void findByUserIdentifierShouldReturnUserWhenSearchingOnUsername() {
         OauthConfigHolder.getCurrentInstance().setIdentifierField(ValtimoProperties.IdentifierField.USERNAME);
 
-        when(keycloakService.usersResource(any()).search(eq(johnDoe.getUsername())))
+        when(keycloakService.usersResource(any()).searchByUsername(eq(johnDoe.getUsername()), eq(true)))
             .thenReturn(List.of(johnDoe));
 
         var user = userManagementService.findByUserIdentifier(johnDoe.getUsername());
 
-        verify(keycloakService.usersResource(any())).search(eq(johnDoe.getUsername()));
+        verify(keycloakService.usersResource(any())).searchByUsername(eq(johnDoe.getUsername()), eq(true));
         assertThat(user).isNotNull();
     }
 
@@ -221,19 +221,28 @@ class KeycloakUserManagementServiceTest {
         userManagementService.findByEmail(email);
         userManagementService.findByEmail(email);
 
-        verify(keycloakService.usersResource(any()), times(1)).search(null, null, null, email, 0, 1, true, true);
+        verify(keycloakService.usersResource(any()), times(1)).search(
+            null,
+            null,
+            null,
+            email,
+            0,
+            1,
+            true,
+            true
+        );
     }
 
     @Test
     void findByUserIdentifierShouldNotThrowAnExceptionWhenSearchingOnUsernameAndNoUserIsNotFound() {
         OauthConfigHolder.getCurrentInstance().setIdentifierField(ValtimoProperties.IdentifierField.USERNAME);
 
-        when(keycloakService.usersResource(any()).search(eq(johnDoe.getUsername())))
+        when(keycloakService.usersResource(any()).searchByUsername(eq(johnDoe.getUsername()), eq(true)))
             .thenReturn(List.of());
 
         var user = userManagementService.findByUserIdentifier(johnDoe.getUsername());
 
-        verify(keycloakService.usersResource(any())).search(eq(johnDoe.getUsername()));
+        verify(keycloakService.usersResource(any())).searchByUsername(eq(johnDoe.getUsername()), eq(true));
         assertThat(user).isNull();
     }
 
