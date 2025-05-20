@@ -30,6 +30,7 @@ import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_TAB
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_WIDGET_TAB
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
+import com.ritense.importer.ValtimoImportTypes.Companion.FORM
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.validation.check
 import jakarta.validation.Validator
@@ -42,7 +43,7 @@ class CaseWidgetTabImporter(
 ) : Importer {
     override fun type() = CASE_WIDGET_TAB
 
-    override fun dependsOn() = setOf(DOCUMENT_DEFINITION, CASE_TAB)
+    override fun dependsOn() = setOf(DOCUMENT_DEFINITION, CASE_TAB, FORM)
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
@@ -58,6 +59,7 @@ class CaseWidgetTabImporter(
         }
 
         validator.check(tabs)
+        tabs.forEach { it.validate(caseDefinitionId) }
 
         val toSave = tabs.map { tab ->
             CaseWidgetTab(
