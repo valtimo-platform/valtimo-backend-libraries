@@ -44,6 +44,9 @@ class TestApplication {
         }
 
         @Bean
+        fun fakeFormDefinitionImporter(): FakeFormDefinitionImporter = FakeFormDefinitionImporter()
+
+        @Bean
         fun testFormExporter() = TestFormExporter()
 
         @Bean
