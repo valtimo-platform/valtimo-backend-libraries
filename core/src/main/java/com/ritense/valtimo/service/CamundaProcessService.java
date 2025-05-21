@@ -525,7 +525,7 @@ public class CamundaProcessService {
         CaseDefinitionId caseDefinitionId,
         BpmnModelInstance bpmnModel
     ) throws ProcessNotDeployableException {
-        ProcessDefinition latestProcessDefinition = getExistingProcessForFile(caseDefinitionId, bpmnModel);
+        CamundaProcessDefinition latestProcessDefinition = getExistingProcessForFile(caseDefinitionId, bpmnModel);
 
         if (latestProcessDefinition != null) {
             try {
@@ -552,7 +552,7 @@ public class CamundaProcessService {
         return false;
     }
 
-    public ProcessDefinition getExistingProcessForFile(
+    public CamundaProcessDefinition getExistingProcessForFile(
         CaseDefinitionId caseDefinitionId,
         BpmnModelInstance bpmnModel
     ) {
@@ -560,17 +560,24 @@ public class CamundaProcessService {
             .map(Process::getId)
             .findFirst().orElseThrow();
 
-        var query = repositoryService
-            .createProcessDefinitionQuery()
-            .processDefinitionKey(processDefinitionKey)
-            .latestVersion()
-            .active();
-        if (caseDefinitionId != null) {
-            query = query.versionTag(CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId);
+        List<CamundaProcessDefinition> processDefinition = camundaRepositoryService.findProcessDefinitions(
+            byKey(processDefinitionKey)
+                .and(byLatestVersion())
+                .and(byActive())
+                .and(caseDefinitionId == null ? byNotLinkedToCaseDefinition() : byVersionTag(
+                    CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId))
+        );
+
+        if (processDefinition.size() > 1) {
+            throw new IllegalStateException(
+                "Only one process definition should be found for key: " + processDefinitionKey
+                    + " and case definition id: " + caseDefinitionId
+            );
+        } else if (processDefinition.size() == 1) {
+            return processDefinition.getFirst();
         } else {
-            query = query.withoutVersionTag();
+            return null;
         }
-        return query.singleResult();
     }
 
     private void setProcessesVersionTag(BpmnModelInstance bpmnModel, CaseDefinitionId caseDefinitionId) {
