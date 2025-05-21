@@ -60,7 +60,6 @@ class CaseTabService(
     private val caseDefinitionChecker: CaseDefinitionChecker,
 ) {
     fun getCaseTab(caseDefinitionId: CaseDefinitionId, key: String): CaseTab {
-        caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId)
         val caseTab = caseTabRepository.getReferenceById(CaseTabId(caseDefinitionId, key))
         authorizationService.requirePermission(
             EntityAuthorizationRequest(
