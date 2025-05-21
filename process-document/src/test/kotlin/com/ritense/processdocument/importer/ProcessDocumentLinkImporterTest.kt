@@ -152,7 +152,7 @@ class ProcessDocumentLinkImporterTest(
 
         val processDocumentDefinitionRequestCaptor = argumentCaptor<ProcessDocumentDefinitionRequest>()
 
-        verify(processDefinitionCaseDefinitionService).deleteProcessDocumentDefinition(
+        verify(processDefinitionCaseDefinitionService).deleteProcessDefinitionCaseDefinition(
             ProcessDefinitionId(processDefinitionId),
             caseDefinitionId
         )
