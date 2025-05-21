@@ -40,6 +40,7 @@ import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import com.ritense.valtimo.contract.exception.DocumentParserException;
 import com.ritense.valtimo.contract.exception.ProcessNotFoundException;
+import com.ritense.valtimo.exception.BpmnParseException;
 import com.ritense.valtimo.repository.CamundaSearchProcessInstanceRepository;
 import com.ritense.valtimo.repository.camunda.dto.ProcessInstance;
 import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
@@ -56,6 +57,7 @@ import com.ritense.valtimo.web.rest.dto.ProcessDefinitionWithPropertiesDto;
 import com.ritense.valtimo.web.rest.dto.ProcessInstanceDiagramDto;
 import com.ritense.valtimo.web.rest.dto.ProcessInstanceSearchDTO;
 import com.ritense.valtimo.web.rest.util.PaginationUtil;
+import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -64,10 +66,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.engine.HistoryService;
+import org.camunda.bpm.engine.ParseException;
 import org.camunda.bpm.engine.ProcessEngines;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
@@ -101,8 +105,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @SkipComponentScan
@@ -611,10 +617,9 @@ public class ProcessResource extends AbstractProcessResource {
         return ResponseEntity.ok().build();
     }
 
-    //TODO: Upload endpoint for bpmn files, should be replaced
-/*    @PostMapping(value = "/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/process", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/v1/process/definition/deployment", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Object> deployProcessDefinition(
-            @RequestPart(name = "file") MultipartFile bpmn) {
+        @RequestPart(name = "file") MultipartFile bpmn) {
         boolean correctFileExtension = Objects.requireNonNull(bpmn.getOriginalFilename()).endsWith(".bpmn")
             || Objects.requireNonNull(bpmn.getOriginalFilename()).endsWith(".dmn");
 
@@ -623,13 +628,13 @@ public class ProcessResource extends AbstractProcessResource {
         }
         try {
             runWithoutAuthorization(() -> {
-                camundaProcessService.deploy(bpmn.getOriginalFilename(), new ByteArrayInputStream(bpmn.getBytes()));
+                camundaProcessService.deploy(null, bpmn.getOriginalFilename(), new ByteArrayInputStream(bpmn.getBytes()));
                 return null;
             });
         } catch (ParseException e) {
             throw new BpmnParseException(e);
         }
         return ResponseEntity.ok().build();
-    }*/
+    }
 
 }
