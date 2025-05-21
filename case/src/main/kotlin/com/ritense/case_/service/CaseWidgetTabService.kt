@@ -74,8 +74,6 @@ class CaseWidgetTabService(
     }
 
     fun getWidgetTab(caseDefinitionId: CaseDefinitionId, key: String): CaseWidgetTabDto? {
-        checkCaseTabAccess(caseDefinitionId, key, VIEW)
-
         return caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionId, key))
             ?.let { CaseWidgetTabDto.of(it, caseWidgetMappers, this::viewPermissionCheck) }
 
