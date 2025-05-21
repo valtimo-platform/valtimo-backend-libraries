@@ -37,12 +37,10 @@ import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.DocumentStatisticService;
 import com.ritense.document.service.InternalCaseStatusService;
 import com.ritense.document.service.SearchFieldService;
-import com.ritense.document.service.UndeployDocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionSequenceGeneratorService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentSearchService;
 import com.ritense.document.service.impl.JsonSchemaDocumentService;
-import com.ritense.document.service.impl.UndeployJsonSchemaDocumentDefinitionService;
 import com.ritense.document.web.rest.DocumentDefinitionManagementResource;
 import com.ritense.document.web.rest.DocumentDefinitionResource;
 import com.ritense.document.web.rest.DocumentResource;
@@ -138,7 +136,7 @@ public class DocumentAutoConfiguration {
         JsonSchemaDocumentDefinitionService jsonSchemaDocumentDefinitionService
     ) {
         return new JsonSchemaDocumentDefinitionImporter(
-          jsonSchemaDocumentDefinitionService
+            jsonSchemaDocumentDefinitionService
         );
     }
 
@@ -148,22 +146,6 @@ public class DocumentAutoConfiguration {
         final DocumentDefinitionSequenceRepository<JsonSchemaDocumentDefinitionSequenceRecord> documentDefinitionSequenceRepository
     ) {
         return new JsonSchemaDocumentDefinitionSequenceGeneratorService(documentDefinitionSequenceRepository);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(UndeployDocumentDefinitionService.class)
-    public UndeployJsonSchemaDocumentDefinitionService undeployDocumentDefinitionService(
-        final JsonSchemaDocumentDefinitionService documentDefinitionService,
-        final DocumentService documentService,
-        final ApplicationEventPublisher applicationEventPublisher,
-        final AuthorizationService authorizationService
-    ) {
-        return new UndeployJsonSchemaDocumentDefinitionService(
-            documentDefinitionService,
-            documentService,
-            applicationEventPublisher,
-            authorizationService
-        );
     }
 
     @Bean
@@ -210,12 +192,10 @@ public class DocumentAutoConfiguration {
     @ConditionalOnMissingBean(DocumentDefinitionResource.class)
     public JsonSchemaDocumentDefinitionResource documentDefinitionResource(
         final DocumentDefinitionService documentDefinitionService,
-        final UndeployDocumentDefinitionService undeployDocumentDefinitionService,
         final DocumentStatisticService documentStatisticService
     ) {
         return new JsonSchemaDocumentDefinitionResource(
             documentDefinitionService,
-            undeployDocumentDefinitionService,
             documentStatisticService
         );
     }
