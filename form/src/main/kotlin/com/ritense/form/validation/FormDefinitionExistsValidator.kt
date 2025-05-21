@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2024 Ritense BV, the Netherlands.
+ * Copyright 2015-2025 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,33 +15,24 @@
  */
 package com.ritense.form.validation
 
+import com.ritense.form.exception.FormDefinitionNotFoundException
 import com.ritense.form.service.FormDefinitionService
-import jakarta.validation.ConstraintValidator
-import jakarta.validation.ConstraintValidatorContext
-import java.util.UUID
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 
 class FormDefinitionExistsValidator(
     private val formDefinitionService: FormDefinitionService
-) : ConstraintValidator<FormDefinitionExists, Any> {
-
-    override fun isValid(value: Any?, context: ConstraintValidatorContext): Boolean {
-        if (value == null) {
-            return true
-        }
-
-        return when (value) {
-            is String -> {
-                formDefinitionService.getFormDefinitionByName(value).isPresent
-            }
-
-            is UUID -> {
-                formDefinitionService.formDefinitionExistsById(value)
-            }
-
-            else -> {
-                throw UnsupportedOperationException("Value of type ${value.javaClass.name} is not supported")
-            }
-        }
+) {
+    init {
+        Companion.formDefinitionService = formDefinitionService
     }
 
+    companion object {
+        private lateinit var formDefinitionService: FormDefinitionService
+
+        @JvmStatic
+        fun isValid(formDefinitionName: String, caseDefinitionId: CaseDefinitionId?) {
+            if (!formDefinitionService.getFormDefinitionByName(formDefinitionName, caseDefinitionId).isPresent)
+                throw FormDefinitionNotFoundException(formDefinitionName, caseDefinitionId)
+        }
+    }
 }
