@@ -74,7 +74,7 @@ class ProcessDefinitionCaseEventListener(
     @EventListener(CaseDefinitionPreDeleteEvent::class)
     fun handleCaseDefinitionPreDeleteEvent(event: CaseDefinitionPreDeleteEvent) {
         associationService.findProcessDefinitionCaseDefinitions(event.caseDefinitionId).forEach { association ->
-            associationService.deleteProcessDocumentDefinition(
+            associationService.deleteProcessDefinitionCaseDefinition(
                 processDefinitionId = association.id.processDefinitionId,
                 caseDefinitionId = event.caseDefinitionId,
             )

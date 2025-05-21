@@ -28,6 +28,7 @@ import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.processlink.security.config.ProcessLinkHttpSecurityConfigurer
 import com.ritense.processlink.service.CopyProcessLinkOnProcessDeploymentListener
+import com.ritense.processlink.service.ProcessDeploymentService
 import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.processlink.service.ProcessLinkActivityService
 import com.ritense.processlink.service.ProcessLinkService
@@ -127,14 +128,16 @@ class ProcessLinkAutoConfiguration {
         processLinkMappers: List<ProcessLinkMapper>,
         camundaProcessService: CamundaProcessService,
         processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
-        repositoryService: RepositoryService
+        repositoryService: RepositoryService,
+        processDeploymentService: ProcessDeploymentService
     ): ProcessLinkResource {
         return ProcessLinkResource(
             processLinkService,
             processLinkMappers,
             camundaProcessService,
             processDefinitionCaseDefinitionService,
-            repositoryService
+            repositoryService,
+            processDeploymentService
         )
     }
 
@@ -189,4 +192,17 @@ class ProcessLinkAutoConfiguration {
         objectMapper
     )
 
+    @Bean
+    @ConditionalOnMissingBean(ProcessDeploymentService::class)
+    fun processDeploymentService(
+        camundaProcessService: CamundaProcessService,
+        processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
+        processLinkService: ProcessLinkService,
+    ): ProcessDeploymentService {
+        return ProcessDeploymentService(
+            camundaProcessService,
+            processDefinitionCaseDefinitionService,
+            processLinkService
+        )
+    }
 }

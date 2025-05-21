@@ -19,6 +19,7 @@ package com.ritense.valtimo.service;
 import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byStartUserId;
 import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byUnfinished;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.NAME;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.VERSION;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byActive;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
@@ -525,21 +526,7 @@ public class CamundaProcessService {
         CaseDefinitionId caseDefinitionId,
         BpmnModelInstance bpmnModel
     ) throws ProcessNotDeployableException {
-        String processDefinitionKey = bpmnModel.getModelElementsByType(Process.class).stream()
-            .map(Process::getId)
-            .findFirst().orElseThrow();
-
-        var query = repositoryService
-            .createProcessDefinitionQuery()
-            .processDefinitionKey(processDefinitionKey)
-            .latestVersion()
-            .active();
-        if (caseDefinitionId != null) {
-            query = query.versionTag(CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId);
-        } else {
-            query = query.versionTag("");
-        }
-        ProcessDefinition latestProcessDefinition = query.singleResult();
+        CamundaProcessDefinition latestProcessDefinition = getExistingProcessForFile(caseDefinitionId, bpmnModel);
 
         if (latestProcessDefinition != null) {
             try {
@@ -560,10 +547,39 @@ public class CamundaProcessService {
                 outputStream.close();
 
             } catch (IOException e) {
-                throw new ProcessNotDeployableException(caseDefinitionId + " and process: " + processDefinitionKey);
+                throw new ProcessNotDeployableException(caseDefinitionId + " and process: " + latestProcessDefinition.getKey());
             }
         }
         return false;
+    }
+
+    public CamundaProcessDefinition getExistingProcessForFile(
+        CaseDefinitionId caseDefinitionId,
+        BpmnModelInstance bpmnModel
+    ) {
+        String processDefinitionKey = bpmnModel.getModelElementsByType(Process.class).stream()
+            .map(Process::getId)
+            .findFirst().orElseThrow();
+
+        List<CamundaProcessDefinition> processDefinition = camundaRepositoryService.findProcessDefinitions(
+            byKey(processDefinitionKey)
+                .and(byActive())
+                .and(caseDefinitionId == null ? byNotLinkedToCaseDefinition() : byVersionTag(
+                    CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId))
+            ,
+            Sort.by(Sort.Order.desc(VERSION))
+        );
+
+        if (processDefinition.size() > 1 && caseDefinitionId != null) {
+            throw new IllegalStateException(
+                "Only one process definition should be found for key: " + processDefinitionKey
+                    + " and case definition id: " + caseDefinitionId
+            );
+        } else if (processDefinition.size() > 0) {
+            return processDefinition.getFirst();
+        } else {
+            return null;
+        }
     }
 
     private void setProcessesVersionTag(BpmnModelInstance bpmnModel, CaseDefinitionId caseDefinitionId) {

@@ -116,8 +116,7 @@ class ProcessDefinitionCaseDefinitionService(
             }
     }
 
-
-    fun deleteProcessDocumentDefinition(processDefinitionId: ProcessDefinitionId, caseDefinitionId: CaseDefinitionId) {
+    fun deleteProcessDefinitionCaseDefinition(processDefinitionId: ProcessDefinitionId, caseDefinitionId: CaseDefinitionId) {
         denyAuthorization()
         caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId)
 
