@@ -19,6 +19,7 @@ package com.ritense.valtimo.service;
 import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byStartUserId;
 import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byUnfinished;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.NAME;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.VERSION;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byActive;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
@@ -562,18 +563,19 @@ public class CamundaProcessService {
 
         List<CamundaProcessDefinition> processDefinition = camundaRepositoryService.findProcessDefinitions(
             byKey(processDefinitionKey)
-                .and(byLatestVersion())
                 .and(byActive())
                 .and(caseDefinitionId == null ? byNotLinkedToCaseDefinition() : byVersionTag(
                     CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId))
+            ,
+            Sort.by(Sort.Order.desc(VERSION))
         );
 
-        if (processDefinition.size() > 1) {
+        if (processDefinition.size() > 1 && caseDefinitionId != null) {
             throw new IllegalStateException(
                 "Only one process definition should be found for key: " + processDefinitionKey
                     + " and case definition id: " + caseDefinitionId
             );
-        } else if (processDefinition.size() == 1) {
+        } else if (processDefinition.size() > 0) {
             return processDefinition.getFirst();
         } else {
             return null;
