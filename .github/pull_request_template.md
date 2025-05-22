@@ -35,7 +35,7 @@ Integration tests have been added that cover these changes
 - [ ] Not applicable
 
 ### Security
-The [Secure by Default principle](https://en.wikipedia.org/wiki/Secure_by_default) has been applied to these changes
+The [Secure by Design principle](https://en.wikipedia.org/wiki/Secure_by_design) has been applied to these changes
 - [ ] Yes
 - [ ] Not applicable
 

@@ -30,14 +30,14 @@ public class UserSettings {
 
     @Id
     @Column(name = "user_id", nullable = false)
-    private String userId;
+    private String username;
 
     @Type(value = JsonType.class)
     @Column(name = "settings", columnDefinition = "JSON")
     private Map<String, Object> settings;
 
-    public UserSettings(String userId, Map<String, Object> settings) {
-        this.userId = userId;
+    public UserSettings(String username, Map<String, Object> settings) {
+        this.username = username;
         this.settings = settings;
     }
 
@@ -45,8 +45,8 @@ public class UserSettings {
 
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUsername() {
+        return username;
     }
 
     public Map<String, Object> getSettings() {
@@ -64,7 +64,7 @@ public class UserSettings {
 
         UserSettings that = (UserSettings) o;
 
-        if (getUserId() != null ? !getUserId().equals(that.getUserId()) : that.getUserId() != null) {
+        if (getUsername() != null ? !getUsername().equals(that.getUsername()) : that.getUsername() != null) {
             return false;
         }
         return getSettings() != null ? getSettings().equals(that.getSettings()) : that.getSettings() == null;
@@ -72,7 +72,7 @@ public class UserSettings {
 
     @Override
     public int hashCode() {
-        int result = getUserId() != null ? getUserId().hashCode() : 0;
+        int result = getUsername() != null ? getUsername().hashCode() : 0;
         result = 31 * result + (getSettings() != null ? getSettings().hashCode() : 0);
         return result;
     }

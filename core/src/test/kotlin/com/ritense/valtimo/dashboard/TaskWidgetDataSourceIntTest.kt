@@ -46,8 +46,8 @@ class TaskWidgetDataSourceIntTest @Autowired constructor(
         whenever(userManagementService.currentUser.email)
             .thenReturn(mockedUserEmail)
 
-        whenever(userManagementService.currentUser.userIdentifier)
-            .thenReturn(mockedUserIdentifier)
+        whenever(userManagementService.currentUser.username)
+            .thenReturn(mockedUsername)
     }
 
     @Test
@@ -139,7 +139,7 @@ class TaskWidgetDataSourceIntTest @Autowired constructor(
     fun `should support current user criteria`() {
         createTask(mockedUserId)
         createTask(mockedUserEmail)
-        createTask(mockedUserIdentifier)
+        createTask(mockedUsername)
 
         val properties1 = TaskCountDataSourceProperties(
             queryConditions = listOf(
@@ -157,7 +157,7 @@ class TaskWidgetDataSourceIntTest @Autowired constructor(
                 QueryCondition(
                     "task:name",
                     ExpressionOperator.EQUAL_TO,
-                    "\${currentUserIdentifier}"
+                    "\${currentUsername}"
                 )
             )
         )
@@ -197,7 +197,7 @@ class TaskWidgetDataSourceIntTest @Autowired constructor(
     companion object {
         private val mockedUserId = "mockUserId"
         private val mockedUserEmail = "mockUserEmail"
-        private val mockedUserIdentifier = "mockUserIdentifier"
+        private val mockedUsername = "mockUsername"
         private val defaultAssignee = "test@test.com"
     }
 }

@@ -189,28 +189,23 @@ class KeycloakUserManagementServiceTest {
     }
 
     @Test
-    void findByUserIdentifierShouldReturnUserWhenSearchingOnUserId() {
-        OauthConfigHolder.getCurrentInstance().setIdentifierField(ValtimoProperties.IdentifierField.USERID);
-
+    void shouldNotfindByUsernameShouldReturnUserWhenSearchingOnUserId() {
         when(keycloakService.usersResource(any()).get(eq(johnDoe.getId())).toRepresentation())
             .thenReturn(johnDoe);
 
-        var user = userManagementService.findByUserIdentifier(johnDoe.getId());
+        var user = userManagementService.findByUsername(johnDoe.getId());
 
-        verify(keycloakService.usersResource(any()).get(eq(johnDoe.getId()))).toRepresentation();
-        assertThat(user).isNotNull();
+        assertThat(user).isNull();
     }
 
     @Test
-    void findByUserIdentifierShouldReturnUserWhenSearchingOnUsername() {
-        OauthConfigHolder.getCurrentInstance().setIdentifierField(ValtimoProperties.IdentifierField.USERNAME);
-
-        when(keycloakService.usersResource(any()).search(eq(johnDoe.getUsername())))
+    void findByUsernameShouldReturnUserWhenSearchingOnUsername() {
+        when(keycloakService.usersResource(any()).searchByUsername(johnDoe.getUsername(), true))
             .thenReturn(List.of(johnDoe));
 
-        var user = userManagementService.findByUserIdentifier(johnDoe.getUsername());
+        var user = userManagementService.findByUsername(johnDoe.getUsername());
 
-        verify(keycloakService.usersResource(any())).search(eq(johnDoe.getUsername()));
+        verify(keycloakService.usersResource(any())).searchByUsername(johnDoe.getUsername(), true);
         assertThat(user).isNotNull();
     }
 
@@ -225,15 +220,13 @@ class KeycloakUserManagementServiceTest {
     }
 
     @Test
-    void findByUserIdentifierShouldNotThrowAnExceptionWhenSearchingOnUsernameAndNoUserIsNotFound() {
-        OauthConfigHolder.getCurrentInstance().setIdentifierField(ValtimoProperties.IdentifierField.USERNAME);
-
-        when(keycloakService.usersResource(any()).search(eq(johnDoe.getUsername())))
+    void findByUsernameShouldNotThrowAnExceptionWhenSearchingOnUsernameAndNoUserIsNotFound() {
+        when(keycloakService.usersResource(any()).searchByUsername(johnDoe.getUsername(), true))
             .thenReturn(List.of());
 
-        var user = userManagementService.findByUserIdentifier(johnDoe.getUsername());
+        var user = userManagementService.findByUsername(johnDoe.getUsername());
 
-        verify(keycloakService.usersResource(any())).search(eq(johnDoe.getUsername()));
+        verify(keycloakService.usersResource(any())).searchByUsername(johnDoe.getUsername(), true);
         assertThat(user).isNull();
     }
 
