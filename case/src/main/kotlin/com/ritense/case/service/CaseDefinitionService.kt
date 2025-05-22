@@ -25,6 +25,7 @@ import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSpecificationHelper.Companion.byActive
 import com.ritense.case.repository.CaseDefinitionSpecificationHelper.Companion.byCaseDefinitionKey
+import com.ritense.case.repository.CaseDefinitionSpecificationHelper.Companion.byCaseDefinitionVersionTag
 import com.ritense.case.repository.CaseDefinitionSpecificationHelper.Companion.byFinal
 import com.ritense.case.repository.CaseDefinitionSpecificationHelper.Companion.query
 import com.ritense.case.service.validations.CreateCaseListColumnValidator
@@ -52,6 +53,7 @@ import org.semver4j.Semver
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.domain.Specification
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -151,6 +153,7 @@ class CaseDefinitionService(
 
     fun getCaseDefinitions(
         caseDefinitionKey: String? = null,
+        caseDefinitionVersionTag: Semver? = null,
         active: Boolean? = null,
         final: Boolean? = null,
         pageable: Pageable,
@@ -158,18 +161,31 @@ class CaseDefinitionService(
         if (active == null || !active) {
             denyManagementOperation()
         }
-
-        var spec = query()
-        if (caseDefinitionKey != null) {
-            spec = spec.and(byCaseDefinitionKey(caseDefinitionKey))
-        }
-        if (active != null) {
-            spec = spec.and(byActive(active))
-        }
-        if (final != null) {
-            spec = spec.and(byFinal(final))
-        }
+        val spec = getCaseDefinitionsQuery(
+            caseDefinitionKey = caseDefinitionKey,
+            caseDefinitionVersionTag = caseDefinitionVersionTag,
+            active = active,
+            final = final,
+        )
         return caseDefinitionRepository.findAll(spec, pageable)
+    }
+
+    fun getCaseDefinitions(
+        caseDefinitionKey: String? = null,
+        caseDefinitionVersionTag: Semver? = null,
+        active: Boolean? = null,
+        final: Boolean? = null,
+    ): List<CaseDefinition> {
+        if (active == null || !active) {
+            denyManagementOperation()
+        }
+        val spec = getCaseDefinitionsQuery(
+            caseDefinitionKey = caseDefinitionKey,
+            caseDefinitionVersionTag = caseDefinitionVersionTag,
+            active = active,
+            final = final,
+        )
+        return caseDefinitionRepository.findAll(spec)
     }
 
     fun getCaseDefinition(caseDefinitionId: CaseDefinitionId): CaseDefinition {
@@ -304,6 +320,28 @@ class CaseDefinitionService(
             .map { caseDefinitions -> caseDefinitions.maxBy { it.id.versionTag } }
             .map { caseDefinition -> caseDefinition.copy(active = true) }
             .forEach { caseDefinition -> caseDefinitionRepository.save(caseDefinition) }
+    }
+
+    private fun getCaseDefinitionsQuery(
+        caseDefinitionKey: String? = null,
+        caseDefinitionVersionTag: Semver? = null,
+        active: Boolean? = null,
+        final: Boolean? = null,
+    ): Specification<CaseDefinition> {
+        var spec = query()
+        if (caseDefinitionKey != null) {
+            spec = spec.and(byCaseDefinitionKey(caseDefinitionKey))
+        }
+        if (caseDefinitionVersionTag != null) {
+            spec = spec.and(byCaseDefinitionVersionTag(caseDefinitionVersionTag))
+        }
+        if (active != null) {
+            spec = spec.and(byActive(active))
+        }
+        if (final != null) {
+            spec = spec.and(byFinal(final))
+        }
+        return spec
     }
 
     private fun denyManagementOperation() {

@@ -20,8 +20,6 @@ import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.BaseIntegrationTest
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.document.domain.DocumentDefinition
-import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentService
 import com.ritense.notificatiesapi.event.NotificatiesApiNotificationReceivedEvent
 import com.ritense.objectenapi.ObjectenApiPlugin
@@ -66,7 +64,6 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
     private val zaakTypeUrl: String = "https://example.gov"
     private val verzoekObjectType = "objection"
 
-    lateinit var documentDefinition: DocumentDefinition
     lateinit var notificatiesApiPluginConfiguration: PluginConfiguration
     lateinit var objectManagement: ObjectManagement
 
@@ -80,9 +77,6 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var documentService: DocumentService
-
-    @Autowired
-    lateinit var documentDefinitionService: DocumentDefinitionService
 
     @Autowired
     lateinit var processService: RuntimeService
@@ -136,8 +130,6 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
             )
         )
 
-        documentDefinition = runWithoutAuthorization { documentDefinitionService.findLatestByName("profile").get() }
-
         objectManagement = objectManagementService.create(createObjectManagement())
 
         whenever(zaaktypeUrlProvider.getZaaktypeUrl(caseDefinitionId))
@@ -179,7 +171,8 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
               "rsin": "$rsin",
               "verzoekProperties": [{
                 "type": "objection",
-                "caseDefinitionName": "${documentDefinition.id().name()}",
+                "caseDefinitionKey": "${caseDefinitionId.key}",
+                "caseDefinitionVersionTag": "${caseDefinitionId.versionTag}",
                 "processDefinitionKey": "objection-process",
                 "objectManagementId": "${objectManagement.id}",
                 "initiatorRoltypeUrl": "$initiatoRolType",
@@ -236,7 +229,7 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
               "rsin": "$rsin",
               "verzoekProperties": [{
                 "type": "objection",
-                "caseDefinitionName": "${documentDefinition.id().name()}",
+                "caseDefinitionKey": "${caseDefinitionId.key}",
                 "processDefinitionKey": "objection-process",
                 "objectManagementId": "${objectManagement.id}",
                 "initiatorRoltypeUrl": "$initiatoRolType",
@@ -293,7 +286,7 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
               "rsin": "$rsin",
               "verzoekProperties": [{
                 "type": "objection",
-                "caseDefinitionName": "${documentDefinition.id().name()}",
+                "caseDefinitionKey": "${caseDefinitionId.key}",
                 "processDefinitionKey": "objection-process",
                 "objectManagementId": "${objectManagement.id}",
                 "initiatorRoltypeUrl": "$initiatoRolType",
@@ -354,7 +347,7 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
               "rsin": "$rsin",
               "verzoekProperties": [{
                 "type": "objection",
-                "caseDefinitionName": "${documentDefinition.id().name()}",
+                "caseDefinitionKey": "${caseDefinitionId.key}",
                 "processDefinitionKey": "objection-process",
                 "objectManagementId": "${objectManagement.id}",
                 "initiatorRoltypeUrl": "$initiatoRolType",
@@ -390,7 +383,7 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
               "rsin": "$rsin",
               "verzoekProperties": [{
                 "type": "objection",
-                "caseDefinitionName": "${documentDefinition.id().name()}",
+                "caseDefinitionKey": "${caseDefinitionId.key}",
                 "processDefinitionKey": "objection-process",
                 "objectManagementId": "${objectManagement.id}",
                 "initiatorRoltypeUrl": "$initiatoRolType",
@@ -426,7 +419,7 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
               "rsin": "$rsin",
               "verzoekProperties": [{
                 "type": "objection",
-                "caseDefinitionName": "${documentDefinition.id().name()}",
+                "caseDefinitionKey": "${caseDefinitionId.key}",
                 "processDefinitionKey": "objection-process",
                 "objectManagementId": "${objectManagement.id}",
                 "initiatorRoltypeUrl": "$initiatoRolType",

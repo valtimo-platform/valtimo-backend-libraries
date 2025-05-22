@@ -129,14 +129,18 @@ class CaseDefinitionResource(
         return ResponseEntity.ok(CaseDefinitionResponseDto.of(caseDefinition))
     }
 
-    @RunWithoutAuthorization
     @GetMapping("/v1/case-definition")
     fun getCaseDefinitions(
+        @RequestParam caseDefinitionKey: String?,
         @RequestParam active: Boolean?,
         @RequestParam final: Boolean?,
     ): ResponseEntity<List<CaseDefinitionResponseDto>> {
-        val caseDefinitions = service.getCaseDefinitions(active = active, final = final, pageable = Pageable.unpaged())
-        return ResponseEntity.ok(caseDefinitions.content.map { CaseDefinitionResponseDto.of(it) })
+        val caseDefinitions = service.getCaseDefinitions(
+            caseDefinitionKey = caseDefinitionKey,
+            active = active,
+            final = final,
+        )
+        return ResponseEntity.ok(caseDefinitions.map { CaseDefinitionResponseDto.of(it) })
     }
 
     @RunWithoutAuthorization
@@ -150,7 +154,12 @@ class CaseDefinitionResource(
             SortDefault(sort = ["active", "id.versionTag"], direction = Sort.Direction.DESC)
         ) pageable: Pageable
     ): ResponseEntity<Page<CaseDefinitionResponseDto>> {
-        val caseDefinitions = service.getCaseDefinitions(caseDefinitionKey, active, final, pageable)
+        val caseDefinitions = service.getCaseDefinitions(
+            caseDefinitionKey = caseDefinitionKey,
+            active = active,
+            final = final,
+            pageable = pageable
+        )
         return ResponseEntity.ok(caseDefinitions.map { CaseDefinitionResponseDto.of(it) })
     }
 
@@ -161,7 +170,7 @@ class CaseDefinitionResource(
         @PageableDefault(size = 5, sort = ["active", "id.versionTag"], direction = Sort.Direction.DESC)
         pageable: Pageable
     ): ResponseEntity<List<CaseVersionDto>> {
-        val caseDefinitions = service.getCaseDefinitions(caseDefinitionKey, null, null, pageable)
+        val caseDefinitions = service.getCaseDefinitions(caseDefinitionKey = caseDefinitionKey, pageable = pageable)
         return ResponseEntity.ok(caseDefinitions.map { CaseVersionDto.of(it) }.content)
     }
 
