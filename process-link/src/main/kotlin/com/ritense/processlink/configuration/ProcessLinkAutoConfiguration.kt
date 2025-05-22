@@ -19,14 +19,17 @@ package com.ritense.processlink.configuration
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.document.service.DocumentService
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.processlink.autodeployment.ProcessLinkDeploymentApplicationReadyEventListener
 import com.ritense.processlink.domain.SupportedProcessLinkTypeHandler
 import com.ritense.processlink.exporter.ProcessLinkExporter
 import com.ritense.processlink.importer.ProcessLinkImporter
+import com.ritense.processlink.listener.ProcessDefinitionDeletedEventListener
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.processlink.security.config.ProcessLinkHttpSecurityConfigurer
 import com.ritense.processlink.service.CopyProcessLinkOnProcessDeploymentListener
+import com.ritense.processlink.service.ProcessDeploymentService
 import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.processlink.service.ProcessLinkActivityService
 import com.ritense.processlink.service.ProcessLinkService
@@ -34,9 +37,11 @@ import com.ritense.processlink.web.rest.ProcessLinkResource
 import com.ritense.processlink.web.rest.ProcessLinkTaskResource
 import com.ritense.valtimo.autoconfiguration.ValtimoCamundaAutoConfiguration
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.event.ProcessDefinitionDeployedEvent
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
+import org.camunda.bpm.engine.RepositoryService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
@@ -73,12 +78,14 @@ class ProcessLinkAutoConfiguration {
         processLinkMappers: List<ProcessLinkMapper>,
         processLinkTypes: List<SupportedProcessLinkTypeHandler>,
         camundaRepositoryService: CamundaRepositoryService,
+        caseDefinitionChecker: CaseDefinitionChecker,
     ): ProcessLinkService {
         return ProcessLinkService(
             processLinkRepository,
             processLinkMappers,
             processLinkTypes,
-            camundaRepositoryService
+            camundaRepositoryService,
+            caseDefinitionChecker
         )
     }
 
@@ -120,9 +127,19 @@ class ProcessLinkAutoConfiguration {
     fun processLinkProcessLinkResource(
         processLinkService: ProcessLinkService,
         processLinkMappers: List<ProcessLinkMapper>,
-        camundaProcessService: CamundaProcessService
+        camundaProcessService: CamundaProcessService,
+        processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
+        repositoryService: RepositoryService,
+        processDeploymentService: ProcessDeploymentService
     ): ProcessLinkResource {
-        return ProcessLinkResource(processLinkService, processLinkMappers, camundaProcessService)
+        return ProcessLinkResource(
+            processLinkService,
+            processLinkMappers,
+            camundaProcessService,
+            processDefinitionCaseDefinitionService,
+            repositoryService,
+            processDeploymentService
+        )
     }
 
     @Bean
@@ -176,4 +193,24 @@ class ProcessLinkAutoConfiguration {
         objectMapper
     )
 
+    @Bean
+    @ConditionalOnMissingBean(ProcessDefinitionDeletedEventListener::class)
+    fun processDefinitionDeletedEventListener(
+        processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
+        processLinkService: ProcessLinkService
+    ) = ProcessDefinitionDeletedEventListener(processDefinitionCaseDefinitionService, processLinkService)
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessDeploymentService::class)
+    fun processDeploymentService(
+        camundaProcessService: CamundaProcessService,
+        processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
+        processLinkService: ProcessLinkService,
+    ): ProcessDeploymentService {
+        return ProcessDeploymentService(
+            camundaProcessService,
+            processDefinitionCaseDefinitionService,
+            processLinkService
+        )
+    }
 }

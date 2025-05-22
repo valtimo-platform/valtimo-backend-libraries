@@ -1,0 +1,136 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright 2015-2024 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet id="1" author="Ritense">
+        <dropForeignKeyConstraint baseTableName="task_list_column"
+                                    constraintName="fk_task_list_column_case_definition"/>
+        <!--TODO: add this back based on the new information-->
+    </changeSet>
+
+    <changeSet id="2" author="Ritense">
+        <dropPrimaryKey tableName="case_definition"/>
+    </changeSet>
+
+    <changeSet id="3" author="Ritense">
+        <renameColumn tableName="case_definition"
+                      oldColumnName="case_definition_name"
+                      newColumnName="case_definition_key"
+                      columnDataType="varchar(256)"/>
+        <addColumn tableName="case_definition">
+            <column name="case_definition_version_tag" type="VARCHAR(200)" defaultValue="1.0.0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="case_definition">
+            <column name="case_definition_name" type="VARCHAR(256)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="4" author="Ritense">
+        <addPrimaryKey tableName="case_definition" columnNames="case_definition_key, case_definition_version_tag"/>
+    </changeSet>
+
+    <changeSet id="5" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql>
+            UPDATE case_definition cd
+            SET case_definition_name = (
+                SELECT JSON_EXTRACT(jsd.json_schema, '$.title')
+                FROM json_schema_document_definition jsd
+                WHERE jsd.document_definition_name = cd.case_definition_key
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="6" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <sql>
+            UPDATE case_definition cd
+            SET case_definition_name = (
+                SELECT jsd.json_schema->>'title'
+                FROM json_schema_document_definition jsd
+                WHERE jsd.document_definition_name = cd.case_definition_key
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="7" author="Ritense">
+        <addColumn tableName="task_list_column">
+            <column name="case_definition_version_tag" type="VARCHAR(200)" defaultValue="1.0.0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="8" author="Ritense">
+        <dropPrimaryKey tableName="json_schema_document_definition"/>
+        <dropPrimaryKey tableName="json_schema_document_definition_sequence_record"/>
+    </changeSet>
+
+    <changeSet id="9" author="Ritense">
+        <dropColumn tableName="json_schema_document_definition" columnName="document_definition_version"/>
+    </changeSet>
+
+    <changeSet id="12" author="Ritense">
+        <addColumn tableName="json_schema_document_definition">
+            <column name="case_definition_key" type="VARCHAR(256)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="json_schema_document_definition">
+            <column name="case_definition_version_tag" type="VARCHAR(200)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <update tableName="json_schema_document_definition">
+            <column name="case_definition_key" valueComputed="document_definition_name"/>
+            <column name="case_definition_version_tag" value="1.0.0"/>
+        </update>
+        <addNotNullConstraint
+            tableName="json_schema_document_definition"
+            columnName="case_definition_key"
+            columnDataType="VARCHAR(256)"/>
+        <addNotNullConstraint
+            tableName="json_schema_document_definition"
+            columnName="case_definition_version_tag"
+            columnDataType="VARCHAR(200)"/>
+    </changeSet>
+
+    <changeSet id="13" author="Ritense">
+        <addPrimaryKey tableName="json_schema_document_definition"
+                       columnNames="document_definition_name, case_definition_key, case_definition_version_tag"
+        />
+        <addPrimaryKey tableName="json_schema_document_definition_sequence_record"
+                       columnNames="document_definition_name"/>
+        <addForeignKeyConstraint baseTableName="json_schema_document_definition"
+                                 baseColumnNames="case_definition_key, case_definition_version_tag"
+                                 constraintName="fk_json_schema_document_definition_case_definition"
+                                 referencedTableName="case_definition"
+                                 referencedColumnNames="case_definition_key, case_definition_version_tag"/>
+    </changeSet>
+
+</databaseChangeLog>

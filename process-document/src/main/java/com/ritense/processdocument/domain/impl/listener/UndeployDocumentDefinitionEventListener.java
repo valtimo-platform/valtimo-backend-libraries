@@ -17,6 +17,7 @@
 package com.ritense.processdocument.domain.impl.listener;
 
 import com.ritense.authorization.AuthorizationContext;
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.valtimo.contract.event.UndeployDocumentDefinitionEvent;
 import com.ritense.valtimo.service.CamundaProcessService;
@@ -31,33 +32,37 @@ public class UndeployDocumentDefinitionEventListener {
 
     private static final Logger logger = LoggerFactory.getLogger(UndeployDocumentDefinitionEventListener.class);
     private final ProcessDocumentAssociationService processDocumentAssociationService;
+    private final ProcessDefinitionCaseDefinitionService processDefinitionCaseDefinitionService;
     private final CamundaProcessService camundaProcessService;
     private static final String REASON = "Triggerd undeployment of document definition";
 
     public UndeployDocumentDefinitionEventListener(
         ProcessDocumentAssociationService processDocumentAssociationService,
+        ProcessDefinitionCaseDefinitionService processDefinitionCaseDefinitionService,
         CamundaProcessService camundaProcessService
     ) {
         this.processDocumentAssociationService = processDocumentAssociationService;
+        this.processDefinitionCaseDefinitionService = processDefinitionCaseDefinitionService;
         this.camundaProcessService = camundaProcessService;
     }
 
-    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
+//TODO: How do we want to support this?
+/*    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleEvent(UndeployDocumentDefinitionEvent event) {
         logger.debug("process document definition to be removed due to undeployment document definition with name: {}", event.getDocumentDefinitionName());
         String documentDefinitionName = event.getDocumentDefinitionName();
         AuthorizationContext.runWithoutAuthorization(() -> {
-            processDocumentAssociationService.findByDocumentDefinitionName(documentDefinitionName).ifPresent(processDocumentDefinition -> {
+            processDefinitionCaseDefinitionService.findByDocumentDefinitionName(documentDefinitionName).ifPresent(processDocumentDefinition -> {
                 camundaProcessService.deleteAllProcesses(
                     processDocumentDefinition.processDocumentDefinitionId().processDefinitionKey().toString(), REASON
                 );
                 processDocumentAssociationService.deleteProcessDocumentInstances(
                     processDocumentDefinition.processName());
-                processDocumentAssociationService.deleteProcessDocumentDefinition(documentDefinitionName);
+                processDefinitionCaseDefinitionService.deleteProcessDocumentDefinition(documentDefinitionName);
             });
             return null;
         });
-    }
+    }*/
 
 }

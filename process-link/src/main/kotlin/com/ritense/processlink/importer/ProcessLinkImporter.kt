@@ -72,12 +72,12 @@ class ProcessLinkImporter(
                     .toProcessLinkCreateRequestDto(deployDto)
 
                 try {
-                    processLinkService.createProcessLink(processLinkCreateDto)
+                    processLinkService.createProcessLink(processLinkCreateDto, request.caseDefinitionId)
                 } catch (e: ProcessLinkExistsException) {
                     try {
                         val processLinkUpdateDto = processLinkService.getProcessLinkMapper(deployDto.processLinkType)
                             .toProcessLinkUpdateRequestDto(deployDto, e.existingProcessLinkId)
-                        processLinkService.updateProcessLink(processLinkUpdateDto)
+                        processLinkService.updateProcessLink(processLinkUpdateDto, request.caseDefinitionId)
                     } catch (e: IllegalStateException) {
                         throw IllegalStateException(
                             "Failed to deploy process link. For file: ${request.fileName} and activity-id: ${deployDto.activityId}",
@@ -90,6 +90,6 @@ class ProcessLinkImporter(
     }
 
     private companion object {
-        val FILENAME_REGEX = """(?:.*\/)?(.+)\.processlink\.json""".toRegex()
+        val FILENAME_REGEX = """/process-link/(?:.*\/)?(.+)\.process-link\.json""".toRegex()
     }
 }

@@ -25,7 +25,7 @@ import com.ritense.note.service.NoteService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 
 class NoteSpecificationFactory(
-    private val noteService: NoteService,
+    private val noteRepository: NoteRepository,
     private var queryDialectHelper: QueryDialectHelper
 ) : AuthorizationSpecificationFactory<Note> {
 
@@ -36,7 +36,7 @@ class NoteSpecificationFactory(
         return NoteSpecification(
             request,
             permissions,
-            noteService,
+            noteRepository,
             queryDialectHelper
         )
     }

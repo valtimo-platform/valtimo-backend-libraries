@@ -20,23 +20,17 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 import com.ritense.valtimo.BaseIntegrationTest;
-import com.ritense.valtimo.contract.audit.AuditEvent;
 import org.camunda.bpm.engine.RuntimeService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.event.EventListener;
 
 @Tag("integration")
 class ProcessInstanceEventHandlerIntTest extends BaseIntegrationTest {
 
     @Autowired
     private RuntimeService runtimeService;
-
-    @MockBean
-    private AuditEventListener auditEventListener;
 
     @Test
     @Disabled
@@ -45,11 +39,6 @@ class ProcessInstanceEventHandlerIntTest extends BaseIntegrationTest {
 
         verify(auditEventListener).handle(any(ProcessStartedEvent.class));
         verify(auditEventListener).handle(any(ProcessEndedEvent.class));
-    }
-
-    public interface AuditEventListener {
-        @EventListener(classes = AuditEvent.class)
-        void handle(AuditEvent auditEvent);
     }
 
 }

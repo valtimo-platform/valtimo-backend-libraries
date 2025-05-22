@@ -51,10 +51,5 @@ class TestApplication {
         fun testCategoryPlugin(pluginService: PluginService): PluginFactory<TestCategoryPlugin> {
             return spy(TestCategoryPluginFactory(pluginService))
         }
-
-        @Bean
-        fun runtimeService():RuntimeService {
-            return RuntimeServiceFluentMock().runtimeService
-        }
     }
 }

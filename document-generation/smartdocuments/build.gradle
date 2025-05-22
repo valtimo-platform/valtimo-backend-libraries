@@ -30,9 +30,9 @@ dockerCompose {
 }
 
 dependencies {
+    implementation project(':case')
     implementation project(':contract')
     implementation project(':core')
-    implementation project(':document')
     implementation project(":document-generation")
     implementation project(':process-document')
     implementation project(':resource')
@@ -46,7 +46,6 @@ dependencies {
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "jakarta.inject:jakarta.inject-api:${jakartaInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -65,7 +64,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
     implementation "org.apache.commons:commons-text:${commonsText}"
-    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "io.github.oshai:kotlin-logging:${kotlinLoggingVersion}"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
@@ -76,8 +75,7 @@ dependencies {
     implementation "commons-io:commons-io:${commonsIoVersion}"
 
     testImplementation "org.springframework.security:spring-security-test"
-    testImplementation("org.camunda.bpm.extension.mockito:camunda-bpm-mockito:${camundaBpmMockitoVersion}")
-    testImplementation("org.camunda.bpm.assert:camunda-bpm-assert:${camundaBpmAssertVersion}")
+    testImplementation("org.camunda.bpm:camunda-bpm-assert:${camundaBpmAssertVersion}")
     testImplementation "com.squareup.okhttp3:mockwebserver:${okhttpVersion}"
     testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"

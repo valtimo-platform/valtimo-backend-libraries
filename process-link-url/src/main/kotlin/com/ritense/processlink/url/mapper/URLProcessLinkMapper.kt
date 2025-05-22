@@ -30,6 +30,7 @@ import com.ritense.processlink.url.web.rest.dto.URLProcessLinkCreateRequestDto
 import com.ritense.processlink.url.web.rest.dto.URLProcessLinkExportResponseDto
 import com.ritense.processlink.url.web.rest.dto.URLProcessLinkResponseDto
 import com.ritense.processlink.url.web.rest.dto.URLProcessLinkUpdateRequestDto
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import java.util.UUID
 
 class URLProcessLinkMapper(
@@ -78,7 +79,7 @@ class URLProcessLinkMapper(
         )
     }
 
-    override fun toNewProcessLink(createRequestDto: ProcessLinkCreateRequestDto): ProcessLink {
+    override fun toNewProcessLink(createRequestDto: ProcessLinkCreateRequestDto, caseDefinitionId: CaseDefinitionId?): ProcessLink {
         createRequestDto as URLProcessLinkCreateRequestDto
         return URLProcessLink(
             id = UUID.randomUUID(),
@@ -91,7 +92,8 @@ class URLProcessLinkMapper(
 
     override fun toUpdatedProcessLink(
         processLinkToUpdate: ProcessLink,
-        updateRequestDto: ProcessLinkUpdateRequestDto
+        updateRequestDto: ProcessLinkUpdateRequestDto,
+        caseDefinitionId: CaseDefinitionId?
     ): ProcessLink {
         updateRequestDto as URLProcessLinkUpdateRequestDto
         assert(processLinkToUpdate.id == updateRequestDto.id)

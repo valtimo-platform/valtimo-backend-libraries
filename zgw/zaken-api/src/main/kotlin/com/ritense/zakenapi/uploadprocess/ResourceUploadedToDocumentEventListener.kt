@@ -23,7 +23,7 @@ import com.ritense.resource.authorization.ResourcePermissionActionProvider.Compa
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.domain.TemporaryResourceUploadedEvent
 import com.ritense.resource.service.TemporaryResourceStorageService
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.event.EventListener
 
 class ResourceUploadedToDocumentEventListener(

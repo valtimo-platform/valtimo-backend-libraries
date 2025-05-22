@@ -29,69 +29,50 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 public class ProcessDocumentHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
-    private static final String DEFINITION_URL = "/api/v1/process-document/definition";
-    private static final String PROCESS_URL = "/api/v1/process-document/demo/{documentDefinitionName}/process";
+    private static final String FEATURE_PROCESS_URL =
+        "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/feature-process";
 
     @Override
     public void configure(HttpSecurity http) {
         try {
             http.authorizeHttpRequests(requests -> requests
-                .requestMatchers(antMatcher(GET, DEFINITION_URL))
+                .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionKey}/case-process-link"))
                 .authenticated()
-                .requestMatchers(antMatcher(POST, DEFINITION_URL))
-                .hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(DELETE, DEFINITION_URL))
-                .hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(
-                    GET, DEFINITION_URL + "/document/{document-definition-name}"))
+                .requestMatchers(antMatcher(GET, "/api/v1/document-instance/{documentId}/case-process-link"))
                 .authenticated()
-                .requestMatchers(antMatcher(
-                    GET, "/api/v2/process-document/definition/document/{document-definition-name}"))
-                .authenticated()
-                .requestMatchers(antMatcher(
-                    GET, "/api/management/v1/process-document/definition/document/{document-definition-name}"))
-                .hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(
-                    GET, DEFINITION_URL + "/document/{document-definition-name}/version/{document-definition-version}")
-                )
-                .hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(
-                    GET, DEFINITION_URL + "/process/{process-definition-key}"))
-                .hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(
-                    GET,
-                    DEFINITION_URL + "/processinstance/{process-instance-id}"
-                ))
+                .requestMatchers(antMatcher(GET, "/api/v1/process-instance/{processInstanceId}/case-process-link"))
                 .authenticated()
                 .requestMatchers(antMatcher(GET, "/api/v1/process-document/instance/document/{document-id}"))
                 .authenticated()
-                .requestMatchers(antMatcher(
-                    GET, "/api/v1/process-document/instance/document/{document-id}/audit"))
+                .requestMatchers(antMatcher(GET, "/api/v1/process-document/instance/document/{document-id}/audit"))
+                .authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v1/process-document/operation/new-document-and-start-process"))
                 .authenticated()
                 .requestMatchers(antMatcher(
-                    POST, "/api/v1/process-document/operation/new-document-and-start-process"))
+                    POST,
+                    "/api/v1/process-document/operation/modify-document-and-complete-task"
+                ))
                 .authenticated()
                 .requestMatchers(antMatcher(
-                    POST, "/api/v1/process-document/operation/modify-document-and-complete-task"))
+                    POST,
+                    "/api/v1/process-document/operation/modify-document-and-start-process"
+                ))
                 .authenticated()
-                .requestMatchers(antMatcher(
-                    POST, "/api/v1/process-document/operation/modify-document-and-start-process"))
+                .requestMatchers(antMatcher(POST, "/api/v3/task"))
                 .authenticated()
-                .requestMatchers(antMatcher(
-                    GET, PROCESS_URL))
+                .requestMatchers(antMatcher(POST, "/api/v1/document-definition/{caseDefinitionName}/task/search"))
+                .authenticated()
+                //admin endpoints
+                .requestMatchers(antMatcher(GET, FEATURE_PROCESS_URL + "/{type}"))
+                .hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(PUT, FEATURE_PROCESS_URL))
+                .hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(DELETE, FEATURE_PROCESS_URL + "/{type}"))
                 .hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(
-                    PUT, PROCESS_URL))
-                .hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(
-                    DELETE, PROCESS_URL))
-                .hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(
-                    POST, "/api/v3/task"))
-                .authenticated()
-                .requestMatchers(antMatcher(
-                    POST, "/api/v1/document-definition/{caseDefinitionName}/task/search"))
-                .authenticated()
+                    PUT,
+                    "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/process/{processDefinitionId}/properties"
+                )).hasAuthority(ADMIN)
             );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);

@@ -1,6 +1,0 @@
-services:
-    db:
-        ports:
-            - "3303:3306"
-        environment:
-            - MYSQL_DATABASE=document-test

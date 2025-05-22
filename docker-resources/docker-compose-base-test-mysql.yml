@@ -8,6 +8,7 @@ services:
             --innodb-flush-method=O_DIRECT
             --lower-case-table-names=1
             --sql-mode=NO_ENGINE_SUBSTITUTION
+            --transaction-isolation=READ-COMMITTED
         #ports:
            # - "5432:5432" #needs overriding "XXXX:5432" XXXX=your-own-port-per-module-test
         environment:
@@ -62,5 +63,6 @@ services:
 #   url: jdbc:mysql://localhost:3354/keycloak-iam-test
 #   url: jdbc:mysql://localhost:3355/logging-test
 #   url: jdbc:mysql://localhost:3356/process-link-url-test
+#   url: jdbc:mysql://localhost:3357/exporter-test
 #   url: localhost:55672 <--outbox rabbitmq
 #   url: localhost:55673 <--inbox rabbitmq

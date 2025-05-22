@@ -33,6 +33,8 @@ valtimo:
     authorization:
         zgwDocuments:
             enabled: true
+    import:
+        whitelistedPaths: "example.properties.*"
 
 camunda:
     bpm:

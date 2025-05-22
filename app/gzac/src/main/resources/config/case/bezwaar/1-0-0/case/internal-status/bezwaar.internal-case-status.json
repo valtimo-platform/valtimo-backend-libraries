@@ -1,0 +1,20 @@
+[
+    {
+        "key": "aanvraag-ontvangen",
+        "title": "Aanvraag ontvangen",
+        "visibleInCaseListByDefault": true,
+        "color": "BLUE"
+    },
+    {
+        "key": "in-behandeling",
+        "title": "In behandeling",
+        "visibleInCaseListByDefault": true,
+        "color": "PURPLE"
+    },
+    {
+        "key": "informatieverzoek-uitgezet",
+        "title": "Informatieverzoek uitgezet",
+        "visibleInCaseListByDefault": true,
+        "color": "GREEN"
+    }
+]

@@ -14,12 +14,34 @@
  * limitations under the License.
  */
 
+dockerCompose {
+    projectName = "exporter"
+
+    securityTesting {
+        isRequiredBy(project.tasks.securityTesting)
+        useComposeFiles.addAll("../docker-resources/docker-compose-base-test-postgresql.yml", "docker-compose-override-postgresql.yml")
+    }
+
+    integrationTestingPostgresql {
+        isRequiredBy(project.tasks.integrationTestingPostgresql)
+        useComposeFiles.addAll("../docker-resources/docker-compose-base-test-postgresql.yml", "docker-compose-override-postgresql.yml")
+    }
+
+    integrationTestingMysql {
+        isRequiredBy(project.tasks.integrationTestingMysql)
+        useComposeFiles.addAll("../docker-resources/docker-compose-base-test-mysql.yml", "docker-compose-override-mysql.yml")
+    }
+}
+
 dependencies {
+    implementation project(":contract")
+
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
-    implementation "io.github.microutils:kotlin-logging:$kotlinLoggingVersion"
+    implementation "io.github.oshai:kotlin-logging:$kotlinLoggingVersion"
 
+    testImplementation project(":test-utils-common")
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion"
 

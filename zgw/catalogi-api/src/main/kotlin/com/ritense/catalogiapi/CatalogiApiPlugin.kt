@@ -49,7 +49,7 @@ import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zgw.LoggingConstants.CATALOGI_API
 import com.ritense.zgw.Page
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.net.URI
 import java.time.LocalDate
@@ -92,7 +92,7 @@ class CatalogiApiPlugin(
             } else {
                 val document =
                     AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
-                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
+                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().caseDefinitionId())
                 getStatustypeByOmschrijving(zaaktypeUrl, statustype).url!!.toASCIIString()
             }
 
@@ -122,7 +122,7 @@ class CatalogiApiPlugin(
             } else {
                 val document =
                     AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
-                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
+                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().caseDefinitionId())
                 getResultaattypeByOmschrijving(zaaktypeUrl, resultaattype).url!!.toASCIIString()
             }
 
@@ -152,7 +152,7 @@ class CatalogiApiPlugin(
             } else {
                 val document =
                     AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
-                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
+                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().caseDefinitionId())
                 getBesluittypeByOmschrijving(zaaktypeUrl, besluittype).url!!.toASCIIString()
             }
 
@@ -181,7 +181,7 @@ class CatalogiApiPlugin(
             } else {
                 val document =
                     AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
-                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
+                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().caseDefinitionId())
 
                 getEigenschapByName(zaaktypeUrl, eigenschap).url!!.toASCIIString()
             }

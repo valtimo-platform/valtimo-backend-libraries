@@ -31,6 +31,7 @@ import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.springframework.stereotype.Component
 import java.util.UUID
 
@@ -105,7 +106,7 @@ class PluginProcessLinkMapper(
         }
     }
 
-    override fun toNewProcessLink(createRequestDto: ProcessLinkCreateRequestDto): PluginProcessLink {
+    override fun toNewProcessLink(createRequestDto: ProcessLinkCreateRequestDto, caseDefinitionId: CaseDefinitionId?): PluginProcessLink {
         createRequestDto as PluginProcessLinkCreateDto
         return PluginProcessLink(
             id = UUID.randomUUID(),
@@ -120,7 +121,8 @@ class PluginProcessLinkMapper(
 
     override fun toUpdatedProcessLink(
         processLinkToUpdate: ProcessLink,
-        updateRequestDto: ProcessLinkUpdateRequestDto
+        updateRequestDto: ProcessLinkUpdateRequestDto,
+        caseDefinitionId: CaseDefinitionId?
     ): PluginProcessLink {
         return withLoggingContext(ProcessLink::class, processLinkToUpdate.id) {
             updateRequestDto as PluginProcessLinkUpdateDto

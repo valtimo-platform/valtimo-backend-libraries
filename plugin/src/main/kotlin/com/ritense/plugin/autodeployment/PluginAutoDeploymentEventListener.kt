@@ -22,8 +22,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.ritense.plugin.service.PluginService
-import mu.KLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.core.Ordered
@@ -80,7 +79,7 @@ class PluginAutoDeploymentEventListener(
     }
 
     companion object {
-        private val logger: KLogger = KotlinLogging.logger {}
+        private val logger = KotlinLogging.logger {}
         const val PATH = "classpath*:**/*.pluginconfig.json"
     }
 

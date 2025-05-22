@@ -26,6 +26,7 @@ import com.ritense.search.domain.FieldType
 import com.ritense.search.domain.SearchFieldMatchType
 import com.ritense.search.domain.SearchFieldV2
 import com.ritense.search.service.SearchFieldV2Service
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -62,7 +63,7 @@ class SearchFieldExporterTest {
     fun `should not export when no searchfields are configured`() {
         val request = DocumentDefinitionExportRequest(
             name = "empty-document-definition-name",
-            version = 1L
+            CaseDefinitionId.of("test", "1.0.0")
         )
 
         val result = testExporter.export(request)
@@ -74,7 +75,7 @@ class SearchFieldExporterTest {
     fun `should return changeset with correct details`() {
         val request = DocumentDefinitionExportRequest(
             name = "my-document-definition-name",
-            version = 1L
+            CaseDefinitionId.of("test", "1.0.0")
         )
         whenever(searchFieldService.findAllByOwnerTypeAndOwnerId(testExporter.ownerTypeKey(), request.name)).thenReturn(
             listOf(
@@ -105,7 +106,7 @@ class SearchFieldExporterTest {
 
         val result = testExporter.export(request)
 
-        val path = testExporter.getPath(request.name)
+        val path = testExporter.getPath(request)
         val ownerTypeKey = testExporter.ownerTypeKey()
         val caseTaskListExport = result.exportFiles.singleOrNull {
             it.path == path
@@ -132,7 +133,7 @@ class SearchFieldExporterTest {
         objectMapper: ObjectMapper,
         searchFieldService: SearchFieldV2Service,
     ) : SearchFieldExporter(objectMapper, searchFieldService) {
-        override fun getPath(documentDefinitionName: String): String = "some/$documentDefinitionName/path"
+        override fun getPath(request: DocumentDefinitionExportRequest): String = "some/$request/path"
 
         override fun ownerTypeKey(): String = "some-owner-type"
     }

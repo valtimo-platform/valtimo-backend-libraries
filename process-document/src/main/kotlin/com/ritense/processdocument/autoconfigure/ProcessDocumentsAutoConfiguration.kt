@@ -21,6 +21,7 @@ import com.ritense.authorization.AuthorizationService
 import com.ritense.case.repository.TaskListColumnRepository
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository
+import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.processdocument.camunda.authorization.CamundaTaskDocumentMapper
@@ -29,39 +30,45 @@ import com.ritense.processdocument.exporter.ProcessDocumentLinkExporter
 import com.ritense.processdocument.importer.ProcessDocumentLinkImporter
 import com.ritense.processdocument.listener.CaseAssigneeListener
 import com.ritense.processdocument.listener.CaseAssigneeTaskCreatedListener
+import com.ritense.processdocument.listener.DecisionCaseEventListener
+import com.ritense.processdocument.listener.ProcessDefinitionCaseEventListener
+import com.ritense.processdocument.repository.ProcessDefinitionCaseDefinitionRepository
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository
+import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
 import com.ritense.processdocument.service.CaseTaskListSearchService
 import com.ritense.processdocument.service.CorrelationService
 import com.ritense.processdocument.service.CorrelationServiceImpl
+import com.ritense.processdocument.service.DefaultProcessDefinitionCaseDefinitionLinker
 import com.ritense.processdocument.service.DocumentDelegateService
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentDeletedEventListener
-import com.ritense.processdocument.service.ProcessDocumentDeploymentService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.ProcessDocumentsService
 import com.ritense.processdocument.service.ValueResolverDelegateService
 import com.ritense.processdocument.tasksearch.TaskListSearchFieldV2Mapper
-import com.ritense.processdocument.tasksearch.TaskSearchFieldDeployer
 import com.ritense.processdocument.tasksearch.TaskSearchFieldExporter
 import com.ritense.processdocument.tasksearch.TaskSearchFieldImporter
+import com.ritense.processdocument.web.CaseDefinitionProcessManagementResource
+import com.ritense.processdocument.web.ProcessCaseManagementResource
 import com.ritense.processdocument.web.TaskListResource
 import com.ritense.search.repository.SearchFieldV2Repository
 import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
-import com.ritense.valtimo.changelog.service.ChangelogDeployer
-import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.annotation.ProcessBean
 import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import com.ritense.valtimo.decision.CamundaDecisionService
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.persistence.EntityManager
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.TaskService
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -197,22 +204,28 @@ class ProcessDocumentsAutoConfiguration {
     fun processDocumentLinkExporter(
         objectMapper: ObjectMapper,
         camundaRepositoryService: CamundaRepositoryService,
-        processDocumentAssociationService: ProcessDocumentAssociationService
+        processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService
     ): ProcessDocumentLinkExporter {
         return ProcessDocumentLinkExporter(
             objectMapper,
             camundaRepositoryService,
-            processDocumentAssociationService
+            processDefinitionCaseDefinitionService
         )
     }
 
     @Bean
     @ConditionalOnMissingBean(ProcessDocumentLinkImporter::class)
     fun processDocumentLinkImporter(
-        processDocumentDeploymentService: ProcessDocumentDeploymentService
+        processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
+        documentDefinitionService: DocumentDefinitionService,
+        objectMapper: ObjectMapper,
+        processService: CamundaProcessService
     ): ProcessDocumentLinkImporter {
         return ProcessDocumentLinkImporter(
-            processDocumentDeploymentService,
+            processDefinitionCaseDefinitionService,
+            documentDefinitionService,
+            objectMapper,
+            processService
         )
     }
 
@@ -259,24 +272,6 @@ class ProcessDocumentsAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(TaskSearchFieldDeployer::class)
-    fun taskSearchFieldDeployer(
-        objectMapper: ObjectMapper,
-        changelogService: ChangelogService,
-        repository: SearchFieldV2Repository,
-        searchFieldService: SearchFieldV2Service,
-        @Value("\${valtimo.changelog.task-search-fields.clear-tables:false}") clearTables: Boolean
-    ): TaskSearchFieldDeployer {
-        return TaskSearchFieldDeployer(
-            objectMapper,
-            changelogService,
-            repository,
-            searchFieldService,
-            clearTables
-        )
-    }
-
-    @Bean
     @ConditionalOnMissingBean(TaskSearchFieldExporter::class)
     fun taskSearchFieldExporter(
         objectMapper: ObjectMapper,
@@ -291,12 +286,30 @@ class ProcessDocumentsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(TaskSearchFieldImporter::class)
     fun taskSearchFieldImporter(
-        taskSearchFieldDeployer: TaskSearchFieldDeployer,
-        changelogDeployer: ChangelogDeployer
+        objectMapper: ObjectMapper,
+        repository: SearchFieldV2Repository,
+        searchFieldService: SearchFieldV2Service,
     ): TaskSearchFieldImporter {
         return TaskSearchFieldImporter(
-            taskSearchFieldDeployer,
-            changelogDeployer,
+            objectMapper, repository, searchFieldService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessDefinitionCaseDefinitionService::class)
+    fun processDefinitionCaseDefinitionService(
+        authorizationService: AuthorizationService,
+        processDefinitionCaseDefinitionRepository: ProcessDefinitionCaseDefinitionRepository,
+        documentService: JsonSchemaDocumentService,
+        runtimeService: RuntimeService,
+        caseDefinitionChecker: CaseDefinitionChecker,
+    ): ProcessDefinitionCaseDefinitionService {
+        return ProcessDefinitionCaseDefinitionService(
+            authorizationService,
+            processDefinitionCaseDefinitionRepository,
+            documentService,
+            runtimeService,
+            caseDefinitionChecker,
         )
     }
 
@@ -311,5 +324,49 @@ class ProcessDocumentsAutoConfiguration {
             runtimeService,
             processDocumentAssociationService
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessDefinitionCaseDefinitionLinker::class)
+    fun defaultProcessDefinitionCaseDefinitionLinker(
+        processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService
+    ): ProcessDefinitionCaseDefinitionLinker {
+        return DefaultProcessDefinitionCaseDefinitionLinker(
+            processDefinitionCaseDefinitionService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CaseDefinitionProcessManagementResource::class)
+    fun caseDefinitionProcessManagementResource(
+        caseDefinitionProcessLinkService: CaseDefinitionProcessLinkService
+    ): CaseDefinitionProcessManagementResource {
+        return CaseDefinitionProcessManagementResource(caseDefinitionProcessLinkService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessCaseManagementResource::class)
+    fun processCaseManagementResource(
+        processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService
+    ): ProcessCaseManagementResource {
+        return ProcessCaseManagementResource(processDefinitionCaseDefinitionService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessDefinitionCaseEventListener::class)
+    fun processDefinitionCaseEventListener(
+        processService: CamundaProcessService,
+        associationService: ProcessDefinitionCaseDefinitionService,
+    ): ProcessDefinitionCaseEventListener {
+        return ProcessDefinitionCaseEventListener(processService, associationService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DecisionCaseEventListener::class)
+    fun decisionCaseEventListener(
+        decisionService: CamundaDecisionService,
+        processService: CamundaProcessService,
+    ): DecisionCaseEventListener {
+        return DecisionCaseEventListener(decisionService, processService)
     }
 }

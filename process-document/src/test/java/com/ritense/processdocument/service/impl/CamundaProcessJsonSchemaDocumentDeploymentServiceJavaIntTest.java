@@ -21,8 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.processdocument.BaseIntegrationTest;
-import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
-import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,132 +31,86 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 class CamundaProcessJsonSchemaDocumentDeploymentServiceJavaIntTest extends BaseIntegrationTest {
 
-    private static final String DOCUMENT_DEFINITION_NAME = "house";
-    private static final String PROCESS_DEFINITION_KEY = "loan-process-demo";
+    private static final CaseDefinitionId CASE_DEFINITION_ID = new CaseDefinitionId("house", "1.0.0");
 
     @Autowired
     private DocumentDefinitionService documentDefinitionService;
 
     @Test
     void shouldDeployProcessDocumentLinkFromResourceFolder() {
-        final var processDocumentDefinitions = AuthorizationContext.runWithoutAuthorization(() ->
-            camundaProcessJsonSchemaDocumentAssociationService.findProcessDocumentDefinitions(
-                DOCUMENT_DEFINITION_NAME
-            )
+        final var processDefinitionCaseDefinitions = AuthorizationContext.runWithoutAuthorization(() ->
+            processDefinitionCaseDefinitionService.findProcessDefinitionCaseDefinitions(new CaseDefinitionId("notahouse", "1.0.0"))
         );
 
-        assertThat(processDocumentDefinitions.size()).isGreaterThanOrEqualTo(1);
-        assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().processDefinitionKey()).hasToString(PROCESS_DEFINITION_KEY);
-        assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().documentDefinitionId().name()).isEqualTo(DOCUMENT_DEFINITION_NAME);
-        assertThat(processDocumentDefinitions.get(0).canInitializeDocument()).isTrue();
-        assertThat(processDocumentDefinitions.get(0).startableByUser()).isTrue();
+        assertThat(processDefinitionCaseDefinitions.size()).isGreaterThanOrEqualTo(1);
+        assertThat(processDefinitionCaseDefinitions.get(0).getId().getProcessDefinitionId()).isNotNull();
+        assertThat(processDefinitionCaseDefinitions.get(0).getId().getCaseDefinitionId().getKey()).isEqualTo("notahouse");
+        assertThat(processDefinitionCaseDefinitions.get(0).getId().getCaseDefinitionId().getVersionTag().toString()).isEqualTo("1.0.0");
+        assertThat(processDefinitionCaseDefinitions.get(0).getCanInitializeDocument()).isTrue();
+        assertThat(processDefinitionCaseDefinitions.get(0).getStartableByUser()).isTrue();
     }
 
     @Test
     public void findProcessDocumentDefinitionWithStartableByUserTrue() {
         Boolean startableByUser = true;
-        final var processDocumentDefinitions = AuthorizationContext.runWithoutAuthorization(() ->
-            camundaProcessJsonSchemaDocumentAssociationService.findProcessDocumentDefinitions(
-                DOCUMENT_DEFINITION_NAME, startableByUser
+        final var processDefinitionCaseDefinitions = AuthorizationContext.runWithoutAuthorization(() ->
+            processDefinitionCaseDefinitionService.findProcessDefinitionCaseDefinitions(
+                CASE_DEFINITION_ID,
+                startableByUser,
+                null
             )
         );
 
-        assertThat(processDocumentDefinitions.size()).isGreaterThanOrEqualTo(1);
-        assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().processDefinitionKey().toString()).isEqualTo(PROCESS_DEFINITION_KEY);
-        assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().documentDefinitionId().name()).isEqualTo(DOCUMENT_DEFINITION_NAME);
-        assertThat(processDocumentDefinitions.get(0).startableByUser()).isTrue();
+        assertThat(processDefinitionCaseDefinitions.size()).isGreaterThanOrEqualTo(1);
+        assertThat(processDefinitionCaseDefinitions.get(0).getId().getProcessDefinitionId()).isNotNull();
+        assertThat(processDefinitionCaseDefinitions.get(0).getId().getCaseDefinitionId().getKey()).isEqualTo("house");
+        assertThat(processDefinitionCaseDefinitions.get(0).getId().getCaseDefinitionId().getVersionTag().toString()).isEqualTo("1.0.0");
+        assertThat(processDefinitionCaseDefinitions.get(0).getStartableByUser()).isTrue();
     }
 
     @Test
     public void findProcessDocumentDefinitionWithStartableByUserFalse() {
         Boolean startableByUser = false;
-        final var processDocumentDefinitions = AuthorizationContext.runWithoutAuthorization(() ->
-            camundaProcessJsonSchemaDocumentAssociationService.findProcessDocumentDefinitions(
-                DOCUMENT_DEFINITION_NAME, startableByUser
+        final var processDefinitionCaseDefinitions = AuthorizationContext.runWithoutAuthorization(() ->
+            processDefinitionCaseDefinitionService.findProcessDefinitionCaseDefinitions(
+                new CaseDefinitionId("notahouse", "1.0.0"),
+                startableByUser,
+                null
             )
         );
 
-        assertThat(processDocumentDefinitions.size()).isEqualTo(0);
+        assertThat(processDefinitionCaseDefinitions.size()).isEqualTo(0);
     }
 
     @Test
     public void findProcessDocumentDefinitionWithCanInitializeDocumentTrue() {
         Boolean canInitializeDocument = true;
-        final var processDocumentDefinitions = AuthorizationContext.runWithoutAuthorization(() ->
-            camundaProcessJsonSchemaDocumentAssociationService.findProcessDocumentDefinitions(
-                DOCUMENT_DEFINITION_NAME, null, canInitializeDocument
+        final var processDefinitionCaseDefinitions = AuthorizationContext.runWithoutAuthorization(() ->
+            processDefinitionCaseDefinitionService.findProcessDefinitionCaseDefinitions(
+                CASE_DEFINITION_ID,
+                null,
+                canInitializeDocument
             )
         );
 
-        assertThat(processDocumentDefinitions.size()).isGreaterThanOrEqualTo(1);
-        assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().processDefinitionKey().toString()).isEqualTo(PROCESS_DEFINITION_KEY);
-        assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().documentDefinitionId().name()).isEqualTo(DOCUMENT_DEFINITION_NAME);
-        assertThat(processDocumentDefinitions.get(0).canInitializeDocument()).isTrue();
+        assertThat(processDefinitionCaseDefinitions.size()).isGreaterThanOrEqualTo(1);
+        assertThat(processDefinitionCaseDefinitions.get(0).getId().getProcessDefinitionId()).isNotNull();
+        assertThat(processDefinitionCaseDefinitions.get(0).getId().getCaseDefinitionId().getKey()).isEqualTo("house");
+        assertThat(processDefinitionCaseDefinitions.get(0).getId().getCaseDefinitionId().getVersionTag().toString()).isEqualTo("1.0.0");
+        assertThat(processDefinitionCaseDefinitions.get(0).getCanInitializeDocument()).isTrue();
     }
 
     @Test
     public void findProcessDocumentDefinitionWithCanInitializeDocumentFalse() {
         Boolean canInitializeDocument = false;
-        final var processDocumentDefinitions = AuthorizationContext.runWithoutAuthorization(() ->
-            camundaProcessJsonSchemaDocumentAssociationService.findProcessDocumentDefinitions(
-                DOCUMENT_DEFINITION_NAME, null, canInitializeDocument
+        final var processDefinitionCaseDefinitions = AuthorizationContext.runWithoutAuthorization(() ->
+            processDefinitionCaseDefinitionService.findProcessDefinitionCaseDefinitions(
+                new CaseDefinitionId("notahouse", "1.0.0"),
+                null,
+                canInitializeDocument
             )
         );
 
-        assertThat(processDocumentDefinitions.size()).isEqualTo(0);
+        assertThat(processDefinitionCaseDefinitions.size()).isEqualTo(0);
     }
-
-    @Test
-    void shouldCopyProcessDocumentLinkToLatestVersino() {
-        var result = AuthorizationContext.runWithoutAuthorization(() -> {
-            documentDefinitionService.deploy(
-                "{\n" +
-                "    \"$id\": \"test.schema\",\n" +
-                "    \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
-                "    \"title\": \"Test\",\n" +
-                "    \"type\": \"object\",\n" +
-                "    \"properties\": {\n" +
-                "        \"housenumber\": {\n" +
-                "            \"description\": \"house number must be equal to or greater than zero.\",\n" +
-                "            \"type\": \"integer\",\n" +
-                "            \"minimum\": 0\n" +
-                "        }\n" +
-                "    }\n" +
-                "}"
-            );
-
-            camundaProcessJsonSchemaDocumentAssociationService.createProcessDocumentDefinition(new ProcessDocumentDefinitionRequest(
-                "deadlock-process",
-                "test",
-                true
-            ));
-
-            return documentDefinitionService.deploy(
-                "{\n" +
-                "    \"$id\": \"test.schema\",\n" +
-                "    \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
-                "    \"title\": \"Test changed\",\n" +
-                "    \"type\": \"object\",\n" +
-                "    \"properties\": {\n" +
-                "        \"housenumber\": {\n" +
-                "            \"description\": \"house number must be equal to or greater than zero.\",\n" +
-                "            \"type\": \"integer\",\n" +
-                "            \"minimum\": 0\n" +
-                "        }\n" +
-                "    }\n" +
-                "}"
-            );
-        });
-
-        var association = AuthorizationContext.runWithoutAuthorization(() ->
-            camundaProcessJsonSchemaDocumentAssociationService.findProcessDocumentDefinition(
-                new CamundaProcessDefinitionKey("deadlock-process")
-            ).orElseThrow()
-        );
-
-        assertThat(result.errors()).isEmpty();
-        assertThat(result.documentDefinition().id().version()).isEqualTo(2);
-        assertThat(association.processDocumentDefinitionId().documentDefinitionId()).isEqualTo(result.documentDefinition().id());
-    }
-
 }

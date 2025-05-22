@@ -49,7 +49,6 @@ dependencies {
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "jakarta.inject:jakarta.inject-api:${jakartaInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -66,7 +65,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
-    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "io.github.oshai:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.graalvm.js:js-scriptengine:${graalvmJsVersion}"
     implementation "org.graalvm.js:js:${graalvmJsVersion}"
 
@@ -86,7 +85,6 @@ dependencies {
     // Camunda plugins
     implementation "org.camunda.bpm:camunda-engine-plugin-spin:${camundaVersion}"
     implementation "org.camunda.bpm:camunda-engine-plugin-connect:${camundaVersion}"
-    api "org.camunda.bpm.extension.reactor:camunda-bpm-reactor-spring-starter:${camundaReactorSpringVersion}"
 
     // spring boot admin client
     implementation "de.codecentric:spring-boot-admin-starter-client:${springBootAdminStarterClientVersion}"
@@ -132,6 +130,10 @@ dependencies {
     implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
     implementation "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
     implementation "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
+
+    testImplementation (project(":case")) {
+        exclude(group: "com.ritense.valtimo", module: "core")
+    }
 
     // Camunda test
     testImplementation project(":test-utils-common")

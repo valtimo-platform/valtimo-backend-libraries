@@ -30,6 +30,7 @@ import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valueresolver.ValueResolverOptionType
 import org.assertj.core.api.Assertions.assertThat
@@ -543,19 +544,19 @@ internal class DocumentJsonValueResolverTest {
         assertEquals("/object3/object4/text1", options[0].children?.get(0)?.path)
     }
 
-    private fun mockDefinition(definitionName: String?): JsonSchemaDocumentDefinition {
+    private fun mockDefinition(definitionName: String): JsonSchemaDocumentDefinition {
         val definition: JsonSchemaDocumentDefinition = definitionOf(definitionName)
         whenever(documentDefinitionService.findLatestByName(definitionName)).thenReturn(Optional.of(definition))
         return definition
     }
 
-    private fun definitionOf(name: String?): JsonSchemaDocumentDefinition {
-        val documentDefinitionName = JsonSchemaDocumentDefinitionId.newId(name)
+    private fun definitionOf(name: String): JsonSchemaDocumentDefinition {
+        val documentDefinitionName = JsonSchemaDocumentDefinitionId.of(name, CaseDefinitionId(name, "1.0.0"))
         val schema = JsonSchema.fromResourceUri(path(documentDefinitionName.name()))
         return JsonSchemaDocumentDefinition(documentDefinitionName, schema)
     }
 
     private fun path(name: String): URI {
-        return URI.create(String.format("config/document/definition/%s.json", "$name.schema"))
+        return URI.create(String.format("config/case/%s/1-0-0/document/definition/%s.document-definition.json", name, "$name.schema"))
     }
 }
