@@ -17,9 +17,8 @@
 package com.ritense.verzoek
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.case.service.CaseDefinitionService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
-import com.ritense.processdocument.resolver.DocumentJsonValueResolverFactory.Companion.PREFIX as DOC_PREFIX
-import com.ritense.valueresolver.ProcessVariableValueResolverFactory.Companion.PREFIX as PV_PREFIX
 import com.ritense.notificatiesapi.NotificatiesApiPlugin
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginEvent
@@ -30,6 +29,8 @@ import com.ritense.verzoek.domain.VerzoekProperties
 import com.ritense.zgw.Rsin
 import jakarta.validation.Valid
 import jakarta.validation.ValidationException
+import com.ritense.processdocument.resolver.DocumentJsonValueResolverFactory.Companion.PREFIX as DOC_PREFIX
+import com.ritense.valueresolver.ProcessVariableValueResolverFactory.Companion.PREFIX as PV_PREFIX
 
 @Plugin(
     key = "verzoek",
@@ -37,6 +38,7 @@ import jakarta.validation.ValidationException
     description = "Handles verzoeken"
 )
 class VerzoekPlugin(
+    private val caseDefinitionService: CaseDefinitionService,
     private val documentDefinitionService: JsonSchemaDocumentDefinitionService,
 ) {
 
@@ -63,10 +65,30 @@ class VerzoekPlugin(
                         throw ValidationException("Failed to set mapping. Unknown prefix '${it.target.substringBefore(":")}:'.")
                     }
 
+                    val documentDefinitions = runWithoutAuthorization {
+                         val caseDefinitions = caseDefinitionService.getCaseDefinitions(
+                            caseDefinitionKey = property.caseDefinitionKey,
+                            caseDefinitionVersionTag = property.caseDefinitionVersionTag,
+                        )
+                        require(caseDefinitions.isNotEmpty()) {
+                            "No case definition found for '${property.caseDefinitionKey}:${property.caseDefinitionVersionTag}'."
+                        }
+                        caseDefinitions.map { caseDefinition ->
+                            documentDefinitionService.findByCaseDefinitionId(
+                                caseDefinition.id
+                            ).get()
+                        }
+                    }
+
                     if (it.target.startsWith(DOC_PREFIX)) {
                         val documentPath = it.target.substringAfter(delimiter = ":")
                         runWithoutAuthorization {
-                            documentDefinitionService.validateJsonPointer(property.caseDefinitionName, documentPath)
+                            documentDefinitions.forEach { documentDefinition ->
+                                documentDefinitionService.validateJsonPointer(
+                                    documentDefinition.id.name(),
+                                    documentPath
+                                )
+                            }
                         }
                     }
                 }
