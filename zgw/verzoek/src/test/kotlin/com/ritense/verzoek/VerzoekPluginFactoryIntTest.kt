@@ -127,7 +127,7 @@ internal class VerzoekPluginFactoryIntTest : BaseIntegrationTest() {
               "rsin": "637549971",
               "verzoekProperties": [{
                 "type": "objection",
-                "caseDefinitionName": "profile",
+                "caseDefinitionKey": "profile",
                 "processDefinitionKey": "objection-process",
                 "objectManagementId": "0b993a22-aa70-49a8-934a-79b17a70df6f",
                 "initiatorRoltypeUrl": "https://example.com/my-role-type",
@@ -154,7 +154,7 @@ internal class VerzoekPluginFactoryIntTest : BaseIntegrationTest() {
         assertEquals("637549971", plugin.rsin.toString())
         assertEquals(1, plugin.verzoekProperties.size)
         assertEquals("objection", plugin.verzoekProperties[0].type)
-        assertEquals("profile", plugin.verzoekProperties[0].caseDefinitionName)
+        assertEquals("profile", plugin.verzoekProperties[0].caseDefinitionKey)
         assertEquals("objection-process", plugin.verzoekProperties[0].processDefinitionKey)
         assertEquals("https://example.com/my-role-type", plugin.verzoekProperties[0].initiatorRoltypeUrl.toString())
         assertEquals("Initiator", plugin.verzoekProperties[0].initiatorRolDescription)
