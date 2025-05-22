@@ -88,6 +88,8 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
             "delete-processes",
             NewDocumentRequest(
                 "house",
+                "house",
+                "1.0.0",
                 objectMapper.readTree(documentJson)
             )
         )

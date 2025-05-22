@@ -49,7 +49,7 @@ class FormManagementResourceIntTest : BaseIntegrationTest() {
         whenever(manageableUser.userIdentifier).thenReturn("userIdentifier")
         whenever(manageableUser.fullName).thenReturn("FullName")
         whenever(userManagementService.currentUser).thenReturn(manageableUser)
-        whenever(userManagementService.findByUserIdentifier(any())).thenReturn(manageableUser)
+        whenever(userManagementService.findByUsername(any())).thenReturn(manageableUser)
     }
 
     @Test
