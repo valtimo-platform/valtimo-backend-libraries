@@ -71,6 +71,8 @@ import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState;
+import org.camunda.bpm.engine.repository.DecisionDefinition;
+import org.camunda.bpm.engine.repository.DecisionDefinitionQuery;
 import org.camunda.bpm.engine.repository.DeploymentWithDefinitions;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
@@ -505,7 +507,10 @@ public class CamundaProcessService {
             CamundaProcessDefinition latestProcessDefinition = getExistingProcessForFile(caseDefinitionId, bpmnModel);
             if (latestProcessDefinition != null) {
                 // clean up previous process definition, can only be triggered when we're deploying a draft version
-                applicationEventPublisher.publishEvent(new ProcessDefinitionDeleted(latestProcessDefinition.getId(), caseDefinitionId));
+                applicationEventPublisher.publishEvent(new ProcessDefinitionDeleted(
+                    latestProcessDefinition.getId(),
+                    caseDefinitionId
+                ));
                 repositoryService.deleteProcessDefinition(latestProcessDefinition.getId(), true);
             }
 
@@ -530,6 +535,26 @@ public class CamundaProcessService {
 
             if (caseDefinitionId != null) {
                 setDecisionsVersionTag(dmnModel, caseDefinitionId);
+            }
+
+            String decisionDefinitionKey = dmnModel.getDefinitions()
+                .getChildElementsByType(Decision.class)
+                .stream()
+                .map(Decision::getId)
+                .findFirst()
+                .orElseThrow();
+
+            DecisionDefinitionQuery decisionDefinitionQuery = repositoryService.createDecisionDefinitionQuery()
+                .decisionDefinitionKey(decisionDefinitionKey);
+
+            if (caseDefinitionId != null) {
+                decisionDefinitionQuery.versionTag(CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId);
+            }
+
+            DecisionDefinition decisionDefinition = decisionDefinitionQuery.singleResult();
+
+            if (decisionDefinition != null) {
+                repositoryService.deleteDeployment(decisionDefinition.getDeploymentId());
             }
 
             return repositoryService.createDeployment().addModelInstance(fileName, dmnModel).deployWithResult();

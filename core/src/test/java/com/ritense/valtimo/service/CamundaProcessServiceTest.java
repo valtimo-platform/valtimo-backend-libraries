@@ -52,6 +52,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.context.ApplicationEventPublisher;
 
 class CamundaProcessServiceTest {
 
@@ -103,6 +104,9 @@ class CamundaProcessServiceTest {
     @Mock
     private CamundaByteArrayService camundaByteArrayService;
 
+    @Mock
+    private ApplicationEventPublisher applicationEventPublisher;
+
     private CamundaHistoryService historyService = mock(CamundaHistoryService.class, RETURNS_DEEP_STUBS);
 
     @BeforeEach
@@ -124,7 +128,8 @@ class CamundaProcessServiceTest {
             authorizationService,
             camundaExecutionRepository,
             processDefinitionCaseDefinitionLinker,
-            camundaByteArrayService
+            camundaByteArrayService,
+            applicationEventPublisher
         );
 
         //when
@@ -169,7 +174,8 @@ class CamundaProcessServiceTest {
             authorizationService,
             camundaExecutionRepository,
             processDefinitionCaseDefinitionLinker,
-            camundaByteArrayService
+            camundaByteArrayService,
+            applicationEventPublisher
         );
 
         //when
