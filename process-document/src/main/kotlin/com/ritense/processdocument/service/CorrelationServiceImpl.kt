@@ -26,6 +26,7 @@ import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
+import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.runtime.MessageCorrelationResult
 import org.camunda.bpm.engine.runtime.ProcessInstance
 
@@ -146,6 +147,18 @@ class CorrelationServiceImpl(
         return sendCatchEventMessageToAll(message, businessKey, toVariableMap(*variables))
     }
 
+    override fun sendMessage(message: String, execution: DelegateExecution): MessageCorrelationResult {
+        val result = correlate(message, execution.businessKey, execution.variables)
+        associateDocumentToProcess(result, execution.businessKey)
+        return result
+    }
+
+    override fun sendMessageToAll(message: String, execution: DelegateExecution): List<MessageCorrelationResult> {
+        val results = correlateAll(message, execution.businessKey, execution.variables)
+        results.forEach { associateDocumentToProcess(it, execution.businessKey) }
+        return results
+    }
+
     private fun getLatestProcessDefinitionIdByKey(processDefinitionKey: String): CamundaProcessDefinition {
         return runWithoutAuthorization {
             camundaRepositoryService.findProcessDefinition(byKey(processDefinitionKey).and(byLatestVersion()))
@@ -156,6 +169,17 @@ class CorrelationServiceImpl(
     private fun associationExists(processInstanceId: String): Boolean {
         return runWithoutAuthorization {
             associationService.findProcessDocumentInstance(CamundaProcessInstanceId(processInstanceId)).isPresent
+        }
+    }
+
+    private fun associateDocumentToProcess(result: MessageCorrelationResult, businessKey: String) {
+        if (result.processInstance?.processDefinitionId != null) {
+            val processName = getProcessDefinitionName(result.processInstance.processDefinitionId)
+            associateDocumentToProcess(result.processInstance.id, processName, businessKey)
+        } else {
+            val processInstanceId = result.execution.processInstanceId
+            val processName = getProcessDefinitionNameByProcessInstanceId(processInstanceId)
+            associateDocumentToProcess(processInstanceId, processName, businessKey)
         }
     }
 

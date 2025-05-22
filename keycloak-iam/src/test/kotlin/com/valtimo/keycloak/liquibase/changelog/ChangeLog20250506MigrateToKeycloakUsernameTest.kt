@@ -16,7 +16,6 @@
 
 package com.valtimo.keycloak.liquibase.changelog
 
-import com.ritense.valtimo.contract.config.ValtimoProperties
 import liquibase.database.Database
 import liquibase.database.jvm.JdbcConnection
 import okhttp3.mockwebserver.Dispatcher
@@ -35,11 +34,11 @@ import org.springframework.mock.env.MockEnvironment
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 
-internal class ChangeLog20240116MigrateTaskAssigneeEmailToUserIdTest {
+internal class ChangeLog20250506MigrateToKeycloakUsernameTest {
 
     lateinit var server: MockWebServer
 
-    lateinit var changeLog: ChangeLog20240116MigrateTaskAssigneeEmailToUserId
+    lateinit var changeLog: ChangeLog20250506MigrateToKeycloakUsername
     lateinit var environment: MockEnvironment
 
 
@@ -56,9 +55,9 @@ internal class ChangeLog20240116MigrateTaskAssigneeEmailToUserIdTest {
             this.setProperty("keycloak.credentials.secret", "example-secret")
         }
 
-        ChangeLog20240116MigrateTaskAssigneeEmailToUserId().postProcessEnvironment(environment, mock())
+        ChangeLog20250506MigrateToKeycloakUsername().postProcessEnvironment(environment, mock())
 
-        changeLog = ChangeLog20240116MigrateTaskAssigneeEmailToUserId()
+        changeLog = ChangeLog20250506MigrateToKeycloakUsername()
     }
 
     @AfterEach
@@ -67,29 +66,7 @@ internal class ChangeLog20240116MigrateTaskAssigneeEmailToUserIdTest {
     }
 
     @Test
-    fun `should execute changelog for USERID`() {
-        val database = mock<Database>()
-        val connection = mock<JdbcConnection>(defaultAnswer = RETURNS_DEEP_STUBS)
-        val resultSet = mock<ResultSet>()
-        val updateTaskTable = mock<PreparedStatement>()
-        whenever(database.connection).thenReturn(connection)
-        whenever(connection.prepareStatement("SELECT id_,assignee_ FROM act_ru_task").executeQuery())
-            .thenReturn(resultSet)
-        whenever(resultSet.next()).thenReturn(true).thenReturn(false)
-        whenever(resultSet.getString("id_")).thenReturn("my-task-id-1")
-        whenever(resultSet.getString("assignee_")).thenReturn("user@ritense.com")
-        whenever(connection.prepareStatement("UPDATE act_ru_task SET assignee_ = ? WHERE id_ = ?"))
-            .thenReturn(updateTaskTable)
-
-        changeLog.execute(database)
-
-        verify(updateTaskTable).setString(1, "user-id-1")
-        verify(updateTaskTable).setString(2, "my-task-id-1")
-    }
-
-    @Test
     fun `should execute changelog for USERNAME`() {
-        environment.setProperty("valtimo.oauth.identifier-field", ValtimoProperties.IdentifierField.USERNAME.toString())
         val database = mock<Database>()
         val connection = mock<JdbcConnection>(defaultAnswer = RETURNS_DEEP_STUBS)
         val resultSet = mock<ResultSet>()
@@ -97,11 +74,24 @@ internal class ChangeLog20240116MigrateTaskAssigneeEmailToUserIdTest {
         whenever(database.connection).thenReturn(connection)
         whenever(connection.prepareStatement("SELECT id_,assignee_ FROM act_ru_task").executeQuery())
             .thenReturn(resultSet)
-        whenever(resultSet.next()).thenReturn(true).thenReturn(false)
+        whenever(resultSet.next()).thenReturn(true).thenReturn(true).thenReturn(false)
         whenever(resultSet.getString("id_")).thenReturn("my-task-id-1")
         whenever(resultSet.getString("assignee_")).thenReturn("user@ritense.com")
         whenever(connection.prepareStatement("UPDATE act_ru_task SET assignee_ = ? WHERE id_ = ?"))
             .thenReturn(updateTaskTable)
+        whenever(resultSet.getBoolean(1)).thenReturn(true)
+        whenever(
+            connection.prepareStatement(
+                """
+            SELECT EXISTS (
+                SELECT 1
+                FROM information_schema.tables
+                WHERE table_schema = 'null'
+                  AND table_name = 'act_ru_task'
+            );
+        """.trimIndent()
+            ).executeQuery()
+        ).thenReturn(resultSet)
 
         changeLog.execute(database)
 
@@ -118,11 +108,24 @@ internal class ChangeLog20240116MigrateTaskAssigneeEmailToUserIdTest {
         whenever(database.connection).thenReturn(connection)
         whenever(connection.prepareStatement("SELECT id_,assignee_ FROM act_ru_task").executeQuery())
             .thenReturn(resultSet)
-        whenever(resultSet.next()).thenReturn(true).thenReturn(false)
+        whenever(resultSet.next()).thenReturn(true).thenReturn(true).thenReturn(false)
         whenever(resultSet.getString("id_")).thenReturn("my-task-id-1")
         whenever(resultSet.getString("assignee_")).thenReturn("notfound@ritense.com")
         whenever(connection.prepareStatement("UPDATE act_ru_task SET assignee_ = ? WHERE id_ = ?"))
             .thenReturn(updateTaskTable)
+        whenever(resultSet.getBoolean(1)).thenReturn(true)
+        whenever(
+            connection.prepareStatement(
+                """
+            SELECT EXISTS (
+                SELECT 1
+                FROM information_schema.tables
+                WHERE table_schema = 'null'
+                  AND table_name = 'act_ru_task'
+            );
+        """.trimIndent()
+            ).executeQuery()
+        ).thenReturn(resultSet)
 
         changeLog.execute(database)
 
@@ -153,8 +156,8 @@ internal class ChangeLog20240116MigrateTaskAssigneeEmailToUserIdTest {
             override fun dispatch(request: RecordedRequest): MockResponse {
                 val response = when (request.requestLine) {
                     "POST /realms/example-realm/protocol/openid-connect/token HTTP/1.1" -> handleTokenRequest()
-                    "GET /admin/realms/example-realm/users?email=user%40ritense.com&first=0&max=1&enabled=true&briefRepresentation=true HTTP/1.1" -> handleUserSearchRequest()
-                    "GET /admin/realms/example-realm/users?email=notfound%40ritense.com&first=0&max=1&enabled=true&briefRepresentation=true HTTP/1.1" -> handleUserSearchRequestEmpty()
+                    "GET /admin/realms/example-realm/users?email=user%40ritense.com&exact=true HTTP/1.1" -> handleUserSearchRequest()
+                    "GET /admin/realms/example-realm/users?email=notfound%40ritense.com&exact=true HTTP/1.1" -> handleUserSearchRequestEmpty()
                     else -> MockResponse().setResponseCode(404)
                 }
                 return response

@@ -32,6 +32,7 @@ import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byProcessInstanceId
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
+import org.camunda.bpm.engine.RuntimeService
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.BeforeEach
@@ -53,6 +54,7 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
     private val processService: CamundaProcessService,
     private val testValueResolverFactory: TestValueResolverFactory,
     private val objectMapper: ObjectMapper,
+    private val runtimeService: RuntimeService,
 ) : BaseIntegrationTest() {
 
     @BeforeEach
@@ -110,18 +112,15 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
         assertThat(json, hasJsonPath("""${'$'}.aanvrager.geslacht""", equalTo("M")))
         assertThat(json, hasJsonPath("""${'$'}.aanvrager.persoonsgegevens.voornaam""", equalTo("Henk")))
 
-        val processExecution = runWithoutAuthorization {
-            processService.findExecutionByBusinessKey(businessKey)
+        val pv = runWithoutAuthorization {
+            processService.findExecutionByBusinessKey(businessKey).variables
         }
-        val lastName = processExecution?.getVariable("userLastName")
-        assertThat(lastName, equalTo("Doe"))
-
-        val dateOfBirth = processExecution?.getVariable("dateOfBirth")
-        assertThat(dateOfBirth, equalTo("1980-02-03"))
+        assertThat(pv["userLastName"], equalTo("Doe"))
+        assertThat(pv["dateOfBirth"], equalTo("1980-02-03"))
+        assertThat(pv["object"], equalTo(mapOf("property2" to "value2")))
 
         val argumentCaptor = argumentCaptor<Map<String, Any?>>()
         verify(testValueResolverFactory).handleValues(any<UUID>(), argumentCaptor.capture())
-
         assertThat(argumentCaptor.firstValue["gender"], equalTo("M"))
     }
 
@@ -150,12 +149,13 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
                             }"""
                         )
                     )
-                ).withProcessVars(mapOf("breadId" to "2"))
+                ).withProcessVars(mapOf("breadId" to "2", "object" to mapOf("property1" to "value1")))
             )
         }
         val document = result.resultingDocument().get()
+        val processInstanceId = result.resultingProcessInstanceId().get().toString()
         val task = runWithoutAuthorization {
-            taskService.findTasks(byProcessInstanceId(result.resultingProcessInstanceId().get().toString())).first()
+            taskService.findTasks(byProcessInstanceId(processInstanceId)).first()
         }
 
         val submissionResult = runWithoutAuthorization {
@@ -198,6 +198,8 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
         assertThat(json, hasNoJsonPath("""${'$'}.containerProperty3"""))
         assertThat(json, hasJsonPath("""${'$'}.aanvrager.geslacht""", equalTo("M")))
         assertThat(json, hasJsonPath("""${'$'}.aanvrager.persoonsgegevens.voornaam""", equalTo("Henk")))
+        val pv = runtimeService.getVariables(processInstanceId) as Map<*, *>
+        assertThat(pv["object"], equalTo(mapOf("property1" to "value1", "property2" to "value2")))
     }
 
     private fun createFormData(): JsonNode {
@@ -217,7 +219,10 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
                 "property2": "property2",
                 "verzoek": {"jaartallen":"2010","toelichting":"From 2010"},
                 "container": {"containerProperty1":"containerProperty1","containerProperty2":"containerProperty2"},
-                "aanvrager":{"geslacht":"M","persoonsgegevens":{"voornaam":"Henk"}}
+                "aanvrager":{"geslacht":"M","persoonsgegevens":{"voornaam":"Henk"}},
+                "pv": {
+                    "object":{"property2":"value2"}
+                }
             }
         """.trimIndent()
         )

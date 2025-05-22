@@ -20,6 +20,7 @@ import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
+import org.camunda.bpm.engine.HistoryService
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
@@ -42,4 +43,7 @@ class BaseIntegrationTest {
 
     @MockitoBean
     lateinit var pluginProcessLinkRepository: PluginProcessLinkRepository
+
+    @MockBean
+    lateinit var historyService: HistoryService
 }

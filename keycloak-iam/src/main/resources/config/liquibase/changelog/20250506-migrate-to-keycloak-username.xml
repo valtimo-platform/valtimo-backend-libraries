@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- * Copyright 2015-2024 Ritense BV, the Netherlands.
+  ~ Copyright 2015-2025 Ritense BV, the Netherlands.
   ~
   ~ Licensed under EUPL, Version 1.2 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <changeSet id="1" author="Ritense">
-        <customChange class="com.valtimo.keycloak.liquibase.changelog.ChangeLog20240116MigrateTaskAssigneeEmailToUserId"/>
+        <customChange class="com.valtimo.keycloak.liquibase.changelog.ChangeLog20250506MigrateToKeycloakUsername"/>
     </changeSet>
 
 </databaseChangeLog>

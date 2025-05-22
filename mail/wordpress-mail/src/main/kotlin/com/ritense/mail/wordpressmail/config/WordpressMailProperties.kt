@@ -19,5 +19,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "valtimo.wordpressmail")
 data class WordpressMailProperties(
-    val url: String
+    val url: String? = null
 )

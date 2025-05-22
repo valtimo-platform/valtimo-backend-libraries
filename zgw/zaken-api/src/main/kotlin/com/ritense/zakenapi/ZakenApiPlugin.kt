@@ -261,7 +261,9 @@ class ZakenApiPlugin(
         @PluginActionProperty rolToelichting: String,
         @PluginActionProperty inpBsn: String?,
         @PluginActionProperty anpIdentificatie: String?,
-        @PluginActionProperty inpA_nummer: String?
+        @PluginActionProperty inpA_nummer: String?,
+        @PluginActionProperty beginGeldigheid: LocalDate? = null,
+        @PluginActionProperty eindeGeldigheid: LocalDate? = null,
     ) {
         withLoggingContext(
             CATALOGI_API.ROLTYPE to roltypeUrl,
@@ -283,7 +285,9 @@ class ZakenApiPlugin(
                         inpBsn = inpBsn,
                         anpIdentificatie = anpIdentificatie,
                         inpA_nummer = inpA_nummer
-                    )
+                    ),
+                    beginGeldigheid = beginGeldigheid,
+                    eindeGeldigheid = eindeGeldigheid
                 )
             )
 
@@ -302,7 +306,9 @@ class ZakenApiPlugin(
         @PluginActionProperty roltypeUrl: String,
         @PluginActionProperty rolToelichting: String,
         @PluginActionProperty innNnpId: String?,
-        @PluginActionProperty annIdentificatie: String?
+        @PluginActionProperty annIdentificatie: String?,
+        @PluginActionProperty beginGeldigheid: LocalDate? = null,
+        @PluginActionProperty eindeGeldigheid: LocalDate? = null,
     ) {
         withLoggingContext(
             CATALOGI_API.ROLTYPE to roltypeUrl,
@@ -323,7 +329,9 @@ class ZakenApiPlugin(
                     betrokkeneIdentificatie = RolNietNatuurlijkPersoon(
                         annIdentificatie = annIdentificatie,
                         innNnpId = innNnpId
-                    )
+                    ),
+                    beginGeldigheid = beginGeldigheid,
+                    eindeGeldigheid = eindeGeldigheid
                 )
             )
 

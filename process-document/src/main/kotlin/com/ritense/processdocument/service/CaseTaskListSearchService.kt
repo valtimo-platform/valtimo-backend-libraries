@@ -249,8 +249,8 @@ class CaseTaskListSearchService(
     ): Predicate {
         val assignmentFilterPredicate: Predicate = when (assignmentFilter) {
             TaskFilter.MINE -> {
-                val userIdentifier = userManagementService.currentUser.userIdentifier
-                cb.and(cb.equal(taskRoot.get<Any>(CamundaTaskSpecificationHelper.ASSIGNEE), userIdentifier))
+                val username = userManagementService.currentUser.username
+                cb.and(cb.equal(taskRoot.get<Any>(CamundaTaskSpecificationHelper.ASSIGNEE), username))
             }
 
             TaskFilter.ALL -> {
@@ -684,7 +684,7 @@ class CaseTaskListSearchService(
                 "assignee" -> {
                     CaseTaskProperties.getByPropertyName("assignee")
                         ?.getValueFromObject(caseTask)
-                        ?.let { assigneeId -> userManagementService.findByUserIdentifier(assigneeId as String)?.fullName }
+                        ?.let { assigneeUsername -> userManagementService.findByUsername(assigneeUsername as String)?.fullName }
                 }
 
                 else -> CaseTaskProperties.getByPropertyName(path)?.getValueFromObject(caseTask)

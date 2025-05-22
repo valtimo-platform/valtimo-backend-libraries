@@ -1,2 +1,2 @@
 org.springframework.boot.env.EnvironmentPostProcessor=\
-  com.valtimo.keycloak.liquibase.changelog.ChangeLog20240116MigrateTaskAssigneeEmailToUserId
+  com.valtimo.keycloak.liquibase.changelog.ChangeLog20250506MigrateToKeycloakUsername
