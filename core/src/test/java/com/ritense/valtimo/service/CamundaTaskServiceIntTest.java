@@ -31,14 +31,15 @@ import com.ritense.authorization.permission.ConditionContainer;
 import com.ritense.authorization.permission.Permission;
 import com.ritense.authorization.permission.PermissionRepository;
 import com.ritense.authorization.role.RoleRepository;
-import com.ritense.outbox.domain.BaseEvent;
 import com.ritense.outbox.repository.OutboxMessageRepository;
+import com.ritense.outbox.domain.BaseEvent;
 import com.ritense.valtimo.BaseIntegrationTest;
 import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.NamedUser;
+import jakarta.inject.Inject;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -51,7 +52,6 @@ import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -60,22 +60,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
-    @Autowired
+    @Inject
     private CamundaTaskService camundaTaskService;
 
-    @Autowired
+    @Inject
     private TaskService taskService;
 
-    @Autowired
+    @Inject
     private CamundaProcessService camundaProcessService;
 
-    @Autowired
+    @Inject
     private RoleRepository roleRepository;
 
-    @Autowired
+    @Inject
     private PermissionRepository permissionRepository;
 
-    @Autowired
+    @Inject
     private OutboxMessageRepository outboxRepository;
 
     private final String processDefinitionKey = "one-task-process";

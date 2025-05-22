@@ -16,7 +16,6 @@
 
 package com.ritense.zakenapi.repository
 
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.zakenapi.domain.ZaakTypeLink
 import com.ritense.zakenapi.domain.ZaakTypeLinkId
 import org.springframework.data.jpa.repository.JpaRepository
@@ -27,21 +26,20 @@ import java.util.UUID
 
 interface ZaakTypeLinkRepository : JpaRepository<ZaakTypeLink, ZaakTypeLinkId> {
 
-    fun findByCaseDefinitionId(caseDefinitionId: CaseDefinitionId): ZaakTypeLink?
+    fun findByDocumentDefinitionName(documentDefinitionName: String): ZaakTypeLink?
 
-    fun findByCaseDefinitionIdIn(caseDefinitionIds: List<CaseDefinitionId>): List<ZaakTypeLink>
+    fun findByDocumentDefinitionNameIn(documentDefinitionNames: List<String>): List<ZaakTypeLink>
 
     fun findByZakenApiPluginConfigurationId(id: UUID): List<ZaakTypeLink>
 
     @Modifying
-    @Query(
-        "" +
+    @Query("" +
             "   DELETE " +
             "   FROM    ZaakTypeLink ztl " +
-            "   WHERE   ztl.caseDefinitionId = :caseDefinitionId "
+            "   WHERE   ztl.documentDefinitionName = :documentDefinitionName "
     )
-    fun deleteByCaseDefinitionId(
-        @Param("caseDefinitionId") caseDefinitionId: CaseDefinitionId
+    fun deleteByDocumentDefinitionName(
+        @Param("documentDefinitionName") documentDefinitionName: String
     )
 
 }

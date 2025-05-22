@@ -44,7 +44,7 @@ import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.verzoek.domain.CopyStrategy
 import com.ritense.verzoek.domain.VerzoekProperties
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -110,7 +110,7 @@ class VerzoekPluginEventListener(
             logger.info { "Received verzoek notification. Verzoek objectUrl: ${event.resourceUrl}" }
             val document = createDocument(verzoekTypeProperties, verzoekObject)
             withLoggingContext(JsonSchemaDocument::class, document.id()) {
-                val zaakTypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().caseDefinitionId())
+                val zaakTypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
                 val initiatorType = if (verzoekObjectData.has("kvk")) {
                     "kvk"
                 } else if (verzoekObjectData.has("bsn")) {
@@ -148,10 +148,9 @@ class VerzoekPluginEventListener(
         return if (path.startsWith("object:")) {
             verzoekObject.at(path.substringAfterLast("object:"))
         } else {
-            val verzoekDataData =
-                verzoekObject["record"]["data"]["data"] ?: throw NotificatiesNotificationEventException(
-                    "VerzoekObject /record/data/data cannot be found! For verzoek with type '${verzoekObject["type"]}'"
-                )
+            val verzoekDataData = verzoekObject["record"]["data"]["data"] ?: throw NotificatiesNotificationEventException(
+                "VerzoekObject /record/data/data cannot be found! For verzoek with type '${verzoekObject["type"]}'"
+            )
             verzoekDataData.at(path)
         }
     }
@@ -209,8 +208,6 @@ class VerzoekPluginEventListener(
             documentService.createDocument(
                 NewDocumentRequest(
                     verzoekTypeProperties.caseDefinitionName,
-                    null, // TODO: Fix this, we always want a case definition key and version tag
-                    null,
                     getDocumentContent(verzoekTypeProperties, verzoekObject)
                 )
             )

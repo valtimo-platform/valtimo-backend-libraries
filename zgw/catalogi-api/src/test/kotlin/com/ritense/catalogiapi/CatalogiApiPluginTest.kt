@@ -34,7 +34,6 @@ import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.service.DocumentService
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.zgw.Page
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
@@ -56,7 +55,6 @@ internal class CatalogiApiPluginTest : BaseTest() {
     val zaaktypeUrlProvider = mock<ZaaktypeUrlProvider>()
     val documentService = mock<DocumentService>()
     val plugin = CatalogiApiPlugin(client, zaaktypeUrlProvider, documentService)
-    val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
 
     @BeforeEach
     fun setUp() {
@@ -392,9 +390,9 @@ internal class CatalogiApiPluginTest : BaseTest() {
         val statustypeUrl = "https://example.com/statustype/456"
         val zaaktypeUrl = "https://example.com/zaaktype/123"
         val execution = DelegateExecutionFake().withBusinessKey(documentId)
-        whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.of("myDocDef", caseDefinitionId))
+        whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.newId("myDocDef"))
         whenever(documentService.get(documentId)).thenReturn(document)
-        whenever(zaaktypeUrlProvider.getZaaktypeUrl(caseDefinitionId)).thenReturn(URI(zaaktypeUrl))
+        whenever(zaaktypeUrlProvider.getZaaktypeUrl("myDocDef")).thenReturn(URI(zaaktypeUrl))
         whenever(client.getStatustypen(any(), any(), any())).thenReturn(
             Page(
                 count = 3,
@@ -419,9 +417,9 @@ internal class CatalogiApiPluginTest : BaseTest() {
         val statustype = "Registered"
         val zaaktypeUrl = "https://example.com/zaaktype/123"
         val execution = DelegateExecutionFake().withBusinessKey(documentId)
-        whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.of("myDocDef", caseDefinitionId))
+        whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.newId("myDocDef"))
         whenever(documentService.get(documentId)).thenReturn(document)
-        whenever(zaaktypeUrlProvider.getZaaktypeUrl(caseDefinitionId)).thenReturn(URI(zaaktypeUrl))
+        whenever(zaaktypeUrlProvider.getZaaktypeUrl("myDocDef")).thenReturn(URI(zaaktypeUrl))
         whenever(client.getStatustypen(any(), any(), any())).thenReturn(
             Page(count = 0, results = listOf())
         )
@@ -444,9 +442,9 @@ internal class CatalogiApiPluginTest : BaseTest() {
         val resultaattypeUrl = "https://example.com/resultaattype/456"
         val zaaktypeUrl = "https://example.com/zaaktype/123"
         val execution = DelegateExecutionFake().withBusinessKey(documentId)
-        whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.of("myDocDef", caseDefinitionId))
+        whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.newId("myDocDef"))
         whenever(documentService.get(documentId)).thenReturn(document)
-        whenever(zaaktypeUrlProvider.getZaaktypeUrl(caseDefinitionId)).thenReturn(URI(zaaktypeUrl))
+        whenever(zaaktypeUrlProvider.getZaaktypeUrl("myDocDef")).thenReturn(URI(zaaktypeUrl))
         whenever(client.getResultaattypen(any(), any(), any())).thenReturn(
             Page(
                 count = 3,
@@ -513,9 +511,9 @@ internal class CatalogiApiPluginTest : BaseTest() {
         val besluittypeUrl = "https://example.com/besluittype/456"
         val zaaktypeUrl = "https://example.com/zaaktype/123"
         val execution = DelegateExecutionFake().withBusinessKey(documentId)
-        whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.of("myDocDef", caseDefinitionId))
+        whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.newId("myDocDef"))
         whenever(documentService.get(documentId)).thenReturn(document)
-        whenever(zaaktypeUrlProvider.getZaaktypeUrl(caseDefinitionId)).thenReturn(URI(zaaktypeUrl))
+        whenever(zaaktypeUrlProvider.getZaaktypeUrl("myDocDef")).thenReturn(URI(zaaktypeUrl))
         whenever(client.getBesluittypen(any(), any(), any())).thenReturn(
             Page(
                 count = 3,
@@ -600,9 +598,9 @@ internal class CatalogiApiPluginTest : BaseTest() {
         val zaaktypeUrl = "https://example.com/zaaktype/123"
         val execution = DelegateExecutionFake().withBusinessKey(documentId)
 
-        whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.of("myDocDef", caseDefinitionId))
+        whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.newId("myDocDef"))
         whenever(documentService.get(documentId)).thenReturn(document)
-        whenever(zaaktypeUrlProvider.getZaaktypeUrl(caseDefinitionId)).thenReturn(URI(zaaktypeUrl))
+        whenever(zaaktypeUrlProvider.getZaaktypeUrl("myDocDef")).thenReturn(URI(zaaktypeUrl))
         whenever(client.getBesluittypen(any(), any(), any())).thenReturn(
             Page(count = 0, results = listOf())
         )
@@ -652,9 +650,9 @@ internal class CatalogiApiPluginTest : BaseTest() {
         val zaaktypeUrl = "https://example.com/zaaktype/123"
         val execution = DelegateExecutionFake().withBusinessKey(documentId)
 
-        whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.of("myDocDef", caseDefinitionId))
+        whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.newId("myDocDef"))
         whenever(documentService.get(documentId)).thenReturn(document)
-        whenever(zaaktypeUrlProvider.getZaaktypeUrl(caseDefinitionId)).thenReturn(URI(zaaktypeUrl))
+        whenever(zaaktypeUrlProvider.getZaaktypeUrl("myDocDef")).thenReturn(URI(zaaktypeUrl))
         whenever(client.getEigenschappen(any(), any(), any())).thenReturn(
             Page(
                 count = 3,
@@ -699,9 +697,9 @@ internal class CatalogiApiPluginTest : BaseTest() {
         val zaaktypeUrl = "https://example.com/zaaktype/123"
         val execution = DelegateExecutionFake().withBusinessKey(documentId)
 
-        whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.of("myDocDef", caseDefinitionId))
+        whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.newId("myDocDef"))
         whenever(documentService.get(documentId)).thenReturn(document)
-        whenever(zaaktypeUrlProvider.getZaaktypeUrl(caseDefinitionId)).thenReturn(URI(zaaktypeUrl))
+        whenever(zaaktypeUrlProvider.getZaaktypeUrl("myDocDef")).thenReturn(URI(zaaktypeUrl))
         whenever(client.getEigenschappen(any(), any(), any())).thenReturn(
             Page(count = 0, results = listOf())
         )

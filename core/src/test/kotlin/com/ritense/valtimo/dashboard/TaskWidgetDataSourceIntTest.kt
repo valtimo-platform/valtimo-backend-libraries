@@ -17,7 +17,7 @@
 package com.ritense.document.dashboard
 
 import com.ritense.valtimo.BaseIntegrationTest
-import com.ritense.valtimo.contract.authorization.UserManagementServiceHolder
+import com.ritense.authorization.UserManagementServiceHolder
 import com.ritense.valtimo.contract.dashboard.QueryCondition
 import com.ritense.valtimo.contract.repository.ExpressionOperator
 import com.ritense.valtimo.dashboard.TaskCountDataSourceProperties

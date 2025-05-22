@@ -24,7 +24,6 @@ import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersion
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.service.CamundaProcessService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -52,35 +51,47 @@ internal class CopyProcessLinkOnProcessDeploymentListenerIntTest : BaseIntegrati
     }
 
     @Test
-    fun `should NOT copy process link on old process to a newly deployed process`() {
+    fun `should copy process link on latest process to a newly deployed process`() {
         // given
-        val changedProcessBpmn = readFileAsString("/config/case/autodeploy/1-0-0/bpmn/service-task-process.bpmn")
-            .replace("My service task", "My service task changed")
-        runWithoutAuthorization {
-            camundaProcessService.deploy(
-                CaseDefinitionId("autodeploy", "1.0.0"),
-                "service-task-process.bpmn",
-                changedProcessBpmn.byteInputStream()
-            )
-        }
         createProcessLink(processDefinition)
-        val changedAgainProcessBpmn = readFileAsString("/config/case/autodeploy/1-0-0/bpmn/service-task-process.bpmn")
-            .replace("My service task", "My service task changed again")
+        val changedProcessBpmn = readFileAsString("/bpmn/service-task-process.bpmn")
+            .replace("My service task", "My service task changed")
 
         // when
         runWithoutAuthorization {
-            camundaProcessService.deploy(
-                CaseDefinitionId("autodeploy", "1.0.0"),
-                "service-task-process.bpmn",
-                changedAgainProcessBpmn.byteInputStream()
-            )
+            camundaProcessService.deploy("service-task-process.bpmn", changedProcessBpmn.byteInputStream())
         }
 
         // then
         val latestProcessDefinition = getLatestProcessDefinition()
         assertEquals(1, processDefinition.version)
         assertEquals(1, processLinkService.getProcessLinks(processDefinition.id, SERVICE_TASK_ID).count())
-        assertEquals(1, latestProcessDefinition.version)
+        assertEquals(2, latestProcessDefinition.version)
+        assertEquals(1, processLinkService.getProcessLinks(latestProcessDefinition.id, SERVICE_TASK_ID).count())
+    }
+
+    @Test
+    fun `should NOT copy process link on old process to a newly deployed process`() {
+        // given
+        val changedProcessBpmn = readFileAsString("/bpmn/service-task-process.bpmn")
+            .replace("My service task", "My service task changed")
+        runWithoutAuthorization {
+            camundaProcessService.deploy("service-task-process.bpmn", changedProcessBpmn.byteInputStream())
+        }
+        createProcessLink(processDefinition)
+        val changedAgainProcessBpmn = readFileAsString("/bpmn/service-task-process.bpmn")
+            .replace("My service task", "My service task changed again")
+
+        // when
+        runWithoutAuthorization {
+            camundaProcessService.deploy("service-task-process.bpmn", changedAgainProcessBpmn.byteInputStream())
+        }
+
+        // then
+        val latestProcessDefinition = getLatestProcessDefinition()
+        assertEquals(1, processDefinition.version)
+        assertEquals(1, processLinkService.getProcessLinks(processDefinition.id, SERVICE_TASK_ID).count())
+        assertEquals(3, latestProcessDefinition.version)
         assertEquals(0, processLinkService.getProcessLinks(latestProcessDefinition.id, SERVICE_TASK_ID).count())
     }
 
@@ -89,9 +100,8 @@ internal class CopyProcessLinkOnProcessDeploymentListenerIntTest : BaseIntegrati
             TestProcessLinkCreateRequestDto(
                 processDefinition.id,
                 SERVICE_TASK_ID,
-                ActivityTypeWithEventName.SERVICE_TASK_START,
-            ),
-            CaseDefinitionId.of("autodeploy", "1.0.0")
+                ActivityTypeWithEventName.SERVICE_TASK_START
+            )
         )
     }
 

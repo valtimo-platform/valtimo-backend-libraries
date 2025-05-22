@@ -24,7 +24,6 @@ import com.ritense.case.domain.CaseTabId
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.service.DocumentDefinitionService
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import jakarta.persistence.EntityNotFoundException
 import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
@@ -37,10 +36,9 @@ class CaseTabDocumentDefinitionMapper(
     override fun mapRelated(entity: CaseTab): List<JsonSchemaDocumentDefinition> {
         return runWithoutAuthorization {
             listOf(
-                documentDefinitionService.findByCaseDefinitionId(entity.id.caseDefinitionId)
+                documentDefinitionService.findLatestByName(entity.id.caseDefinitionName)
                     .map { it as JsonSchemaDocumentDefinition }
-                    .getOrNull()
-                    ?: throw EntityNotFoundException("JsonSchemaDocumentDefinition with name ${entity.id.caseDefinitionId.key} and version tag ${entity.id.caseDefinitionId.versionTag} not found")
+                    .getOrNull() ?: throw EntityNotFoundException("JsonSchemaDocumentDefinition with name ${entity.id.caseDefinitionName} not found")
             )
         }
     }
@@ -50,15 +48,13 @@ class CaseTabDocumentDefinitionMapper(
         query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): AuthorizationEntityMapperResult<JsonSchemaDocumentDefinition> {
-        val documentDefinitionRoot: Root<JsonSchemaDocumentDefinition> =
-            query.from(JsonSchemaDocumentDefinition::class.java)
+        val documentDefinitionRoot: Root<JsonSchemaDocumentDefinition> = query.from(JsonSchemaDocumentDefinition::class.java)
         return AuthorizationEntityMapperResult(
             documentDefinitionRoot,
             query,
             criteriaBuilder.equal(
-                root.get<CaseTabId>("id").get<String>("caseDefinitionId"),
-                documentDefinitionRoot.get<JsonSchemaDocumentDefinitionId>("id")
-                    .get<CaseDefinitionId>("caseDefinitionId")
+                root.get<CaseTabId>("id").get<String>("caseDefinitionName"),
+                documentDefinitionRoot.get<JsonSchemaDocumentDefinitionId>("id").get<String>("name")
             )
         )
     }

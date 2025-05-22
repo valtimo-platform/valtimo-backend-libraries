@@ -16,22 +16,24 @@
 
 package com.ritense.zakenapi.service
 
-import com.ritense.processdocument.domain.ProcessDefinitionCaseDefinition
-import com.ritense.processdocument.domain.ProcessDefinitionCaseDefinitionId
-import com.ritense.processdocument.domain.ProcessDefinitionId
-import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
+import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey
+import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinition
+import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinitionId
+import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService
 import com.ritense.zakenapi.domain.ZaakTypeLink
 import com.ritense.zakenapi.domain.ZaakTypeLinkId
 import com.ritense.zakenapi.repository.ZaakTypeLinkRepository
 import com.ritense.zakenapi.web.rest.request.CreateZaakTypeLinkRequest
+import jakarta.validation.ConstraintViolationException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
-import org.mockito.kotlin.mock
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
 import java.net.URI
 import java.util.Optional
@@ -50,25 +52,20 @@ class ZaakTypeLinkServiceTest {
     lateinit var zaakTypeLinkRepository: ZaakTypeLinkRepository
 
     @Mock
-    lateinit var processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService
+    lateinit var processDocumentAssociationService: CamundaProcessJsonSchemaDocumentAssociationService
 
     val zaakTypeUrl = URI.create("http//example.com")
-    val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
 
     @BeforeEach
     fun setUp() {
         MockitoAnnotations.openMocks(this)
 
-        zaakTypeLinkService = DefaultZaakTypeLinkService(
-            zaakTypeLinkRepository,
-            processDefinitionCaseDefinitionService,
-            mock()
-        )
+        zaakTypeLinkService = DefaultZaakTypeLinkService(zaakTypeLinkRepository, processDocumentAssociationService)
         zaakTypeLinkId = ZaakTypeLinkId.newId(UUID.randomUUID())
 
         zaakTypeLink = ZaakTypeLink(
             zaakTypeLinkId,
-            caseDefinitionId,
+            documentDefinitionName,
             zaakTypeUrl
         )
         whenever(zaakTypeLinkRepository.findById(zaakTypeLinkId)).thenReturn(Optional.of(zaakTypeLink))
@@ -77,53 +74,79 @@ class ZaakTypeLinkServiceTest {
 
     @Test
     fun `should return entity`() {
-        whenever(zaakTypeLinkRepository.findByCaseDefinitionId(caseDefinitionId)).thenReturn(zaakTypeLink)
+        whenever(zaakTypeLinkRepository.findByDocumentDefinitionName("documentDefinitionName")).thenReturn(zaakTypeLink)
 
-        val result = zaakTypeLinkService.get(caseDefinitionId)
+        val result = zaakTypeLinkService.get("documentDefinitionName")
 
-        assertThat(result?.caseDefinitionId).isEqualTo(zaakTypeLink.caseDefinitionId)
+        assertThat(result?.documentDefinitionName).isEqualTo(zaakTypeLink.documentDefinitionName)
         assertThat(result?.zaakTypeUrl).isEqualTo(zaakTypeLink.zaakTypeUrl)
     }
 
     @Test
     fun `should create entity`() {
         val request = CreateZaakTypeLinkRequest(
+            documentDefinitionName,
             zaakTypeUrl
         )
 
-        whenever(zaakTypeLinkRepository.save(any())).thenAnswer { invocation -> invocation.getArgument<ZaakTypeLink>(0) }
+        whenever(zaakTypeLinkRepository.save(any())).thenAnswer { invocation -> invocation.getArgument<ZaakTypeLink>(0)}
 
-        val result = zaakTypeLinkService.createZaakTypeLink(caseDefinitionId, request)
+        val result = zaakTypeLinkService.createZaakTypeLink(request)
 
-        assertThat(result.caseDefinitionId).isEqualTo(caseDefinitionId)
+        assertThat(result.documentDefinitionName).isEqualTo(documentDefinitionName)
         assertThat(result.zaakTypeUrl).isEqualTo(zaakTypeUrl)
     }
 
     @Test
-    fun `should get zaakTypeLink`() {
-
-        whenever(
-            processDefinitionCaseDefinitionService.findByProcessDefinitionId(
-                ProcessDefinitionId("123")
-            )
+    fun `should not create entity`() {
+        val request = CreateZaakTypeLinkRequest(
+            invalidDocumentDefinitionName,
+            zaakTypeUrl
         )
-            .thenReturn(
-                ProcessDefinitionCaseDefinition(
-                    ProcessDefinitionCaseDefinitionId(
-                        ProcessDefinitionId("123"),
-                        caseDefinitionId
+
+        assertThrows<ConstraintViolationException> {
+            zaakTypeLinkService.createZaakTypeLink(request)
+        }
+    }
+
+    @Test
+    fun `should get empty zaakTypeLinks`() {
+        val result = zaakTypeLinkService.getByProcess("processDefinitionKey")
+
+        assertThat(result).isEmpty()
+    }
+
+    @Test
+    fun `should get zaakTypeLinks`() {
+        whenever(processDocumentAssociationService.findAllProcessDocumentDefinitions(CamundaProcessDefinitionKey("processDefinitionKey")))
+            .thenReturn(listOf(
+                CamundaProcessJsonSchemaDocumentDefinition(
+                    CamundaProcessJsonSchemaDocumentDefinitionId.newId(
+                        CamundaProcessDefinitionKey("processDefinitionKey"),
+                        JsonSchemaDocumentDefinitionId.newId("documentDefinitionId")
+                    ),
+                    true,
+                    false
+                ),
+                CamundaProcessJsonSchemaDocumentDefinition(
+                    CamundaProcessJsonSchemaDocumentDefinitionId.newId(
+                        CamundaProcessDefinitionKey("processDefinitionKey"),
+                        JsonSchemaDocumentDefinitionId.newId("documentDefinitionId2")
                     ),
                     true,
                     false
                 )
-            )
+            ))
 
-        whenever(zaakTypeLinkRepository.findByCaseDefinitionId(caseDefinitionId))
-            .thenReturn(zaakTypeLink)
+        whenever(zaakTypeLinkRepository.findByDocumentDefinitionNameIn(
+            eq(listOf("documentDefinitionId", "documentDefinitionId2")))
+        ).thenReturn(listOf(
+            zaakTypeLink
+        ))
 
-        val result = zaakTypeLinkService.getByProcess("123")
+        val result = zaakTypeLinkService.getByProcess("processDefinitionKey")
 
-        assertThat(result).isEqualTo(zaakTypeLink)
+        assertThat(result).contains(zaakTypeLink)
     }
 
 }

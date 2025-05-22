@@ -50,6 +50,7 @@ public class ValtimoMybatisAutoConfiguration {
         databaseSpecificTruncDatepart2.put(DbSqlSessionFactory.ORACLE, ",')");
         for (String mysqlLikeDatabase : Arrays.asList(
             DbSqlSessionFactory.MYSQL,
+            DbSqlSessionFactory.MARIADB,
             DbSqlSessionFactory.POSTGRES
         )) {
             databaseSpecificTruncDatepart1.put(mysqlLikeDatabase, "date(");

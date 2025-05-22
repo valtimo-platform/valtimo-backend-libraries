@@ -21,14 +21,14 @@ import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.mail.MailSender;
+import jakarta.inject.Inject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @SpringBootTest
@@ -36,19 +36,19 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @Tag("integration")
 public abstract class BaseIntegrationTest extends BaseTest {
 
-    @MockitoBean
+    @MockBean
     public UserManagementService userManagementService;
 
-    @MockitoBean
+    @MockBean
     public MailSender mailSender;
 
-    @MockitoBean
+    @MockBean
     public ResourceService resourceService;
 
-    @MockitoBean
+    @MockBean
     public DocumentSnapshotService documentSnapshotService;
 
-    @Autowired
+    @Inject
     public FormDefinitionRepository formDefinitionRepository;
 
     @BeforeAll

@@ -17,9 +17,9 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.security.test.context.support.WithMockUser
-import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -38,7 +38,7 @@ class IntermediateSubmissionResourceIntTest : BaseIntegrationTest() {
     @Autowired
     lateinit var intermediateSubmissionService: IntermediateSubmissionService
 
-    @MockitoBean
+    @MockBean
     lateinit var camundaTaskService: CamundaTaskService
 
     lateinit var mockMvc: MockMvc

@@ -42,14 +42,4 @@ class FormIoCaseWidget(
     val properties: FormIoWidgetProperties
 ) : CaseWidgetTabWidget(
     id, title, order, width, highContrast, actions
-) {
-    override fun copy(id: CaseWidgetTabWidgetId) = FormIoCaseWidget(
-        id = id,
-        title = title,
-        order = order,
-        width = width,
-        highContrast = highContrast,
-        actions = actions,
-        properties = properties
-    )
-}
+)

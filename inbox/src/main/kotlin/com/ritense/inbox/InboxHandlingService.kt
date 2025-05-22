@@ -16,7 +16,7 @@
 
 package com.ritense.inbox
 
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KotlinLogging
 
 class InboxHandlingService(
     private val eventHandlers: List<InboxEventHandler>,

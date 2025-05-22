@@ -41,17 +41,17 @@ class CaseInstanceService(
     private val valueResolverService: ValueResolverService,
 ) {
     fun search(
-        caseDefinitionKey: String,
+        caseDefinitionName: String,
         searchRequest: SearchWithConfigRequest,
         pageable: Pageable
     ): Page<CaseListRowDto> {
         // No authorization on this level, as we have to fully rely on the documentSearchService for filtering results
-        val caseListColumns = caseDefinitionListColumnRepository.findByIdCaseDefinitionKeyOrderByOrderAsc(
-            caseDefinitionKey
+        val caseListColumns = caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAsc(
+            caseDefinitionName
         )
         val newPageable = mutatePageable(caseListColumns, pageable)
 
-        return documentSearchService.search(caseDefinitionKey, searchRequest, newPageable)
+        return documentSearchService.search(caseDefinitionName, searchRequest, newPageable)
             .map { document -> toCaseListRowDto(document, caseListColumns) }
     }
 
@@ -74,8 +74,8 @@ class CaseInstanceService(
         }.toMutableList()
 
         if (items.none { it.key == "assigneeFullName" }) {
-            val case = caseDefinitionService.findCaseDefinition(document.definitionId().caseDefinitionId())
-            if (case?.canHaveAssignee == true) {
+            val caseSettings = caseDefinitionService.getCaseSettings(document.definitionId().name())
+            if (caseSettings.canHaveAssignee) {
                 items.add(CaseListRowDto.CaseListItemDto("assigneeFullName", document.assigneeFullName()))
             }
         }

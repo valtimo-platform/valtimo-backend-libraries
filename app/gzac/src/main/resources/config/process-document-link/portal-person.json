@@ -1,0 +1,7 @@
+[
+    {
+        "processDefinitionKey": "portal-person",
+        "canInitializeDocument": true,
+        "startableByUser": true
+    }
+]

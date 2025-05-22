@@ -17,11 +17,10 @@
 package com.ritense.valtimo;
 
 import com.ritense.outbox.OutboxService;
-import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.mail.MailSender;
 import com.ritense.valtimo.repository.CamundaSearchProcessInstanceRepository;
-import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker;
+import jakarta.inject.Inject;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
 import org.junit.jupiter.api.AfterEach;
@@ -30,11 +29,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.event.EventListener;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @SpringBootTest(properties = {"valtimo.outbox.enabled=true"}, classes = {CoreTestConfiguration.class})
@@ -42,28 +39,22 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @Tag("integration")
 public abstract class BaseIntegrationTest {
 
-    @Autowired
+    @Inject
     public RuntimeService runtimeService;
 
-    @MockitoBean
-    public AuditEventListener auditEventListener;
-
-    @MockitoBean(answers = Answers.RETURNS_DEEP_STUBS)
+    @MockBean(answer = Answers.RETURNS_DEEP_STUBS)
     public UserManagementService userManagementService;
 
-    @MockitoBean
+    @MockBean
     public MailSender mailSender;
 
-    @MockitoBean
-    public ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker;
-
-    @MockitoSpyBean
+    @SpyBean
     public OutboxService outboxService;
 
-    @MockitoSpyBean
+    @SpyBean
     public CamundaSearchProcessInstanceRepository camundaSearchProcessInstanceRepository;
 
-    @MockitoSpyBean
+    @SpyBean
     public TaskService camundaTaskService;
 
     @BeforeAll
@@ -76,11 +67,6 @@ public abstract class BaseIntegrationTest {
 
     @AfterEach
     public void afterEach() {
-    }
-
-    public interface AuditEventListener {
-        @EventListener(classes = AuditEvent.class)
-        void handle(AuditEvent auditEvent);
     }
 
 }

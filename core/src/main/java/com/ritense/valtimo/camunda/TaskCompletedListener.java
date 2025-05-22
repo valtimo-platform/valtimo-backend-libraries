@@ -16,8 +16,6 @@
 
 package com.ritense.valtimo.camunda;
 
-import static com.ritense.logging.LoggingContextKt.withLoggingContext;
-
 import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
 import com.ritense.valtimo.contract.event.TaskCompletedEvent;
@@ -25,11 +23,17 @@ import com.ritense.valtimo.contract.utils.RequestHelper;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.UUID;
+import org.camunda.bpm.engine.ActivityTypes;
 import org.camunda.bpm.engine.delegate.DelegateTask;
+import org.camunda.bpm.engine.delegate.TaskListener;
+import org.camunda.bpm.extension.reactor.bus.CamundaSelector;
+import org.camunda.bpm.extension.reactor.spring.listener.ReactorTaskListener;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.event.EventListener;
 
-public class TaskCompletedListener {
+import static com.ritense.logging.LoggingContextKt.withLoggingContext;
+
+@CamundaSelector(type = ActivityTypes.TASK_USER_TASK, event = TaskListener.EVENTNAME_COMPLETE)
+public class TaskCompletedListener extends ReactorTaskListener {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -37,9 +41,7 @@ public class TaskCompletedListener {
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
-    @EventListener(condition = "#delegateTask.bpmnModelElementInstance != null " +
-        "&& #delegateTask.bpmnModelElementInstance.elementType.typeName == T(org.camunda.bpm.engine.ActivityTypes).TASK_USER_TASK " +
-        "&& #delegateTask.eventName == T(org.camunda.bpm.engine.delegate.TaskListener).EVENTNAME_COMPLETE")
+    @Override
     public void notify(DelegateTask delegateTask) {
         withLoggingContext(CamundaTask.class, delegateTask.getId(), () ->
             applicationEventPublisher.publishEvent(

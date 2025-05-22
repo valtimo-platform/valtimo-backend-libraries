@@ -18,6 +18,4 @@ package com.ritense.processlink.repository
 
 import com.ritense.processlink.domain.ProcessLink
 
-interface ProcessLinkRepository : BaseProcessLinkRepository<ProcessLink> {
-    fun deleteAllByProcessDefinitionId(processDefinitionId: String)
-}
+interface ProcessLinkRepository : BaseProcessLinkRepository<ProcessLink>

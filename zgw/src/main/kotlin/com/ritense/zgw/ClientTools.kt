@@ -30,7 +30,7 @@ import java.net.URI
 
 class ClientTools {
     companion object {
-        val logger = io.github.oshai.kotlinlogging.KotlinLogging.logger {}
+        val logger = mu.KotlinLogging.logger {}
 
         @Deprecated("Use of WebClient is deprecated, this was used before")
         fun <T> getTypedPage(responseClass: Class<out T>): ParameterizedTypeReference<Page<T>> {

@@ -38,7 +38,6 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.PluginConfigurationResource
 import com.ritense.plugin.web.rest.PluginDefinitionResource
 import com.ritense.plugin.web.rest.converter.StringToActivityTypeConverter
-import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.persistence.EntityManager
 import jakarta.validation.Validator
@@ -125,8 +124,7 @@ class PluginAutoConfiguration {
         validator: Validator,
         applicationEventPublisher: ApplicationEventPublisher,
         encryptionService: EncryptionService,
-        environment: Environment,
-        caseDefinitionChecker: CaseDefinitionChecker,
+        environment: Environment
     ): PluginService {
         return PluginService(
             pluginDefinitionRepository,
@@ -141,7 +139,6 @@ class PluginAutoConfiguration {
             applicationEventPublisher,
             encryptionService,
             environment,
-            caseDefinitionChecker,
         )
     }
 

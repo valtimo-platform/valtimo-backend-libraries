@@ -137,8 +137,6 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
                     "prefill-process",
                     NewDocumentRequest(
                         "person",
-                        "person",
-                        "1.0.0",
                         objectMapper.readTree(
                             """{
                                 "fruitTypes":[{"apples":2}],

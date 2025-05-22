@@ -1,0 +1,19 @@
+{
+    "changesetId": "person.case-tag",
+    "caseTags": [
+        {
+            "key": "important",
+            "caseDefinitionName": "person",
+            "title": "Important",
+            "order": 0,
+            "color": "BLUE"
+        },
+        {
+            "key": "needs-attention",
+            "caseDefinitionName": "person",
+            "title": "Needs attention!",
+            "order": 1,
+            "color": "PURPLE"
+        }
+    ]
+}

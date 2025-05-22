@@ -1,7 +1,0 @@
-{
-    "key": "fvm",
-    "name": "FVM",
-    "versionTag": "1.0.0",
-    "canHaveAssignee": true,
-    "autoAssignTasks": true
-}

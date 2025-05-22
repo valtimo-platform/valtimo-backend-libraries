@@ -12,21 +12,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *//*
-
+ */
 
 package com.ritense.case.web.rest
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.BaseIntegrationTest
+import com.ritense.case.BaseIntegrationTest
+import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
-import com.ritense.case_.domain.definition.CaseDefinition
-import com.ritense.case_.repository.CaseDefinitionRepository
+import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matchers.nullValue
 import org.junit.jupiter.api.BeforeEach
@@ -66,7 +64,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     lateinit var webApplicationContext: WebApplicationContext
 
     @Autowired
-    lateinit var caseDefitionRepository: CaseDefinitionRepository
+    lateinit var caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository
 
     @Autowired
     lateinit var caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository
@@ -79,18 +77,18 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = [USER])
     fun `should get case settings with default values`() {
-        val caseDefinitionId = CaseDefinitionId("resource-test-default", "1.0.0")
+        val caseDefinitionName = "resource-test-default"
         runWithoutAuthorization {
-            documentDefinitionService.deploy(basicDocumentDefinition(caseDefinitionId.key), caseDefinitionId)
+            documentDefinitionService.deploy(basicDocumentDefinition(caseDefinitionName))
         }
         mockMvc
             .perform(
-                get(CASE_SETTINGS_PATH, caseDefinitionId.key)
+                get(CASE_SETTINGS_PATH, caseDefinitionName)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
             )
             .andExpect(status().isOk)
             .andExpect(jsonPath(ROOT).isNotEmpty)
-            .andExpect(jsonPath(NAME).value(caseDefinitionId.key))
+            .andExpect(jsonPath(NAME).value(caseDefinitionName))
             .andExpect(jsonPath(CAN_HAVE_ASSIGNEE).value(false))
             .andExpect(jsonPath(AUTO_ASSIGN_TASKS).value(false))
             .andExpect(jsonPath(HAS_EXTERNAL_START_FORM).value(false))
@@ -100,94 +98,148 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Test
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should get case settings as an admin with default values`() {
-        val caseDefinitionId = CaseDefinitionId("resource-test-default", "1.0.0")
+        val caseDefinitionName = "resource-test-default"
         runWithoutAuthorization {
-            documentDefinitionService.deploy(basicDocumentDefinition(caseDefinitionId.key), caseDefinitionId)
+            documentDefinitionService.deploy(basicDocumentDefinition(caseDefinitionName))
         }
         mockMvc
             .perform(
-                get(MANAGEMENT_CASE_SETTINGS_PATH, caseDefinitionId.key)
+                get(MANAGEMENT_CASE_SETTINGS_PATH, caseDefinitionName)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
             )
             .andExpect(status().isOk)
             .andExpect(jsonPath(ROOT).isNotEmpty)
-            .andExpect(jsonPath(NAME).value(caseDefinitionId.key))
+            .andExpect(jsonPath(NAME).value(caseDefinitionName))
             .andExpect(jsonPath(CAN_HAVE_ASSIGNEE).value(false))
             .andExpect(jsonPath(AUTO_ASSIGN_TASKS).value(false))
             .andExpect(jsonPath(HAS_EXTERNAL_START_FORM).value(false))
             .andExpect(jsonPath(EXTERNAL_START_FORM_URL, nullValue()))
     }
 
+    @Deprecated("Since 11.0.0")
     @Test
-    @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
-    fun `should update case setting 'can have assignee' as an admin`() {
-        val caseDefinitionId = CaseDefinitionId("resource-test-update", "1.0.0")
+    fun `should update case setting 'can have assignee'`() {
+        val caseDefinitionName = "resource-test-update"
         runWithoutAuthorization {
-            documentDefinitionService.deploy(basicDocumentDefinition(caseDefinitionId.key), caseDefinitionId)
+            documentDefinitionService.deploy(basicDocumentDefinition(caseDefinitionName))
         }
         mockMvc
             .perform(
-                patch(MANAGEMENT_CASE_SETTINGS_PATH, caseDefinitionId.key, caseDefinitionId.versionTag.toString())
+                patch(CASE_SETTINGS_PATH, caseDefinitionName)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content("{\"canHaveAssignee\": true, \"autoAssignTasks\": true}")
             )
             .andExpect(status().isOk)
             .andExpect(jsonPath(ROOT).isNotEmpty)
-            .andExpect(jsonPath(NAME).value(caseDefinitionId.key))
+            .andExpect(jsonPath(NAME).value(caseDefinitionName))
             .andExpect(jsonPath(CAN_HAVE_ASSIGNEE).value(true))
             .andExpect(jsonPath(HAS_EXTERNAL_START_FORM).value(false))
             .andExpect(jsonPath(EXTERNAL_START_FORM_URL, nullValue()))
-        val settingsInDatabase = caseDefitionRepository.getReferenceById(caseDefinitionId)
-        assertEquals(caseDefinitionId.key, settingsInDatabase.name)
+        val settingsInDatabase = caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)
+        assertEquals(caseDefinitionName, settingsInDatabase.name)
+        assertEquals(true, settingsInDatabase.canHaveAssignee)
+    }
+
+    @Test
+    @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
+    fun `should update case setting 'can have assignee' as an admin`() {
+        val caseDefinitionName = "resource-test-update"
+        runWithoutAuthorization {
+            documentDefinitionService.deploy(basicDocumentDefinition(caseDefinitionName))
+        }
+        mockMvc
+            .perform(
+                patch(MANAGEMENT_CASE_SETTINGS_PATH, caseDefinitionName)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content("{\"canHaveAssignee\": true, \"autoAssignTasks\": true}")
+            )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath(ROOT).isNotEmpty)
+            .andExpect(jsonPath(NAME).value(caseDefinitionName))
+            .andExpect(jsonPath(CAN_HAVE_ASSIGNEE).value(true))
+            .andExpect(jsonPath(HAS_EXTERNAL_START_FORM).value(false))
+            .andExpect(jsonPath(EXTERNAL_START_FORM_URL, nullValue()))
+        val settingsInDatabase = caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)
+        assertEquals(caseDefinitionName, settingsInDatabase.name)
+        assertEquals(true, settingsInDatabase.canHaveAssignee)
+    }
+
+    @Deprecated("Since 11.0.0")
+    @Test
+    fun `should not update case settings property when it has not been submitted`() {
+        val caseDefinitionName = "resource-test-empty"
+        runWithoutAuthorization {
+            documentDefinitionService.deploy(basicDocumentDefinition(caseDefinitionName))
+        }
+        val settings = CaseDefinitionSettings(
+            caseDefinitionName,
+            canHaveAssignee = true,
+            autoAssignTasks = true
+        )
+        caseDefinitionSettingsRepository.save(settings)
+        mockMvc
+            .perform(
+                patch(CASE_SETTINGS_PATH, caseDefinitionName)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content("{}")
+            )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath(ROOT).isNotEmpty)
+            .andExpect(jsonPath(NAME).value(caseDefinitionName))
+            .andExpect(jsonPath(CAN_HAVE_ASSIGNEE).value(true))
+            .andExpect(jsonPath(AUTO_ASSIGN_TASKS).value(true))
+            .andExpect(jsonPath(HAS_EXTERNAL_START_FORM).value(false))
+            .andExpect(jsonPath(EXTERNAL_START_FORM_URL, nullValue()))
+        val settingsInDatabase = caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)
+        assertEquals(caseDefinitionName, settingsInDatabase.name)
         assertEquals(true, settingsInDatabase.canHaveAssignee)
     }
 
     @Test
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should not update case settings property as an admin when it has not been submitted`() {
-        val caseDefinitionId = CaseDefinitionId("resource-test-empty", "1.0.0")
+        val caseDefinitionName = "resource-test-empty"
         val externalFormUrl = "https://www.example.com/external-form"
         runWithoutAuthorization {
-            documentDefinitionService.deploy(basicDocumentDefinition(caseDefinitionId.key), caseDefinitionId)
+            documentDefinitionService.deploy(basicDocumentDefinition(caseDefinitionName))
         }
-        val settings = CaseDefinition(
-            id = caseDefinitionId,
-            name = caseDefinitionId.key,
+        val settings = CaseDefinitionSettings(
+            caseDefinitionName,
             canHaveAssignee = true,
             autoAssignTasks = true,
             hasExternalStartForm = true,
             externalStartFormUrl = externalFormUrl
         )
-        caseDefitionRepository.save(settings)
+        caseDefinitionSettingsRepository.save(settings)
         mockMvc
             .perform(
-                patch(MANAGEMENT_CASE_SETTINGS_PATH, caseDefinitionId.key, caseDefinitionId.versionTag.toString())
+                patch(MANAGEMENT_CASE_SETTINGS_PATH, caseDefinitionName)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content("{}")
             )
             .andExpect(status().isOk)
             .andExpect(jsonPath(ROOT).isNotEmpty)
-            .andExpect(jsonPath(NAME).value(caseDefinitionId.key))
+            .andExpect(jsonPath(NAME).value(caseDefinitionName))
             .andExpect(jsonPath(CAN_HAVE_ASSIGNEE).value(true))
             .andExpect(jsonPath(AUTO_ASSIGN_TASKS).value(true))
             .andExpect(jsonPath(HAS_EXTERNAL_START_FORM).value(true))
             .andExpect(jsonPath(EXTERNAL_START_FORM_URL).value(externalFormUrl))
-        val settingsInDatabase = caseDefitionRepository.getReferenceById(caseDefinitionId)
-        assertEquals(caseDefinitionId.key, settingsInDatabase.name)
+        val settingsInDatabase = caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)
+        assertEquals(caseDefinitionName, settingsInDatabase.name)
         assertEquals(true, settingsInDatabase.canHaveAssignee)
     }
 
     @Test
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should update case setting 'has external case start form' as an admin`() {
-        val caseDefinitionId = CaseDefinitionId("resource-test-update", "1.0.0")
+        val caseDefinitionName = "resource-test-update"
         val externalFormUrl = "https://www.example.com/external-form"
         runWithoutAuthorization {
-            documentDefinitionService.deploy(basicDocumentDefinition(caseDefinitionId.key), caseDefinitionId)
+            documentDefinitionService.deploy(basicDocumentDefinition(caseDefinitionName))
         }
         mockMvc
             .perform(
-                patch(MANAGEMENT_CASE_SETTINGS_PATH, caseDefinitionId.key, caseDefinitionId.versionTag.toString())
+                patch(MANAGEMENT_CASE_SETTINGS_PATH, caseDefinitionName)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(
                         """
@@ -200,11 +252,11 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             )
             .andExpect(status().isOk)
             .andExpect(jsonPath(ROOT).isNotEmpty)
-            .andExpect(jsonPath(NAME).value(caseDefinitionId.key))
+            .andExpect(jsonPath(NAME).value(caseDefinitionName))
             .andExpect(jsonPath(HAS_EXTERNAL_START_FORM).value(true))
             .andExpect(jsonPath(EXTERNAL_START_FORM_URL).value(externalFormUrl))
-        val settingsInDatabase = caseDefitionRepository.getReferenceById(caseDefinitionId)
-        assertEquals(caseDefinitionId.key, settingsInDatabase.name)
+        val settingsInDatabase = caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)
+        assertEquals(caseDefinitionName, settingsInDatabase.name)
         assertEquals(true, settingsInDatabase.hasExternalStartForm)
         assertEquals(externalFormUrl, settingsInDatabase.externalStartFormUrl)
     }
@@ -212,13 +264,13 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Test
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should expect a server error when updating case setting 'has external case start form' as an admin when specified uri is blank`() {
-        val caseDefinitionId = CaseDefinitionId("resource-test-update", "1.0.0")
+        val caseDefinitionName = "resource-test-update"
         runWithoutAuthorization {
-            documentDefinitionService.deploy(basicDocumentDefinition(caseDefinitionId.key), caseDefinitionId)
+            documentDefinitionService.deploy(basicDocumentDefinition(caseDefinitionName))
         }
         mockMvc
             .perform(
-                patch(MANAGEMENT_CASE_SETTINGS_PATH, caseDefinitionId.key, caseDefinitionId.versionTag.toString())
+                patch(MANAGEMENT_CASE_SETTINGS_PATH, caseDefinitionName)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(
                         """
@@ -235,13 +287,13 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Test
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should expect a server error when updating case setting 'has external case start form' as an admin when specified uri is invalid`() {
-        val caseDefinitionId = CaseDefinitionId("resource-test-update", "1.0.0")
+        val caseDefinitionName = "resource-test-update"
         runWithoutAuthorization {
-            documentDefinitionService.deploy(basicDocumentDefinition(caseDefinitionId.key), caseDefinitionId)
+            documentDefinitionService.deploy(basicDocumentDefinition(caseDefinitionName))
         }
         mockMvc
             .perform(
-                patch(MANAGEMENT_CASE_SETTINGS_PATH, caseDefinitionId.key, caseDefinitionId.versionTag.toString())
+                patch(MANAGEMENT_CASE_SETTINGS_PATH, caseDefinitionName)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(
                         """
@@ -304,31 +356,30 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Deprecated("Since 11.0.0")
     @Test
     fun `should create list column`() {
-        val caseDefinitionId = CaseDefinitionId("listColumnDocumentDefinition", "1.0.0")
+        val caseDefinitionName = "listColumnDocumentDefinition"
         runWithoutAuthorization {
             documentDefinitionService.deploy(
                 "{\n" +
-                "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
-                "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
-                "    \"title\": \"listColumnDocumentDefinition\",\n" +
-                "    \"type\": \"object\",\n" +
-                "    \"properties\": {\n" +
-                "        \"firstName\": {\n" +
-                "            \"type\": \"string\",\n" +
-                "            \"description\": \"first name\"\n" +
-                "        },\n" +
-                "        \"lastName\": {\n" +
-                "            \"type\": \"string\",\n" +
-                "            \"description\": \"last name\"\n" +
-                "        }\n" +
-                "    }\n" +
-                "}",
-                caseDefinitionId
+                    "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                    "    \"title\": \"listColumnDocumentDefinition\",\n" +
+                    "    \"type\": \"object\",\n" +
+                    "    \"properties\": {\n" +
+                    "        \"firstName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"first name\"\n" +
+                    "        },\n" +
+                    "        \"lastName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"last name\"\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "}"
             )
         }
         mockMvc.perform(
             MockMvcRequestBuilders.post(
-                LIST_COLUMN_PATH, caseDefinitionId.key
+                LIST_COLUMN_PATH, caseDefinitionName
             ).contentType(MediaType.APPLICATION_JSON_VALUE).content(
                 "{\n" + "  \"title\": \"First name\",\n" + "  \"key\": \"first-name\",\n" + "  \"path\": \"test:firstName\" ,\n" + "  \"displayType\": {\n" + "    \"type\": \"enum\",\n" + "    \"displayTypeParameters\": {\n" + "        \"enum\": {\"key1\":\"Value 1\"},\n" + "        \"date-format\": \"\"\n" + "        }\n" + "    },\n" + "    \"sortable\": true ,\n" + "    \"defaultSort\": \"ASC\"\n" + "}"
             )
@@ -338,31 +389,30 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Test
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should create list column as an admin`() {
-        val caseDefinitionId = CaseDefinitionId("listColumnDocumentDefinition", "1.0.0")
+        val caseDefinitionName = "listColumnDocumentDefinition"
         runWithoutAuthorization {
             documentDefinitionService.deploy(
                 "{\n" +
-                "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
-                "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
-                "    \"title\": \"listColumnDocumentDefinition\",\n" +
-                "    \"type\": \"object\",\n" +
-                "    \"properties\": {\n" +
-                "        \"firstName\": {\n" +
-                "            \"type\": \"string\",\n" +
-                "            \"description\": \"first name\"\n" +
-                "        },\n" +
-                "        \"lastName\": {\n" +
-                "            \"type\": \"string\",\n" +
-                "            \"description\": \"last name\"\n" +
-                "        }\n" +
-                "    }\n" +
-                "}",
-                caseDefinitionId
+                    "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                    "    \"title\": \"listColumnDocumentDefinition\",\n" +
+                    "    \"type\": \"object\",\n" +
+                    "    \"properties\": {\n" +
+                    "        \"firstName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"first name\"\n" +
+                    "        },\n" +
+                    "        \"lastName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"last name\"\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "}"
             )
         }
         mockMvc.perform(
             MockMvcRequestBuilders.post(
-                MANAGEMENT_LIST_COLUMN_PATH, caseDefinitionId.key
+                MANAGEMENT_LIST_COLUMN_PATH, caseDefinitionName
             ).contentType(MediaType.APPLICATION_JSON_VALUE).content(
                 "{\n" + "  \"title\": \"First name\",\n" + "  \"key\": \"first-name\",\n" + "  \"path\": \"test:firstName\" ,\n" + "  \"displayType\": {\n" + "    \"type\": \"enum\",\n" + "    \"displayTypeParameters\": {\n" + "        \"enum\": {\"key1\":\"Value 1\"},\n" + "        \"date-format\": \"\"\n" + "        }\n" + "    },\n" + "    \"sortable\": true ,\n" + "    \"defaultSort\": \"ASC\"\n" + "}"
             )
@@ -372,31 +422,30 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Deprecated("Since 11.0.0")
     @Test
     fun `should return bad request on create`() {
-        val caseDefinitionId = CaseDefinitionId("listColumnDocumentDefinition", "1.0.0")
+        val caseDefinitionName = "listColumnDocumentDefinition"
         runWithoutAuthorization {
             documentDefinitionService.deploy(
                 "{\n" +
-                "  \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
-                "  \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
-                "  \"title\": \"listColumnDocumentDefinition\",\n" +
-                "  \"type\": \"object\",\n" +
-                "  \"properties\": {\n" +
-                "    \"firstName\": {\n" +
-                "      \"type\": \"string\",\n" +
-                "      \"description\": \"first name\"\n" +
-                "    },\n" +
-                "    \"lastName\": {\n" +
-                "      \"type\": \"string\",\n" +
-                "      \"description\": \"last name\"\n" +
-                "    }\n" +
-                "  }\n" +
-                "}",
-                caseDefinitionId
+                    "  \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
+                    "  \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                    "  \"title\": \"listColumnDocumentDefinition\",\n" +
+                    "  \"type\": \"object\",\n" +
+                    "  \"properties\": {\n" +
+                    "    \"firstName\": {\n" +
+                    "      \"type\": \"string\",\n" +
+                    "      \"description\": \"first name\"\n" +
+                    "    },\n" +
+                    "    \"lastName\": {\n" +
+                    "      \"type\": \"string\",\n" +
+                    "      \"description\": \"last name\"\n" +
+                    "    }\n" +
+                    "  }\n" +
+                    "}"
             )
         }
 
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/case/{caseDefinitionName}/list-column", caseDefinitionId.key)
+            MockMvcRequestBuilders.post("/api/v1/case/{caseDefinitionName}/list-column", caseDefinitionName)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(
                     """
@@ -422,45 +471,44 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Test
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should return bad request on create as an admin`() {
-        val caseDefinitionId = CaseDefinitionId("listColumnDocumentDefinition", "1.0.0")
+        val caseDefinitionName = "listColumnDocumentDefinition"
         runWithoutAuthorization {
             documentDefinitionService.deploy(
                 "{\n" +
-                "  \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
-                "  \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
-                "  \"title\": \"listColumnDocumentDefinition\",\n" +
-                "  \"type\": \"object\",\n" +
-                "  \"properties\": {\n" +
-                "    \"firstName\": {\n" +
-                "      \"type\": \"string\",\n" +
-                "      \"description\": \"first name\"\n" +
-                "    },\n" +
-                "    \"lastName\": {\n" +
-                "      \"type\": \"string\",\n" +
-                "      \"description\": \"last name\"\n" +
-                "    }\n" +
-                "  }\n" +
-                "}",
-                caseDefinitionId
+                    "  \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
+                    "  \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                    "  \"title\": \"listColumnDocumentDefinition\",\n" +
+                    "  \"type\": \"object\",\n" +
+                    "  \"properties\": {\n" +
+                    "    \"firstName\": {\n" +
+                    "      \"type\": \"string\",\n" +
+                    "      \"description\": \"first name\"\n" +
+                    "    },\n" +
+                    "    \"lastName\": {\n" +
+                    "      \"type\": \"string\",\n" +
+                    "      \"description\": \"last name\"\n" +
+                    "    }\n" +
+                    "  }\n" +
+                    "}"
             )
         }
         createListColumn(
-            caseDefinitionId.key,
+            caseDefinitionName,
             """
-                {
-                  "title": "First name",
-                  "key": "first-name",
-                  "path": "doc:firstName",
-                  "displayType": {
-                    "type": "enum",
-                    "displayTypeParameters": {
-                      "date-format": ""
+                    {
+                      "title": "First name",
+                      "key": "first-name",
+                      "path": "doc:firstName",
+                      "displayType": {
+                        "type": "enum",
+                        "displayTypeParameters": {
+                          "date-format": ""
+                        }
+                      },
+                      "sortable": true,
+                      "defaultSort": "ASC"
                     }
-                  },
-                  "sortable": true,
-                  "defaultSort": "ASC"
-                }
-            """.trimIndent(), status().isBadRequest
+                """.trimIndent(), status().isBadRequest
         )
     }
 
@@ -557,33 +605,32 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             }
     }
 
+    @Deprecated("Since 11.0.0")
     @Test
-    @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
-    fun `should update columns for case definition as an admin`() {
-        val caseDefinitionId = CaseDefinitionId("listColumnDocumentDefinition", "1.0.0")
+    fun `should update columns for case definition`() {
+        val caseDefinitionName = "listColumnDocumentDefinition"
         runWithoutAuthorization {
             documentDefinitionService.deploy(
                 "{\n" +
-                "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
-                "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
-                "    \"title\": \"listColumnDocumentDefinition\",\n" +
-                "    \"type\": \"object\",\n" +
-                "    \"properties\": {\n" +
-                "        \"firstName\": {\n" +
-                "            \"type\": \"string\",\n" +
-                "            \"description\": \"first name\"\n" +
-                "        },\n" +
-                "        \"lastName\": {\n" +
-                "            \"type\": \"string\",\n" +
-                "            \"description\": \"last name\"\n" +
-                "        }\n" +
-                "    }\n" +
-                "}",
-                caseDefinitionId
+                    "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                    "    \"title\": \"listColumnDocumentDefinition\",\n" +
+                    "    \"type\": \"object\",\n" +
+                    "    \"properties\": {\n" +
+                    "        \"firstName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"first name\"\n" +
+                    "        },\n" +
+                    "        \"lastName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"last name\"\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "}"
             )
         }
         createListColumn(
-            caseDefinitionId.key,
+            caseDefinitionName,
             """
                           {
                             "title": "First name",
@@ -603,7 +650,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                 """.trimIndent(), status().isOk
         )
         createListColumn(
-            caseDefinitionId.key,
+            caseDefinitionName,
             """
                           {
                             "title": "Last name",
@@ -622,7 +669,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                 """.trimIndent(), status().isOk
         )
         mockMvc.perform(
-            MockMvcRequestBuilders.put(MANAGEMENT_LIST_COLUMN_PATH, caseDefinitionId.key)
+            MockMvcRequestBuilders.put(LIST_COLUMN_PATH, caseDefinitionName)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(
                     """
@@ -661,7 +708,117 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                 )
         ).andExpect(status().isOk)
         val columns = caseDefinitionListColumnRepository
-            .findByIdCaseDefinitionKeyOrderByOrderAsc(caseDefinitionId.key)
+            .findByIdCaseDefinitionNameOrderByOrderAsc(caseDefinitionName)
+        assertEquals("last-name", columns[0].id.key)
+        assertEquals(ColumnDefaultSort.DESC, columns[0].defaultSort)
+        assertEquals("first-name", columns[1].id.key)
+        assertNull(columns[1].defaultSort)
+    }
+
+    @Test
+    @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
+    fun `should update columns for case definition as an admin`() {
+        val caseDefinitionName = "listColumnDocumentDefinition"
+        runWithoutAuthorization {
+            documentDefinitionService.deploy(
+                "{\n" +
+                    "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                    "    \"title\": \"listColumnDocumentDefinition\",\n" +
+                    "    \"type\": \"object\",\n" +
+                    "    \"properties\": {\n" +
+                    "        \"firstName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"first name\"\n" +
+                    "        },\n" +
+                    "        \"lastName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"last name\"\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "}"
+            )
+        }
+        createListColumn(
+            caseDefinitionName,
+            """
+                          {
+                            "title": "First name",
+                            "key": "first-name",
+                            "path": "test:firstName",
+                            "displayType": {
+                              "type": "enum",
+                              "displayTypeParameters": {
+                                "enum": {
+                                  "key1": "Value 1"
+                                }
+                              }
+                            },
+                            "sortable": true,
+                            "defaultSort": "ASC"
+                          }
+                """.trimIndent(), status().isOk
+        )
+        createListColumn(
+            caseDefinitionName,
+            """
+                          {
+                            "title": "Last name",
+                            "key": "last-name",
+                            "path": "test:lastName",
+                            "displayType": {
+                              "type": "enum",
+                              "displayTypeParameters": {
+                                "enum": {
+                                  "key1": "Value 1"
+                                }
+                              }
+                            },
+                            "sortable": true
+                          }
+                """.trimIndent(), status().isOk
+        )
+        mockMvc.perform(
+            MockMvcRequestBuilders.put(MANAGEMENT_LIST_COLUMN_PATH, caseDefinitionName)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(
+                    """
+                        [
+                          {
+                            "title": "Last name",
+                            "key": "last-name",
+                            "path": "test:lastName",
+                            "displayType": {
+                              "type": "enum",
+                              "displayTypeParameters": {
+                                "enum": {
+                                  "key1": "Value 1"
+                                }
+                              }
+                            },
+                            "sortable": true,
+                            "defaultSort": "DESC"
+                          },
+                          {
+                            "title": "First name",
+                            "key": "first-name",
+                            "path": "test:firstName",
+                            "displayType": {
+                              "type": "enum",
+                              "displayTypeParameters": {
+                                "enum": {
+                                  "key1": "Value 1"
+                                }
+                              }
+                            },
+                            "sortable": true
+                          }
+                        ]
+                    """.trimIndent()
+                )
+        ).andExpect(status().isOk)
+        val columns = caseDefinitionListColumnRepository
+            .findByIdCaseDefinitionNameOrderByOrderAsc(caseDefinitionName)
         assertEquals("last-name", columns[0].id.key)
         assertEquals(ColumnDefaultSort.DESC, columns[0].defaultSort)
         assertEquals("first-name", columns[1].id.key)
@@ -671,51 +828,50 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Deprecated("Since 11.0.0")
     @Test
     fun `should delete column for case definition`() {
-        val caseDefinitionId = CaseDefinitionId("listColumnDocumentDefinition", "1.0.0")
+        val caseDefinitionName = "listColumnDocumentDefinition"
         runWithoutAuthorization {
             documentDefinitionService.deploy(
                 "{\n" +
-                "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
-                "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
-                "    \"title\": \"listColumnDocumentDefinition\",\n" +
-                "    \"type\": \"object\",\n" +
-                "    \"properties\": {\n" +
-                "        \"firstName\": {\n" +
-                "            \"type\": \"string\",\n" +
-                "            \"description\": \"first name\"\n" +
-                "        },\n" +
-                "        \"lastName\": {\n" +
-                "            \"type\": \"string\",\n" +
-                "            \"description\": \"last name\"\n" +
-                "        }\n" +
-                "    }\n" +
-                "}",
-                caseDefinitionId
+                    "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                    "    \"title\": \"listColumnDocumentDefinition\",\n" +
+                    "    \"type\": \"object\",\n" +
+                    "    \"properties\": {\n" +
+                    "        \"firstName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"first name\"\n" +
+                    "        },\n" +
+                    "        \"lastName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"last name\"\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "}"
             )
         }
         val columnKey = "first-name"
         createListColumn(
-            caseDefinitionId.key,
+            caseDefinitionName,
             """
-              {
-                "title": "First name",
-                "key": "$columnKey",
-                "path": "test:firstName",
-                "displayType": {
-                  "type": "enum",
-                  "displayTypeParameters": {
-                    "enum": {
-                      "key1": "Value 1"
-                    }
-                  }
-                },
-                "sortable": true,
-                "defaultSort": "ASC"
-              }
-            """.trimIndent(), status().isOk
+                          {
+                            "title": "First name",
+                            "key": "$columnKey",
+                            "path": "test:firstName",
+                            "displayType": {
+                              "type": "enum",
+                              "displayTypeParameters": {
+                                "enum": {
+                                  "key1": "Value 1"
+                                }
+                              }
+                            },
+                            "sortable": true,
+                            "defaultSort": "ASC"
+                          }
+                """.trimIndent(), status().isOk
         )
         mockMvc.perform(
-            MockMvcRequestBuilders.delete("$LIST_COLUMN_PATH/{columnKey}", caseDefinitionId.key, columnKey)
+            MockMvcRequestBuilders.delete("$LIST_COLUMN_PATH/{columnKey}", caseDefinitionName, columnKey)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andExpect(status().isNoContent)
     }
@@ -723,53 +879,52 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Test
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should delete column for case definition as an admin`() {
-        val caseDefinitionId = CaseDefinitionId("listColumnDocumentDefinition", "1.0.0")
+        val caseDefinitionName = "listColumnDocumentDefinition"
         runWithoutAuthorization {
             documentDefinitionService.deploy(
                 "{\n" +
-                "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
-                "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
-                "    \"title\": \"listColumnDocumentDefinition\",\n" +
-                "    \"type\": \"object\",\n" +
-                "    \"properties\": {\n" +
-                "        \"firstName\": {\n" +
-                "            \"type\": \"string\",\n" +
-                "            \"description\": \"first name\"\n" +
-                "        },\n" +
-                "        \"lastName\": {\n" +
-                "            \"type\": \"string\",\n" +
-                "            \"description\": \"last name\"\n" +
-                "        }\n" +
-                "    }\n" +
-                "}",
-                caseDefinitionId
+                    "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                    "    \"title\": \"listColumnDocumentDefinition\",\n" +
+                    "    \"type\": \"object\",\n" +
+                    "    \"properties\": {\n" +
+                    "        \"firstName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"first name\"\n" +
+                    "        },\n" +
+                    "        \"lastName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"last name\"\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "}"
             )
         }
         val columnKey = "first-name"
         createListColumn(
-            caseDefinitionId.key,
+            caseDefinitionName,
             """
-              {
-                "title": "First name",
-                "key": "$columnKey",
-                "path": "test:firstName",
-                "displayType": {
-                  "type": "enum",
-                  "displayTypeParameters": {
-                    "enum": {
-                      "key1": "Value 1"
-                    }
-                  }
-                },
-                "sortable": true,
-                "defaultSort": "ASC"
-              }
-            """.trimIndent(), status().isOk
+                          {
+                            "title": "First name",
+                            "key": "$columnKey",
+                            "path": "test:firstName",
+                            "displayType": {
+                              "type": "enum",
+                              "displayTypeParameters": {
+                                "enum": {
+                                  "key1": "Value 1"
+                                }
+                              }
+                            },
+                            "sortable": true,
+                            "defaultSort": "ASC"
+                          }
+                """.trimIndent(), status().isOk
         )
         mockMvc.perform(
             MockMvcRequestBuilders.delete(
                 "/api/management/v1/case/{caseDefinitionName}/list-column/{columnKey}",
-                caseDefinitionId.key,
+                caseDefinitionName,
                 columnKey
             )
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -779,31 +934,30 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Deprecated("Since 11.0.0")
     @Test
     fun `should respond with no content for non existing column`() {
-        val caseDefinitionId = CaseDefinitionId("listColumnDocumentDefinition", "1.0.0")
+        val caseDefinitionName = "listColumnDocumentDefinition"
         runWithoutAuthorization {
             documentDefinitionService.deploy(
                 "{\n" +
-                "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
-                "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
-                "    \"title\": \"listColumnDocumentDefinition\",\n" +
-                "    \"type\": \"object\",\n" +
-                "    \"properties\": {\n" +
-                "        \"firstName\": {\n" +
-                "            \"type\": \"string\",\n" +
-                "            \"description\": \"first name\"\n" +
-                "        },\n" +
-                "        \"lastName\": {\n" +
-                "            \"type\": \"string\",\n" +
-                "            \"description\": \"last name\"\n" +
-                "        }\n" +
-                "    }\n" +
-                "}",
-                caseDefinitionId
+                    "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                    "    \"title\": \"listColumnDocumentDefinition\",\n" +
+                    "    \"type\": \"object\",\n" +
+                    "    \"properties\": {\n" +
+                    "        \"firstName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"first name\"\n" +
+                    "        },\n" +
+                    "        \"lastName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"last name\"\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "}"
             )
         }
         val columnKey = "first-name"
         mockMvc.perform(
-            MockMvcRequestBuilders.delete("$LIST_COLUMN_PATH/{columnKey}", caseDefinitionId.key, columnKey)
+            MockMvcRequestBuilders.delete("$LIST_COLUMN_PATH/{columnKey}", caseDefinitionName, columnKey)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andExpect(status().isNoContent)
     }
@@ -811,33 +965,32 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Test
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should respond with no content for non existing column as an admin`() {
-        val caseDefinitionId = CaseDefinitionId("listColumnDocumentDefinition", "1.0.0")
+        val caseDefinitionName = "listColumnDocumentDefinition"
         runWithoutAuthorization {
             documentDefinitionService.deploy(
                 "{\n" +
-                "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
-                "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
-                "    \"title\": \"listColumnDocumentDefinition\",\n" +
-                "    \"type\": \"object\",\n" +
-                "    \"properties\": {\n" +
-                "        \"firstName\": {\n" +
-                "            \"type\": \"string\",\n" +
-                "            \"description\": \"first name\"\n" +
-                "        },\n" +
-                "        \"lastName\": {\n" +
-                "            \"type\": \"string\",\n" +
-                "            \"description\": \"last name\"\n" +
-                "        }\n" +
-                "    }\n" +
-                "}",
-                caseDefinitionId
+                    "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                    "    \"title\": \"listColumnDocumentDefinition\",\n" +
+                    "    \"type\": \"object\",\n" +
+                    "    \"properties\": {\n" +
+                    "        \"firstName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"first name\"\n" +
+                    "        },\n" +
+                    "        \"lastName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"last name\"\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "}"
             )
         }
         val columnKey = "first-name"
         mockMvc.perform(
             MockMvcRequestBuilders.delete(
                 "/api/management/v1/case/{caseDefinitionName}/list-column/{columnKey}",
-                caseDefinitionId.key,
+                caseDefinitionName,
                 columnKey
             )
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -873,71 +1026,70 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Deprecated("Since 11.0.0")
     @Test
     fun `should insert list column with correct order`() {
-        val caseDefinitionId = CaseDefinitionId("listColumnDocumentDefinition", "1.0.0")
+        val caseDefinitionName = "listColumnDocumentDefinition"
         runWithoutAuthorization {
             documentDefinitionService.deploy(
                 "{\n" +
-                "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
-                "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
-                "    \"title\": \"listColumnDocumentDefinition\",\n" +
-                "    \"type\": \"object\",\n" +
-                "    \"properties\": {\n" +
-                "        \"firstName\": {\n" +
-                "            \"type\": \"string\",\n" +
-                "            \"description\": \"first name\"\n" +
-                "        },\n" +
-                "        \"lastName\": {\n" +
-                "            \"type\": \"string\",\n" +
-                "            \"description\": \"last name\"\n" +
-                "        }\n" +
-                "    }\n" +
-                "}",
-                caseDefinitionId
+                    "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                    "    \"title\": \"listColumnDocumentDefinition\",\n" +
+                    "    \"type\": \"object\",\n" +
+                    "    \"properties\": {\n" +
+                    "        \"firstName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"first name\"\n" +
+                    "        },\n" +
+                    "        \"lastName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"last name\"\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "}"
             )
         }
         createListColumn(
-            caseDefinitionId.key,
+            caseDefinitionName,
             """
-              {
-                "title": "First name",
-                "key": "first-name",
-                "path": "test:firstName",
-                "displayType": {
-                  "type": "enum",
-                  "displayTypeParameters": {
-                    "enum": {
-                      "key1": "Value 1"
-                    }
-                  }
-                },
-                "sortable": true,
-                "defaultSort": "ASC"
-              }
-            """.trimIndent(), status().isOk
+                          {
+                            "title": "First name",
+                            "key": "first-name",
+                            "path": "test:firstName",
+                            "displayType": {
+                              "type": "enum",
+                              "displayTypeParameters": {
+                                "enum": {
+                                  "key1": "Value 1"
+                                }
+                              }
+                            },
+                            "sortable": true,
+                            "defaultSort": "ASC"
+                          }
+                """.trimIndent(), status().isOk
         )
         createListColumn(
-            caseDefinitionId.key,
+            caseDefinitionName,
             """
-              {
-                "title": "Last name",
-                "key": "last-name",
-                "path": "test:firstName",
-                "displayType": {
-                  "type": "enum",
-                  "displayTypeParameters": {
-                    "enum": {
-                      "key1": "Value 1"
-                    }
-                  }
-                },
-                "sortable": true
-              }
-            """.trimIndent(), status().isOk
+                          {
+                            "title": "Last name",
+                            "key": "last-name",
+                            "path": "test:firstName",
+                            "displayType": {
+                              "type": "enum",
+                              "displayTypeParameters": {
+                                "enum": {
+                                  "key1": "Value 1"
+                                }
+                              }
+                            },
+                            "sortable": true
+                          }
+                """.trimIndent(), status().isOk
         )
 
         mockMvc.perform(
             get(
-                LIST_COLUMN_PATH, caseDefinitionId.key
+                LIST_COLUMN_PATH, caseDefinitionName
             ).contentType(MediaType.APPLICATION_JSON_VALUE)
         )
             .andExpect {
@@ -986,50 +1138,49 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Test
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should insert list column with correct order as an admin`() {
-        val caseDefinitionId = CaseDefinitionId("listColumnDocumentDefinition", "1.0.0")
+        val caseDefinitionName = "listColumnDocumentDefinition"
         runWithoutAuthorization {
             documentDefinitionService.deploy(
                 "{\n" +
-                "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
-                "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
-                "    \"title\": \"listColumnDocumentDefinition\",\n" +
-                "    \"type\": \"object\",\n" +
-                "    \"properties\": {\n" +
-                "        \"firstName\": {\n" +
-                "            \"type\": \"string\",\n" +
-                "            \"description\": \"first name\"\n" +
-                "        },\n" +
-                "        \"lastName\": {\n" +
-                "            \"type\": \"string\",\n" +
-                "            \"description\": \"last name\"\n" +
-                "        }\n" +
-                "    }\n" +
-                "}",
-                caseDefinitionId
+                    "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                    "    \"title\": \"listColumnDocumentDefinition\",\n" +
+                    "    \"type\": \"object\",\n" +
+                    "    \"properties\": {\n" +
+                    "        \"firstName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"first name\"\n" +
+                    "        },\n" +
+                    "        \"lastName\": {\n" +
+                    "            \"type\": \"string\",\n" +
+                    "            \"description\": \"last name\"\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "}"
             )
         }
         createListColumn(
-            caseDefinitionId.key,
+            caseDefinitionName,
             """
-              {
-                "title": "First name",
-                "key": "first-name",
-                "path": "test:firstName",
-                "displayType": {
-                  "type": "enum",
-                  "displayTypeParameters": {
-                    "enum": {
-                      "key1": "Value 1"
-                    }
-                  }
-                },
-                "sortable": true,
-                "defaultSort": "ASC"
-              }
-            """.trimIndent(), status().isOk
+                          {
+                            "title": "First name",
+                            "key": "first-name",
+                            "path": "test:firstName",
+                            "displayType": {
+                              "type": "enum",
+                              "displayTypeParameters": {
+                                "enum": {
+                                  "key1": "Value 1"
+                                }
+                              }
+                            },
+                            "sortable": true,
+                            "defaultSort": "ASC"
+                          }
+                """.trimIndent(), status().isOk
         )
         createListColumn(
-            caseDefinitionId.key,
+            caseDefinitionName,
             """
                           {
                             "title": "Last name",
@@ -1050,7 +1201,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
 
         mockMvc.perform(
             get(
-                MANAGEMENT_LIST_COLUMN_PATH, caseDefinitionId.key
+                MANAGEMENT_LIST_COLUMN_PATH, caseDefinitionName
             ).contentType(MediaType.APPLICATION_JSON_VALUE)
         )
             .andExpect {
@@ -1103,7 +1254,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
         val caseDefinitionVersion = 1
         val result = mockMvc.perform(
             get(
-                "/api/management/v1/case/{caseDefinitionName}/version/{caseDefinitionVersion}/export",
+                "/api/management/v1/case/{caseDefinitionName}/{caseDefinitionVersion}/export",
                 caseDefinitionName, caseDefinitionVersion
             )
         ).andExpect(status().isOk)
@@ -1164,8 +1315,8 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     companion object {
         private const val LIST_COLUMN_PATH = "/api/v1/case/{caseDefinitionName}/list-column"
         private const val MANAGEMENT_LIST_COLUMN_PATH = "/api/management/v1/case/{caseDefinitionName}/list-column"
-        private const val CASE_SETTINGS_PATH = "/api/v1/case-definition/{caseDefinitionKey}/settings"
-        private const val MANAGEMENT_CASE_SETTINGS_PATH = "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/settings"
+        private const val CASE_SETTINGS_PATH = "/api/v1/case/{caseDefinitionName}/settings"
+        private const val MANAGEMENT_CASE_SETTINGS_PATH = "/api/management/v1/case/{caseDefinitionName}/settings"
 
         private const val ROOT = "$"
         private const val NAME = "$.name"
@@ -1175,4 +1326,3 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
         private const val EXTERNAL_START_FORM_URL = "$.externalStartFormUrl"
     }
 }
-*/

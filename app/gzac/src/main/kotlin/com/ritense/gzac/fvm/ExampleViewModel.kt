@@ -22,7 +22,8 @@ import com.ritense.formviewmodel.error.FormErrorsException.ComponentError
 import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.formviewmodel.viewmodel.ViewModel
 import com.ritense.valtimo.camunda.domain.CamundaTask
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KLogger
+import mu.KotlinLogging
 import java.time.OffsetDateTime
 
 data class ExampleViewModel(
@@ -57,7 +58,7 @@ data class ExampleViewModel(
     }
 
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger: KLogger = KotlinLogging.logger {}
     }
 
     data class Container(

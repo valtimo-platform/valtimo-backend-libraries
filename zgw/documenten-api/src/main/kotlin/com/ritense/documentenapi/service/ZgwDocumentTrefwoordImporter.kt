@@ -16,26 +16,20 @@
 
 package com.ritense.documentenapi.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.documentenapi.repository.ZgwDocumentTrefwoordRepository
+import com.ritense.documentenapi.deployment.ZgwDocumentTrefwoordDeploymentService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
-import com.ritense.importer.ValtimoImportTypes.Companion.ZGW_DOCUMENT_TREFWOORD
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
-import io.github.oshai.kotlinlogging.KotlinLogging
-import org.springframework.data.domain.Pageable
+import com.ritense.valtimo.changelog.service.ChangelogDeployer
+import mu.KotlinLogging
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 class ZgwDocumentTrefwoordImporter(
-    private val zgwDocumentTrefwoordRepository: ZgwDocumentTrefwoordRepository,
-    private val zgwDocumentTrefwoordService: ZgwDocumentTrefwoordService,
-    private val objectMapper: ObjectMapper
+    private val zgwDocumentTrefwoordDeploymentService: ZgwDocumentTrefwoordDeploymentService,
+    private val changelogDeployer: ChangelogDeployer
 ) : Importer {
-    override fun type() = ZGW_DOCUMENT_TREFWOORD
+    override fun type() = "zgw-document-trefwoord"
 
     override fun dependsOn() = setOf(DOCUMENT_DEFINITION)
 
@@ -43,30 +37,11 @@ class ZgwDocumentTrefwoordImporter(
 
     override fun import(request: ImportRequest) {
         logger.info { "Importing ZGW document trefwoorden for file ${request.fileName}" }
-        deploy(request.caseDefinitionId!!, request.content.toString(Charsets.UTF_8))
-    }
-
-    private fun deploy(caseDefinitionId: CaseDefinitionId, content: String) {
-        val trefwoorden = getJson(content)
-        runWithoutAuthorization {
-            zgwDocumentTrefwoordRepository.deleteAll(
-                zgwDocumentTrefwoordRepository.findAllByCaseDefinitionName(
-                    caseDefinitionId.key,
-                    Pageable.unpaged()
-                )
-            )
-            trefwoorden.forEach { trefwoord ->
-                zgwDocumentTrefwoordService.createTrefwoord(caseDefinitionId.key, trefwoord)
-            }
-        }
-    }
-
-    private fun getJson(rawJson: String): List<String> {
-        return objectMapper.readValue<List<String>>(rawJson)
+        changelogDeployer.deploy(zgwDocumentTrefwoordDeploymentService, request.fileName, request.content.toString(Charsets.UTF_8))
     }
 
     private companion object {
         private val logger = KotlinLogging.logger {}
-        val FILENAME_REGEX = """/zgw/trefwoord/([^/]+)\.zgw-document-trefwoord\.json""".toRegex()
+        val FILENAME_REGEX = """config/case/trefwoorden/([^/]+)\.zgw-document-trefwoorden\.json""".toRegex()
     }
 }

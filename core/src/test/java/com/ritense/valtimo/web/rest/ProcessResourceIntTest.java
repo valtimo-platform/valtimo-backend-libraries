@@ -29,12 +29,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.valtimo.BaseIntegrationTest;
 import com.ritense.valtimo.repository.camunda.dto.ProcessInstance;
 import com.ritense.valtimo.web.rest.dto.ProcessInstanceSearchDTO;
+import jakarta.inject.Inject;
 import java.util.Date;
 import java.util.List;
 import org.camunda.bpm.engine.RepositoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,13 +44,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 class ProcessResourceIntTest extends BaseIntegrationTest {
 
-    @Autowired
+    @Inject
     private ProcessResource processResource;
 
-    @Autowired
+    @Inject
     public RepositoryService repositoryService;
 
-    @Autowired
+    @Inject
     private ObjectMapper objectMapper;
 
     private MockMvc mockMvc;

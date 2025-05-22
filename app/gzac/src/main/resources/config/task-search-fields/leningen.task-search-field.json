@@ -1,0 +1,26 @@
+{
+    "changesetId": "leningen-searchfields-v1",
+    "collection": [
+        {
+            "ownerId": "leningen",
+            "searchFields": [
+                {
+                    "title": "Voornaam",
+                    "key": "voornaam",
+                    "path": "doc:voornaam",
+                    "dataType": "text",
+                    "fieldType": "single",
+                    "matchType": "like"
+                },
+                {
+                    "title": "Achternaam",
+                    "key": "achternaam",
+                    "path": "doc:achternaam",
+                    "dataType": "text",
+                    "fieldType": "single",
+                    "matchType": "like"
+                }
+            ]
+        }
+    ]
+}

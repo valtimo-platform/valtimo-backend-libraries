@@ -1,0 +1,213 @@
+{
+    "display": "form",
+    "settings": {
+        "pdf": {
+            "id": "1ec0f8ee-6685-5d98-a847-26f67b67d6f0",
+            "src": "https://files.form.io/pdf/5692b91fd1028f01000407e3/file/1ec0f8ee-6685-5d98-a847-26f67b67d6f0"
+        }
+    },
+    "components": [
+        {
+            "label": "HTML",
+            "attrs": [
+                {
+                    "attr": "",
+                    "value": ""
+                }
+            ],
+            "content": "<strong>Persoonsgegevens</strong>\n<hr>",
+            "refreshOnChange": false,
+            "tableView": false,
+            "key": "html",
+            "type": "htmlelement",
+            "input": false
+        },
+        {
+            "label": "Voornaam",
+            "spellcheck": true,
+            "tableView": true,
+            "calculateServer": false,
+            "key": "firstName",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Achternaam",
+            "spellcheck": true,
+            "tableView": true,
+            "calculateServer": false,
+            "key": "lastName",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Emailadres",
+            "spellcheck": true,
+            "tableView": true,
+            "calculateServer": false,
+            "key": "email",
+            "type": "email",
+            "input": true
+        },
+        {
+            "label": "Telefoonnummer",
+            "spellcheck": true,
+            "tableView": true,
+            "calculateServer": false,
+            "key": "phoneNumber",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "HTML",
+            "attrs": [
+                {
+                    "attr": "",
+                    "value": ""
+                }
+            ],
+            "content": "<strong>Evenementgegevens</strong>\n<hr>",
+            "refreshOnChange": false,
+            "tableView": false,
+            "key": "html1",
+            "type": "htmlelement",
+            "input": false
+        },
+        {
+            "label": "Naam van het evenement",
+            "spellcheck": true,
+            "tableView": true,
+            "calculateServer": false,
+            "key": "eventName",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Aantal personen",
+            "mask": false,
+            "spellcheck": true,
+            "tableView": false,
+            "delimiter": false,
+            "requireDecimal": false,
+            "inputFormat": "plain",
+            "calculateServer": false,
+            "key": "size",
+            "type": "number",
+            "input": true
+        },
+        {
+            "label": "Start datum",
+            "tableView": false,
+            "datePicker": {
+                "disableWeekends": false,
+                "disableWeekdays": false
+            },
+            "calculateServer": false,
+            "key": "startDate",
+            "type": "datetime",
+            "input": true,
+            "suffix": "<i ref=\"icon\" class=\"fa fa-calendar\" style=\"\"></i>",
+            "widget": {
+                "type": "calendar",
+                "displayInTimezone": "viewer",
+                "language": "en",
+                "useLocaleSettings": false,
+                "allowInput": true,
+                "mode": "single",
+                "enableTime": true,
+                "noCalendar": false,
+                "format": "yyyy-MM-dd hh:mm a",
+                "hourIncrement": 1,
+                "minuteIncrement": 1,
+                "time_24hr": true,
+                "minDate": null,
+                "disableWeekends": false,
+                "disableWeekdays": false,
+                "maxDate": null
+            }
+        },
+        {
+            "label": "Eind datum",
+            "tableView": false,
+            "datePicker": {
+                "disableWeekends": false,
+                "disableWeekdays": false
+            },
+            "calculateServer": false,
+            "key": "endDate",
+            "type": "datetime",
+            "input": true,
+            "suffix": "<i ref=\"icon\" class=\"fa fa-calendar\" style=\"\"></i>",
+            "widget": {
+                "type": "calendar",
+                "displayInTimezone": "viewer",
+                "language": "en",
+                "useLocaleSettings": false,
+                "allowInput": true,
+                "mode": "single",
+                "enableTime": true,
+                "noCalendar": false,
+                "format": "yyyy-MM-dd hh:mm a",
+                "hourIncrement": 1,
+                "minuteIncrement": 1,
+                "time_24hr": true,
+                "minDate": null,
+                "disableWeekends": false,
+                "disableWeekdays": false,
+                "maxDate": null
+            }
+        },
+        {
+            "label": "Wordt er alcohol geschonken?",
+            "optionsLabelPosition": "right",
+            "inline": true,
+            "tableView": false,
+            "values": [
+                {
+                    "label": "Ja",
+                    "value": "Ja",
+                    "shortcut": ""
+                },
+                {
+                    "label": "Nee",
+                    "value": "Nee",
+                    "shortcut": ""
+                }
+            ],
+            "calculateServer": false,
+            "key": "alcoholBeingServed",
+            "type": "radio",
+            "input": true
+        },
+        {
+            "label": "Wordt er versterkte muziek gespeeld?",
+            "optionsLabelPosition": "right",
+            "inline": true,
+            "tableView": false,
+            "values": [
+                {
+                    "label": "Ja",
+                    "value": "Ja",
+                    "shortcut": ""
+                },
+                {
+                    "label": "Nee",
+                    "value": "Nee",
+                    "shortcut": ""
+                }
+            ],
+            "calculateServer": false,
+            "key": "amplifiedMusic",
+            "type": "radio",
+            "input": true
+        },
+        {
+            "type": "button",
+            "label": "Submit",
+            "key": "submit",
+            "disableOnInvalid": true,
+            "input": true,
+            "tableView": false
+        }
+    ]
+}

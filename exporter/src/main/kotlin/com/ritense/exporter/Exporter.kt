@@ -18,7 +18,7 @@ package com.ritense.exporter
 
 import com.ritense.exporter.request.ExportRequest
 
-interface Exporter<T: ExportRequest> {
+interface  Exporter<T: ExportRequest> {
     fun supports(): Class<T>
 
     fun export(request: T): ExportResult

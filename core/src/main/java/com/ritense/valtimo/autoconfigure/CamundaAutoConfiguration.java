@@ -41,7 +41,6 @@ import com.ritense.valtimo.web.rest.error.CamundaExceptionTranslator;
 import org.camunda.bpm.application.impl.event.ProcessApplicationEventListenerPlugin;
 import org.camunda.bpm.spring.boot.starter.CamundaBpmAutoConfiguration;
 import org.camunda.bpm.spring.boot.starter.configuration.Ordering;
-import org.camunda.bpm.spring.boot.starter.property.CamundaBpmProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -85,10 +84,8 @@ public class CamundaAutoConfiguration {
     public CamundaConfiguration camundaConfiguration(
         final ValtimoSchemaOperationsCommand valtimoSchemaOperationsCommand,
         final CustomRepositoryServiceImpl repositoryService,
-        final ProcessDefinitionDeployedEventPublisher processDefinitionDeployedEventPublisher,
-        final CamundaBpmProperties camundaBpmProperties
+        final ProcessDefinitionDeployedEventPublisher processDefinitionDeployedEventPublisher
     ) {
-        camundaBpmProperties.setAutoDeploymentEnabled(false);
         return new CamundaConfiguration(valtimoSchemaOperationsCommand, repositoryService, processDefinitionDeployedEventPublisher);
     }
 

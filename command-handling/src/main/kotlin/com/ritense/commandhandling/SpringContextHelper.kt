@@ -16,7 +16,7 @@
 
 package com.ritense.commandhandling
 
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KotlinLogging
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 

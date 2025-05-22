@@ -28,9 +28,10 @@ import com.fasterxml.jackson.databind.node.JsonNodeType.OBJECT
 import com.fasterxml.jackson.databind.node.JsonNodeType.POJO
 import com.fasterxml.jackson.databind.node.JsonNodeType.STRING
 import com.ritense.objectenapi.service.ZaakObjectConstants.Companion.ZAAKOBJECT_PREFIX
+import com.ritense.objectenapi.service.ZaakObjectValueResolverFactory.Companion
 import com.ritense.valtimo.contract.form.DataResolvingContext
 import com.ritense.valtimo.contract.form.FormFieldDataResolver
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KotlinLogging
 import java.lang.Deprecated
 
 @Deprecated(since = "11.0", forRemoval = true)

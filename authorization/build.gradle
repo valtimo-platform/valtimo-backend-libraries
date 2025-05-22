@@ -41,16 +41,13 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-security"
     implementation("com.jayway.jsonpath:json-path:${jaywayJsonpathVersion}")
-    implementation "io.github.oshai:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
     testImplementation "org.jetbrains.kotlin:kotlin-test"
 
-    testImplementation (project(":case")) {
-        exclude(group: "com.ritense.valtimo", module: "authorization")
-    }
     testImplementation(project(":core")) {
         exclude(group: "com.ritense.valtimo", module: "authorization")
     }

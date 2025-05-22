@@ -1,0 +1,87 @@
+{
+    "display": "form",
+    "settings": {
+        "pdf": {
+            "id": "1ec0f8ee-6685-5d98-a847-26f67b67d6f0",
+            "src": "https://files.form.io/pdf/5692b91fd1028f01000407e3/file/1ec0f8ee-6685-5d98-a847-26f67b67d6f0"
+        }
+    },
+    "components": [
+        {
+            "label": "Annual revenue",
+            "tableView": true,
+            "key": "jaaromzet",
+            "defaultValue": "750000",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Amount to borrow",
+            "tableView": true,
+            "defaultValue": "250000",
+            "key": "leen-bedrag",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Upload",
+            "tableView": false,
+            "storage": "url",
+            "webcam": false,
+            "fileTypes": [
+                {
+                    "label": "",
+                    "value": ""
+                }
+            ],
+            "validate": {
+                "unique": true,
+                "multiple": false
+            },
+            "key": "bijlagen",
+            "type": "file",
+            "url": "/api/form-file",
+            "input": true,
+            "multiple": true
+        },
+        {
+            "cellAlignment": "left",
+            "key": "table",
+            "type": "table",
+            "numRows": 1,
+            "numCols": 2,
+            "input": false,
+            "tableView": false,
+            "striped": true,
+            "hideLabel": true,
+            "rows": [
+                [
+                    {
+                        "components": [
+                            {
+                                "type": "button",
+                                "label": "< Personal information",
+                                "key": "back",
+                                "theme": "warning",
+                                "disableOnInvalid": false,
+                                "input": true
+                            }
+                        ]
+                    },
+                    {
+                        "components": [
+                            {
+                                "type": "button",
+                                "label": "Next >",
+                                "key": "submit",
+                                "theme": "primary",
+                                "disableOnInvalid": true,
+                                "input": true
+                            }
+                        ]
+                    }
+                ]
+            ]
+        }
+    ]
+}

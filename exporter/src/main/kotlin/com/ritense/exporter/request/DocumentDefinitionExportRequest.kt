@@ -16,9 +16,7 @@
 
 package com.ritense.exporter.request
 
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
-
 data class DocumentDefinitionExportRequest(
     val name: String,
-    override val caseDefinitionId: CaseDefinitionId
+    val version: Long
 ) : ExportRequest()

@@ -32,9 +32,8 @@ import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
-import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
+import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -84,7 +83,7 @@ internal class DocumentenApiResourceIT : BaseIntegrationTest() {
     lateinit var documentenApiColumnRepository: DocumentenApiColumnRepository
 
     @Autowired
-    lateinit var caseDefinitionProcessLinkService: CaseDefinitionProcessLinkService
+    lateinit var documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService
 
     @Autowired
     lateinit var documentService: DocumentService
@@ -94,8 +93,6 @@ internal class DocumentenApiResourceIT : BaseIntegrationTest() {
     lateinit var server: MockWebServer
 
     lateinit var pluginConfiguration: PluginConfiguration
-
-    private val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
 
     @BeforeEach
     fun beforeEach() {
@@ -147,8 +144,8 @@ internal class DocumentenApiResourceIT : BaseIntegrationTest() {
     fun `should get a list of all ordered Documenten API columns`() {
         documentenApiColumnRepository.deleteAllByIdCaseDefinitionName("profile")
         runWithoutAuthorization {
-            caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-                caseDefinitionId,
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                "profile",
                 DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
             )
             documentenApiService.createOrUpdateColumn(
@@ -174,8 +171,8 @@ internal class DocumentenApiResourceIT : BaseIntegrationTest() {
     @WithMockUser(username = USER_EMAIL, authorities = [USER])
     fun `should get API version`() {
         runWithoutAuthorization {
-            caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-                caseDefinitionId,
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                "profile",
                 DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
             )
         }
@@ -196,12 +193,7 @@ internal class DocumentenApiResourceIT : BaseIntegrationTest() {
         val documentId = runWithoutAuthorization {
             val content = """{"description":"Test description"}"""
             documentService.createDocument(
-                NewDocumentRequest(
-                    "profile",
-                    "profile",
-                    "1.0.0",
-                    JsonDocumentContent(content).asJson()
-                )
+                NewDocumentRequest("profile", JsonDocumentContent(content).asJson())
             ).resultingDocument().get().id().id
         }
 

@@ -34,7 +34,6 @@ import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.valueresolver.ValueResolverFactory
 import com.ritense.valueresolver.ValueResolverOption
@@ -132,8 +131,20 @@ class DocumentJsonValueResolverFactory(
         return emptyDocumentContent
     }
 
-    override fun getResolvableKeyOptions(documentDefinitionName: String, caseDefinitionId: CaseDefinitionId): List<ValueResolverOption> {
-        val documentDefinition = documentDefinitionService.findByCaseDefinitionId(caseDefinitionId).orElseThrow()
+    @Deprecated("Deprecated since 12.6.0, Use getResolvableKeyOptions(documentDefinitionName: String, version: Long) instead")
+    override fun getResolvableKeys(documentDefinitionName: String, version: Long): List<String> {
+        val documentDefinition = documentDefinitionService.findByNameAndVersion(documentDefinitionName, version).orElseThrow()
+        return documentDefinitionService.getPropertyNames(documentDefinition)
+    }
+
+    @Deprecated("Deprecated since 12.6.0, Use getResolvableKeyOptions(documentDefinitionName: String) instead")
+    override fun getResolvableKeys(documentDefinitionName: String): List<String> {
+        val documentDefinition = documentDefinitionService.findLatestByName(documentDefinitionName).orElseThrow()
+        return documentDefinitionService.getPropertyNames(documentDefinition)
+    }
+
+    override fun getResolvableKeyOptions(documentDefinitionName: String, version: Long): List<ValueResolverOption> {
+        val documentDefinition = documentDefinitionService.findByNameAndVersion(documentDefinitionName, version).orElseThrow()
         val schemaAsNode = documentDefinition.getSchema()
             .asJson() as ObjectNode
         return getPropertyNamesFromObjectNode(documentDefinition, schemaAsNode, "$PREFIX:")

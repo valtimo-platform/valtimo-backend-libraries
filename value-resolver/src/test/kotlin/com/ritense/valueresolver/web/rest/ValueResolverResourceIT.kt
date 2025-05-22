@@ -106,6 +106,27 @@ class ValueResolverResourceIT @Autowired constructor(
     }
 
     @Test
+    fun `should get list of possible value resolvers for a single prefix v2`() {
+
+        val prefixes = """{"prefixes":["testDoc"],"type":"FIELD"}"""
+
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .post("/api/management/v2/value-resolver/document-definition/{documentDefinitionName}/keys", "x")
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(prefixes)
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$[0].path").value("testDoc:1"))
+            .andExpect(jsonPath("$[0].type").value("FIELD"))
+            .andExpect(jsonPath("$[1].path").value("testDoc:2"))
+            .andExpect(jsonPath("$[1].type").value("FIELD"))
+            .andExpect(jsonPath("$[2].path").value("testDoc:3"))
+            .andExpect(jsonPath("$[2].type").value("FIELD"))
+    }
+
+    @Test
     fun `should get list of possible value resolvers for multiple prefixes`() {
 
         val prefixes = """["testDoc", "testCase"]"""

@@ -16,8 +16,6 @@
 
 package com.ritense.valtimo.contract.database;
 
-import static com.ritense.valtimo.contract.database.ExpressionHelper.cast;
-
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Path;
@@ -41,17 +39,16 @@ public class PostgresQueryDialectHelper implements QueryDialectHelper {
             cb.function("jsonpath", String.class, cb.literal(jsonPath))
         );
         if (String.class.isAssignableFrom(type)) {
-            return cast(cb.trim('"', cast(jsonValue, String.class)), type);
+            return cb.trim('"', jsonValue.as(String.class)).as(type);
         } else if (TemporalAccessor.class.isAssignableFrom(type)) {
-            var stringValue = cast(jsonValue, String.class);
             return cb.selectCase()
-                .when(cb.or(cb.equal(stringValue, "null"), cb.equal(stringValue, "\"\"")), cb.nullLiteral(type))
-                .otherwise(cast(cb.trim('"', stringValue), type))
+                .when(jsonValue.as(String.class).in("\"\""), cb.nullLiteral(type))
+                .otherwise(cb.trim('"', jsonValue.as(String.class)))
                 .as(type);
         } else if (Collection.class.isAssignableFrom(type)) {
             throw new UnsupportedOperationException("Failed to query '" + jsonPath + "'. Unsupported type '" + type + "'.");
         } else {
-            return cast(jsonValue, type);
+            return jsonValue.as(type);
         }
     }
 
@@ -102,7 +99,7 @@ public class PostgresQueryDialectHelper implements QueryDialectHelper {
 
     @Override
     public Expression<String> uuidToString(CriteriaBuilder cb, Path<UUID> column) {
-        return cast(column, String.class);
+        return column.as(String.class);
     }
 
     private Expression<String> getValueForPathText(CriteriaBuilder cb, Path column, String path) {

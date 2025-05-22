@@ -19,10 +19,10 @@ package com.ritense.valtimo.logging
 import com.ritense.valtimo.contract.LoggingConstants
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.utils.SecurityUtils
-import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import mu.KotlinLogging
 import org.slf4j.MDC
 import org.springframework.web.filter.OncePerRequestFilter
 import java.util.UUID

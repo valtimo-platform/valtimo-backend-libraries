@@ -20,7 +20,7 @@ import com.ritense.valtimo.contract.mail.MailSender
 import com.ritense.valtimo.contract.mail.model.MailMessageStatus
 import com.ritense.valtimo.contract.mail.model.RawMailMessage
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KotlinLogging
 import java.util.Optional
 
 class LocalMailSender : MailSender {

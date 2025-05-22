@@ -17,16 +17,16 @@
 package com.ritense.mail.service
 
 import com.ritense.mail.BaseIntegrationTest
+import jakarta.inject.Inject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Transactional
 internal class BlacklistServiceIntTest : BaseIntegrationTest() {
 
-    @Autowired
+    @Inject
     lateinit var blacklistService: BlacklistService
 
     @Test

@@ -19,9 +19,7 @@ package com.ritense.form.service
 import com.ritense.form.autodeployment.FormDefinitionDeploymentService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
-import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
 import com.ritense.importer.ValtimoImportTypes.Companion.FORM
-import com.ritense.importer.ValtimoImportTypes.Companion.PROCESS_DEFINITION
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
@@ -30,9 +28,12 @@ class FormDefinitionImporter(
 ) : Importer {
     override fun type(): String = FORM
 
-    override fun dependsOn(): Set<String> = setOf(CASE_DEFINITION, PROCESS_DEFINITION)
+    override fun dependsOn(): Set<String> = emptySet()
 
-    override fun supports(fileName: String): Boolean = fileName.matches(FILENAME_REGEX)
+    override fun supports(fileName: String): Boolean {
+        return fileName.substringBeforeLast('/') == PATH
+            && fileName.substringAfterLast('.') == EXTENSION
+    }
 
     override fun import(request: ImportRequest) {
         val formDefinitionAsString = request.content.toString(Charsets.UTF_8)
@@ -40,19 +41,16 @@ class FormDefinitionImporter(
             .deploy(
                 fileNameWithoutPathAndExtension(request.fileName),
                 formDefinitionAsString,
-                request.caseDefinitionId,
                 false
             )
     }
 
     private fun fileNameWithoutPathAndExtension(fileName: String): String {
-        return fileName
-            .substringAfterLast('/')
-            .substringBeforeLast('.')
-            .substringBeforeLast('.')
+        return fileName.substringAfterLast('/').substringBeforeLast('.')
     }
 
     companion object {
-        val FILENAME_REGEX = """/form/(?:.*/)?(.+)\.form\.json""".toRegex()
+        private const val PATH = "config/form"
+        private const val EXTENSION = "json"
     }
 }

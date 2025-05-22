@@ -27,7 +27,7 @@ import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime

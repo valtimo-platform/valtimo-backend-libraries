@@ -1,7 +1,0 @@
-{
-    "key": "test",
-    "name": "Test",
-    "versionTag": "1.0.0",
-    "canHaveAssignee": true,
-    "autoAssignTasks": true
-}

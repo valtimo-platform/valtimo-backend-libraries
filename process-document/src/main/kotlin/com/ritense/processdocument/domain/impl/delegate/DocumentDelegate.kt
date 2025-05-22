@@ -21,7 +21,7 @@ import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 
 @Deprecated(message = "Since 11.0.0", ReplaceWith("com.ritense.processdocument.service.DocumentDelegateService"))

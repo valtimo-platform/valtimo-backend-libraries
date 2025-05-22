@@ -32,18 +32,15 @@ import com.ritense.document.domain.patch.JsonPatchService;
 import com.ritense.form.autoconfigure.FormAutoConfiguration;
 import com.ritense.form.domain.event.FormRegisteredEvent;
 import com.ritense.form.domain.exception.FormDefinitionParsingException;
-import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -96,7 +93,6 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
                 && objectNode.get(DISABLED_KEY).asBoolean()
         );
 
-    // TODO: Do we want to remove the UUID and instead have a composite ID of formDefinition and caseDefinitionId?
     @Id
     @Column(name = "id", updatable = false)
     private UUID id;
@@ -104,13 +100,9 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     @Column(name = "name", columnDefinition = "VARCHAR(255)")
     private String name;
 
-    @Column(name = "form_definition", columnDefinition = "json", nullable = false)
+    @Column(name = "form_definition", columnDefinition = "json")
     @Type(value = JsonType.class)
     private String formDefinition;
-
-    @Embedded
-    @Nullable
-    private CaseDefinitionId caseDefinitionId;
 
     @Column(name = "read_only", columnDefinition = "BIT")
     private Boolean readOnly = false;
@@ -128,7 +120,6 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         final UUID id,
         final String name,
         final String formDefinition,
-        @Nullable final CaseDefinitionId caseDefinitionId,
         final Boolean isReadOnly
     ) {
         assertArgumentNotNull(id, "id is required");
@@ -137,7 +128,6 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         assertArgumentNotNull(formDefinition, "formDefinition is required");
         this.id = id;
         this.name = name;
-        this.caseDefinitionId = caseDefinitionId;
         setFormDefinition(formDefinition);
         setReadOnly(isReadOnly);
         this.isNew = true;
@@ -300,10 +290,6 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     @Override
     public boolean isReadOnly() {
         return readOnly;
-    }
-
-    public Optional<CaseDefinitionId> getCaseDefinitionId() {
-        return Optional.ofNullable(caseDefinitionId);
     }
 
     public JsonNode asJson() {

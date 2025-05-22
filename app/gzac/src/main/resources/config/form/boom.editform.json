@@ -1,0 +1,319 @@
+{
+    "display": "form",
+    "settings": {
+        "pdf": {
+            "id": "1ec0f8ee-6685-5d98-a847-26f67b67d6f0",
+            "src": "https://files.form.io/pdf/5692b91fd1028f01000407e3/file/1ec0f8ee-6685-5d98-a847-26f67b67d6f0"
+        }
+    },
+    "components": [
+        {
+            "label": "Boombeeld",
+            "key": "boombeeld",
+            "widget": "choicesjs",
+            "type": "select",
+            "tableView": true,
+            "input": true,
+            "data": {
+                "values": [
+                    {
+                        "label": "Niet van toepassing",
+                        "value": "Niet van toepassing"
+                    },
+                    {
+                        "label": "Verwaarloosd boombeeld",
+                        "value": "Verwaarloosd boombeeld"
+                    },
+                    {
+                        "label": "Aanvaard boombeeld",
+                        "value": "Aanvaard boombeeld"
+                    },
+                    {
+                        "label": "Achterstallig boombeeld",
+                        "value": "Achterstallig boombeeld"
+                    },
+                    {
+                        "label": "Boombeeld regulier (HB)",
+                        "value": "Boombeeld regulier (HB)"
+                    },
+                    {
+                        "label": "Niet te beoordelen",
+                        "value": "Niet te beoordelen"
+                    }
+                ]
+            }
+        },
+        {
+            "label": "Boomgroep",
+            "key": "boomgroep",
+            "widget": "choicesjs",
+            "type": "select",
+            "tableView": true,
+            "input": true,
+            "data": {
+                "values": [
+                    {
+                        "label": "Laanboom",
+                        "value": "Laanboom"
+                    },
+                    {
+                        "label": "Boomweide",
+                        "value": "Boomweide"
+                    },
+                    {
+                        "label": "Solitaire boom",
+                        "value": "Solitaire boom"
+                    }
+                ]
+            }
+        },
+        {
+            "label": "Groeifase",
+            "key": "groeifase",
+            "widget": "choicesjs",
+            "type": "select",
+            "tableView": true,
+            "input": true,
+            "data": {
+                "values": [
+                    {
+                        "label": "Jeugdfase",
+                        "value": "Jeugdfase"
+                    },
+                    {
+                        "label": "Volwassen fase",
+                        "value": "Volwassen fase"
+                    },
+                    {
+                        "label": "Eindfase",
+                        "value": "Eindfase"
+                    },
+                    {
+                        "label": "Aanlegfase",
+                        "value": "Aanlegfase"
+                    },
+                    {
+                        "label": "Onbekend",
+                        "value": "Onbekend"
+                    }
+                ]
+            }
+        },
+        {
+            "label": "Snoeifase",
+            "key": "snoeifase",
+            "widget": "choicesjs",
+            "type": "select",
+            "tableView": true,
+            "input": true,
+            "data": {
+                "values": [
+                    {
+                        "label": "Begeleidingssnoeifase",
+                        "value": "Begeleidingssnoeifase"
+                    },
+                    {
+                        "label": "Onbekend",
+                        "value": "Onbekend"
+                    },
+                    {
+                        "label": "Niet van toepassing",
+                        "value": "Niet van toepassing"
+                    },
+                    {
+                        "label": "Onderhoudssnoeifase",
+                        "value": "Onderhoudssnoeifase"
+                    }
+                ]
+            }
+        },
+        {
+            "label": "Boomspiegel",
+            "key": "boomspiegel",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Meerstammig",
+            "optionsLabelPosition": "right",
+            "inline": false,
+            "tableView": false,
+            "values": [
+                {
+                    "label": "Yes",
+                    "value": "true",
+                    "shortcut": ""
+                },
+                {
+                    "label": "No",
+                    "value": "false",
+                    "shortcut": ""
+                }
+            ],
+            "dataType": "boolean",
+            "key": "meerstammig",
+            "type": "radio",
+            "input": true,
+            "defaultValue": false
+        },
+        {
+            "label": "Takvrijestam",
+            "key": "takvrijestam",
+            "widget": "choicesjs",
+            "type": "select",
+            "tableView": true,
+            "input": true,
+            "data": {
+                "values": [
+                    {
+                        "label": "0 m.",
+                        "value": "0 m."
+                    },
+                    {
+                        "label": "Anders, namelijk",
+                        "value": "Anders, namelijk"
+                    },
+                    {
+                        "label": "4 m.",
+                        "value": "4 m."
+                    },
+                    {
+                        "label": "2 m.",
+                        "value": "2 m."
+                    },
+                    {
+                        "label": "8 m.",
+                        "value": "8 m."
+                    },
+                    {
+                        "label": "6 m.",
+                        "value": "6 m."
+                    },
+                    {
+                        "label": "Onbekend",
+                        "value": "Onbekend"
+                    },
+                    {
+                        "label": "Niet te beoordelen",
+                        "value": "Niet te beoordelen"
+                    }
+                ]
+            }
+        },
+        {
+            "label": "Beleidsstatus",
+            "key": "beleidsstatus",
+            "widget": "choicesjs",
+            "type": "select",
+            "tableView": true,
+            "input": true,
+            "data": {
+                "values": [
+                    {
+                        "label": "Structuurbepalend/hoofd(groen/bomen)structuur",
+                        "value": "Structuurbepalend/hoofd(groen/bomen)structuur"
+                    },
+                    {
+                        "label": "Geen specifieke status-verkorte omloop (tot ca. 20 jaar) en bomen 3e grootte",
+                        "value": "Geen specifieke status-verkorte omloop (tot ca. 20 jaar) en bomen 3e grootte"
+                    },
+                    {
+                        "label": "Beschermwaardig/monumentaal",
+                        "value": "Beschermwaardig/monumentaal"
+                    },
+                    {
+                        "label": "Geen specifieke status-functionele laan- en parkbomen",
+                        "value": "Geen specifieke status-functionele laan- en parkbomen"
+                    }
+                ]
+            }
+        },
+        {
+            "label": "Boombeschermer",
+            "key": "boombeschermer",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Herplantplicht",
+            "optionsLabelPosition": "right",
+            "inline": false,
+            "tableView": false,
+            "values": [
+                {
+                    "label": "Yes",
+                    "value": "true",
+                    "shortcut": ""
+                },
+                {
+                    "label": "No",
+                    "value": "false",
+                    "shortcut": ""
+                }
+            ],
+            "dataType": "boolean",
+            "key": "herplantplicht",
+            "type": "radio",
+            "input": true,
+            "defaultValue": false
+        },
+        {
+            "label": "Feestverlichting",
+            "key": "feestverlichting",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Beoogdeomlooptijd",
+            "key": "beoogdeomlooptijd",
+            "widget": "choicesjs",
+            "type": "select",
+            "tableView": true,
+            "input": true,
+            "data": {
+                "values": [
+                    {
+                        "label": "75-100 jaar",
+                        "value": "75-100 jaar"
+                    },
+                    {
+                        "label": "30-50 jaar",
+                        "value": "30-50 jaar"
+                    },
+                    {
+                        "label": ">200 jaar",
+                        "value": ">200 jaar"
+                    },
+                    {
+                        "label": "50-75 jaar",
+                        "value": "50-75 jaar"
+                    },
+                    {
+                        "label": "20-30 jaar",
+                        "value": "20-30 jaar"
+                    },
+                    {
+                        "label": "100-150 jaar",
+                        "value": "100-150 jaar"
+                    },
+                    {
+                        "label": "< 10 jaar",
+                        "value": "< 10 jaar"
+                    },
+                    {
+                        "label": "Onbekend",
+                        "value": "Onbekend"
+                    },
+                    {
+                        "label": "10-20 jaar",
+                        "value": "10-20 jaar"
+                    },
+                    {
+                        "label": "150-200 jaar",
+                        "value": "150-200 jaar"
+                    }
+                ]
+            }
+        }
+    ]
+}

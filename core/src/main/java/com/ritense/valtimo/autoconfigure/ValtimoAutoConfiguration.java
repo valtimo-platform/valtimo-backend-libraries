@@ -46,11 +46,9 @@ import com.ritense.valtimo.repository.CamundaSearchProcessInstanceRepository;
 import com.ritense.valtimo.repository.UserSettingsRepository;
 import com.ritense.valtimo.service.AuthorizedUsersServiceImpl;
 import com.ritense.valtimo.service.BpmnModelService;
-import com.ritense.valtimo.service.CamundaByteArrayService;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.CurrentUserServiceImpl;
-import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker;
 import com.ritense.valtimo.service.ProcessPropertyService;
 import com.ritense.valtimo.service.ProcessShortTimerService;
 import com.ritense.valtimo.service.UserSettingsService;
@@ -72,6 +70,7 @@ import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
+import org.camunda.bpm.extension.reactor.spring.EnableCamundaEventBus;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -86,6 +85,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @AutoConfiguration
 @EnableConfigurationProperties(ValtimoProperties.class)
 @EnableJpaAuditing(dateTimeProviderRef = "customDateTimeProvider")
+@EnableCamundaEventBus
 @EnableJpaRepositories(basePackageClasses = {ProcessDefinitionPropertiesRepository.class, UserSettingsRepository.class})
 @EntityScan("com.ritense.valtimo.domain.*")
 public class ValtimoAutoConfiguration {
@@ -141,11 +141,7 @@ public class ValtimoAutoConfiguration {
         final ProcessPropertyService processPropertyService,
         final ValtimoProperties valtimoProperties,
         final AuthorizationService authorizationService,
-        final CamundaExecutionRepository camundaExecutionRepository,
-        final ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker,
-        final CamundaByteArrayService camundaByteArrayService,
-        final ApplicationEventPublisher applicationEventPublisher
-
+        CamundaExecutionRepository camundaExecutionRepository
     ) {
         return new CamundaProcessService(
             runtimeService,
@@ -157,10 +153,7 @@ public class ValtimoAutoConfiguration {
             processPropertyService,
             valtimoProperties,
             authorizationService,
-            camundaExecutionRepository,
-            processDefinitionCaseDefinitionLinker,
-            camundaByteArrayService,
-            applicationEventPublisher
+            camundaExecutionRepository
         );
     }
 

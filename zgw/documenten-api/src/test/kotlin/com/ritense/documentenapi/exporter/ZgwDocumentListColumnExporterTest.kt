@@ -19,13 +19,13 @@ package com.ritense.documentenapi.exporter
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.documentenapi.deployment.ZgwDocumentListColumn
+import com.ritense.documentenapi.deployment.ZgwDocumentListColumnChangeset
 import com.ritense.documentenapi.domain.ColumnDefaultSort.ASC
 import com.ritense.documentenapi.domain.DocumentenApiColumn
 import com.ritense.documentenapi.domain.DocumentenApiColumnId
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -38,9 +38,8 @@ import org.mockito.kotlin.whenever
 class ZgwDocumentListColumnExporterTest(
     @Mock private val documentenApiColumnRepository: DocumentenApiColumnRepository
 ) {
-    private lateinit var exporter: ZgwDocumentListColumnExporter
 
-    private val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
+    private lateinit var exporter: ZgwDocumentListColumnExporter
 
     @BeforeEach
     fun before() {
@@ -49,7 +48,7 @@ class ZgwDocumentListColumnExporterTest(
 
     @Test
     fun `should not export changeset when no documentlist columns are configured`() {
-        val export = exporter.export(DocumentDefinitionExportRequest("test", caseDefinitionId))
+        val export = exporter.export(DocumentDefinitionExportRequest("test", 1L))
 
         assertThat(export.exportFiles).isEmpty()
     }
@@ -65,13 +64,17 @@ class ZgwDocumentListColumnExporterTest(
             )
         )
 
-        val export = exporter.export(DocumentDefinitionExportRequest(name, caseDefinitionId))
+        val export = exporter.export(DocumentDefinitionExportRequest(name, 1L))
 
         assertThat(export.exportFiles).hasSize(1)
         val file = export.exportFiles.first()
-        assertThat(file.path).isEqualTo("config/case/test/1-0-0/zgw/document-list-column/test.zgw-document-list-column.json")
-        val columns = jacksonObjectMapper().readValue<List<ZgwDocumentListColumn>>(file.content)
-        assertThat(columns).containsExactly(
+        assertThat(file.path).isEqualTo("config/case/zgw-document-list-columns/test.zgw-document-list-column.json")
+        val value = jacksonObjectMapper().readValue<ZgwDocumentListColumnChangeset>(file.content)
+        assertThat(value.changesetId).matches("""test\.zgw-document-list-column\.\d+""")
+        assertThat(value.caseDefinitions).hasSize(1)
+        val columnCollection = value.caseDefinitions.first()
+        assertThat(columnCollection.key).isEqualTo(name)
+        assertThat(columnCollection.columns).containsExactly(
             ZgwDocumentListColumn(DocumentenApiColumnKey.AUTEUR, ASC),
             ZgwDocumentListColumn(DocumentenApiColumnKey.BESTANDSNAAM, null),
         )

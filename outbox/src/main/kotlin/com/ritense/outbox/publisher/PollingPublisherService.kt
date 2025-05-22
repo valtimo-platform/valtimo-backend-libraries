@@ -17,7 +17,7 @@
 package com.ritense.outbox.publisher
 
 import com.ritense.outbox.ValtimoOutboxService
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KotlinLogging
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
 import java.util.concurrent.atomic.AtomicBoolean

@@ -16,7 +16,7 @@
 
 package com.ritense.formflow.event
 
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 
 class ApplicationEventPublisherHolder(

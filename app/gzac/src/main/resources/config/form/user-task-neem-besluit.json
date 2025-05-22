@@ -1,0 +1,78 @@
+{
+    "display": "form",
+    "settings": {
+        "pdf": {
+            "id": "1ec0f8ee-6685-5d98-a847-26f67b67d6f0",
+            "src": "https://files.form.io/pdf/5692b91fd1028f01000407e3/file/1ec0f8ee-6685-5d98-a847-26f67b67d6f0"
+        }
+    },
+    "components": [
+        {
+            "label": "Naam behandelaar",
+            "key": "naamBehandelaar",
+            "type": "textfield",
+            "disabled": true,
+            "input": true
+        },
+        {
+            "label": "E-mailadres behandelaar",
+            "key": "e-mailBehandelaar",
+            "type": "textfield",
+            "disabled": true,
+            "input": true
+        },
+        {
+            "label": "Referentie zaaknummer",
+            "key": "zaaknummer",
+            "type": "textfield",
+            "disabled": true,
+            "input": true
+        },
+        {
+            "label": "Aanvullende informatie van collega",
+            "autoExpand": false,
+            "tableView": true,
+            "key": "aanvullendeInfo",
+            "type": "textarea",
+            "input": true,
+            "disabled": true
+        },
+        {
+            "label": "Omschrijving van de beslissing",
+            "autoExpand": false,
+            "tableView": true,
+            "key": "beslissingBezwaar",
+            "type": "textarea",
+            "input": true
+        },
+        {
+            "label": "Beslissing bezwaar?",
+            "optionsLabelPosition": "right",
+            "inline": false,
+            "hideLabel": true,
+            "tableView": false,
+            "values": [
+                {
+                    "label": "Het bezwaar is gegrond",
+                    "value": "true",
+                    "shortcut": ""
+                },
+                {
+                    "label": "Het bezwaar is ongegrond",
+                    "value": "false",
+                    "shortcut": ""
+                }
+            ],
+            "key": "gegrond",
+            "type": "radio",
+            "input": true
+        },
+        {
+            "type": "button",
+            "label": "Submit",
+            "key": "submit",
+            "disableOnInvalid": true,
+            "input": true
+        }
+    ]
+}

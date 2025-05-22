@@ -29,7 +29,7 @@ import java.util.function.Consumer;
 public class NewDocumentForRunningProcessRequest implements Request {
 
     @JsonProperty
-    private final String processDefinitionId;
+    private final String processDefinitionKey;
 
     @JsonProperty
     private final String processInstanceId;
@@ -42,17 +42,17 @@ public class NewDocumentForRunningProcessRequest implements Request {
 
     @JsonCreator
     public NewDocumentForRunningProcessRequest(
-        @JsonProperty(value = "processDefinitionId", required = true) @NotNull String processDefinitionId,
+        @JsonProperty(value = "processDefinitionKey", required = true) @NotNull String processDefinitionKey,
         @JsonProperty(value = "processInstanceId", required = true) @NotNull String processInstanceId,
         @JsonProperty(value = "request", required = true) @NotNull @Valid NewDocumentRequest newDocumentRequest
     ) {
-        this.processDefinitionId = processDefinitionId;
+        this.processDefinitionKey = processDefinitionKey;
         this.processInstanceId = processInstanceId;
         this.newDocumentRequest = newDocumentRequest;
     }
 
     public String processDefinitionKey() {
-        return processDefinitionId;
+        return processDefinitionKey;
     }
 
     public String processInstanceId() {

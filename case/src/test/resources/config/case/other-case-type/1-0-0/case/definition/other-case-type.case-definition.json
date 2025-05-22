@@ -1,7 +1,0 @@
-{
-    "key": "other-case-type",
-    "name": "Other case type",
-    "versionTag": "1.0.0",
-    "canHaveAssignee": true,
-    "autoAssignTasks": true
-}

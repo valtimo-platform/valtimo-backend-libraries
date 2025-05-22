@@ -16,7 +16,6 @@
 
 package com.ritense.catalogiapi.web.rest
 
-import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.catalogiapi.web.rest.result.BesluittypeDto
 import com.ritense.catalogiapi.web.rest.result.EigenschapDto
@@ -38,30 +37,26 @@ import org.springframework.web.bind.annotation.RestController
 @SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class CatalogiResource(
-    private val catalogiService: CatalogiService,
-    private val activeCaseDefinitionService: ActiveCaseDefinitionService
+    private val catalogiService: CatalogiService
 ) {
-    @GetMapping("/v1/case-definition/{caseDefinitionKey}/zaaktype/documenttype")
+    @GetMapping("/v1/documentdefinition/{documentDefinitionName}/zaaktype/documenttype")
     fun getZaakObjecttypes(
-        @LoggableResource("caseDefinitionKey") @PathVariable(name = "caseDefinitionKey") caseDefinitionKey: String,
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "documentDefinitionName") documentDefinitionName: String
     ): ResponseEntity<List<InformatieobjecttypeDto>> {
-        val caseDefinitionId = activeCaseDefinitionService.getActiveCaseDefinition(caseDefinitionKey).id
-        val zaakObjectTypes =
-            catalogiService.getInformatieobjecttypes(caseDefinitionId).map {
-                InformatieobjecttypeDto(
-                    it.url!!,
-                    it.omschrijving
-                )
-            }
+        val zaakObjectTypes = catalogiService.getInformatieobjecttypes(documentDefinitionName).map {
+            InformatieobjecttypeDto(
+                it.url!!,
+                it.omschrijving
+            )
+        }
         return ResponseEntity.ok(zaakObjectTypes)
     }
 
-    @GetMapping("/v1/case-definition/{caseDefinitionKey}/zaaktype/roltype")
+    @GetMapping("/v1/case-definition/{caseDefinitionName}/zaaktype/roltype")
     fun getZaakRoltypes(
-        @LoggableResource("caseDefinitionKey") @PathVariable(name = "caseDefinitionKey") caseDefinitionKey: String,
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<List<RoltypeDto>> {
-        val caseDefinitionId = activeCaseDefinitionService.getActiveCaseDefinition(caseDefinitionKey).id
-        val zaakRolTypes = catalogiService.getRoltypes(caseDefinitionId).map {
+        val zaakRolTypes = catalogiService.getRoltypes(caseDefinitionName).map {
             RoltypeDto(
                 it.url,
                 it.omschrijving
@@ -70,12 +65,11 @@ class CatalogiResource(
         return ResponseEntity.ok(zaakRolTypes)
     }
 
-    @GetMapping("/v1/case-definition/{caseDefinitionKey}/zaaktype/statustype")
+    @GetMapping("/v1/case-definition/{caseDefinitionName}/zaaktype/statustype")
     fun getZaakStatustypen(
-        @LoggableResource("caseDefinitionKey") @PathVariable(name = "caseDefinitionKey") caseDefinitionKey: String,
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<List<StatustypeDto>> {
-        val caseDefinitionId = activeCaseDefinitionService.getActiveCaseDefinition(caseDefinitionKey).id
-        val zaakStatusTypes = catalogiService.getStatustypen(caseDefinitionId).map {
+        val zaakStatusTypes = catalogiService.getStatustypen(caseDefinitionName).map {
             StatustypeDto(
                 it.url!!,
                 it.omschrijving
@@ -84,27 +78,24 @@ class CatalogiResource(
         return ResponseEntity.ok(zaakStatusTypes)
     }
 
-    @GetMapping("/v1/case-definition/{caseDefinitionKey}/zaaktype/resultaattype")
+    @GetMapping("/v1/case-definition/{caseDefinitionName}/zaaktype/resultaattype")
     fun getZaakResultaattypen(
-        @LoggableResource("caseDefinitionKey") @PathVariable(name = "caseDefinitionKey") caseDefinitionKey: String,
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<List<ResultaattypeDto>> {
-        val caseDefinitionId = activeCaseDefinitionService.getActiveCaseDefinition(caseDefinitionKey).id
-        val zaakResultaatTypes =
-            catalogiService.getResultaattypen(caseDefinitionId).map {
-                ResultaattypeDto(
-                    it.url!!,
-                    it.omschrijving
-                )
-            }
+        val zaakResultaatTypes = catalogiService.getResultaattypen(caseDefinitionName).map {
+            ResultaattypeDto(
+                it.url!!,
+                it.omschrijving
+            )
+        }
         return ResponseEntity.ok(zaakResultaatTypes)
     }
 
-    @GetMapping("/v1/case-definition/{caseDefinitionKey}/zaaktype/besluittype")
+    @GetMapping("/v1/case-definition/{caseDefinitionName}/zaaktype/besluittype")
     fun getZaakBesuilttypen(
-        @LoggableResource("caseDefinitionKey") @PathVariable(name = "caseDefinitionKey") caseDefinitionKey: String,
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<List<BesluittypeDto>> {
-        val caseDefinitionId = activeCaseDefinitionService.getActiveCaseDefinition(caseDefinitionKey).id
-        val zaakBesluitTypes = catalogiService.getBesluittypen(caseDefinitionId).map {
+        val zaakBesluitTypes = catalogiService.getBesluittypen(caseDefinitionName).map {
             BesluittypeDto(
                 it.url!!,
                 it.omschrijving ?: it.url.toString().substringAfterLast("/")
@@ -119,15 +110,13 @@ class CatalogiResource(
         return ResponseEntity.ok(zaakTypen)
     }
 
-    @GetMapping("/management/v1/case-definition/{caseDefinitionKey}/catalogi-eigenschappen")
+    @GetMapping("/management/v1/case-definition/{caseDefinitionName}/catalogi-eigenschappen")
     fun getEigenschappen(
-        @LoggableResource("caseDefinitionKey") @PathVariable(name = "caseDefinitionKey") caseDefinitionKey: String,
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<List<EigenschapDto>> {
-        val caseDefinitionId = activeCaseDefinitionService.getActiveCaseDefinition(caseDefinitionKey).id
-        val eigenschappen = catalogiService.getEigenschappen(caseDefinitionId)
+        val eigenschappen = catalogiService.getEigenschappen(caseDefinitionName)
             .map { EigenschapDto.of(it) }
             .sortedBy { it.name }
-
         return ResponseEntity.ok(eigenschappen)
     }
 }

@@ -42,7 +42,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-security"
 
-    implementation "io.github.oshai:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "io.github.classgraph:classgraph:${classgraphVersion}"
 
     testImplementation project(":core")
@@ -53,7 +53,7 @@ dependencies {
     testImplementation "org.springframework.security:spring-security-test"
 
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
-    testImplementation "org.mockito:mockito-core"
+    testImplementation "org.mockito:mockito-inline:${mockitoInlineVersion}"
 
     jar {
         enabled = true

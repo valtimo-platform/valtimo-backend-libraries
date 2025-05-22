@@ -17,7 +17,7 @@
 package com.ritense.commandhandling
 
 import com.ritense.commandhandling.decorator.DecoratorBuilder
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KotlinLogging
 import kotlin.reflect.KClass
 
 class CommandDispatcher {

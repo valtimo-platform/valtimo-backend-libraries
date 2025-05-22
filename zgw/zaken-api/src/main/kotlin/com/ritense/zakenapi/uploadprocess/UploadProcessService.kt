@@ -17,11 +17,10 @@
 package com.ritense.zakenapi.uploadprocess
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest
-import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
+import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.springframework.stereotype.Service
@@ -32,15 +31,13 @@ import java.util.UUID
 class UploadProcessService(
     private val documentService: DocumentService,
     private val processDocumentService: ProcessDocumentService,
-    private val caseDefinitionProcessLinkService: CaseDefinitionProcessLinkService,
-    private val activeCaseDefinitionService: ActiveCaseDefinitionService,
+    private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
 ) {
 
     fun startUploadResourceProcess(caseId: String, resourceId: String) {
         val caseDefinitionName = runWithoutAuthorization { documentService.get(caseId) }.definitionId().name()
-        val caseDefinition = activeCaseDefinitionService.getActiveCaseDefinition(caseDefinitionName)
-        val link = caseDefinitionProcessLinkService.getDocumentDefinitionProcessLink(caseDefinition.id, DOCUMENT_UPLOAD)
-        if (link == null) {
+        val link = documentDefinitionProcessLinkService.getDocumentDefinitionProcessLink(caseDefinitionName, DOCUMENT_UPLOAD)
+        if (!link.isPresent) {
             throw IllegalStateException("No upload-process linked to case: $caseDefinitionName")
         }
 
@@ -48,7 +45,7 @@ class UploadProcessService(
             processDocumentService.startProcessForDocument(
                 StartProcessForDocumentRequest(
                     JsonSchemaDocumentId.existingId(UUID.fromString(caseId)),
-                    link.id.processDefinitionKey,
+                    link.get().id.processDefinitionKey,
                     mapOf(RESOURCE_ID_PROCESS_VAR to resourceId)
                 )
             )

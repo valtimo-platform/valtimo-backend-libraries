@@ -34,9 +34,9 @@ open class CaseListColumnValidationUtils(
 ) {
 
     @Throws(InvalidListColumnException::class)
-    internal fun assertListColumnExists(caseDefinitionKey: String, caseListColumnDto: CaseListColumnDto) {
-        if (caseDefinitionListColumnRepository.existsByIdCaseDefinitionKeyAndIdKey(
-                caseDefinitionKey,
+    internal fun assertListColumnExists(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto) {
+        if (caseDefinitionListColumnRepository.existsByIdCaseDefinitionNameAndIdKey(
+                caseDefinitionName,
                 caseListColumnDto.key
             )
         ) {
@@ -48,11 +48,11 @@ open class CaseListColumnValidationUtils(
     }
 
     @Throws(InvalidListColumnException::class)
-    internal fun isCreateColumnDefaultSortValid(caseDefinitionKey: String, caseListColumnDto: CaseListColumnDto) {
+    internal fun isCreateColumnDefaultSortValid(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto) {
         if (existsColumnWithDefaultSort(
                 caseListColumnDto,
-                caseDefinitionListColumnRepository.findByIdCaseDefinitionKeyOrderByOrderAsc(
-                    caseDefinitionKey
+                caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAsc(
+                    caseDefinitionName
                 )
             )
         ) {

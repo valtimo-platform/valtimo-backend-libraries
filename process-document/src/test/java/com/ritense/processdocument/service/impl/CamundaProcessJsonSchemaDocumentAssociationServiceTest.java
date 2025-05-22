@@ -17,17 +17,28 @@
 package com.ritense.processdocument.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
+import com.ritense.document.exception.UnknownDocumentDefinitionException;
+import com.ritense.document.repository.DocumentDefinitionRepository;
+import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.processdocument.BaseTest;
+import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinition;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstance;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstanceId;
+import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest;
+import com.ritense.processdocument.exception.UnknownProcessDefinitionException;
+import com.ritense.processdocument.repository.ProcessDocumentDefinitionRepository;
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
@@ -42,7 +53,10 @@ import org.junit.jupiter.api.Test;
 public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends BaseTest {
 
     private CamundaProcessJsonSchemaDocumentAssociationService service;
+    private ProcessDocumentDefinitionRepository processDocumentDefinitionRepository;
     private ProcessDocumentInstanceRepository processDocumentInstanceRepository;
+    private DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository;
+    private DocumentDefinitionService documentDefinitionService;
     private CamundaRepositoryService repositoryService;
     private RuntimeService runtimeService;
     private HistoryService historyService;
@@ -52,7 +66,10 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
 
     @BeforeEach
     public void setUp() {
+        processDocumentDefinitionRepository = spy(ProcessDocumentDefinitionRepository.class);
         processDocumentInstanceRepository = spy(ProcessDocumentInstanceRepository.class);
+        documentDefinitionRepository = mock(DocumentDefinitionRepository.class);
+        documentDefinitionService = mock(DocumentDefinitionService.class);
         repositoryService = mock(CamundaRepositoryService.class);
         runtimeService = mock(RuntimeService.class);
         historyService = mock(HistoryService.class);
@@ -61,7 +78,10 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
         userManagementService = mock(UserManagementService.class);
 
         service = new CamundaProcessJsonSchemaDocumentAssociationService(
+            processDocumentDefinitionRepository,
             processDocumentInstanceRepository,
+            documentDefinitionRepository,
+            documentDefinitionService,
             repositoryService,
             runtimeService,
             historyService,
@@ -69,6 +89,82 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
             documentService,
             userManagementService
         );
+    }
+
+    @Test
+    public void shouldCreateProcessDocumentDefinition() {
+        final var processDefinitionKey = processDefinitionKey();
+        final var definitionId = definitionId();
+        final var processDocumentRequest = new ProcessDocumentDefinitionRequest(
+            processDefinitionKey.toString(),
+            definitionId.name(),
+            true,
+            true
+        );
+
+        when(repositoryService.processDefinitionExists(any()))
+            .thenReturn(true);
+
+        when(documentDefinitionService.findIdByName(anyString()))
+            .thenReturn(definitionId);
+
+        when(documentDefinitionRepository.existsById(any(JsonSchemaDocumentDefinitionId.class)))
+            .thenReturn(true);
+
+        when(processDocumentDefinitionRepository.saveAndFlush(any()))
+            .thenReturn(mock(CamundaProcessJsonSchemaDocumentDefinition.class));
+
+        service.createProcessDocumentDefinition(processDocumentRequest);
+
+        verify(processDocumentDefinitionRepository).saveAndFlush(any());
+    }
+
+    @Test
+    public void shouldNotCreateProcessDocumentDefinitionUnknownProcess() {
+        final var processDefinitionKey = processDefinitionKey();
+        final var definitionId = definitionId();
+
+        final var processDocumentDefinitionRequest = new ProcessDocumentDefinitionRequest(
+            processDefinitionKey.toString(),
+            definitionId.name(),
+            true,
+            true
+        );
+
+        when(documentDefinitionService.findIdByName(anyString()))
+            .thenReturn(definitionId);
+
+        when(repositoryService.processDefinitionExists(any()))
+            .thenReturn(false);
+
+        assertThrows(UnknownProcessDefinitionException.class, () -> {
+            service.createProcessDocumentDefinition(processDocumentDefinitionRequest);
+        });
+    }
+
+    @Test
+    public void shouldNotCreateProcessDocumentDefinitionUnknownDocument() {
+        final var processDefinitionKey = processDefinitionKey();
+        final var definitionId = definitionId();
+        final var processDocumentRequest = new ProcessDocumentDefinitionRequest(
+            processDefinitionKey.toString(),
+            definitionId.name(),
+            true,
+            true
+        );
+
+        when(repositoryService.processDefinitionExists(any()))
+            .thenReturn(true);
+
+        when(documentDefinitionService.findIdByName(anyString()))
+            .thenReturn(definitionId);
+
+        when(documentDefinitionRepository.existsById(any(JsonSchemaDocumentDefinitionId.class)))
+            .thenReturn(false);
+
+        assertThrows(UnknownDocumentDefinitionException.class, () -> {
+            service.createProcessDocumentDefinition(processDocumentRequest);
+        });
     }
 
     @Test
@@ -139,4 +235,21 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
         assertThat(result.isError()).isEqualTo(false);
         assertThat(result.resultingValue().orElseThrow()).isEqualTo(instance);
     }
+
+    @Test
+    public void shouldDeleteDocumentDefinition() {
+        final var id = processDocumentDefinitionId();
+        final var request = new ProcessDocumentDefinitionRequest(
+            id.processDefinitionKey().toString(),
+            id.documentDefinitionId().name(),
+            true,
+            true
+        );
+
+        when(documentDefinitionService.findIdByName(anyString())).thenReturn(id.documentDefinitionId());
+
+        service.deleteProcessDocumentDefinition(request);
+        verify(processDocumentDefinitionRepository).deleteById(id);
+    }
+
 }

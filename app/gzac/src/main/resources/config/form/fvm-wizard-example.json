@@ -1,0 +1,1076 @@
+{
+    "display": "wizard",
+    "components": [
+        {
+            "key": "validationPage",
+            "type": "panel",
+            "input": false,
+            "label": "Validation",
+            "title": "Validation",
+            "tableView": false,
+            "components": [
+                {
+                    "key": "panel",
+                    "type": "panel",
+                    "input": false,
+                    "label": "Panel",
+                    "title": "Panel",
+                    "tableView": false,
+                    "collapsible": true,
+                    "components": [
+                        {
+                            "key": "enableUpdateValidation",
+                            "type": "checkbox",
+                            "input": true,
+                            "label": "Enable update validation",
+                            "tableView": false,
+                            "defaultValue": false,
+                            "validateWhenHidden": false
+                        },
+                        {
+                            "key": "enableSubmissionValidation",
+                            "type": "checkbox",
+                            "input": true,
+                            "label": "Enable submission validation",
+                            "tableView": false,
+                            "defaultValue": false,
+                            "validateWhenHidden": false
+                        },
+                        {
+                            "key": "showBusinessError",
+                            "type": "checkbox",
+                            "input": true,
+                            "label": "Show business error",
+                            "tableView": false,
+                            "defaultValue": false,
+                            "validateWhenHidden": false
+                        },
+                        {
+                            "label": "Container",
+                            "tableView": false,
+                            "validateWhenHidden": false,
+                            "key": "container",
+                            "type": "container",
+                            "input": true,
+                            "components": [
+                                {
+                                    "key": "positiveNumber",
+                                    "mask": false,
+                                    "type": "number",
+                                    "input": true,
+                                    "label": "Positive number",
+                                    "delimiter": false,
+                                    "tableView": false,
+                                    "attributes": {
+                                        "data-testid": "testform-number1"
+                                    },
+                                    "applyMaskOn": "change",
+                                    "inputFormat": "plain",
+                                    "placeholder": "1",
+                                    "defaultValue": 1,
+                                    "requireDecimal": false,
+                                    "validateWhenHidden": false,
+                                    "truncateMultipleSpaces": false
+                                },
+                                {
+                                    "key": "futureDateTime",
+                                    "label": "Future date",
+                                    "format": "yyyy-MM-dd",
+                                    "tableView": false,
+                                    "datePicker": {
+                                        "disableWeekends": false,
+                                        "disableWeekdays": false
+                                    },
+                                    "enableTime": false,
+                                    "enableMinDateInput": false,
+                                    "enableMaxDateInput": false,
+                                    "type": "datetime",
+                                    "input": true,
+                                    "widget": {
+                                        "type": "calendar",
+                                        "displayInTimezone": "viewer",
+                                        "locale": "en",
+                                        "useLocaleSettings": false,
+                                        "allowInput": true,
+                                        "mode": "single",
+                                        "enableTime": false,
+                                        "noCalendar": false,
+                                        "format": "yyyy-MM-dd",
+                                        "hourIncrement": 1,
+                                        "minuteIncrement": 1,
+                                        "time_24hr": false,
+                                        "minDate": null,
+                                        "disableWeekends": false,
+                                        "disableWeekdays": false,
+                                        "maxDate": null
+                                    },
+                                    "validateWhenHidden": false
+                                },
+                                {
+                                    "key": "maxLengthString",
+                                    "type": "textfield",
+                                    "input": true,
+                                    "label": "Max 10 characters",
+                                    "tableView": true,
+                                    "applyMaskOn": "change",
+                                    "placeholder": "0123456789",
+                                    "defaultValue": "0123456789",
+                                    "validateWhenHidden": false
+                                },
+                                {
+                                    "key": "selectedValue",
+                                    "label": "Select one",
+                                    "widget": "choicesjs",
+                                    "tableView": true,
+                                    "dataSrc": "custom",
+                                    "data": {
+                                        "custom": "values = data.container.selectOptions;"
+                                    },
+                                    "valueProperty": "value",
+                                    "template": "<span>{{ item.label }}</span>",
+                                    "validateWhenHidden": false,
+                                    "type": "select",
+                                    "input": true
+                                },
+                                {
+                                    "label": "Datagrid",
+                                    "hideLabel": true,
+                                    "reorder": false,
+                                    "addAnotherPosition": "bottom",
+                                    "layoutFixed": false,
+                                    "enableRowGroups": false,
+                                    "initEmpty": false,
+                                    "tableView": false,
+                                    "validateWhenHidden": false,
+                                    "key": "grid",
+                                    "type": "datagrid",
+                                    "addAnother": "Add",
+                                    "input": true,
+                                    "components": [
+                                        {
+                                            "key": "textInput",
+                                            "type": "textfield",
+                                            "input": true,
+                                            "label": "Text",
+                                            "tableView": true,
+                                            "applyMaskOn": "change",
+                                            "validateWhenHidden": false
+                                        },
+                                        {
+                                            "key": "showError",
+                                            "type": "checkbox",
+                                            "input": true,
+                                            "label": "Show error",
+                                            "tableView": false,
+                                            "defaultValue": false,
+                                            "validateWhenHidden": false
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "collapsible": false,
+            "saveOnEnter": false,
+            "scrollToTop": false,
+            "buttonSettings": {
+                "next": true,
+                "cancel": true,
+                "previous": true
+            },
+            "navigateOnEnter": false,
+            "breadcrumbClickable": true
+        },
+        {
+            "key": "tablePage",
+            "type": "panel",
+            "input": false,
+            "label": "Table",
+            "title": "Table",
+            "tableView": false,
+            "components": [
+                {
+                    "key": "myPanel",
+                    "type": "panel",
+                    "input": false,
+                    "label": "Panel",
+                    "title": "Panel with table",
+                    "tableView": false,
+                    "components": [
+                        {
+                            "key": "myTable",
+                            "rows": [
+                                [
+                                    {
+                                        "components": [
+                                            {
+                                                "key": "selectBoxes",
+                                                "type": "selectboxes",
+                                                "input": true,
+                                                "label": "Select Boxes",
+                                                "values": [
+                                                    {
+                                                        "label": "One",
+                                                        "value": "one",
+                                                        "shortcut": ""
+                                                    },
+                                                    {
+                                                        "label": "Two",
+                                                        "value": "two",
+                                                        "shortcut": ""
+                                                    }
+                                                ],
+                                                "inputType": "checkbox",
+                                                "tableView": false,
+                                                "attributes": {
+                                                    "data-testid": "testform-selectBoxes"
+                                                },
+                                                "defaultValue": {
+                                                    "one": true,
+                                                    "two": false
+                                                },
+                                                "validateWhenHidden": false,
+                                                "optionsLabelPosition": "right"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "components": [
+                                            {
+                                                "key": "textField2",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "label": "Text Field",
+                                                "tableView": true,
+                                                "attributes": {
+                                                    "data-testid": "testform-textField2"
+                                                },
+                                                "applyMaskOn": "change",
+                                                "placeholder": "test",
+                                                "defaultValue": "test",
+                                                "validateWhenHidden": false
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "components": [
+                                            {
+                                                "key": "number",
+                                                "mask": false,
+                                                "type": "number",
+                                                "input": true,
+                                                "label": "Number",
+                                                "delimiter": false,
+                                                "tableView": false,
+                                                "attributes": {
+                                                    "data-testid": "testform-number"
+                                                },
+                                                "applyMaskOn": "change",
+                                                "inputFormat": "plain",
+                                                "placeholder": "1",
+                                                "requireDecimal": false,
+                                                "validateWhenHidden": false,
+                                                "truncateMultipleSpaces": false
+                                            }
+                                        ]
+                                    }
+                                ],
+                                [
+                                    {
+                                        "components": [
+                                            {
+                                                "key": "select",
+                                                "data": {
+                                                    "values": [
+                                                        {
+                                                            "label": "One",
+                                                            "value": "one"
+                                                        },
+                                                        {
+                                                            "label": "Two",
+                                                            "value": "two"
+                                                        }
+                                                    ]
+                                                },
+                                                "type": "select",
+                                                "input": true,
+                                                "label": "Select ChoicesJS",
+                                                "widget": "choicesjs",
+                                                "tableView": true,
+                                                "attributes": {
+                                                    "data-testid": "testform-select"
+                                                },
+                                                "defaultValue": "one",
+                                                "validateWhenHidden": false
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "components": [
+                                            {
+                                                "key": "selectHtml5",
+                                                "data": {
+                                                    "values": [
+                                                        {
+                                                            "label": "One",
+                                                            "value": "one"
+                                                        },
+                                                        {
+                                                            "label": "Two",
+                                                            "value": "two"
+                                                        }
+                                                    ]
+                                                },
+                                                "type": "select",
+                                                "input": true,
+                                                "label": "Select HTML5",
+                                                "widget": "html5",
+                                                "tableView": true,
+                                                "attributes": {
+                                                    "data-testid": "testform-selectHtml5"
+                                                },
+                                                "defaultValue": "one",
+                                                "validateWhenHidden": false
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "components": [
+                                            {
+                                                "key": "radio",
+                                                "type": "radio",
+                                                "input": true,
+                                                "label": "Radio",
+                                                "inline": false,
+                                                "values": [
+                                                    {
+                                                        "label": "One",
+                                                        "value": "one",
+                                                        "shortcut": ""
+                                                    },
+                                                    {
+                                                        "label": "Two",
+                                                        "value": "two",
+                                                        "shortcut": ""
+                                                    }
+                                                ],
+                                                "tableView": false,
+                                                "attributes": {
+                                                    "data-testid": "testform-radio"
+                                                },
+                                                "defaultValue": "one",
+                                                "validateWhenHidden": false,
+                                                "optionsLabelPosition": "right"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                [
+                                    {
+                                        "components": [
+                                            {
+                                                "key": "email",
+                                                "type": "email",
+                                                "input": true,
+                                                "label": "Email",
+                                                "tableView": true,
+                                                "attributes": {
+                                                    "data-testid": "testform-email"
+                                                },
+                                                "applyMaskOn": "change",
+                                                "defaultValue": "test@example.com",
+                                                "validateWhenHidden": false
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "components": [
+                                            {
+                                                "key": "dateTime",
+                                                "type": "datetime",
+                                                "input": true,
+                                                "label": "Date / Time",
+                                                "widget": {
+                                                    "mode": "single",
+                                                    "type": "calendar",
+                                                    "format": "yyyy-MM-dd hh:mm a",
+                                                    "locale": "en",
+                                                    "maxDate": null,
+                                                    "minDate": null,
+                                                    "time_24hr": false,
+                                                    "allowInput": true,
+                                                    "enableTime": true,
+                                                    "noCalendar": false,
+                                                    "hourIncrement": 1,
+                                                    "disableWeekdays": false,
+                                                    "disableWeekends": false,
+                                                    "minuteIncrement": 1,
+                                                    "displayInTimezone": "viewer",
+                                                    "useLocaleSettings": false
+                                                },
+                                                "tableView": false,
+                                                "attributes": {
+                                                    "data-testid": "testform-dateTime"
+                                                },
+                                                "datePicker": {
+                                                    "disableWeekdays": false,
+                                                    "disableWeekends": false
+                                                },
+                                                "defaultValue": "2025-01-30T12:00:00+01:00",
+                                                "enableMaxDateInput": false,
+                                                "enableMinDateInput": false,
+                                                "validateWhenHidden": false
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "components": [
+                                            {
+                                                "key": "currency",
+                                                "mask": false,
+                                                "type": "currency",
+                                                "input": true,
+                                                "label": "Currency",
+                                                "currency": "EUR",
+                                                "delimiter": true,
+                                                "tableView": false,
+                                                "attributes": {
+                                                    "data-testid": "testform-currency"
+                                                },
+                                                "applyMaskOn": "change",
+                                                "inputFormat": "plain",
+                                                "defaultValue": 123.45,
+                                                "validateWhenHidden": false,
+                                                "truncateMultipleSpaces": false
+                                            }
+                                        ]
+                                    }
+                                ],
+                                [
+                                    {
+                                        "components": [
+                                            {
+                                                "key": "textArea",
+                                                "type": "textarea",
+                                                "input": true,
+                                                "label": "Text Area",
+                                                "tableView": true,
+                                                "attributes": {
+                                                    "data-testid": "testform-textArea"
+                                                },
+                                                "autoExpand": false,
+                                                "applyMaskOn": "change",
+                                                "defaultValue": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. \n\nNulla non arcu purus. Morbi scelerisque augue ipsum, vel fermentum sapien blandit in. Proin tempor orci ipsum, et facilisis felis cursus a.",
+                                                "validateWhenHidden": false
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "components": [
+                                            {
+                                                "key": "password",
+                                                "type": "password",
+                                                "input": true,
+                                                "label": "Password",
+                                                "protected": true,
+                                                "tableView": false,
+                                                "attributes": {
+                                                    "data-testid": "testform-password"
+                                                },
+                                                "applyMaskOn": "change",
+                                                "placeholder": "************",
+                                                "validateWhenHidden": false
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "components": [
+                                            {
+                                                "key": "checkbox",
+                                                "type": "checkbox",
+                                                "input": true,
+                                                "label": "Checkbox",
+                                                "tableView": false,
+                                                "attributes": {
+                                                    "data-testid": "testform-checkbox"
+                                                },
+                                                "defaultValue": true,
+                                                "validateWhenHidden": false
+                                            }
+                                        ]
+                                    }
+                                ],
+                                [
+                                    {
+                                        "components": [
+                                            {
+                                                "key": "documentPicker",
+                                                "data": {
+                                                    "custom": "values = instance.getResources()"
+                                                },
+                                                "type": "resource-selector",
+                                                "input": true,
+                                                "label": "Document picker",
+                                                "widget": "choicesjs",
+                                                "dataSrc": "custom",
+                                                "dataType": "string",
+                                                "tableView": true,
+                                                "attributes": {
+                                                    "data-testid": "testform-documentPicker"
+                                                },
+                                                "asyncValues": true,
+                                                "placeholder": "pick please",
+                                                "valueProperty": "value"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "components": [
+                                            {
+                                                "key": "valtimoFile1",
+                                                "type": "valtimo-file",
+                                                "input": true,
+                                                "label": "  Valtimo File Upload",
+                                                "tableView": false,
+                                                "attributes": {
+                                                    "data-testid": "testform-valtimoFile1"
+                                                },
+                                                "customOptions": {
+                                                    "title": "",
+                                                    "camera": false,
+                                                    "subtitle": "",
+                                                    "hideTitle": false,
+                                                    "maxFileSize": 5,
+                                                    "hideMaxFileSize": false
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "components": [
+                                            {
+                                                "key": "valtimoCurrentUser",
+                                                "type": "valtimo-current-user",
+                                                "input": true,
+                                                "label": "Valtimo Current User",
+                                                "tableView": true,
+                                                "attributes": {
+                                                    "data-testid": "testform-valtimoCurrentUser"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                [
+                                    {
+                                        "components": [
+                                            {
+                                                "key": "iban",
+                                                "mask": false,
+                                                "type": "iban",
+                                                "input": true,
+                                                "label": "Iban component",
+                                                "tableView": true,
+                                                "attributes": {
+                                                    "data-testid": "testform-iban"
+                                                },
+                                                "spellcheck": true,
+                                                "applyMaskOn": "change",
+                                                "inputFormat": "plain",
+                                                "defaultValue": "NL91ABNA0417164300",
+                                                "truncateMultipleSpaces": false
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "components": [
+                                            {
+                                                "key": "documentenApiFile1",
+                                                "type": "documenten-api-file",
+                                                "input": true,
+                                                "label": "Documenten API File Upload",
+                                                "tableView": false,
+                                                "attributes": {
+                                                    "data-testid": "testform-documentenApiFile1"
+                                                },
+                                                "customOptions": {
+                                                    "tags": "",
+                                                    "title": "",
+                                                    "author": "",
+                                                    "camera": false,
+                                                    "status": "",
+                                                    "filename": "",
+                                                    "hideTags": false,
+                                                    "language": "",
+                                                    "subtitle": "",
+                                                    "hideTitle": false,
+                                                    "hideAuthor": false,
+                                                    "hideStatus": false,
+                                                    "description": "",
+                                                    "maxFileSize": 5,
+                                                    "documentType": "",
+                                                    "hideFilename": false,
+                                                    "hideLanguage": false,
+                                                    "disableAuthor": false,
+                                                    "disableStatus": false,
+                                                    "documentTitle": "",
+                                                    "disableFilename": false,
+                                                    "disableLanguage": false,
+                                                    "hideDescription": false,
+                                                    "hideMaxFileSize": false,
+                                                    "hideCreationDate": false,
+                                                    "hideDocumentType": false,
+                                                    "hideDocumentTitle": false,
+                                                    "disableDescription": false,
+                                                    "hideAdditionalDate": false,
+                                                    "disableCreationDate": false,
+                                                    "disableDocumentType": false,
+                                                    "confidentialityLevel": "",
+                                                    "disableDocumentTitle": false,
+                                                    "hideConfidentialityLevel": false,
+                                                    "disableConfidentialityLevel": false
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "components": [
+                                            {
+                                                "key": "phoneNumber",
+                                                "type": "phoneNumber",
+                                                "input": true,
+                                                "label": "Phone Number",
+                                                "tableView": true,
+                                                "attributes": {
+                                                    "data-testid": "testform-phoneNumber"
+                                                },
+                                                "applyMaskOn": "change",
+                                                "defaultValue": "(061) 234-5678"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                [
+                                    {
+                                        "components": [
+                                            {
+                                                "key": "signature",
+                                                "type": "signature",
+                                                "input": true,
+                                                "label": "Signature",
+                                                "tableView": false,
+                                                "attributes": {
+                                                    "data-testid": "testform-signature"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "components": [
+                                            {
+                                                "key": "tags",
+                                                "type": "tags",
+                                                "input": true,
+                                                "label": "Tags",
+                                                "tableView": false,
+                                                "attributes": {
+                                                    "data-testid": "testform-tags"
+                                                },
+                                                "defaultValue": "test,test2"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "components": [
+                                            {
+                                                "key": "url",
+                                                "type": "url",
+                                                "input": true,
+                                                "label": "Url",
+                                                "tableView": true,
+                                                "attributes": {
+                                                    "data-testid": "testform-url"
+                                                },
+                                                "applyMaskOn": "change",
+                                                "defaultValue": "http://www.example.com"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            ],
+                            "type": "table",
+                            "input": false,
+                            "label": "My table",
+                            "numRows": 7,
+                            "tableView": false,
+                            "cellAlignment": "left"
+                        }
+                    ],
+                    "collapsible": false
+                }
+            ],
+            "collapsible": false,
+            "saveOnEnter": false,
+            "scrollToTop": false,
+            "buttonSettings": {
+                "next": true,
+                "cancel": true,
+                "previous": true
+            },
+            "navigateOnEnter": false,
+            "breadcrumbClickable": true
+        },
+        {
+            "key": "datagridPage",
+            "type": "panel",
+            "input": false,
+            "label": "Datagrid",
+            "title": "Datagrid",
+            "tableView": false,
+            "components": [
+                {
+                    "key": "outerDatagrid",
+                    "type": "datagrid",
+                    "input": true,
+                    "label": "Outer datagrid",
+                    "reorder": false,
+                    "initEmpty": false,
+                    "tableView": false,
+                    "components": [
+                        {
+                            "key": "innerDataGrid",
+                            "type": "datagrid",
+                            "input": true,
+                            "label": "Inner Data Grid",
+                            "reorder": false,
+                            "initEmpty": false,
+                            "tableView": false,
+                            "components": [
+                                {
+                                    "key": "valtimoCurrentUser",
+                                    "type": "valtimo-current-user",
+                                    "input": true,
+                                    "label": "Valtimo Current User",
+                                    "tableView": true
+                                },
+                                {
+                                    "key": "textField",
+                                    "type": "textfield",
+                                    "input": true,
+                                    "label": "Text Field",
+                                    "tableView": true,
+                                    "applyMaskOn": "change"
+                                },
+                                {
+                                    "key": "checkbox",
+                                    "type": "checkbox",
+                                    "input": true,
+                                    "label": "Checkbox",
+                                    "tableView": false
+                                },
+                                {
+                                    "key": "number",
+                                    "mask": false,
+                                    "type": "number",
+                                    "input": true,
+                                    "label": "Number",
+                                    "delimiter": false,
+                                    "tableView": false,
+                                    "applyMaskOn": "change",
+                                    "inputFormat": "plain",
+                                    "defaultValue": 123,
+                                    "requireDecimal": false,
+                                    "truncateMultipleSpaces": false
+                                }
+                            ],
+                            "layoutFixed": false,
+                            "defaultValue": [
+                                {}
+                            ],
+                            "enableRowGroups": false,
+                            "addAnotherPosition": "bottom"
+                        }
+                    ],
+                    "layoutFixed": false,
+                    "defaultValue": [
+                        {}
+                    ],
+                    "enableRowGroups": false,
+                    "addAnotherPosition": "bottom",
+                    "attributes": {
+                        "data-testid": "testform-outerDatagrid"
+                    }
+                },
+                {
+                    "key": "outerDataGrid2",
+                    "type": "datagrid",
+                    "input": true,
+                    "label": "Outer Data Grid2",
+                    "reorder": false,
+                    "initEmpty": false,
+                    "tableView": false,
+                    "components": [
+                        {
+                            "key": "dataGrid",
+                            "type": "datagrid",
+                            "input": true,
+                            "label": "Data Grid",
+                            "reorder": false,
+                            "initEmpty": false,
+                            "tableView": false,
+                            "components": [
+                                {
+                                    "key": "textArea",
+                                    "type": "textarea",
+                                    "input": true,
+                                    "label": "Text Area",
+                                    "tableView": true,
+                                    "autoExpand": false,
+                                    "applyMaskOn": "change"
+                                },
+                                {
+                                    "key": "select",
+                                    "type": "select",
+                                    "input": true,
+                                    "label": "Select",
+                                    "widget": "choicesjs",
+                                    "tableView": true
+                                },
+                                {
+                                    "key": "currency",
+                                    "mask": false,
+                                    "type": "currency",
+                                    "input": true,
+                                    "label": "Currency component",
+                                    "tableView": true,
+                                    "spellcheck": true,
+                                    "applyMaskOn": "change",
+                                    "inputFormat": "plain",
+                                    "defaultValue": 0,
+                                    "customOptions": {
+                                        "currencyLocale": "nl-NL",
+                                        "allowEmptyValue": false,
+                                        "currencyCurrency": "EUR"
+                                    },
+                                    "truncateMultipleSpaces": false
+                                },
+                                {
+                                    "key": "radio",
+                                    "type": "radio",
+                                    "input": true,
+                                    "label": "Radio",
+                                    "inline": false,
+                                    "values": [
+                                        {
+                                            "label": "One",
+                                            "value": "one",
+                                            "shortcut": ""
+                                        },
+                                        {
+                                            "label": "Two",
+                                            "value": "two",
+                                            "shortcut": ""
+                                        }
+                                    ],
+                                    "tableView": false,
+                                    "defaultValue": "one",
+                                    "optionsLabelPosition": "right"
+                                }
+                            ],
+                            "layoutFixed": false,
+                            "defaultValue": [
+                                {}
+                            ],
+                            "enableRowGroups": false,
+                            "addAnotherPosition": "bottom"
+                        }
+                    ],
+                    "layoutFixed": false,
+                    "defaultValue": [
+                        {}
+                    ],
+                    "enableRowGroups": false,
+                    "addAnotherPosition": "bottom",
+                    "attributes": {
+                        "data-testid": "testform-outerDataGrid2"
+                    }
+                }
+            ],
+            "collapsible": false,
+            "saveOnEnter": false,
+            "scrollToTop": false,
+            "buttonSettings": {
+                "next": true,
+                "cancel": true,
+                "previous": true
+            },
+            "navigateOnEnter": false,
+            "breadcrumbClickable": true
+        },
+        {
+            "key": "tabPage",
+            "type": "panel",
+            "input": false,
+            "label": "Tab",
+            "title": "Tab",
+            "tableView": false,
+            "components": [
+                {
+                    "key": "tabs",
+                    "type": "tabs",
+                    "input": false,
+                    "label": "Tabs",
+                    "tableView": false,
+                    "components": [
+                        {
+                            "key": "tab1",
+                            "label": "Tab 1",
+                            "components": [
+                                {
+                                    "key": "textField1",
+                                    "type": "textfield",
+                                    "input": true,
+                                    "label": "Text Field",
+                                    "tableView": true,
+                                    "attributes": {
+                                        "data-testid": "testform-textField1"
+                                    },
+                                    "applyMaskOn": "change",
+                                    "placeholder": "test",
+                                    "defaultValue": "test",
+                                    "validateWhenHidden": false
+                                },
+                                {
+                                    "key": "textArea1",
+                                    "type": "textarea",
+                                    "input": true,
+                                    "label": "Text Area",
+                                    "tableView": true,
+                                    "attributes": {
+                                        "data-testid": "testform-textArea1"
+                                    },
+                                    "autoExpand": false,
+                                    "applyMaskOn": "change",
+                                    "defaultValue": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. \n\nNulla non arcu purus. Morbi scelerisque augue ipsum, vel fermentum sapien blandit in. Proin tempor orci ipsum, et facilisis felis cursus a.",
+                                    "validateWhenHidden": false
+                                },
+                                {
+                                    "key": "number1",
+                                    "mask": false,
+                                    "type": "number",
+                                    "input": true,
+                                    "label": "Number",
+                                    "delimiter": false,
+                                    "tableView": false,
+                                    "attributes": {
+                                        "data-testid": "testform-number1"
+                                    },
+                                    "applyMaskOn": "change",
+                                    "inputFormat": "plain",
+                                    "placeholder": "1",
+                                    "defaultValue": 1,
+                                    "requireDecimal": false,
+                                    "validateWhenHidden": false,
+                                    "truncateMultipleSpaces": false
+                                },
+                                {
+                                    "key": "password1",
+                                    "type": "password",
+                                    "input": true,
+                                    "label": "Password",
+                                    "protected": true,
+                                    "tableView": false,
+                                    "attributes": {
+                                        "data-testid": "testform-password1"
+                                    },
+                                    "applyMaskOn": "change",
+                                    "placeholder": "*********",
+                                    "validateWhenHidden": false
+                                },
+                                {
+                                    "key": "checkbox1",
+                                    "type": "checkbox",
+                                    "input": true,
+                                    "label": "Checkbox",
+                                    "tableView": false,
+                                    "attributes": {
+                                        "data-testid": "testform-checkbox1"
+                                    },
+                                    "defaultValue": true,
+                                    "validateWhenHidden": false
+                                },
+                                {
+                                    "key": "selectBoxes1",
+                                    "type": "selectboxes",
+                                    "input": true,
+                                    "label": "Select Boxes",
+                                    "values": [
+                                        {
+                                            "label": "One",
+                                            "value": "one",
+                                            "shortcut": ""
+                                        },
+                                        {
+                                            "label": "Two",
+                                            "value": "two",
+                                            "shortcut": ""
+                                        }
+                                    ],
+                                    "inputType": "checkbox",
+                                    "tableView": false,
+                                    "attributes": {
+                                        "data-testid": "testform-selectBoxes1"
+                                    },
+                                    "defaultValue": {
+                                        "one": false,
+                                        "two": true
+                                    },
+                                    "validateWhenHidden": false,
+                                    "optionsLabelPosition": "right"
+                                },
+                                {
+                                    "key": "radio1",
+                                    "type": "radio",
+                                    "input": true,
+                                    "label": "Radio",
+                                    "inline": false,
+                                    "values": [
+                                        {
+                                            "label": "One",
+                                            "value": "one",
+                                            "shortcut": ""
+                                        },
+                                        {
+                                            "label": "Two",
+                                            "value": "two",
+                                            "shortcut": ""
+                                        }
+                                    ],
+                                    "tableView": false,
+                                    "attributes": {
+                                        "data-testid": "testform-radio1"
+                                    },
+                                    "defaultValue": "one",
+                                    "validateWhenHidden": false,
+                                    "optionsLabelPosition": "right"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "collapsible": false,
+            "saveOnEnter": false,
+            "scrollToTop": false,
+            "buttonSettings": {
+                "next": true,
+                "cancel": true,
+                "previous": true
+            },
+            "navigateOnEnter": false,
+            "breadcrumbClickable": true
+        }
+    ]
+}

@@ -40,8 +40,6 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.findByOrNull
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import jakarta.validation.Valid
 import org.springframework.context.event.EventListener
 import org.springframework.data.domain.Pageable
@@ -61,22 +59,20 @@ class CaseWidgetTabService(
     private val caseTabRepository: CaseTabRepository,
     private val authorizationService: AuthorizationService,
     private val caseWidgetMappers: List<CaseWidgetMapper<CaseWidgetTabWidget, CaseWidgetTabWidgetDto>>,
-    private val caseWidgetDataProviders: List<CaseWidgetDataProvider<CaseWidgetTabWidget>>,
-    private val caseDefinitionChecker: CaseDefinitionChecker,
+    private val caseWidgetDataProviders: List<CaseWidgetDataProvider<CaseWidgetTabWidget>>
 ) {
 
     @EventListener(CaseTabCreatedEvent::class)
     fun handleCaseTabCreatedEvent(event: CaseTabCreatedEvent) {
-        caseDefinitionChecker.assertCanUpdateCaseDefinition(event.tab.id.caseDefinitionId)
         if (event.tab.type == CaseTabType.WIDGETS) {
             caseWidgetTabRepository.save(CaseWidgetTab(event.tab.id))
         }
     }
 
-    fun getWidgetTab(caseDefinitionId: CaseDefinitionId, key: String): CaseWidgetTabDto? {
-        checkCaseTabAccess(caseDefinitionId, key, VIEW)
+    fun getWidgetTab(caseDefinitionName: String, key: String): CaseWidgetTabDto? {
+        checkCaseTabAccess(caseDefinitionName, key, VIEW)
 
-        return caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionId, key))
+        return caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, key))
             ?.let { CaseWidgetTabDto.of(it, caseWidgetMappers, this::viewPermissionCheck) }
 
     }
@@ -85,9 +81,9 @@ class CaseWidgetTabService(
         val document = runWithoutAuthorization { documentService.findByOrNull(documentId) }
 
         return document?.let { existingDocument ->
-            caseTabRepository.findByIdOrNull(CaseTabId(document.definitionId().caseDefinitionId(), key))?.let { caseTab ->
+            caseTabRepository.findByIdOrNull(CaseTabId(document.definitionId().name(), key))?.let { caseTab ->
                 checkCaseTabAccess(existingDocument as JsonSchemaDocument, caseTab, VIEW)
-                caseWidgetTabRepository.findByIdOrNull(CaseTabId(existingDocument.definitionId().caseDefinitionId(), key))
+                caseWidgetTabRepository.findByIdOrNull(CaseTabId(existingDocument.definitionId().name(), key))
                     ?.let { widgetTab ->
                         CaseWidgetTabDto
                         .ofWithContext(
@@ -105,17 +101,11 @@ class CaseWidgetTabService(
     @Transactional
     fun updateWidgetTab(@Valid tabDto: CaseWidgetTabDto): CaseWidgetTabDto {
         denyAuthorization()
-        val caseDefinitionId = CaseDefinitionId.of(tabDto.caseDefinitionKey!!, tabDto.caseDefinitionVersionTag!!)
-        caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId)
 
-        val caseWidgetTab = (
-            caseWidgetTabRepository.findByIdOrNull(
-                CaseTabId(caseDefinitionId, tabDto.key)
-            )
+        val caseWidgetTab = (caseWidgetTabRepository.findByIdOrNull(CaseTabId(tabDto.caseDefinitionName, tabDto.key))
             ?: throw RuntimeException(
-                "Failed to update tab. Tab with key '${tabDto.key}' doesn't exist " +
-                    "for case definition with key '${tabDto.caseDefinitionKey}' and version tag " +
-                    "'${tabDto.caseDefinitionVersionTag}'."
+                "Failed to update dashboard. Dashboard with key '${tabDto.key}' doesn't exist " +
+                    "for case definition with name '${tabDto.caseDefinitionName}'."
             )
             ).copy(
                 widgets = tabDto.widgets.mapIndexed { index, widgetDto ->
@@ -138,10 +128,10 @@ class CaseWidgetTabService(
             documentService.findByOrNull(JsonSchemaDocumentId.existingId(documentId))
         } ?: return null
 
-        val caseDefinitionId = document.definitionId().caseDefinitionId()
-        checkCaseTabAccess(caseDefinitionId, tabKey, VIEW)
+        val caseDefinitionName = document.definitionId().name()
+        checkCaseTabAccess(caseDefinitionName, tabKey, VIEW)
 
-        val widgetTab = caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionId, tabKey)) ?: return null
+        val widgetTab = caseWidgetTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, tabKey)) ?: return null
         val widget = widgetTab.widgets.firstOrNull { it.id.key == widgetKey } ?: return null
 
         authorizationService.requirePermission(
@@ -164,8 +154,8 @@ class CaseWidgetTabService(
         }
     }
 
-    private fun checkCaseTabAccess(caseDefinitionId: CaseDefinitionId, key: String, action: Action<CaseTab>) {
-        caseTabRepository.findByIdOrNull(CaseTabId(caseDefinitionId, key))?.let { caseTab ->
+    private fun checkCaseTabAccess(caseDefinitionName: String, key: String, action: Action<CaseTab>) {
+        caseTabRepository.findByIdOrNull(CaseTabId(caseDefinitionName, key))?.let { caseTab ->
             authorizationService.requirePermission(
                 EntityAuthorizationRequest(
                     CaseTab::class.java,

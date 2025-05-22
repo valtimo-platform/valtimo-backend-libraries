@@ -17,7 +17,6 @@
 package com.ritense.zakenapi.provider
 
 import com.ritense.catalogiapi.exception.ZaakTypeLinkNotFoundException
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.zakenapi.domain.ZaakTypeLink
 import com.ritense.zakenapi.domain.ZaakTypeLinkId
 import com.ritense.zakenapi.service.ZaakTypeLinkService
@@ -43,33 +42,58 @@ class DefaultZaaktypeUrlProviderTest {
     }
 
     @Test
-    fun `should get zaaktype URL by case definition id`() {
-        val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
+    fun `should get zaaktype URL by document definition name`() {
+        val name = "test"
 
-        val zaakTypeLink = createZaakTypeLink(caseDefinitionId)
-        whenever(zaakTypeLinkService.get(caseDefinitionId)).thenReturn(zaakTypeLink)
+        val zaakTypeLink = createZaakTypeLink(name)
+        whenever(zaakTypeLinkService.get(name)).thenReturn(zaakTypeLink)
 
-        val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(caseDefinitionId)
+        val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(name)
 
         assertThat(zaaktypeUrl).isEqualTo(zaakTypeLink.zaakTypeUrl)
     }
 
     @Test
     fun `should throw ZaakTypeLinkNotFoundException on getZaaktypeUrl when ZaakTypeLink cannot be found`() {
-        val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
+        val name = "test"
 
-        whenever(zaakTypeLinkService.get(caseDefinitionId)).thenReturn(null)
+        whenever(zaakTypeLinkService.get(name)).thenReturn(null)
 
         val ex = assertThrows<ZaakTypeLinkNotFoundException> {
-            zaaktypeUrlProvider.getZaaktypeUrl(caseDefinitionId)
+            zaaktypeUrlProvider.getZaaktypeUrl(name)
         }
 
-        assertThat(ex.message).endsWith("For case definition $caseDefinitionId")
+        assertThat(ex.message).endsWith("For document definition with name $name")
     }
 
-    private fun createZaakTypeLink(caseDefinitionId: CaseDefinitionId) = ZaakTypeLink(
+    @Test
+    fun `should get zaaktype URL by case definition name`() {
+        val name = "test"
+
+        val zaakTypeLink = createZaakTypeLink(name)
+        whenever(zaakTypeLinkService.get(name)).thenReturn(zaakTypeLink)
+
+        val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrlByCaseDefinitionName(name)
+
+        assertThat(zaaktypeUrl).isEqualTo(zaakTypeLink.zaakTypeUrl)
+    }
+
+    @Test
+    fun `should throw ZaakTypeLinkNotFoundException on getZaaktypeUrlByCaseDefinitionName when ZaakTypeLink cannot be found`() {
+        val name = "test"
+
+        whenever(zaakTypeLinkService.get(name)).thenReturn(null)
+
+        val ex = assertThrows<ZaakTypeLinkNotFoundException> {
+            zaaktypeUrlProvider.getZaaktypeUrlByCaseDefinitionName(name)
+        }
+
+        assertThat(ex.message).endsWith("For case definition with name $name")
+    }
+
+    private fun createZaakTypeLink(name: String) = ZaakTypeLink(
         ZaakTypeLinkId.newId(UUID.randomUUID()),
-        caseDefinitionId,
-        URI("http://localhost/${caseDefinitionId.key}")
+        name,
+        URI("http://localhost/$name")
     )
 }

@@ -1,0 +1,39 @@
+{
+    "changesetId": "some-case-type.case-task-list",
+    "case-definitions": [
+        {
+            "key": "some-case-type",
+            "columns": [
+                {
+                    "title": "First name",
+                    "key": "first-name",
+                    "path": "test:firstName" ,
+                    "displayType": {
+                        "type": "enum",
+                        "displayTypeParameters": {
+                            "enum": {
+                                "key1":"Value 1"
+                            }
+                        }
+                    },
+                    "sortable": true ,
+                    "defaultSort": "ASC"
+                },
+                {
+                    "title": "Last name",
+                    "key": "last-name",
+                    "path": "test:lastName" ,
+                    "displayType": {
+                        "type": "enum",
+                        "displayTypeParameters": {
+                            "enum": {
+                                "key1":"Value 2"
+                            }
+                        }
+                    },
+                    "sortable": true
+                }
+            ]
+        }
+    ]
+}

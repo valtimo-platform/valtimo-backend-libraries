@@ -17,6 +17,8 @@
 package com.ritense.case.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.case.deployment.CaseDefinitionsTabCollection
+import com.ritense.case.deployment.CaseTabChangeset
 import com.ritense.case.deployment.CaseTabDto
 import com.ritense.case.domain.CaseTab
 import com.ritense.case.domain.CaseTabType
@@ -27,8 +29,8 @@ import com.ritense.exporter.Exporter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import com.ritense.exporter.request.ExportRequest
 import com.ritense.exporter.request.FormDefinitionExportRequest
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.springframework.transaction.annotation.Transactional
+import java.time.Instant
 
 @Transactional(readOnly = true)
 class CaseTabExporter(
@@ -39,39 +41,44 @@ class CaseTabExporter(
     override fun supports() = DocumentDefinitionExportRequest::class.java
 
     override fun export(request: DocumentDefinitionExportRequest): ExportResult {
-        val caseTabs = caseTabService.getCaseTabs(request.caseDefinitionId)
+        val caseName = request.name
+        val caseTabs = caseTabService.getCaseTabs(caseName)
 
         if (caseTabs.isEmpty()) {
             return ExportResult()
         }
 
-        val caseDefinitionKey = request.caseDefinitionId.key
-        val formattedCaseDefinitionVersion = request.caseDefinitionId.versionTag.let {
-            "${it.major}-${it.minor}-${it.patch}"
-        }
-
+        val caseTabChangeset = CaseTabChangeset(
+            "$caseName.case-tabs.${Instant.now().toEpochMilli()}",
+            listOf(
+                CaseDefinitionsTabCollection(
+                    caseName,
+                    caseTabs.map(CaseTabDto::of)
+                )
+            )
+        )
         val caseTabExport = ExportFile(
-            PATH.format(caseDefinitionKey, formattedCaseDefinitionVersion, caseDefinitionKey),
-            objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(caseTabs.map(CaseTabDto::of))
+            PATH.format(caseName),
+            objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(caseTabChangeset)
         )
 
         return ExportResult(
             caseTabExport,
-            createFormDefininitionExportRequests(caseTabs, request.caseDefinitionId)
+            createFormDefininitionExportRequests(caseTabs)
         )
     }
 
-    private fun createFormDefininitionExportRequests(caseTabs: List<CaseTab>, caseDefinitionId: CaseDefinitionId): Set<ExportRequest> {
+    private fun createFormDefininitionExportRequests(caseTabs: List<CaseTab>): Set<ExportRequest> {
         return caseTabs.filter {
             it.type == CaseTabType.FORMIO
         }.distinctBy {
             it.contentKey
         }.map {
-            FormDefinitionExportRequest(it.contentKey, caseDefinitionId)
+            FormDefinitionExportRequest(it.contentKey)
         }.toSet()
     }
 
     companion object {
-        private const val PATH = "config/case/%s/%s/case/tab/%s.case-tab.json"
+        private const val PATH = "config/case-tabs/%s.case-tabs.json"
     }
 }

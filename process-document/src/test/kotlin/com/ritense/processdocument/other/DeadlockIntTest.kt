@@ -26,12 +26,12 @@ import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRe
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
+import mu.KotlinLogging
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -84,8 +84,6 @@ internal class DeadlockIntTest : BaseIntegrationTest() {
             documentService.createDocument(
                 NewDocumentRequest(
                     definition().id().name(),
-                    definition().id.caseDefinitionId().key,
-                    definition().id.caseDefinitionId().versionTag.version,
                     JsonDocumentContent(content).asJson()
                 )
             )

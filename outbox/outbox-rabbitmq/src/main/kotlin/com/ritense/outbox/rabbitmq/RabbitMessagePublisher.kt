@@ -19,7 +19,8 @@ package com.ritense.outbox.rabbitmq
 import com.ritense.outbox.OutboxMessage
 import com.ritense.outbox.publisher.MessagePublisher
 import com.ritense.outbox.publisher.MessagePublishingFailed
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KLogger
+import mu.KotlinLogging
 import org.springframework.amqp.core.Message
 import org.springframework.amqp.rabbit.connection.CorrelationData
 import org.springframework.amqp.rabbit.core.RabbitTemplate
@@ -70,6 +71,6 @@ class RabbitMessagePublisher(
     }
 
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger: KLogger = KotlinLogging.logger {}
     }
 }

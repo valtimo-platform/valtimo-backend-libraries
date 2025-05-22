@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_0djvcr2" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.1.0">
+  <bpmn:collaboration id="Collaboration_0m48qlp">
+    <bpmn:participant id="Participant_06kw7tj" name="Melding behandelen (OpenZaak)" processRef="melding-behandelen" />
+  </bpmn:collaboration>
+  <bpmn:process id="melding-behandelen" name="Melding behandelen (OpenZaak)" isExecutable="true">
+    <bpmn:startEvent id="start-event-melding-behandelen">
+      <bpmn:outgoing>SequenceFlow_0riin2e</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0riin2e" sourceRef="start-event-melding-behandelen" targetRef="Activity_1fv88i5" />
+    <bpmn:sequenceFlow id="Flow_11rnmyj" sourceRef="Activity_1fv88i5" targetRef="melding-bekijken" />
+    <bpmn:sequenceFlow id="Flow_1ur170v" sourceRef="melding-bekijken" targetRef="set-zaak-status" />
+    <bpmn:userTask id="melding-bekijken" name="Melding bekijken" camunda:candidateGroups="ROLE_USER">
+      <bpmn:incoming>Flow_11rnmyj</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ur170v</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Activity_1fv88i5" name="Maak zaak aan" camunda:expression="${true}">
+      <bpmn:incoming>SequenceFlow_0riin2e</bpmn:incoming>
+      <bpmn:outgoing>Flow_11rnmyj</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1u130i0" sourceRef="set-zaak-status" targetRef="set-zaak-resultaat" />
+    <bpmn:sequenceFlow id="Flow_1mt8fq1" sourceRef="set-zaak-resultaat" targetRef="end-event-melding-behandelen" />
+    <bpmn:endEvent id="end-event-melding-behandelen">
+      <bpmn:incoming>Flow_1mt8fq1</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="set-zaak-resultaat" name="Set zaak resultaat" camunda:expression="${true}">
+      <bpmn:incoming>Flow_1u130i0</bpmn:incoming>
+      <bpmn:outgoing>Flow_1mt8fq1</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="set-zaak-status" name="Set zaak status" camunda:expression="${true}">
+      <bpmn:incoming>Flow_1ur170v</bpmn:incoming>
+      <bpmn:outgoing>Flow_1u130i0</bpmn:outgoing>
+    </bpmn:serviceTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0m48qlp">
+      <bpmndi:BPMNShape id="Participant_06kw7tj_di" bpmnElement="Participant_06kw7tj" isHorizontal="true">
+        <dc:Bounds x="158" y="39" width="1002" height="271" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1ur170v_di" bpmnElement="Flow_1ur170v">
+        <di:waypoint x="610" y="165" />
+        <di:waypoint x="720" y="165" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_11rnmyj_di" bpmnElement="Flow_11rnmyj">
+        <di:waypoint x="450" y="165" />
+        <di:waypoint x="510" y="165" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0riin2e_di" bpmnElement="SequenceFlow_0riin2e">
+        <di:waypoint x="259" y="165" />
+        <di:waypoint x="350" y="165" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1u130i0_di" bpmnElement="Flow_1u130i0">
+        <di:waypoint x="820" y="165" />
+        <di:waypoint x="900" y="165" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1mt8fq1_di" bpmnElement="Flow_1mt8fq1">
+        <di:waypoint x="1000" y="165" />
+        <di:waypoint x="1072" y="165" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start-event-melding-behandelen">
+        <dc:Bounds x="223" y="147" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_00ougsg_di" bpmnElement="melding-bekijken">
+        <dc:Bounds x="510" y="125" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_04t7fdy_di" bpmnElement="Activity_1fv88i5">
+        <dc:Bounds x="350" y="125" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_15b8qng_di" bpmnElement="end-event-melding-behandelen">
+        <dc:Bounds x="1072" y="147" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0opddpi_di" bpmnElement="set-zaak-resultaat">
+        <dc:Bounds x="900" y="125" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0n6tlgj_di" bpmnElement="set-zaak-status">
+        <dc:Bounds x="720" y="125" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

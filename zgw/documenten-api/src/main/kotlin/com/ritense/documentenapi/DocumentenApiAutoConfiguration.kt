@@ -18,12 +18,13 @@ package com.ritense.documentenapi
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
-import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.documentenapi.client.DocumentenApiClient
+import com.ritense.documentenapi.deployment.ZgwDocumentListColumnDeploymentService
+import com.ritense.documentenapi.deployment.ZgwDocumentUploadFieldsDeploymentService
 import com.ritense.documentenapi.domain.DocumentenApiVersion
 import com.ritense.documentenapi.exporter.DocumentenApiUploadFieldExporter
 import com.ritense.documentenapi.exporter.ZgwDocumentListColumnExporter
@@ -40,9 +41,11 @@ import com.ritense.documentenapi.web.rest.DocumentenApiManagementResource
 import com.ritense.documentenapi.web.rest.DocumentenApiResource
 import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
-import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
+import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.changelog.service.ChangelogDeployer
+import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valtimo.processlink.service.PluginProcessLinkService
 import com.ritense.valueresolver.ValueResolverService
@@ -141,10 +144,9 @@ class DocumentenApiAutoConfiguration {
         authorizationService: AuthorizationService,
         documentService: DocumentService,
         documentDefinitionService: DocumentDefinitionService,
-        caseDefinitionProcessLinkService: CaseDefinitionProcessLinkService,
+        documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
         pluginProcessLinkService: PluginProcessLinkService,
         camundaRepositoryService: CamundaRepositoryService,
-        activeCaseDefinitionService: ActiveCaseDefinitionService,
     ): DocumentenApiVersionService {
         return DocumentenApiVersionService(
             resourceLoader,
@@ -154,10 +156,9 @@ class DocumentenApiAutoConfiguration {
             authorizationService,
             documentService,
             documentDefinitionService,
-            caseDefinitionProcessLinkService,
+            documentDefinitionProcessLinkService,
             pluginProcessLinkService,
             camundaRepositoryService,
-            activeCaseDefinitionService,
         )
     }
 
@@ -168,6 +169,42 @@ class DocumentenApiAutoConfiguration {
         documentenApiColumnRepository: DocumentenApiColumnRepository,
     ): DocumentenApiColumnDeploymentService {
         return DocumentenApiColumnDeploymentService(documentenApiService, documentenApiColumnRepository)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ZgwDocumentListColumnDeploymentService::class)
+    fun zgwDocumentListColumnColumnDeploymentService(
+        objectMapper: ObjectMapper,
+        documentenApiColumnRepository: DocumentenApiColumnRepository,
+        documentenApiService: DocumentenApiService,
+        changelogService: ChangelogService,
+        @Value("\${valtimo.changelog.zgw-document-list-column.clear-tables:false}") clearTables: Boolean
+    ): ZgwDocumentListColumnDeploymentService {
+        return ZgwDocumentListColumnDeploymentService(
+            objectMapper,
+            documentenApiColumnRepository,
+            documentenApiService,
+            changelogService,
+            clearTables
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ZgwDocumentUploadFieldsDeploymentService::class)
+    fun zgwDocumentUploadFieldsDeploymentService(
+        objectMapper: ObjectMapper,
+        documentenApiUploadFieldRepository: DocumentenApiUploadFieldRepository,
+        documentenApiService: DocumentenApiService,
+        changelogService: ChangelogService,
+        @Value("\${valtimo.changelog.zgw-document-upload-fields.clear-tables:false}") clearTables: Boolean
+    ): ZgwDocumentUploadFieldsDeploymentService {
+        return ZgwDocumentUploadFieldsDeploymentService(
+            objectMapper,
+            documentenApiUploadFieldRepository,
+            documentenApiService,
+            changelogService,
+            clearTables
+        )
     }
 
     @Bean
@@ -210,11 +247,9 @@ class DocumentenApiAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ZgwDocumentListColumnImporter::class)
     fun zgwDocumentListColumnImporter(
-        objectMapper: ObjectMapper,
-        documentenApiColumnRepository: DocumentenApiColumnRepository,
-        documentenApiService: DocumentenApiService,
-    ): ZgwDocumentListColumnImporter =
-        ZgwDocumentListColumnImporter(objectMapper, documentenApiColumnRepository, documentenApiService)
+        deployer: ZgwDocumentListColumnDeploymentService,
+        changelogDeployer: ChangelogDeployer
+    ): ZgwDocumentListColumnImporter = ZgwDocumentListColumnImporter(deployer, changelogDeployer)
 
     @Bean
     @ConditionalOnMissingBean(ZgwDocumentListColumnExporter::class)
@@ -226,11 +261,11 @@ class DocumentenApiAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DocumentenApiUploadFieldImporter::class)
     fun documentenApiUploadFieldImporter(
-        objectMapper: ObjectMapper,
-        documentenApiService: DocumentenApiService,
+        deployer: ZgwDocumentUploadFieldsDeploymentService,
+        changelogDeployer: ChangelogDeployer
     ): DocumentenApiUploadFieldImporter = DocumentenApiUploadFieldImporter(
-        objectMapper,
-        documentenApiService
+        deployer,
+        changelogDeployer
     )
 
     @Bean

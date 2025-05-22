@@ -18,16 +18,17 @@ package com.ritense.formflow.repository
 
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface FormFlowDefinitionRepository : JpaRepository<FormFlowDefinition, FormFlowDefinitionId> {
 
-    fun findAllByIdCaseDefinitionId(caseDefinitionId: CaseDefinitionId): List<FormFlowDefinition>
+    /**
+     *  Find the latest definition by key
+     *
+     * @param formFlowKey The key of the form-flow
+     * @return The FormFlow definition
+     */
+    fun findFirstByIdKeyOrderByIdVersionDesc(formFlowKey: String): FormFlowDefinition?
 
-    fun findAllByIdCaseDefinitionId(caseDefinitionId: CaseDefinitionId, pageable: Pageable): Page<FormFlowDefinition>
-
-    fun deleteAllByIdCaseDefinitionId(caseDefinitionId: CaseDefinitionId)
+    fun deleteAllByIdKey(formFlowKey: String)
 }

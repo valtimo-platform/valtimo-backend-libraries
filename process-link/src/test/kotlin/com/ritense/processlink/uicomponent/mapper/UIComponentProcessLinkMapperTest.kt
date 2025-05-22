@@ -8,7 +8,6 @@ import com.ritense.processlink.uicomponent.dto.UIComponentProcessLinkDeployDto
 import com.ritense.processlink.uicomponent.dto.UIComponentProcessLinkExportResponseDto
 import com.ritense.processlink.uicomponent.dto.UIComponentProcessLinkResponseDto
 import com.ritense.processlink.uicomponent.dto.UIComponentProcessLinkUpdateRequestDto
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.util.UUID
@@ -64,10 +63,7 @@ class UIComponentProcessLinkMapperTest {
     @Test
     fun `should map to new ProcessLink`() {
         val dto = createCreateDto()
-        val processLink = mapper.toNewProcessLink(
-            dto,
-            CaseDefinitionId.of("something", "1.0.0")
-        ) as? UIComponentProcessLink
+        val processLink = mapper.toNewProcessLink(dto) as? UIComponentProcessLink
 
         assertThat(dto).isNotNull
         assertThat(processLink!!.id).isNotNull()
@@ -92,10 +88,7 @@ class UIComponentProcessLinkMapperTest {
             id = processLink.id,
             componentKey = "updatedComponentKey",
         )
-        val dto = mapper.toUpdatedProcessLink(
-            processLink, updateRequestDto,
-            CaseDefinitionId.of("something", "1.0.0")
-        ) as? UIComponentProcessLink
+        val dto = mapper.toUpdatedProcessLink(processLink, updateRequestDto) as? UIComponentProcessLink
 
         assertThat(dto).isNotNull
         assertThat(dto!!.processLinkType).isEqualTo(TYPE_UI_COMPONENT)

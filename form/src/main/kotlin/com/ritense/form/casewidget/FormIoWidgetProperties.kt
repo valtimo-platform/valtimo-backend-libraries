@@ -16,9 +16,11 @@
 
 package com.ritense.form.casewidget
 
+import com.ritense.form.validation.FormDefinitionExists
 import jakarta.validation.constraints.NotBlank
 
 data class FormIoWidgetProperties (
     @field:NotBlank
+    @field:FormDefinitionExists
     val formDefinitionName: String,
 )

@@ -23,7 +23,8 @@ import com.ritense.valtimo.contract.annotation.AllOpen
 import com.ritense.valtimo.contract.event.DocumentDeletedEvent
 import com.ritense.zakenapi.ZakenApiPlugin
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KLogger
+import mu.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.transaction.annotation.Transactional
 
@@ -61,6 +62,6 @@ class ZakenApiDocumentDeletedEventListener(
     }
 
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger: KLogger = KotlinLogging.logger {}
     }
 }

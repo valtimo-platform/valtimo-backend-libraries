@@ -17,7 +17,6 @@
 package com.ritense.formflow.expression
 
 import com.ritense.formflow.BaseIntegrationTest
-import com.ritense.formflow.common.ValtimoFormFlow
 import com.ritense.formflow.expression.spel.SpelExpressionProcessorFactory
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -40,9 +39,8 @@ class ExpressionProcessorFactoryHolderIntTest: BaseIntegrationTest() {
             ExpressionProcessorFactoryHolder.getInstance() as SpelExpressionProcessorFactory
 
         assertNotNull(spelExpressionProcessorFactory.formFlowBeans)
-        assertEquals(2, spelExpressionProcessorFactory.formFlowBeans.size)
+        assertEquals(1, spelExpressionProcessorFactory.formFlowBeans.size)
         assertTrue(spelExpressionProcessorFactory.formFlowBeans["formFlowBeanTestHelper"] is FormFlowBeanTestHelper)
-        assertTrue(spelExpressionProcessorFactory.formFlowBeans["valtimoFormFlow"] is ValtimoFormFlow)
     }
 
     @Test
@@ -68,7 +66,7 @@ class ExpressionProcessorFactoryHolderIntTest: BaseIntegrationTest() {
 
         assertThrows<ExpressionExecutionException> {
             expressionProcessor
-                .process<Any>("\${formFlowService.findByKey(\"inkomens_loket\")}")
+                .process<Any>("\${formFlowService.findLatestDefinitionByKey(\"inkomens_loket\")}")
         }
     }
 

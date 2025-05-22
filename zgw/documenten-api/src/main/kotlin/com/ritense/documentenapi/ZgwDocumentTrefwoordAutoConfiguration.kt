@@ -17,11 +17,15 @@
 package com.ritense.documentenapi
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.documentenapi.deployment.ZgwDocumentTrefwoordDeploymentService
 import com.ritense.documentenapi.repository.ZgwDocumentTrefwoordRepository
 import com.ritense.documentenapi.service.ZgwDocumentTrefwoordExporter
 import com.ritense.documentenapi.service.ZgwDocumentTrefwoordImporter
 import com.ritense.documentenapi.service.ZgwDocumentTrefwoordService
 import com.ritense.documentenapi.web.rest.ZgwDocumentTrefwoordResource
+import com.ritense.valtimo.changelog.service.ChangelogDeployer
+import com.ritense.valtimo.changelog.service.ChangelogService
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -30,6 +34,22 @@ import org.springframework.context.annotation.Bean
 @AutoConfiguration
 @EntityScan(basePackages = ["com.ritense.documentenapi.domain"])
 class ZgwDocumentTrefwoordAutoConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean(ZgwDocumentTrefwoordDeploymentService::class)
+    fun zgwDocumentTrefwoordDeploymentService(
+        objectMapper: ObjectMapper,
+        zgwDocumentTrefwoordRepository: ZgwDocumentTrefwoordRepository,
+        zgwDocumentTrefwoordService: ZgwDocumentTrefwoordService,
+        changelogService: ChangelogService,
+        @Value("\${valtimo.changelog.zgw-document-trefwoord.clear-tables:false}") clearTables: Boolean
+    ) = ZgwDocumentTrefwoordDeploymentService(
+        objectMapper,
+        zgwDocumentTrefwoordRepository,
+        zgwDocumentTrefwoordService,
+        changelogService,
+        clearTables
+    )
 
     @Bean
     @ConditionalOnMissingBean(ZgwDocumentTrefwoordService::class)
@@ -60,13 +80,11 @@ class ZgwDocumentTrefwoordAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ZgwDocumentTrefwoordImporter::class)
     fun zgwDocumentTrefwoordImporter(
-        objectMapper: ObjectMapper,
-        zgwDocumentTrefwoordRepository: ZgwDocumentTrefwoordRepository,
-        zgwDocumentTrefwoordService: ZgwDocumentTrefwoordService,
+        zgwDocumentTrefwoordDeploymentService: ZgwDocumentTrefwoordDeploymentService,
+        changelogDeployer: ChangelogDeployer,
     ) = ZgwDocumentTrefwoordImporter(
-        zgwDocumentTrefwoordRepository,
-        zgwDocumentTrefwoordService,
-        objectMapper
+        zgwDocumentTrefwoordDeploymentService,
+        changelogDeployer
     )
 
 }

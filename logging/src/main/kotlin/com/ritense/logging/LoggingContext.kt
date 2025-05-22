@@ -68,19 +68,19 @@ inline fun <T> withLoggingContext(
     pair: Pair<String, String?>,
     restorePrevious: Boolean = true,
     body: () -> T
-): T = io.github.oshai.kotlinlogging.withLoggingContext(pair, restorePrevious) { catchMdcErrorContext(body) }
+): T = mu.withLoggingContext(pair, restorePrevious) { catchMdcErrorContext(body) }
 
 inline fun <T> withLoggingContext(
     vararg pair: Pair<String, String?>,
     restorePrevious: Boolean = true,
     body: () -> T
-): T = io.github.oshai.kotlinlogging.withLoggingContext(*pair, restorePrevious = restorePrevious) { catchMdcErrorContext(body) }
+): T = mu.withLoggingContext(*pair, restorePrevious = restorePrevious) { catchMdcErrorContext(body) }
 
 inline fun <T> withLoggingContext(
     map: Map<String, String?>,
     restorePrevious: Boolean = true,
     body: () -> T
-): T = io.github.oshai.kotlinlogging.withLoggingContext(map, restorePrevious) { catchMdcErrorContext(body) }
+): T = mu.withLoggingContext(map, restorePrevious) { catchMdcErrorContext(body) }
 
 inline fun <T> withErrorLoggingContext(
     body: () -> T
@@ -89,7 +89,7 @@ inline fun <T> withErrorLoggingContext(
     return if (mdcErrorContext == null) {
         body()
     } else {
-        io.github.oshai.kotlinlogging.withLoggingContext(mdcErrorContext.second, true, body)
+        mu.withLoggingContext(mdcErrorContext.second, true, body)
     }
 }
 

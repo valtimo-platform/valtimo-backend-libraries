@@ -17,8 +17,7 @@
 package com.ritense.zakenapi.uploadprocess
 
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
-import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.zakenapi.BaseIntegrationTest
 import com.ritense.zakenapi.uploadprocess.UploadProcessService.Companion.DOCUMENT_UPLOAD
 import org.junit.jupiter.api.BeforeEach
@@ -40,11 +39,9 @@ class UploadProcessResourceIT : BaseIntegrationTest() {
     lateinit var webApplicationContext: WebApplicationContext
 
     @Autowired
-    lateinit var caseDefinitionProcessLinkService: CaseDefinitionProcessLinkService
+    lateinit var documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService
 
     lateinit var mockMvc: MockMvc
-
-    val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
 
     @BeforeEach
     fun beforeEach() {
@@ -63,8 +60,8 @@ class UploadProcessResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should respond with process-case-link when one has been configured`() {
-        caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-            caseDefinitionId,
+        documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+            CASE_DEFINITION_KEY,
             DocumentDefinitionProcessRequest(
                 UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY,
                 DOCUMENT_UPLOAD

@@ -55,8 +55,6 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
-import org.springframework.http.HttpHeaders.CONTENT_TYPE
-import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.ClientRequest
@@ -603,7 +601,6 @@ DocumentenApiClientTest {
     @Test
     fun `should send patch document object request and send event`() {
         val restClientBuilder = RestClient.builder()
-            .defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
         val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock(), authorizationService)
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 

@@ -1,0 +1,12 @@
+[
+    {
+        "processDefinitionKey": "lening-aanvragen",
+        "canInitializeDocument": true,
+        "startableByUser": true
+    },
+    {
+        "processDefinitionKey": "form-flow-process",
+        "canInitializeDocument": false,
+        "startableByUser": true
+    }
+]

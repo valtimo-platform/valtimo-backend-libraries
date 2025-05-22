@@ -16,7 +16,6 @@
 
 package com.ritense.outbox
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import liquibase.Contexts
 import liquibase.Liquibase
 import liquibase.database.DatabaseFactory
@@ -24,6 +23,7 @@ import liquibase.database.jvm.JdbcConnection
 import liquibase.exception.DatabaseException
 import liquibase.exception.LiquibaseException
 import liquibase.resource.ClassLoaderResourceAccessor
+import mu.KotlinLogging
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties
 import java.sql.SQLException

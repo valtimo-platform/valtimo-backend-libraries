@@ -19,12 +19,17 @@ package com.ritense.plugin.autodeployment
 
 import com.ritense.plugin.BaseIntegrationTest
 import com.ritense.plugin.service.PluginConfigurationSearchParameters
+import com.ritense.plugin.service.PluginService
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class PluginAutoDeploymentEventListenerIntTest: BaseIntegrationTest() {
+
+    @Autowired
+    lateinit var pluginService : PluginService
 
     @Test
     fun `should deploy plugin configuration`(){

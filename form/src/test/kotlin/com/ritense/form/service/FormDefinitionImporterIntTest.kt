@@ -21,7 +21,6 @@ import com.ritense.form.BaseIntegrationTest
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.repository.FormDefinitionRepository
 import com.ritense.importer.ImportRequest
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -64,12 +63,8 @@ class FormDefinitionImporterIntTest @Autowired constructor(
 
     @Test
     fun `shouldImportFormDefinition`() {
-        val validPath = "/form/importer-example.json"
-        val request = ImportRequest(
-            validPath,
-            formDefinition.encodeToByteArray(),
-            CaseDefinitionId.of("person", "1.0.0")
-        )
+        val validPath = "config/form/importer-example.json"
+        val request = ImportRequest(validPath, formDefinition.encodeToByteArray())
 
         formDefinitionImporter.import(request)
         val formIoFormDefinition = formDefinitionService.getFormDefinitionByName("importer-example")

@@ -86,12 +86,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
 
         documentId = AuthorizationContext.runWithoutAuthorization {
             documentService.createDocument(
-                NewDocumentRequest(
-                    PROFILE_DOCUMENT_DEFINITION_NAME,
-                    "profile",
-                    "1.0.0",
-                    objectMapper.createObjectNode()
-                )
+                NewDocumentRequest(PROFILE_DOCUMENT_DEFINITION_NAME, objectMapper.createObjectNode())
             ).resultingDocument().get().id()!!.id
         }
         whenever(userManagementService.currentUser)
