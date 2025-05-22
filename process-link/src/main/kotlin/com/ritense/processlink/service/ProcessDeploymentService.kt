@@ -46,14 +46,6 @@ class ProcessDeploymentService(
         canInitializeDocument: Boolean,
         startableByUser: Boolean
     ) {
-        val currentProcessDefinition = if (processDefinitionId !== null) {
-            runWithoutAuthorization {
-                camundaProcessService.getProcessDefinitionById(processDefinitionId)
-            }
-        } else {
-            null
-        }
-
         val deployedProcessDefinitionId = deployProcessDefinitionAndProcessLinks(
             caseDefinitionId,
             bpmn,
