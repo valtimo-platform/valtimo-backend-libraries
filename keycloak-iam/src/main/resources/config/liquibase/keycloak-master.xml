@@ -20,6 +20,6 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <include file="changelog/20240116-migrate-task-assignee-email-to-user-id.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20250506-migrate-to-keycloak-username.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

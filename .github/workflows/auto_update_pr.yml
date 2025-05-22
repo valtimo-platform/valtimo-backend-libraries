@@ -1,0 +1,18 @@
+name: Auto-update PRs when their target branch is updated
+on: push # Triggers on all branches. So any time a PR's target branch updates, the PR gets updated as well
+jobs:
+    autoupdate:
+        name: autoupdate
+        runs-on: ubuntu-22.04
+        steps:
+            - name: Generate token as GitHub App
+              id: generate_token
+              uses: tibdex/github-app-token@v2
+              with:
+                  app_id: ${{ secrets.VALTIMO_PLATFORM_APP_APPID }}
+                  private_key: ${{ secrets.VALTIMO_PLATFORM_APP_PRIVATE_KEY }}
+            - uses: docker://chinthakagodawita/autoupdate-action:v1
+              with:
+                  include_drafts: true
+              env:
+                  GITHUB_TOKEN: "${{ steps.generate_token.outputs.token }}"

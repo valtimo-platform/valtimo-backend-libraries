@@ -143,7 +143,9 @@ public class ValtimoAutoConfiguration {
         final AuthorizationService authorizationService,
         final CamundaExecutionRepository camundaExecutionRepository,
         final ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker,
-        final CamundaByteArrayService camundaByteArrayService
+        final CamundaByteArrayService camundaByteArrayService,
+        final ApplicationEventPublisher applicationEventPublisher
+
     ) {
         return new CamundaProcessService(
             runtimeService,
@@ -157,7 +159,8 @@ public class ValtimoAutoConfiguration {
             authorizationService,
             camundaExecutionRepository,
             processDefinitionCaseDefinitionLinker,
-            camundaByteArrayService
+            camundaByteArrayService,
+            applicationEventPublisher
         );
     }
 

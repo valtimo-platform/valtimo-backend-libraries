@@ -25,7 +25,6 @@ import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.exception.BpmnParseException
 import com.ritense.valtimo.service.CamundaProcessService
 import org.camunda.bpm.engine.ParseException
-import org.camunda.bpm.engine.repository.Deployment
 import org.camunda.bpm.model.bpmn.Bpmn
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -64,12 +63,12 @@ class ProcessDeploymentService(
 
         runWithoutAuthorization {
             val processIdToUpdate = if (deployedProcessDefinitionId != null) {
-                    deployedProcessDefinitionId
-                } else {
-                    val model = Bpmn.readModelFromStream(bpmn!!.inputStream)
-                    val previouslyDeployProcess = camundaProcessService.getExistingProcessForFile(caseDefinitionId, model)
-                    ProcessDefinitionId(previouslyDeployProcess.id)
-                }
+                deployedProcessDefinitionId
+            } else {
+                val model = Bpmn.readModelFromStream(bpmn!!.inputStream)
+                val previouslyDeployProcess = camundaProcessService.getExistingProcessForFile(caseDefinitionId, model)
+                ProcessDefinitionId(previouslyDeployProcess.id)
+            }
 
             if (processIdToUpdate != null) {
                 processDefinitionCaseDefinitionService.createProcessDocumentDefinition(
@@ -80,16 +79,6 @@ class ProcessDeploymentService(
                         startableByUser = startableByUser
                     )
                 )
-            }
-
-            // If deployment of process definition has been successful, delete the previous and its links
-            if (currentProcessDefinition != null && deployedProcessDefinitionId != null) {
-                processDefinitionCaseDefinitionService.deleteProcessDefinitionCaseDefinition(
-                    ProcessDefinitionId(currentProcessDefinition.id),
-                    caseDefinitionId
-                )
-                processLinkService.deleteProcessLinksForProcessDefinition(currentProcessDefinition.id)
-                runWithoutAuthorization { camundaProcessService.deleteProcessDefinition(currentProcessDefinition.id) }
             }
         }
     }

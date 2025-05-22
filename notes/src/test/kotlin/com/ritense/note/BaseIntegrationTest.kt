@@ -91,7 +91,7 @@ abstract class BaseIntegrationTest {
                 action = MODIFY,
                 conditionContainer = ConditionContainer(
                     listOf(
-                        FieldPermissionCondition("createdByUserId", PermissionConditionOperator.EQUAL_TO, "\${currentUserId}")
+                        FieldPermissionCondition("createdByUserId", PermissionConditionOperator.EQUAL_TO, "\${currentUsername}")
                     )
                 ),
                 role = role2
@@ -101,7 +101,7 @@ abstract class BaseIntegrationTest {
                 action = DELETE,
                 conditionContainer = ConditionContainer(
                     listOf(
-                        FieldPermissionCondition("createdByUserId", PermissionConditionOperator.EQUAL_TO, "\${currentUserId}")
+                        FieldPermissionCondition("createdByUserId", PermissionConditionOperator.EQUAL_TO, "\${currentUsername}")
                     )
                 ),
                 role = role2

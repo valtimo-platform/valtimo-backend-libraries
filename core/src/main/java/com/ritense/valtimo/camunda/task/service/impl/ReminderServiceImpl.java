@@ -73,7 +73,7 @@ public class ReminderServiceImpl implements ReminderService {
                         );
                         authUser.getRoles().forEach(role ->
                             reminderNotification.assignRoleBasedTasks(findRoleBasesTasksFor(role)));
-                        reminderNotification.assignAssignedTasks(findAssignedTasksFor(authUser.getUserIdentifier()));
+                        reminderNotification.assignAssignedTasks(findAssignedTasksFor(authUser.getUsername()));
                         reminderNotification.asTemplatedMailMessage().ifPresent(mailSender::send);
                     })
             );
