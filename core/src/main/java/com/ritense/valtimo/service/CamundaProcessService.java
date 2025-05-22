@@ -44,6 +44,7 @@ import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService;
 import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import com.ritense.valtimo.contract.config.ValtimoProperties;
+import com.ritense.valtimo.event.ProcessDefinitionDeleted;
 import com.ritense.valtimo.exception.FileExtensionNotSupportedException;
 import com.ritense.valtimo.exception.NoFileExtensionFoundException;
 import com.ritense.valtimo.exception.ProcessDefinitionNotFoundException;
@@ -92,6 +93,7 @@ import org.camunda.bpm.model.dmn.DmnModelInstance;
 import org.camunda.bpm.model.dmn.instance.Decision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -114,6 +116,7 @@ public class CamundaProcessService {
     private final AuthorizationService authorizationService;
     private final ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker;
     private final CamundaByteArrayService camundaByteArrayService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     private final CamundaExecutionRepository camundaExecutionRepository;
 
@@ -129,7 +132,8 @@ public class CamundaProcessService {
         AuthorizationService authorizationService,
         CamundaExecutionRepository camundaExecutionRepository,
         ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker,
-        CamundaByteArrayService camundaByteArrayService
+        CamundaByteArrayService camundaByteArrayService,
+        ApplicationEventPublisher applicationEventPublisher
     ) {
         this.runtimeService = runtimeService;
         this.camundaRuntimeService = camundaRuntimeService;
@@ -143,6 +147,7 @@ public class CamundaProcessService {
         this.camundaExecutionRepository = camundaExecutionRepository;
         this.processDefinitionCaseDefinitionLinker = processDefinitionCaseDefinitionLinker;
         this.camundaByteArrayService = camundaByteArrayService;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     public CamundaProcessDefinition findProcessDefinitionById(String processDefinitionId) {
@@ -370,7 +375,10 @@ public class CamundaProcessService {
     public List<CamundaProcessDefinition> getUnlinkedDeployedDefinitions() {
         denyAuthorization();
         return AuthorizationContext.runWithoutAuthorization(() ->
-            camundaRepositoryService.findProcessDefinitions(byActive().and(byNotLinkedToCaseDefinition()), Sort.by(NAME)).stream()
+            camundaRepositoryService.findProcessDefinitions(
+                    byActive().and(byNotLinkedToCaseDefinition()),
+                    Sort.by(NAME)
+                ).stream()
                 .collect(Collectors.groupingBy(
                     CamundaProcessDefinition::getKey,
                     Collectors.maxBy(Comparator.comparing(CamundaProcessDefinition::getVersion))
@@ -492,6 +500,13 @@ public class CamundaProcessService {
 
             if (isProcessDefinitionPreviouslyDeployed(caseDefinitionId, bpmnModel)) {
                 return null;
+            }
+
+            CamundaProcessDefinition latestProcessDefinition = getExistingProcessForFile(caseDefinitionId, bpmnModel);
+            if (latestProcessDefinition != null) {
+                // clean up previous process definition, can only be triggered when we're deploying a draft version
+                applicationEventPublisher.publishEvent(new ProcessDefinitionDeleted(latestProcessDefinition.getId(), caseDefinitionId));
+                repositoryService.deleteProcessDefinition(latestProcessDefinition.getId(), true);
             }
 
             var deploymentBuilder = repositoryService.createDeployment()
