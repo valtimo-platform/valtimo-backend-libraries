@@ -44,6 +44,6 @@ class BaseIntegrationTest {
     @MockitoBean
     lateinit var pluginProcessLinkRepository: PluginProcessLinkRepository
 
-    @MockBean
+    @MockitoBean
     lateinit var historyService: HistoryService
 }
