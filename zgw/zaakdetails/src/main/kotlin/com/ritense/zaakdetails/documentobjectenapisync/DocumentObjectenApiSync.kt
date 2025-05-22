@@ -16,9 +16,7 @@
 
 package com.ritense.zaakdetails.documentobjectenapisync
 
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import jakarta.persistence.Column
-import jakarta.persistence.Embedded
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
@@ -32,8 +30,11 @@ data class DocumentObjectenApiSync(
     @Column(name = "id")
     val id: UUID = UUID.randomUUID(),
 
-    @Embedded
-    val caseDefinitionId: CaseDefinitionId,
+    @Column(name = "document_definition_name")
+    val documentDefinitionName: String,
+
+    @Column(name = "document_definition_version")
+    val documentDefinitionVersion: Long,
 
     @Column(name = "object_management_configuration_id")
     val objectManagementConfigurationId: UUID,

@@ -17,8 +17,9 @@
 package com.ritense.valtimo.contract.validation
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.Validator
+import mu.KLogger
+import mu.KotlinLogging
 
 interface Validatable {
 
@@ -29,7 +30,7 @@ interface Validatable {
     }
 
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger: KLogger = KotlinLogging.logger {}
 
         @Deprecated("This method has been moved to ValidatorHolder", ReplaceWith("ValidatorHolder.getValidator()"))
         fun getValidator(): Validator {

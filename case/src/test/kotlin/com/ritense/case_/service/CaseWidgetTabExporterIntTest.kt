@@ -17,10 +17,12 @@
 package com.ritense.case_.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.BaseIntegrationTest
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.case.BaseIntegrationTest
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
@@ -40,18 +42,26 @@ class CaseWidgetTabExporterIntTest @Autowired constructor(
     fun `should export list columns for case definition`(): Unit = AuthorizationContext.runWithoutAuthorization {
         val caseDefinitionName = "some-other-case-type"
 
-        val request = DocumentDefinitionExportRequest(caseDefinitionName, CaseDefinitionId("some-other-case-type", "1.1.1"))
+        val request = DocumentDefinitionExportRequest(caseDefinitionName, 1)
         val exportResult = exporter.export(request)
 
-        val path = PATH.format(caseDefinitionName, "1-1-1", caseDefinitionName)
+        val path = PATH.format(caseDefinitionName)
         val caseWidgetTabsExport = exportResult.exportFiles.singleOrNull {
             it.path == path
         }
         requireNotNull(caseWidgetTabsExport)
         val exportJson = objectMapper.readTree(caseWidgetTabsExport.content)
 
+        //Check if the changesetId ends with a timestamp
+        val changesetIdField = "changesetId"
+        val changesetRegex = """(some-other-case-type\.case-widget-tab)\.\d+""".toRegex()
+        val matchResult = changesetRegex.matchEntire(exportJson.get(changesetIdField).textValue())
+        assertThat(matchResult).isNotNull
+
+        //Remove the timestamp from the changesetId, so we can compare it as usual
+        (exportJson as ObjectNode).set<TextNode>(changesetIdField, TextNode(matchResult!!.groupValues[1]))
         val expectedJson = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
-            .getResource("classpath:config/case/$caseDefinitionName/1-1-1/case/widget-tab/some-widget-tab.case-widget-tab.json")
+            .getResource("classpath:config/case-tabs/$caseDefinitionName.case-widget-tab.json")
             .inputStream
             .use { inputStream ->
                 StreamUtils.copyToString(inputStream, Charsets.UTF_8)
@@ -59,11 +69,11 @@ class CaseWidgetTabExporterIntTest @Autowired constructor(
         JSONAssert.assertEquals(
             expectedJson,
             objectMapper.writeValueAsString(exportJson),
-            JSONCompareMode.LENIENT
+            JSONCompareMode.NON_EXTENSIBLE
         )
     }
 
     companion object {
-        private const val PATH = "config/case/%s/%s/case/widget-tab/%s.case-widget-tab.json"
+        private const val PATH = "config/case-widget-tab/%s.case-widget-tab.json"
     }
 }

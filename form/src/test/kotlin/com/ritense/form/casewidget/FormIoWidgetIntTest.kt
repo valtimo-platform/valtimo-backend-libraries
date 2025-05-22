@@ -26,7 +26,6 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.form.BaseIntegrationTest
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -65,14 +64,7 @@ class FormIoWidgetIntTest @Autowired constructor(
         val widgetKey = "my-widget"
         val documentId = runWithoutAuthorization {
             createCaseWidgetTab(caseDefinitionName, tabKey, widgetKey)
-            documentService.createDocument(
-                NewDocumentRequest(
-                    caseDefinitionName,
-                    "person",
-                    "1.0.0",
-                    MapperSingleton.get().createObjectNode()
-                )
-            ).resultingDocument().get().id()
+            documentService.createDocument(NewDocumentRequest(caseDefinitionName, MapperSingleton.get().createObjectNode())).resultingDocument().get().id()
         }
         mockMvc.perform(
             get("/api/v1/document/{documentId}/widget-tab/{tabKey}", documentId, tabKey)
@@ -92,14 +84,7 @@ class FormIoWidgetIntTest @Autowired constructor(
         val widgetKey = "my-widget"
         val documentId = runWithoutAuthorization {
             createCaseWidgetTab(caseDefinitionName, tabKey, widgetKey)
-            documentService.createDocument(
-                NewDocumentRequest(
-                    caseDefinitionName,
-                    "person",
-                    "1.0.0",
-                    MapperSingleton.get().createObjectNode()
-                )
-            ).resultingDocument().get().id()
+            documentService.createDocument(NewDocumentRequest(caseDefinitionName, MapperSingleton.get().createObjectNode())).resultingDocument().get().id()
         }
         mockMvc.perform(
             get("/api/v1/document/{documentId}/widget-tab/{tabKey}/widget/{widgetKey}", documentId, tabKey, widgetKey)
@@ -115,14 +100,10 @@ class FormIoWidgetIntTest @Autowired constructor(
         tabKey: String,
         widgetKey: String
     ): CaseWidgetTabDto {
-        tabService.createCaseTab(
-            CaseDefinitionId.of(caseDefinitionName, "1.0.0"),
-            CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-")
-        )
+        tabService.createCaseTab(caseDefinitionName, CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-"))
         return widgetTabService.updateWidgetTab(
             CaseWidgetTabDto(
-                caseDefinitionKey = caseDefinitionName,
-                caseDefinitionVersionTag = "1.0.0",
+                caseDefinitionName = caseDefinitionName,
                 key = tabKey,
                 widgets = listOf(
                     FormIoCaseWidgetDto(

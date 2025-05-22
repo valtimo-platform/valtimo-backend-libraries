@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.contract.authorization
+package com.ritense.authorization
 
 import com.ritense.valtimo.contract.authentication.UserManagementService
 

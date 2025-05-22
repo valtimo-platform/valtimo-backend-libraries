@@ -1,0 +1,150 @@
+{
+    "display": "form",
+    "settings": {
+        "pdf": {
+            "id": "1ec0f8ee-6685-5d98-a847-26f67b67d6f0",
+            "src": "https://files.form.io/pdf/5692b91fd1028f01000407e3/file/1ec0f8ee-6685-5d98-a847-26f67b67d6f0"
+        }
+    },
+    "components": [
+        {
+            "label": "Naam behandelaar",
+            "key": "naamBehandelaar",
+            "type": "textfield",
+            "defaultValue": "Tim",
+            "input": true,
+            "validate": {
+                "required": true
+            }
+        },
+        {
+            "label": "E-mailadres behandelaar",
+            "tableView": true,
+            "key": "e-mailBehandelaar",
+            "type": "email",
+            "defaultValue": "tim@test.nl",
+            "input": true
+        },
+        {
+            "label": "Voornaam indiener",
+            "key": "voornaam",
+            "type": "textfield",
+            "disabled": true,
+            "input": true
+        },
+        {
+            "label": "Achternaam indiener",
+            "key": "achternaam",
+            "type": "textfield",
+            "disabled": true,
+            "input": true
+        },
+        {
+            "label": "E-mailadres indiener",
+            "tableView": true,
+            "key": "e-mailadres",
+            "type": "email",
+            "disabled": true,
+            "input": true
+        },
+        {
+            "label": "Referentie zaaknummer",
+            "key": "zaaknummer",
+            "type": "textfield",
+            "disabled": true,
+            "input": true
+        },
+        {
+            "label": "Wat is uw bezwaar?",
+            "autoExpand": false,
+            "tableView": true,
+            "key": "bezwaar",
+            "type": "textarea",
+            "disabled": true,
+            "input": true
+        },
+        {
+            "label": "Omschrijving van de beslissing",
+            "autoExpand": false,
+            "tableView": true,
+            "defaultValue": "beslissing",
+            "key": "beslissingBezwaar",
+            "type": "textarea",
+            "input": true
+        },
+        {
+            "label": "Kan je een besluit nemen?",
+            "optionsLabelPosition": "right",
+            "inline": false,
+            "tableView": false,
+            "values": [
+                {
+                    "label": "Ja",
+                    "value": true,
+                    "shortcut": ""
+                },
+                {
+                    "label": "Nee",
+                    "value": false,
+                    "shortcut": ""
+                }
+            ],
+            "key": "besluitGenomen",
+            "type": "radio",
+            "input": true
+        },
+        {
+            "label": "gegrond",
+            "optionsLabelPosition": "right",
+            "inline": false,
+            "hidden": true,
+            "clearOnHide": false,
+            "tableView": false,
+            "defaultValue": true,
+            "values": [
+                {
+                    "label": "ja",
+                    "value": true,
+                    "shortcut": ""
+                }
+            ],
+            "key": "gegrond",
+            "type": "radio",
+            "input": true
+        },
+        {
+            "label": "Is het bezwaar gegrond?",
+            "optionsLabelPosition": "right",
+            "inline": false,
+            "tableView": false,
+            "values": [
+                {
+                    "label": "ja",
+                    "value": true,
+                    "shortcut": ""
+                },
+                {
+                    "label": "nee",
+                    "value": false,
+                    "shortcut": ""
+                }
+            ],
+            "key": "gegrond",
+            "conditional": {
+                "show": true,
+                "when": "besluitGenomen",
+                "eq": "true"
+            },
+            "type": "radio",
+            "input": true
+        },
+        {
+            "type": "button",
+            "label": "Submit",
+            "key": "submit",
+            "disableOnInvalid": true,
+            "input": true,
+            "tableView": false
+        }
+    ]
+}

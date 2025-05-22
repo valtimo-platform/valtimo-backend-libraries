@@ -88,8 +88,6 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
             "delete-processes",
             NewDocumentRequest(
                 "house",
-                "house",
-                "1.0.0",
                 objectMapper.readTree(documentJson)
             )
         )
@@ -106,12 +104,7 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
     fun `should start process by process definition key`() {
         document = runWithoutAuthorization {
             documentService.createDocument(
-                NewDocumentRequest(
-                    "house",
-                    "house",
-                    "1.0.0",
-                    objectMapper.readTree(documentJson)
-                )
+                NewDocumentRequest("house", objectMapper.readTree(documentJson))
             ).resultingDocument().orElseThrow()
         }
         val processInstance = runtimeService.startProcessInstanceByKey(
@@ -160,12 +153,7 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
     fun `should fail to start process with non existing process definition key`() {
         document = runWithoutAuthorization {
             documentService.createDocument(
-                NewDocumentRequest(
-                    "house",
-                    "house",
-                    "1.0.0",
-                    objectMapper.readTree(documentJson)
-                )
+                NewDocumentRequest("house", objectMapper.readTree(documentJson))
             ).resultingDocument().orElseThrow()
         }
         val exception = assertThrows<ProcessEngineException> {

@@ -23,7 +23,7 @@ import com.ritense.objectmanagement.domain.ObjectManagementConfigurationAutoDepl
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.event.EventListener

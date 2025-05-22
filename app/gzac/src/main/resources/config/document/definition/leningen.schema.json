@@ -1,0 +1,45 @@
+{
+    "$id": "leningen.schema",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Leningen",
+    "type": "object",
+    "properties": {
+        "voornaam": {
+            "type": "string",
+            "description": "Voornaam",
+            "maxLength": 9
+        },
+        "achternaam": {
+            "type": "string",
+            "description": "Achternaam",
+            "maxLength": 50
+        },
+        "emailadres": {
+            "type": "string",
+            "description": "Emailadres",
+            "maxLength": 100
+        },
+        "jaar-omzet": {
+            "type": "string",
+            "description": "Jaar omzet"
+        },
+        "leen-bedrag": {
+            "type": "string",
+            "description": "Te lenen bedrag"
+        },
+        "lening-startdatum": {
+            "type": "string",
+            "description": "Startdatum van de lening"
+        },
+        "lening-akkoord": {
+            "type": "boolean",
+            "description": "Akkoord op lening?"
+        },
+        "bijlagen": {
+            "type": "array",
+            "items": {
+                "$ref": "formio-file.schema.json"
+            }
+        }
+    }
+}

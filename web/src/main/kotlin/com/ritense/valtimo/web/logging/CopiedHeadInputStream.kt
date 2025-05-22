@@ -16,7 +16,7 @@
 
 package com.ritense.valtimo.web.logging
 
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KotlinLogging
 import java.io.IOException
 import java.io.InputStream
 

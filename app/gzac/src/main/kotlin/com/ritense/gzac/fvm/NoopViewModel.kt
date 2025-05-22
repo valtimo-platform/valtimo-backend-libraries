@@ -19,7 +19,8 @@ package com.ritense.gzac.fvm
 import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.formviewmodel.viewmodel.ViewModel
 import com.ritense.valtimo.camunda.domain.CamundaTask
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KLogger
+import mu.KotlinLogging
 
 class NoopViewModel : ViewModel, Submission {
 
@@ -30,6 +31,6 @@ class NoopViewModel : ViewModel, Submission {
     }
 
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger: KLogger = KotlinLogging.logger {}
     }
 }

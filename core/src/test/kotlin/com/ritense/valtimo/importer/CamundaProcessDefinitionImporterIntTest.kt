@@ -19,7 +19,6 @@ package com.ritense.valtimo.importer
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.importer.ImportRequest
 import com.ritense.valtimo.BaseIntegrationTest
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.exception.FileExtensionNotSupportedException
 import com.ritense.valtimo.service.CamundaProcessService
 import org.assertj.core.api.Assertions.assertThat
@@ -39,9 +38,9 @@ class CamundaProcessDefinitionImporterIntTest @Autowired constructor(
 ) : BaseIntegrationTest() {
     @Test
     fun `should import process definition with bpmn extension`() {
-        val validPath = "/bpmn/shouldDeploy.bpmn"
+        val validPath = "bpmn/shouldDeploy.bpmn"
         val request = processDefinition.inputStream.use {
-            ImportRequest(validPath, it.readAllBytes(), CaseDefinitionId.of("everything", "1.0.0"))
+            ImportRequest(validPath, it.readAllBytes())
         }
 
         runWithoutAuthorization {
@@ -55,7 +54,7 @@ class CamundaProcessDefinitionImporterIntTest @Autowired constructor(
 
     @Test
     fun `should not import process definition with xml extension`() {
-        val validPath = "/bpmn/shouldDeploy.xml"
+        val validPath = "bpmn/shouldDeploy.xml"
         val request = processDefinition.inputStream.use {
             ImportRequest(validPath, it.readAllBytes())
         }

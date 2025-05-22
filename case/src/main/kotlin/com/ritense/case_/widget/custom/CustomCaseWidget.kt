@@ -42,14 +42,4 @@ class CustomCaseWidget(
     val properties: CustomWidgetProperties
 ) : CaseWidgetTabWidget(
     id, title, order, width, highContrast, actions
-) {
-    override fun copy(id: CaseWidgetTabWidgetId) = CustomCaseWidget(
-        id = id,
-        title = title,
-        order = order,
-        width = width,
-        highContrast = highContrast,
-        actions = actions,
-        properties = properties
-    )
-}
+)

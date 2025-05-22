@@ -20,15 +20,13 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentService
-import com.ritense.processdocument.domain.ProcessDefinitionId
-import com.ritense.processdocument.domain.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
-import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
-import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
+import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
+import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
+import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.domain.TemporaryResourceUploadedEvent
 import com.ritense.resource.service.TemporaryResourceStorageService
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.zakenapi.BaseIntegrationTest
 import com.ritense.zakenapi.uploadprocess.UploadProcessService.Companion.DOCUMENT_UPLOAD
 import com.ritense.zakenapi.uploadprocess.UploadProcessService.Companion.RESOURCE_ID_PROCESS_VAR
@@ -47,25 +45,23 @@ class ResourceUploadedToDocumentSseEventMapperIT @Autowired constructor(
     private val temporaryResourceStorageService: TemporaryResourceStorageService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val historyService: HistoryService,
-    private val processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
-    private val caseDefinitionProcessLinkService: CaseDefinitionProcessLinkService,
+    private val processDocumentAssociationService: ProcessDocumentAssociationService,
+    private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
     private val objectMapper: ObjectMapper,
 ): BaseIntegrationTest() {
-
-    val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
 
     @BeforeEach
     fun beforeEach() {
         runWithoutAuthorization {
-            processDefinitionCaseDefinitionService.createProcessDocumentDefinition(
+            processDocumentAssociationService.createProcessDocumentDefinition(
                 ProcessDocumentDefinitionRequest(
-                    ProcessDefinitionId(UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY),
-                    caseDefinitionId,
+                    UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY,
+                    DOCUMENT_DEFINITION_KEY,
                     true
                 )
             )
-            caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-                caseDefinitionId,
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                DOCUMENT_DEFINITION_KEY,
                 DocumentDefinitionProcessRequest(
                     UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY,
                     DOCUMENT_UPLOAD
@@ -80,8 +76,6 @@ class ResourceUploadedToDocumentSseEventMapperIT @Autowired constructor(
             documentService.createDocument(
                 NewDocumentRequest(
                     DOCUMENT_DEFINITION_KEY,
-                    "profile",
-                    "1.0.0",
                     objectMapper.createObjectNode()
                 )
             ).resultingDocument().get().id!!.id.toString()
@@ -102,8 +96,6 @@ class ResourceUploadedToDocumentSseEventMapperIT @Autowired constructor(
             documentService.createDocument(
                 NewDocumentRequest(
                     DOCUMENT_DEFINITION_KEY,
-                    "profile",
-                    "1.0.0",
                     objectMapper.createObjectNode()
                 )
             ).resultingDocument().get().id!!.id.toString()

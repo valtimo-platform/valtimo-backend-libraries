@@ -47,10 +47,9 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-validation"
     implementation "org.springframework.boot:spring-boot-starter-security"
 
-    implementation "io.github.oshai:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
 
-    testImplementation(project(":core"))
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
     testImplementation "org.jetbrains.kotlin:kotlin-test"

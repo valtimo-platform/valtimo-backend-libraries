@@ -26,8 +26,7 @@ import com.ritense.documentenapi.domain.DocumentenApiColumnKey.TITEL
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
-import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import org.hamcrest.Matchers.containsInRelativeOrder
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -58,14 +57,12 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
     lateinit var objectMapper: ObjectMapper
 
     @Autowired
-    lateinit var caseDefinitionProcessLinkService: CaseDefinitionProcessLinkService
+    lateinit var documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService
 
     @Autowired
     lateinit var documentenApiColumnRepository: DocumentenApiColumnRepository
 
     lateinit var mockMvc: MockMvc
-
-    private val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
 
     @BeforeEach
     fun beforeEach() {
@@ -77,8 +74,8 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
     @Test
     fun `should get a list of all Documenten API column keys`() {
         runWithoutAuthorization {
-            caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-                caseDefinitionId,
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                "profile",
                 DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
             )
         }
@@ -99,8 +96,8 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
     @Test
     fun `should get a list of ordered Documenten API columns`() {
         runWithoutAuthorization {
-            caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-                caseDefinitionId,
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                "profile",
                 DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
             )
         }
@@ -132,8 +129,8 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
     @Test
     fun `should reorder list of Documenten API columns`() {
         runWithoutAuthorization {
-            caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-                caseDefinitionId,
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                "profile",
                 DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
             )
         }
@@ -178,8 +175,8 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
     @Test
     fun `should update Documenten API column`() {
         runWithoutAuthorization {
-            caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-                caseDefinitionId,
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                "profile",
                 DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
             )
         }
@@ -213,8 +210,8 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
     @Test
     fun `should delete Documenten API column`() {
         runWithoutAuthorization {
-            caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-                caseDefinitionId,
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                "profile",
                 DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
             )
             documentenApiService.createOrUpdateColumn(
@@ -238,8 +235,8 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
     @Test
     fun `should get API version`() {
         runWithoutAuthorization {
-            caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-                caseDefinitionId,
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                "profile",
                 DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
             )
         }

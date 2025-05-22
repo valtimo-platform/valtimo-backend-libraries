@@ -18,10 +18,6 @@ package com.ritense.processlink.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.processdocument.domain.ProcessDefinitionId
-import com.ritense.processdocument.domain.ProcessDocumentDefinitionRequest
-import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.processlink.BaseIntegrationTest
 import com.ritense.processlink.autodeployment.ProcessLinkDeploymentApplicationReadyEventListener
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
@@ -29,13 +25,9 @@ import com.ritense.processlink.domain.TestProcessLink
 import com.ritense.processlink.domain.TestProcessLinkCreateRequestDto
 import com.ritense.processlink.domain.TestProcessLinkUpdateRequestDto
 import com.ritense.processlink.repository.ProcessLinkRepository
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
-import com.ritense.valtimo.contract.domain.ValtimoMediaType
-import com.ritense.valtimo.service.CamundaProcessService
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.semver4j.Semver
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockMultipartFile
@@ -45,25 +37,20 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
-import java.io.ByteArrayInputStream
 import java.nio.charset.StandardCharsets
 import java.util.UUID
-import kotlin.test.assertEquals
 
 
 @Transactional
 internal class ProcessLinkResourceIT @Autowired constructor(
     private val webApplicationContext: WebApplicationContext,
     private val processLinkRepository: ProcessLinkRepository,
-    private val camundaProcessService: CamundaProcessService,
-    private val listener: ProcessLinkDeploymentApplicationReadyEventListener,
-    private val processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
+    private val listener: ProcessLinkDeploymentApplicationReadyEventListener
 ) : BaseIntegrationTest() {
 
     lateinit var mockMvc: MockMvc
@@ -175,65 +162,6 @@ internal class ProcessLinkResourceIT @Autowired constructor(
     }
 
     @Test
-    fun `should get the processes for a case definition`() {
-        val caseDefinitionId = CaseDefinitionId("autodeploy", "1.0.0")
-        val bpmnFile =
-            """
-        <?xml version="1.0" encoding="UTF-8"?>
-        <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
-                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                     xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd"
-                     targetNamespace="http://camunda.org/examples">
-            <process id="test-process-2" name="Test Process 2">
-                <startEvent id="start" />
-                <endEvent id="end" />
-            </process>
-        </definitions>
-        """.trimIndent().toByteArray()
-
-        runWithoutAuthorization {
-            // deplot process
-            camundaProcessService.deploy(caseDefinitionId, "test-process.bpmn", ByteArrayInputStream(bpmnFile))
-
-            val procdef = camundaProcessService.getProcessDefinition("test-process-2")
-
-            // add process links
-            processLinkRepository.save(TestProcessLink(UUID.randomUUID(), procdef.id, "start", SERVICE_TASK_START))
-
-            processDefinitionCaseDefinitionService.createProcessDocumentDefinition(
-                ProcessDocumentDefinitionRequest(
-                    processDefinitionId = ProcessDefinitionId(procdef.id),
-                    caseDefinitionId = caseDefinitionId,
-                    canInitializeDocument = true,
-                    startableByUser = true
-                )
-            )
-        }
-
-        mockMvc.perform(
-            get("/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/process-definition", "autodeploy", "1.0.0")
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-        )
-        .andDo(print())
-        .andExpect(status().isOk)
-        .andExpect(content().contentType(ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE))
-        .andExpect(jsonPath("$").isArray)
-        .andExpect(jsonPath("$[5].processDefinition.id").isNotEmpty())
-        .andExpect(jsonPath("$[5].processDefinition.key").value("test-process-2"))
-        .andExpect(jsonPath("$[5].processDefinition.name").value("Test Process 2"))
-        .andExpect(jsonPath("$[5].processDefinition.versionTag").value("CD:autodeploy:1.0.0"))
-        .andExpect(jsonPath("$[5].processCaseLink.id.caseDefinitionId.key").value("autodeploy"))
-        .andExpect(jsonPath("$[5].processCaseLink.id.caseDefinitionId.versionTag").value("1.0.0"))
-        .andExpect(jsonPath("$[5].processCaseLink.canInitializeDocument").value(true))
-        .andExpect(jsonPath("$[5].processCaseLink.startableByUser").value(true))
-        .andExpect(jsonPath("$[5].processLinks").isArray)
-        .andExpect(jsonPath("$[5].processLinks[0].activityId").value("start"))
-        .andExpect(jsonPath("$[5].processLinks[0].activityType").value("bpmn:ServiceTask:start"))
-        .andExpect(jsonPath("$[5].processLinks[0].processLinkType").value("test"))
-        .andExpect(jsonPath("$[5].bpmn20Xml").isNotEmpty)
-    }
-
-    @Test
     fun `should deploy process definition and process links`() {
         val bpmnFile = MockMultipartFile(
             "file",
@@ -264,7 +192,7 @@ internal class ProcessLinkResourceIT @Autowired constructor(
         val processLinksJson = ObjectMapper().writeValueAsString(processLinks)
 
         mockMvc.perform(
-            MockMvcRequestBuilders.multipart("/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/process-definition", "autodeploy", "1.0.0")
+            MockMvcRequestBuilders.multipart("/api/v1/process/definition/deployment/process-link")
                 .file(bpmnFile)
                 .file(
                     MockMultipartFile(
@@ -275,25 +203,11 @@ internal class ProcessLinkResourceIT @Autowired constructor(
                     )
                 )
                 .param("processDefinitionId", PROCESS_DEF_ID)
-                .param("canInitializeDocument", "true")
-                .param("startableByUser", "true")
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
             .andDo(print())
             .andExpect(status().isNoContent)
-
-        runWithoutAuthorization {
-            val deployedProcess = camundaProcessService.getProcessDefinition("test-process")
-            assertEquals("CD:autodeploy:1.0.0", deployedProcess?.versionTag)
-
-
-            val procdef = camundaProcessService.getProcessDefinition("test-process")
-            val processCaseLink = processDefinitionCaseDefinitionService.findByProcessDefinitionId(ProcessDefinitionId(procdef.id))
-
-            assertEquals("autodeploy", processCaseLink.id.caseDefinitionId.key)
-            assertEquals(Semver("1.0.0"), processCaseLink.id.caseDefinitionId.versionTag)
-        }
     }
 
     private fun createProcessLink(): UUID {

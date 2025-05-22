@@ -430,12 +430,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
     ): CamundaTask {
         return runWithoutAuthorization {
             val newDocumentRequest =
-                NewDocumentRequest(
-                    DOCUMENT_DEFINITION_KEY,
-                    "profile",
-                    "1.0.0",
-                    objectMapper.readTree(content)
-                )
+                NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.readTree(content))
             val request = NewDocumentAndStartProcessRequest(processDefinitionKey, newDocumentRequest)
             val processResult = procesDocumentService.newDocumentAndStartProcess(request)
             taskService.findTask(

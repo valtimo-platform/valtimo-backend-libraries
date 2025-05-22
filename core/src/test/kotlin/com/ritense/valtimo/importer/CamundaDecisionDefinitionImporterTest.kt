@@ -17,8 +17,6 @@
 package com.ritense.valtimo.importer
 
 import com.ritense.importer.ImportRequest
-import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.service.CamundaProcessService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -48,21 +46,22 @@ class CamundaDecisionDefinitionImporterTest(
 
     @Test
     fun `should not depend on any type`() {
-        assertThat(importer.dependsOn()).isEqualTo(setOf(CASE_DEFINITION))
+        assertThat(importer.dependsOn()).isEmpty()
     }
 
     @Test
     fun `should support decision definition fileName`() {
-        assertThat(importer.supports("/dmn/mydecision.dmn")).isTrue()
-        assertThat(importer.supports("/dmn/x/test.dmn")).isTrue()
+        assertThat(importer.supports(FILENAME)).isTrue()
+        assertThat(importer.supports("bpmn/mydecision.dmn")).isTrue()
     }
 
     @Test
     fun `should not support non-dmn fileName`() {
-        assertThat(importer.supports("/bpmn/test.json")).isFalse()
-        assertThat(importer.supports("/bpmn/x/test.dmn")).isFalse()
-        assertThat(importer.supports("/dmn/test.json")).isFalse()
-        assertThat(importer.supports("/dmn/test-dmn")).isFalse()
+        assertThat(importer.supports("bpmn/test.json")).isFalse()
+        assertThat(importer.supports("bpmn/x/test.dmn")).isFalse()
+        assertThat(importer.supports("dmn/test.json")).isFalse()
+        assertThat(importer.supports("dmn/x/test.dmn")).isFalse()
+        assertThat(importer.supports("dmn/test-dmn")).isFalse()
     }
 
     @Test
@@ -70,15 +69,10 @@ class CamundaDecisionDefinitionImporterTest(
         val dmnContent = "<some-xml />"
         importer.import(ImportRequest(FILENAME, dmnContent.toByteArray()))
 
-        val caseDefinitionIdCaptor = argumentCaptor<CaseDefinitionId>()
         val nameCaptor = argumentCaptor<String>()
         val contentCaptor = argumentCaptor<ByteArrayInputStream>()
 
-        verify(camundaProcessService).deploy(
-            caseDefinitionIdCaptor.capture(),
-            nameCaptor.capture(),
-            contentCaptor.capture()
-        )
+        verify(camundaProcessService).deploy(nameCaptor.capture(), contentCaptor.capture())
 
         assertThat(nameCaptor.firstValue).isEqualTo("mydecision.dmn")
         val contentValue = contentCaptor.firstValue.readAllBytes().toString(Charsets.UTF_8)
@@ -86,6 +80,6 @@ class CamundaDecisionDefinitionImporterTest(
     }
 
     private companion object {
-        const val FILENAME = "/dmn/mydecision.dmn"
+        const val FILENAME = "dmn/mydecision.dmn"
     }
 }

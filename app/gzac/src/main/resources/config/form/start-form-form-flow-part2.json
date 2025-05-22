@@ -1,0 +1,58 @@
+{
+    "display": "form",
+    "settings": {
+        "pdf": {
+            "id": "1ec0f8ee-6685-5d98-a847-26f67b67d6f0",
+            "src": "https://files.form.io/pdf/5692b91fd1028f01000407e3/file/1ec0f8ee-6685-5d98-a847-26f67b67d6f0"
+        }
+    },
+    "components": [
+        {
+            "label": "Hoogte",
+            "key": "height",
+            "type": "number",
+            "input": true,
+            "validate": {
+            }
+        },
+        {
+            "cellAlignment": "left",
+            "key": "table",
+            "type": "table",
+            "numRows": 1,
+            "numCols": 2,
+            "input": false,
+            "tableView": false,
+            "striped": true,
+            "hideLabel": true,
+            "rows": [
+                [
+                    {
+                        "components": [
+                            {
+                                "type": "button",
+                                "label": "< Back",
+                                "key": "back",
+                                "theme": "warning",
+                                "disableOnInvalid": false,
+                                "input": true
+                            }
+                        ]
+                    },
+                    {
+                        "components": [
+                            {
+                                "type": "button",
+                                "label": "Submit",
+                                "key": "submit",
+                                "theme": "primary",
+                                "disableOnInvalid": true,
+                                "input": true
+                            }
+                        ]
+                    }
+                ]
+            ]
+        }
+    ]
+}

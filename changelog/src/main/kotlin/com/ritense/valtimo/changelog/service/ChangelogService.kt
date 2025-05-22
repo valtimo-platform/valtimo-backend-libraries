@@ -21,9 +21,9 @@ import com.ritense.valtimo.changelog.domain.Changeset
 import com.ritense.valtimo.changelog.domain.ChangesetCheckSumType
 import com.ritense.valtimo.changelog.repository.ChangesetRepository
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import io.github.oshai.kotlinlogging.KotlinLogging
 import liquibase.util.MD5Util
 import liquibase.util.StringUtil
+import mu.KotlinLogging
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils

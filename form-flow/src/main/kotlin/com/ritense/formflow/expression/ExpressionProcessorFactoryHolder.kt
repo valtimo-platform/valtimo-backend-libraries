@@ -16,13 +16,14 @@
 
 package com.ritense.formflow.expression
 
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KLogger
+import mu.KotlinLogging
 import org.springframework.context.ApplicationContext
 
 class ExpressionProcessorFactoryHolder {
 
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger: KLogger = KotlinLogging.logger {}
         private var expressionProcessorFactory: ExpressionProcessorFactory? = null
 
         fun setInstance(expressionProcessorFactory: ExpressionProcessorFactory, applicationContext: ApplicationContext) {

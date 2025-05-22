@@ -17,6 +17,8 @@
 package com.ritense.documentenapi.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.documentenapi.deployment.CaseDefinitionTrefwoordCollection
+import com.ritense.documentenapi.deployment.ZgwDocumentTrefwoordChangeset
 import com.ritense.documentenapi.domain.ZgwDocumentTrefwoord
 import com.ritense.exporter.ExportFile
 import com.ritense.exporter.ExportPrettyPrinter
@@ -25,6 +27,7 @@ import com.ritense.exporter.Exporter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.transaction.annotation.Transactional
+import java.time.Instant
 
 @Transactional(readOnly = true)
 class ZgwDocumentTrefwoordExporter(
@@ -42,14 +45,18 @@ class ZgwDocumentTrefwoordExporter(
             return ExportResult()
         }
 
-        val formattedCaseDefinitionVersion = request.caseDefinitionId.versionTag.let {
-            "${it.major}-${it.minor}-${it.patch}"
-        }
-
+        val trefwoordenChangeset = ZgwDocumentTrefwoordChangeset(
+            "$caseName.zgw-document-trefwoorden.${Instant.now().toEpochMilli()}",
+            listOf(
+                CaseDefinitionTrefwoordCollection(
+                    caseName,
+                    trefwoorden.content.map(ZgwDocumentTrefwoord::value)
+                )
+            )
+        )
         val trefwoordenExport = ExportFile(
-            PATH.format(request.caseDefinitionId.key, formattedCaseDefinitionVersion, caseName),
-            objectMapper.writer(ExportPrettyPrinter())
-                .writeValueAsBytes(trefwoorden.content.map(ZgwDocumentTrefwoord::value))
+            PATH.format(caseName),
+            objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(trefwoordenChangeset)
         )
 
         return ExportResult(
@@ -58,6 +65,6 @@ class ZgwDocumentTrefwoordExporter(
     }
 
     companion object {
-        private const val PATH = "config/case/%s/%s/zgw/trefwoord/%s.zgw-document-trefwoord.json"
+        private const val PATH = "config/case/trefwoorden/%s.zgw-document-trefwoorden.json"
     }
 }

@@ -17,12 +17,15 @@
 package com.ritense.case.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.case.deployment.CaseDefinitionsTaskListCollection
+import com.ritense.case.deployment.TaskListChangeset
 import com.ritense.exporter.ExportFile
 import com.ritense.exporter.ExportPrettyPrinter
 import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import org.springframework.transaction.annotation.Transactional
+import java.time.Instant
 
 @Transactional(readOnly = true)
 class CaseTaskListExporter(
@@ -43,13 +46,18 @@ class CaseTaskListExporter(
             return ExportResult()
         }
 
-        val formattedCaseDefinitionVersion = request.caseDefinitionId.versionTag.let {
-            "${it.major}-${it.minor}-${it.patch}"
-        }
-
+        val caseTaskListChangeset = TaskListChangeset(
+            "$caseName.case-task-list.${Instant.now().toEpochMilli()}",
+            listOf(
+                CaseDefinitionsTaskListCollection(
+                    caseName,
+                    caseTaskList
+                )
+            )
+        )
         val caseTaskListExport = ExportFile(
-            PATH.format(request.caseDefinitionId.key, formattedCaseDefinitionVersion, caseName),
-            objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(caseTaskList)
+            PATH.format(caseName),
+            objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(caseTaskListChangeset)
         )
 
         return ExportResult(
@@ -58,6 +66,6 @@ class CaseTaskListExporter(
     }
 
     companion object {
-        private const val PATH = "config/case/%s/%s/case/task-list/%s.case-task-list.json"
+        private const val PATH = "config/case-task-list/%s.case-task-list.json"
     }
 }

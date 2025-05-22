@@ -47,8 +47,6 @@ internal class CamundaTaskDocumentMapperIntTest : BaseIntegrationTest() {
                     "single-user-task-process",
                     NewDocumentRequest(
                         "house",
-                        "house",
-                        "1.0.0",
                         objectMapper.readTree("""{"city":"Amsterdam"}""")
                     )
                 )
@@ -73,8 +71,6 @@ internal class CamundaTaskDocumentMapperIntTest : BaseIntegrationTest() {
                     "single-user-task-process",
                     NewDocumentRequest(
                         "house",
-                        "house",
-                        "1.0.0",
                         objectMapper.readTree("""{"city":"Utrecht"}""")
                     )
                 )

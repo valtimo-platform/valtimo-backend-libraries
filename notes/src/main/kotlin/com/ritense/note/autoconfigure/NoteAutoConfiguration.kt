@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Lazy
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
@@ -90,9 +91,9 @@ class NoteAutoConfiguration {
 
     @Bean
     fun noteSpecificationFactory(
-        noteRepository: NoteRepository,
+        @Lazy noteService: NoteService,
         queryDialectHelper: QueryDialectHelper
     ): NoteSpecificationFactory {
-        return NoteSpecificationFactory(noteRepository, queryDialectHelper)
+        return NoteSpecificationFactory(noteService, queryDialectHelper)
     }
 }

@@ -16,30 +16,28 @@
 
 package com.ritense.documentenapi.importer
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
-import com.ritense.documentenapi.service.DocumentenApiService
+import com.ritense.documentenapi.deployment.ZgwDocumentListColumnDeploymentService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.ValtimoImportTypes
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.verify
 
 @ExtendWith(MockitoExtension::class)
 class ZgwDocumentListColumnImporterTest(
-    @Mock private val objectMapper: ObjectMapper,
-    @Mock private val documentenApiColumnRepository: DocumentenApiColumnRepository,
-    @Mock private val documentenApiService: DocumentenApiService,
+    @Mock private val deployer: ZgwDocumentListColumnDeploymentService,
+    @Mock private val changelogDeployer: ChangelogDeployer,
 ) {
     private lateinit var importer: ZgwDocumentListColumnImporter
 
     @BeforeEach
     fun before() {
-        importer = ZgwDocumentListColumnImporter(objectMapper, documentenApiColumnRepository, documentenApiService)
+        importer = ZgwDocumentListColumnImporter(deployer, changelogDeployer)
     }
 
     @Test
@@ -64,11 +62,20 @@ class ZgwDocumentListColumnImporterTest(
             importer.supports("config/case/t.zgw-document-list-column.json")
         ).isFalse()
         Assertions.assertThat(
-            importer.supports("config/case/zgw-document-list-column/my-file.json")
+            importer.supports("config/case/zgw-document-list-columns/my-file.json")
         ).isFalse()
     }
 
+    @Test
+    fun `should call deploy method for import with correct parameters`() {
+        val jsonContent = "{}"
+
+        importer.import(ImportRequest(FILENAME, jsonContent.toByteArray()))
+
+        verify(changelogDeployer).deploy(deployer, FILENAME, jsonContent)
+    }
+
     private companion object {
-        const val FILENAME = "/zgw/document-list-column/my-file.zgw-document-list-column.json"
+        const val FILENAME = "config/case/zgw-document-list-columns/my-file.zgw-document-list-column.json"
     }
 }

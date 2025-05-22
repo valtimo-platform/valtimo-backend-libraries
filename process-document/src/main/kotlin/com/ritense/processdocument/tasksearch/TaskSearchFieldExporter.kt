@@ -17,7 +17,6 @@
 package com.ritense.processdocument.tasksearch
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import com.ritense.processdocument.service.SEARCH_FIELD_OWNER_TYPE
 import com.ritense.search.exporter.SearchFieldExporter
 import com.ritense.search.service.SearchFieldV2Service
@@ -28,15 +27,6 @@ class TaskSearchFieldExporter(
 ): SearchFieldExporter(objectMapper, searchFieldService) {
     override fun ownerTypeKey(): String = SEARCH_FIELD_OWNER_TYPE
 
-    override fun getPath(request: DocumentDefinitionExportRequest): String {
-        val formattedCaseDefinitionVersion = request.caseDefinitionId.versionTag.let {
-            "${it.major}-${it.minor}-${it.patch}"
-        }
-
-        return PATH.format(request.caseDefinitionId.key, formattedCaseDefinitionVersion, request.name)
-    }
-
-    companion object {
-        private const val PATH = "config/case/%s/%s/task-search-field/%s.task-search-field.json"
-    }
+    override fun getPath(documentDefinitionName: String): String =
+        "config/task-search-field/$documentDefinitionName.task-search-field.json"
 }

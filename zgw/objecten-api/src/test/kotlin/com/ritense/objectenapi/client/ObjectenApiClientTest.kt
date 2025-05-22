@@ -51,8 +51,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.data.domain.PageRequest
-import org.springframework.http.HttpHeaders.CONTENT_TYPE
-import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.ClientRequest
@@ -82,7 +80,6 @@ internal class ObjectenApiClientTest {
         objectMapper = MapperSingleton.get()
         outboxService = Mockito.mock(OutboxService::class.java)
         restClientBuilder = RestClient.builder()
-            .defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
     }
 
     @BeforeEach

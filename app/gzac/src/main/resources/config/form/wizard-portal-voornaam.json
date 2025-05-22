@@ -1,0 +1,63 @@
+{
+    "display": "wizard",
+    "settings": {
+        "pdf": {
+            "id": "1ec0f8ee-6685-5d98-a847-26f67b67d6f0",
+            "src": "https://files.form.io/pdf/5692b91fd1028f01000407e3/file/1ec0f8ee-6685-5d98-a847-26f67b67d6f0"
+        }
+    },
+    "components": [
+        {
+            "title": "Page 1",
+            "label": "Page 1",
+            "type": "panel",
+            "key": "page1",
+            "components": [
+                {
+                    "label": "Wat is de naam van de indiener?",
+                    "spellcheck": true,
+                    "tableView": true,
+                    "calculateServer": false,
+                    "key": "firstName",
+                    "type": "textfield",
+                    "input": true,
+                    "validate": {
+                        "required": true
+                    }
+                }
+            ],
+            "input": false,
+            "tableView": false
+        },
+        {
+            "title": "Page 2",
+            "label": "Page 2",
+            "type": "panel",
+            "key": "page2",
+            "components": [
+                {
+                    "label": "Laatste kans: Wat is de naam van de indiener?",
+                    "spellcheck": true,
+                    "tableView": true,
+                    "calculateServer": false,
+                    "key": "firstName",
+                    "type": "textfield",
+                    "input": true,
+                    "validate": {
+                        "required": true
+                    }
+                }
+            ],
+            "input": false,
+            "tableView": false
+        },
+        {
+            "type": "button",
+            "label": "Submit",
+            "key": "submit",
+            "disableOnInvalid": true,
+            "input": true,
+            "tableView": false
+        }
+    ]
+}

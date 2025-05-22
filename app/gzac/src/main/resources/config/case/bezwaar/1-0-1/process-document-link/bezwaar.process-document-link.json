@@ -1,7 +1,0 @@
-[
-    {
-        "processDefinitionKey": "bezwaar",
-        "canInitializeDocument": true,
-        "startableByUser": true
-    }
-]

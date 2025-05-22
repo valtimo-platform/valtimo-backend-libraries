@@ -131,8 +131,6 @@ class PrefillFormServiceIntTest @Autowired constructor(
     private fun createDocument(definitionName: String, content: String): Document {
         return runWithoutAuthorization { documentService.createDocument(NewDocumentRequest(
             definitionName,
-            "person",
-            "1.0.0",
             objectMapper.readTree(
                 content.trimIndent()
             )

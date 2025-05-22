@@ -15,9 +15,9 @@
  */
 
 
-import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
 plugins {
     id "idea"
@@ -29,7 +29,7 @@ plugins {
     id "org.jetbrains.kotlin.plugin.spring" version "${kotlinVersion}"
     id "org.jetbrains.kotlin.plugin.jpa" version "${kotlinVersion}"
     id "org.jetbrains.kotlin.plugin.allopen" version "${kotlinVersion}"
-    id "org.jetbrains.dokka-javadoc" version "${dokkaPluginVersion}"
+    id "org.jetbrains.dokka" version "${dokkaPluginVersion}"
     id "com.github.ben-manes.versions" version "${versionsPluginVersion}"
     id "org.sonarqube" version "${sonarqubePluginVersion}"
     id "checkstyle"
@@ -56,7 +56,7 @@ dependencies {
 reporting {
     reports {
         testCodeCoverageReport(JacocoCoverageReport) {
-            testSuiteName = "test"
+            testType = TestSuiteType.UNIT_TEST
         }
     }
 }
@@ -99,6 +99,8 @@ allprojects {
             }
             dependencies {
                 dependency "org.hibernate.orm:hibernate-core:${hibernateCoreVersion}"
+                dependency "org.yaml:snakeyaml:${snakeYamlVersionOverride}"
+                dependency "io.netty:netty-codec:${nettyCodecVersionOverride}"
                 dependency "org.liquibase:liquibase-core:${liquibaseVersion}"
                 dependency "com.rabbitmq:amqp-client:${amqpCLientVersion}"
             }
@@ -107,8 +109,8 @@ allprojects {
         bootJar.enabled = false
     }
 
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 
     group = projectGroup
     version = projectVersion
@@ -137,7 +139,7 @@ subprojects { subproject ->
         apply plugin: "kotlin-jpa"
         apply from: "$rootProject.projectDir/gradle/test.gradle"
         apply plugin: "com.avast.gradle.docker-compose"
-        apply plugin: "org.jetbrains.dokka-javadoc"
+        apply plugin: "org.jetbrains.dokka"
         apply plugin: "maven-publish"
         apply plugin: "org.owasp.dependencycheck"
 
@@ -159,7 +161,7 @@ subprojects { subproject ->
         ext.kotlinSubProjectPath = subproject.projectDir.getAbsolutePath() + "/src/main/kotlin"
         if (new File(ext.kotlinSubProjectPath).exists() && !new File(ext.javaSubProjectPath).exists()) {
             tasks.getByName('javadocJar') {
-                from dokkaGenerate
+                from dokkaJavadoc
             }
         }
 
@@ -173,7 +175,7 @@ subprojects { subproject ->
 
         tasks.withType(KotlinCompile).configureEach {
             compilerOptions {
-                jvmTarget = JvmTarget.JVM_21
+                jvmTarget = JvmTarget.JVM_17
                 freeCompilerArgs.add("-Xemit-jvm-type-annotations")
             }
         }

@@ -1,0 +1,7 @@
+{
+    "changesetId": "role-v1",
+    "roles": [
+        "ROLE_USER",
+        "ROLE_ADMIN"
+    ]
+}

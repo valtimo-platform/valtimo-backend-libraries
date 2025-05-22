@@ -55,7 +55,7 @@ class SmartDocumentsPluginIntegrationTest @Autowired constructor(
     private val camundaRepositoryService: CamundaRepositoryService,
     private val runtimeService: RuntimeService,
     private val temporaryResourceStorageService: TemporaryResourceStorageService,
-) : BaseSmartDocumentsIntegrationTest() {
+): BaseSmartDocumentsIntegrationTest() {
 
     lateinit var smartDocumentsPlugin: SmartDocumentsPlugin
     lateinit var pluginConfiguration: PluginConfiguration
@@ -114,12 +114,7 @@ class SmartDocumentsPluginIntegrationTest @Autowired constructor(
     fun `should generate document`() {
         // given
         val documentContent = objectMapper.readTree("{\"lastname\": \"Klaveren\"}")
-        val newDocumentRequest = NewDocumentRequest(
-            DOCUMENT_DEFINITION_KEY,
-            "profile",
-            "1.0.0",
-            documentContent
-        )
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, documentContent)
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("age" to 138))
 
@@ -133,26 +128,19 @@ class SmartDocumentsPluginIntegrationTest @Autowired constructor(
             findRequestBody(HttpMethod.POST, "/wsxmldeposit/deposit/unattended", SmartDocumentsRequest::class.java)
         assertThat(requestBody.smartDocument.selection.templateGroup).isNotEqualTo("test-template-group")
         assertThat(requestBody.smartDocument.selection.template).isEqualTo("test-template-name")
-        assertThat(requestBody.customerData).isEqualTo(
-            mapOf(
-                "achternaam" to "Klaveren",
-                "leeftijd" to 138,
-                "nonExistingDocumentVar" to null,
-                "nonExistingProcessVar" to null,
-                "fixedValue" to "My fixed value",
-            )
-        )
+        assertThat(requestBody.customerData).isEqualTo(mapOf(
+            "achternaam" to "Klaveren",
+            "leeftijd" to 138,
+            "nonExistingDocumentVar" to null,
+            "nonExistingProcessVar" to null,
+            "fixedValue" to "My fixed value",
+        ))
     }
 
     @Test
     fun `should create temp file when generating document`() {
         // given
-        val newDocumentRequest = NewDocumentRequest(
-            DOCUMENT_DEFINITION_KEY,
-            "profile",
-            "1.0.0",
-            objectMapper.createObjectNode()
-        )
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
 
         // when
@@ -196,12 +184,7 @@ class SmartDocumentsPluginIntegrationTest @Autowired constructor(
             }
         """.trimIndent()
         )
-        val newDocumentRequest = NewDocumentRequest(
-            DOCUMENT_DEFINITION_KEY,
-            "profile",
-            "1.0.0",
-            objectMapper.createObjectNode()
-        )
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("my-template-name-variable" to "my-custom-template-name"))
 
@@ -230,12 +213,7 @@ class SmartDocumentsPluginIntegrationTest @Autowired constructor(
             }
         """.trimIndent()
         )
-        val newDocumentRequest = NewDocumentRequest(
-            DOCUMENT_DEFINITION_KEY,
-            "profile",
-            "1.0.0",
-            objectMapper.createObjectNode()
-        )
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
 
         // when

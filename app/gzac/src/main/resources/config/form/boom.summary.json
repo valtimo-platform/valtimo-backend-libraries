@@ -1,0 +1,859 @@
+{
+    "display": "form",
+    "settings": {
+        "pdf": {
+            "id": "1ec0f8ee-6685-5d98-a847-26f67b67d6f0",
+            "src": "https://files.form.io/pdf/5692b91fd1028f01000407e3/file/1ec0f8ee-6685-5d98-a847-26f67b67d6f0"
+        }
+    },
+    "components": [
+        {
+            "content": "<strong>Boom</strong>",
+            "type": "htmlelement"
+        },
+        {
+            "label": "Columns",
+            "columns": [
+                {
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "Type"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "Kiemjaar"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "Leeftijd"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "TypePlus"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "Verplant"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "Boombeeld"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "Boomgroep"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "Groeifase"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "Snoeifase"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "Boomspiegel"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "Kroonvolume"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "Meerstammig"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "Transponder"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "VrijeTakval"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "Stamdiameter"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "TakvrijeStam"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "Verplantbaar"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "Beleidsstatus"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "Boombeschermer"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "Herplantplicht"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "Feestverlichting"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "BeoogdeOmlooptijd"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "BoomhoogteActueel"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "Controlefrequentie"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "Stamdiameterklasse"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "VrijeDoorrijhoogte"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "BoomBoomvoorziening"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "MonetaireBoomwaarde"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "TakvrijeZonePrimair"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "Boomveiligheidsklasse"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "Groeiplaatsinrichting"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "TakvrijeZoneSecundair"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "TypeBeschermingsstatus"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "TypeVermeerderingsvorm"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "BoomhoogteklasseActueel"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "TakvrijeRuimteTotGebouw"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "BoomhoogteklasseEindbeeld"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "TypeOmgevingsrisicoklasse"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "VrijeDoorrijhoogtePrimair"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "KroondiameterklasseActueel"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "VrijeDoorrijhoogteSecundair"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "KroondiameterklasseEindbeeld"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "placeholder": "BoomTypeBeschermingsstatusPlus"
+                        }
+                    ],
+                    "width": 3,
+                    "offset": 0,
+                    "push": 0,
+                    "pull": 0,
+                    "size": "md"
+                },
+                {
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "Type",
+                            "key": "type"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "Kiemjaar",
+                            "key": "kiemjaar"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "Leeftijd",
+                            "key": "leeftijd"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "TypePlus",
+                            "key": "typeplus"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "Verplant",
+                            "key": "verplant"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "Boombeeld",
+                            "key": "boombeeld"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "Boomgroep",
+                            "key": "boomgroep"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "Groeifase",
+                            "key": "groeifase"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "Snoeifase",
+                            "key": "snoeifase"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "Boomspiegel",
+                            "key": "boomspiegel"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "Kroonvolume",
+                            "key": "kroonvolume"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "Meerstammig",
+                            "key": "meerstammig"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "Transponder",
+                            "key": "transponder"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "VrijeTakval",
+                            "key": "vrijetakval"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "Stamdiameter",
+                            "key": "stamdiameter"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "TakvrijeStam",
+                            "key": "takvrijestam"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "Verplantbaar",
+                            "key": "verplantbaar"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "Beleidsstatus",
+                            "key": "beleidsstatus"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "Boombeschermer",
+                            "key": "boombeschermer"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "Herplantplicht",
+                            "key": "herplantplicht"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "Feestverlichting",
+                            "key": "feestverlichting"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "BeoogdeOmlooptijd",
+                            "key": "beoogdeomlooptijd"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "BoomhoogteActueel",
+                            "key": "boomhoogteactueel"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "Controlefrequentie",
+                            "key": "controlefrequentie"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "Stamdiameterklasse",
+                            "key": "stamdiameterklasse"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "VrijeDoorrijhoogte",
+                            "key": "vrijedoorrijhoogte"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "BoomBoomvoorziening",
+                            "key": "boomboomvoorziening"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "MonetaireBoomwaarde",
+                            "key": "monetaireboomwaarde"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "TakvrijeZonePrimair",
+                            "key": "takvrijezoneprimair"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "Boomveiligheidsklasse",
+                            "key": "boomveiligheidsklasse"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "Groeiplaatsinrichting",
+                            "key": "groeiplaatsinrichting"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "TakvrijeZoneSecundair",
+                            "key": "takvrijezonesecundair"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "TypeBeschermingsstatus",
+                            "key": "typebeschermingsstatus"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "TypeVermeerderingsvorm",
+                            "key": "typevermeerderingsvorm"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "BoomhoogteklasseActueel",
+                            "key": "boomhoogteklasseactueel"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "TakvrijeRuimteTotGebouw",
+                            "key": "takvrijeruimtetotgebouw"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "BoomhoogteklasseEindbeeld",
+                            "key": "boomhoogteklasseeindbeeld"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "TypeOmgevingsrisicoklasse",
+                            "key": "typeomgevingsrisicoklasse"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "VrijeDoorrijhoogtePrimair",
+                            "key": "vrijedoorrijhoogteprimair"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "KroondiameterklasseActueel",
+                            "key": "kroondiameterklasseactueel"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "VrijeDoorrijhoogteSecundair",
+                            "key": "vrijedoorrijhoogtesecundair"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "KroondiameterklasseEindbeeld",
+                            "key": "kroondiameterklasseeindbeeld"
+                        },
+                        {
+                            "type": "textfield",
+                            "hideLabel": true,
+                            "disabled": true,
+                            "attributes": {
+                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
+                            },
+                            "label": "BoomTypeBeschermingsstatusPlus",
+                            "key": "boomtypebeschermingsstatusplus"
+                        }
+                    ],
+                    "width": 3,
+                    "offset": 0,
+                    "push": 0,
+                    "pull": 0,
+                    "size": "md"
+                }
+            ],
+            "tableView": false,
+            "key": "columns",
+            "type": "columns",
+            "input": false
+        }
+    ]
+}

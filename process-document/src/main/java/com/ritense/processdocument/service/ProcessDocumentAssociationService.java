@@ -17,17 +17,57 @@
 package com.ritense.processdocument.service;
 
 import com.ritense.document.domain.Document;
+import com.ritense.processdocument.domain.ProcessDefinitionKey;
+import com.ritense.processdocument.domain.ProcessDocumentDefinition;
 import com.ritense.processdocument.domain.ProcessDocumentInstance;
 import com.ritense.processdocument.domain.ProcessDocumentInstanceId;
 import com.ritense.processdocument.domain.ProcessInstanceId;
 import com.ritense.processdocument.domain.impl.ProcessDocumentInstanceDto;
+import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest;
 import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.contract.result.OperationError;
+import org.springframework.lang.Nullable;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface ProcessDocumentAssociationService {
+
+    Optional<? extends ProcessDocumentDefinition> findProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey);
+
+    ProcessDocumentDefinition getProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey);
+
+    List<? extends ProcessDocumentDefinition> findAllProcessDocumentDefinitions(ProcessDefinitionKey processDefinitionKey);
+
+    Optional<? extends ProcessDocumentDefinition> findProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey, long documentDefinitionVersion);
+
+    ProcessDocumentDefinition getProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey, long documentDefinitionVersion);
+
+    List<? extends ProcessDocumentDefinition> findProcessDocumentDefinitions(String documentDefinitionName);
+
+    List<? extends ProcessDocumentDefinition> findProcessDocumentDefinitions(
+        String documentDefinitionName,
+        @Nullable Boolean startableByUser
+    );
+
+    List<? extends ProcessDocumentDefinition> findProcessDocumentDefinitions(
+        String documentDefinitionName,
+        @Nullable Boolean startableByUser,
+        @Nullable Boolean canInitializeDocument
+    );
+
+    List<? extends ProcessDocumentDefinition> findProcessDocumentDefinitions(
+        UUID documentId,
+        @Nullable Boolean startableByUser,
+        @Nullable Boolean canInitializeDocument
+    );
+
+    List<? extends ProcessDocumentDefinition> findProcessDocumentDefinitions(String documentDefinitionName, Long documentDefinitionVersion);
+
+    List<? extends ProcessDocumentDefinition> findProcessDocumentDefinitionsByProcessDefinitionKey(String processDefinitionKey);
+
+    Optional<? extends ProcessDocumentDefinition> findByDocumentDefinitionName(String documentDefinitionName);
 
     Optional<? extends ProcessDocumentInstance> findProcessDocumentInstance(ProcessInstanceId processInstanceId);
 
@@ -42,6 +82,14 @@ public interface ProcessDocumentAssociationService {
     FunctionResult<? extends ProcessDocumentInstance, OperationError> getProcessDocumentInstanceResult(
         ProcessDocumentInstanceId processDocumentInstanceId
     );
+
+    Optional<? extends ProcessDocumentDefinition> createProcessDocumentDefinition(
+        ProcessDocumentDefinitionRequest request
+    );
+
+    void deleteProcessDocumentDefinition(ProcessDocumentDefinitionRequest processDocumentDefinitionRequest);
+
+    void deleteProcessDocumentDefinition(String documentDefititionName);
 
     Optional<? extends ProcessDocumentInstance> createProcessDocumentInstance(
         String processInstanceId,

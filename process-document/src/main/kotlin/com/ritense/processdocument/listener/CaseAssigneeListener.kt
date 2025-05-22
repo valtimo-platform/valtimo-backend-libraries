@@ -17,7 +17,6 @@ package com.ritense.processdocument.listener
 
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.case.service.CaseDefinitionService
-import com.ritense.case_.domain.definition.CaseDefinition
 import com.ritense.document.event.DocumentAssigneeChangedEvent
 import com.ritense.document.event.DocumentUnassignedEvent
 import com.ritense.document.service.DocumentService
@@ -27,7 +26,7 @@ import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Com
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.service.CamundaTaskService
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 
@@ -44,11 +43,9 @@ class CaseAssigneeListener(
     @EventListener(DocumentAssigneeChangedEvent::class)
     fun updateAssigneeOnTasks(event: DocumentAssigneeChangedEvent) {
         val document = documentService[event.documentId.toString()]
-        val caseDefinition: CaseDefinition = caseDefinitionService.getCaseDefinition(
-            document.definitionId().caseDefinitionId()
-        )
+        val caseSettings = caseDefinitionService.getCaseSettings(document.definitionId().name())
 
-        if (caseDefinition.canHaveAssignee && caseDefinition.autoAssignTasks) {
+        if (caseSettings.canHaveAssignee && caseSettings.autoAssignTasks) {
             val assignee = userManagementService.findByUsername(document.assigneeId())
             val tasks = camundaTaskService.findTasks(
                 byProcessInstanceBusinessKey(document.id().toString())
@@ -65,10 +62,9 @@ class CaseAssigneeListener(
     @EventListener(DocumentUnassignedEvent::class)
     fun removeAssigneeFromTasks(event: DocumentUnassignedEvent) {
         val document = documentService[event.documentId.toString()]
-        val caseDefinition: CaseDefinition = caseDefinitionService.getCaseDefinition(
-            document.definitionId().caseDefinitionId()
-        )
-        if (caseDefinition.canHaveAssignee && caseDefinition.autoAssignTasks) {
+        val caseSettings = caseDefinitionService.getCaseSettings(document.definitionId().name())
+
+        if (caseSettings.canHaveAssignee && caseSettings.autoAssignTasks) {
             val tasks = camundaTaskService.findTasks(
                 byProcessInstanceBusinessKey(document.id().toString())
                     .and(byAssigned())

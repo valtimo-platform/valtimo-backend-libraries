@@ -21,7 +21,7 @@ import com.ritense.outbox.ValtimoOutboxService
 import com.ritense.outbox.config.condition.OnOutboxEnabledCondition.Companion.PROPERTY_NAME
 import com.ritense.outbox.domain.BaseEvent
 import com.ritense.valtimo.contract.domain.AggregateRoot
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KotlinLogging
 
 class EventDispatcherHelper {
 

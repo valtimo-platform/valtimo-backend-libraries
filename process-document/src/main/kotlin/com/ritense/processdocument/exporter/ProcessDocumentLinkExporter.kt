@@ -24,57 +24,49 @@ import com.ritense.exporter.Exporter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import com.ritense.exporter.request.ProcessDefinitionExportRequest
 import com.ritense.processdocument.domain.config.ProcessDocumentLinkConfigItem
-import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
+import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 
 class ProcessDocumentLinkExporter(
     private val objectMapper: ObjectMapper,
     private val camundaRepositoryService: CamundaRepositoryService,
-    private val processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService
+    private val processDocumentAssociationService: ProcessDocumentAssociationService
 ) : Exporter<DocumentDefinitionExportRequest> {
 
     override fun supports() = DocumentDefinitionExportRequest::class.java
 
     override fun export(request: DocumentDefinitionExportRequest): ExportResult {
-        val processDefinitions = processDefinitionCaseDefinitionService.findProcessDefinitionCaseDefinitions(
-            request.caseDefinitionId
+        val exportItems = processDocumentAssociationService.findProcessDocumentDefinitions(
+            request.name, null,null
         ).map { definition ->
-            Pair(definition, camundaRepositoryService.findProcessDefinitionById(definition.id.processDefinitionId.id)!!)
-        }
-
-        if (processDefinitions.isEmpty()) {
-            return ExportResult()
-        }
-
-        val exportItems = processDefinitions.map { processDefinitionWithConfig ->
             ProcessDocumentLinkConfigItem().apply {
-                this.processDefinitionKey = processDefinitionWithConfig.second.key
-                this.startableByUser = processDefinitionWithConfig.first.startableByUser
-                this.canInitializeDocument = processDefinitionWithConfig.first.canInitializeDocument
+                val processDefinitionKey = definition.processDocumentDefinitionId().processDefinitionKey().toString()
+                this.processDefinitionKey = processDefinitionKey
+                this.startableByUser = definition.startableByUser()
+                this.canInitializeDocument = definition.canInitializeDocument()
             }
         }
 
-        val relatedRequests = processDefinitions.asSequence()
-            .map { it.second }
-            .map { processDefinition ->
-                ProcessDefinitionExportRequest(processDefinition.id, request.caseDefinitionId)
-            }.toSet()
-
-        val caseDefinitionKey = request.caseDefinitionId.key
-        val formattedCaseDefinitionVersion = request.caseDefinitionId.versionTag.let {
-            "${it.major}-${it.minor}-${it.patch}"
+        if (exportItems.isEmpty()) {
+            return ExportResult()
         }
+
+        val relatedRequests = exportItems.asSequence().map { it.processDefinitionKey }
+            .distinct()
+            .map { key -> requireNotNull(camundaRepositoryService.findLatestProcessDefinition(key)) }
+            .map { processDefinition ->
+                ProcessDefinitionExportRequest(processDefinition.id)
+            }.toSet()
 
         return ExportResult(
             ExportFile(
-                PATH.format(caseDefinitionKey, formattedCaseDefinitionVersion, request.name),
+                PATH.format(request.name),
                 objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(exportItems)
             ),
             relatedRequests
         )
     }
-
     companion object {
-        private const val PATH = "config/case/%s/%s/process-document-link/%s.process-document-link.json"
+        private const val PATH = "config/process-document-link/%s.json";
     }
 }

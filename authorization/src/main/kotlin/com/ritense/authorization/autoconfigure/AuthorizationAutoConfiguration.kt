@@ -38,7 +38,7 @@ import com.ritense.authorization.web.RoleManagementResource
 import com.ritense.authorization.web.security.ValtimoAuthorizationHttpSecurityConfigurer
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import com.ritense.valtimo.contract.authorization.UserManagementServiceHolder
+import com.ritense.authorization.UserManagementServiceHolder
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration

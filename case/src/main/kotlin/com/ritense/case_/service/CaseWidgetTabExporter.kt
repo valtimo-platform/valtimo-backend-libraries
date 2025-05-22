@@ -19,12 +19,14 @@ package com.ritense.case_.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.case.domain.CaseTabType
 import com.ritense.case.service.CaseTabService
+import com.ritense.case_.deployment.CaseWidgetTabChangeset
 import com.ritense.exporter.ExportFile
 import com.ritense.exporter.ExportPrettyPrinter
 import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import org.springframework.transaction.annotation.Transactional
+import java.time.Instant
 
 @Transactional(readOnly = true)
 class CaseWidgetTabExporter(
@@ -36,24 +38,22 @@ class CaseWidgetTabExporter(
     override fun supports() = DocumentDefinitionExportRequest::class.java
 
     override fun export(request: DocumentDefinitionExportRequest): ExportResult {
-        val caseTabs = caseTabService.getCaseTabs(request.caseDefinitionId)
+        val caseName = request.name
+        val caseTabs = caseTabService.getCaseTabs(caseName)
 
         if (caseTabs.isEmpty()) {
             return ExportResult()
         }
 
-        val caseDefinitionKey = request.caseDefinitionId.key
-        val formattedCaseDefinitionVersion = request.caseDefinitionId.versionTag.let {
-            "${it.major}-${it.minor}-${it.patch}"
-        }
-
+        val caseTabChangeset = CaseWidgetTabChangeset(
+            "$caseName.case-widget-tab.${Instant.now().toEpochMilli()}",
+            caseTabs
+                .filter { it.type == CaseTabType.WIDGETS }
+                .map { caseWidgetTabService.getWidgetTab(it.id.caseDefinitionName, it.id.key)!! }
+        )
         val caseWidgetTabExport = ExportFile(
-            PATH.format(caseDefinitionKey, formattedCaseDefinitionVersion, caseDefinitionKey),
-            objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(
-                caseTabs
-                    .filter { it.type == CaseTabType.WIDGETS }
-                    .map { caseWidgetTabService.getWidgetTab(it.id.caseDefinitionId, it.id.key)!! }
-            )
+            PATH.format(caseName),
+            objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(caseTabChangeset)
         )
 
         return ExportResult(
@@ -62,6 +62,6 @@ class CaseWidgetTabExporter(
     }
 
     companion object {
-        private const val PATH = "config/case/%s/%s/case/widget-tab/%s.case-widget-tab.json"
+        private const val PATH = "config/case-widget-tab/%s.case-widget-tab.json"
     }
 }

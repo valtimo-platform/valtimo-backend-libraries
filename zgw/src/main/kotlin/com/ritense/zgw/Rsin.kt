@@ -19,12 +19,13 @@ package com.ritense.zgw
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 
-data class Rsin @JsonCreator(mode = JsonCreator.Mode.DELEGATING) constructor(private val value: String) {
+data class Rsin(private val value: String) {
 
     constructor(value: Long) : this(value.toString().padStart(9, '0'))
 
     companion object {
         @JvmStatic
+        @JsonCreator
         fun create(value: String) = value
     }
 

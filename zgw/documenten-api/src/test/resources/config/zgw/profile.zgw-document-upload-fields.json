@@ -1,0 +1,51 @@
+{
+    "changesetId": "v1",
+    "case-definitions": [
+        {
+            "key": "profile",
+            "fields": [
+                {
+                    "key": "beschrijving",
+                    "defaultValue": "doc:description",
+                    "visible": true
+                }
+            ]
+        },
+        {
+            "key": "profile",
+            "fields": [
+                {
+                    "key": "taal",
+                    "defaultValue": "eng"
+                }
+            ]
+        },
+        {
+            "key": "profile",
+            "fields": [
+                {
+                    "key": "vertrouwelijkheidaanduiding",
+                    "defaultValue": "zaakvertrouwelijk"
+                }
+            ]
+        },
+        {
+            "key": "profile",
+            "fields": [
+                {
+                    "key": "informatieobjecttype",
+                    "defaultValue": "${example.properties.catalogiApiUrl}informatieobjecttypen/${example.properties.informatieobjecttype}"
+                }
+            ]
+        },
+        {
+            "key": "profile",
+            "fields": [
+                {
+                    "key": "status",
+                    "defaultValue": "in_bewerking"
+                }
+            ]
+        }
+    ]
+}

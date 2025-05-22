@@ -16,16 +16,16 @@
 
 package com.ritense.case_.widget.custom
 
-import com.ritense.BaseIntegrationTest
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.domain.CaseTabType
 import com.ritense.case.service.CaseTabService
 import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case_.rest.dto.CaseWidgetTabDto
 import com.ritense.case_.service.CaseWidgetTabService
 import com.ritense.document.domain.impl.request.NewDocumentRequest
+import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -46,6 +46,7 @@ class CustomWidgetIntTest @Autowired constructor(
     private val webApplicationContext: WebApplicationContext,
     private val tabService: CaseTabService,
     private val widgetTabService: CaseWidgetTabService,
+    private val documentService: JsonSchemaDocumentService
 ) : BaseIntegrationTest() {
 
     lateinit var mockMvc: MockMvc
@@ -62,16 +63,8 @@ class CustomWidgetIntTest @Autowired constructor(
         val tabKey = "my-tab"
         val widgetKey = "my-widget"
         val documentId = runWithoutAuthorization {
-            val document = documentService.createDocument(
-                NewDocumentRequest(
-                    caseDefinitionName,
-                    caseDefinitionName,
-                    "1.2.3",
-                    MapperSingleton.get().createObjectNode()
-                )
-            ).resultingDocument().get()
-            createCaseWidgetTab(document.definitionId().caseDefinitionId(), tabKey, widgetKey)
-            document.id
+            createCaseWidgetTab(caseDefinitionName, tabKey, widgetKey)
+            documentService.createDocument(NewDocumentRequest(caseDefinitionName, MapperSingleton.get().createObjectNode())).resultingDocument().get().id()
         }
         mockMvc.perform(
             get("/api/v1/document/{documentId}/widget-tab/{tabKey}", documentId, tabKey)
@@ -86,18 +79,14 @@ class CustomWidgetIntTest @Autowired constructor(
     }
 
     private fun createCaseWidgetTab(
-        caseDefinitionId: CaseDefinitionId,
+        caseDefinitionName: String,
         tabKey: String,
         widgetKey: String
     ): CaseWidgetTabDto {
-        tabService.createCaseTab(
-            caseDefinitionId,
-            CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-")
-        )
+        tabService.createCaseTab(caseDefinitionName, CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-"))
         return widgetTabService.updateWidgetTab(
             CaseWidgetTabDto(
-                caseDefinitionKey = caseDefinitionId.key,
-                caseDefinitionVersionTag = caseDefinitionId.versionTag.version,
+                caseDefinitionName = caseDefinitionName,
                 key = tabKey,
                 widgets = listOf(
                     CustomCaseWidgetDto(

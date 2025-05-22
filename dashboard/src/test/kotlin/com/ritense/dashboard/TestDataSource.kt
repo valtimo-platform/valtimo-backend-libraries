@@ -17,7 +17,8 @@
 package com.ritense.dashboard
 
 import com.ritense.valtimo.contract.dashboard.WidgetDataSource
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KLogger
+import mu.KotlinLogging
 
 class TestDataSource {
 
@@ -43,7 +44,7 @@ class TestDataSource {
     }
 
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger: KLogger = KotlinLogging.logger {}
         const val NUMBER_DATA_KEY = "number-data"
         const val NUMBER_DATA_TITLE = "Number data"
         const val NUMBERS_DATA_KEY = "numbers-data"

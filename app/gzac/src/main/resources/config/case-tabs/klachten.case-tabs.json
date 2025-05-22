@@ -1,0 +1,52 @@
+{
+    "changesetId": "klachten-tabs-v1",
+    "case-definitions": [
+        {
+            "key": "klachten",
+            "tabs": [
+                {
+                    "name": "Summary",
+                    "key": "summary",
+                    "type": "standard",
+                    "contentKey": "summary"
+                },
+                {
+                    "name": "Progress",
+                    "key": "progress",
+                    "type": "standard",
+                    "contentKey": "progress"
+                },
+                {
+                    "name": "Audit",
+                    "key": "audit",
+                    "type": "standard",
+                    "contentKey": "audit"
+                },
+                {
+                    "name": "Documents",
+                    "key": "documents",
+                    "type": "standard",
+                    "contentKey": "documents"
+                },
+                {
+                    "name": "Contact moments",
+                    "key": "contact-moments",
+                    "type": "standard",
+                    "contentKey": "contact-moments"
+                },
+                {
+                    "name": "Zaak objects",
+                    "key": "zaakobjecten",
+                    "type": "standard",
+                    "contentKey": "zaakobjecten"
+                },
+                {
+                    "name": "Notes",
+                    "key": "notes",
+                    "type": "standard",
+                    "contentKey": "notes"
+                }
+            ]
+        }
+    ]
+}

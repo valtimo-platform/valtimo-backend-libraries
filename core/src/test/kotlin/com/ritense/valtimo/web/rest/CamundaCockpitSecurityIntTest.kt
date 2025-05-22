@@ -17,7 +17,6 @@
 package com.ritense.valtimo.web.rest
 
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
@@ -27,8 +26,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.web.server.LocalServerPort
-import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.web.client.HttpClientErrorException.Forbidden
 import org.springframework.web.client.RestTemplate
@@ -38,14 +37,11 @@ import org.springframework.web.client.RestTemplate
 @Tag("security")
 class CamundaCockpitSecurityIntTest {
 
-    @MockitoBean
-    lateinit var processDefinitionCaseDefinitionLinker: ProcessDefinitionCaseDefinitionLinker
-
     @Nested
     @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = ["valtimo.security.whitelist.hosts=localhost"])
     inner class LocalhostWhiteListed @Autowired constructor(
         @LocalServerPort private val serverPort: Int,
-        @MockitoBean private val userManagementService: UserManagementService,
+        @MockBean private val userManagementService: UserManagementService,
     ) {
 
         @Test
@@ -61,7 +57,7 @@ class CamundaCockpitSecurityIntTest {
     @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = ["valtimo.security.whitelist.hosts=8.8.8.8"])
     inner class GoogleWhiteListed @Autowired constructor(
         @LocalServerPort private val serverPort: Int,
-        @MockitoBean private val userManagementService: UserManagementService,
+        @MockBean private val userManagementService: UserManagementService,
     ) {
 
         @Test

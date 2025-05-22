@@ -28,5 +28,5 @@
     <include file="changelog/20230117-add-zaak-instance-link.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20240131-zaaktype-link-domain-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20240214-create-table-zaak-hersteltermijn.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/20250312_zaak_type_link_to_case_definition.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

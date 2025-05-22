@@ -25,7 +25,6 @@ import com.ritense.objectenapi.management.ObjectManagementInfoProvider
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.objecttypenapi.client.Objecttype
 import com.ritense.plugin.service.PluginService
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPlugin
@@ -59,8 +58,6 @@ internal class ZaakObjectServiceTest {
     var objecttypenApiPlugin: ObjecttypenApiPlugin? = null
 
     lateinit var zaakObjecten: MutableList<ZaakObject>
-
-    val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
 
     @BeforeEach
     fun init() {
@@ -330,7 +327,6 @@ internal class ZaakObjectServiceTest {
                     ]
                 }
             """.trimIndent(),
-            caseDefinitionId,
             false
         )
         whenever(formDefinitionService.getFormDefinitionByNameIgnoringCase("some-type.editform"))

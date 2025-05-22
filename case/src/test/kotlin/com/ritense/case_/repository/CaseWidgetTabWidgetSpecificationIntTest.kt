@@ -16,8 +16,8 @@
 
 package com.ritense.case_.repository
 
-import com.ritense.BaseIntegrationTest
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.domain.CaseTabType
 import com.ritense.case.service.CaseTabService
 import com.ritense.case.web.rest.dto.CaseTabDto
@@ -28,7 +28,7 @@ import com.ritense.case_.widget.TestCaseWidgetProperties
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.request.NewDocumentRequest
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.document.service.impl.JsonSchemaDocumentService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -42,20 +42,20 @@ import org.springframework.transaction.annotation.Transactional
 class CaseWidgetTabWidgetSpecificationIntTest @Autowired constructor(
     private val caseTabService: CaseTabService,
     private val caseWidgetTabService: CaseWidgetTabService,
+    private val documentService: JsonSchemaDocumentService,
 ) : BaseIntegrationTest() {
 
-    val caseDefinitionId = CaseDefinitionId.of("widgets", "1.0.0")
+    val caseDefinitionName = "widgets"
     val tabKey = "some-tab"
 
     @BeforeEach
     fun setup() {
         runWithoutAuthorization {
-            caseTabService.createCaseTab(caseDefinitionId, CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-"))
+            caseTabService.createCaseTab(caseDefinitionName, CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-"))
 
             caseWidgetTabService.updateWidgetTab(
                 CaseWidgetTabDto(
-                    caseDefinitionId.key,
-                    caseDefinitionId.versionTag.version,
+                    caseDefinitionName,
                     tabKey,
                     widgets = listOf(
                         TestCaseWidgetTabWidgetDto("test", "Widget 1", 1, false, TestCaseWidgetProperties("test123")),
@@ -70,7 +70,7 @@ class CaseWidgetTabWidgetSpecificationIntTest @Autowired constructor(
     @Test
     @WithMockUser(authorities = ["ROLE_ALL_WIDGETS"])
     fun `should get tab with all widgets`() {
-        val tab = caseWidgetTabService.getWidgetTab(caseDefinitionId, tabKey)
+        val tab = caseWidgetTabService.getWidgetTab(caseDefinitionName, tabKey)
 
         assertEquals(2, tab?.widgets?.size)
         assertEquals("test", tab?.widgets?.get(0)?.key)
@@ -80,7 +80,7 @@ class CaseWidgetTabWidgetSpecificationIntTest @Autowired constructor(
     @Test
     @WithMockUser(authorities = ["ROLE_ONLY_TEST_WIDGETS"])
     fun `should get tab with only permitted widgets`() {
-        val tab = caseWidgetTabService.getWidgetTab(caseDefinitionId, tabKey)
+        val tab = caseWidgetTabService.getWidgetTab(caseDefinitionName, tabKey)
 
         assertEquals(1, tab?.widgets?.size)
         assertEquals("test", tab?.widgets?.get(0)?.key)
@@ -89,14 +89,14 @@ class CaseWidgetTabWidgetSpecificationIntTest @Autowired constructor(
     @Test
     @WithMockUser(authorities = ["ROLE_ONLY_TEST_WIDGETS_FOR_CONTEXT"])
     fun `should not get tab without context with only permitted widgets for context`() {
-        createDocument(caseDefinitionId, "{\"key\": \"CONTEXT\"}")
-        assertThrows<AccessDeniedException> { caseWidgetTabService.getWidgetTab(caseDefinitionId, tabKey) }
+        createDocument(caseDefinitionName, "{\"key\": \"CONTEXT\"}")
+        assertThrows<AccessDeniedException> { caseWidgetTabService.getWidgetTab(caseDefinitionName, tabKey) }
     }
 
     @Test
     @WithMockUser(authorities = ["ROLE_ONLY_TEST_WIDGETS_FOR_CONTEXT"])
     fun `should get tab with context with only permitted widgets for context`() {
-        val document = createDocument(caseDefinitionId, "{\"key\": \"CONTEXT\"}")
+        val document = createDocument(caseDefinitionName, "{\"key\": \"CONTEXT\"}")
         val tab = caseWidgetTabService.getWidgetTab(document.id(), tabKey)
 
         assertEquals(1, tab?.widgets?.size)
@@ -106,26 +106,24 @@ class CaseWidgetTabWidgetSpecificationIntTest @Autowired constructor(
     @Test
     @WithMockUser(authorities = ["ROLE_ONLY_TEST_WIDGETS_FOR_CONTEXT"])
     fun `should not get tab with only permitted widgets for the context`() {
-        val document = createDocument(caseDefinitionId)
+        val document = createDocument(caseDefinitionName)
         assertThrows<AccessDeniedException> { caseWidgetTabService.getWidgetTab(document.id(), tabKey) }
     }
 
     @Test
     @WithMockUser(authorities = ["ROLE_ONLY_TEST_WIDGETS_FOR_CONTEXT"])
     fun `should get tab without widgets for the context`() {
-        val document = createDocument(caseDefinitionId, "{\"key\": \"CONTEXTWITHOUTWIDGETS\"}")
+        val document = createDocument(caseDefinitionName, "{\"key\": \"CONTEXTWITHOUTWIDGETS\"}")
         val tab = caseWidgetTabService.getWidgetTab(document.id(), tabKey)
 
         assertEquals(0, tab?.widgets?.size)
     }
 
-    private fun createDocument(caseDefinitionId: CaseDefinitionId, content: String = "{}"): JsonSchemaDocument {
+    private fun createDocument(documentDefinitionName: String, content: String = "{}"): JsonSchemaDocument {
         return runWithoutAuthorization {
             documentService.createDocument(
                 NewDocumentRequest(
-                    caseDefinitionId.key,
-                    caseDefinitionId.key,
-                    caseDefinitionId.versionTag.version,
+                    documentDefinitionName,
                     JsonDocumentContent(content).asJson()
                 )
             ).resultingDocument().orElseThrow()

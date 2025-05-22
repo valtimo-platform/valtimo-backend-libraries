@@ -16,7 +16,7 @@
 
 package com.ritense.valueresolver.exception
 
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KotlinLogging
 import org.zalando.problem.AbstractThrowableProblem
 import org.zalando.problem.Status
 

@@ -97,8 +97,7 @@ internal class PluginServiceTest {
             Validation.buildDefaultValidatorFactory().validator,
             applicationEventPublisher,
             encryptionService,
-            environment,
-            mock()
+            environment
         ))
     }
 

@@ -86,10 +86,7 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
         variables["variable"] = "start-event-test"
         document = runWithoutAuthorization {
             documentService.createDocument(
-                NewDocumentRequest("house",
-                    "house",
-                    "1.0.0",
-                    objectMapper.readTree(documentJson))
+                NewDocumentRequest("house", objectMapper.readTree(documentJson))
             ).resultingDocument().orElseThrow()
         }
         val processInstance = runtimeService.startProcessInstanceByKey(
@@ -141,20 +138,14 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
 
         document = runWithoutAuthorization {
             documentService.createDocument(
-                NewDocumentRequest("house",
-                    "house",
-                    "1.0.0",
-                    objectMapper.readTree(documentJson))
+                NewDocumentRequest("house", objectMapper.readTree(documentJson))
             ).resultingDocument().orElseThrow()
         }
         variables["businessKey"] = document.id()
         val documentTwo = runWithoutAuthorization {
             documentService.createDocument(
                 NewDocumentRequest(
-                    "house",
-                    "house",
-                    "1.0.0",
-                    objectMapper.readTree(documentJson)
+                    "house", objectMapper.readTree(documentJson)
                 )
             ).resultingDocument().orElseThrow()
         }
@@ -234,10 +225,7 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
         variables["variable"] = "process-definition-start-event-test"
         document = runWithoutAuthorization {
             documentService.createDocument(
-                NewDocumentRequest("house",
-                    "house",
-                    "1.0.0",
-                    objectMapper.readTree(documentJson))
+                NewDocumentRequest("house", objectMapper.readTree(documentJson))
             ).resultingDocument().orElseThrow()
         }
         val processInstance = runtimeService.startProcessInstanceByKey(
@@ -288,10 +276,7 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
         variables["variable"] = "intermediate-catch-event-test-with-business-key"
         document = runWithoutAuthorization {
             documentService.createDocument(
-                NewDocumentRequest("house",
-                    "house",
-                    "1.0.0",
-                    objectMapper.readTree(documentJson))
+                NewDocumentRequest("house", objectMapper.readTree(documentJson))
             ).resultingDocument().orElseThrow()
         }
         variables["businessKey"] = document.id()

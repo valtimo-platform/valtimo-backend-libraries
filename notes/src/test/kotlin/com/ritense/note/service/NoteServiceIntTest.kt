@@ -28,8 +28,8 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.security.test.context.support.WithMockUser
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import java.util.UUID
 import java.util.function.Supplier
 
@@ -43,7 +43,7 @@ class NoteServiceIntTest() : BaseIntegrationTest() {
     @Autowired
     lateinit var objectMapper: ObjectMapper
 
-    @MockitoSpyBean
+    @SpyBean
     lateinit var outboxService: OutboxService
 
     lateinit var documentId: UUID
@@ -52,12 +52,7 @@ class NoteServiceIntTest() : BaseIntegrationTest() {
     fun beforeEach() {
         documentId = AuthorizationContext.runWithoutAuthorization {
             documentService.createDocument(
-                NewDocumentRequest(
-                    PROFILE_DOCUMENT_DEFINITION_NAME,
-                    "profile",
-                    "1.0.0",
-                    objectMapper.createObjectNode()
-                )
+                NewDocumentRequest(PROFILE_DOCUMENT_DEFINITION_NAME, objectMapper.createObjectNode())
             ).resultingDocument().get().id()!!.id
         }
 

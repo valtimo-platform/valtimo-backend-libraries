@@ -18,7 +18,7 @@ package com.ritense.commandhandling.decorator
 
 import com.ritense.commandhandling.Command
 import com.ritense.commandhandling.CommandHandler
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KotlinLogging
 
 class DecoratorBuilder<T>(private val handler: CommandHandler<Command<T>, T>) {
     private var decoratedHandler = handler

@@ -19,7 +19,6 @@ package com.ritense.zaakdetails.documentobjectenapisync
 import com.ritense.logging.LoggableResource
 import com.ritense.objectenapi.management.ObjectManagementInfoProvider
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -37,14 +36,13 @@ class DocumentObjectenApiSyncManagementResource(
     private val documentObjectenApiSyncManagementService: DocumentObjectenApiSyncManagementService,
     private val objectManagementInfoProvider: ObjectManagementInfoProvider,
 ) {
-    @GetMapping("/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/objecten-api-sync")
+    @GetMapping("/v1/document-definition/{name}/version/{version}/objecten-api-sync")
     fun getSyncConfiguration(
-        @PathVariable(name = "caseDefinitionKey") caseDefinitionKey: String,
-        @PathVariable(name = "caseDefinitionVersionTag") caseDefinitionVersionTag: String,
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "name") documentDefinitionName: String,
+        @PathVariable(name = "version") documentDefinitionVersion: Long,
     ): ResponseEntity<DocumentObjectenApiSyncResponse?> {
-        val caseDefinitionId = CaseDefinitionId(caseDefinitionKey, caseDefinitionVersionTag)
         val syncConfiguration =
-            documentObjectenApiSyncManagementService.getSyncConfiguration(caseDefinitionId)
+            documentObjectenApiSyncManagementService.getSyncConfiguration(documentDefinitionName, documentDefinitionVersion)
                 ?: return ResponseEntity.ok(null)
         val objectManagementConfiguration =
             objectManagementInfoProvider.getObjectManagementInfo(syncConfiguration.objectManagementConfigurationId)
@@ -53,26 +51,25 @@ class DocumentObjectenApiSyncManagementResource(
         )
     }
 
-    @PutMapping("/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/objecten-api-sync")
+    @PutMapping("/v1/document-definition/{name}/version/{version}/objecten-api-sync")
     fun createOrUpdateSyncConfiguration(
-        @PathVariable(name = "caseDefinitionKey") caseDefinitionKey: String,
-        @PathVariable(name = "caseDefinitionVersionTag") caseDefinitionVersionTag: String,
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "name") documentDefinitionName: String,
+        @PathVariable(name = "version") documentDefinitionVersion: Long,
         @RequestBody syncRequest: DocumentObjectenApiSyncRequest
     ): ResponseEntity<Unit> {
-        val caseDefinitionId = CaseDefinitionId(caseDefinitionKey, caseDefinitionVersionTag)
-        val syncConfiguration = syncRequest.toEntity(caseDefinitionId)
+        val syncConfiguration = syncRequest.toEntity(documentDefinitionName, documentDefinitionVersion)
         documentObjectenApiSyncManagementService.saveSyncConfiguration(syncConfiguration)
         return ResponseEntity.ok().build()
     }
 
-    @DeleteMapping("/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/objecten-api-sync")
+    @DeleteMapping("/v1/document-definition/{name}/version/{version}/objecten-api-sync")
     fun deleteSyncConfiguration(
-        @PathVariable(name = "caseDefinitionKey") caseDefinitionKey: String,
-        @PathVariable(name = "caseDefinitionVersionTag") caseDefinitionVersionTag: String,
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "name") documentDefinitionName: String,
+        @PathVariable(name = "version") documentDefinitionVersion: Long,
     ): ResponseEntity<Unit> {
-        val caseDefinitionId = CaseDefinitionId(caseDefinitionKey, caseDefinitionVersionTag)
         documentObjectenApiSyncManagementService.deleteSyncConfigurationByDocumentDefinition(
-            caseDefinitionId
+            documentDefinitionName,
+            documentDefinitionVersion
         )
         return ResponseEntity.ok().build()
     }

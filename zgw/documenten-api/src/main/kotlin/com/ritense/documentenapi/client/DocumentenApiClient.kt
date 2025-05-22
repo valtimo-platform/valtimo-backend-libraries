@@ -18,6 +18,7 @@ package com.ritense.documentenapi.client
 
 import BestandsdelenResult
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.documentenapi.DocumentenApiAuthentication
@@ -36,7 +37,7 @@ import com.ritense.resource.authorization.ResourcePermissionActionProvider
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.ClientTools.Companion.optionalQueryParam
 import com.ritense.zgw.Page
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KotlinLogging
 import org.springframework.core.io.Resource
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable

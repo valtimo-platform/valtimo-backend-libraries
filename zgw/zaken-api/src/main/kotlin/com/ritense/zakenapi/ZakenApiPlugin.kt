@@ -62,7 +62,8 @@ import com.ritense.zgw.LoggingConstants.CATALOGI_API
 import com.ritense.zgw.LoggingConstants.DOCUMENTEN_API
 import com.ritense.zgw.Page
 import com.ritense.zgw.Rsin
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KLogger
+import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
@@ -762,7 +763,7 @@ class ZakenApiPlugin(
     }
 
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger: KLogger = KotlinLogging.logger {}
         const val PLUGIN_KEY = "zakenapi"
         const val URL_PROPERTY = "url"
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"

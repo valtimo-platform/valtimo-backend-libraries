@@ -1,0 +1,248 @@
+{
+    "changesetId": "case-widget-tab-v1",
+    "tabs": [
+        {
+            "caseDefinitionName": "bezwaar",
+            "key": "widgets",
+            "widgets": [
+                {
+                    "key": "partner",
+                    "type": "fields",
+                    "title": "Partner",
+                    "width": 4,
+                    "highContrast": true,
+                    "properties": {
+                        "columns": [
+                            [
+                                {
+                                    "key": "bsn",
+                                    "title": "BSN",
+                                    "value": "doc:partner.bsn"
+                                },
+                                {
+                                    "key": "alive",
+                                    "title": "Alive",
+                                    "value": "doc:partner.alive",
+                                    "displayProperties": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                {
+                                    "key": "length",
+                                    "title": "Length",
+                                    "value": "doc:partner.length",
+                                    "displayProperties": {
+                                        "type": "number",
+                                        "digitsInfo": "1.0-0"
+                                    }
+                                }
+                            ],
+                            [
+                                {
+                                    "key": "phoneNumber",
+                                    "title": "Phone number",
+                                    "value": "doc:partner.phoneNumber"
+                                },
+                                {
+                                    "key": "dateOfBirth",
+                                    "title": "Date of birth",
+                                    "value": "doc:partner.dateOfBirth",
+                                    "displayProperties": {
+                                        "type": "date",
+                                        "format": "DD-MM-YYYY"
+                                    }
+                                },
+                                {
+                                    "key": "gender",
+                                    "title": "Gender",
+                                    "value": "doc:partner.gender",
+                                    "displayProperties": {
+                                        "type": "enum",
+                                        "values": {
+                                            "m": "Male",
+                                            "f": "Female",
+                                            "x": "Other"
+                                        }
+                                    }
+                                }
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "key": "partner2",
+                    "type": "fields",
+                    "title": "Partner2",
+                    "width": 2,
+                    "highContrast": true,
+                    "properties": {
+                        "columns": [
+                            [
+                                {
+                                    "key": "bsn",
+                                    "title": "BSN",
+                                    "value": "doc:partner.bsn"
+                                },
+                                {
+                                    "key": "alive",
+                                    "title": "Alive",
+                                    "value": "doc:partner.alive",
+                                    "displayProperties": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                {
+                                    "key": "length",
+                                    "title": "Length",
+                                    "value": "doc:partner.length",
+                                    "displayProperties": {
+                                        "type": "number",
+                                        "digitsInfo": "1.0-0"
+                                    }
+                                }
+                            ],
+                            [
+                                {
+                                    "key": "phoneNumber",
+                                    "title": "Phone number",
+                                    "value": "doc:partner.phoneNumber"
+                                },
+                                {
+                                    "key": "dateOfBirth",
+                                    "title": "Date of birth",
+                                    "value": "doc:partner.dateOfBirth",
+                                    "displayProperties": {
+                                        "type": "date",
+                                        "format": "DD-MM-YYYY"
+                                    }
+                                },
+                                {
+                                    "key": "gender",
+                                    "title": "Gender",
+                                    "value": "doc:partner.gender",
+                                    "displayProperties": {
+                                        "type": "enum",
+                                        "values": {
+                                            "m": "Male",
+                                            "f": "Female",
+                                            "x": "Other"
+                                        }
+                                    }
+                                }
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "key": "partner3",
+                    "type": "fields",
+                    "title": "Partner3",
+                    "width": 1,
+                    "highContrast": true,
+                    "properties": {
+                        "columns": [
+                            [
+                                {
+                                    "key": "bsn",
+                                    "title": "BSN",
+                                    "value": "doc:partner.bsn"
+                                },
+                                {
+                                    "key": "alive",
+                                    "title": "Alive",
+                                    "value": "doc:partner.alive",
+                                    "displayProperties": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                {
+                                    "key": "length",
+                                    "title": "Length",
+                                    "value": "doc:partner.length",
+                                    "displayProperties": {
+                                        "type": "number",
+                                        "digitsInfo": "1.0-0"
+                                    }
+                                }
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "key": "partner4",
+                    "type": "fields",
+                    "title": "Partner4",
+                    "width": 1,
+                    "highContrast": true,
+                    "properties": {
+                        "columns": [
+                            [
+                                {
+                                    "key": "bsn",
+                                    "title": "BSN",
+                                    "value": "doc:partner.bsn"
+                                }
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "key": "werkgevers1",
+                    "type": "table",
+                    "title": "Werkgevers1",
+                    "width": 4,
+                    "highContrast": false,
+                    "properties": {
+                        "collection": "doc:werkgevers",
+                        "defaultPageSize": 5,
+                        "columns": [
+                            {
+                                "key": "naam",
+                                "title": "Naam",
+                                "value": "naam"
+                            },
+                            {
+                                "key": "nettobedrag",
+                                "title": "Netto bedrag",
+                                "value": "nettoBedrag",
+                                "displayProperties": {
+                                    "type": "currency"
+                                }
+                            },
+                            {
+                                "key": "periode",
+                                "title": "Periode",
+                                "value": "periode"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "key": "children1",
+                    "type": "collection",
+                    "title": "Children1",
+                    "width": 4,
+                    "highContrast": false,
+                    "properties": {
+                        "collection": "doc:children",
+                        "defaultPageSize": 5,
+                        "title": {
+                            "value": "name"
+                        },
+                        "fields": [
+                            {
+                                "key": "dateOfBirth",
+                                "title": "Netto bedrag",
+                                "value": "nettoBedrag",
+                                "displayProperties": {
+                                    "type": "date",
+                                    "format": "DD-MM-YYYY"
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

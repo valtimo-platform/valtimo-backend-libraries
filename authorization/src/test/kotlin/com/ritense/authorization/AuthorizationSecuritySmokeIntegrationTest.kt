@@ -16,13 +16,8 @@
 
 package com.ritense.authorization
 
-import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker
 import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
-import org.springframework.test.context.bean.override.mockito.MockitoBean
 
 class AuthorizationSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
     basePackageName = "com.ritense.authorization"
-) {
-    @MockitoBean
-    lateinit var processDefinitionCaseDefinitionLinker: ProcessDefinitionCaseDefinitionLinker
-}
+)

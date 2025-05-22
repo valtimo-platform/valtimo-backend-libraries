@@ -1,7 +1,0 @@
-{
-    "key": "allows-all",
-    "name": "Allows all",
-    "versionTag": "1.0.0",
-    "canHaveAssignee": true,
-    "autoAssignTasks": true
-}

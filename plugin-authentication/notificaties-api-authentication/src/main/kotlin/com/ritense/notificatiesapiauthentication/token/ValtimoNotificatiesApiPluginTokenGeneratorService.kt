@@ -17,11 +17,12 @@
 package com.ritense.notificatiesapiauthentication.token
 
 import com.ritense.valtimo.contract.utils.SecurityUtils
-import io.github.oshai.kotlinlogging.KotlinLogging
 import io.jsonwebtoken.JwtBuilder
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
+import mu.KLogger
+import mu.KotlinLogging
 import java.nio.charset.Charset
 import java.util.Date
 
@@ -66,6 +67,6 @@ class ValtimoNotificatiesApiPluginTokenGeneratorService : NotificatiesApiPluginT
     }
 
     companion object {
-        val logger = KotlinLogging.logger {}
+        val logger: KLogger = KotlinLogging.logger {}
     }
 }

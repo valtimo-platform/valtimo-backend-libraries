@@ -29,6 +29,4 @@ open class TestImporter(
     override fun supports(fileName: String) = supportsFunction(fileName)
 
     override fun import(request: ImportRequest) = importFunction(request)
-
-    override fun partOfCaseDefinition(): Boolean = false
 }

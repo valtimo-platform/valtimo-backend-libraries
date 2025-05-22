@@ -16,9 +16,8 @@
 
 package com.ritense.importer
 
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import java.io.InputStream
 
 interface ImportService {
-    fun import(inputStream: InputStream, caseDefinitionIdList: List<CaseDefinitionId>)
+    fun import(inputStream: InputStream)
 }

@@ -18,7 +18,7 @@ package com.ritense.commandhandling.decorator
 
 import com.ritense.commandhandling.Command
 import com.ritense.commandhandling.CommandHandler
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KotlinLogging
 
 class ExecutionTimeDecorator<C : Command<T>, T>(
     commandHandler: CommandHandler<C, T>

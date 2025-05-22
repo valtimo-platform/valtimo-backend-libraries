@@ -27,11 +27,11 @@ import com.ritense.valtimo.contract.hardening.config.HardeningProperties;
 import com.ritense.valtimo.contract.hardening.service.impl.HardeningServiceImpl;
 import com.ritense.valtimo.contract.web.rest.error.ExceptionTranslator;
 import com.ritense.valtimo.web.autoconfigure.WebAutoConfiguration;
+import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.ContextConfiguration;
@@ -59,13 +59,13 @@ import org.zalando.problem.violations.ConstraintViolationProblemModule;
 @Tag("integration")
 public class ExceptionTranslatorIntTest {
 
-    @Autowired
+    @Inject
     private ExceptionTranslatorTestController controller;
 
-    @Autowired
+    @Inject
     private ExceptionTranslator exceptionTranslator;
 
-    @Autowired
+    @Inject
     private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
 
     private MockMvc mockMvc;

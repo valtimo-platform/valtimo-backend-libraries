@@ -26,7 +26,6 @@ import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import java.util.UUID
 
 class AnotherTestProcessLinkMapper(
@@ -86,7 +85,7 @@ class AnotherTestProcessLinkMapper(
         )
     }
 
-    override fun toNewProcessLink(createRequestDto: ProcessLinkCreateRequestDto, caseDefinitionId: CaseDefinitionId?): ProcessLink {
+    override fun toNewProcessLink(createRequestDto: ProcessLinkCreateRequestDto): ProcessLink {
         createRequestDto as AnotherTestProcessLinkCreateRequestDto
         return AnotherTestProcessLink(
             id = UUID.randomUUID(),
@@ -99,8 +98,7 @@ class AnotherTestProcessLinkMapper(
 
     override fun toUpdatedProcessLink(
         processLinkToUpdate: ProcessLink,
-        updateRequestDto: ProcessLinkUpdateRequestDto,
-        caseDefinitionId: CaseDefinitionId?
+        updateRequestDto: ProcessLinkUpdateRequestDto
     ): ProcessLink {
         updateRequestDto as AnotherTestProcessLinkUpdateRequestDto
 
@@ -113,7 +111,7 @@ class AnotherTestProcessLinkMapper(
         )
     }
 
-    override fun createRelatedExportRequests(processLink: ProcessLink, caseDefinitionId: CaseDefinitionId): Set<ExportRequest> {
+    override fun createRelatedExportRequests(processLink: ProcessLink): Set<ExportRequest> {
         return setOf(CustomProcessLinkNestedExportRequest())
     }
 

@@ -1,7 +1,0 @@
-{
-    "key": "profile",
-    "name": "Profile",
-    "versionTag": "1.0.0",
-    "canHaveAssignee": true,
-    "autoAssignTasks": true
-}

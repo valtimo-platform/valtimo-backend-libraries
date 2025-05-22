@@ -546,6 +546,8 @@ class ZakenApiClient(
             .retrieve()
             .body<ZaakObject>()!!
 
+        result = result.copy(objectUrl = result.objectUrl)
+
         outboxService.send {
             ZaakObjectCreated(result.url.toString(), objectMapper.valueToTree(result))
         }
@@ -572,10 +574,5 @@ class ZakenApiClient(
                 authentication.applyAuth(it)
             }
             .build()
-    }
-
-    companion object {
-        private const val HOST_DOCKER_INTERNAL = "host.docker.internal"
-        private const val LOCALHOST = "localhost"
     }
 }

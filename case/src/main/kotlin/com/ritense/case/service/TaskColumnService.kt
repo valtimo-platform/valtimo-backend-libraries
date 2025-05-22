@@ -33,7 +33,6 @@ import com.ritense.document.domain.DocumentDefinition
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valueresolver.ValueResolverService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -47,8 +46,7 @@ class TaskColumnService(
     private val taskListColumnRepository: TaskListColumnRepository,
     private val documentDefinitionService: DocumentDefinitionService,
     valueResolverService: ValueResolverService,
-    private val authorizationService: AuthorizationService,
-    private val caseDefinitionChecker: CaseDefinitionChecker,
+    private val authorizationService: AuthorizationService
 ) {
     var validators: Map<Operation, ListColumnValidator<TaskListColumnDto>> = mapOf(
         Operation.CREATE to SaveTaskListColumnValidator(
@@ -64,7 +62,6 @@ class TaskColumnService(
         taskListColumnDto: TaskListColumnDto
     ) {
         denyManagementOperation()
-        caseDefinitionChecker.assertCanUpdateGlobalConfiguration()
 
         runWithoutAuthorization {
             validators[Operation.CREATE]!!.validate(caseDefinitionName, taskListColumnDto)
@@ -85,7 +82,6 @@ class TaskColumnService(
         taskColumnKey2: String
     ) {
         denyManagementOperation()
-        caseDefinitionChecker.assertCanUpdateGlobalConfiguration()
 
         assertDocumentDefinitionExists(caseDefinitionName)
 
@@ -128,7 +124,6 @@ class TaskColumnService(
     @Throws(UnknownDocumentDefinitionException::class)
     fun deleteTaskListColumn(caseDefinitionName: String, columnKey: String) {
         denyManagementOperation()
-        caseDefinitionChecker.assertCanUpdateGlobalConfiguration()
 
         runWithoutAuthorization { assertDocumentDefinitionExists(caseDefinitionName) }
 

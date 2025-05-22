@@ -18,7 +18,6 @@ package com.ritense.valtimo.importer
 
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
-import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
 import com.ritense.importer.ValtimoImportTypes.Companion.DECISION_DEFINITION
 import com.ritense.valtimo.service.CamundaProcessService
 import org.springframework.transaction.annotation.Transactional
@@ -29,18 +28,18 @@ class CamundaDecisionDefinitionImporter(
 ) : Importer {
     override fun type() = DECISION_DEFINITION
 
-    override fun dependsOn(): Set<String> = setOf(CASE_DEFINITION)
+    override fun dependsOn(): Set<String> = emptySet()
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
         val fileName = request.fileName.substringAfterLast("/")
         request.content.inputStream().use {
-            camundaProcessService.deploy(request.caseDefinitionId, fileName, it)
+            camundaProcessService.deploy(fileName, it)
         }
     }
 
     private companion object {
-        val FILENAME_REGEX = """/dmn/(?:.*/)?(.+)\.dmn""".toRegex()
+        val FILENAME_REGEX = """(?:dmn|bpmn)/[^/]+\.dmn""".toRegex()
     }
 }

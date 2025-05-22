@@ -17,21 +17,18 @@
 package com.ritense.mail.wordpressmail
 
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
 @Tag("integration")
 abstract class BaseIntegrationTest {
-    @MockitoBean
-    lateinit var processDefinitionCaseDefinitionLinker: ProcessDefinitionCaseDefinitionLinker
 
-    @MockitoBean
+    @MockBean
     lateinit var userManagementService: UserManagementService
 
 }

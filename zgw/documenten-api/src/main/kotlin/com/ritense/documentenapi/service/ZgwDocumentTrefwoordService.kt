@@ -20,7 +20,7 @@ import com.ritense.documentenapi.domain.ZgwDocumentTrefwoord
 import com.ritense.documentenapi.repository.ZgwDocumentTrefwoordRepository
 import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KotlinLogging
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service

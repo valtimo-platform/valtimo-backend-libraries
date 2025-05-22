@@ -28,14 +28,14 @@ class CatalogiApiHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeHttpRequests { requests ->
-                requests.requestMatchers(antMatcher(GET, "/api/v1/case-definition/{documentDefinitionKey}/zaaktype/documenttype")).authenticated()
-                    .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{documentDefinitionKey}/zaaktype/roltype")).authenticated()
-                    .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{documentDefinitionKey}/zaaktype/statustype")).authenticated()
-                    .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{documentDefinitionKey}/zaaktype/resultaattype")).authenticated()
-                    .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{documentDefinitionKey}/zaaktype/besluittype")).authenticated()
+                requests.requestMatchers(antMatcher(GET, "/api/v1/documentdefinition/{documentDefinitionName}/zaaktype/documenttype")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/roltype")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/statustype")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/resultaattype")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/besluittype")).authenticated()
 
                     .requestMatchers(antMatcher(GET, "/api/management/v1/zgw/zaaktype")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition/{documentDefinitionKey}/catalogi-eigenschappen")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionName}/catalogi-eigenschappen")).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

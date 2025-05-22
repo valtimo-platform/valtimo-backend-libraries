@@ -16,20 +16,16 @@
 
 package com.ritense.case.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.case.web.rest.dto.TaskListColumnDto
+import com.ritense.case.deployment.CaseTaskListDeploymentService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_TASK_LIST
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
-import com.ritense.logging.withLoggingContext
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.valtimo.changelog.service.ChangelogDeployer
 
 class CaseTaskListImporter(
-    private val objectMapper: ObjectMapper,
-    private val taskColumnService: TaskColumnService,
+    private val caseTaskListDeploymentService: CaseTaskListDeploymentService,
+    private val changelogDeployer: ChangelogDeployer
 ) : Importer {
     override fun type(): String = CASE_TASK_LIST
 
@@ -38,26 +34,11 @@ class CaseTaskListImporter(
     override fun supports(fileName: String): Boolean = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
-        deploy(request.caseDefinitionId!!, request.content.toString(Charsets.UTF_8))
-    }
-
-    private fun deploy(caseDefinitionId: CaseDefinitionId, content: String) {
-        val columns = getJson(content)
-
-        runWithoutAuthorization {
-            withLoggingContext("jsonSchemaDocumentName" to caseDefinitionId.key) {
-                columns.map { taskListColumnDto ->
-                    taskColumnService.saveListColumn(caseDefinitionId.key, taskListColumnDto)
-                }
-            }
-        }
-    }
-
-    private fun getJson(rawJson: String): List<TaskListColumnDto> {
-        return objectMapper.readValue<List<TaskListColumnDto>>(rawJson)
+        changelogDeployer
+            .deploy(caseTaskListDeploymentService, request.fileName, request.content.toString(Charsets.UTF_8))
     }
 
     private companion object {
-        val FILENAME_REGEX = """/case/task-list/([^/]+)\.case-task-list\.json""".toRegex()
+        val FILENAME_REGEX = """config/case-task-list/([^/]+)\.case-task-list\.json""".toRegex()
     }
 }

@@ -25,8 +25,8 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.bean.override.mockito.MockitoBean
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
+import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest(properties = ["${OnOutboxEnabledCondition.PROPERTY_NAME}=true"])
@@ -34,10 +34,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @Tag("integration")
 class BaseIntegrationTest {
 
-    @MockitoBean
+    @MockBean
     lateinit var messagePublisher: MessagePublisher
 
-    @MockitoSpyBean
+    @SpyBean
     lateinit var outboxMessageRepository: OutboxMessageRepository
 
     @Autowired

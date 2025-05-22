@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.AuthorizationSupportedHelper
-import com.ritense.case.service.CaseDefinitionService
+import com.ritense.authorization.request.RelatedEntityAuthorizationRequest
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchema
 import com.ritense.document.domain.impl.JsonSchemaDocument
@@ -28,7 +28,6 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentSequenceGeneratorService
-import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.domain.FormProcessLink
@@ -36,20 +35,22 @@ import com.ritense.form.service.impl.DefaultFormSubmissionService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.form.web.rest.dto.FormSubmissionResultFailed
 import com.ritense.form.web.rest.dto.FormSubmissionResultSucceeded
-import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionId
+import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey
+import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinition
+import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinitionId
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndStartProcessRequest
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
-import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
+import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService
 import com.ritense.processdocument.service.impl.result.ModifyDocumentAndCompleteTaskResultSucceeded
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ActivityTypeWithEventName.START_EVENT_START
 import com.ritense.processlink.domain.ActivityTypeWithEventName.USER_TASK_CREATE
 import com.ritense.processlink.service.ProcessLinkService
+import com.ritense.valtimo.camunda.domain.CamundaExecution
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
@@ -79,8 +80,7 @@ class DefaultFormSubmissionServiceTest {
     lateinit var processLinkService: ProcessLinkService
     lateinit var formDefinitionService: FormIoFormDefinitionService
     lateinit var documentService: JsonSchemaDocumentService
-    lateinit var documentDefinitionService: JsonSchemaDocumentDefinitionService
-    lateinit var processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService
+    lateinit var processDocumentAssociationService: CamundaProcessJsonSchemaDocumentAssociationService
     lateinit var processDocumentService: CamundaProcessJsonSchemaDocumentService
     lateinit var camundaTaskService: CamundaTaskService
     lateinit var repositoryService: CamundaRepositoryService
@@ -89,20 +89,17 @@ class DefaultFormSubmissionServiceTest {
     lateinit var documentSequenceGeneratorService: DocumentSequenceGeneratorService
     lateinit var authorizationService: AuthorizationService
     lateinit var valueResolverService: ValueResolverService
-    lateinit var caseDefinitionService: CaseDefinitionService
 
     lateinit var formProcessLink: FormProcessLink
     lateinit var processDefinition: CamundaProcessDefinition
     lateinit var formDefinition: FormIoFormDefinition
-    val caseDefinitionId = CaseDefinitionId.of("person", "1.0.0")
 
     @BeforeEach
     fun beforeEach() {
         processLinkService = mock()
         formDefinitionService = mock()
         documentService = mock()
-        documentDefinitionService = mock()
-        processDefinitionCaseDefinitionService = mock()
+        processDocumentAssociationService = mock()
         processDocumentService = mock()
         camundaTaskService = mock()
         repositoryService = mock()
@@ -110,14 +107,12 @@ class DefaultFormSubmissionServiceTest {
         prefillFormService = mock()
         authorizationService = mock()
         valueResolverService = mock()
-        caseDefinitionService = mock()
         mockkObject(AuthorizationSupportedHelper)
         defaultFormSubmissionService = DefaultFormSubmissionService(
             processLinkService,
             formDefinitionService,
             documentService,
-            documentDefinitionService,
-            processDefinitionCaseDefinitionService,
+            processDocumentAssociationService,
             processDocumentService,
             camundaTaskService,
             repositoryService,
@@ -125,7 +120,6 @@ class DefaultFormSubmissionServiceTest {
             prefillFormService,
             authorizationService,
             valueResolverService,
-            caseDefinitionService,
             MapperSingleton.get()
         )
 
@@ -139,7 +133,7 @@ class DefaultFormSubmissionServiceTest {
         whenever(repositoryService.findProcessDefinitionById(formProcessLink.processDefinitionId))
             .thenReturn(processDefinition)
 
-        formDefinition = formDefinitionOf("user-task", caseDefinitionId)
+        formDefinition = formDefinitionOf("user-task")
         whenever(formDefinitionService.getFormDefinitionById(formProcessLink.formDefinitionId))
             .thenReturn(Optional.of(formDefinition))
 
@@ -155,7 +149,9 @@ class DefaultFormSubmissionServiceTest {
     fun `should handle submission - new document and start process`() {
         //Given
         val formData = formData()
-        val document = createDocument(JsonDocumentContent.build(formData), caseDefinitionId)
+        whenever(processDocumentAssociationService.getProcessDocumentDefinition(any()))
+            .thenReturn(processDocumentDefinition("aName", true))
+        val document = createDocument(JsonDocumentContent.build(formData))
         whenever(processDocumentService.dispatch(any()))
             .thenReturn(ModifyDocumentAndCompleteTaskResultSucceeded(document))
 
@@ -165,7 +161,7 @@ class DefaultFormSubmissionServiceTest {
             formData = formData,
             documentId = null,
             taskInstanceId = null,
-            documentDefinitionName = "aName"
+            documentDefinitionName = null
         )
 
         //Then
@@ -179,7 +175,7 @@ class DefaultFormSubmissionServiceTest {
     fun `should handle submission - new document and start process - no process document association`() {
         //Given
         val formData = formData()
-        val document = createDocument(JsonDocumentContent.build(formData), caseDefinitionId)
+        val document = createDocument(JsonDocumentContent.build(formData))
         whenever(processDocumentService.dispatch(any()))
             .thenReturn(ModifyDocumentAndCompleteTaskResultSucceeded(document))
 
@@ -195,7 +191,7 @@ class DefaultFormSubmissionServiceTest {
         //Then
         assertThat(formSubmissionResult).isInstanceOf(FormSubmissionResultSucceeded::class.java)
         assertThat(formSubmissionResult.errors()).isEmpty()
-        verifyNoInteractions(processDefinitionCaseDefinitionService)
+        verifyNoInteractions(processDocumentAssociationService)
         verify(applicationEventPublisher, times(0)).publishEvent(isA<ExternalDataSubmittedEvent>())
         verify(processDocumentService, times(1)).dispatch(isA<NewDocumentAndStartProcessRequest>())
     }
@@ -205,7 +201,9 @@ class DefaultFormSubmissionServiceTest {
         //Given
         val documentId = UUID.randomUUID().toString()
         val formData = formData()
-        val document = createDocument(JsonDocumentContent.build(formData), caseDefinitionId)
+        whenever(processDocumentAssociationService.getProcessDocumentDefinition(any(), any()))
+            .thenReturn(processDocumentDefinition("aName"))
+        val document = createDocument(JsonDocumentContent.build(formData))
         whenever(documentService.get(documentId)).thenReturn(document)
         whenever(processDocumentService.dispatch(any()))
             .thenReturn(ModifyDocumentAndCompleteTaskResultSucceeded(document))
@@ -231,7 +229,9 @@ class DefaultFormSubmissionServiceTest {
         //Given
         val documentId = UUID.randomUUID().toString()
         val formData = formData()
-        val document = createDocument(JsonDocumentContent.build(formData), caseDefinitionId)
+        whenever(processDocumentAssociationService.getProcessDocumentDefinition(any(), any()))
+            .thenReturn(processDocumentDefinition("aName"))
+        val document = createDocument(JsonDocumentContent.build(formData))
         whenever(documentService.get(documentId)).thenReturn(document)
         whenever(processDocumentService.dispatch(any()))
             .thenReturn(ModifyDocumentAndCompleteTaskResultSucceeded(document))
@@ -297,7 +297,7 @@ class DefaultFormSubmissionServiceTest {
         //Given
         val documentId: String? = null
         val formData = formData()
-        val document = createDocument(JsonDocumentContent.build(formData), caseDefinitionId)
+        val document = createDocument(JsonDocumentContent.build(formData))
         whenever(documentService.get(documentId)).thenReturn(document)
 
         //When
@@ -319,7 +319,7 @@ class DefaultFormSubmissionServiceTest {
         //Given
         val documentId = UUID.randomUUID().toString()
         val formData = formData()
-        val document = createDocument(JsonDocumentContent.build(formData), caseDefinitionId)
+        val document = createDocument(JsonDocumentContent.build(formData))
         whenever(documentService.get(documentId)).thenReturn(document)
 
         //When
@@ -350,25 +350,36 @@ class DefaultFormSubmissionServiceTest {
         return formProcessLink
     }
 
-    private fun formDefinitionOf(formDefinitionId: String, caseDefinitionId: CaseDefinitionId): FormIoFormDefinition {
+    private fun formDefinitionOf(formDefinitionId: String): FormIoFormDefinition {
         val formDefinition = rawFormDefinition(formDefinitionId)
-        return FormIoFormDefinition(UUID.randomUUID(), "form-example", formDefinition, caseDefinitionId, false)
+        return FormIoFormDefinition(UUID.randomUUID(), "form-example", formDefinition, false)
     }
 
     private fun rawFormDefinition(formDefinitionId: String): String {
-        return requireNotNull(Thread.currentThread().contextClassLoader.getResourceAsStream("config/case/person/1-0-0/form/$formDefinitionId.form.json"))
+        return requireNotNull(Thread.currentThread().contextClassLoader.getResourceAsStream("config/form/$formDefinitionId.json"))
             .bufferedReader().use { it.readText() }
     }
 
-    private fun definition(caseDefinitionId: CaseDefinitionId): JsonSchemaDocumentDefinition {
-        val jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.of("person", caseDefinitionId)
+    private fun processDocumentDefinition(documentDefinitionName: String, canInitializeDocument: Boolean = false): CamundaProcessJsonSchemaDocumentDefinition {
+        return CamundaProcessJsonSchemaDocumentDefinition(
+            CamundaProcessJsonSchemaDocumentDefinitionId.newId(
+                CamundaProcessDefinitionKey(PROCESS_DEFINITION_KEY),
+                JsonSchemaDocumentDefinitionId.existingId(documentDefinitionName, 1)
+            ),
+            canInitializeDocument,
+            false
+        )
+    }
+
+    private fun definition(): JsonSchemaDocumentDefinition {
+        val jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.newId("person")
         val jsonSchema = JsonSchema.fromResourceUri(path(jsonSchemaDocumentDefinitionId.name()))
         return JsonSchemaDocumentDefinition(jsonSchemaDocumentDefinitionId, jsonSchema)
     }
 
-    private fun createDocument(content: JsonDocumentContent, caseDefinitionId: CaseDefinitionId): JsonSchemaDocument {
+    private fun createDocument(content: JsonDocumentContent): JsonSchemaDocument {
         return JsonSchemaDocument.create(
-            definition(caseDefinitionId),
+            definition(),
             content,
             USERNAME,
             documentSequenceGeneratorService,
@@ -379,7 +390,7 @@ class DefaultFormSubmissionServiceTest {
     }
 
     private fun path(name: String): URI? {
-        return URI.create(String.format("config/case/person/1-0-0/document/definition/%s.document-definition.json", "$name.schema"))
+        return URI.create(String.format("config/document/definition/%s.json", "$name.schema"))
     }
 
     private fun formData(): ObjectNode {

@@ -47,7 +47,7 @@ class ProcessLinkImporterIntTest @Autowired constructor(
     @Test
     fun `should deploy processLinks`() {
         processLinkImporter.import(ImportRequest(
-            "/process-link/test-importer-process.process-link.json",
+            "test-importer-process.processlink.json",
             JSON.toByteArray(Charsets.UTF_8)
         ))
 

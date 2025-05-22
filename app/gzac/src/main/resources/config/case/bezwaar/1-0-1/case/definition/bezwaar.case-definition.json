@@ -1,7 +1,0 @@
-{
-    "key": "bezwaar",
-    "name": "Bezwaar",
-    "versionTag": "1.0.1",
-    "canHaveAssignee": true,
-    "autoAssignTasks": true
-}

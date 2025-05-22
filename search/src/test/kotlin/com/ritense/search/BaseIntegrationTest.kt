@@ -22,7 +22,7 @@ import com.ritense.valtimo.contract.mail.MailSender
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest
@@ -30,9 +30,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @Tag("integration")
 abstract class BaseIntegrationTest {
 
-    @MockitoBean
+    @MockBean
     lateinit var userManagementService: UserManagementService
 
-    @MockitoBean
+    @MockBean
     lateinit var mailSender: MailSender
 }

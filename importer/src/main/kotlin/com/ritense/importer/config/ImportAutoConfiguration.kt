@@ -19,27 +19,18 @@ package com.ritense.importer.config
 import com.ritense.importer.ImportService
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportService
-import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
-import org.springframework.core.env.Environment
+import org.springframework.boot.autoconfigure.AutoConfiguration
 
 @AutoConfiguration
-@EnableConfigurationProperties(ImportProperties::class)
 class ImportAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ImportService::class)
-    fun importService(
-        importers: Set<Importer>,
-        environment: Environment,
-        importProperties: ImportProperties
-    ): ImportService {
+    fun importService(importers: Set<Importer>): ImportService {
         return ValtimoImportService(
-            importers,
-            environment,
-            importProperties.whitelistedPaths.map { it.toRegex() }
+            importers
         )
     }
 }

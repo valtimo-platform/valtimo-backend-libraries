@@ -1,0 +1,88 @@
+{
+    "display": "form",
+    "settings": {
+        "pdf": {
+            "id": "1ec0f8ee-6685-5d98-a847-26f67b67d6f0",
+            "src": "https://files.form.io/pdf/5692b91fd1028f01000407e3/file/1ec0f8ee-6685-5d98-a847-26f67b67d6f0"
+        }
+    },
+    "components": [
+        {
+            "label": "Firstname",
+            "key": "voornaam",
+            "type": "textfield",
+            "disabled": true,
+            "input": true
+        },
+        {
+            "label": "Lastname",
+            "key": "achternaam",
+            "type": "textfield",
+            "disabled": true,
+            "input": true
+        },
+        {
+            "label": "Email address",
+            "key": "emailadres",
+            "type": "textfield",
+            "disabled": true,
+            "input": true
+        },
+        {
+            "label": "Annual revenue",
+            "tableView": true,
+            "key": "jaaromzet",
+            "defaultValue": "750000",
+            "type": "textfield",
+            "disabled": true,
+            "input": true
+        },
+        {
+            "label": "Amount to borrow",
+            "tableView": true,
+            "defaultValue": "250000",
+            "key": "leen-bedrag",
+            "type": "textfield",
+            "disabled": true,
+            "input": true
+        },
+        {
+            "cellAlignment": "left",
+            "key": "table",
+            "type": "table",
+            "numRows": 1,
+            "numCols": 2,
+            "input": false,
+            "tableView": false,
+            "striped": true,
+            "hideLabel": true,
+            "rows": [
+                [
+                    {
+                        "components": [
+                            {
+                                "type": "button",
+                                "label": "< Loan height",
+                                "key": "back",
+                                "theme": "warning",
+                                "disableOnInvalid": false,
+                                "input": true
+                            }
+                        ]
+                    },
+                    {
+                        "components": [
+                            {
+                                "type": "button",
+                                "label": "Confirm >",
+                                "key": "submit",
+                                "disableOnInvalid": true,
+                                "input": true
+                            }
+                        ]
+                    }
+                ]
+            ]
+        }
+    ]
+}

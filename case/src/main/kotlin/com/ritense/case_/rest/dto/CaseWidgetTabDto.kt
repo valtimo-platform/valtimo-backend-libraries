@@ -20,22 +20,14 @@ import com.ritense.case_.domain.tab.CaseWidgetTab
 import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 import com.ritense.case_.widget.CaseWidgetMapper
 import com.ritense.document.domain.impl.JsonSchemaDocument
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 
 data class CaseWidgetTabDto(
-    val caseDefinitionKey: String? = null,
-    val caseDefinitionVersionTag: String? = null,
+    @field:NotBlank val caseDefinitionName: String,
     @field:NotBlank val key: String,
     @field:Valid val widgets: List<@Valid CaseWidgetTabWidgetDto> = listOf(),
 ) {
-    fun validate(caseDefinitionId: CaseDefinitionId) {
-        widgets.forEach {
-            it.validate(caseDefinitionId)
-        }
-    }
-
     companion object {
         @JvmStatic
         fun of(
@@ -44,8 +36,7 @@ data class CaseWidgetTabDto(
             permissionCheck: (CaseWidgetTabWidget) -> Boolean
         ): CaseWidgetTabDto {
             return CaseWidgetTabDto(
-                tab.id.caseDefinitionId.key,
-                tab.id.caseDefinitionId.versionTag.version,
+                tab.id.caseDefinitionName,
                 tab.id.key,
                 widgets = tab.widgets
                     .filter { permissionCheck(it) }
@@ -65,8 +56,7 @@ data class CaseWidgetTabDto(
             document: JsonSchemaDocument
         ): CaseWidgetTabDto {
             return CaseWidgetTabDto(
-                tab.id.caseDefinitionId.key,
-                tab.id.caseDefinitionId.versionTag.version,
+                tab.id.caseDefinitionName,
                 tab.id.key,
                 widgets = tab.widgets
                     .filter { permissionCheck(it, document) }

@@ -16,12 +16,12 @@
 
 package com.ritense.zaakdetails.documentobjectenapisync
 
-import com.ritense.case_.domain.definition.CaseDefinition
+import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.zaakdetails.documentobjectenapisync.DocumentObjectenApiSyncService.Companion.logger
+import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -30,19 +30,39 @@ import org.springframework.transaction.annotation.Transactional
 @SkipComponentScan
 class DocumentObjectenApiSyncManagementService(
     private val documentObjectenApiSyncRepository: DocumentObjectenApiSyncRepository,
-    private val caseDefinitionChecker: CaseDefinitionChecker,
 ) {
+
+    @EventListener(DocumentDefinitionDeployedEvent::class)
+    fun deployNewSyncConfiguration(event: DocumentDefinitionDeployedEvent) {
+        val newDocumentDefinitionId = event.documentDefinition().id()
+        val latest = documentObjectenApiSyncRepository
+            .findFirstByDocumentDefinitionNameOrderByDocumentDefinitionVersionDesc(newDocumentDefinitionId.name())
+        if (latest != null && latest.documentDefinitionVersion + 1 == newDocumentDefinitionId.version()) {
+            saveSyncConfiguration(
+                DocumentObjectenApiSync(
+                    documentDefinitionName = latest.documentDefinitionName,
+                    documentDefinitionVersion = newDocumentDefinitionId.version(),
+                    objectManagementConfigurationId = latest.objectManagementConfigurationId,
+                    enabled = latest.enabled,
+                )
+            )
+        }
+    }
+
     fun getSyncConfiguration(
-        @LoggableResource(resourceType = CaseDefinition ::class) caseDefinitionId: CaseDefinitionId
+        @LoggableResource(resourceType = JsonSchemaDocumentDefinition::class) documentDefinitionName: String,
+        documentDefinitionVersion: Long
     ): DocumentObjectenApiSync? {
-        logger.debug { "Get sync configuration caseDefinitionId=$caseDefinitionId" }
-        return documentObjectenApiSyncRepository.findByCaseDefinitionId(caseDefinitionId)
+        logger.debug { "Get sync configuration documentDefinitionName=$documentDefinitionName" }
+        return documentObjectenApiSyncRepository.findByDocumentDefinitionNameAndDocumentDefinitionVersion(
+            documentDefinitionName,
+            documentDefinitionVersion
+        )
     }
 
     fun saveSyncConfiguration(sync: DocumentObjectenApiSync) {
-        logger.info { "Save sync configuration caseDefinitionId=${sync.caseDefinitionId}" }
-        caseDefinitionChecker.assertCanUpdateCaseDefinition(sync.caseDefinitionId)
-        val modifiedSync = getSyncConfiguration(sync.caseDefinitionId)
+        logger.info { "Save sync configuration documentDefinitionName=${sync.documentDefinitionName}" }
+        val modifiedSync = getSyncConfiguration(sync.documentDefinitionName, sync.documentDefinitionVersion)
             ?.copy(
                 objectManagementConfigurationId = sync.objectManagementConfigurationId,
                 enabled = sync.enabled
@@ -53,12 +73,16 @@ class DocumentObjectenApiSyncManagementService(
     }
 
     fun deleteSyncConfigurationByDocumentDefinition(
-        @LoggableResource(resourceType = CaseDefinition ::class) caseDefinitionId: CaseDefinitionId
+        @LoggableResource(resourceType = JsonSchemaDocumentDefinition::class) documentDefinitionName: String,
+        documentDefinitionVersion: Long
     ) {
         logger.info {
-            "Delete sync configuration caseDefinitionId=$caseDefinitionId"
+            """Delete sync configuration documentDefinitionName=$documentDefinitionName
+                documentDefinitionVersion=$documentDefinitionVersion"""
         }
-        caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId)
-        documentObjectenApiSyncRepository.deleteByCaseDefinitionId(caseDefinitionId)
+        documentObjectenApiSyncRepository.deleteByDocumentDefinitionNameAndDocumentDefinitionVersion(
+            documentDefinitionName,
+            documentDefinitionVersion
+        )
     }
 }

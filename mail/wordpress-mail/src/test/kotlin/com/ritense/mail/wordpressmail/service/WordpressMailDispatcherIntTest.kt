@@ -17,13 +17,13 @@
 package com.ritense.mail.wordpressmail.service
 
 import com.ritense.mail.wordpressmail.BaseIntegrationTest
+import jakarta.inject.Inject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 
 internal class WordpressMailDispatcherIntTest : BaseIntegrationTest() {
 
-    @Autowired
+    @Inject
     lateinit var wordpressMailMailDispatcher: WordpressMailDispatcher
 
     @Test
