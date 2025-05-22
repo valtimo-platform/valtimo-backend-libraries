@@ -24,6 +24,7 @@ import com.ritense.processlink.autodeployment.ProcessLinkDeploymentApplicationRe
 import com.ritense.processlink.domain.SupportedProcessLinkTypeHandler
 import com.ritense.processlink.exporter.ProcessLinkExporter
 import com.ritense.processlink.importer.ProcessLinkImporter
+import com.ritense.processlink.listener.ProcessDefinitionDeletedEventListener
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.processlink.security.config.ProcessLinkHttpSecurityConfigurer
@@ -191,6 +192,13 @@ class ProcessLinkAutoConfiguration {
         repositoryService,
         objectMapper
     )
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessDefinitionDeletedEventListener::class)
+    fun processDefinitionDeletedEventListener(
+        processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
+        processLinkService: ProcessLinkService
+    ) = ProcessDefinitionDeletedEventListener(processDefinitionCaseDefinitionService, processLinkService)
 
     @Bean
     @ConditionalOnMissingBean(ProcessDeploymentService::class)

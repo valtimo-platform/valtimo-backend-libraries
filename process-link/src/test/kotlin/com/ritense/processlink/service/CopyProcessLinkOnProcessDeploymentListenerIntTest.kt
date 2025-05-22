@@ -75,39 +75,6 @@ internal class CopyProcessLinkOnProcessDeploymentListenerIntTest : BaseIntegrati
         assertEquals(1, processLinkService.getProcessLinks(latestProcessDefinition.id, SERVICE_TASK_ID).count())
     }
 
-    @Test
-    fun `should NOT copy process link on old process to a newly deployed process`() {
-        // given
-        val changedProcessBpmn = readFileAsString("/config/case/autodeploy/1-0-0/bpmn/service-task-process.bpmn")
-            .replace("My service task", "My service task changed")
-        runWithoutAuthorization {
-            camundaProcessService.deploy(
-                CaseDefinitionId("autodeploy", "1.0.0"),
-                "service-task-process.bpmn",
-                changedProcessBpmn.byteInputStream()
-            )
-        }
-        createProcessLink(processDefinition)
-        val changedAgainProcessBpmn = readFileAsString("/config/case/autodeploy/1-0-0/bpmn/service-task-process.bpmn")
-            .replace("My service task", "My service task changed again")
-
-        // when
-        runWithoutAuthorization {
-            camundaProcessService.deploy(
-                CaseDefinitionId("autodeploy", "1.0.0"),
-                "service-task-process.bpmn",
-                changedAgainProcessBpmn.byteInputStream()
-            )
-        }
-
-        // then
-        val latestProcessDefinition = getLatestProcessDefinition()
-        assertEquals(1, processDefinition.version)
-        assertEquals(1, processLinkService.getProcessLinks(processDefinition.id, SERVICE_TASK_ID).count())
-        assertEquals(3, latestProcessDefinition.version)
-        assertEquals(0, processLinkService.getProcessLinks(latestProcessDefinition.id, SERVICE_TASK_ID).count())
-    }
-
     private fun createProcessLink(processDefinition: CamundaProcessDefinition) {
         processLinkService.createProcessLink(
             TestProcessLinkCreateRequestDto(
