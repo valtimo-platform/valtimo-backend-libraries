@@ -32,7 +32,6 @@ dockerCompose {
 dependencies {
     api project(":mail")
     implementation project(":case")
-    implementation project(":connector")
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
@@ -64,7 +63,6 @@ dependencies {
 
     testImplementation project(":core")
     testImplementation project(":mail")
-    testImplementation project(":connector")
     testImplementation project(":test-utils-common")
     testImplementation project(":resource:local-resource")
 

@@ -19,13 +19,12 @@ package com.ritense.smartdocuments.client
 import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.ritense.resource.service.TemporaryResourceStorageService
-import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
+import com.ritense.smartdocuments.config.SmartDocumentsAuthentication
 import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.FileStreamResponse
 import com.ritense.smartdocuments.domain.FilesResponse
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import com.ritense.smartdocuments.domain.SmartDocumentsTemplateData
-import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
 import com.ritense.smartdocuments.io.SubInputStream
 import com.ritense.smartdocuments.io.UnicodeUnescapeInputStream
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8
@@ -39,14 +38,13 @@ import java.util.Base64
 import java.util.UUID
 
 class SmartDocumentsClient(
-    private var smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties,
     private val smartDocumentsRestClientBuilder: RestClient.Builder,
     private val maxFileSizeMb: Int,
     private val temporaryResourceStorageService: TemporaryResourceStorageService,
 ) {
 
-    fun getSmartDocumentsTemplateData(smartDocumentsPropertiesDto: SmartDocumentsPropertiesDto): SmartDocumentsTemplateData? {
-        val response = pluginRestClient(smartDocumentsPropertiesDto)
+    fun getSmartDocumentsTemplateData(authentication: SmartDocumentsAuthentication): SmartDocumentsTemplateData? {
+        val response = restClient(authentication)
             .get()
             .uri(STRUCTURE_PATH)
             .retrieve()
@@ -54,8 +52,8 @@ class SmartDocumentsClient(
         return xmlMapper.readValue(response, SmartDocumentsTemplateData::class.java)
     }
 
-    fun generateDocument(smartDocumentsRequest: SmartDocumentsRequest): FilesResponse {
-        return restClient()
+    fun generateDocument(authentication: SmartDocumentsAuthentication, smartDocumentsRequest: SmartDocumentsRequest): FilesResponse {
+        return restClient(authentication)
             .post()
             .uri("/wsxmldeposit/deposit/unattended")
             .contentType(APPLICATION_JSON_UTF8)
@@ -65,11 +63,12 @@ class SmartDocumentsClient(
     }
 
     fun generateDocumentStream(
+        authentication: SmartDocumentsAuthentication,
         smartDocumentsRequest: SmartDocumentsRequest,
         outputFormat: DocumentFormatOption,
     ): FileStreamResponse {
         // Stream complete response (json) to a Resource
-        val result = restClient()
+        val result = restClient(authentication)
             .post()
             .uri("/wsxmldeposit/deposit/unattended")
             .contentType(APPLICATION_JSON_UTF8)
@@ -103,31 +102,14 @@ class SmartDocumentsClient(
         )
     }
 
-    fun setProperties(smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties) {
-        this.smartDocumentsConnectorProperties = smartDocumentsConnectorProperties
-    }
-
-    private fun pluginRestClient(pluginProperties: SmartDocumentsPropertiesDto): RestClient {
+    private fun restClient(authentication: SmartDocumentsAuthentication): RestClient {
         return smartDocumentsRestClientBuilder
             .clone()
-            .baseUrl(pluginProperties.url)
+            .baseUrl(authentication.url)
             .defaultHeaders { headers ->
                 headers.setBasicAuth(
-                    pluginProperties.username,
-                    pluginProperties.password
-                )
-            }
-            .build()
-    }
-
-    private fun restClient(): RestClient {
-        return smartDocumentsRestClientBuilder
-            .clone()
-            .baseUrl(smartDocumentsConnectorProperties.url!!)
-            .defaultHeaders { headers ->
-                headers.setBasicAuth(
-                    smartDocumentsConnectorProperties.username!!,
-                    smartDocumentsConnectorProperties.password!!
+                    authentication.username,
+                    authentication.password
                 )
             }
             .messageConverters {

@@ -20,29 +20,32 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.valtimo.contract.json.MapperSingleton
-import java.time.LocalDate
-import java.util.UUID
 import org.assertj.core.api.Assertions
+import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.RuntimeService
+import org.camunda.bpm.engine.history.HistoricProcessInstance
+import org.camunda.bpm.engine.history.HistoricVariableInstance
 import org.camunda.bpm.engine.impl.context.Context
 import org.camunda.bpm.engine.impl.interceptor.CommandContext
-import org.camunda.bpm.engine.variable.Variables
-import org.camunda.bpm.engine.variable.impl.value.ObjectValueImpl
-import org.camunda.bpm.engine.variable.impl.value.builder.SerializedObjectValueBuilderImpl
-import org.camunda.community.mockito.delegate.DelegateCaseVariableInstanceFake
 import org.camunda.community.mockito.delegate.DelegateTaskFake
-import org.camunda.community.mockito.process.ProcessInstanceFake
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.time.LocalDate
+import java.util.UUID
 
 internal class ProcessVariableValueResolverTest {
     private val runtimeService: RuntimeService = mock(defaultAnswer = RETURNS_DEEP_STUBS)
+    private val historyService: HistoryService = mock(defaultAnswer = RETURNS_DEEP_STUBS)
     private val objectMapper = MapperSingleton.get()
-    private val processVariableValueResolver = ProcessVariableValueResolverFactory(runtimeService, objectMapper)
+    private val processVariableValueResolver = ProcessVariableValueResolverFactory(
+        runtimeService,
+        historyService,
+        objectMapper
+    )
 
     @BeforeEach
     fun setUp() {
@@ -145,11 +148,13 @@ internal class ProcessVariableValueResolverTest {
     fun `should resolve requestedValue from process variables by document ID`() {
         val somePropertyName = "somePropertyName"
         val documentInstanceId = UUID.randomUUID().toString()
-        val processInstance = ProcessInstanceFake.builder().processInstanceId(UUID.randomUUID().toString()).build()
-        whenever(runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(documentInstanceId).list())
+        val processInstance = mock<HistoricProcessInstance>()
+        whenever(processInstance.id).thenReturn(UUID.randomUUID().toString())
+        whenever(historyService.createHistoricProcessInstanceQuery().processInstanceBusinessKey(documentInstanceId).list())
             .thenReturn(listOf(processInstance))
-        val variableInstance = DelegateCaseVariableInstanceFake().create(somePropertyName, Variables.booleanValue(true))
-        whenever(runtimeService.createVariableInstanceQuery()
+        val variableInstance = mock<HistoricVariableInstance>()
+        whenever(variableInstance.value).thenReturn(true)
+        whenever(historyService.createHistoricVariableInstanceQuery()
             .processInstanceIdIn(processInstance.id)
             .variableName(somePropertyName)
             .list())
@@ -178,14 +183,14 @@ internal class ProcessVariableValueResolverTest {
                 }
             """)
         val documentInstanceId = UUID.randomUUID().toString()
-        val processInstance = ProcessInstanceFake.builder().processInstanceId(UUID.randomUUID().toString()).build()
-        whenever(runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(documentInstanceId).list())
+        val processInstance: HistoricProcessInstance = mock()
+        whenever(processInstance.id).thenReturn(UUID.randomUUID().toString())
+        whenever(historyService.createHistoricProcessInstanceQuery().processInstanceBusinessKey(documentInstanceId).list())
             .thenReturn(listOf(processInstance))
-        val variableInstance = DelegateCaseVariableInstanceFake().create(
-            "person",
-            SerializedObjectValueBuilderImpl(ObjectValueImpl(personVariable)).create()
-        )
-        whenever(runtimeService.createVariableInstanceQuery()
+        val variableInstance: HistoricVariableInstance = mock()
+        whenever(variableInstance.name).thenReturn("person")
+        whenever(variableInstance.value).thenReturn(personVariable)
+        whenever(historyService.createHistoricVariableInstanceQuery()
             .processInstanceIdIn(processInstance.id)
             .variableName("person")
             .list())
@@ -279,6 +284,23 @@ internal class ProcessVariableValueResolverTest {
                     mapOf("firstName" to "Peter")
                 )
             )
+        )
+    }
+
+    @Test
+    fun `should add property to object in a single handleValues`() {
+        val processInstanceId = UUID.randomUUID().toString()
+
+        processVariableValueResolver.handleValues(
+            processInstanceId, null, mapOf(
+                "person.info" to mapOf("firstName" to "John"),
+                "person.info.lastName" to "Doe"
+            )
+        )
+
+        verify(runtimeService).setVariables(
+            processInstanceId,
+            mapOf("person" to mapOf("info" to mapOf("firstName" to "John", "lastName" to "Doe")))
         )
     }
 }
