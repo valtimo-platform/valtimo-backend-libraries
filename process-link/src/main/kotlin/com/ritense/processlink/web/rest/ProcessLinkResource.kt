@@ -375,8 +375,8 @@ class ProcessLinkResource(
         @RequestPart(name = "file") bpmn: MultipartFile?,
         @RequestPart(name = "processLinks") processLinks: List<ProcessLinkCreateRequestDto>,
         @RequestPart(name = "processDefinitionId") processDefinitionId: String?,
-        @RequestPart(name = "canInitializeDocument") canInitializeDocument: String,
-        @RequestPart(name = "startableByUser") startableByUser: String
+        @RequestPart(name = "canInitializeDocument") canInitializeDocument: String = "false",
+        @RequestPart(name = "startableByUser") startableByUser: String = "false"
     ): ResponseEntity<Any> {
         val caseDefinitionId = CaseDefinitionId(caseDefinitionKey, caseDefinitionVersionTag)
         processDeploymentService.deployProcessDefinitionAndProcessLinksForCaseDefinition(
