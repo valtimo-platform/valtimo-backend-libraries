@@ -287,7 +287,6 @@ internal class ProcessLinkResourceIT @Autowired constructor(
             val deployedProcess = camundaProcessService.getProcessDefinition("test-process")
             assertEquals("CD:autodeploy:1.0.0", deployedProcess?.versionTag)
 
-
             val procdef = camundaProcessService.getProcessDefinition("test-process")
             val processCaseLink = processDefinitionCaseDefinitionService.findByProcessDefinitionId(ProcessDefinitionId(procdef.id))
 
