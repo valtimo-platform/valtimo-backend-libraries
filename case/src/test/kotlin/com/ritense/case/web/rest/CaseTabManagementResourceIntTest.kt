@@ -17,8 +17,8 @@
 package com.ritense.case.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.BaseIntegrationTest
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.domain.CaseTab
 import com.ritense.case.domain.CaseTabId
 import com.ritense.case.domain.CaseTabType
@@ -27,10 +27,10 @@ import com.ritense.case.repository.CaseTabSpecificationHelper
 import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateOrderDto
-import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.Constants
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -54,7 +54,6 @@ import kotlin.jvm.optionals.getOrNull
 class CaseTabManagementResourceIntTest @Autowired constructor(
     private val webApplicationContext: WebApplicationContext,
     private val caseTabRepository: CaseTabRepository,
-    private val documentDefinitionService: DocumentDefinitionService
 ) : BaseIntegrationTest() {
 
     @Autowired
@@ -71,15 +70,18 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
     @Transactional
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should create tab`() {
-        val caseDefinitionName = "some-case-type"
+        val caseDefinitionId = CaseDefinitionId.of("some-case-type", "1.2.3")
 
         runWithoutAuthorization {
-            documentDefinitionService.deploy("""
+            documentDefinitionService.deploy(
+                """
                 {
-                    "${'$'}id": "$caseDefinitionName.schema",
+                    "${'$'}id": "${caseDefinitionId.key}.schema",
                     "${'$'}schema": "http://json-schema.org/draft-07/schema#"
                 }
-            """.trimIndent())
+                """.trimIndent(),
+                caseDefinitionId
+            )
         }
 
         val dto = CaseTabDto(
@@ -91,15 +93,19 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
 
         assertThat(
             caseTabRepository.findOne(
-                CaseTabSpecificationHelper.byCaseDefinitionNameAndTabKey(
-                    caseDefinitionName,
+                CaseTabSpecificationHelper.byCaseDefinitionIdAndTabKey(
+                    caseDefinitionId,
                     dto.key
                 )
             ).getOrNull()
         ).isNull()
 
         mockMvc.perform(
-            post("/api/management/v1/case-definition/{caseDefinitionName}/tab", caseDefinitionName)
+            post(
+                "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/tab",
+                caseDefinitionId.key,
+                caseDefinitionId.versionTag.version
+            )
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(dto))
         ).andExpect(status().isOk)
@@ -110,7 +116,7 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
             .andExpect(jsonPath("$.contentKey").value(dto.contentKey))
 
         val createdTab = caseTabRepository.findOne(
-            CaseTabSpecificationHelper.byCaseDefinitionNameAndTabKey(caseDefinitionName, dto.key)
+            CaseTabSpecificationHelper.byCaseDefinitionIdAndTabKey(caseDefinitionId, dto.key)
         ).getOrNull()
 
         assertThat(createdTab).isNotNull()
@@ -120,15 +126,18 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
     @Transactional
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should fail creating tab when tab with key already exists`() {
-        val caseDefinitionName = "some-case-type"
+        val caseDefinitionId = CaseDefinitionId.of("some-case-type", "1.2.3")
 
         runWithoutAuthorization {
-            documentDefinitionService.deploy("""
+            documentDefinitionService.deploy(
+                """
                 {
-                    "${'$'}id": "$caseDefinitionName.schema",
+                    "${'$'}id": "${caseDefinitionId.key}.schema",
                     "${'$'}schema": "http://json-schema.org/draft-07/schema#"
                 }
-            """.trimIndent())
+                """.trimIndent(),
+                caseDefinitionId
+            )
         }
 
         val dto = CaseTabDto(
@@ -139,19 +148,27 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
         )
 
         mockMvc.perform(
-            post("/api/management/v1/case-definition/{caseDefinitionName}/tab", caseDefinitionName)
+            post(
+                "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/tab",
+                caseDefinitionId.key,
+                caseDefinitionId.versionTag.version
+            )
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(dto))
         ).andExpect(status().isOk)
 
         mockMvc.perform(
-            post("/api/management/v1/case-definition/{caseDefinitionName}/tab", caseDefinitionName)
+            post(
+                "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/tab",
+                caseDefinitionId.key,
+                caseDefinitionId.versionTag.version
+            )
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(dto))
         ).andExpect(status().isConflict)
 
         val createdTab = caseTabRepository.findOne(
-            CaseTabSpecificationHelper.byCaseDefinitionNameAndTabKey(caseDefinitionName, dto.key)
+            CaseTabSpecificationHelper.byCaseDefinitionIdAndTabKey(caseDefinitionId, dto.key)
         ).getOrNull()
 
         assertThat(createdTab).isNotNull()
@@ -161,19 +178,19 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
     @Transactional
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should update tab order`() {
-        val caseDefinitionName = "test-case-type"
+        val caseDefinitionId = CaseDefinitionId.of("some-case-type", "0.0.1")
 
         caseTabRepository.saveAll(
             listOf(
                 CaseTab(
-                    id = CaseTabId(caseDefinitionName, "tab-1"),
+                    id = CaseTabId(caseDefinitionId, "tab-1"),
                     name = "Tab 1",
                     type = CaseTabType.STANDARD,
                     tabOrder = 0,
                     contentKey = "some-content-key"
                 ),
                 CaseTab(
-                    id = CaseTabId(caseDefinitionName, "tab-2"),
+                    id = CaseTabId(caseDefinitionId, "tab-2"),
                     name = "Tab 2",
                     type = CaseTabType.STANDARD,
                     tabOrder = 1,
@@ -197,7 +214,7 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
         )
 
         mockMvc.perform(
-            put("/api/management/v1/case-definition/{caseDefinitionName}/tab", caseDefinitionName)
+            put("/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/tab", caseDefinitionId.key, caseDefinitionId.versionTag.version)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(updateDto))
         )
@@ -210,11 +227,11 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
     @Transactional
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should update tab`() {
-        val caseDefinitionName = "some-case-type"
+        val caseDefinitionId = CaseDefinitionId.of("some-case-type", "1.2.3")
 
         val key = "some-key"
         val caseTab = CaseTab(
-            id = CaseTabId(caseDefinitionName, key),
+            id = CaseTabId(caseDefinitionId, key),
             name = "Some tab name",
             type = CaseTabType.STANDARD,
             tabOrder = Integer.MAX_VALUE,
@@ -230,13 +247,13 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
         )
 
         mockMvc.perform(
-            put("/api/management/v1/case-definition/{caseDefinitionName}/tab/{tabKey}", caseDefinitionName, key)
+            put("/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/tab/{tabKey}", caseDefinitionId.key, caseDefinitionId.versionTag.version, key)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(updateDto))
         ).andExpect(status().isNoContent)
 
         val updatedTab = caseTabRepository.findOne(
-            CaseTabSpecificationHelper.byCaseDefinitionNameAndTabKey(caseDefinitionName, key)
+            CaseTabSpecificationHelper.byCaseDefinitionIdAndTabKey(caseDefinitionId, key)
         ).getOrNull()
 
         assertThat(updatedTab).isNotNull()
@@ -251,11 +268,11 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
     @Transactional
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should delete tab`() {
-        val caseDefinitionName = "some-case-type"
+        val caseDefinitionId = CaseDefinitionId.of("some-case-type", "1.2.3")
 
         val key = "some-key"
         val caseTab = CaseTab(
-            id = CaseTabId(caseDefinitionName, key),
+            id = CaseTabId(caseDefinitionId, key),
             name = "Some tab name",
             type = CaseTabType.STANDARD,
             tabOrder = Integer.MAX_VALUE,
@@ -265,14 +282,14 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
         caseTabRepository.save(caseTab)
 
         mockMvc.perform(
-            delete("/api/management/v1/case-definition/{caseDefinitionName}/tab/{tabKey}", caseDefinitionName, key)
+            delete("/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/tab/{tabKey}", caseDefinitionId.key, caseDefinitionId.versionTag.version, key)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andExpect(status().isNoContent)
 
         assertThat(
             caseTabRepository.findOne(
-                CaseTabSpecificationHelper.byCaseDefinitionNameAndTabKey(
-                    caseDefinitionName,
+                CaseTabSpecificationHelper.byCaseDefinitionIdAndTabKey(
+                    caseDefinitionId,
                     key
                 )
             ).getOrNull()
@@ -283,11 +300,11 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
     @Transactional
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should get tabs`() {
-        val caseDefinitionName = "my-case-type"
+        val caseDefinitionId = CaseDefinitionId.of("some-case-type", "1.0.0")
 
         val key = "some-key"
         val caseTab = CaseTab(
-            id = CaseTabId(caseDefinitionName, key),
+            id = CaseTabId(caseDefinitionId, key),
             name = "Some tab name",
             type = CaseTabType.STANDARD,
             tabOrder = Integer.MAX_VALUE,
@@ -297,7 +314,7 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
         caseTabRepository.save(caseTab)
 
         mockMvc.perform(
-            get("/api/management/v1/case-definition/{caseDefinitionName}/tab", caseDefinitionName)
+            get("/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/tab", caseDefinitionId.key, caseDefinitionId.versionTag.version)
         )
             .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isOk)
@@ -316,11 +333,11 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
                 Constants.SYSTEM_ACCOUNT
             ).build()
         )
-        val caseDefinitionName = "my-case-type"
+        val caseDefinitionId = CaseDefinitionId.of("some-case-type", "1.2.3")
 
         val key = "some-key"
         val caseTab = CaseTab(
-            id = CaseTabId(caseDefinitionName, key),
+            id = CaseTabId(caseDefinitionId, key),
             name = "Some tab name",
             type = CaseTabType.STANDARD,
             tabOrder = Integer.MAX_VALUE,
@@ -331,7 +348,7 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
         caseTabRepository.save(caseTab)
 
         mockMvc.perform(
-            get("/api/management/v1/case-definition/{caseDefinitionName}/tab/{tabKey}", caseDefinitionName, key)
+            get("/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/tab/{tabKey}", caseDefinitionId.key, caseDefinitionId.versionTag.version, key)
         )
             .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isOk)

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2015-2024 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
+    <property name="uuidType" value="uuid" dbms="h2,postgresql"/>
+
+    <property name="jsonType" value="JSON" dbms="mysql"/>
+    <property name="jsonType" value="JSONB" dbms="postgresql"/>
+
+    <property name="intType" value="int" dbms="mysql"/>
+    <property name="intType" value="integer" dbms="postgresql"/>
+
+    <include file="changelog/20190712-create-document-domain-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20190815-document-dates-added-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20190916-document-created-by-added-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20191014-document-definition-sequence.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20191018-document-relationships.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20191018-document-indexes.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20200310-document-related-files.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20201007-update-document-definition-id.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20201014-document-snapshot.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20210202-add-readonly-column.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20220215-create-document-definition-role-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20220923-add-assginee-columns-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20221021-add-search-field-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20221114-add-column-title-to-search-field-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20240104-update-version-column.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20240201-add-internal-case-status-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20240214-add-column-color-to-internal-case-status-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20250203-add-case-tag-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20250210-add-case-tag-link-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20241220-update-document-sequence.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20250113-major13-upgrade.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>

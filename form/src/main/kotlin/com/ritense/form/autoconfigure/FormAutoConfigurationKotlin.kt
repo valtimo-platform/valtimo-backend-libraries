@@ -19,10 +19,14 @@ package com.ritense.form.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
+import com.ritense.case.service.CaseDefinitionService
+import com.ritense.document.service.DocumentService
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.form.autodeployment.FormDefinitionDeploymentService
 import com.ritense.form.casewidget.FormIoCaseWidgetDataProvider
 import com.ritense.form.casewidget.FormIoCaseWidgetMapper
+import com.ritense.form.listener.FormCaseEventListener
 import com.ritense.form.repository.IntermediateSubmissionRepository
 import com.ritense.form.security.config.FormHttpSecurityConfigurerKotlin
 import com.ritense.form.service.FormDefinitionExporter
@@ -35,9 +39,10 @@ import com.ritense.form.service.PrefillFormService
 import com.ritense.form.service.impl.DefaultFormSubmissionService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.form.validation.FormDefinitionExistsValidator
+import com.ritense.form.web.rest.FormOptionResource
 import com.ritense.form.web.rest.FormResource
 import com.ritense.form.web.rest.IntermediateSubmissionResource
-import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
@@ -70,10 +75,12 @@ class FormAutoConfigurationKotlin {
     @Bean
     @ConditionalOnMissingBean(FormResource::class)
     fun formResource(
+        documentService: DocumentService,
         formSubmissionService: FormSubmissionService,
         prefillFormService: PrefillFormService,
         formDefinitionService: FormDefinitionService,
     ) = FormResource(
+        documentService,
         formSubmissionService,
         prefillFormService,
         formDefinitionService
@@ -91,7 +98,8 @@ class FormAutoConfigurationKotlin {
         processLinkService: ProcessLinkService,
         formDefinitionService: FormIoFormDefinitionService,
         documentService: JsonSchemaDocumentService,
-        processDocumentAssociationService: ProcessDocumentAssociationService,
+        documentDefinitionService: JsonSchemaDocumentDefinitionService,
+        processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
         processDocumentService: ProcessDocumentService,
         camundaTaskService: CamundaTaskService,
         repositoryService: CamundaRepositoryService,
@@ -99,12 +107,14 @@ class FormAutoConfigurationKotlin {
         prefillFormService: PrefillFormService,
         authorizationService: AuthorizationService,
         valueResolverService: ValueResolverService,
+        caseDefinitionService: CaseDefinitionService,
         objectMapper: ObjectMapper,
     ) = DefaultFormSubmissionService(
         processLinkService,
         formDefinitionService,
         documentService,
-        processDocumentAssociationService,
+        documentDefinitionService,
+        processDefinitionCaseDefinitionService,
         processDocumentService,
         camundaTaskService,
         repositoryService,
@@ -112,6 +122,7 @@ class FormAutoConfigurationKotlin {
         prefillFormService,
         authorizationService,
         valueResolverService,
+        caseDefinitionService,
         objectMapper,
     )
 
@@ -161,4 +172,17 @@ class FormAutoConfigurationKotlin {
     ) = IntermediateSubmissionResource(
         intermediateSubmissionService
     )
+
+    @Bean
+    @ConditionalOnMissingBean(FormOptionResource::class)
+    fun formOptionResource(
+        formDefinitionService: FormDefinitionService
+    ) = FormOptionResource(
+        formDefinitionService
+    )
+
+    @Bean
+    @ConditionalOnMissingBean(FormCaseEventListener::class)
+    fun formCaseEventListener(formDefinitionService: FormDefinitionService) =
+        FormCaseEventListener(formDefinitionService)
 }

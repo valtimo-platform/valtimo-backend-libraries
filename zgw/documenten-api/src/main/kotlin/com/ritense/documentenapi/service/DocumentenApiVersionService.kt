@@ -22,6 +22,7 @@ import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
+import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.service.DocumentDefinitionService
@@ -32,7 +33,7 @@ import com.ritense.documentenapi.domain.DocumentenApiVersion
 import com.ritense.logging.LoggableResource
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginService
-import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
+import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
@@ -55,9 +56,10 @@ class DocumentenApiVersionService(
     private val authorizationService: AuthorizationService,
     private val documentService: DocumentService,
     private val documentDefinitionService: DocumentDefinitionService,
-    private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
+    private val caseDefinitionProcessLinkService: CaseDefinitionProcessLinkService,
     private val pluginProcessLinkService: PluginProcessLinkService,
     private val camundaRepositoryService: CamundaRepositoryService,
+    private val activeCaseDefinitionService: ActiveCaseDefinitionService
 ) {
 
     private var documentenApiVersions: Map<String, DocumentenApiVersion> = emptyMap()
@@ -111,14 +113,15 @@ class DocumentenApiVersionService(
         @LoggableResource("documentDefinitionName") caseDefinitionName: String
     ): List<PluginConfiguration> {
         documentDefinitionService.requirePermission(caseDefinitionName, JsonSchemaDocumentDefinitionActionProvider.VIEW)
-        val link = documentDefinitionProcessLinkService.getDocumentDefinitionProcessLink(
-            caseDefinitionName,
+        val caseDefinition = activeCaseDefinitionService.getActiveCaseDefinition(caseDefinitionName)
+        val link = caseDefinitionProcessLinkService.getDocumentDefinitionProcessLink(
+            caseDefinition.id,
             "DOCUMENT_UPLOAD"
         )
-        if (link.isEmpty) {
+        if (link == null) {
             return emptyList()
         }
-        val processDefinitionKey = link.get().id.processDefinitionKey
+        val processDefinitionKey = link.id.processDefinitionKey
         val detectedConfigurations = AuthorizationContext.runWithoutAuthorization {
             camundaRepositoryService.findLinkedProcessDefinitions(
                 CamundaProcessDefinitionSpecificationHelper.byKey(

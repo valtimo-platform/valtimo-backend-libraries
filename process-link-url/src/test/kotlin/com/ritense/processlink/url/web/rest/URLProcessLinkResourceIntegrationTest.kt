@@ -25,8 +25,6 @@ import com.ritense.processlink.url.BaseIntegrationTest
 import com.ritense.processlink.url.domain.URLProcessLink
 import com.ritense.processlink.url.web.rest.dto.URLProcessLinkCreateRequestDto
 import com.ritense.processlink.url.web.rest.dto.URLProcessLinkUpdateRequestDto
-import java.nio.charset.StandardCharsets
-import java.util.UUID
 import org.hamcrest.Matchers.hasSize
 import org.hamcrest.Matchers.`in` as inMatcher
 import org.junit.jupiter.api.BeforeEach
@@ -43,6 +41,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
+import java.nio.charset.StandardCharsets
+import java.util.UUID
 
 @Transactional
 internal class URLProcessLinkResourceIntegrationTest @Autowired constructor(

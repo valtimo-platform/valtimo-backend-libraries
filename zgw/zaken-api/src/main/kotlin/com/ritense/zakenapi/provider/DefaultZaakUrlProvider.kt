@@ -22,8 +22,7 @@ import com.ritense.valtimo.contract.annotation.AllOpen
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.link.ZaakInstanceLinkNotFoundException
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
-import mu.KLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.net.URI
 import java.util.UUID
 
@@ -41,6 +40,6 @@ class DefaultZaakUrlProvider(
     }
 
     companion object {
-        private val logger: KLogger = KotlinLogging.logger {}
+        private val logger = KotlinLogging.logger {}
     }
 }

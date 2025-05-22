@@ -45,7 +45,7 @@ class CamundaProcessDefinitionSpecificationHelperIntTest @Autowired constructor(
     @Transactional
     fun byVersion() {
         val deployedProcessDefinition = repositoryService.createDeployment()
-            .addClasspathResource("bpmn/$USER_TASK_PROCESS.bpmn")
+            .addClasspathResource("config/case/everything/1-0-0/bpmn/$USER_TASK_PROCESS.bpmn")
             .deployWithResult()
             .deployedProcessDefinitions.first()
 
@@ -67,7 +67,7 @@ class CamundaProcessDefinitionSpecificationHelperIntTest @Autowired constructor(
     @Transactional
     fun byLatestVersion() {
         val deployedProcessDefinition = repositoryService.createDeployment()
-            .addClasspathResource("bpmn/$USER_TASK_PROCESS.bpmn")
+            .addClasspathResource("config/case/everything/1-0-0/bpmn/$USER_TASK_PROCESS.bpmn")
             .deployWithResult()
             .deployedProcessDefinitions.first()
 
@@ -89,7 +89,7 @@ class CamundaProcessDefinitionSpecificationHelperIntTest @Autowired constructor(
     @Transactional
     fun byActive() {
         val deployedProcessDefinition = repositoryService.createDeployment()
-            .addClasspathResource("bpmn/$USER_TASK_PROCESS.bpmn")
+            .addClasspathResource("config/case/everything/1-0-0/bpmn/$USER_TASK_PROCESS.bpmn")
             .deployWithResult()
             .deployedProcessDefinitions.first()
 

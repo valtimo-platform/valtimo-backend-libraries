@@ -16,8 +16,7 @@
 
 package com.ritense.zgw
 
-import mu.KLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.net.URI
 import java.util.Collections
 
@@ -57,6 +56,6 @@ data class Page<T>(
             return results.flatMap(Page<T>::results)
         }
 
-        private val logger: KLogger = KotlinLogging.logger {}
+        private val logger = KotlinLogging.logger {}
     }
 }

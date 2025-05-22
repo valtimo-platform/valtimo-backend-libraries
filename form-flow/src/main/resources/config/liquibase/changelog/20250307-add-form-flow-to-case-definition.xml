@@ -1,0 +1,92 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright 2015-2024 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet id="1" author="Ritense">
+        <dropForeignKeyConstraint baseTableName="form_flow_instance"
+                                  constraintName="fk_form_flow_definition_key_version"/>
+    </changeSet>
+
+    <changeSet id="2" author="Ritense">
+        <dropForeignKeyConstraint baseTableName="form_flow_step"
+                                  constraintName="fk_form_flow_definition_id"/>
+    </changeSet>
+
+    <changeSet id="3" author="Ritense">
+        <dropPrimaryKey tableName="form_flow_definition"/>
+    </changeSet>
+
+    <changeSet id="4" author="Ritense">
+        <addColumn tableName="form_flow_definition">
+            <column name="case_definition_key" type="VARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="case_definition_version_tag" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <dropColumn tableName="form_flow_definition" columnName="form_flow_definition_version"/>
+    </changeSet>
+
+    <changeSet id="5" author="Ritense">
+        <addColumn tableName="form_flow_instance">
+            <column name="case_definition_key" type="VARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="case_definition_version_tag" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <dropColumn tableName="form_flow_instance" columnName="form_flow_definition_version"/>
+    </changeSet>
+
+    <changeSet id="6" author="Ritense">
+        <addColumn tableName="form_flow_step">
+            <column name="case_definition_key" type="VARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="case_definition_version_tag" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <dropColumn tableName="form_flow_step" columnName="form_flow_definition_version"/>
+    </changeSet>
+
+    <changeSet id="7" author="Ritense">
+        <addPrimaryKey tableName="form_flow_definition" columnNames="form_flow_definition_key,case_definition_key,case_definition_version_tag"/>
+    </changeSet>
+
+    <changeSet id="8" author="Ritense">
+        <addForeignKeyConstraint baseTableName="form_flow_instance"
+                                 baseColumnNames="form_flow_definition_key,case_definition_key,case_definition_version_tag"
+                                 constraintName="fk_form_flow_definition_instance"
+                                 referencedTableName="form_flow_definition"
+                                 referencedColumnNames="form_flow_definition_key,case_definition_key,case_definition_version_tag"/>
+    </changeSet>
+
+    <changeSet id="9" author="Ritense">
+        <addForeignKeyConstraint baseTableName="form_flow_step"
+                                 baseColumnNames="form_flow_definition_key,case_definition_key,case_definition_version_tag"
+                                 constraintName="fk_form_flow_definition_step"
+                                 referencedTableName="form_flow_definition"
+                                 referencedColumnNames="form_flow_definition_key,case_definition_key,case_definition_version_tag"/>
+    </changeSet>
+
+</databaseChangeLog>

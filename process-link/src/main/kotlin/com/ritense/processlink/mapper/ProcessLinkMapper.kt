@@ -23,6 +23,7 @@ import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import java.util.UUID
 
 interface ProcessLinkMapper {
@@ -35,18 +36,20 @@ interface ProcessLinkMapper {
     ): ProcessLinkUpdateRequestDto
 
     fun toProcessLinkExportResponseDto(processLink: ProcessLink): ProcessLinkExportResponseDto
-    fun toNewProcessLink(createRequestDto: ProcessLinkCreateRequestDto): ProcessLink
+    fun toNewProcessLink(createRequestDto: ProcessLinkCreateRequestDto, caseDefinitionId: CaseDefinitionId?): ProcessLink
     fun toUpdatedProcessLink(
         processLinkToUpdate: ProcessLink,
-        updateRequestDto: ProcessLinkUpdateRequestDto
+        updateRequestDto: ProcessLinkUpdateRequestDto,
+        caseDefinitionId: CaseDefinitionId?
     ): ProcessLink
 
     /**
      * Used by the export service.
      * Should return export requests the provided processLink depends on.
      * @param processLink The processLink to create related export requests for
+     * @param caseDefinitionId The caseDefinitionId of the case the processLink is part of
      */
-    fun createRelatedExportRequests(processLink: ProcessLink): Set<ExportRequest> = setOf()
+    fun createRelatedExportRequests(processLink: ProcessLink, caseDefinitionId: CaseDefinitionId): Set<ExportRequest> = setOf()
 
     fun getImporterType(): String? = null
 }

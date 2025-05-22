@@ -63,11 +63,11 @@ class ProcessLinkImporterTest(
 
     @Test
     fun `should not support non-processlink fileName`() {
-        assertThat(importer.supports("my-processlink.json")).isFalse()
-        assertThat(importer.supports("test.xml")).isFalse()
+        assertThat(importer.supports("/process-link/my-process-link.json")).isFalse()
+        assertThat(importer.supports("/process-link/test.process-link.xml")).isFalse()
     }
 
     private companion object {
-        const val FILENAME = "config/x/y/z/my.processlink.json"
+        const val FILENAME = "/process-link/my.process-link.json"
     }
 }

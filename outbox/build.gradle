@@ -44,7 +44,7 @@ dependencies {
     implementation "io.hypersistence:hypersistence-utils-hibernate-62:$hypersistenceUtilsVersion"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
-    implementation "io.github.microutils:kotlin-logging:$kotlinLoggingVersion"
+    implementation "io.github.oshai:kotlin-logging:$kotlinLoggingVersion"
 
     implementation "io.cloudevents:cloudevents-core:$cloudEventsCoreVersion"
     implementation "io.cloudevents:cloudevents-json-jackson:$cloudEventsCoreVersion"

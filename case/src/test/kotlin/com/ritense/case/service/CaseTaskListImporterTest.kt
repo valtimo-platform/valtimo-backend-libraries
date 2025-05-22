@@ -16,12 +16,12 @@
 
 package com.ritense.case.service
 
-import com.ritense.case.deployment.CaseTabDeploymentService
-import com.ritense.case.deployment.CaseTaskListDeploymentService
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.case.repository.TaskListColumnRepository
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
-import com.ritense.importer.ValtimoImportTypes.Companion.FORM
 import com.ritense.valtimo.changelog.service.ChangelogDeployer
+import com.ritense.valtimo.changelog.service.ChangelogService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -32,14 +32,14 @@ import org.mockito.kotlin.verify
 
 @ExtendWith(MockitoExtension::class)
 class CaseTaskListImporterTest(
-    @Mock private val caseTaskListDeploymentService: CaseTaskListDeploymentService,
-    @Mock private val changelogDeployer: ChangelogDeployer
+    @Mock private val objectMapper: ObjectMapper,
+    @Mock private val taskColumnService: TaskColumnService,
 ) {
     private lateinit var importer: CaseTaskListImporter
 
     @BeforeEach
     fun before() {
-        importer = CaseTaskListImporter(caseTaskListDeploymentService, changelogDeployer)
+        importer = CaseTaskListImporter(objectMapper, taskColumnService)
     }
 
     @Test
@@ -59,20 +59,11 @@ class CaseTaskListImporterTest(
 
     @Test
     fun `should not support non-caseTaskList fileName`() {
-        assertThat(importer.supports("config/case-tabs/x/test.json")).isFalse()
-        assertThat(importer.supports("config/case-task-list/test-json")).isFalse()
-    }
-
-    @Test
-    fun `should call deploy method for import with correct parameters`() {
-        val jsonContent = "{}"
-
-        importer.import(ImportRequest(FILENAME, jsonContent.toByteArray()))
-
-        verify(changelogDeployer).deploy(caseTaskListDeploymentService, FILENAME, jsonContent)
+        assertThat(importer.supports("/case/task-list/x/test.case-task-list.json")).isFalse()
+        assertThat(importer.supports("/case/task-list/test-json")).isFalse()
     }
 
     private companion object {
-        const val FILENAME = "config/case-task-list/my-doc-def.case-task-list.json"
+        const val FILENAME = "/case/task-list/my-doc-def.case-task-list.json"
     }
 }

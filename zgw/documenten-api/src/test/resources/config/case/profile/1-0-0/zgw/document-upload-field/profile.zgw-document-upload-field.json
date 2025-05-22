@@ -1,0 +1,23 @@
+[
+    {
+        "key": "beschrijving",
+        "defaultValue": "doc:description",
+        "visible": true
+    },
+    {
+        "key": "taal",
+        "defaultValue": "eng"
+    },
+    {
+        "key": "vertrouwelijkheidaanduiding",
+        "defaultValue": "zaakvertrouwelijk"
+    },
+    {
+        "key": "informatieobjecttype",
+        "defaultValue": "${example.properties.catalogiApiUrl}informatieobjecttypen/${example.properties.informatieobjecttype}"
+    },
+    {
+        "key": "status",
+        "defaultValue": "in_bewerking"
+    }
+]

@@ -17,12 +17,11 @@
 package com.ritense.dashboard.datasource
 
 import com.ritense.valtimo.contract.annotation.AnnotatedClassResolver
-import com.ritense.valtimo.contract.dashboard.feature.WidgetDataFeature
 import com.ritense.valtimo.contract.dashboard.WidgetDataSource
-import java.lang.reflect.Method
-import mu.KLogger
-import mu.KotlinLogging
+import com.ritense.valtimo.contract.dashboard.feature.WidgetDataFeature
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.ApplicationContext
+import java.lang.reflect.Method
 
 class WidgetDataSourceResolver(
     context: ApplicationContext
@@ -49,6 +48,6 @@ class WidgetDataSourceResolver(
     }
 
     companion object {
-        private val logger: KLogger = KotlinLogging.logger {}
+        private val logger = KotlinLogging.logger {}
     }
 }

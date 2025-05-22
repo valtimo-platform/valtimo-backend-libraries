@@ -21,7 +21,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.documentenapi.BaseIntegrationTest
+import com.ritense.documentenapi.repository.DocumentenApiUploadFieldRepository
+import com.ritense.exporter.Exporter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -36,33 +39,28 @@ import org.springframework.util.StreamUtils
 class ZgwDocumentTrefwoordExporterIntTest @Autowired constructor(
     private val objectMapper: ObjectMapper,
     private val resourceLoader: ResourceLoader,
-    private val zgwDocumentTrefwoordExporter: ZgwDocumentTrefwoordExporter
+    private val zgwDocumentTrefwoordExporter: ZgwDocumentTrefwoordExporter,
+    private val zgwDocumentUploadFieldRepository: DocumentenApiUploadFieldRepository
 ) : BaseIntegrationTest() {
+
+    private val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
+
     @Test
     fun `should export zgw document trefwoorden for case definition`(): Unit = AuthorizationContext.runWithoutAuthorization {
         val caseDefinitionName = "profile"
 
-        val request = DocumentDefinitionExportRequest(caseDefinitionName, 1)
+        val request = DocumentDefinitionExportRequest(caseDefinitionName, caseDefinitionId)
         val exportFiles = zgwDocumentTrefwoordExporter.export(request).exportFiles
 
         val path = PATH.format(caseDefinitionName)
-        val trefwoordenExport = exportFiles.singleOrNull {
+        val  trefwoordenExport = exportFiles.singleOrNull {
             it.path == path
         }
 
         val jsonTree = objectMapper.readTree(requireNotNull(trefwoordenExport).content)
 
-        //Check if the changesetId ends with a timestamp
-        val changesetIdField = "changesetId"
-        val changesetRegex = """(profile\.zgw-document-trefwoorden)\.\d+""".toRegex()
-        val matchResult = changesetRegex.matchEntire(jsonTree.get(changesetIdField).textValue())
-        Assertions.assertThat(matchResult).isNotNull
-
-        //Remove the timestamp from the changesetId, so we can compare it as usual
-        (jsonTree as ObjectNode).set<TextNode>(changesetIdField, TextNode(matchResult!!.groupValues[1]))
-
         val expectedJson = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
-            .getResource("classpath:config/case/trefwoorden/$caseDefinitionName.zgw-document-trefwoorden.json")
+            .getResource("classpath:config/case/profile/1-0-0/zgw/trefwoord/$caseDefinitionName.zgw-document-trefwoord.json")
             .inputStream
             .use { inputStream ->
                 StreamUtils.copyToString(inputStream, Charsets.UTF_8)
@@ -75,7 +73,7 @@ class ZgwDocumentTrefwoordExporterIntTest @Autowired constructor(
     }
 
     companion object {
-        private const val PATH = "config/case/trefwoorden/%s.zgw-document-trefwoorden.json"
+        private const val PATH = "config/case/profile/1-0-0/zgw/trefwoord/%s.zgw-document-trefwoord.json"
 
     }
 }

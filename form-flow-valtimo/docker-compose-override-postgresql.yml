@@ -1,6 +1,0 @@
-services:
-    db:
-        ports:
-            - "3320:5432"
-        environment:
-            - POSTGRES_DB=form-flow-valtimo-test

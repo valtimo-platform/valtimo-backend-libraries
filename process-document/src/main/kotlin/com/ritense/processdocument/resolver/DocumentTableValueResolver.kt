@@ -21,6 +21,7 @@ import com.ritense.document.domain.Document
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valueresolver.ValueResolverFactory
 import com.ritense.valueresolver.ValueResolverOption
 import com.ritense.valueresolver.exception.ValueResolverValidationException
@@ -66,17 +67,7 @@ class DocumentTableValueResolver(
         throw NotImplementedError("Unable to handle value: {${firstValue.key} to ${firstValue.value}}")
     }
 
-    @Deprecated("Deprecated since 12.6.0, Use getResolvableKeyOptions(documentDefinitionName: String, version: Long) instead")
-    override fun getResolvableKeys(documentDefinitionName: String, version: Long): List<String> {
-        return TABLE_COLUMN_LIST
-    }
-
-    @Deprecated("Deprecated since 12.6.0, Use getResolvableKeyOptions(documentDefinitionName: String) instead")
-    override fun getResolvableKeys(documentDefinitionName: String): List<String> {
-        return TABLE_COLUMN_LIST
-    }
-
-    override fun getResolvableKeyOptions(documentDefinitionName: String, version: Long): List<ValueResolverOption> {
+    override fun getResolvableKeyOptions(documentDefinitionName: String, caseDefinitionId: CaseDefinitionId): List<ValueResolverOption> {
         return createFieldList(TABLE_COLUMN_LIST)
     }
 
@@ -93,7 +84,8 @@ class DocumentTableValueResolver(
                 "createdOn" -> document.createdOn()
                 "definitionId" -> document.definitionId()
                 "definitionId.name" -> document.definitionId().name()
-                "definitionId.version" -> document.definitionId().version()
+                // TODO: change definitionId.caseDefinitionId
+                "definitionId.version" -> document.definitionId().caseDefinitionId()
                 "id" -> document.id().id
                 "internalStatus" -> document.internalStatus()
                 "caseTags" -> document.caseTags()

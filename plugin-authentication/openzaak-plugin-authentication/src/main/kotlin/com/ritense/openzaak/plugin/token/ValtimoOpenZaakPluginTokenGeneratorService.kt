@@ -17,14 +17,13 @@
 package com.ritense.openzaak.plugin.token
 
 import com.ritense.valtimo.contract.utils.SecurityUtils
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.jsonwebtoken.JwtBuilder
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
 import java.nio.charset.Charset
 import java.util.Date
-import mu.KLogger
-import mu.KotlinLogging
 
 private const val FALLBACK_USER = "Valtimo"
 
@@ -67,6 +66,6 @@ class ValtimoOpenZaakPluginTokenGeneratorService : OpenZaakPluginTokenGeneratorS
     }
 
     companion object {
-        val logger: KLogger = KotlinLogging.logger {}
+        val logger = KotlinLogging.logger {}
     }
 }

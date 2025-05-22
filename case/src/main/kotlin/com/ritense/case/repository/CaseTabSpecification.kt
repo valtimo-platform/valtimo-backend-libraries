@@ -21,6 +21,7 @@ import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.case.domain.CaseTab
+import com.ritense.case.domain.CaseTabId
 import com.ritense.case.service.CaseTabService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import jakarta.persistence.criteria.AbstractQuery
@@ -64,9 +65,7 @@ class CaseTabSpecification(
     }
 
     override fun identifierToEntity(identifier: String): CaseTab {
-        val caseDefinitionName = identifier.substringBefore(":")
-        val key = identifier.substringAfter(":")
-        return runWithoutAuthorization { caseTabService.getCaseTab(caseDefinitionName, key) }
+        return runWithoutAuthorization { caseTabService.getCaseTab(CaseTabId.of(identifier)!!) }
     }
 }
 

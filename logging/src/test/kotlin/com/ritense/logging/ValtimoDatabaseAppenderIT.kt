@@ -19,8 +19,7 @@ package com.ritense.logging
 import com.ritense.logging.repository.LoggingEventSpecificationHelper.Companion.byCallerClass
 import com.ritense.logging.repository.LoggingEventSpecificationHelper.Companion.byLevel
 import com.ritense.logging.repository.LoggingEventSpecificationHelper.Companion.byLikeFormattedMessage
-import mu.KLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -75,6 +74,6 @@ class ValtimoDatabaseAppenderIT : BaseIntegrationTest() {
     }
 
     private companion object {
-        private val logger: KLogger = KotlinLogging.logger {}
+        private val logger = KotlinLogging.logger {}
     }
 }

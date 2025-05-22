@@ -18,6 +18,7 @@ package com.ritense.valueresolver
 
 import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.camunda.bpm.engine.delegate.VariableScope
 import org.springframework.stereotype.Service
 import java.util.UUID
@@ -48,28 +49,6 @@ class ValueResolverServiceImpl(
         return resolverFactoryMap.keys.filter { prefix -> prefix != "" }.toList()
     }
 
-    @Deprecated("Use getResolvableKeys with ValueResolverOptionRequest object instead")
-    override fun getResolvableKeys(
-        prefixes: List<String>,
-        @LoggableResource("documentDefinitionName") documentDefinitionName: String
-    ): List<String> {
-        return prefixes.fold(emptyList()) { acc, prefix ->
-            (acc + (addPrefixToResolvableKeys(prefix, resolverFactoryMap[prefix]?.getResolvableKeys(documentDefinitionName))))
-        }
-    }
-
-    @Deprecated("Use getResolvableKeys with ValueResolverOptionRequest object instead")
-    override fun getResolvableKeys(
-        prefixes: List<String>,
-        @LoggableResource("documentDefinitionName") documentDefinitionName: String,
-        version: Long
-    ): List<String> {
-        return prefixes.fold(emptyList()) { acc, prefix ->
-            (acc + (addPrefixToResolvableKeys(prefix, resolverFactoryMap[prefix]?.getResolvableKeys(documentDefinitionName, version))))
-        }
-    }
-
-
     override fun getResolvableKeys(
         request: ValueResolverOptionRequest,
         @LoggableResource("documentDefinitionName") documentDefinitionName: String
@@ -77,19 +56,19 @@ class ValueResolverServiceImpl(
         val prefixes = request.prefixes.ifEmpty { resolverFactoryMap.keys }
         return prefixes.fold(emptyList()) { list, prefix ->
             val newOptions = resolverFactoryMap[prefix]?.getResolvableKeyOptions(documentDefinitionName) ?: emptyList()
-            list + newOptions.filter { option -> request.type == option.type }
+            list + newOptions.filter { option -> request.type.equals(option.type) }
         }
     }
 
     override fun getResolvableKeys(
         request: ValueResolverOptionRequest,
         @LoggableResource("documentDefinitionName") documentDefinitionName: String,
-        version: Long
+        caseDefinitionId: CaseDefinitionId
     ): List<ValueResolverOption> {
         val prefixes = request.prefixes.ifEmpty { resolverFactoryMap.keys }
         return prefixes.fold(emptyList()) { list, prefix ->
-            val newOptions = resolverFactoryMap[prefix]?.getResolvableKeyOptions(documentDefinitionName, version) ?: emptyList()
-            list + newOptions.filter { option -> request.type == option.type }
+            val newOptions = resolverFactoryMap[prefix]?.getResolvableKeyOptions(documentDefinitionName, caseDefinitionId) ?: emptyList()
+            list + newOptions.filter { option -> request.type.equals(option.type) }
         }
     }
 

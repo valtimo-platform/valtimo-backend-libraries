@@ -41,6 +41,8 @@ class ProcessAuthorizationServiceIntTest @Autowired constructor(
             documentService.createDocument(
                 NewDocumentRequest(
                     "fvm",
+                    "fvm",
+                    "1.0.0",
                     objectMapper.createObjectNode()
                 )
             )
@@ -58,6 +60,8 @@ class ProcessAuthorizationServiceIntTest @Autowired constructor(
             documentService.createDocument(
                 NewDocumentRequest(
                     "fvm",
+                    "fvm",
+                    "1.0.0",
                     objectMapper.readTree(
                     """{"allow": true}""".trimIndent())
                 )

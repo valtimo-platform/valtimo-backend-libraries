@@ -19,10 +19,11 @@ package com.ritense.dataprovider
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
+import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest
@@ -30,9 +31,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @Tag("integration")
 abstract class BaseIntegrationTest {
 
-    @MockBean
+    @MockitoBean
+    lateinit var processDefinitionCaseDefinitionLinker: ProcessDefinitionCaseDefinitionLinker
+
+    @MockitoBean
     lateinit var userManagementService: UserManagementService
 
-    @MockBean
+    @MockitoBean
     lateinit var mailSender: MailSender
 }

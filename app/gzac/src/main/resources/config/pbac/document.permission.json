@@ -16,9 +16,15 @@
                 },
                 {
                     "type": "field",
-                    "field": "documentDefinitionId.name",
+                    "field": "documentDefinitionId.caseDefinitionId.key",
                     "operator": "==",
                     "value": "leningen"
+                },
+                {
+                    "type": "field",
+                    "field": "documentDefinitionId.caseDefinitionId.versionTag",
+                    "operator": "==",
+                    "value": "${ACTIVE}"
                 }
             ]
         },

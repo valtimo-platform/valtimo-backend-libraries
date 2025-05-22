@@ -39,11 +39,14 @@ dependencies {
 
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
 
-    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "io.github.oshai:kotlin-logging:${kotlinLoggingVersion}"
 
     implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
 
     testImplementation (project(":core")) {
+        exclude(group: "com.ritense.valtimo", module: "changelog")
+    }
+    testImplementation (project(":case")) {
         exclude(group: "com.ritense.valtimo", module: "changelog")
     }
     testImplementation (project(":resource:local-resource")) {

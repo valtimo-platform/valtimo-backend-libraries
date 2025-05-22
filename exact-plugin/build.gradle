@@ -15,9 +15,9 @@
  */
 
 dependencies {
+    implementation project(':case')
     implementation project(':contract')
     implementation project(':core')
-    implementation project(':document')
     implementation project(':process-document')
     implementation project(':resource')
     implementation project(':plugin')
@@ -29,7 +29,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "io.github.oshai:kotlin-logging:${kotlinLoggingVersion}"
 
 
     // Shedlock

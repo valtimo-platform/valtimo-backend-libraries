@@ -16,6 +16,7 @@
 
 package com.ritense.valueresolver
 
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.camunda.bpm.engine.delegate.VariableScope
 import java.util.UUID
 
@@ -97,13 +98,9 @@ interface ValueResolverService {
 
     fun getValueResolvers(): List<String>
 
-    @Deprecated("Deprecated since 12.6.0, Use getResolvableKeys with ValueResolverOptionRequest object instead")
-    fun getResolvableKeys(prefixes: List<String>, documentDefinitionName: String, version: Long): List<String>
-
-    @Deprecated("Deprecated since 12.6.0, Use getResolvableKeys with ValueResolverOptionRequest object instead")
-    fun getResolvableKeys(prefixes: List<String>, documentDefinitionName: String): List<String>
-
-    fun getResolvableKeys(request: ValueResolverOptionRequest, documentDefinitionName: String, version: Long): List<ValueResolverOption>
+    fun getResolvableKeys(
+        request: ValueResolverOptionRequest, documentDefinitionName: String, caseDefinitionId: CaseDefinitionId
+    ): List<ValueResolverOption>
 
     fun getResolvableKeys(request: ValueResolverOptionRequest, documentDefinitionName: String): List<ValueResolverOption>
 }

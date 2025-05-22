@@ -16,7 +16,7 @@
 
 package com.ritense.case.web.rest.dto
 
-import com.ritense.case.domain.CaseDefinitionSettings
+import com.ritense.case_.domain.definition.CaseDefinition
 
 data class CaseSettingsDto(
     val canHaveAssignee: Boolean? = null,
@@ -25,44 +25,44 @@ data class CaseSettingsDto(
     val externalStartFormUrl: String? = null,
     val externalStartFormDescription: String? = null,
 ) {
-    fun update(currentSettings: CaseDefinitionSettings): CaseDefinitionSettings {
-        return CaseDefinitionSettings(
-            name = currentSettings.name,
-            canHaveAssignee = getSettingForUpdate(currentSettings.canHaveAssignee, this.canHaveAssignee) ?: false,
+    fun update(currentCaseDefinition: CaseDefinition): CaseDefinition {
+        return currentCaseDefinition.copy(
+            name = currentCaseDefinition.name,
+            canHaveAssignee = getSettingForUpdate(currentCaseDefinition.canHaveAssignee, this.canHaveAssignee) ?: false,
             autoAssignTasks = when (this.canHaveAssignee) {
                 false -> false
-                else -> getSettingForUpdate(currentSettings.autoAssignTasks, this.autoAssignTasks) ?: false
+                else -> getSettingForUpdate(currentCaseDefinition.autoAssignTasks, this.autoAssignTasks) ?: false
             },
             hasExternalStartForm = getSettingForUpdate(
-                currentSettings.hasExternalStartForm,
+                currentCaseDefinition.hasExternalStartForm,
                 this.hasExternalStartForm
             ) ?: false,
             externalStartFormUrl = when (this.hasExternalStartForm) {
                 false -> null
-                else -> getSettingForUpdate(currentSettings.externalStartFormUrl, this.externalStartFormUrl)
+                else -> getSettingForUpdate(currentCaseDefinition.externalStartFormUrl, this.externalStartFormUrl)
             },
             externalStartFormDescription = when (this.hasExternalStartForm) {
                 false -> null
                 else -> getSettingForUpdate(
-                    currentSettings.externalStartFormUrl,
+                    currentCaseDefinition.externalStartFormUrl,
                     this.externalStartFormDescription
                 )
             }
         )
     }
 
-    private fun <T> getSettingForUpdate(currentValue: T?, newValue: T?): T? {
+    private fun <T> getSettingForUpdate(currentValue: T, newValue: T?): T {
         return newValue ?: currentValue
     }
 
     companion object {
 
-        fun from(settings: CaseDefinitionSettings) = CaseSettingsDto(
-            canHaveAssignee = settings.canHaveAssignee,
-            autoAssignTasks = settings.autoAssignTasks,
-            hasExternalStartForm = settings.hasExternalStartForm,
-            externalStartFormUrl = settings.externalStartFormUrl,
-            externalStartFormDescription = settings.externalStartFormDescription,
+        fun from(caseDefinition: CaseDefinition) = CaseSettingsDto(
+            canHaveAssignee = caseDefinition.canHaveAssignee,
+            autoAssignTasks = caseDefinition.autoAssignTasks,
+            hasExternalStartForm = caseDefinition.hasExternalStartForm,
+            externalStartFormUrl = caseDefinition.externalStartFormUrl,
+            externalStartFormDescription = caseDefinition.externalStartFormDescription,
         )
     }
 }
