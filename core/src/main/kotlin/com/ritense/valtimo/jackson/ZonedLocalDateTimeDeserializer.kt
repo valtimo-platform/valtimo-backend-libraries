@@ -19,8 +19,7 @@ package com.ritense.valtimo.jackson
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
-import mu.KLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.time.DateTimeException
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
@@ -62,6 +61,6 @@ class ZonedLocalDateTimeDeserializer : LocalDateTimeDeserializer() {
     }
 
     private companion object {
-        private val logger: KLogger = KotlinLogging.logger {}
+        private val logger = KotlinLogging.logger {}
     }
 }

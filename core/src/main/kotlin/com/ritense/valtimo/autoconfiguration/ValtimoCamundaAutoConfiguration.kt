@@ -26,6 +26,7 @@ import com.ritense.valtimo.camunda.authorization.CamundaIdentityLinkSpecificatio
 import com.ritense.valtimo.camunda.authorization.CamundaProcessDefinitionSpecificationFactory
 import com.ritense.valtimo.camunda.authorization.CamundaTaskSpecificationFactory
 import com.ritense.valtimo.camunda.repository.CamundaBytearrayRepository
+import com.ritense.valtimo.camunda.repository.CamundaDecisionDefinitionRepository
 import com.ritense.valtimo.camunda.repository.CamundaExecutionRepository
 import com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceRepository
 import com.ritense.valtimo.camunda.repository.CamundaHistoricTaskInstanceRepository
@@ -39,10 +40,16 @@ import com.ritense.valtimo.camunda.service.CamundaContextService
 import com.ritense.valtimo.camunda.service.CamundaHistoryService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.config.ValtimoProperties
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import com.ritense.valtimo.decision.CamundaDecisionService
 import com.ritense.valtimo.repository.ValtimoApplicationPropertyRepository
+import com.ritense.valtimo.security.DecisionHttpSecurityConfigurer
+import com.ritense.valtimo.service.CamundaByteArrayService
+import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.web.rest.DecisionManagementResource
 import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
@@ -53,6 +60,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Lazy
+import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @AutoConfiguration
@@ -65,6 +73,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
         CamundaHistoricVariableInstanceRepository::class,
         CamundaIdentityLinkRepository::class,
         CamundaProcessDefinitionRepository::class,
+        CamundaDecisionDefinitionRepository::class,
         CamundaTaskRepository::class,
         CamundaVariableInstanceRepository::class
     ]
@@ -99,11 +108,13 @@ class ValtimoCamundaAutoConfiguration {
     @ConditionalOnMissingBean(CamundaRepositoryService::class)
     fun camundaRepositoryService(
         camundaProcessDefinitionRepository: CamundaProcessDefinitionRepository,
+        camundaDecisionDefinitionRepository: CamundaDecisionDefinitionRepository,
         authorizationService: AuthorizationService,
         repositoryService: RepositoryService,
     ): CamundaRepositoryService {
         return CamundaRepositoryService(
             camundaProcessDefinitionRepository,
+            camundaDecisionDefinitionRepository,
             authorizationService,
             repositoryService
         )
@@ -185,4 +196,42 @@ class ValtimoCamundaAutoConfiguration {
         valtimoProperties: ValtimoProperties
     ): ValtimoApplicationPropertyService = ValtimoApplicationPropertyService(repository, valtimoProperties)
 
+    @Bean
+    @Order(350)
+    @ConditionalOnMissingBean(DecisionHttpSecurityConfigurer::class)
+    fun decisionHttpSecurityConfigurer(): DecisionHttpSecurityConfigurer {
+        return DecisionHttpSecurityConfigurer()
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CamundaDecisionService::class)
+    fun camundaDecisionService(
+        repositoryService: RepositoryService,
+        caseDefinitionChecker: CaseDefinitionChecker,
+        camundaByteArrayService: CamundaByteArrayService,
+    ): CamundaDecisionService {
+        return CamundaDecisionService(
+            repositoryService,
+            caseDefinitionChecker,
+            camundaByteArrayService,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DecisionManagementResource::class)
+    fun decisionManagementResource(
+        camundaProcessService: CamundaProcessService,
+        camundaDecisionService: CamundaDecisionService,
+    ): DecisionManagementResource {
+        return DecisionManagementResource(camundaProcessService, camundaDecisionService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CamundaByteArrayService::class)
+    fun camundaByteArrayService(
+        camundaBytearrayRepository: CamundaBytearrayRepository,
+        authorizationService: AuthorizationService,
+    ): CamundaByteArrayService {
+        return CamundaByteArrayService(camundaBytearrayRepository, authorizationService)
+    }
 }

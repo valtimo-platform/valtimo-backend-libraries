@@ -1,0 +1,21 @@
+[
+    {
+        "key": "TITEL"
+    },
+    {
+        "key": "BESTANDSNAAM"
+    },
+    {
+        "key": "CREATIEDATUM",
+        "defaultSort": "DESC"
+    },
+    {
+        "key": "STATUS"
+    },
+    {
+        "key": "VERSIE"
+    },
+    {
+        "key": "INFORMATIEOBJECTTYPE_OMSCHRIJVING"
+    }
+]

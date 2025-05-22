@@ -16,20 +16,21 @@
 
 package com.ritense.case.service
 
-import com.ritense.case.domain.CaseDefinitionSettings
+import com.ritense.BaseTest
 import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DisplayType
 import com.ritense.case.domain.EnumDisplayTypeParameter
 import com.ritense.case.exception.InvalidListColumnException
 import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
-import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.case.web.rest.mapper.CaseListColumnMapper
+import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.valueresolver.exception.ValueResolverValidationException
 import org.junit.jupiter.api.BeforeEach
@@ -38,6 +39,7 @@ import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doNothing
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -46,129 +48,87 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class CaseDefinitionServiceTest {
-
-    lateinit var caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository
+class CaseDefinitionServiceTest : BaseTest() {
+    lateinit var caseDefinitionRepository: CaseDefinitionRepository
     lateinit var caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository
+    lateinit var service: CaseDefinitionService
     lateinit var documentDefinitionService: DocumentDefinitionService
     lateinit var valueResolverService: ValueResolverService
-    lateinit var service: CaseDefinitionService
 
     @BeforeEach
     fun setUp() {
-        caseDefinitionSettingsRepository = mock()
         documentDefinitionService = mock()
         caseDefinitionListColumnRepository = mock()
+        caseDefinitionRepository = mock()
         valueResolverService = mock()
         service = CaseDefinitionService(
-            caseDefinitionSettingsRepository,
             caseDefinitionListColumnRepository,
             documentDefinitionService,
+            caseDefinitionRepository,
             valueResolverService,
-            mock()
+            mock(),
+            mock(),
+            mock(),
         )
     }
 
     @Test
-    fun `should get case settings by id`() {
-        val caseDefinitionName = "name"
+    fun `should get case definition by id`() {
         val externalFormUrl = "https://www.example.com/external-form"
-        val caseDefinitionSettings = CaseDefinitionSettings(
-            name = caseDefinitionName,
+        val caseDefinition = caseDefinition(
             canHaveAssignee = true,
             hasExternalStartForm = true,
             externalStartFormUrl = externalFormUrl
         )
 
-        whenever(documentDefinitionService.findLatestByName(caseDefinitionName))
-            .thenReturn(Optional.of(mock()))
-        whenever(caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName))
-            .thenReturn(caseDefinitionSettings)
+        whenever(caseDefinitionRepository.findById(caseDefinition.id)).thenReturn(Optional.of(caseDefinition))
 
-        val foundCaseDefinitionSettings = service.getCaseSettings(caseDefinitionName)
+        val foundCaseDefinitionSettings = service.getCaseDefinition(caseDefinition.id)
 
-        verify(caseDefinitionSettingsRepository).getReferenceById(caseDefinitionName)
-        assertEquals(caseDefinitionName, foundCaseDefinitionSettings.name)
+        assertEquals(caseDefinition.name, foundCaseDefinitionSettings.name)
         assertTrue(foundCaseDefinitionSettings.canHaveAssignee)
-        assertTrue(foundCaseDefinitionSettings.hasExternalStartForm)
-        assertEquals(externalFormUrl, foundCaseDefinitionSettings.externalStartFormUrl)
     }
 
     @Test
     fun `should throw exception when getting case settings by id and document definition does not exist `() {
-        val caseDefinitionName = "name"
+        val caseDefinitionId = CaseDefinitionId.of("name", "1.0.0")
 
         assertThrows<UnknownCaseDefinitionException> {
-            service.getCaseSettings(caseDefinitionName)
+            service.getCaseDefinition(caseDefinitionId)
         }
     }
 
     @Test
-    fun `should update case setting 'can have assignee`() {
-        val caseDefinitionName = "name"
-        val currentCaseDefinitionSettings = CaseDefinitionSettings(
-            name = caseDefinitionName,
+    fun `should update case settings`() {
+        val currentCaseDefinition = caseDefinition(
             canHaveAssignee = true
         )
-        val updatedCaseDefinitionSettings = CaseDefinitionSettings(
-            name = caseDefinitionName,
+        val updatedCaseDefinition = caseDefinition(
             canHaveAssignee = false
         )
         val caseSettingsDto: CaseSettingsDto = mock()
-        whenever(documentDefinitionService.findLatestByName(caseDefinitionName))
-            .thenReturn(Optional.of(mock()))
-        whenever(caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName))
-            .thenReturn(currentCaseDefinitionSettings)
-        whenever(caseDefinitionSettingsRepository.save(updatedCaseDefinitionSettings))
-            .thenReturn(
-                updatedCaseDefinitionSettings
+        whenever(caseDefinitionRepository.findById(eq(currentCaseDefinition.id))).thenReturn(
+            Optional.of(
+                currentCaseDefinition
             )
-        whenever(caseSettingsDto.update(currentCaseDefinitionSettings))
-            .thenReturn(updatedCaseDefinitionSettings)
+        )
+        whenever(caseDefinitionRepository.save(updatedCaseDefinition)).thenReturn(
+            updatedCaseDefinition
+        )
+        whenever(caseSettingsDto.update(currentCaseDefinition)).thenReturn(updatedCaseDefinition)
+        val returnedCaseDefinitionSettings = service.updateCaseSettings(currentCaseDefinition.id, caseSettingsDto)
 
-        val returnedCaseDefinitionSettings = service.updateCaseSettings(caseDefinitionName, caseSettingsDto)
-        verify(caseDefinitionSettingsRepository).getReferenceById(caseDefinitionName)
-        assertEquals(caseDefinitionName, returnedCaseDefinitionSettings.name)
+        assertEquals("name", returnedCaseDefinitionSettings.name)
         assertFalse(returnedCaseDefinitionSettings.canHaveAssignee)
     }
 
     @Test
-    fun `should update case setting 'has external case start form`() {
-        val caseDefinitionName = "name"
-        val currentCaseDefinitionSettings = CaseDefinitionSettings(
-            name = caseDefinitionName,
-            hasExternalStartForm = false
-        )
-        val updatedCaseDefinitionSettings = CaseDefinitionSettings(
-            name = caseDefinitionName,
-            hasExternalStartForm = true,
-            externalStartFormUrl = "https://www.example.com/external-form"
-        )
-        val caseSettingsDto: CaseSettingsDto = mock()
-        whenever(documentDefinitionService.findLatestByName(caseDefinitionName))
-            .thenReturn(Optional.of(mock()))
-        whenever(caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName))
-            .thenReturn(currentCaseDefinitionSettings)
-        whenever(caseDefinitionSettingsRepository.save(updatedCaseDefinitionSettings))
-            .thenReturn(
-                updatedCaseDefinitionSettings
-            )
-        whenever(caseSettingsDto.update(currentCaseDefinitionSettings))
-            .thenReturn(updatedCaseDefinitionSettings)
-
-        val returnedCaseDefinitionSettings = service.updateCaseSettings(caseDefinitionName, caseSettingsDto)
-        verify(caseDefinitionSettingsRepository).getReferenceById(caseDefinitionName)
-        assertEquals(caseDefinitionName, returnedCaseDefinitionSettings.name)
-        assertFalse(returnedCaseDefinitionSettings.canHaveAssignee)
-    }
-
-    @Test
-    fun `should throw exception when updating case settings and document definition does not exist `() {
-        val caseDefinitionName = "name"
+    fun `should throw exception when updating case settings and case definition does not exist `() {
+        val caseDefinitionId = CaseDefinitionId.of("name", "1.0.0")
         val caseSettingsDto: CaseSettingsDto = mock()
 
         assertThrows<UnknownCaseDefinitionException> {
-            service.updateCaseSettings(caseDefinitionName, caseSettingsDto)
+            service.updateCaseSettings(caseDefinitionId, caseSettingsDto)
         }
     }
 
@@ -179,10 +139,10 @@ class CaseDefinitionServiceTest {
             DisplayType("enum", EnumDisplayTypeParameter(mapOf(Pair("Key1", "Value1"))))
         )
         whenever(documentDefinitionService.findIdByName(caseDefinitionName))
-            .thenReturn(JsonSchemaDocumentDefinitionId.newId("aName"))
+            .thenReturn(JsonSchemaDocumentDefinitionId.existingId("aName", CaseDefinitionId.of("bName", "1.0.2")))
         whenever(
             caseDefinitionListColumnRepository
-                .existsByIdCaseDefinitionNameAndIdKey(
+                .existsByIdCaseDefinitionKeyAndIdKey(
                     caseDefinitionName,
                     listColumnDto.key
                 )
@@ -192,7 +152,7 @@ class CaseDefinitionServiceTest {
             service.createListColumn(caseDefinitionName, listColumnDto)
         }
         verify(documentDefinitionService).findIdByName(caseDefinitionName)
-        verify(caseDefinitionListColumnRepository).existsByIdCaseDefinitionNameAndIdKey(
+        verify(caseDefinitionListColumnRepository).existsByIdCaseDefinitionKeyAndIdKey(
             caseDefinitionName,
             listColumnDto.key
         )
@@ -220,9 +180,9 @@ class CaseDefinitionServiceTest {
             DisplayType("enum", EnumDisplayTypeParameter(mapOf(Pair("Key1", "Value1"))))
         )
         whenever(documentDefinitionService.findIdByName(caseDefinitionName))
-            .thenReturn(JsonSchemaDocumentDefinitionId.newId("aName"))
+            .thenReturn(JsonSchemaDocumentDefinitionId.existingId("aName", CaseDefinitionId.of("bName", "1.0.2")))
         whenever(
-            caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAsc(
+            caseDefinitionListColumnRepository.findByIdCaseDefinitionKeyOrderByOrderAsc(
                 caseDefinitionName
             )
         )
@@ -235,7 +195,7 @@ class CaseDefinitionServiceTest {
             service.createListColumn(caseDefinitionName, listColumnDto)
         }
         verify(documentDefinitionService).findIdByName(caseDefinitionName)
-        verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionNameOrderByOrderAsc(
+        verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionKeyOrderByOrderAsc(
             caseDefinitionName
         )
         assertEquals("Unable to create list column. A column with defaultSort value already exists", exception.message)
@@ -249,9 +209,9 @@ class CaseDefinitionServiceTest {
             DisplayType("enum", EnumDisplayTypeParameter(mapOf(Pair("Key1", "Value1"))))
         )
         whenever(documentDefinitionService.findIdByName(caseDefinitionName))
-            .thenReturn(JsonSchemaDocumentDefinitionId.newId("aName"))
+            .thenReturn(JsonSchemaDocumentDefinitionId.existingId("aName", CaseDefinitionId.of("bName", "1.0.2")))
         whenever(
-            caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAsc(
+            caseDefinitionListColumnRepository.findByIdCaseDefinitionKeyOrderByOrderAsc(
                 caseDefinitionName
             )
         )
@@ -270,7 +230,7 @@ class CaseDefinitionServiceTest {
             service.createListColumn(caseDefinitionName, listColumnDto)
         }
         verify(documentDefinitionService).findIdByName(caseDefinitionName)
-        verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionNameOrderByOrderAsc(
+        verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionKeyOrderByOrderAsc(
             caseDefinitionName
         )
         verify(valueResolverService).validateValues(caseDefinitionName, listOf(listColumnDto.path))
@@ -290,9 +250,9 @@ class CaseDefinitionServiceTest {
             DisplayType("enum", EnumDisplayTypeParameter(emptyMap()))
         )
         whenever(documentDefinitionService.findIdByName(caseDefinitionName))
-            .thenReturn(JsonSchemaDocumentDefinitionId.newId("aName"))
+            .thenReturn(JsonSchemaDocumentDefinitionId.existingId("aName", CaseDefinitionId.of("bName", "1.0.2")))
         whenever(
-            caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAsc(
+            caseDefinitionListColumnRepository.findByIdCaseDefinitionKeyOrderByOrderAsc(
                 caseDefinitionName
             )
         )
@@ -304,7 +264,7 @@ class CaseDefinitionServiceTest {
             service.createListColumn(caseDefinitionName, listColumnDto)
         }
         verify(documentDefinitionService).findIdByName(caseDefinitionName)
-        verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionNameOrderByOrderAsc(
+        verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionKeyOrderByOrderAsc(
             caseDefinitionName
         )
         verify(valueResolverService).validateValues(caseDefinitionName, listOf(listColumnDto.path))
@@ -337,9 +297,9 @@ class CaseDefinitionServiceTest {
         )
         listColumnDtoLastName.defaultSort = ColumnDefaultSort.ASC
         whenever(documentDefinitionService.findIdByName(caseDefinitionName))
-            .thenReturn(JsonSchemaDocumentDefinitionId.newId("aName"))
+            .thenReturn(JsonSchemaDocumentDefinitionId.existingId("aName", CaseDefinitionId.of("bName", "1.0.2")))
         whenever(
-            caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAsc(
+            caseDefinitionListColumnRepository.findByIdCaseDefinitionKeyOrderByOrderAsc(
                 caseDefinitionName
             )
         )
@@ -356,7 +316,7 @@ class CaseDefinitionServiceTest {
             )
         }
         verify(documentDefinitionService).findIdByName(caseDefinitionName)
-        verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionNameOrderByOrderAsc(
+        verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionKeyOrderByOrderAsc(
             caseDefinitionName
         )
         assertEquals("Invalid set of columns. There is more than 1 column with default sort value", exception.message)
@@ -372,9 +332,9 @@ class CaseDefinitionServiceTest {
             DisplayType("enum", EnumDisplayTypeParameter(mapOf(Pair("Key1", "Value1"))))
         )
         whenever(documentDefinitionService.findIdByName(caseDefinitionName))
-            .thenReturn(JsonSchemaDocumentDefinitionId.newId("aName"))
+            .thenReturn(JsonSchemaDocumentDefinitionId.existingId("aName", CaseDefinitionId.of("bName", "1.0.2")))
         whenever(
-            caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAsc(
+            caseDefinitionListColumnRepository.findByIdCaseDefinitionKeyOrderByOrderAsc(
                 caseDefinitionName
             )
         )
@@ -396,7 +356,7 @@ class CaseDefinitionServiceTest {
             service.updateListColumns(caseDefinitionName, listOf(listColumnDtoFirstName))
         }
         verify(documentDefinitionService).findIdByName(caseDefinitionName)
-        verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionNameOrderByOrderAsc(
+        verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionKeyOrderByOrderAsc(
             caseDefinitionName
         )
         verify(valueResolverService).validateValues(caseDefinitionName, listOf(listColumnDtoFirstName.path))

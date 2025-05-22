@@ -18,7 +18,7 @@ package com.ritense.valtimo.web.sse.web.rest
 
 import com.ritense.valtimo.web.sse.domain.Subscriber
 import com.ritense.valtimo.web.sse.service.SseSubscriptionService
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController

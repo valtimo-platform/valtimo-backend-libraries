@@ -16,20 +16,8 @@
 
 package com.ritense.documentenapi.deployment
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.ritense.documentenapi.domain.ColumnDefaultSort
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey
-
-data class ZgwDocumentListColumnChangeset(
-    val changesetId: String,
-    @JsonProperty("case-definitions")
-    val caseDefinitions: List<ZgwDocumentListColumnCollection>
-)
-
-data class ZgwDocumentListColumnCollection(
-    val key: String,
-    val columns: List<ZgwDocumentListColumn>
-)
 
 data class ZgwDocumentListColumn(
     val key: DocumentenApiColumnKey,

@@ -17,6 +17,7 @@
 package com.ritense.exporter
 
 import com.ritense.exporter.request.ExportRequest
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.ByteArrayOutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
@@ -70,6 +71,6 @@ class ValtimoExportService (
     }
 
     companion object {
-        private val logger: mu.KLogger = mu.KotlinLogging.logger {}
+        val logger = KotlinLogging.logger {}
     }
 }

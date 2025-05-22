@@ -25,6 +25,7 @@ import com.ritense.processlink.autodeployment.ProcessLinkDeploymentApplicationRe
 import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -50,12 +51,17 @@ class ProcessLinkExporterIntTest @Autowired constructor(
         val processDefinitionKey = "auto-deploy-process-link-with-long-key"
         val processDefinitionId = getProcessDefinitionId(processDefinitionKey)
 
-        val result = processLinkExporter.export(ProcessDefinitionExportRequest(processDefinitionId))
+        val result = processLinkExporter.export(
+            ProcessDefinitionExportRequest(
+                processDefinitionId,
+                CaseDefinitionId.of("something", "1.0.0")
+            )
+        )
 
         assertThat(result.exportFiles).isNotEmpty()
 
         val exportFile = result.exportFiles.single {
-            it.path == "config/processlink/auto-deploy-process-link-with-long-key.processlink.json"
+            it.path == "config/case/something/1-0-0/process-link/auto-deploy-process-link-with-long-key.process-link.json"
         }
 
         val createRequestDtos: List<ProcessLinkExportResponseDto> = objectMapper.readValue(exportFile.content)

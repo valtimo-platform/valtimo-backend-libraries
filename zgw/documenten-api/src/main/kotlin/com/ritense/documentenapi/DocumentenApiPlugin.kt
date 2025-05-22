@@ -47,8 +47,8 @@ import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.temporaryresource.domain.StorageMetadataKeys
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zgw.domain.Vertrouwelijkheid
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.ValidationException
-import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.hibernate.validator.constraints.Length
 import org.springframework.context.ApplicationEventPublisher

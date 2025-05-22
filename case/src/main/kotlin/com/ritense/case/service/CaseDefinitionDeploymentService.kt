@@ -16,72 +16,110 @@
 
 package com.ritense.case.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.convertValue
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.ritense.case.domain.CaseDefinitionSettings
-import com.ritense.case.repository.CaseDefinitionSettingsRepository
-import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
-import com.ritense.logging.withLoggingContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.case_.repository.CaseDefinitionRepository
+import com.ritense.importer.ValtimoImportService
+import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
+import org.apache.commons.lang3.StringUtils
+import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
+import org.springframework.core.Ordered
+import org.springframework.core.annotation.Order
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.util.StreamUtils
-import java.nio.charset.StandardCharsets
+import java.io.FileNotFoundException
+
 
 @Transactional
 @Service
 @SkipComponentScan
 class CaseDefinitionDeploymentService(
-    private val resourceLoader: ResourceLoader,
-    private val objectMapper: ObjectMapper,
-    private val caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository
+    val resourceLoader: ResourceLoader,
+    val valtimoImportService: ValtimoImportService,
+    val caseDefinitionRepository: CaseDefinitionRepository,
+    val changelogDeployer: ChangelogDeployer,
 ) {
+    @Order(Ordered.LOWEST_PRECEDENCE)
+    @EventListener(ApplicationReadyEvent::class)
+    fun deployOnStartup() {
+        deployCase()
+        deployGlobal()
 
-    @EventListener(DocumentDefinitionDeployedEvent::class)
-    fun conditionalCreateCase(event: DocumentDefinitionDeployedEvent) {
-        val documentDefinitionName = event.documentDefinition().id().name()
-        withLoggingContext("jsonSchemaDocumentName" to documentDefinitionName) {
-            val caseDefinitionSettings = caseDefinitionSettingsRepository.findByIdOrNull(documentDefinitionName)
-            if (caseDefinitionSettings == null) {
-                val resource = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
-                    .getResource("classpath:config/case/definition/$documentDefinitionName.json")
+        // TODO: convert changelogdeployers to importers
+        changelogDeployer.deployAll()
+    }
 
-                if (resource.exists()) {
-                    deploy(
-                        resource.filename!!.substringBeforeLast("."),
-                        StreamUtils.copyToString(resource.inputStream, StandardCharsets.UTF_8)
-                    )
-                } else {
-                    caseDefinitionSettingsRepository.save(CaseDefinitionSettings(documentDefinitionName))
+    private fun deployCase() {
+        try {
+            val resources =
+                ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(CASE_DEFINITION_PATH)
+                    .groupBy { resource ->
+                        val relativePath = resource.url.path.substringAfter(CASE_DEFINITION_FOLDER_STRUCTURE)
+                        relativePath.substring(0, StringUtils.ordinalIndexOf(relativePath, "/", 3))
+                    }
+                    .map { (key, files) ->
+                        key to (files.map {
+                            it.url.path.substringAfter(CASE_DEFINITION_FOLDER_STRUCTURE).substring(key.length) to it
+                        })
+                    }
+            resources.forEach { (_, files) ->
+                runWithoutAuthorization {
+                    valtimoImportService.importCaseDefinition(files, caseDefinitionRepository.findAllByFinalTrue().map { it.id })
                 }
             }
+            setLatestToActiveIfNoneIsActive()
+
+        } catch (ex: FileNotFoundException) {
+            // No resources found, nothing to import
+            logger.info { "No case definitions found. Continuing startup without importing case definitions." }
         }
     }
 
-    fun deploy(caseDefinitionName: String, settingsJson: String, forceDeploy: Boolean = false) {
-        logger.debug { "Deploying case definition $caseDefinitionName" }
-        val caseDefinitionSettings = caseDefinitionSettingsRepository.findByIdOrNull(caseDefinitionName)
 
-        if (caseDefinitionSettings == null || forceDeploy) {
-            val settingsToDeploy = objectMapper.readValue<ObjectNode>(settingsJson)
-                .put("name", caseDefinitionName)
-            val createdCaseDefinitionSettings: CaseDefinitionSettings = objectMapper.convertValue(settingsToDeploy)
+    private fun deployGlobal() {
+        try {
+            val resources =
+                ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(GLOBAL_DEFINITION_PATH)
+                    .groupBy {
+                        it.url.path.substringAfter(GLOBAL_DEFINITION_FOLDER_STRUCTURE)
+                    }
+                    .map { (key, files) ->
+                        key to (files.map {
+                           "/global" + it.url.path.substringAfter(GLOBAL_DEFINITION_FOLDER_STRUCTURE) to it
+                        })
+                    }
+            resources.forEach { (_, files) ->
+                runWithoutAuthorization {
+                    valtimoImportService.importGlobalDefinitions(files)
+                }
+            }
 
-            caseDefinitionSettingsRepository.save(createdCaseDefinitionSettings)
-            logger.debug { "Case definition $caseDefinitionName was created" }
-        } else {
-            logger.debug { "Attempted to update settings for case that already exist $caseDefinitionName" }
+        } catch (ex: FileNotFoundException) {
+            // No resources found, nothing to import
+            logger.info { "No global definitions found. Continuing startup without importing global definitions." }
         }
+    }
+
+    private fun setLatestToActiveIfNoneIsActive() {
+        caseDefinitionRepository.findAll()
+            .groupBy { it.id.key }
+            .map { it.value }
+            .filter { caseDefinitions -> caseDefinitions.none { caseDefinition -> caseDefinition.active } }
+            .map { caseDefinitions -> caseDefinitions.maxBy { it.id.versionTag } }
+            .map { caseDefinition -> caseDefinition.copy(active = true) }
+            .forEach { caseDefinition -> caseDefinitionRepository.save(caseDefinition) }
     }
 
     companion object {
+        private const val CASE_DEFINITION_PATH = "classpath*:config/case/*/*/**/*.*"
+        private const val CASE_DEFINITION_FOLDER_STRUCTURE = "/config/case"
+        private const val GLOBAL_DEFINITION_PATH = "classpath*:config/global/**/*.*"
+        private const val GLOBAL_DEFINITION_FOLDER_STRUCTURE = "/config/global"
+
         val logger = KotlinLogging.logger {}
     }
 }

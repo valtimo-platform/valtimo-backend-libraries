@@ -21,6 +21,7 @@ import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import com.ritense.exporter.request.ProcessDefinitionExportRequest
 import com.ritense.processdocument.BaseIntegrationTest
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -40,8 +41,9 @@ class ProcessDocumentLinkExporterIntTest @Autowired constructor(
 
     @Test
     fun `should export process document links`(): Unit = runWithoutAuthorization {
+        val caseDefinitionId = CaseDefinitionId("house", "1.0.0")
         val documentDefinitionName = "house"
-        val result = processDocumentLinkExporter.export(DocumentDefinitionExportRequest(documentDefinitionName, 1))
+        val result = processDocumentLinkExporter.export(DocumentDefinitionExportRequest(documentDefinitionName, caseDefinitionId))
 
         val exportFile = result.exportFiles.single {
             it.path == PATH.format(documentDefinitionName)
@@ -62,11 +64,11 @@ class ProcessDocumentLinkExporterIntTest @Autowired constructor(
 
         val processDefinitionId = camundaRepositoryService.findLatestProcessDefinition("loan-process-demo")!!.id
         assertThat(result.relatedRequests).contains(
-            ProcessDefinitionExportRequest(processDefinitionId)
+            ProcessDefinitionExportRequest(processDefinitionId, caseDefinitionId)
         )
     }
 
     companion object {
-        private const val PATH = "config/process-document-link/%s.json";
+        private const val PATH = "config/case/house/1-0-0/process-document-link/%s.process-document-link.json";
     }
 }

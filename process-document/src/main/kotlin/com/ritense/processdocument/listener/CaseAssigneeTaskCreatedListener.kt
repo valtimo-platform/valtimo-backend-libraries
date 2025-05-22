@@ -17,58 +17,64 @@
 package com.ritense.processdocument.listener
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import mu.KotlinLogging
-import org.camunda.bpm.engine.ActivityTypes
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.camunda.bpm.engine.TaskService
 import org.camunda.bpm.engine.delegate.DelegateTask
-import org.camunda.bpm.engine.delegate.TaskListener
-import org.camunda.bpm.extension.reactor.bus.CamundaSelector
-import org.camunda.bpm.extension.reactor.spring.listener.ReactorTaskListener
+import org.springframework.context.event.EventListener
+import org.springframework.stereotype.Component
 import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 
-@CamundaSelector(type = ActivityTypes.TASK_USER_TASK, event = TaskListener.EVENTNAME_CREATE)
+@Component
+@SkipComponentScan
 open class CaseAssigneeTaskCreatedListener(
     private val taskService: TaskService,
     private val documentService: DocumentService,
     private val caseDefinitionService: CaseDefinitionService,
     private val userManagementService: UserManagementService
-) : ReactorTaskListener() {
+) {
 
-    override fun notify(delegateTask: DelegateTask) {
+    @EventListener(
+        condition = """#delegateTask.bpmnModelElementInstance != null
+            && #delegateTask.bpmnModelElementInstance.elementType.typeName == T(org.camunda.bpm.engine.ActivityTypes).TASK_USER_TASK
+            && #delegateTask.eventName == T(org.camunda.bpm.engine.delegate.TaskListener).EVENTNAME_CREATE"""
+    )
+    fun notify(delegateTask: DelegateTask) {
         val documentId = JsonSchemaDocumentId.existingId(UUID.fromString(delegateTask.execution.businessKey))
         val document: Document? = runWithoutAuthorization {
             documentService.findBy(documentId).getOrNull()
         }
 
         document?.run {
-            val caseSettings: CaseDefinitionSettings = runWithoutAuthorization {
-                caseDefinitionService.getCaseSettings(
-                    this.definitionId().name()
+            val caseDefinition = runWithoutAuthorization {
+                caseDefinitionService.getCaseDefinition(
+                    document.definitionId().caseDefinitionId()
                 )
             }
 
-            if (
-                caseSettings.canHaveAssignee
-                && caseSettings.autoAssignTasks
-                && !this.assigneeId().isNullOrEmpty()
-            ) {
-                val assignee = userManagementService.findByUsername(this.assigneeId())
+            if (caseDefinition != null) {
+                if (
+                    caseDefinition.canHaveAssignee
+                    && caseDefinition.autoAssignTasks
+                    && !this.assigneeId().isNullOrEmpty()
+                ) {
+                    val assignee = userManagementService.findByUsername(this.assigneeId())
 
-                taskService
-                    .setAssignee(
-                        delegateTask.id,
-                        assignee.username
-                    )
-                    .also {
-                        logger.debug { "Setting assignee for task with id ${delegateTask.id}" }
-                    }
+                    taskService
+                        .setAssignee(
+                            delegateTask.id,
+                            assignee.username
+                        )
+                        .also {
+                            logger.debug { "Setting assignee for task with id ${delegateTask.id}" }
+                        }
+                }
             }
         }
     }

@@ -74,6 +74,8 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
             val result: CreateDocumentResult = documentService.createDocument(
                 NewDocumentRequest(
                     definition!!.id().name(),
+                    definition!!.id.caseDefinitionId().key,
+                    definition!!.id.caseDefinitionId().versionTag.version,
                     content.asJson()
                 )
             )
@@ -86,6 +88,8 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
             val result: CreateDocumentResult = documentService.createDocument(
                 NewDocumentRequest(
                     definition!!.id().name(),
+                    definition!!.id.caseDefinitionId().key,
+                    definition!!.id.caseDefinitionId().versionTag.version,
                     content2.asJson()
                 )
             )
@@ -276,6 +280,8 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
             val result: CreateDocumentResult = documentService.createDocument(
                 NewDocumentRequest(
                     museumDefinition!!.id().name(),
+                    museumDefinition!!.id.caseDefinitionId().key,
+                    museumDefinition!!.id.caseDefinitionId().versionTag.version,
                     content.asJson()
                 )
             )
@@ -342,7 +348,7 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = [AuthoritiesConstants.USER])
     fun shouldReturnMoreThan10Results() {
-        val definition2 = definition("notahouse")
+        val definition2 = definition("task")
         createDocumentAndTwoProcesses("Funenpark1", definition2.id().name())
         createDocumentAndTwoProcesses("Funenpark2", definition2.id().name())
         createDocumentAndTwoProcesses("Funenpark3", definition2.id().name())
@@ -373,6 +379,8 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
             val result: CreateDocumentResult = documentService.createDocument(
                 NewDocumentRequest(
                     documentName,
+                    documentName,
+                    "1.0.0",
                     content2.asJson()
                 )
             )
@@ -383,7 +391,7 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
             camundaProcessJsonSchemaDocumentService.startProcessForDocument(
                 StartProcessForDocumentRequest(
                     document.resultingDocument().orElseThrow().id(),
-                    "loan-process-demo",
+                    "loan-process-demo-3",
                     mapOf()
                 )
             )
@@ -393,7 +401,7 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
             camundaProcessJsonSchemaDocumentService.startProcessForDocument(
                 StartProcessForDocumentRequest(
                     document.resultingDocument().orElseThrow().id(),
-                    "loan-process-demo",
+                    "loan-process-demo-3",
                     mapOf()
                 )
             )

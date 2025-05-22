@@ -52,7 +52,7 @@ abstract class SearchFieldExporter(
             )
         )
         val caseTaskListExport = ExportFile(
-            getPath(documentDefinitionName),
+            getPath(request),
             objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(caseTaskListChangeset)
         )
 
@@ -63,5 +63,5 @@ abstract class SearchFieldExporter(
 
     abstract fun ownerTypeKey(): String
 
-    abstract fun getPath(documentDefinitionName: String): String
+    abstract fun getPath(request: DocumentDefinitionExportRequest): String
 }

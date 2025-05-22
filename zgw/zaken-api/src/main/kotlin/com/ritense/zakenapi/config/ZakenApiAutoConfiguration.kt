@@ -17,19 +17,24 @@
 package com.ritense.zakenapi.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.case_.listener.ZaakTypeLinkCaseEventListener
 import com.ritense.authorization.AuthorizationService
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.document.service.DocumentService
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.documentenapi.service.DocumentenApiVersionService
 import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
+import com.ritense.processdocument.importer.ZaakTypeLinkImporter
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.temporaryresource.repository.ResourceStorageMetadataRepository
 import com.ritense.valtimo.contract.annotation.ProcessBean
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPluginFactory
 import com.ritense.zakenapi.client.ZakenApiClient
@@ -211,10 +216,12 @@ class ZakenApiAutoConfiguration {
     @Bean
     fun zakenApiZaakTypeLinkService(
         zaakTypeLinkRepository: ZaakTypeLinkRepository,
-        processDocumentAssociationService: ProcessDocumentAssociationService
+        processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
+        caseDefinitionChecker: CaseDefinitionChecker,
     ) = DefaultZaakTypeLinkService(
         zaakTypeLinkRepository,
-        processDocumentAssociationService
+        processDefinitionCaseDefinitionService,
+        caseDefinitionChecker
     )
 
     @Bean
@@ -287,4 +294,26 @@ class ZakenApiAutoConfiguration {
         zaakDocumentService,
         pluginService
     )
+
+    @Bean
+    @ConditionalOnMissingBean(ZaakTypeLinkImporter::class)
+    fun zaakTypeLinkImporter(
+        objectMapper: ObjectMapper,
+        zaakTypeLinkService: ZaakTypeLinkService
+    ): ZaakTypeLinkImporter {
+        return ZaakTypeLinkImporter(
+            objectMapper,
+            zaakTypeLinkService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ZaakTypeLinkCaseEventListener::class)
+    fun zaakTypeLinkCaseEventListener(
+        zaakTypeLinkService: ZaakTypeLinkService,
+    ): ZaakTypeLinkCaseEventListener {
+        return ZaakTypeLinkCaseEventListener(
+            zaakTypeLinkService,
+        )
+    }
 }

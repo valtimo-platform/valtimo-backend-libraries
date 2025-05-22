@@ -16,17 +16,28 @@
 
 package com.ritense.form.exception
 
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import java.util.UUID
 
-class FormDefinitionNotFoundException private constructor(name: String?, id: UUID?) : RuntimeException(
+class FormDefinitionNotFoundException private constructor(
+    name: String?,
+    id: UUID?,
+    caseDefinitionId: CaseDefinitionId?,
+) : RuntimeException(
     if (id != null) {
         "Form definition with id '$id' not found"
     } else {
-        "Form definition with name '$name' not found"
+        if (caseDefinitionId == null) {
+            "Form definition with name '$name' not found"
+        } else {
+            "Form definition with name '$name' not found for case definition '$caseDefinitionId'"
+        }
     }
 ) {
 
-    constructor(name: String) : this(name, null)
+    constructor(name: String, caseDefinitionId: CaseDefinitionId?) : this(name, null, caseDefinitionId)
 
-    constructor(id: UUID) : this(null, id)
+    constructor(name: String) : this(name, null, null)
+
+    constructor(id: UUID) : this(null, id, null)
 }

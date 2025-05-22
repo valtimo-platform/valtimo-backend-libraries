@@ -26,9 +26,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpMethod
 import org.springframework.mock.web.MockHttpServletRequest
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -58,10 +58,10 @@ abstract class SecuritySmokeIntegrationTest(
     private val basePackageName: String? = null,
     private val ignoredPathPatterns: Set<String> = setOf()
 ) {
-    @MockBean
+    @MockitoBean
     private lateinit var userManagementService: UserManagementService
 
-    @MockBean
+    @MockitoBean
     private lateinit var mailSender: MailSender
 
     @Qualifier("requestMappingHandlerMapping")

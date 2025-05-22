@@ -619,7 +619,7 @@ public class ProcessResource extends AbstractProcessResource {
 
     @PostMapping(value = "/v1/process/definition/deployment", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Object> deployProcessDefinition(
-            @RequestPart(name = "file") MultipartFile bpmn) {
+        @RequestPart(name = "file") MultipartFile bpmn) {
         boolean correctFileExtension = Objects.requireNonNull(bpmn.getOriginalFilename()).endsWith(".bpmn")
             || Objects.requireNonNull(bpmn.getOriginalFilename()).endsWith(".dmn");
 
@@ -628,7 +628,7 @@ public class ProcessResource extends AbstractProcessResource {
         }
         try {
             runWithoutAuthorization(() -> {
-                camundaProcessService.deploy(bpmn.getOriginalFilename(), new ByteArrayInputStream(bpmn.getBytes()));
+                camundaProcessService.deploy(null, bpmn.getOriginalFilename(), new ByteArrayInputStream(bpmn.getBytes()));
                 return null;
             });
         } catch (ParseException e) {

@@ -21,11 +21,11 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.importer.ImportContext.Companion.runImporter
 import com.ritense.importer.ImportRequest
 import com.ritense.processlink.importer.ProcessLinkImporter
-import java.io.IOException
-import mu.KLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
+import org.apache.commons.lang3.StringUtils
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.core.Ordered
@@ -34,7 +34,9 @@ import org.springframework.core.env.Environment
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
+import java.io.IOException
 
+// TODO: MOVE THIS TO TEST
 open class ProcessLinkDeploymentApplicationReadyEventListener(
     private val resourceLoader: ResourceLoader,
     private val processLinkImporter: ProcessLinkImporter,
@@ -48,7 +50,11 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
         logger.info { "Deploying all process links from $PATH" }
         loadResources().forEach { resource ->
             try {
-                val fileName = requireNotNull(resource.filename)
+                val relativePath = resource.url.path.substringAfter(CASE_DEFINITION_FOLDER_STRUCTURE)
+                val substring = relativePath.substring(0, StringUtils.ordinalIndexOf(relativePath, "/", 3))
+                val fileName =
+                    resource.url.path.substringAfter(CASE_DEFINITION_FOLDER_STRUCTURE).substring(substring.length)
+
                 logger.info { "Deploying process link from file '${fileName}'" }
 
                 val processLinkNode = objectMapper.readValue<ArrayNode>(resource.inputStream)
@@ -56,7 +62,9 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
 
                 val importRequest = ImportRequest(fileName, objectMapper.writeValueAsBytes(resolvedProcessLinkNode))
 
-                processLinkImporter.import(importRequest)
+                runImporter {
+                    processLinkImporter.import(importRequest)
+                }
             } catch (e: Exception) {
                 logger.error(e) { "Error while deploying process-link: '${resource.filename}'" }
             }
@@ -64,9 +72,10 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
     }
 
     @Throws(IOException::class)
-    private fun loadResources(): Array<Resource> {
+    private fun loadResources(): List<Resource> {
         return ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
             .getResources(PATH)
+            .filter { it?.url?.toString()?.contains("/config/case") ?: false }
     }
 
     private fun resolveProperties(array: ArrayNode?): ArrayNode {
@@ -105,7 +114,8 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
     }
 
     companion object {
-        private val logger: KLogger = KotlinLogging.logger {}
-        const val PATH = "classpath*:**/*.processlink.json"
+        private val logger = KotlinLogging.logger {}
+        const val PATH = "classpath*:**/case/*/*/process-link/*.process-link.json"
+        private const val CASE_DEFINITION_FOLDER_STRUCTURE = "/config/case"
     }
 }

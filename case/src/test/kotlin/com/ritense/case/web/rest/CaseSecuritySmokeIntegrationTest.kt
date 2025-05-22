@@ -16,8 +16,13 @@
 
 package com.ritense.case.web.rest
 
+import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker
 import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 
 class CaseSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
     basePackageName = "com.ritense.case"
-)
+) {
+    @MockitoBean
+    lateinit var processDefinitionCaseDefinitionLinker: ProcessDefinitionCaseDefinitionLinker
+}

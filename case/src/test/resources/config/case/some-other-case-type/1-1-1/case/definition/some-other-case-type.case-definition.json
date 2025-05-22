@@ -1,0 +1,7 @@
+{
+    "key": "some-other-case-type",
+    "name": "Some other case type",
+    "versionTag": "1.1.1",
+    "canHaveAssignee": true,
+    "autoAssignTasks": true
+}

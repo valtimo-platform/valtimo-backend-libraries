@@ -52,6 +52,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.context.ApplicationEventPublisher;
 
 class CamundaProcessServiceTest {
 
@@ -97,6 +98,15 @@ class CamundaProcessServiceTest {
     @Mock
     private CamundaExecutionRepository camundaExecutionRepository;
 
+    @Mock
+    private ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker;
+
+    @Mock
+    private CamundaByteArrayService camundaByteArrayService;
+
+    @Mock
+    private ApplicationEventPublisher applicationEventPublisher;
+
     private CamundaHistoryService historyService = mock(CamundaHistoryService.class, RETURNS_DEEP_STUBS);
 
     @BeforeEach
@@ -106,8 +116,20 @@ class CamundaProcessServiceTest {
 
     @Test
     void getAllActiveContextProcessesStartedByCurrentUserTestExpectAll() {
-        camundaProcessService = new CamundaProcessService(runtimeService, camundaRuntimeService, repositoryService, camundaRepositoryService, formService, historyService, processPropertyService, valtimoProperties, authorizationService,
-                camundaExecutionRepository
+        camundaProcessService = new CamundaProcessService(
+            runtimeService,
+            camundaRuntimeService,
+            repositoryService,
+            camundaRepositoryService,
+            formService,
+            historyService,
+            processPropertyService,
+            valtimoProperties,
+            authorizationService,
+            camundaExecutionRepository,
+            processDefinitionCaseDefinitionLinker,
+            camundaByteArrayService,
+            applicationEventPublisher
         );
 
         //when
@@ -140,8 +162,20 @@ class CamundaProcessServiceTest {
 
     @Test
     void getAllActiveContextProcessesStartedByCurrentUserTestExpectTwo() {
-        camundaProcessService = new CamundaProcessService(runtimeService, camundaRuntimeService, repositoryService, camundaRepositoryService, formService, historyService, processPropertyService, valtimoProperties, authorizationService,
-                camundaExecutionRepository
+        camundaProcessService = new CamundaProcessService(
+            runtimeService,
+            camundaRuntimeService,
+            repositoryService,
+            camundaRepositoryService,
+            formService,
+            historyService,
+            processPropertyService,
+            valtimoProperties,
+            authorizationService,
+            camundaExecutionRepository,
+            processDefinitionCaseDefinitionLinker,
+            camundaByteArrayService,
+            applicationEventPublisher
         );
 
         //when

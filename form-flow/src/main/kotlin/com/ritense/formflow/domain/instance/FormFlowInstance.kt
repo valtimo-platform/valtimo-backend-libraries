@@ -17,6 +17,7 @@
 package com.ritense.formflow.domain.instance
 
 import com.ritense.formflow.domain.definition.FormFlowDefinition
+import com.ritense.logging.withLoggingContext
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.AttributeOverride
 import jakarta.persistence.CascadeType
@@ -31,10 +32,9 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.OrderBy
 import jakarta.persistence.Table
-import mu.withLoggingContext
-import java.util.Objects
 import org.hibernate.annotations.Type
 import org.json.JSONObject
+import java.util.Objects
 
 
 @Entity
@@ -45,7 +45,8 @@ class FormFlowInstance(
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumns(
         JoinColumn(name = "form_flow_definition_key", referencedColumnName = "form_flow_definition_key"),
-        JoinColumn(name = "form_flow_definition_version", referencedColumnName = "form_flow_definition_version")
+        JoinColumn(name = "case_definition_key", referencedColumnName = "case_definition_key"),
+        JoinColumn(name = "case_definition_version_tag", referencedColumnName = "case_definition_version_tag")
     )
     val formFlowDefinition: FormFlowDefinition,
     @Embedded
