@@ -38,6 +38,7 @@ class ProcessDeploymentService(
     private val processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
     private val processLinkService: ProcessLinkService,
 ) {
+    //TODO: this code could use a refactor
     fun deployProcessDefinitionAndProcessLinksForCaseDefinition(
         caseDefinitionId: CaseDefinitionId,
         bpmn: MultipartFile?,
@@ -62,16 +63,14 @@ class ProcessDeploymentService(
                 ProcessDefinitionId(previouslyDeployProcess.id)
             }
 
-            if (processIdToUpdate != null) {
-                processDefinitionCaseDefinitionService.createProcessDocumentDefinition(
-                    ProcessDocumentDefinitionRequest(
-                        processDefinitionId = processIdToUpdate,
-                        caseDefinitionId = caseDefinitionId,
-                        canInitializeDocument = canInitializeDocument,
-                        startableByUser = startableByUser
-                    )
+            processDefinitionCaseDefinitionService.createProcessDocumentDefinition(
+                ProcessDocumentDefinitionRequest(
+                    processDefinitionId = processIdToUpdate,
+                    caseDefinitionId = caseDefinitionId,
+                    canInitializeDocument = canInitializeDocument,
+                    startableByUser = startableByUser
                 )
-            }
+            )
         }
     }
 
@@ -97,6 +96,13 @@ class ProcessDeploymentService(
 
                 // If the deployment is null, the same xml was deployed before
                 if (deployment == null) {
+                    runWithoutAuthorization {
+                        val model = Bpmn.readModelFromStream(bpmn!!.inputStream)
+                        val previouslyDeployProcess =
+                            camundaProcessService.getExistingProcessForFile(caseDefinitionId, model)
+                        processLinkService.deleteProcessLinksForProcessDefinition(previouslyDeployProcess.id)
+                        createProcessLinks(processLinks)
+                    }
                     return null
                 }
 
@@ -132,10 +138,19 @@ class ProcessDeploymentService(
                 throw RuntimeException("Failed to duplicate process definition. Rolling back deployment.", e)
             }
         }
+        createProcessLinks(processLinks, deployedProcessDefinitionId)
 
+        return ProcessDefinitionId(deployedProcessDefinitionId)
+    }
+
+    private fun createProcessLinks(processLinks: List<ProcessLinkCreateRequestDto>, deployedProcessDefinitionId: String? = null) {
         try {
             processLinks.map { originalLink ->
-                copyWithNewProcessDefinitionId(originalLink, deployedProcessDefinitionId)
+                if (deployedProcessDefinitionId != null) {
+                    copyWithNewProcessDefinitionId(originalLink, deployedProcessDefinitionId)
+                } else {
+                    originalLink
+                }
             }.forEach { link ->
                 runWithoutAuthorization {
                     processLinkService.createProcessLink(link, null)
@@ -144,13 +159,13 @@ class ProcessDeploymentService(
         } catch (e: Exception) {
             throw RuntimeException("Failed to create process links. Rolling back deployment.", e)
         }
-        return ProcessDefinitionId(deployedProcessDefinitionId)
     }
 
     private fun copyWithNewProcessDefinitionId(
         original: ProcessLinkCreateRequestDto,
         newProcessDefinitionId: String
     ): ProcessLinkCreateRequestDto {
+        //TODO: see if there's a way to do this without reflection
         val originalClass = original::class
         val properties = originalClass.memberProperties
         val constructor = originalClass.primaryConstructor
