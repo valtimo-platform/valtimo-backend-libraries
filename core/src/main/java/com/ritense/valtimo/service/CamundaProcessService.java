@@ -511,7 +511,7 @@ public class CamundaProcessService {
                     latestProcessDefinition.getId(),
                     caseDefinitionId
                 ));
-                repositoryService.deleteProcessDefinition(latestProcessDefinition.getId(), true);
+                repositoryService.deleteDeployment(latestProcessDefinition.getDeploymentId(), true);
             }
 
             var deploymentBuilder = repositoryService.createDeployment()
