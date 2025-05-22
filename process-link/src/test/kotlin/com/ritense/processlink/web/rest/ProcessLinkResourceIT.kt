@@ -275,6 +275,8 @@ internal class ProcessLinkResourceIT @Autowired constructor(
                     )
                 )
                 .param("processDefinitionId", PROCESS_DEF_ID)
+                .param("canInitializeDocument", "true")
+                .param("startableByUser", "true")
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
