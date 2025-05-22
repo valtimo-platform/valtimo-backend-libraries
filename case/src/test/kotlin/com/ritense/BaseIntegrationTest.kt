@@ -135,8 +135,10 @@ class BaseIntegrationTest: BaseTest() {
     }
 
     protected fun mockUser(firstName: String?, lastName: String?): ManageableUser {
+        val id = UUID.randomUUID().toString()
         return ValtimoUserBuilder()
-            .id(UUID.randomUUID().toString())
+            .id(id)
+            .username(id)
             .firstName(firstName)
             .lastName(lastName)
             .roles(List.of(FULL_ACCESS_ROLE))
