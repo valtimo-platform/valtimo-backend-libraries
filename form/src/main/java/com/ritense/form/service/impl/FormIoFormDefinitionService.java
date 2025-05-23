@@ -110,7 +110,7 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     public Optional<FormIoFormDefinition> getFormDefinitionByName(
         @LoggableResource("formDefinitionName") String name
     ) {
-        return formDefinitionRepository.findByName(name);
+        return formDefinitionRepository.findByNameAndCaseDefinitionIdIsNull(name);
     }
 
     public Optional<FormIoFormDefinition> getFormDefinitionByName(
@@ -124,7 +124,7 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     public Optional<FormIoFormDefinition> getFormDefinitionByNameIgnoringCase(
         @LoggableResource("formDefinitionName") String name
     ) {
-        return formDefinitionRepository.findByNameIgnoreCase(name);
+        return formDefinitionRepository.findByNameIgnoreCaseAndCaseDefinitionIdIsNull(name);
     }
 
     @Override

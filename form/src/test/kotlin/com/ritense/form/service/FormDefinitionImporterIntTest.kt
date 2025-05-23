@@ -72,7 +72,10 @@ class FormDefinitionImporterIntTest @Autowired constructor(
         )
 
         formDefinitionImporter.import(request)
-        val formIoFormDefinition = formDefinitionService.getFormDefinitionByName("importer-example")
+        val formIoFormDefinition = formDefinitionService.getFormDefinitionByName(
+            "importer-example",
+            request.caseDefinitionId
+        )
             .map { it as? FormIoFormDefinition }.orElse(null)
 
         assertThat(formIoFormDefinition).isNotNull
