@@ -10,6 +10,7 @@ dependencies {
 
     implementation("io.github.oshai:kotlin-logging")
 
+
     // Spring cloud stream RabbitMQ
     implementation "org.springframework.cloud:spring-cloud-starter-stream-rabbit:${springCloudStreamVersion}"
     implementation "com.rabbitmq:amqp-client:$amqpCLientVersion"

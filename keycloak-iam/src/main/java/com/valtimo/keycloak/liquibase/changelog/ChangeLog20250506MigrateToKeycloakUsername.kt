@@ -17,13 +17,13 @@
 package com.valtimo.keycloak.liquibase.changelog
 
 import com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT
-import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.ws.rs.NotFoundException
 import liquibase.change.custom.CustomTaskChange
 import liquibase.database.Database
 import liquibase.database.jvm.JdbcConnection
 import liquibase.exception.ValidationErrors
 import liquibase.resource.ResourceAccessor
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl
 import org.keycloak.OAuth2Constants.CLIENT_CREDENTIALS
 import org.keycloak.adapters.springboot.KeycloakSpringBootProperties
