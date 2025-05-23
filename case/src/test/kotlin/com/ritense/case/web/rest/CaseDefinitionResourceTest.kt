@@ -310,7 +310,7 @@ class CaseDefinitionResourceTest : BaseTest() {
     fun `should get case definitions`() {
         val caseDefinitionId = CaseDefinitionId("key", "1.0.0")
         val caseDefinition = caseDefinition(caseDefinitionId)
-        whenever(service.getCaseDefinitions(isNull(), isNull(), isNull(), any())).thenReturn(listOf(caseDefinition))
+        whenever(service.getCaseDefinitions()).thenReturn(listOf(caseDefinition))
 
         mockMvc.perform(
             get("/api/v1/case-definition")
