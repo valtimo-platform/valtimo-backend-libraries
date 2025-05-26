@@ -9,6 +9,10 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
+            - uses: actions/setup-java@v4
+              with:
+                  distribution: "temurin"
+                  java-version: "21"
             - name: Run Unit Tests
               run: ./gradlew clean test
     integration-testing:
@@ -16,6 +20,10 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
+            - uses: actions/setup-java@v4
+              with:
+                  distribution: "temurin"
+                  java-version: "21"
             - name: Run Unit Tests
               run: ./gradlew clean integrationTesting
     security-testing:
@@ -36,5 +44,9 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
+            - uses: actions/setup-java@v4
+              with:
+                  distribution: "temurin"
+                  java-version: "21"
             - name: Run Security Tests
               run: ./gradlew clean securityTesting
