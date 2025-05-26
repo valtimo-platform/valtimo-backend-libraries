@@ -47,7 +47,7 @@ public class FormIoFormLoaderService implements FormLoaderService {
         @LoggableResource("formDefinitionName")final String formDefinitionName
     ) {
         assertArgumentNotNull(formDefinitionName, "formDefinitionName is required");
-        return formDefinitionRepository.findByName(formDefinitionName).map(FormIoFormDefinition::asJson);
+        return formDefinitionRepository.findByNameAndCaseDefinitionIdIsNull(formDefinitionName).map(FormIoFormDefinition::asJson);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class FormIoFormLoaderService implements FormLoaderService {
     ) {
         assertArgumentNotNull(documentId, "documentId is required");
         return AuthorizationContext.runWithoutAuthorization(
-            () -> formDefinitionRepository.findByName(formDefinitionName)
+            () -> formDefinitionRepository.findByNameAndCaseDefinitionIdIsNull(formDefinitionName)
                 .map(formIoFormDefinition -> {
                     FormIoFormDefinition prefilledFormDefinition = prefillFormService.getPrefilledFormDefinition(
                         formIoFormDefinition.getId(), documentId.getId());

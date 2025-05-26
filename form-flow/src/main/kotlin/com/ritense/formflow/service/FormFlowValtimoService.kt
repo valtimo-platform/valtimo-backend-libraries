@@ -57,7 +57,11 @@ class FormFlowValtimoService(
             val jsonPatchBuilder = JsonPatchBuilder()
             val verifiedSubmissionData = objectMapper.createObjectNode()
 
-            val validJsonPointers = formDefinitionService.getFormDefinitionByName(currentStepTypeProperties.definition)
+            val caseDefinitionId = formFlowInstance.formFlowDefinition.id.caseDefinitionId
+            val validJsonPointers = formDefinitionService.getFormDefinitionByName(
+                currentStepTypeProperties.definition,
+                caseDefinitionId
+            )
                 .orElseThrow().inputFields
                 .mapNotNull { field -> FormIoFormDefinition.getKey(field).getOrNull() }
                 .map { fieldKey -> JsonPointer.valueOf("/${fieldKey.replace('.', '/')}") }
