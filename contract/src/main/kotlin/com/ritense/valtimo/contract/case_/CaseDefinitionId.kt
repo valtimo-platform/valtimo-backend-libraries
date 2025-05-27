@@ -61,5 +61,20 @@ data class CaseDefinitionId(
         fun of(key: String, versionTag: String): CaseDefinitionId {
             return CaseDefinitionId(key, versionTag)
         }
+
+        @JvmStatic
+        fun fromProcessVersionTag(versionTag: String?): CaseDefinitionId? {
+            if (versionTag == null || !versionTag.startsWith("CD:")) return null
+            val parts = versionTag.removePrefix("CD:").split(":")
+            if (parts.size != 2) return null
+
+            val (key, tag) = parts
+            
+            return try {
+                of(key, tag)
+            } catch (ex: IllegalArgumentException) {
+                null
+            }
+        }
     }
 }

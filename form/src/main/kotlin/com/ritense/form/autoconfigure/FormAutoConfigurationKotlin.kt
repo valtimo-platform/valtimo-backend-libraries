@@ -149,7 +149,8 @@ class FormAutoConfigurationKotlin {
 
     @ConditionalOnMissingBean(FormDefinitionExistsValidator::class)
     @Bean
-    fun formDefinitionExistsValidator(formDefinitionService: FormDefinitionService) = FormDefinitionExistsValidator(formDefinitionService)
+    fun formDefinitionExistsValidator(formDefinitionService: FormDefinitionService) =
+        FormDefinitionExistsValidator(formDefinitionService)
 
     @Bean
     @ConditionalOnMissingBean(IntermediateSubmissionService::class)
@@ -183,6 +184,9 @@ class FormAutoConfigurationKotlin {
 
     @Bean
     @ConditionalOnMissingBean(FormCaseEventListener::class)
-    fun formCaseEventListener(formDefinitionService: FormDefinitionService) =
-        FormCaseEventListener(formDefinitionService)
+    fun formCaseEventListener(
+        formDefinitionService: FormDefinitionService,
+        processLinkService: ProcessLinkService
+    ) =
+        FormCaseEventListener(formDefinitionService, processLinkService)
 }

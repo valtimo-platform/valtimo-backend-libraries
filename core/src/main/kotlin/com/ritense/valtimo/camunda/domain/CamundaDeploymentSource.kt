@@ -16,10 +16,39 @@
 
 package com.ritense.valtimo.camunda.domain
 
-enum class CamundaDeploymentSource(val value: String) {
-    SKIP_PROCESS_LINKS_COPY("SkipProcessLinksCopy");
-
+data class CamundaDeploymentSource @JvmOverloads constructor(
+    val skipProcessLinksCopy: Boolean = false,
+    val originalVersionTag: String? = null,
+    val originalProcessDefinitionId: String? = null
+) {
     override fun toString(): String {
-        return value
+        val parts = mutableListOf<String>()
+        if (skipProcessLinksCopy) parts.add("skipProcessLinksCopy=true")
+        if (!originalVersionTag.isNullOrBlank()) parts.add("originalVersionTag=$originalVersionTag")
+        if (!originalProcessDefinitionId.isNullOrBlank()) parts.add("originalProcessDefinitionId=$originalProcessDefinitionId")
+        return parts.joinToString("|")
+    }
+
+    companion object {
+        @JvmStatic
+        fun fromString(serialized: String?): CamundaDeploymentSource {
+            if (serialized.isNullOrBlank()) {
+                return CamundaDeploymentSource()
+            }
+
+            val props = serialized.split("|")
+                .mapNotNull {
+                    val (key, value) = it.split("=", limit = 2).let { pair ->
+                        pair.getOrNull(0)?.trim() to pair.getOrNull(1)?.trim()
+                    }
+                    if (key != null && value != null) key to value else null
+                }.toMap()
+
+            return CamundaDeploymentSource(
+                skipProcessLinksCopy = props["skipProcessLinksCopy"]?.toBoolean() ?: false,
+                originalVersionTag = props["originalVersionTag"],
+                originalProcessDefinitionId = props["originalProcessDefinitionId"]
+            )
+        }
     }
 }
