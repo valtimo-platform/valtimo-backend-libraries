@@ -44,11 +44,12 @@ class FormCaseEventListener(
     @EventListener(CaseDefinitionCreatedEvent::class)
     @RunWithoutAuthorization
     fun handleCaseDefinitionCreatedEvent(event: CaseDefinitionCreatedEvent) {
-        if (event.duplicate && event.copyFormDefinitionsAfterProcessLinks == false) {
-            val sourceId = event.basedOnCaseDefinitionId ?: return
-            val targetId = event.caseDefinitionId
-            copyFormDefinitions(sourceId, targetId)
-        }
+        if (!event.duplicate || event.copyFormDefinitionsAfterProcessLinks == true) return;
+
+        val sourceId = event.basedOnCaseDefinitionId ?: return
+        val targetId = event.caseDefinitionId
+
+        copyFormDefinitions(sourceId, targetId)
     }
 
     @RunWithoutAuthorization
