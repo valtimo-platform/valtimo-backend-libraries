@@ -56,7 +56,7 @@ class KeycloakServiceTest(
     }
 
     @Test
-    fun `should empty roles if realm ROLES_SCOPE does not exist`() {
+    fun `should return empty roles if realm ROLES_SCOPE does not exist`() {
         val roles = assertDoesNotThrow {
             keycloakService.getRoles(mapOf<String, Any>(
                 KeycloakTokenAuthenticator.REALM_ACCESS to mapOf<String, Any>()
@@ -67,7 +67,7 @@ class KeycloakServiceTest(
     }
 
     @Test
-    fun `should empty roles if client ROLES_SCOPE does not exist`() {
+    fun `should return empty roles if client ROLES_SCOPE does not exist`() {
         val roles = assertDoesNotThrow {
             keycloakService.getRoles(mapOf<String, Any>(
                 KeycloakTokenAuthenticator.RESOURCE_ACCESS to mapOf<String, Any>(
