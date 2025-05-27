@@ -62,7 +62,7 @@ class ObjectenApiAutoConfiguration {
         outboxService: OutboxService,
         objectMapper: ObjectMapper,
         authorizationService: AuthorizationService,
-        @Value("\${valtimo.authorization.objectenapi.enabled:false}") authorizationEnabled: Boolean
+        @Value("\${valtimo.authorization.objectenapi.enabled:true}") authorizationEnabled: Boolean
     ) = ObjectenApiClient(
         restClientBuilder,
         outboxService,
