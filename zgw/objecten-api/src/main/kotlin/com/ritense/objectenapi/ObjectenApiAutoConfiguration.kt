@@ -64,7 +64,7 @@ class ObjectenApiAutoConfiguration {
         objectMapper: ObjectMapper,
         authorizationService: AuthorizationService,
         @Value("\${valtimo.authorization.objectenapi.enabled:true}") authorizationEnabled: Boolean
-    ) {
+    ): ObjectenApiClient {
         if (!authorizationEnabled) {
             logger.warn { "Objecten API authorization is disabled. This is a potential security issue. The option to disable this will be removed with Valtimo 13." }
         }
