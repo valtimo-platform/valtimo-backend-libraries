@@ -23,6 +23,7 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.form.repository.FormDefinitionRepository
 import com.ritense.form.service.PrefillFormService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.zakenapi.BaseIntegrationTest
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -59,6 +60,7 @@ class ZaakStatusValueResolverValueIT @Autowired constructor(
 
     @Test
     fun `should prefill form with status data from the Zaken API`() {
+        val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         runWithoutAuthorization {
             val documentId = documentService.createDocument(
                 NewDocumentRequest(
@@ -69,7 +71,7 @@ class ZaakStatusValueResolverValueIT @Autowired constructor(
                 )
             ).resultingDocument().get().id.id
 
-            val formDefinition = formDefinitionRepository.findByName("form-with-zaak-fields").get()
+            val formDefinition = formDefinitionRepository.findByNameAndCaseDefinitionId("form-with-zaak-fields", caseDefinitionId).get()
             val prefilledFormDefinition = prefillFormService.getPrefilledFormDefinition(
                 formDefinition.id!!,
                 documentId

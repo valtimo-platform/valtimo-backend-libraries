@@ -45,7 +45,7 @@ public class FormIoFormDefinitionServiceTest extends BaseTest {
     @Test
     public void shouldCallRepositoryWhenGettingFormByName() {
         FormIoFormDefinition formIoFormDefinition = mock(FormIoFormDefinition.class);
-        when(formDefinitionRepository.findByName("test")).thenReturn(Optional.of(formIoFormDefinition));
+        when(formDefinitionRepository.findByNameAndCaseDefinitionIdIsNull("test")).thenReturn(Optional.of(formIoFormDefinition));
         Optional<FormIoFormDefinition> formDefinition = formIoFormDefinitionService.getFormDefinitionByName("test");
         assertEquals(formIoFormDefinition, formDefinition.get());
     }
@@ -53,7 +53,7 @@ public class FormIoFormDefinitionServiceTest extends BaseTest {
     @Test
     public void shouldCallRepositoryWhenGettingFormByNameIgnoringCase() {
         FormIoFormDefinition formIoFormDefinition = mock(FormIoFormDefinition.class);
-        when(formDefinitionRepository.findByNameIgnoreCase("test")).thenReturn(Optional.of(formIoFormDefinition));
+        when(formDefinitionRepository.findByNameIgnoreCaseAndCaseDefinitionIdIsNull("test")).thenReturn(Optional.of(formIoFormDefinition));
         Optional<FormIoFormDefinition> formDefinition = formIoFormDefinitionService.getFormDefinitionByNameIgnoringCase("test");
         assertEquals(formIoFormDefinition, formDefinition.get());
     }
