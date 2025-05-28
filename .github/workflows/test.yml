@@ -4,8 +4,34 @@ on:
         types: [synchronize, opened]
 
 jobs:
-    unit-testing:
+    determine-unit-tests:
         runs-on: ubuntu-latest
+        outputs:
+            unit_test_matrix: ${{ steps.set_unit_test_matrix.outputs.matrix }}
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            - name: "Setup jq"
+              uses: dcarbone/install-jq-action@v3
+            - id: set_unit_test_matrix
+              run: |
+                  DRY_RUN=$(./gradlew test --dry-run)
+                  TESTS_FILE='/tmp/unit_tests'
+                  touch $TESTS_FILE
+                  while IFS= read -r line; do
+                    if [[ $line =~ (:[^[:space:]]+:test)\  ]]; then
+                      echo "$line" | cut -d ' ' -f 1 >> $TESTS_FILE
+                    fi
+                  done <<< "$DRY_RUN"
+                  MATRIX=$(jq -R -s -c 'split("\n")[:-1]' < $TESTS_FILE)
+                  echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+
+    unit-testing:
+        needs: [determine-unit-tests]
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                unit_test_suite: ${{ fromJson(needs.determine-unit-tests.outputs.unit_test_matrix) }}
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
@@ -14,7 +40,7 @@ jobs:
                   distribution: "temurin"
                   java-version: "21"
             - name: Run Unit Tests
-              run: ./gradlew clean test
+              run: ./gradlew ${{ matrix.unit_test_suite }}
 
     determine-integration-tests:
         runs-on: ubuntu-latest
@@ -51,7 +77,33 @@ jobs:
             - name: Run integration test suite
               run: ./gradlew ${{ matrix.integration_test_suite }}
 
+    determine-security-tests:
+        runs-on: ubuntu-latest
+        outputs:
+            security_test_matrix: ${{ steps.set_security_test_matrix.outputs.matrix }}
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            - name: "Setup jq"
+              uses: dcarbone/install-jq-action@v3
+            - id: set_security_test_matrix
+              run: |
+                  DRY_RUN=$(./gradlew securityTesting --dry-run)
+                  TESTS_FILE='/tmp/securityTests'
+                  touch $TESTS_FILE
+                  while IFS= read -r line; do
+                    if [[ $line =~ (:[^[:space:]]+:securityTesting)\  ]]; then
+                      echo "$line" | cut -d ' ' -f 1 >> $TESTS_FILE
+                    fi
+                  done <<< "$DRY_RUN"
+                  MATRIX=$(jq -R -s -c 'split("\n")[:-1]' < $TESTS_FILE)
+                  echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+
     security-testing:
+        needs: [determine-security-tests]
+        strategy:
+            matrix:
+                security_test_suite: ${{ fromJson(needs.determine-determine-security-tests.outputs.matrix) }}
         if: |
             github.ref_type == 'branch' && (
               startsWith(github.ref_name, 'development/') ||
@@ -74,4 +126,4 @@ jobs:
                   distribution: "temurin"
                   java-version: "21"
             - name: Run Security Tests
-              run: ./gradlew clean securityTesting
+              run: ./gradlew ${{ matrix.security_test_suite }}
