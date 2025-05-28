@@ -58,6 +58,7 @@ jobs:
                   echo "integration_test_matrix=$(cat $INTEGRATION_TESTS_MATRIX)" >> $GITHUB_OUTPUT
                   echo "security_test_matrix=$(cat $SECURITY_TESTS_MATRIX)" >> $GITHUB_OUTPUT
 
+    # Run the following test suites in parallel
     unit-testing:
         needs: [determine-tests]
         runs-on: ubuntu-latest
