@@ -101,7 +101,7 @@ class ProcessDeploymentService(
                         val previouslyDeployProcess =
                             camundaProcessService.getExistingProcessForFile(caseDefinitionId, model)
                         processLinkService.deleteProcessLinksForProcessDefinition(previouslyDeployProcess.id)
-                        createProcessLinks(processLinks)
+                        createProcessLinks(processLinks = processLinks, caseDefinitionId = caseDefinitionId)
                     }
                     return null
                 }
@@ -138,12 +138,16 @@ class ProcessDeploymentService(
                 throw RuntimeException("Failed to duplicate process definition. Rolling back deployment.", e)
             }
         }
-        createProcessLinks(processLinks, deployedProcessDefinitionId)
+        createProcessLinks(processLinks, deployedProcessDefinitionId, caseDefinitionId)
 
         return ProcessDefinitionId(deployedProcessDefinitionId)
     }
 
-    private fun createProcessLinks(processLinks: List<ProcessLinkCreateRequestDto>, deployedProcessDefinitionId: String? = null) {
+    private fun createProcessLinks(
+        processLinks: List<ProcessLinkCreateRequestDto>,
+        deployedProcessDefinitionId: String? = null,
+        caseDefinitionId: CaseDefinitionId? = null
+    ) {
         try {
             processLinks.map { originalLink ->
                 if (deployedProcessDefinitionId != null) {
@@ -153,7 +157,7 @@ class ProcessDeploymentService(
                 }
             }.forEach { link ->
                 runWithoutAuthorization {
-                    processLinkService.createProcessLink(link, null)
+                    processLinkService.createProcessLink(link, caseDefinitionId)
                 }
             }
         } catch (e: Exception) {
