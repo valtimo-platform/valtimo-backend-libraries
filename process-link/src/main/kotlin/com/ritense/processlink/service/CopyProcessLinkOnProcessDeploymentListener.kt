@@ -38,7 +38,7 @@ class CopyProcessLinkOnProcessDeploymentListener(
             return
         }
 
-        val originalProcessDefinitionId = event.source.originalProcessDefinitionId
+        val originalProcessDefinitionId = event.source.originalProcessDefinitionId ?: event.previousProcessDefinitionId
 
         if (originalProcessDefinitionId != null) {
             val modelInstance = event.processDefinitionModelInstance
