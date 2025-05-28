@@ -250,6 +250,8 @@ valtimo:
             polling.rate: "PT1M"
 
     authorization:
+        objectenapi:
+            enabled: true
         dashboard:
             enabled: true
         zgwDocuments:

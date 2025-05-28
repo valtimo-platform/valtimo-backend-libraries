@@ -18,6 +18,7 @@ package com.ritense.objectenapi.service
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.logging.withLoggingContext
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
@@ -67,8 +68,9 @@ class ZaakObjectValueResolverFactory(
     private fun getZaakData(requestedValue: String, documentId: String): Any? {
         return withLoggingContext(JsonSchemaDocument::class, documentId) {
             val requestedData = ZaakObjectDataResolver.RequestedData(requestedValue)
-            val zaakObject =
+            val zaakObject = runWithoutAuthorization {
                 zaakObjectService.getZaakObjectOfTypeByName(UUID.fromString(documentId), requestedData.objectType)
+            }
             val dataAsJsonNode = objectMapper.valueToTree<JsonNode>(zaakObject.record.data)
             val node = dataAsJsonNode.at(requestedData.path)
             return@withLoggingContext if (node == null || node.isMissingNode || node.isNull) {
