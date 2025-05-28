@@ -29,7 +29,7 @@ jobs:
                       ${{ env.UNIT_TESTS_MATRIX }}
                       ${{ env.INTEGRATION_TESTS_MATRIX }}
                       ${{ env.SECURITY_TESTS_MATRIX }}
-                  key: testdefinitions-${{ hashFiles('**/build.gradle', '**/build.gradle.kts', '**/settings.gradle', '**/settings.gradle.kts', '**/gradle.properties') }}"
+                  key: testdefinitions-${{ hashFiles('**/build.gradle', '**/build.gradle.kts', '**/settings.gradle', '**/settings.gradle.kts', '**/gradle.properties') }}
             - name: Make test matrices
               id: make_test_matrices
               if: steps.cache-test-definitions.outputs.cache-hit != 'true'
@@ -51,7 +51,7 @@ jobs:
                   cat $UNIT_TESTS_FILE | jq -R -s -c 'split("\n")[:-1]' > $UNIT_TESTS_MATRIX
                   cat $INTEGRATION_TESTS_FILE | jq -R -s -c 'split("\n")[:-1]' > $INTEGRATION_TESTS_MATRIX
                   cat $SECURITY_TESTS_FILE | jq -R -s -c 'split("\n")[:-1]' > $SECURITY_TESTS_MATRIX
-            - name: Set test
+            - name: Set test matrices
               id: set_test_matrices
               run: |
                   echo "unit_test_matrix=$(cat $UNIT_TESTS_MATRIX)" >> $GITHUB_OUTPUT
