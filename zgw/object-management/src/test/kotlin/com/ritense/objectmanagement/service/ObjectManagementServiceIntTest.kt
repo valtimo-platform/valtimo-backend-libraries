@@ -19,6 +19,7 @@ package com.ritense.objectmanagement.service
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.objectenapi.client.Comparator.EQUAL_TO
 import com.ritense.objectenapi.client.ObjectSearchParameter
 import com.ritense.objectmanagement.BaseIntegrationTest
@@ -242,9 +243,9 @@ internal class ObjectManagementServiceIntTest : BaseIntegrationTest() {
         val searchWithConfigRequest =
             SearchWithConfigRequest(listOf(otherFilters))
 
-        val objects = objectManagementService.getObjectsWithSearchParams(
+        val objects = runWithoutAuthorization{ objectManagementService.getObjectsWithSearchParams(
             searchWithConfigRequest, objectManagement.id, PageRequest.of(0, 10)
-        )
+        )}
 
         assertThat(objects.content.size).isEqualTo(1)
         assertThat(objects.first().items[0].key).isEqualTo("property1")
@@ -294,11 +295,11 @@ internal class ObjectManagementServiceIntTest : BaseIntegrationTest() {
         val objectManagement = objectManagementService.getByTitle("My Object Management")!!
         val searchParameters = listOf(ObjectSearchParameter("property1", EQUAL_TO, "henk"))
 
-        val objects = objectManagementService.getObjectsWithSearchParams(
+        val objects = runWithoutAuthorization { objectManagementService.getObjectsWithSearchParams(
             objectManagement,
             searchParameters,
             PageRequest.of(0, 10)
-        )
+        )}
 
         assertThat(objects.content.size).isEqualTo(1)
         assertThat(objects.first().url).isEqualTo(URI("https://example.com/123"))

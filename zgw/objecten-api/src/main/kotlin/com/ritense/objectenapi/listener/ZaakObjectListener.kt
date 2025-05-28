@@ -19,6 +19,7 @@ package com.ritense.objectenapi.listener
 import com.fasterxml.jackson.databind.node.NullNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.ValueNode
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.objectenapi.ObjectenApiPlugin
 import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectRequest
@@ -37,24 +38,26 @@ class ZaakObjectListener(
 ) {
     @EventListener(ExternalDataSubmittedEvent::class)
     fun handle(event: ExternalDataSubmittedEvent) {
-        event.data[ZaakObjectConstants.ZAAKOBJECT_PREFIX]?.let { zaakObjectMap ->
-            zaakObjectMap.entries.map { entry ->
-                RequestedField(
-                    entry.key, entry.value
-                )
-            }.groupBy { requestedField ->
-                requestedField.objectType
-            }.forEach { objectTypeGroup ->
-                val zaakObject = zaakObjectService.getZaakObjectOfTypeByName(event.documentId, objectTypeGroup.key)
-                objectTypeGroup.value.forEach { requestedField ->
-                    // For each requestedField update the value in the zaakObject record data
-                    val startPath = requestedField.path.substring(1)
-                    val newValueNode = getValueNode(requestedField.value)
-                    findAndReplaceJsonPath(zaakObject.record.data!! as ObjectNode, startPath, newValueNode)
-                }
+        runWithoutAuthorization {
+            event.data[ZaakObjectConstants.ZAAKOBJECT_PREFIX]?.let { zaakObjectMap ->
+                zaakObjectMap.entries.map { entry ->
+                    RequestedField(
+                        entry.key, entry.value
+                    )
+                }.groupBy { requestedField ->
+                    requestedField.objectType
+                }.forEach { objectTypeGroup ->
+                    val zaakObject = zaakObjectService.getZaakObjectOfTypeByName(event.documentId, objectTypeGroup.key)
+                    objectTypeGroup.value.forEach { requestedField ->
+                        // For each requestedField update the value in the zaakObject record data
+                        val startPath = requestedField.path.substring(1)
+                        val newValueNode = getValueNode(requestedField.value)
+                        findAndReplaceJsonPath(zaakObject.record.data!! as ObjectNode, startPath, newValueNode)
+                    }
 
-                // The zaakObject.record.data has now been updated with the new values, update the object in the objecten api
-                updateObject(zaakObject.url, event.documentId, objectTypeGroup.key, zaakObject.record)
+                    // The zaakObject.record.data has now been updated with the new values, update the object in the objecten api
+                    updateObject(zaakObject.url, event.documentId, objectTypeGroup.key, zaakObject.record)
+                }
             }
         }
     }
