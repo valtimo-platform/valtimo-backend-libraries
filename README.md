@@ -3,6 +3,7 @@
 ### What is Valtimo?
 Valtimo is the low-code platform for Business Process Automation. Our goal is to make implementing business process automation and case management easy.
 
+
 ### What does the Valtimo platform contain?
 - Valtimo consists of two services:
     - A Spring Boot Java/Kotlin backend
@@ -12,6 +13,7 @@ Valtimo is the low-code platform for Business Process Automation. Our goal is to
     - A database (default is PostgreSQL)
 
 <img src="images/valtimo-platform.png" width="400" alt="Valtimo platform"/>
+
 
 ### What are the 'Valtimo backend libraries'?
 This repository contains:
