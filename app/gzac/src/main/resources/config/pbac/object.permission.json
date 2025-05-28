@@ -1,0 +1,30 @@
+{
+    "changesetId": "object-admin-v1",
+    "permissions": [
+        {
+            "resourceType": "com.ritense.objectenapi.security.Object",
+            "action": "create",
+            "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.objectenapi.security.Object",
+            "action": "modify",
+            "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.objectenapi.security.Object",
+            "action": "view",
+            "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.objectenapi.security.Object",
+            "action": "view_list",
+            "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.objectenapi.security.Object",
+            "action": "delete",
+            "roleKey": "ROLE_ADMIN"
+        }
+    ]
+}
