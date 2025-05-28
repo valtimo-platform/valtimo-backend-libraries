@@ -4,34 +4,46 @@ on:
         types: [synchronize, opened]
 
 jobs:
-    determine-unit-tests:
+    determine-tests:
         runs-on: ubuntu-latest
         outputs:
-            unit_test_matrix: ${{ steps.set_unit_test_matrix.outputs.matrix }}
+            unit_test_matrix: ${{ steps.set_test_matrices.outputs.unit_test_matrix }}
+            integration_test_matrix: ${{ steps.set_test_matrices.outputs.integration_test_matrix }}
+            security_test_matrix: ${{ steps.set_test_matrices.outputs.security_test_matrix }}
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
             - name: "Setup jq"
               uses: dcarbone/install-jq-action@v3
-            - id: set_unit_test_matrix
+            - id: set_test_matrices
               run: |
-                  DRY_RUN=$(./gradlew test --dry-run)
-                  TESTS_FILE='/tmp/unit_tests'
-                  touch $TESTS_FILE
+                  DRY_RUN=$(./gradlew test securityTesting integrationTesting --dry-run)
+                  UNIT_TESTS_FILE='/tmp/unit_tests'
+                  INTEGRATION_TESTS_FILE='/tmp/integration_tests'
+                  SECURITY_TESTS_FILE='/tmp/security_tests'
+                  touch $UNIT_TESTS_FILE $INTEGRATION_TESTS_FILE $SECURITY_TESTS_FILE
                   while IFS= read -r line; do
                     if [[ $line =~ (:[^[:space:]]+:test)\  ]]; then
-                      echo "$line" | cut -d ' ' -f 1 >> $TESTS_FILE
+                      echo "$line" | cut -d ' ' -f 1 >> $UNIT_TESTS_FILE
+                    elif [[ $line =~ (:[^[:space:]]+:integrationTesting)\  ]]; then
+                      echo "$line" | cut -d ' ' -f 1 >> $INTEGRATION_TESTS_FILE
+                    elif [[ $line =~ (:[^[:space:]]+:securityTesting)\  ]]; then
+                      echo "$line" | cut -d ' ' -f 1 >> $SECURITY_TESTS_FILE
                     fi
                   done <<< "$DRY_RUN"
-                  MATRIX=$(jq -R -s -c 'split("\n")[:-1]' < $TESTS_FILE)
-                  echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+                  UNIT_TEST_MATRIX=$(jq -R -s -c 'split("\n")[:-1]' < $UNIT_TESTS_FILE)
+                  INTEGRATION_TEST_MATRIX=$(jq -R -s -c 'split("\n")[:-1]' < $INTEGRATION_TESTS_FILE)
+                  SECURITY_TEST_MATRIX=$(jq -R -s -c 'split("\n")[:-1]' < $SECURITY_TESTS_FILE)
+                  echo "unit_test_matrix=$UNIT_TEST_MATRIX" >> $GITHUB_OUTPUT
+                  echo "integration_test_matrix=$INTEGRATION_TEST_MATRIX" >> $GITHUB_OUTPUT
+                  echo "security_test_matrix=$SECURITY_TEST_MATRIX" >> $GITHUB_OUTPUT
 
     unit-testing:
-        needs: [determine-unit-tests]
+        needs: [determine-tests]
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                unit_test_suite: ${{ fromJson(needs.determine-unit-tests.outputs.unit_test_matrix) }}
+                unit_test_suite: ${{ fromJson(needs.determine-tests.outputs.unit_test_matrix) }}
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
@@ -42,68 +54,23 @@ jobs:
             - name: Run Unit Tests
               run: ./gradlew ${{ matrix.unit_test_suite }}
 
-    determine-integration-tests:
-        runs-on: ubuntu-latest
-        outputs:
-            integration_test_matrix: ${{ steps.set_integration_test_matrix.outputs.matrix }}
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-            - name: "Setup jq"
-              uses: dcarbone/install-jq-action@v3
-            - id: set_integration_test_matrix
-              run: |
-                  DRY_RUN=$(./gradlew integrationTesting --dry-run)
-                  TESTS_FILE='/tmp/tests'
-                  touch $TESTS_FILE
-                  while IFS= read -r line; do
-                    if [[ $line =~ (:[^[:space:]]+:integrationTesting)\  ]]; then
-                      echo "$line" | cut -d ' ' -f 1 >> $TESTS_FILE
-                    fi
-                  done <<< "$DRY_RUN"
-                  MATRIX=$(jq -R -s -c 'split("\n")[:-1]' < $TESTS_FILE)
-                  echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
-
-    # Runs all integration test suites in parallel
     integration-testing:
         runs-on: ubuntu-latest
-        needs: [determine-integration-tests]
+        needs: [determine-tests]
         strategy:
             matrix:
-                integration_test_suite: ${{ fromJson(needs.determine-integration-tests.outputs.integration_test_matrix) }}
+                integration_test_suite: ${{ fromJson(needs.determine-tests.outputs.integration_test_matrix) }}
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
             - name: Run integration test suite
               run: ./gradlew ${{ matrix.integration_test_suite }}
 
-    determine-security-tests:
-        runs-on: ubuntu-latest
-        outputs:
-            security_test_matrix: ${{ steps.set_security_test_matrix.outputs.matrix }}
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-            - name: "Setup jq"
-              uses: dcarbone/install-jq-action@v3
-            - id: set_security_test_matrix
-              run: |
-                  DRY_RUN=$(./gradlew securityTesting --dry-run)
-                  TESTS_FILE='/tmp/securityTests'
-                  touch $TESTS_FILE
-                  while IFS= read -r line; do
-                    if [[ $line =~ (:[^[:space:]]+:securityTesting)\  ]]; then
-                      echo "$line" | cut -d ' ' -f 1 >> $TESTS_FILE
-                    fi
-                  done <<< "$DRY_RUN"
-                  MATRIX=$(jq -R -s -c 'split("\n")[:-1]' < $TESTS_FILE)
-                  echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
-
     security-testing:
-        needs: [determine-security-tests]
+        needs: [determine-tests]
         strategy:
             matrix:
-                security_test_suite: ${{ fromJson(needs.determine-determine-security-tests.outputs.matrix) }}
+                security_test_suite: ${{ fromJson(needs.determine-tests.outputs.security_test_matrix) }}
         if: |
             github.ref_type == 'branch' && (
               startsWith(github.ref_name, 'development/') ||
