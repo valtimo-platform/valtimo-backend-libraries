@@ -93,18 +93,15 @@ jobs:
             matrix:
                 security_test_suite: ${{ fromJson(needs.determine-tests.outputs.security_test_matrix) }}
         if: |
-            ${{github.ref_type == 'branch' && (
+            github.ref_type == 'branch' && 
+            (
               startsWith(github.ref_name, 'development/') ||
               startsWith(github.ref_name, 'rc/') ||
               startsWith(github.ref_name, 'release/') ||
               github.ref_name == 'next-minor' ||
-              github.ref_name == 'next-major' ||
-              (
-                github.actor != 'github-actions[bot]' &&
-                ! startsWith(github.ref_name, 'PR-') &&
-                ! startsWith(github.ref_name, 'poc/')
-              )
-            )}}
+              github.ref_name == 'next-major' 
+            )
+
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
