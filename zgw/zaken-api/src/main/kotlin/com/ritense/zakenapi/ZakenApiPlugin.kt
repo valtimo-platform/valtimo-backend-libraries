@@ -38,6 +38,7 @@ import com.ritense.zakenapi.domain.CreateZaakStatusRequest
 import com.ritense.zakenapi.domain.CreateZaakeigenschapRequest
 import com.ritense.zakenapi.domain.Opschorting
 import com.ritense.zakenapi.domain.PatchZaakRequest
+import com.ritense.zakenapi.domain.RelevanteZaak
 import com.ritense.zakenapi.domain.UpdateZaakeigenschapRequest
 import com.ritense.zakenapi.domain.Verlenging
 import com.ritense.zakenapi.domain.ZaakHersteltermijn
@@ -598,6 +599,44 @@ class ZakenApiPlugin(
                 .filter { it.eigenschap == eigenschapUrl }
                 .forEach { client.deleteZaakeigenschap(authenticationPluginConfiguration, url, it.url) }
             logger.info { "Zaakeigenschap with URL '${eigenschapUrl}' deleted for zaak with URL '$zaakUrl' and document with id '${documentId}'" }
+        }
+    }
+
+    @PluginAction(
+        key = "relateer-zaken",
+        title = "Add a zaak to relevanteAndereZaken",
+        description = "This adds the provided (via the action property) zaak to the relevanteAndereZaken of the current zaak",
+        activityTypes = [SERVICE_TASK_START]
+    )
+    fun relateerZaken(
+        execution: DelegateExecution,
+        @PluginActionProperty teRelaterenZaakUri: URI,
+        @PluginActionProperty aardRelatie: String,
+    ) {
+        logger.debug { "Making relation between the current zaak and the zaak with URL '$teRelaterenZaakUri'" }
+        val documentId = UUID.fromString(execution.businessKey)
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+
+        addZaakToRelevanteAndereZaken(zaakUrl, teRelaterenZaakUri, aardRelatie)
+
+        logger.info { "Created a relation between the current zaak '$zaakUrl' and the provided zaak '$teRelaterenZaakUri'" }
+    }
+
+    private fun addZaakToRelevanteAndereZaken(zaakUrl: URI, teRelaterenZaakUri: URI, aardRelatie: String) {
+        logger.trace { "Fetching zaak with URL '$zaakUrl' to determine existing relevanteAndereZaken" }
+
+        val currentZaak = client.getZaak(authenticationPluginConfiguration, zaakUrl)
+        val currentRelevanteAndereZaken = currentZaak.relevanteAndereZaken?.toMutableList() ?: mutableListOf()
+
+        if (currentRelevanteAndereZaken.none { relevanteZaak -> relevanteZaak.url == currentZaak.url }) {
+            currentRelevanteAndereZaken.add(RelevanteZaak(teRelaterenZaakUri, aardRelatie))
+
+            logger.trace { "Sending patch request add the zaak with URL '$teRelaterenZaakUri' to the relevanteAndereZaken of zaak with URL '$zaakUrl'" }
+            client.patchZaak(
+                authenticationPluginConfiguration, url, zaakUrl, PatchZaakRequest(
+                    relevanteAndereZaken = currentRelevanteAndereZaken
+                )
+            )
         }
     }
 
