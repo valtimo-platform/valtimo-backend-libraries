@@ -22,7 +22,9 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.client.ObjectsList
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.valtimo.contract.utils.TestUtil.TEST_USER_EMAIL
 import com.ritense.zaakdetails.BaseIntegrationTest
 import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zakenapi.service.ZaakTypeLinkService
@@ -38,6 +40,7 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
 import java.net.URI
 import java.time.LocalDate
@@ -66,6 +69,7 @@ class DocumentObjectenApiSyncServiceIntTest : BaseIntegrationTest() {
     val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
 
     @Test
+    @WithMockUser(username = TEST_USER_EMAIL, authorities = [ADMIN])
     fun `should create zaakdetails object and link to the zaak when zaak exists`() {
         val objectWrapper = ObjectWrapper(
             URI.create("http://localhost:56273/objecten/98d703e3-4afa-47fe-9787-e3d1ab0ab42c"),
@@ -91,7 +95,17 @@ class DocumentObjectenApiSyncServiceIntTest : BaseIntegrationTest() {
             )
         )
 
-        whenever(objectenApiClient.getObjectsByObjecttypeUrlWithSearchParams(any(), any(), any(), any(), any(), any(), any()))
+        whenever(
+            objectenApiClient.getObjectsByObjecttypeUrlWithSearchParams(
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        )
             .thenReturn(ObjectsList(0, null, null, listOf()))
 
         whenever(objectenApiClient.createObject(any(), any(), any()))
@@ -114,13 +128,22 @@ class DocumentObjectenApiSyncServiceIntTest : BaseIntegrationTest() {
         assertTrue { result.errors().isEmpty() }
 
         verify(zakenApiClient, times(1)).createZaak(any(), any(), any())
-        verify(objectenApiClient, times(1)).getObjectsByObjecttypeUrlWithSearchParams(any(), any(), any(), any(), any(), any(), any())
+        verify(objectenApiClient, times(1)).getObjectsByObjecttypeUrlWithSearchParams(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any()
+        )
         verify(objectenApiClient, times(1)).createObject(any(), any(), any())
         verifyNoMoreInteractions(objectenApiClient)
         verify(zakenApiClient, times(1)).createZaakObject(any(), any(), any())
     }
 
     @Test
+    @WithMockUser(username = TEST_USER_EMAIL, authorities = [ADMIN])
     fun `should update zaakdetails object and link to the zaak when zaak exists`() {
         val objectWrapper = ObjectWrapper(
             URI.create("http://localhost:56273/objecten/98d703e3-4afa-47fe-9787-e3d1ab0ab42c"),
@@ -146,7 +169,17 @@ class DocumentObjectenApiSyncServiceIntTest : BaseIntegrationTest() {
             )
         )
 
-        whenever(objectenApiClient.getObjectsByObjecttypeUrlWithSearchParams(any(), any(), any(), any(), any(), any(), any()))
+        whenever(
+            objectenApiClient.getObjectsByObjecttypeUrlWithSearchParams(
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        )
             .thenReturn(ObjectsList(0, null, null, listOf()))
 
         whenever(objectenApiClient.createObject(any(), any(), any()))
@@ -169,11 +202,22 @@ class DocumentObjectenApiSyncServiceIntTest : BaseIntegrationTest() {
         assertTrue { result.errors().isEmpty() }
 
         runWithoutAuthorization {
-            documentService.modifyDocument(result.resultingDocument().get(), objectMapper.readTree("""{"lastname":"Doe1"}"""))
+            documentService.modifyDocument(
+                result.resultingDocument().get(),
+                objectMapper.readTree("""{"lastname":"Doe1"}""")
+            )
         }
 
         verify(zakenApiClient, times(1)).createZaak(any(), any(), any())
-        verify(objectenApiClient, times(1)).getObjectsByObjecttypeUrlWithSearchParams(any(), any(), any(), any(), any(), any(), any())
+        verify(objectenApiClient, times(1)).getObjectsByObjecttypeUrlWithSearchParams(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any()
+        )
         verify(objectenApiClient, times(1)).createObject(any(), any(), any())
         verify(objectenApiClient, times(1)).objectUpdate(any(), any(), any())
         verifyNoMoreInteractions(objectenApiClient)
@@ -181,6 +225,7 @@ class DocumentObjectenApiSyncServiceIntTest : BaseIntegrationTest() {
     }
 
     @Test
+    @WithMockUser(username = TEST_USER_EMAIL, authorities = [ADMIN])
     fun `should not create zaakdetails object when no configuration exists`() {
         zaakTypeLinkService.createZaakTypeLink(
             caseDefinitionId,
@@ -209,6 +254,7 @@ class DocumentObjectenApiSyncServiceIntTest : BaseIntegrationTest() {
     }
 
     @Test
+    @WithMockUser(username = TEST_USER_EMAIL, authorities = [ADMIN])
     fun `should create zaakdetails object and not link to the zaak when zaak does not exist`() {
         val objectWrapper = ObjectWrapper(
             URI.create("http://localhost:56273/objecten/98d703e3-4afa-47fe-9787-e3d1ab0ab42c"),
@@ -224,13 +270,23 @@ class DocumentObjectenApiSyncServiceIntTest : BaseIntegrationTest() {
             )
         )
 
-        whenever(objectenApiClient.getObjectsByObjecttypeUrlWithSearchParams(any(), any(), any(), any(), any(), any(), any()))
+        whenever(
+            objectenApiClient.getObjectsByObjecttypeUrlWithSearchParams(
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        )
             .thenReturn(ObjectsList(0, null, null, listOf()))
 
         whenever(objectenApiClient.createObject(any(), any(), any()))
             .thenReturn(objectWrapper)
 
-        val result = runWithoutAuthorization {
+        runWithoutAuthorization {
             documentService.createDocument(
                 NewDocumentRequest(
                     "profile",
@@ -241,7 +297,15 @@ class DocumentObjectenApiSyncServiceIntTest : BaseIntegrationTest() {
             )
         }
 
-        verify(objectenApiClient, times(1)).getObjectsByObjecttypeUrlWithSearchParams(any(), any(), any(), any(), any(), any(), any())
+        verify(objectenApiClient, times(1)).getObjectsByObjecttypeUrlWithSearchParams(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any()
+        )
         verify(objectenApiClient, times(1)).createObject(any(), any(), any())
         verifyNoInteractions(zakenApiClient)
     }

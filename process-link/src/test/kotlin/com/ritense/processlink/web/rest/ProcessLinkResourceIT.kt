@@ -29,8 +29,10 @@ import com.ritense.processlink.domain.TestProcessLink
 import com.ritense.processlink.domain.TestProcessLinkCreateRequestDto
 import com.ritense.processlink.domain.TestProcessLinkUpdateRequestDto
 import com.ritense.processlink.repository.ProcessLinkRepository
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.domain.ValtimoMediaType
+import com.ritense.valtimo.contract.utils.TestUtil.TEST_USER_EMAIL
 import com.ritense.valtimo.service.CamundaProcessService
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
@@ -39,6 +41,7 @@ import org.semver4j.Semver
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockMultipartFile
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -55,7 +58,6 @@ import java.io.ByteArrayInputStream
 import java.nio.charset.StandardCharsets
 import java.util.UUID
 import kotlin.test.assertEquals
-
 
 @Transactional
 internal class ProcessLinkResourceIT @Autowired constructor(
@@ -137,6 +139,7 @@ internal class ProcessLinkResourceIT @Autowired constructor(
     }
 
     @Test
+    @WithMockUser(username = TEST_USER_EMAIL, authorities = [ADMIN])
     fun `should update a process-link`() {
         val processLinkId = createProcessLink()
 
@@ -211,26 +214,30 @@ internal class ProcessLinkResourceIT @Autowired constructor(
         }
 
         mockMvc.perform(
-            get("/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/process-definition", "autodeploy", "1.0.0")
+            get(
+                "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/process-definition",
+                "autodeploy",
+                "1.0.0"
+            )
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
-        .andDo(print())
-        .andExpect(status().isOk)
-        .andExpect(content().contentType(ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE))
-        .andExpect(jsonPath("$").isArray)
-        .andExpect(jsonPath("$[5].processDefinition.id").isNotEmpty())
-        .andExpect(jsonPath("$[5].processDefinition.key").value("test-process-2"))
-        .andExpect(jsonPath("$[5].processDefinition.name").value("Test Process 2"))
-        .andExpect(jsonPath("$[5].processDefinition.versionTag").value("CD:autodeploy:1.0.0"))
-        .andExpect(jsonPath("$[5].processCaseLink.id.caseDefinitionId.key").value("autodeploy"))
-        .andExpect(jsonPath("$[5].processCaseLink.id.caseDefinitionId.versionTag").value("1.0.0"))
-        .andExpect(jsonPath("$[5].processCaseLink.canInitializeDocument").value(true))
-        .andExpect(jsonPath("$[5].processCaseLink.startableByUser").value(true))
-        .andExpect(jsonPath("$[5].processLinks").isArray)
-        .andExpect(jsonPath("$[5].processLinks[0].activityId").value("start"))
-        .andExpect(jsonPath("$[5].processLinks[0].activityType").value("bpmn:ServiceTask:start"))
-        .andExpect(jsonPath("$[5].processLinks[0].processLinkType").value("test"))
-        .andExpect(jsonPath("$[5].bpmn20Xml").isNotEmpty)
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$").isArray)
+            .andExpect(jsonPath("$[5].processDefinition.id").isNotEmpty())
+            .andExpect(jsonPath("$[5].processDefinition.key").value("test-process-2"))
+            .andExpect(jsonPath("$[5].processDefinition.name").value("Test Process 2"))
+            .andExpect(jsonPath("$[5].processDefinition.versionTag").value("CD:autodeploy:1.0.0"))
+            .andExpect(jsonPath("$[5].processCaseLink.id.caseDefinitionId.key").value("autodeploy"))
+            .andExpect(jsonPath("$[5].processCaseLink.id.caseDefinitionId.versionTag").value("1.0.0"))
+            .andExpect(jsonPath("$[5].processCaseLink.canInitializeDocument").value(true))
+            .andExpect(jsonPath("$[5].processCaseLink.startableByUser").value(true))
+            .andExpect(jsonPath("$[5].processLinks").isArray)
+            .andExpect(jsonPath("$[5].processLinks[0].activityId").value("start"))
+            .andExpect(jsonPath("$[5].processLinks[0].activityType").value("bpmn:ServiceTask:start"))
+            .andExpect(jsonPath("$[5].processLinks[0].processLinkType").value("test"))
+            .andExpect(jsonPath("$[5].bpmn20Xml").isNotEmpty)
     }
 
     @Test
@@ -264,7 +271,11 @@ internal class ProcessLinkResourceIT @Autowired constructor(
         val processLinksJson = ObjectMapper().writeValueAsString(processLinks)
 
         mockMvc.perform(
-            MockMvcRequestBuilders.multipart("/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/process-definition", "autodeploy", "1.0.0")
+            MockMvcRequestBuilders.multipart(
+                "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/process-definition",
+                "autodeploy",
+                "1.0.0"
+            )
                 .file(bpmnFile)
                 .file(
                     MockMultipartFile(
@@ -288,7 +299,8 @@ internal class ProcessLinkResourceIT @Autowired constructor(
             assertEquals("CD:autodeploy:1.0.0", deployedProcess?.versionTag)
 
             val procdef = camundaProcessService.getProcessDefinition("test-process")
-            val processCaseLink = processDefinitionCaseDefinitionService.findByProcessDefinitionId(ProcessDefinitionId(procdef.id))
+            val processCaseLink =
+                processDefinitionCaseDefinitionService.findByProcessDefinitionId(ProcessDefinitionId(procdef.id))
 
             assertEquals("autodeploy", processCaseLink.id.caseDefinitionId.key)
             assertEquals(Semver("1.0.0"), processCaseLink.id.caseDefinitionId.versionTag)

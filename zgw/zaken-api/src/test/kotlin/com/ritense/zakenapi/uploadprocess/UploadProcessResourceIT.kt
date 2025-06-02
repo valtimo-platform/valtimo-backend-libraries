@@ -16,6 +16,7 @@
 
 package com.ritense.zakenapi.uploadprocess
 
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
 import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
@@ -63,13 +64,15 @@ class UploadProcessResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should respond with process-case-link when one has been configured`() {
-        caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-            caseDefinitionId,
-            DocumentDefinitionProcessRequest(
-                UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY,
-                DOCUMENT_UPLOAD
+        runWithoutAuthorization {
+            caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                caseDefinitionId,
+                DocumentDefinitionProcessRequest(
+                    UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY,
+                    DOCUMENT_UPLOAD
+                )
             )
-        )
+        }
 
         mockMvc.perform(get("/api/v1/uploadprocess/case/{caseDefinitionKey}/check-link", CASE_DEFINITION_KEY))
             .andDo(print())

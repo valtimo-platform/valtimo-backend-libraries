@@ -49,6 +49,7 @@ dependencies {
     testImplementation project(":plugin-authentication:openzaak-plugin-authentication")
 
     testImplementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"

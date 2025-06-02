@@ -16,12 +16,15 @@
 
 package com.ritense.zakenapi.service
 
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.valtimo.contract.utils.TestUtil.TEST_USER_EMAIL
 import com.ritense.zakenapi.BaseIntegrationTest
 import com.ritense.zakenapi.web.rest.request.CreateZaakTypeLinkRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
 import java.net.URI
 
@@ -34,6 +37,7 @@ class ZaakTypeLinkServiceIntTest : BaseIntegrationTest() {
     val zaakUrl = URI.create("http://example.com")
 
     @Test
+    @WithMockUser(username = TEST_USER_EMAIL, authorities = [ADMIN])
     fun `should create zaakTypeLink`() {
         val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val result = zaakTypeLinkService.createZaakTypeLink(
