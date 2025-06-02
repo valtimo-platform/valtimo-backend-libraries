@@ -35,14 +35,16 @@ public class ProcessDefinitionDeployedEvent {
     private final BpmnModelInstance processDefinitionModelInstance;
     private final CamundaDeploymentSource source;
 
-    public ProcessDefinitionDeployedEvent(DeploymentEntity deployment, ProcessDefinitionEntity processDefinition) {
+    public ProcessDefinitionDeployedEvent(
+        DeploymentEntity deployment,
+        ProcessDefinitionEntity processDefinition,
+        CamundaDeploymentSource source) {
+
         this.previousProcessDefinitionId = processDefinition.getPreviousProcessDefinitionId();
         this.processDefinitionId = processDefinition.getId();
         this.processDefinitionKey = processDefinition.getKey();
-
         this.caseDefinitionId = CaseDefinitionId.fromProcessVersionTag(processDefinition.getVersionTag());
-
-        this.source = CamundaDeploymentSource.fromString(deployment.getSource());
+        this.source = source;
 
         var processDefinitionResource = deployment.getResource(processDefinition.getResourceName());
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(processDefinitionResource.getBytes())) {

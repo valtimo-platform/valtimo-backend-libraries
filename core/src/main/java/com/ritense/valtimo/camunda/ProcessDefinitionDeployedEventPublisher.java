@@ -20,6 +20,7 @@ import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.event.ProcessDefinitionDeployedEvent;
 import java.util.ArrayList;
 import java.util.List;
+import com.ritense.valtimo.helper.CamundaDeploymentSourceHelper;
 import org.camunda.bpm.engine.impl.persistence.deploy.Deployer;
 import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
@@ -33,11 +34,14 @@ public class ProcessDefinitionDeployedEventPublisher implements Deployer {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    private final CamundaDeploymentSourceHelper camundaDeploymentSourceHelper;
+
     private List<ProcessDefinitionDeployedEvent> events = new ArrayList<>();
     private boolean isApplicationReady = false;
 
-    public ProcessDefinitionDeployedEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+    public ProcessDefinitionDeployedEventPublisher(ApplicationEventPublisher applicationEventPublisher, CamundaDeploymentSourceHelper camundaDeploymentSourceHelper) {
         this.applicationEventPublisher = applicationEventPublisher;
+        this.camundaDeploymentSourceHelper = camundaDeploymentSourceHelper;
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -60,7 +64,8 @@ public class ProcessDefinitionDeployedEventPublisher implements Deployer {
     }
 
     public void publishEvent(DeploymentEntity deployment, ProcessDefinitionEntity processDefinition) {
-        final var event = new ProcessDefinitionDeployedEvent(deployment, processDefinition);
+        final var deploymentSource = camundaDeploymentSourceHelper.retrieve(deployment.getSource());
+        final var event = new ProcessDefinitionDeployedEvent(deployment, processDefinition, deploymentSource);
         if (isApplicationReady) {
             withLoggingContext(CamundaProcessDefinition.class, event.getProcessDefinitionId(), () ->
                 applicationEventPublisher.publishEvent(event)
