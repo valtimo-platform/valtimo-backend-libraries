@@ -27,12 +27,18 @@ import org.springframework.data.jpa.domain.Specification
 class JsonSchemaDocumentSpecificationHelper {
 
     companion object {
+
+        const val DOCUMENT_DEFINITION_ID: String = "documentDefinitionId"
+        const val CASE_DEFINITION_ID: String = "caseDefinitionId"
+        const val NAME: String = "name"
+        const val ASSIGNEE_ID: String = "assigneeId"
+
         @JvmStatic
         fun byDocumentDefinitionIdName(name: String): Specification<JsonSchemaDocument> {
             return Specification { root: Root<JsonSchemaDocument>,
                                    _: CriteriaQuery<*>?,
                                    criteriaBuilder: CriteriaBuilder ->
-                criteriaBuilder.equal(root.get<Any>("documentDefinitionId").get<String>("name"), name)
+                criteriaBuilder.equal(root.get<Any>(DOCUMENT_DEFINITION_ID).get<String>(NAME), name)
             }
         }
 
@@ -41,13 +47,21 @@ class JsonSchemaDocumentSpecificationHelper {
             return Specification { root: Root<JsonSchemaDocument>,
                                    _: CriteriaQuery<*>?,
                                    criteriaBuilder: CriteriaBuilder ->
-                criteriaBuilder.equal(root.get<Any>("documentDefinitionId").get<CaseDefinitionId>("caseDefinitionId"), caseDefinitionId)
+                criteriaBuilder.equal(
+                    root.get<Any>(DOCUMENT_DEFINITION_ID).get<CaseDefinitionId>(CASE_DEFINITION_ID),
+                    caseDefinitionId
+                )
             }
         }
 
         @JvmStatic
         fun byDocumentDefinitionId(id: DocumentDefinition.Id): Specification<JsonSchemaDocument> {
             return byDocumentDefinitionIdName(id.name()).and(byDocumentDefinitionIdCaseDefinitionId(id.caseDefinitionId()))
+        }
+
+        @JvmStatic
+        fun byUnassigned() = Specification<JsonSchemaDocument> { root, _, cb ->
+            cb.isNull(root.get<Any>(ASSIGNEE_ID))
         }
     }
 }

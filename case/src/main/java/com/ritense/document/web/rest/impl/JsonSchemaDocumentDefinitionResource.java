@@ -53,8 +53,15 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     }
 
     @Override
-    public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(Pageable pageable) {
-        return ok(documentDefinitionService.findAll(fixPageable(pageable)));
+    public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(
+        boolean active,
+        Pageable pageable
+    ) {
+        if (active) {
+            return ok(documentDefinitionService.findAllActive(fixPageable(pageable)));
+        } else {
+            return ok(documentDefinitionService.findAll(fixPageable(pageable)));
+        }
     }
 
     @Override
@@ -75,8 +82,17 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     }
 
     @Override
-    public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitionsForManagement(Pageable pageable) {
-        return ok(runWithoutAuthorization(() -> documentDefinitionService.findAllForManagement(fixPageable(pageable))));
+    public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitionsForManagement(
+        boolean active,
+        Pageable pageable
+    ) {
+        return ok(runWithoutAuthorization(() -> {
+            if (active) {
+                return documentDefinitionService.findAllActiveForManagement(fixPageable(pageable));
+            } else {
+                return documentDefinitionService.findAllForManagement(fixPageable(pageable));
+            }
+        }));
     }
 
     @Override

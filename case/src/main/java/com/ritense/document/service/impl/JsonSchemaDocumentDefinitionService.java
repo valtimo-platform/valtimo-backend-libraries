@@ -17,8 +17,8 @@
 package com.ritense.document.service.impl;
 
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
+import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentDefinitionSpecificationHelper.byCaseDefinitionActive;
 import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentDefinitionSpecificationHelper.byIdCaseDefinitionId;
-import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentDefinitionSpecificationHelper.byLatestVersion;
 import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.CREATE;
 import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.DELETE;
 import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.MODIFY;
@@ -109,6 +109,19 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     }
 
     @Override
+    public Page<JsonSchemaDocumentDefinition> findAllActive(Pageable pageable) {
+        final var spec = authorizationService
+            .getAuthorizationSpecification(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocumentDefinition.class,
+                    VIEW_LIST
+                ),
+                null
+            );
+        return documentDefinitionRepository.findAll(spec.and(byCaseDefinitionActive()), pageable);
+    }
+
+    @Override
     public List<JsonSchemaDocumentDefinition> findAllBy(CaseDefinitionId caseDefinitionId) {
         final var spec = authorizationService
             .getAuthorizationSpecification(
@@ -129,7 +142,18 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
                 Action.deny()
             ));
 
-        final var spec = byLatestVersion();
+        return documentDefinitionRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<JsonSchemaDocumentDefinition> findAllActiveForManagement(Pageable pageable) {
+        authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocumentDefinition.class,
+                Action.deny()
+            ));
+
+        final var spec = byCaseDefinitionActive();
         return documentDefinitionRepository.findAll(spec, pageable);
     }
 

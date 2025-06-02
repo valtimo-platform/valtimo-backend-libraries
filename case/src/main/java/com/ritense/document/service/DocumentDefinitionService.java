@@ -32,9 +32,13 @@ public interface DocumentDefinitionService {
 
     Page<? extends DocumentDefinition> findAll(Pageable pageable);
 
+    Page<? extends DocumentDefinition> findAllActive(Pageable pageable);
+
     List<? extends DocumentDefinition> findAllBy(CaseDefinitionId caseDefinitionId);
 
     Page<? extends DocumentDefinition> findAllForManagement(Pageable pageable);
+
+    Page<? extends DocumentDefinition> findAllActiveForManagement(Pageable pageable);
 
     JsonSchemaDocumentDefinitionId findIdByName(String name);
 

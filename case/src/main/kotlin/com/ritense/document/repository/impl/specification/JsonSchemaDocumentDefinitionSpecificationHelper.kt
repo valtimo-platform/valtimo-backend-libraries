@@ -16,6 +16,7 @@
 
 package com.ritense.document.repository.impl.specification
 
+import com.ritense.case_.domain.definition.CaseDefinition
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import jakarta.persistence.criteria.CriteriaBuilder
@@ -65,6 +66,22 @@ class JsonSchemaDocumentDefinitionSpecificationHelper {
                     criteriaBuilder.equal(caseDefinitionIdPath.get<String>(VERSION_TAG), caseDefinitionId.versionTag)
                 )
             }
+        }
+
+        @JvmStatic
+        fun byCaseDefinitionActive() = Specification<JsonSchemaDocumentDefinition> { root, query, cb ->
+            val caseDefinitionIdPath = root.get<Any>(ID).get<String>(CASE_DEFINITION_ID)
+            val subquery = query.subquery(Long::class.java)
+            val subRoot = subquery.from(CaseDefinition::class.java)
+            subquery.select(cb.count(subRoot.get<Any>(ID).get<CaseDefinitionId>(KEY)))
+            subquery.where(
+                cb.and(
+                    cb.isTrue(subRoot["active"]),
+                    cb.equal(subRoot.get<Any>(ID).get<CaseDefinitionId>(KEY), caseDefinitionIdPath.get<CaseDefinitionId>(KEY)),
+                    cb.equal(subRoot.get<Any>(ID).get<CaseDefinitionId>(VERSION_TAG), caseDefinitionIdPath.get<CaseDefinitionId>(VERSION_TAG)),
+                )
+            )
+            cb.equal(subquery, 1L)
         }
 
         private const val ID: String = "id"
