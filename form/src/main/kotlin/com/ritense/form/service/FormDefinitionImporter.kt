@@ -17,6 +17,7 @@
 package com.ritense.form.service
 
 import com.ritense.form.autodeployment.FormDefinitionDeploymentService
+import com.ritense.importer.ImportContext.Companion.runImporter
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
@@ -34,7 +35,7 @@ class FormDefinitionImporter(
 
     override fun supports(fileName: String): Boolean = fileName.matches(FILENAME_REGEX)
 
-    override fun import(request: ImportRequest) {
+    override fun import(request: ImportRequest): Unit = runImporter {
         val formDefinitionAsString = request.content.toString(Charsets.UTF_8)
         formDefinitionDeploymentService
             .deploy(

@@ -20,13 +20,16 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.processdocument.BaseIntegrationTest
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
 import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.valtimo.contract.utils.TestUtil.TEST_USER_EMAIL
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -55,6 +58,7 @@ class CaseDefinitionProcessManagementResourceIT(
     }
 
     @Test
+    @WithMockUser(username = TEST_USER_EMAIL, authorities = [ADMIN])
     fun `should get a feature process`() {
         caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
             CaseDefinitionId("house", "1.0.0"),
@@ -75,6 +79,7 @@ class CaseDefinitionProcessManagementResourceIT(
     }
 
     @Test
+    @WithMockUser(username = TEST_USER_EMAIL, authorities = [ADMIN])
     fun `should create a feature process`() {
         val request = DocumentDefinitionProcessRequest(
             "unassociated-process",
@@ -101,6 +106,7 @@ class CaseDefinitionProcessManagementResourceIT(
     }
 
     @Test
+    @WithMockUser(username = TEST_USER_EMAIL, authorities = [ADMIN])
     fun `should delete a feature process`() {
         caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
             CaseDefinitionId("house", "1.0.0"),

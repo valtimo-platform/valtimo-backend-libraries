@@ -24,6 +24,7 @@ import com.ritense.documentenapi.domain.DocumentenApiColumn
 import com.ritense.documentenapi.domain.DocumentenApiColumnId
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.documentenapi.service.DocumentenApiService
+import com.ritense.importer.ImportContext.Companion.runImporter
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
@@ -44,7 +45,7 @@ class ZgwDocumentListColumnImporter(
 
     override fun supports(fileName: String): Boolean = fileName.matches(FILENAME_REGEX)
 
-    override fun import(request: ImportRequest) {
+    override fun import(request: ImportRequest): Unit = runImporter {
         logger.info { "Importing ZGW document list columns for file ${request.fileName}" }
         deploy(request.caseDefinitionId!!, request.content.toString(Charsets.UTF_8))
     }

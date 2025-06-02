@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.importer.ImportContext.Companion.runImporter
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.PROCESS_DEFINITION
@@ -48,7 +49,7 @@ class ProcessLinkImporter(
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
-    override fun import(request: ImportRequest) {
+    override fun import(request: ImportRequest): Unit = runImporter {
         val processDefinitionKey = FILENAME_REGEX.matchEntire(request.fileName)!!.groupValues[1]
         withLoggingContext("processDefinitionKey", processDefinitionKey) {
             val processDefinitionId = AuthorizationContext.runWithoutAuthorization {

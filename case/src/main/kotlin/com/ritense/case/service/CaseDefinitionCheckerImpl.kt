@@ -16,13 +16,16 @@
 
 package com.ritense.case.service
 
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.case.repository.CaseDefinitionSpecificationHelper.Companion.byActive
 import com.ritense.case.repository.CaseDefinitionSpecificationHelper.Companion.byCaseDefinitionKey
 import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.importer.ImportContext
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.valtimo.contract.utils.SecurityUtils
 import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -59,7 +62,7 @@ class CaseDefinitionCheckerImpl(
         if (ImportContext.isImporting()) {
             return true
         }
-        return isDraftEnvironment()
+        return isAuthorized() && isDraftEnvironment()
     }
 
     override fun assertCaseDefinitionExists(caseDefinitionId: CaseDefinitionId) {
@@ -80,9 +83,12 @@ class CaseDefinitionCheckerImpl(
     }
 
     override fun assertCanCreateOrUpdateCaseDefinition(caseDefinitionId: CaseDefinitionId, final: Boolean) {
+        require(ImportContext.isImporting() || isAuthorized()) {
+            "Failed to create/update CaseDefinition $caseDefinitionId. Missing admin permissions."
+        }
         val isDraftEnvironment = isDraftEnvironment()
         if (!final && !isDraftEnvironment) {
-            error("Failed to create/update CaseDefinition $caseDefinitionId. This Valtimo environment does not support drafts. Missing one of the following Spring profiles: [$draftEnvironments]")
+            error("Failed to create/update CaseDefinition $caseDefinitionId. This Valtimo environment does not support drafts. A draft environment muse have one of the following Spring profiles: [$draftEnvironments]. This environment only has Spring profiles: [${environment.activeProfiles.joinToString()}]")
         }
         val existingCaseDefinition = caseDefinitionRepository.findById(caseDefinitionId).orElse(null)
         if (existingCaseDefinition != null && existingCaseDefinition.final) {
@@ -91,8 +97,14 @@ class CaseDefinitionCheckerImpl(
     }
 
     override fun assertCanUpdateGlobalConfiguration() {
+        require(ImportContext.isImporting() || isAuthorized()) {
+            "Failed to update configuration. Missing admin permissions."
+        }
+        require(isDraftEnvironment()) {
+            "Failed to update configuration. This Valtimo environment does not support drafts. A draft environment muse have one of the following Spring profiles: [$draftEnvironments]. This environment only has Spring profiles: [${environment.activeProfiles.joinToString()}]"
+        }
         require(canUpdateGlobalConfiguration()) {
-            "Failed to update configuration. This Valtimo environment does not support drafts. Missing one of the following Spring profiles: [$draftEnvironments]"
+            "Failed to update configuration."
         }
     }
 
@@ -100,5 +112,10 @@ class CaseDefinitionCheckerImpl(
         return draftEnvironments.split(',').any { draftEnvironment ->
             environment.activeProfiles.any { it == draftEnvironment }
         }
+    }
+
+    private fun isAuthorized(): Boolean {
+        return AuthorizationContext.ignoreAuthorization
+            || SecurityUtils.getCurrentUserRoles().contains(ADMIN)
     }
 }

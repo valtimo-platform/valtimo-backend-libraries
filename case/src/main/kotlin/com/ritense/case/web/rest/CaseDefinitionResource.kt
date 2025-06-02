@@ -350,7 +350,7 @@ class CaseDefinitionResource(
     }
 
     @RunWithoutAuthorization
-    @GetMapping("/management/v1/case-definition/check")
+    @GetMapping("/v1/case-definition/check")
     fun checkCaseDefinition(): ResponseEntity<CaseDefinitionCheckResponse> {
         return ResponseEntity.ok(
             CaseDefinitionCheckResponse(

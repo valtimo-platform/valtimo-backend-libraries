@@ -29,7 +29,7 @@ class ImportContext {
         @JvmStatic
         fun <T> runImporter(callable: Callable<T>): T {
             return if (isImporting()) {
-                return callable.call()
+                callable.call()
             } else {
                 try {
                     importingThreadLocal.set(true)

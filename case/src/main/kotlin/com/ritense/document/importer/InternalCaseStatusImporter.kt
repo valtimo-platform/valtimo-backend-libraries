@@ -22,6 +22,7 @@ import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.service.InternalCaseStatusService
 import com.ritense.document.web.rest.dto.InternalCaseStatusCreateRequestDto
 import com.ritense.document.web.rest.dto.InternalCaseStatusUpdateRequestDto
+import com.ritense.importer.ImportContext.Companion.runImporter
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
@@ -39,7 +40,7 @@ class InternalCaseStatusImporter(
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
-    override fun import(request: ImportRequest) {
+    override fun import(request: ImportRequest): Unit = runImporter {
         val internalCaseStatuses = objectMapper.readValue<List<InternalCaseStatusDto>>(request.content)
         deploy(request.caseDefinitionId!!.key, internalCaseStatuses)
     }

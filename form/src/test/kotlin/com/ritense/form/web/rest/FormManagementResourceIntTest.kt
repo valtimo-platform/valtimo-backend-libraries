@@ -4,10 +4,12 @@ import com.jayway.jsonpath.JsonPath
 import com.ritense.form.BaseIntegrationTest
 import com.ritense.form.domain.request.CreateFormDefinitionRequest
 import com.ritense.form.domain.request.ModifyFormDefinitionRequest
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.ManageableUser
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.valtimo.contract.utils.TestUtil
+import com.ritense.valtimo.contract.utils.TestUtil.TEST_USER_EMAIL
 import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -114,7 +116,7 @@ class FormManagementResourceIntTest : BaseIntegrationTest() {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username = TEST_USER_EMAIL, authorities = [ADMIN])
     fun `should create form for case definition`() {
         val request = CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}", false)
         mockMvc.perform(
@@ -136,7 +138,7 @@ class FormManagementResourceIntTest : BaseIntegrationTest() {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username = TEST_USER_EMAIL, authorities = [ADMIN])
     fun `should update form for case definition`() {
         val request = CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}", false)
         val result = mockMvc.perform(
@@ -177,7 +179,7 @@ class FormManagementResourceIntTest : BaseIntegrationTest() {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username = TEST_USER_EMAIL, authorities = [ADMIN])
     @Transactional(Transactional.TxType.NEVER)
     fun `should delete form for case definition`() {
         val savedFormDefinition = formDefinitionRepository.save(formDefinition())

@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.decision
 
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.valtimo.BaseIntegrationTest
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.camunda.bpm.engine.RepositoryService
@@ -37,7 +38,7 @@ class CamundaDecisionServiceIT(
 ): BaseIntegrationTest() {
 
     @Test
-    fun `should not delete when multiple decision are in the deployment`() {
+    fun `should not delete when multiple decision are in the deployment`() = runWithoutAuthorization {
 
         val dmnModel1 = Dmn.readModelFromStream(getDecisionXml("delete-test-1").byteInputStream())
         dmnModel1.getDefinitions().getChildElementsByType<Decision>(Decision::class.java).forEach(

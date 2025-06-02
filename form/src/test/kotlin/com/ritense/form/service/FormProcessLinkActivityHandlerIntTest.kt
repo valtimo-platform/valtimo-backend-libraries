@@ -28,10 +28,13 @@ import com.ritense.form.processlink.FormProcessLinkActivityHandler
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.valtimo.contract.utils.TestUtil.TEST_USER_EMAIL
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 import kotlin.test.assertEquals
@@ -52,6 +55,7 @@ internal class FormProcessLinkActivityHandlerIntTest : BaseIntegrationTest() {
     lateinit var documentService: DocumentService
 
     @Test
+    @WithMockUser(username = TEST_USER_EMAIL, authorities = [ADMIN])
     fun `should retrieve form definition`() {
         val formDefinition = formDefinitionService.createFormDefinition(
             CaseDefinitionId.of("person", "1.0.0"),

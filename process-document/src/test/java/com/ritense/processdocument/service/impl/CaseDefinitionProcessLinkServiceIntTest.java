@@ -16,6 +16,9 @@
 
 package com.ritense.processdocument.service.impl;
 
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
+import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
+import static com.ritense.valtimo.contract.utils.TestUtil.TEST_USER_EMAIL;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ritense.processdocument.BaseIntegrationTest;
@@ -26,6 +29,7 @@ import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -43,12 +47,14 @@ class CaseDefinitionProcessLinkServiceIntTest extends BaseIntegrationTest {
     private CaseDefinitionProcessLinkService caseDefinitionProcessLinkService;
 
     @BeforeEach
-    public void beforeEach() {
-        caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-            CASE_DEFINITION_ID,
-            new DocumentDefinitionProcessRequest(
-                PROCESS_DEFINITION_KEY,
-                DOCUMENT_UPLOAD
+    void beforeEach() {
+        runWithoutAuthorization(() ->
+            caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                CASE_DEFINITION_ID,
+                new DocumentDefinitionProcessRequest(
+                    PROCESS_DEFINITION_KEY,
+                    DOCUMENT_UPLOAD
+                )
             )
         );
     }
@@ -67,6 +73,7 @@ class CaseDefinitionProcessLinkServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(username = TEST_USER_EMAIL, authorities = ADMIN)
     void shouldOverrideProcessDefinitionKeyInLinkWhenSaving() {
         caseDefinitionProcessLinkService.saveDocumentDefinitionProcess(
             CASE_DEFINITION_ID,
@@ -76,7 +83,10 @@ class CaseDefinitionProcessLinkServiceIntTest extends BaseIntegrationTest {
             )
         );
 
-        var caseDefinitionProcess = caseDefinitionProcessLinkService.getDocumentDefinitionProcess(CASE_DEFINITION_ID, DOCUMENT_UPLOAD);
+        var caseDefinitionProcess = caseDefinitionProcessLinkService.getDocumentDefinitionProcess(
+            CASE_DEFINITION_ID,
+            DOCUMENT_UPLOAD
+        );
 
         assertThat(caseDefinitionProcess).isNotNull();
         assertThat(caseDefinitionProcess.getProcessDefinitionKey()).isEqualTo("embedded-subprocess-example");

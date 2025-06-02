@@ -16,6 +16,7 @@
 
 package com.ritense
 
+import com.ritense.importer.ImportContext.Companion.runImporter
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
@@ -32,6 +33,6 @@ class FakeFormDefinitionImporter(
 
     override fun supports(fileName: String): Boolean = false
 
-    override fun import(request: ImportRequest) {
+    override fun import(request: ImportRequest): Unit = runImporter {
     }
 }

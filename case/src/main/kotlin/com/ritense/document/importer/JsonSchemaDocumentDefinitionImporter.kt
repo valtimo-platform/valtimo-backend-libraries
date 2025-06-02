@@ -18,6 +18,7 @@ package com.ritense.document.importer
 
 import com.ritense.document.domain.impl.JsonSchema
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
+import com.ritense.importer.ImportContext.Companion.runImporter
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
@@ -34,7 +35,7 @@ class JsonSchemaDocumentDefinitionImporter(
 
     override fun supports(fileName: String) = fileName.matches(PATH_REGEX)
 
-    override fun import(request: ImportRequest) {
+    override fun import(request: ImportRequest): Unit = runImporter {
         jsonSchemaDocumentDefinitionService.deploy(JsonSchema.fromString(request.content.toString(Charsets.UTF_8)), request.caseDefinitionId)
     }
 

@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.service.DocumentDefinitionService
+import com.ritense.importer.ImportContext.Companion.runImporter
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
@@ -50,7 +51,7 @@ class ProcessDocumentLinkImporter(
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
-    override fun import(request: ImportRequest) {
+    override fun import(request: ImportRequest): Unit = runImporter {
         val documentDefinitionName = FILENAME_REGEX.matchEntire(request.fileName)!!.groupValues[1]
         deploy(request.caseDefinitionId!!, documentDefinitionName, request.content.toString(Charsets.UTF_8))
     }

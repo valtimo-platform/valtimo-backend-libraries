@@ -18,6 +18,7 @@ package com.ritense.formflow.common
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.formflow.BaseIntegrationTest
@@ -262,7 +263,9 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     private fun deployFormFlow(onComplete: String) {
         val formFlowJson = readFileAsString("/template/single_step_flow.json")
             .replace("PLACEHOLDER", onComplete)
-        formFlowImporter.deploy("single_step_flow", formFlowJson, CaseDefinitionId("profile", "1.0.0"))
+        runWithoutAuthorization {
+            formFlowImporter.deploy("single_step_flow", formFlowJson, CaseDefinitionId("profile", "1.0.0"))
+        }
     }
 
     private fun linkFormFlowToUserTask() {

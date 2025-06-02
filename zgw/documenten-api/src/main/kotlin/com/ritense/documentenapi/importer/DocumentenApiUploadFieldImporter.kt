@@ -23,6 +23,7 @@ import com.ritense.documentenapi.deployment.ZgwDocumentUploadField
 import com.ritense.documentenapi.domain.DocumentenApiUploadField
 import com.ritense.documentenapi.domain.DocumentenApiUploadFieldId
 import com.ritense.documentenapi.service.DocumentenApiService
+import com.ritense.importer.ImportContext.Companion.runImporter
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
@@ -42,7 +43,7 @@ class DocumentenApiUploadFieldImporter(
 
     override fun supports(fileName: String): Boolean = fileName.matches(FILENAME_REGEX)
 
-    override fun import(request: ImportRequest) {
+    override fun import(request: ImportRequest): Unit = runImporter {
         logger.info { "Importing ZGW document upload fields for file ${request.fileName}" }
         deploy(request.caseDefinitionId!!, request.content.toString(Charsets.UTF_8))
     }

@@ -22,6 +22,8 @@ import java.io.IOException;
 
 public class TestUtil {
 
+    public static final String TEST_USER_EMAIL = "user@valtimo.nl";
+
     private TestUtil() {
     }
 

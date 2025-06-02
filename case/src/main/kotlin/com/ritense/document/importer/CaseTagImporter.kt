@@ -23,6 +23,7 @@ import com.ritense.document.deployment.CaseTagDto
 import com.ritense.document.service.CaseTagService
 import com.ritense.document.web.rest.dto.CaseTagCreateRequestDto
 import com.ritense.document.web.rest.dto.CaseTagUpdateRequestDto
+import com.ritense.importer.ImportContext.Companion.runImporter
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
@@ -41,7 +42,7 @@ class CaseTagImporter(
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
-    override fun import(request: ImportRequest) {
+    override fun import(request: ImportRequest): Unit = runImporter {
         val caseTags = objectMapper.readValue(
             request.content.toString(Charsets.UTF_8),
             object : TypeReference<List<CaseTagDto>>() {})

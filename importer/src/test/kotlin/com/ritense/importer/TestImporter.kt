@@ -16,6 +16,8 @@
 
 package com.ritense.importer
 
+import com.ritense.importer.ImportContext.Companion.runImporter
+
 open class TestImporter(
     private val type: String = "test",
     private val dependsOn: Set<String> = setOf(),
@@ -28,7 +30,7 @@ open class TestImporter(
 
     override fun supports(fileName: String) = supportsFunction(fileName)
 
-    override fun import(request: ImportRequest) = importFunction(request)
+    override fun import(request: ImportRequest): Unit = runImporter { importFunction(request) }
 
     override fun partOfCaseDefinition(): Boolean = false
 }

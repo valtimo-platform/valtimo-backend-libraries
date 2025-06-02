@@ -19,6 +19,7 @@ package com.ritense.case.service
 import CaseDefinitionDto
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.case_.repository.CaseDefinitionRepository
+import com.ritense.importer.ImportContext.Companion.runImporter
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
@@ -36,11 +37,11 @@ class CaseDefinitionImporter(
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
-    override fun import(request: ImportRequest) {
+    override fun import(request: ImportRequest): Unit = runImporter {
         deploy(request.content.toString(Charsets.UTF_8))
     }
 
-    override fun afterImport(request: ImportRequest) {
+    override fun afterImport(request: ImportRequest): Unit = runImporter {
         val caseDefinitionDto = toCaseDefinitionDto(request.content.toString(Charsets.UTF_8))
         if (caseDefinitionDto.final) {
             caseDefinitionRepository.save(caseDefinitionDto.toEntity())

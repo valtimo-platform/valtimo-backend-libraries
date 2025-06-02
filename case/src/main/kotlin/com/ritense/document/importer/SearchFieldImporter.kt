@@ -21,6 +21,7 @@ import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthor
 import com.ritense.document.domain.search.SearchConfigurationDto
 import com.ritense.document.exception.SearchFieldConfigurationDeploymentException
 import com.ritense.document.service.SearchFieldService
+import com.ritense.importer.ImportContext.Companion.runImporter
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
@@ -48,7 +49,7 @@ class SearchFieldImporter(
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
-    override fun import(request: ImportRequest) {
+    override fun import(request: ImportRequest): Unit = runImporter {
         withLoggingContext("caseDefinitionKey" to request.caseDefinitionId!!.key) {
             deploy(
                 request,

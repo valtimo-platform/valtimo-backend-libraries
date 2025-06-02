@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.importer
 
+import com.ritense.importer.ImportContext.Companion.runImporter
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
@@ -33,7 +34,7 @@ class CamundaProcessDefinitionImporter(
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
-    override fun import(request: ImportRequest) {
+    override fun import(request: ImportRequest): Unit = runImporter {
         request.content.inputStream().use {
             camundaProcessService.deploy(request.caseDefinitionId, fileNameWithoutPath(request.fileName), it)
         }

@@ -21,6 +21,7 @@ import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.configuration.FormFlowDefinition
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
 import com.ritense.formflow.service.FormFlowService
+import com.ritense.importer.ImportContext.Companion.runImporter
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.FORM
@@ -48,7 +49,7 @@ class FormFlowDefinitionImporter(
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
-    override fun import(request: ImportRequest) {
+    override fun import(request: ImportRequest): Unit = runImporter {
         val formFlowKey = FILENAME_REGEX.matchEntire(request.fileName)!!.groupValues[1]
         deploy(formFlowKey, request.content.toString(Charsets.UTF_8), request.caseDefinitionId!!)
     }

@@ -25,6 +25,7 @@ import com.ritense.case_.repository.CaseWidgetTabRepository
 import com.ritense.case_.rest.dto.CaseWidgetTabDto
 import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
 import com.ritense.case_.widget.CaseWidgetMapper
+import com.ritense.importer.ImportContext.Companion.runImporter
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_TAB
@@ -47,8 +48,8 @@ class CaseWidgetTabImporter(
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
-    override fun import(request: ImportRequest) {
-        return deploy(request.content.toString(Charsets.UTF_8), request.caseDefinitionId!!)
+    override fun import(request: ImportRequest): Unit = runImporter {
+        deploy(request.content.toString(Charsets.UTF_8), request.caseDefinitionId!!)
     }
 
     fun deploy(fileContent: String, caseDefinitionId: CaseDefinitionId) {

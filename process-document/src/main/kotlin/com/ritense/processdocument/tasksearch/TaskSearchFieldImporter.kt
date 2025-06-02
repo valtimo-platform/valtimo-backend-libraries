@@ -18,6 +18,7 @@ package com.ritense.processdocument.tasksearch
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.importer.ImportContext.Companion.runImporter
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
@@ -37,7 +38,7 @@ class TaskSearchFieldImporter(
     override fun dependsOn(): Set<String> = setOf(DOCUMENT_DEFINITION)
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
-    override fun import(request: ImportRequest) {
+    override fun import(request: ImportRequest): Unit = runImporter {
         deploy(request.caseDefinitionId!!, request.content.toString(Charsets.UTF_8))
     }
 

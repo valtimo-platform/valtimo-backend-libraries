@@ -22,11 +22,14 @@ import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.formflow.BaseIntegrationTest
 import com.ritense.formflow.web.rest.result.FormFlowDefinitionDto
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.valtimo.contract.utils.TestUtil.TEST_USER_EMAIL
 import jakarta.ws.rs.core.MediaType.APPLICATION_JSON
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -82,6 +85,7 @@ class FormFlowManagementResourceIntTest : BaseIntegrationTest() {
     }
 
     @Test
+    @WithMockUser(username = TEST_USER_EMAIL, authorities = [ADMIN])
     fun `should delete form flow definition by key`() {
         val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         formFlowService.save(FormFlowDefinition(FormFlowDefinitionId("test", caseDefinitionId), "start-step", setOf()))
@@ -92,6 +96,7 @@ class FormFlowManagementResourceIntTest : BaseIntegrationTest() {
     }
 
     @Test
+    @WithMockUser(username = TEST_USER_EMAIL, authorities = [ADMIN])
     fun `should create form flow definition`() {
         val definition = FormFlowDefinitionDto(
             key = "test",
@@ -112,6 +117,7 @@ class FormFlowManagementResourceIntTest : BaseIntegrationTest() {
     }
 
     @Test
+    @WithMockUser(username = TEST_USER_EMAIL, authorities = [ADMIN])
     fun `should update form flow definition`() {
         val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         formFlowService.save(FormFlowDefinition(FormFlowDefinitionId("test", caseDefinitionId), "start-step", setOf()))

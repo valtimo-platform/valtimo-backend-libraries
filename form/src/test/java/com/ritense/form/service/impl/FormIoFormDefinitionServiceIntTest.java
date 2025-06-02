@@ -16,6 +16,8 @@
 
 package com.ritense.form.service.impl;
 
+import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
+import static com.ritense.valtimo.contract.utils.TestUtil.TEST_USER_EMAIL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -23,11 +25,12 @@ import com.ritense.form.BaseIntegrationTest;
 import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.form.domain.request.ModifyFormDefinitionRequest;
-import java.util.Optional;
 import com.ritense.valtimo.contract.case_.CaseDefinitionChecker;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -43,6 +46,7 @@ class FormIoFormDefinitionServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(username = TEST_USER_EMAIL, authorities = {ADMIN})
     void shouldCreateFormDefinition() {
         var request = new CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}", false);
         var formDefinition = formIoFormDefinitionService.createFormDefinition(request);
@@ -53,6 +57,7 @@ class FormIoFormDefinitionServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(username = TEST_USER_EMAIL, authorities = {ADMIN})
     void shouldCreateReadonlyFormDefinition() {
         var request = new CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}", true);
         var formDefinition = formIoFormDefinitionService.createFormDefinition(request);
@@ -60,6 +65,7 @@ class FormIoFormDefinitionServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(username = TEST_USER_EMAIL, authorities = {ADMIN})
     void shouldModifyFormDefinition() {
         var request = new CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}", false);
         var formDefinition = formIoFormDefinitionService.createFormDefinition(request);
@@ -77,6 +83,7 @@ class FormIoFormDefinitionServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(username = TEST_USER_EMAIL, authorities = {ADMIN})
     void shouldNotModifyFormDefinition() {
         var request = new CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}", true);
         var formDefinition = formIoFormDefinitionService.createFormDefinition(request);
@@ -92,6 +99,7 @@ class FormIoFormDefinitionServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(username = TEST_USER_EMAIL, authorities = {ADMIN})
     void shouldModifyFormDefinitionSystem() {
         var request = new CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}", true);
         var formDefinition = formIoFormDefinitionService.createFormDefinition(request);
@@ -109,6 +117,7 @@ class FormIoFormDefinitionServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(username = TEST_USER_EMAIL, authorities = {ADMIN})
     void shouldGetFormDefinitionByNameIgnoringCase() {
         var request = new CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}", true);
         var formDefinition = formIoFormDefinitionService.createFormDefinition(request);

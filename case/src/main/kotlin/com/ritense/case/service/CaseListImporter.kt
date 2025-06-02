@@ -19,6 +19,7 @@ package com.ritense.case.service
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.case.web.rest.dto.CaseListColumnDto
+import com.ritense.importer.ImportContext.Companion.runImporter
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_LIST
@@ -44,7 +45,7 @@ class CaseListImporter(
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
-    override fun import(request: ImportRequest) {
+    override fun import(request: ImportRequest): Unit = runImporter {
         val caseDefinitionName = FILENAME_REGEX.matchEntire(request.fileName)!!.groupValues[1]
         withLoggingContext("jsonSchemaDocumentName" to caseDefinitionName) {
             deployColumns(caseDefinitionName, request.content.toString(Charsets.UTF_8))

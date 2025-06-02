@@ -58,8 +58,11 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
     @BeforeEach
     public void beforeEach() {
         definition = definition();
-        documentDefinitionService.store(definition);
-        document = (JsonSchemaDocument) createDocument("{\"street\": \"Funenpark\"}");
+        runWithoutAuthorization(() -> {
+            documentDefinitionService.store(definition);
+            document = (JsonSchemaDocument) createDocument("{\"street\": \"Funenpark\"}");
+            return null;
+        });
     }
 
     @AfterEach
