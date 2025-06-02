@@ -48,7 +48,7 @@ public interface UserManagementService {
 
     Optional<NamedUser> findNamedUserByEmail(String email);
 
-    default ManageableUser  findByUserIdentifier(String userIdentifier) {
+    default ManageableUser findByUserIdentifier(String userIdentifier) {
         throw new NotImplementedException("Failed to get current user because method is not implemented.");
     }
 
