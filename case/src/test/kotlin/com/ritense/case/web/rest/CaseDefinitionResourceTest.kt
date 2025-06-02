@@ -421,7 +421,7 @@ class CaseDefinitionResourceTest : BaseTest() {
         whenever(caseDefinitionChecker.canUpdateGlobalConfiguration()).thenReturn(true)
 
         mockMvc.perform(
-            get("/api/management/v1/case-definition/check")
+            get("/api/v1/case-definition/check")
         )
             .andDo(print())
             .andExpect(status().isOk)
