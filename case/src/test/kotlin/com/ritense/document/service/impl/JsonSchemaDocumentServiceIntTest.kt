@@ -16,10 +16,10 @@
 package com.ritense.document.service.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.BaseIntegrationTest
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.Permission
-import com.ritense.document.BaseIntegrationTest
 import com.ritense.document.domain.CaseTag
 import com.ritense.document.domain.CaseTagColor
 import com.ritense.document.domain.CaseTagId
@@ -101,7 +101,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         admin.username = USERNAME
         admin.roles = listOf(USER, ADMIN)
         whenever(userManagementService.currentUser).thenReturn(admin)
-        whenever(userManagementService.findByUserIdentifier(USERNAME)).thenReturn(admin)
+        whenever(userManagementService.findByUsername(USERNAME)).thenReturn(admin)
         whenever(userManagementService.findById(USERNAME)).thenReturn(admin)
     }
 

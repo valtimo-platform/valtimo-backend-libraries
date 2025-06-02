@@ -139,9 +139,14 @@ class ProcessDocumentResourceTest extends BaseTest {
         caseDefinition = new CaseDefinition(
             caseDefinitionId,
             "house",
+            null,
+            null,
+            null,
+            null,
             true,
             true,
             true,
+            false,
             false,
             null,
             null

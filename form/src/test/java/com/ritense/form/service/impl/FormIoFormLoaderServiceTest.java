@@ -59,7 +59,7 @@ public class FormIoFormLoaderServiceTest extends BaseTest {
         final String formDefinitionName = "form-example";
 
         FormIoFormDefinition formIoFormDefinition = formDefinitionOf(formDefinitionName);
-        when(formDefinitionRepository.findByName(eq(formDefinitionName))).thenReturn(Optional.of(formIoFormDefinition));
+        when(formDefinitionRepository.findByNameAndCaseDefinitionIdIsNull(eq(formDefinitionName))).thenReturn(Optional.of(formIoFormDefinition));
 
         final Optional<JsonNode> formDefinition = formLoaderService.getFormDefinitionByName(formDefinitionName);
         assertThat(formDefinition).isPresent();
@@ -72,7 +72,7 @@ public class FormIoFormLoaderServiceTest extends BaseTest {
         final String formDefinitionName = "form-example";
 
         final var formIoFormDefinition = formDefinitionOf(formDefinitionName);
-        when(formDefinitionRepository.findByName(eq(formDefinitionName))).thenReturn(Optional.of(formIoFormDefinition));
+        when(formDefinitionRepository.findByNameAndCaseDefinitionIdIsNull(eq(formDefinitionName))).thenReturn(Optional.of(formIoFormDefinition));
         when(prefillFormService.getPrefilledFormDefinition(any(), any())).then(invocation -> {
             formIoFormDefinition.preFill(
                 Map.of(
@@ -96,7 +96,7 @@ public class FormIoFormLoaderServiceTest extends BaseTest {
         String formDefinitionId = "form-example-nested-components";
 
         FormIoFormDefinition formIoFormDefinition = formDefinitionOf(formDefinitionId);
-        when(formDefinitionRepository.findByName(eq(formDefinitionId))).thenReturn(Optional.of(formIoFormDefinition));
+        when(formDefinitionRepository.findByNameAndCaseDefinitionIdIsNull(eq(formDefinitionId))).thenReturn(Optional.of(formIoFormDefinition));
         when(prefillFormService.getPrefilledFormDefinition(any(), any())).then(invocation -> {
             formIoFormDefinition.preFill(
                 Map.of(

@@ -55,6 +55,6 @@ class DocumentenApiUploadFieldExporter(
 
     companion object {
         private val logger = KotlinLogging.logger {}
-        private const val PATH = "config/case/%s/%s/zgw/document-upload-fields/%s.zgw-document-upload-field.json"
+        private const val PATH = "config/case/%s/%s/zgw/document-upload-field/%s.zgw-document-upload-field.json"
     }
 }

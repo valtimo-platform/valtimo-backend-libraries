@@ -25,5 +25,7 @@ interface Importer {
 
     fun import(request: ImportRequest)
 
+    fun afterImport(request: ImportRequest) {}
+
     fun partOfCaseDefinition() : Boolean = true
 }

@@ -23,6 +23,7 @@ import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF
 import com.ritense.valtimo.decision.CamundaDecisionService
 import com.ritense.valtimo.service.CamundaProcessService
 import org.camunda.bpm.engine.repository.DecisionDefinition
+import org.camunda.bpm.engine.rest.dto.repository.DecisionDefinitionDto
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.transaction.annotation.Transactional
@@ -51,14 +52,15 @@ class DecisionManagementResource(
     fun listDecisionDefinition(
         @PathVariable(name = "caseDefinitionKey") caseDefinitionKey: String,
         @PathVariable(name = "caseDefinitionVersionTag") caseDefinitionVersionTag: String,
-        @RequestPart(name = "file") dmn: MultipartFile?
-    ): ResponseEntity<List<DecisionDefinition>> {
+    ): ResponseEntity<List<DecisionDefinitionDto>> {
 
         val decisionDefinitions = runWithoutAuthorization {
             camundaDecisionService.getDecisionDefinitions(CaseDefinitionId(caseDefinitionKey, caseDefinitionVersionTag))
         }
 
-        return ResponseEntity.ok(decisionDefinitions)
+        return ResponseEntity.ok(decisionDefinitions.map {
+            DecisionDefinitionDto.fromDecisionDefinition(it)
+        })
     }
 
     @PostMapping(

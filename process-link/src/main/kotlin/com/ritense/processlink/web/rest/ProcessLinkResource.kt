@@ -20,11 +20,11 @@ import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthor
 import com.ritense.logging.LoggableResource
 import com.ritense.logging.withLoggingContext
 import com.ritense.processdocument.domain.ProcessDefinitionId
-import com.ritense.processdocument.domain.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.domain.ProcessLinkType
 import com.ritense.processlink.mapper.ProcessLinkMapper
+import com.ritense.processlink.service.ProcessDeploymentService
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.processlink.web.rest.dto.CaseProcessDefinitionResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessDefinitionResponseDto
@@ -36,10 +36,8 @@ import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
-import com.ritense.valtimo.exception.BpmnParseException
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.web.rest.dto.ProcessDefinitionWithPropertiesDto
-import org.camunda.bpm.engine.ParseException
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.impl.util.IoUtil
 import org.springframework.http.HttpStatus
@@ -57,12 +55,9 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
-import java.io.ByteArrayInputStream
 import java.nio.charset.StandardCharsets
 import java.util.UUID
 import java.util.stream.Collectors
-import kotlin.reflect.full.memberProperties
-import kotlin.reflect.full.primaryConstructor
 
 @RestController
 @SkipComponentScan
@@ -72,7 +67,8 @@ class ProcessLinkResource(
     private val processLinkMappers: List<ProcessLinkMapper>,
     private val camundaProcessService: CamundaProcessService,
     private val processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
-    private val repositoryService: RepositoryService
+    private val repositoryService: RepositoryService,
+    private val processDeploymentService: ProcessDeploymentService
 ) {
 
     @GetMapping("/v1/process-link")
@@ -340,7 +336,7 @@ class ProcessLinkResource(
                     processDefinitionKey
                 )
                 .forEach { definition: CamundaProcessDefinition ->
-                    processDefinitionCaseDefinitionService.deleteProcessDocumentDefinition(
+                    processDefinitionCaseDefinitionService.deleteProcessDefinitionCaseDefinition(
                         ProcessDefinitionId(definition.id),
                         CaseDefinitionId.of(caseDefinitionKey, versionTag)
                     )
@@ -378,89 +374,19 @@ class ProcessLinkResource(
         @PathVariable(name = "caseDefinitionVersionTag") caseDefinitionVersionTag: String,
         @RequestPart(name = "file") bpmn: MultipartFile?,
         @RequestPart(name = "processLinks") processLinks: List<ProcessLinkCreateRequestDto>,
-        @RequestPart(name = "processDefinitionId") processDefinitionId: String?
+        @RequestParam(name = "processDefinitionId") processDefinitionId: String?,
+        @RequestParam(name = "canInitializeDocument") canInitializeDocument: String?,
+        @RequestParam(name = "startableByUser") startableByUser: String?
     ): ResponseEntity<Any> {
-        val deployedProcessDefinitionId: String
         val caseDefinitionId = CaseDefinitionId(caseDefinitionKey, caseDefinitionVersionTag)
-
-        val currentProcessDefinition = if (processDefinitionId !== null) {
-            runWithoutAuthorization {
-                camundaProcessService.getProcessDefinitionById(processDefinitionId)
-            }
-        } else {
-            null
-        }
-
-        if (bpmn !== null) {
-            val correctFileExtension = bpmn.originalFilename?.endsWith(".bpmn") == true
-
-            if (!correctFileExtension) {
-                return ResponseEntity.badRequest().body("Invalid file name. Must have '.bpmn' suffix.")
-            }
-
-            try {
-                val deployment = runWithoutAuthorization {
-                    camundaProcessService.deploy(
-                        caseDefinitionId,
-                        bpmn.originalFilename,
-                        ByteArrayInputStream(bpmn.bytes),
-                        true,
-                        false
-                    )
-                }
-                val deployedProcessDefinition = runWithoutAuthorization {
-                    camundaProcessService.getProcessDefinitionByDeploymentId(deployment.id)
-                }
-
-                deployedProcessDefinitionId = deployedProcessDefinition.id
-            } catch (e: ParseException) {
-                throw BpmnParseException(e)
-            }
-        } else {
-            try {
-                val deployment = runWithoutAuthorization {
-                    camundaProcessService.duplicateProcessDefinitionById(
-                        caseDefinitionId,
-                        processDefinitionId,
-                        true,
-                        true
-                    )
-                }
-                val deployedProcessDefinition = runWithoutAuthorization {
-                    camundaProcessService.getProcessDefinitionByDeploymentId(deployment.id)
-                }
-
-                deployedProcessDefinitionId = deployedProcessDefinition.id
-            } catch (e: Exception) {
-                throw RuntimeException("Failed to duplicate process definition. Rolling back deployment.", e)
-            }
-        }
-
-        runWithoutAuthorization {
-            processDefinitionCaseDefinitionService.createProcessDocumentDefinition(
-                ProcessDocumentDefinitionRequest(
-                    processDefinitionId = ProcessDefinitionId(deployedProcessDefinitionId),
-                    caseDefinitionId = caseDefinitionId,
-                    canInitializeDocument = false,
-                    startableByUser = false
-                )
-            )
-        }
-
-        try {
-            processLinks.map { originalLink ->
-                copyWithNewProcessDefinitionId(originalLink, deployedProcessDefinitionId)
-            }.forEach { runWithoutAuthorization { processLinkService.createProcessLink(it, caseDefinitionId) } }
-        } catch (e: Exception) {
-            throw RuntimeException("Failed to create process links. Rolling back deployment.", e)
-        }
-
-        // If deployment of process definition has been successful, delete the previous and its links
-
-        if (currentProcessDefinition != null) {
-            processLinkService.deleteProcessLinksForProcessDefinition(currentProcessDefinition.id)
-            runWithoutAuthorization { camundaProcessService.deleteProcessDefinition(currentProcessDefinition.id) }
-        }
+        processDeploymentService.deployProcessDefinitionAndProcessLinksForCaseDefinition(
+            caseDefinitionId,
+            bpmn,
+            processLinks,
+            processDefinitionId,
+            canInitializeDocument.toBoolean(),
+            startableByUser.toBoolean()
+        )
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
@@ -476,82 +402,16 @@ class ProcessLinkResource(
         @RequestPart(name = "processLinks") processLinks: List<ProcessLinkCreateRequestDto>,
         @RequestPart(name = "processDefinitionId") processDefinitionId: String?
     ): ResponseEntity<Any> {
-        val deployedProcessDefinitionId: String
-
-        if (bpmn != null) {
-            val correctFileExtension = bpmn.originalFilename?.endsWith(".bpmn") == true
-
-            if (!correctFileExtension) {
-                return ResponseEntity.badRequest().body("Invalid file name. Must have '.bpmn' suffix.")
-            }
-
-            try {
-                val deployment = runWithoutAuthorization {
-                    camundaProcessService.deploy(
-                        null,
-                        bpmn.originalFilename,
-                        ByteArrayInputStream(bpmn.bytes),
-                        true,
-                        false
-                    )
-                }
-                val deployedProcessDefinition = runWithoutAuthorization {
-                    camundaProcessService.getProcessDefinitionByDeploymentId(deployment.id)
-                }
-
-                deployedProcessDefinitionId = deployedProcessDefinition.id
-            } catch (e: ParseException) {
-                throw BpmnParseException(e)
-            }
-        } else {
-            try {
-                val deployment = runWithoutAuthorization {
-                    camundaProcessService.duplicateProcessDefinitionById(
-                        null,
-                        processDefinitionId,
-                        true,
-                        true
-                    )
-                }
-                val deployedProcessDefinition = runWithoutAuthorization {
-                    camundaProcessService.getProcessDefinitionByDeploymentId(deployment.id)
-                }
-
-                deployedProcessDefinitionId = deployedProcessDefinition.id
-            } catch (e: Exception) {
-                throw RuntimeException("Failed to duplicate process definition. Rolling back deployment.", e)
-            }
-        }
-
-        try {
-            processLinks.map { originalLink ->
-                copyWithNewProcessDefinitionId(originalLink, deployedProcessDefinitionId)
-            }.forEach { link ->
-                runWithoutAuthorization {
-                    processLinkService.createProcessLink(link, null)
-                }
-            }
-        } catch (e: Exception) {
-            throw RuntimeException("Failed to create process links. Rolling back deployment.", e)
-        }
+        processDeploymentService.deployProcessDefinitionAndProcessLinks(
+            null,
+            bpmn,
+            processLinks,
+            processDefinitionId
+        )
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
 
-    private fun copyWithNewProcessDefinitionId(
-        original: ProcessLinkCreateRequestDto,
-        newProcessDefinitionId: String
-    ): ProcessLinkCreateRequestDto {
-        val originalClass = original::class
-        val properties = originalClass.memberProperties
-        val constructor = originalClass.primaryConstructor
-
-        val args = properties.associate { prop ->
-            prop.name to if (prop.name == "processDefinitionId") newProcessDefinitionId else prop.getter.call(original)
-        }
-
-        return constructor?.callBy(constructor.parameters.associateWith { args[it.name] }) as ProcessLinkCreateRequestDto
-    }
 
     private fun getProcessLinkMapper(processLinkType: String): ProcessLinkMapper {
         return processLinkMappers.singleOrNull { it.supportsProcessLinkType(processLinkType) }

@@ -64,7 +64,8 @@ class CaseTabServiceTest(
             authorizationService,
             applicationEventPublisher,
             userManagementService,
-            documentService
+            documentService,
+            mock(),
         )
     }
 

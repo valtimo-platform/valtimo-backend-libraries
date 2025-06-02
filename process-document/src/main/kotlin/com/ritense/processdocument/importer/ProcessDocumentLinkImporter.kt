@@ -34,7 +34,6 @@ import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionServic
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.service.CamundaProcessService
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.camunda.bpm.engine.RepositoryService
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
@@ -42,7 +41,7 @@ class ProcessDocumentLinkImporter(
     private val processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
     private val documentDefinitionService: DocumentDefinitionService,
     private val objectMapper: ObjectMapper,
-    private val repositoryService: RepositoryService
+    private val processService: CamundaProcessService,
 ) : Importer {
 
     override fun type() = PROCESS_DOCUMENT_LINK
@@ -77,11 +76,10 @@ class ProcessDocumentLinkImporter(
         documentDefinitionName: String,
         item: ProcessDocumentLinkConfigItem
     ) {
-        val processDefinition = repositoryService
-            .createProcessDefinitionQuery()
-            .processDefinitionKey(item.processDefinitionKey)
-            .versionTag(CamundaProcessService.CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.toString())
-            .singleResult()
+        val processDefinition = processService.getLatestDefinitionByKeyAndCaseDefinition(
+            caseDefinitionId,
+            item.processDefinitionKey
+        )
 
         val request = ProcessDocumentDefinitionRequest(
             ProcessDefinitionId(processDefinition.id),
@@ -102,7 +100,7 @@ class ProcessDocumentLinkImporter(
                         "Updating process-document-links from {}.json",
                         documentDefinitionName
                     )
-                    processDefinitionCaseDefinitionService.deleteProcessDocumentDefinition(
+                    processDefinitionCaseDefinitionService.deleteProcessDefinitionCaseDefinition(
                         request.processDefinitionId,
                         request.caseDefinitionId
                     )

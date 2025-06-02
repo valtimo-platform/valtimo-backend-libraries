@@ -35,6 +35,7 @@ import com.ritense.formflow.handler.FormFlowStepTypeFormHandler
 import com.ritense.formflow.handler.FormFlowStepTypeHandler
 import com.ritense.formflow.importer.FormFlowDefinitionImporter
 import com.ritense.formflow.json.MapperSingleton
+import com.ritense.formflow.listener.FormFlowCaseEventListener
 import com.ritense.formflow.mapper.FormFlowProcessLinkMapper
 import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
@@ -56,6 +57,7 @@ import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionServic
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.persistence.EntityManager
@@ -115,13 +117,15 @@ class FormFlowAutoConfiguration {
         formFlowDefinitionRepository: FormFlowDefinitionRepository,
         formFlowInstanceRepository: FormFlowInstanceRepository,
         formFlowAdditionalPropertiesSearchRepository: FormFlowAdditionalPropertiesSearchRepository,
-        formFlowStepTypeHandlers: List<FormFlowStepTypeHandler>
+        formFlowStepTypeHandlers: List<FormFlowStepTypeHandler>,
+        caseDefinitionChecker: CaseDefinitionChecker,
     ): FormFlowService {
         return FormFlowService(
             formFlowDefinitionRepository,
             formFlowInstanceRepository,
             formFlowAdditionalPropertiesSearchRepository,
-            formFlowStepTypeHandlers
+            formFlowStepTypeHandlers,
+            caseDefinitionChecker
         )
     }
 
@@ -323,5 +327,11 @@ class FormFlowAutoConfiguration {
             objectMapper,
             doSubmissionDataFiltering
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(FormFlowCaseEventListener::class)
+    fun formFlowCaseEventListener(service: FormFlowService): FormFlowCaseEventListener {
+        return FormFlowCaseEventListener(service)
     }
 }

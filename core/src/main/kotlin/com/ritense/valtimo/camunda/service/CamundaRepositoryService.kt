@@ -20,7 +20,9 @@ import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
+import com.ritense.valtimo.camunda.domain.CamundaDecisionDefinition
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
+import com.ritense.valtimo.camunda.repository.CamundaDecisionDefinitionRepository
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionRepository
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byId
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
@@ -39,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional
 @SkipComponentScan
 class CamundaRepositoryService(
     private val camundaProcessDefinitionRepository: CamundaProcessDefinitionRepository,
+    private val camundaDecisionDefinitionRepository: CamundaDecisionDefinitionRepository,
     private val authorizationService: AuthorizationService,
     private val repositoryService: RepositoryService,
 ) {
@@ -76,6 +79,12 @@ class CamundaRepositoryService(
     fun findProcessDefinition(specification: Specification<CamundaProcessDefinition>): CamundaProcessDefinition? {
         denyAuthorization()
         return camundaProcessDefinitionRepository.findOne(specification).orElse(null)
+    }
+
+    @Transactional(readOnly = true)
+    fun findDecisionDefinition(specification: Specification<CamundaDecisionDefinition>): CamundaDecisionDefinition? {
+        denyAuthorization()
+        return camundaDecisionDefinitionRepository.findOne(specification).orElse(null)
     }
 
     @Transactional(readOnly = true)

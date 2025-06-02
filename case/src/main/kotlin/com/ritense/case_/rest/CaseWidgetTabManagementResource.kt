@@ -44,8 +44,9 @@ class CaseWidgetTabManagementResource(
         @PathVariable caseDefinitionVersionTag: String,
         @PathVariable tabKey: String
     ): ResponseEntity<CaseWidgetTabDto> {
+        val caseDefinitionId = CaseDefinitionId(caseDefinitionKey, caseDefinitionVersionTag)
         val widgetTab =  runWithoutAuthorization {
-            caseWidgetTabService.getWidgetTab(CaseDefinitionId.of(caseDefinitionKey, caseDefinitionVersionTag), tabKey)
+            caseWidgetTabService.getWidgetTab(caseDefinitionId, tabKey)
         }
         return ResponseEntity.ofNullable(widgetTab)
     }
@@ -57,6 +58,8 @@ class CaseWidgetTabManagementResource(
         @PathVariable tabKey: String,
         @Valid @RequestBody caseWidgetTabDto: CaseWidgetTabDto
     ): ResponseEntity<CaseWidgetTabDto> {
+        val caseDefinitionId = CaseDefinitionId(caseDefinitionKey, caseDefinitionVersionTag)
+        caseWidgetTabDto.validate(caseDefinitionId)
         val widgetTab = runWithoutAuthorization {
             caseWidgetTabService.updateWidgetTab(caseWidgetTabDto)
         }

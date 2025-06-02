@@ -46,6 +46,7 @@ import com.ritense.valtimo.repository.CamundaSearchProcessInstanceRepository;
 import com.ritense.valtimo.repository.UserSettingsRepository;
 import com.ritense.valtimo.service.AuthorizedUsersServiceImpl;
 import com.ritense.valtimo.service.BpmnModelService;
+import com.ritense.valtimo.service.CamundaByteArrayService;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.CurrentUserServiceImpl;
@@ -141,7 +142,10 @@ public class ValtimoAutoConfiguration {
         final ValtimoProperties valtimoProperties,
         final AuthorizationService authorizationService,
         final CamundaExecutionRepository camundaExecutionRepository,
-        final ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker
+        final ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker,
+        final CamundaByteArrayService camundaByteArrayService,
+        final ApplicationEventPublisher applicationEventPublisher
+
     ) {
         return new CamundaProcessService(
             runtimeService,
@@ -154,7 +158,9 @@ public class ValtimoAutoConfiguration {
             valtimoProperties,
             authorizationService,
             camundaExecutionRepository,
-            processDefinitionCaseDefinitionLinker
+            processDefinitionCaseDefinitionLinker,
+            camundaByteArrayService,
+            applicationEventPublisher
         );
     }
 

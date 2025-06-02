@@ -23,16 +23,11 @@ import static org.springframework.http.ResponseEntity.ok;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ritense.document.domain.DocumentDefinition;
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
 import com.ritense.document.domain.impl.template.DocumentDefinitionTemplateRequestDto;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentStatisticService;
-import com.ritense.document.service.UndeployDocumentDefinitionService;
-import com.ritense.document.service.request.DocumentDefinitionCreateRequest;
-import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import com.ritense.document.service.result.DocumentVersionsResult;
-import com.ritense.document.service.result.UndeployDocumentDefinitionResult;
 import com.ritense.document.web.rest.DocumentDefinitionResource;
 import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import com.ritense.valtimo.contract.json.MapperSingleton;
@@ -42,22 +37,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionResource {
 
     private final DocumentDefinitionService documentDefinitionService;
-    private final UndeployDocumentDefinitionService undeployDocumentDefinitionService;
     private final DocumentStatisticService documentStatisticService;
 
     public JsonSchemaDocumentDefinitionResource(
         DocumentDefinitionService documentDefinitionService,
-        UndeployDocumentDefinitionService undeployDocumentDefinitionService,
         DocumentStatisticService documentStatisticService
     ) {
         this.documentDefinitionService = documentDefinitionService;
-        this.undeployDocumentDefinitionService = undeployDocumentDefinitionService;
         this.documentStatisticService = documentStatisticService;
     }
 
@@ -147,12 +138,5 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     @Override
     public ResponseEntity<List<UnassignedDocumentCountDto>> getUnassignedDocumentCount() {
         return ok(documentStatisticService.getUnassignedDocumentCountDtos());
-    }
-
-    @Override
-    public ResponseEntity<UndeployDocumentDefinitionResult> removeDocumentDefinition(String name) {
-        var result = runWithoutAuthorization(() -> undeployDocumentDefinitionService.undeploy(name));
-        var httpStatus = result.documentDefinitionName() != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
-        return ResponseEntity.status(httpStatus).body(result);
     }
 }

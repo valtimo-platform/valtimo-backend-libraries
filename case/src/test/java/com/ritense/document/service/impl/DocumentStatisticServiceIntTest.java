@@ -19,8 +19,8 @@ package com.ritense.document.service.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
+import com.ritense.BaseIntegrationTest;
 import com.ritense.authorization.AuthorizationContext;
-import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.service.DocumentStatisticService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
@@ -49,7 +49,7 @@ class DocumentStatisticServiceIntTest extends BaseIntegrationTest {
         definition = definition();
 
         var user = new ValtimoUserBuilder().username(USERNAME).email(USERNAME).id(USER_ID).build();
-        when(userManagementService.findByUserIdentifier(USER_ID)).thenReturn(user);
+        when(userManagementService.findByUsername(USER_ID)).thenReturn(user);
         when(userManagementService.findById(USER_ID)).thenReturn(user);
         when(userManagementService.getCurrentUser()).thenReturn(user);
     }

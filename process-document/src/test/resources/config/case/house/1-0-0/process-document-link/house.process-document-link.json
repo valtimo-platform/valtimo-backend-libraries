@@ -33,5 +33,10 @@
         "processDefinitionKey" : "single-user-task-process",
         "canInitializeDocument" : true,
         "startableByUser" : true
+    },
+    {
+        "processDefinitionKey" : "delete-processes",
+        "canInitializeDocument" : true,
+        "startableByUser" : true
     }
 ]

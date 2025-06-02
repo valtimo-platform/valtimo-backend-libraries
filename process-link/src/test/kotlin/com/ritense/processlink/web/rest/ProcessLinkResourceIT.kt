@@ -275,6 +275,8 @@ internal class ProcessLinkResourceIT @Autowired constructor(
                     )
                 )
                 .param("processDefinitionId", PROCESS_DEF_ID)
+                .param("canInitializeDocument", "true")
+                .param("startableByUser", "true")
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
@@ -284,7 +286,6 @@ internal class ProcessLinkResourceIT @Autowired constructor(
         runWithoutAuthorization {
             val deployedProcess = camundaProcessService.getProcessDefinition("test-process")
             assertEquals("CD:autodeploy:1.0.0", deployedProcess?.versionTag)
-
 
             val procdef = camundaProcessService.getProcessDefinition("test-process")
             val processCaseLink = processDefinitionCaseDefinitionService.findByProcessDefinitionId(ProcessDefinitionId(procdef.id))

@@ -17,6 +17,7 @@
 package com.ritense.valtimo;
 
 import com.ritense.outbox.OutboxService;
+import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.mail.MailSender;
 import com.ritense.valtimo.repository.CamundaSearchProcessInstanceRepository;
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.event.EventListener;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -42,6 +44,9 @@ public abstract class BaseIntegrationTest {
 
     @Autowired
     public RuntimeService runtimeService;
+
+    @MockitoBean
+    public AuditEventListener auditEventListener;
 
     @MockitoBean(answers = Answers.RETURNS_DEEP_STUBS)
     public UserManagementService userManagementService;
@@ -71,6 +76,11 @@ public abstract class BaseIntegrationTest {
 
     @AfterEach
     public void afterEach() {
+    }
+
+    public interface AuditEventListener {
+        @EventListener(classes = AuditEvent.class)
+        void handle(AuditEvent auditEvent);
     }
 
 }

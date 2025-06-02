@@ -80,12 +80,4 @@ public interface DocumentDefinitionResource {
 
     @GetMapping("/v1/document-definition/open/count")
     ResponseEntity<List<UnassignedDocumentCountDto>> getUnassignedDocumentCount();
-
-    @DeleteMapping(value = {
-        "/v1/document-definition/{name}", //Deprecated since v11
-        "/management/v1/document-definition/{name}"
-    })
-    ResponseEntity<UndeployDocumentDefinitionResult> removeDocumentDefinition(
-        @LoggableResource("documentDefinitionName") @PathVariable String name
-    );
 }

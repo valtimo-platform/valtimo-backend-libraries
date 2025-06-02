@@ -54,6 +54,7 @@ import com.ritense.plugin.web.rest.result.PluginProcessLinkResultDto
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valueresolver.ValueResolverService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.ConstraintViolationException
@@ -87,7 +88,8 @@ class PluginService(
     private val validator: Validator,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val encryptionService: EncryptionService,
-    private val environment: Environment
+    private val environment: Environment,
+    private val caseDefinitionChecker: CaseDefinitionChecker,
 ) {
 
     fun getObjectMapper(): ObjectMapper {
@@ -337,7 +339,7 @@ class PluginService(
         if (getProcessLinks(processLink.processDefinitionId, processLink.activityId).isNotEmpty()) {
             throw ValidationException("A process-link for this process-definition and activity already exists!")
         }
-
+        caseDefinitionChecker.assertCanUpdateGlobalConfiguration()
         val newProcessLink = PluginProcessLink(
             id = PluginProcessLinkId.newId(),
             processDefinitionId = processLink.processDefinitionId,
@@ -352,6 +354,7 @@ class PluginService(
 
     @Deprecated("Marked for removal since 10.6.0", ReplaceWith("processLinkService.updateProcessLink(i)"))
     fun updateProcessLink(processLink: PluginProcessLinkUpdateDto) {
+        caseDefinitionChecker.assertCanUpdateGlobalConfiguration()
         withLoggingContext(ProcessLink::class, processLink.id) {
             val link = pluginProcessLinkRepository.getById(
                 PluginProcessLinkId.existingId(processLink.id)
@@ -368,6 +371,7 @@ class PluginService(
     fun deleteProcessLink(
         @LoggableResource(resourceType = ProcessLink::class) id: UUID
     ) {
+        caseDefinitionChecker.assertCanUpdateGlobalConfiguration()
         pluginProcessLinkRepository.deleteById(PluginProcessLinkId.existingId(id))
     }
 

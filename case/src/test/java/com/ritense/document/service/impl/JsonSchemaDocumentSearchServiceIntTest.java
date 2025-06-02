@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ritense.document.BaseIntegrationTest;
+import com.ritense.BaseIntegrationTest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchema;
@@ -148,7 +148,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         });
 
         var user = new ValtimoUserBuilder().username(USERNAME).email(USERNAME).id(USER_ID).build();
-        when(userManagementService.findByUserIdentifier(USER_ID)).thenReturn(user);
+        when(userManagementService.findByUsername(USER_ID)).thenReturn(user);
         when(userManagementService.findById(USER_ID)).thenReturn(user);
         when(userManagementService.getCurrentUser()).thenReturn(user);
     }

@@ -20,12 +20,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.config.DocumentSpringContextHelper;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
-import com.ritense.document.domain.impl.listener.ApplicationReadyEventListenerImpl;
 import com.ritense.document.domain.impl.listener.DocumentRelatedFileSubmittedEventListenerImpl;
 import com.ritense.document.domain.impl.listener.RelatedJsonSchemaDocumentAvailableEventListenerImpl;
 import com.ritense.document.domain.impl.sequence.JsonSchemaDocumentDefinitionSequenceRecord;
 import com.ritense.document.exporter.JsonSchemaDocumentDefinitionExporter;
 import com.ritense.document.importer.JsonSchemaDocumentDefinitionImporter;
+import com.ritense.document.listener.DocumentDefinitionCaseEventListener;
 import com.ritense.document.repository.DocumentDefinitionRepository;
 import com.ritense.document.repository.DocumentDefinitionSequenceRepository;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
@@ -37,12 +37,10 @@ import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.DocumentStatisticService;
 import com.ritense.document.service.InternalCaseStatusService;
 import com.ritense.document.service.SearchFieldService;
-import com.ritense.document.service.UndeployDocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionSequenceGeneratorService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentSearchService;
 import com.ritense.document.service.impl.JsonSchemaDocumentService;
-import com.ritense.document.service.impl.UndeployJsonSchemaDocumentDefinitionService;
 import com.ritense.document.web.rest.DocumentDefinitionManagementResource;
 import com.ritense.document.web.rest.DocumentDefinitionResource;
 import com.ritense.document.web.rest.DocumentResource;
@@ -54,6 +52,7 @@ import com.ritense.document.web.rest.impl.JsonSchemaDocumentSearchResource;
 import com.ritense.outbox.OutboxService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import jakarta.persistence.EntityManager;
 import java.util.List;
@@ -108,12 +107,14 @@ public class DocumentAutoConfiguration {
     public JsonSchemaDocumentDefinitionService documentDefinitionService(
         final ResourceLoader resourceLoader,
         final DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository,
-        final AuthorizationService authorizationService
+        final AuthorizationService authorizationService,
+        final CaseDefinitionChecker caseDefinitionChecker
     ) {
         return new JsonSchemaDocumentDefinitionService(
             resourceLoader,
             documentDefinitionRepository,
-            authorizationService
+            authorizationService,
+            caseDefinitionChecker
         );
     }
 
@@ -135,7 +136,7 @@ public class DocumentAutoConfiguration {
         JsonSchemaDocumentDefinitionService jsonSchemaDocumentDefinitionService
     ) {
         return new JsonSchemaDocumentDefinitionImporter(
-          jsonSchemaDocumentDefinitionService
+            jsonSchemaDocumentDefinitionService
         );
     }
 
@@ -145,22 +146,6 @@ public class DocumentAutoConfiguration {
         final DocumentDefinitionSequenceRepository<JsonSchemaDocumentDefinitionSequenceRecord> documentDefinitionSequenceRepository
     ) {
         return new JsonSchemaDocumentDefinitionSequenceGeneratorService(documentDefinitionSequenceRepository);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(UndeployDocumentDefinitionService.class)
-    public UndeployJsonSchemaDocumentDefinitionService undeployDocumentDefinitionService(
-        final JsonSchemaDocumentDefinitionService documentDefinitionService,
-        final DocumentService documentService,
-        final ApplicationEventPublisher applicationEventPublisher,
-        final AuthorizationService authorizationService
-    ) {
-        return new UndeployJsonSchemaDocumentDefinitionService(
-            documentDefinitionService,
-            documentService,
-            applicationEventPublisher,
-            authorizationService
-        );
     }
 
     @Bean
@@ -186,14 +171,6 @@ public class DocumentAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(ApplicationReadyEventListenerImpl.class)
-    public ApplicationReadyEventListenerImpl applicationReadyEventListenerImpl(
-        final DocumentDefinitionService documentDefinitionService
-    ) {
-        return new ApplicationReadyEventListenerImpl(documentDefinitionService);
-    }
-
-    @Bean
     @ConditionalOnMissingBean(RelatedJsonSchemaDocumentAvailableEventListenerImpl.class)
     public RelatedJsonSchemaDocumentAvailableEventListenerImpl relatedDocumentAvailableEventListener(
         final DocumentService documentService
@@ -215,12 +192,10 @@ public class DocumentAutoConfiguration {
     @ConditionalOnMissingBean(DocumentDefinitionResource.class)
     public JsonSchemaDocumentDefinitionResource documentDefinitionResource(
         final DocumentDefinitionService documentDefinitionService,
-        final UndeployDocumentDefinitionService undeployDocumentDefinitionService,
         final DocumentStatisticService documentStatisticService
     ) {
         return new JsonSchemaDocumentDefinitionResource(
             documentDefinitionService,
-            undeployDocumentDefinitionService,
             documentStatisticService
         );
     }
@@ -260,6 +235,16 @@ public class DocumentAutoConfiguration {
     ) {
         return new DocumentModuleExceptionTranslator(
             adviceTraits.get(0)
+        );
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DocumentDefinitionCaseEventListener.class)
+    public DocumentDefinitionCaseEventListener documentDefinitionCaseEventListener(
+        DocumentDefinitionService documentDefinitionService
+    ) {
+        return new DocumentDefinitionCaseEventListener(
+            documentDefinitionService
         );
     }
 }

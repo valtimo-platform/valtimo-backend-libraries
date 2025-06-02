@@ -21,9 +21,9 @@ import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 import com.ritense.case_.repository.CaseWidgetTabRepository
 import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
 import com.ritense.case_.widget.CaseWidgetMapper
-import com.ritense.importer.ImportRequest
 import com.ritense.importer.ValtimoImportTypes.Companion.CASE_TAB
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
+import com.ritense.importer.ValtimoImportTypes.Companion.FORM
 import jakarta.validation.Validator
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -53,7 +53,7 @@ class CaseWidgetTabImporterTest(
 
     @Test
     fun `should depend on 'documentdefinition' and 'form' type`() {
-        assertThat(importer.dependsOn()).isEqualTo(setOf(DOCUMENT_DEFINITION, CASE_TAB))
+        assertThat(importer.dependsOn()).isEqualTo(setOf(DOCUMENT_DEFINITION, CASE_TAB, FORM))
     }
 
     @Test

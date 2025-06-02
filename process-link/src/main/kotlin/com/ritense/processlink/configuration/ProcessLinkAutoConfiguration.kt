@@ -24,10 +24,12 @@ import com.ritense.processlink.autodeployment.ProcessLinkDeploymentApplicationRe
 import com.ritense.processlink.domain.SupportedProcessLinkTypeHandler
 import com.ritense.processlink.exporter.ProcessLinkExporter
 import com.ritense.processlink.importer.ProcessLinkImporter
+import com.ritense.processlink.listener.ProcessDefinitionDeletedEventListener
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.processlink.security.config.ProcessLinkHttpSecurityConfigurer
 import com.ritense.processlink.service.CopyProcessLinkOnProcessDeploymentListener
+import com.ritense.processlink.service.ProcessDeploymentService
 import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.processlink.service.ProcessLinkActivityService
 import com.ritense.processlink.service.ProcessLinkService
@@ -35,6 +37,7 @@ import com.ritense.processlink.web.rest.ProcessLinkResource
 import com.ritense.processlink.web.rest.ProcessLinkTaskResource
 import com.ritense.valtimo.autoconfiguration.ValtimoCamundaAutoConfiguration
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.event.ProcessDefinitionDeployedEvent
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
@@ -75,12 +78,14 @@ class ProcessLinkAutoConfiguration {
         processLinkMappers: List<ProcessLinkMapper>,
         processLinkTypes: List<SupportedProcessLinkTypeHandler>,
         camundaRepositoryService: CamundaRepositoryService,
+        caseDefinitionChecker: CaseDefinitionChecker,
     ): ProcessLinkService {
         return ProcessLinkService(
             processLinkRepository,
             processLinkMappers,
             processLinkTypes,
-            camundaRepositoryService
+            camundaRepositoryService,
+            caseDefinitionChecker
         )
     }
 
@@ -124,14 +129,16 @@ class ProcessLinkAutoConfiguration {
         processLinkMappers: List<ProcessLinkMapper>,
         camundaProcessService: CamundaProcessService,
         processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
-        repositoryService: RepositoryService
+        repositoryService: RepositoryService,
+        processDeploymentService: ProcessDeploymentService
     ): ProcessLinkResource {
         return ProcessLinkResource(
             processLinkService,
             processLinkMappers,
             camundaProcessService,
             processDefinitionCaseDefinitionService,
-            repositoryService
+            repositoryService,
+            processDeploymentService
         )
     }
 
@@ -186,4 +193,24 @@ class ProcessLinkAutoConfiguration {
         objectMapper
     )
 
+    @Bean
+    @ConditionalOnMissingBean(ProcessDefinitionDeletedEventListener::class)
+    fun processDefinitionDeletedEventListener(
+        processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
+        processLinkService: ProcessLinkService
+    ) = ProcessDefinitionDeletedEventListener(processDefinitionCaseDefinitionService, processLinkService)
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessDeploymentService::class)
+    fun processDeploymentService(
+        camundaProcessService: CamundaProcessService,
+        processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
+        processLinkService: ProcessLinkService,
+    ): ProcessDeploymentService {
+        return ProcessDeploymentService(
+            camundaProcessService,
+            processDefinitionCaseDefinitionService,
+            processLinkService
+        )
+    }
 }

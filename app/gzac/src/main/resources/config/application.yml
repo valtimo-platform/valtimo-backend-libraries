@@ -174,7 +174,6 @@ valtimo:
         reminderTemplate: bpc-task-reminder
     oauth:
         tokenValidityInSeconds: 3600 # Token is valid 1 hour
-        identifier-field: username
 
     hardening:
         allowStacktraceOnIps:
@@ -209,10 +208,6 @@ valtimo:
                     - "*"
             paths:
                 - "/**"
-    openklant:
-        url: "http://localhost:8006"
-        clientId: "valtimo_client"
-        rsin: "051845623"
 
     genericTemplateName: "template-name"
     besluitDocumentRequired: true
@@ -235,7 +230,7 @@ valtimo:
             rabbitmq:
                 exchange: valtimo-events
                 delivery-timeout: "PT0.5S"
-            polling.rate: "PT1S"
+            polling.rate: "PT15M"
 
     authorization:
         dashboard:

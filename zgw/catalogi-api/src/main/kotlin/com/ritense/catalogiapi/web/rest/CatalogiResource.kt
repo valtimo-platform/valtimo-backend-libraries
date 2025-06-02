@@ -27,11 +27,14 @@ import com.ritense.catalogiapi.web.rest.result.StatustypeDto
 import com.ritense.catalogiapi.web.rest.result.ZaaktypeDto
 import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import org.semver4j.Semver
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -59,8 +62,13 @@ class CatalogiResource(
     @GetMapping("/v1/case-definition/{caseDefinitionKey}/zaaktype/roltype")
     fun getZaakRoltypes(
         @LoggableResource("caseDefinitionKey") @PathVariable(name = "caseDefinitionKey") caseDefinitionKey: String,
+        @RequestParam caseDefinitionVersionTag: String?,
     ): ResponseEntity<List<RoltypeDto>> {
-        val caseDefinitionId = activeCaseDefinitionService.getActiveCaseDefinition(caseDefinitionKey).id
+        val caseDefinitionId = if (caseDefinitionVersionTag.isNullOrEmpty()) {
+            activeCaseDefinitionService.getActiveCaseDefinition(caseDefinitionKey).id
+        } else {
+            CaseDefinitionId(caseDefinitionKey, Semver(caseDefinitionVersionTag))
+        }
         val zaakRolTypes = catalogiService.getRoltypes(caseDefinitionId).map {
             RoltypeDto(
                 it.url,

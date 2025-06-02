@@ -18,9 +18,11 @@ package com.ritense.processdocument.service
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
+import com.ritense.logging.withLoggingContext
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstance
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
@@ -41,6 +43,31 @@ class ProcessDocumentsService(
     private val repositoryService: RepositoryService,
     private val camundaRuntimeService: CamundaRuntimeService,
 ) {
+
+    fun deleteAllProcessInstancesForThisDocument(execution: DelegateExecution, reason: String) {
+        val thisProcessInstanceId = CamundaProcessInstanceId(execution.processInstanceId)
+        val documentId = processDocumentService.getDocumentId(thisProcessInstanceId, execution)
+        requireNotNull(documentId) {
+            "Failed to delete processes for document. Reason: current process has no association with a document."
+        }
+        withLoggingContext(JsonSchemaDocument::class, documentId.toString()) {
+            val processInstanceIds = associationService.findProcessDocumentInstances(documentId)
+                .map { it.processDocumentInstanceId().processInstanceId().toString() }
+            camundaProcessService.findProcessInstancesByIds(processInstanceIds.toSet())
+                .filter { it.rootProcessInstanceId == null || it.rootProcessInstanceId == it.processInstanceId }
+                .mapNotNull { processInstance ->
+                    try {
+                        camundaProcessService.deleteProcessInstanceById(processInstance.id, reason)
+                        null
+                    } catch (exception: Exception) {
+                        exception
+                    }
+                }
+                .toList()
+                .forEach { throw it }
+        }
+    }
+
     //TODO: Determine what to with this
     fun startProcessByProcessDefinitionKey(processDefinitionKey: String, businessKey: String) {
         startProcessByProcessDefinitionKey(processDefinitionKey, businessKey, null)

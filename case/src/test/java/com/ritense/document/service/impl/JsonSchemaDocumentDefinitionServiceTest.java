@@ -29,8 +29,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.ritense.BaseTest;
 import com.ritense.authorization.AuthorizationService;
-import com.ritense.document.BaseTest;
 import com.ritense.document.domain.impl.JsonSchema;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
@@ -59,7 +59,8 @@ class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
         documentDefinitionService = spy(new JsonSchemaDocumentDefinitionService(
             resourceLoader,
             jsonSchemaDocumentDefinitionRepository,
-            mock(AuthorizationService.class)
+            mock(AuthorizationService.class),
+            mock()
         ));
         definition = definitionOfForUnitTests("person");
     }
