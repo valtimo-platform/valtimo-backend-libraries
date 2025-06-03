@@ -96,13 +96,6 @@ class CamundaProcessDefinition(
     }
 
     fun getCaseDefinitionId(): CaseDefinitionId? {
-        return if (versionTag != null && versionTag.startsWith("CD:")) {
-            val caseDefinitionIdAsArray = versionTag.substringAfter("CD:").split(":")
-            CaseDefinitionId.of(caseDefinitionIdAsArray[0], caseDefinitionIdAsArray[1])
-        } else {
-            null
-        }
+        return CaseDefinitionId.fromProcessVersionTag(versionTag)
     }
-
-
 }

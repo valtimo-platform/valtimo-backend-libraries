@@ -126,7 +126,8 @@ class CaseDefinitionService(
                 caseDefinitionId = newSavedCaseDefinition.id,
                 caseDefinitionName = newSavedCaseDefinition.name,
                 basedOnCaseDefinitionId = basedOnCaseDefinitionId,
-                duplicate = basedOnCaseDefinitionId != null
+                duplicate = basedOnCaseDefinitionId != null,
+                copyFormDefinitionsAfterProcessLinks = true
             )
         )
         return newSavedCaseDefinition

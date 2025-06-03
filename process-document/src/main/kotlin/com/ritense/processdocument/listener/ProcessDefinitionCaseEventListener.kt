@@ -51,7 +51,11 @@ class ProcessDefinitionCaseEventListener(
                     val deploymentId = processService.deploy(
                         event.caseDefinitionId,
                         oldProcessDefinition.resourceName,
-                        processService.getBpmnModel(oldProcessDefinition).inputStream()
+                        processService.getBpmnModel(oldProcessDefinition).inputStream(),
+                        false,
+                        false,
+                        oldProcessDefinition.versionTag,
+                        oldProcessDefinition.id
                     )
                         ?.id
                         ?: error { "Failed to duplicate process definition ${oldProcessDefinition.key} for ${event.caseDefinitionId}" }
