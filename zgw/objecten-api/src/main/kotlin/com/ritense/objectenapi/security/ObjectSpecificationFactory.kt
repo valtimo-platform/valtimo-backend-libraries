@@ -20,11 +20,9 @@ import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.specification.AuthorizationSpecificationFactory
-import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.springframework.stereotype.Component
 
 @Component
-@SkipComponentScan
 class ObjectSpecificationFactory : AuthorizationSpecificationFactory<Object> {
 
     override fun create(
