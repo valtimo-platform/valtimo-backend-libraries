@@ -70,7 +70,7 @@ class ObjectenApiAutoConfiguration {
             logger.warn { "Objecten API authorization is disabled. This is a potential security issue. The option to disable this will be removed with Valtimo 13." }
         }
         return ObjectenApiClient(
-            restClientBuilder,
+            webclientBuilder,
             outboxService,
             objectMapper,
             authorizationService,
