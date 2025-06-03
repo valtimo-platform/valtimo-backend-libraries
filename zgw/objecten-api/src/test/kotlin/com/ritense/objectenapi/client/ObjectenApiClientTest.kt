@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath
+import com.ritense.authorization.AuthorizationService
 import com.ritense.objectenapi.ObjectenApiAuthentication
 import com.ritense.objectenapi.event.ObjectCreated
 import com.ritense.objectenapi.event.ObjectDeleted
@@ -35,6 +36,7 @@ import com.ritense.valtimo.contract.json.MapperSingleton
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions
+import org.camunda.bpm.engine.AuthorizationService
 import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert
 import org.junit.jupiter.api.AfterAll
@@ -70,6 +72,8 @@ internal class ObjectenApiClientTest {
 
     lateinit var outboxService: OutboxService
 
+    lateinit var authorizationService: AuthorizationService
+
     @BeforeAll
     fun setUp() {
         mockApi = MockWebServer()
@@ -91,7 +95,7 @@ internal class ObjectenApiClientTest {
     @Test
     fun `should send get single object request and parse response`() {
         val webclientBuilder = WebClient.builder()
-        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper, authorizationService, false)
 
         val responseBody = """
             {
@@ -159,7 +163,7 @@ internal class ObjectenApiClientTest {
     @Test
     fun `should send outbox message on retrieving object`() {
         val webclientBuilder = WebClient.builder()
-        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper, authorizationService, false)
 
         val responseBody = """
             {
@@ -215,7 +219,7 @@ internal class ObjectenApiClientTest {
     @Test
     fun `should not send outbox message on failing to retrieve object`() {
         val webclientBuilder = WebClient.builder()
-        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper, authorizationService, false)
 
         mockApi.enqueue(mockResponse("").setResponseCode(400))
 
@@ -240,7 +244,7 @@ internal class ObjectenApiClientTest {
     @Test
     fun `should get objectslist`() {
         val webclientBuilder = WebClient.builder()
-        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper, authorizationService, false)
 
         val responseBody = """
             {
@@ -317,7 +321,7 @@ internal class ObjectenApiClientTest {
     @Test
     fun `should send outbox message when getting objects by object type url`() {
         val webclientBuilder = WebClient.builder()
-        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper, authorizationService, false)
 
         val responseBody = """
             {
@@ -381,7 +385,7 @@ internal class ObjectenApiClientTest {
     @Test
     fun `should not send outbox message when failing to get objects by object type url`() {
         val webclientBuilder = WebClient.builder()
-        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper, authorizationService, false)
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
@@ -408,7 +412,7 @@ internal class ObjectenApiClientTest {
     @Test
     fun `should send outbox message when getting objects by object type url with search params`() {
         val webclientBuilder = WebClient.builder()
-        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper, authorizationService, false)
 
         val responseBody = """
             {
@@ -473,7 +477,7 @@ internal class ObjectenApiClientTest {
     @Test
     fun `should not send outbox message when failing to get objects by object type url with search params`() {
         val webclientBuilder = WebClient.builder()
-        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper, authorizationService, false)
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
@@ -502,7 +506,7 @@ internal class ObjectenApiClientTest {
     @Test
     fun `should send outbox message on creating object`() {
         val webclientBuilder = WebClient.builder()
-        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper, authorizationService, false)
 
         val responseBody = """
             {
@@ -568,7 +572,7 @@ internal class ObjectenApiClientTest {
     @Test
     fun `should not send outbox message on failing to create object`() {
         val webclientBuilder = WebClient.builder()
-        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper, authorizationService, false)
 
         mockApi.enqueue(mockResponse("").setResponseCode(400))
 
@@ -602,7 +606,7 @@ internal class ObjectenApiClientTest {
     @Test
     fun `should send post request when creating object`() {
         val webclientBuilder = WebClient.builder()
-        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper, authorizationService, false)
 
         val responseBody = """
             {
@@ -661,7 +665,7 @@ internal class ObjectenApiClientTest {
     @Test
     fun `should send post request with uuid when uuid has been provided when creating object`() {
         val webclientBuilder = WebClient.builder()
-        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper, authorizationService, false)
 
         val responseBody = """
             {
@@ -722,7 +726,7 @@ internal class ObjectenApiClientTest {
     @Test
     fun `should send patch request`() {
         val webclientBuilder = WebClient.builder()
-        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper, authorizationService, false)
 
         val responseBody = """
             {
@@ -814,7 +818,7 @@ internal class ObjectenApiClientTest {
     @Test
     fun `should send outbox message on patching object`() {
         val webclientBuilder = WebClient.builder()
-        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper, authorizationService, false)
 
         val responseBody = """
             {
@@ -880,7 +884,7 @@ internal class ObjectenApiClientTest {
     @Test
     fun `should not send outbox message on failing to patch object`() {
         val webclientBuilder = WebClient.builder()
-        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper, authorizationService, false)
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
@@ -914,7 +918,7 @@ internal class ObjectenApiClientTest {
     @Test
     fun `should send outbox message on updating object`() {
         val webclientBuilder = WebClient.builder()
-        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper, authorizationService, false)
 
         val responseBody = """
             {
@@ -980,7 +984,7 @@ internal class ObjectenApiClientTest {
     @Test
     fun `should not send outbox message on failing to update object`() {
         val webclientBuilder = WebClient.builder()
-        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper, authorizationService, false)
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
@@ -1014,7 +1018,7 @@ internal class ObjectenApiClientTest {
     @Test
     fun `should send outbox message on deleting object`() {
         val webclientBuilder = WebClient.builder()
-        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper, authorizationService, false)
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
@@ -1040,7 +1044,7 @@ internal class ObjectenApiClientTest {
     @Test
     fun `should not send outbox message on failing to delete object`() {
         val webclientBuilder = WebClient.builder()
-        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper, authorizationService, false)
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 

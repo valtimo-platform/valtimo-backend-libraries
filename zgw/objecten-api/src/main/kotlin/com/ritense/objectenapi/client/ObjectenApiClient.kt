@@ -17,6 +17,8 @@
 package com.ritense.objectenapi.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.objectenapi.ObjectenApiAuthentication
 import com.ritense.objectenapi.event.ObjectCreated
 import com.ritense.objectenapi.event.ObjectDeleted
@@ -24,6 +26,8 @@ import com.ritense.objectenapi.event.ObjectPatched
 import com.ritense.objectenapi.event.ObjectUpdated
 import com.ritense.objectenapi.event.ObjectViewed
 import com.ritense.objectenapi.event.ObjectsListed
+import com.ritense.objectenapi.security.Object
+import com.ritense.objectenapi.security.ObjectActionProvider
 import com.ritense.outbox.OutboxService
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
@@ -34,8 +38,9 @@ import java.net.URI
 class ObjectenApiClient(
     private val webclientBuilder: WebClient.Builder,
     private val outboxService: OutboxService,
-    private val objectMapper: ObjectMapper
-
+    private val objectMapper: ObjectMapper,
+    private val authorizationService: AuthorizationService,
+    private val authorizationEnabled: Boolean,
 ) {
 
     fun getObject(
@@ -60,6 +65,16 @@ class ObjectenApiClient(
                     responseBody.type.toString().replace(HOST_DOCKER_INTERNAL, "localhost")
                 )
         ) else responseBody
+
+        if (authorizationEnabled) {
+            authorizationService.requirePermission(
+                EntityAuthorizationRequest(
+                    Object::class.java,
+                    ObjectActionProvider.VIEW,
+                    Object()
+                )
+            )
+        }
 
         if (result.hasBody()) {
             outboxService.send {
@@ -109,6 +124,16 @@ class ObjectenApiClient(
             .retrieve()
             .toEntity(ObjectsList::class.java)
             .block()
+
+        if (authorizationEnabled) {
+            authorizationService.requirePermission(
+                EntityAuthorizationRequest(
+                    Object::class.java,
+                    ObjectActionProvider.VIEW_LIST,
+                    Object()
+                )
+            )
+        }
 
         if (result.hasBody()) {
             outboxService.send {
@@ -160,6 +185,16 @@ class ObjectenApiClient(
             .toEntity(ObjectsList::class.java)
             .block()
 
+        if (authorizationEnabled) {
+            authorizationService.requirePermission(
+                EntityAuthorizationRequest(
+                    Object::class.java,
+                    ObjectActionProvider.VIEW_LIST,
+                    Object()
+                )
+            )
+        }
+
         if (result.hasBody()) {
             outboxService.send {
                 ObjectsListed(
@@ -176,6 +211,16 @@ class ObjectenApiClient(
         objectsApiUrl: URI,
         objectRequest: ObjectRequest
     ): ObjectWrapper {
+        if (authorizationEnabled) {
+            authorizationService.requirePermission(
+                EntityAuthorizationRequest(
+                    Object::class.java,
+                    ObjectActionProvider.CREATE,
+                    Object()
+                )
+            )
+        }
+
         val objectRequestCorrectedHost = if (objectRequest.type.host == "localhost") {
             objectRequest.copy(
                 type = UriComponentsBuilder
@@ -219,6 +264,16 @@ class ObjectenApiClient(
         objectUrl: URI,
         objectRequest: ObjectRequest
     ): ObjectWrapper {
+        if (authorizationEnabled) {
+            authorizationService.requirePermission(
+                EntityAuthorizationRequest(
+                    Object::class.java,
+                    ObjectActionProvider.MODIFY,
+                    Object()
+                )
+            )
+        }
+
         val objectRequestCorrectedHost = if (objectRequest.type.host == "localhost") {
             objectRequest.copy(
                 type = UriComponentsBuilder
@@ -260,6 +315,16 @@ class ObjectenApiClient(
         objectUrl: URI,
         objectRequest: ObjectRequest
     ): ObjectWrapper {
+        if (authorizationEnabled) {
+            authorizationService.requirePermission(
+                EntityAuthorizationRequest(
+                    Object::class.java,
+                    ObjectActionProvider.MODIFY,
+                    Object()
+                )
+            )
+        }
+
         val result = webclientBuilder
             .clone()
             .filter(authentication)
@@ -285,6 +350,16 @@ class ObjectenApiClient(
     }
 
     fun deleteObject(authentication: ObjectenApiAuthentication, objectUrl: URI): HttpStatus {
+        if (authorizationEnabled) {
+            authorizationService.requirePermission(
+                EntityAuthorizationRequest(
+                    Object::class.java,
+                    ObjectActionProvider.DELETE,
+                    Object()
+                )
+            )
+        }
+
         val result = webclientBuilder
             .clone()
             .filter(authentication)

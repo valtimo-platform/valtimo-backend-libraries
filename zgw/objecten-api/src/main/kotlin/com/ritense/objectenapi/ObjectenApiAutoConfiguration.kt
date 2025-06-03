@@ -17,11 +17,13 @@
 package com.ritense.objectenapi
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.authorization.AuthorizationService
 import com.ritense.form.service.FormDefinitionService
 import com.ritense.objectenapi.client.ObjectenApiClient
 import com.ritense.objectenapi.listener.ZaakObjectListener
 import com.ritense.objectenapi.management.ErrorObjectManagementInfoProvider
 import com.ritense.objectenapi.management.ObjectManagementInfoProvider
+import com.ritense.objectenapi.security.ObjectSpecificationFactory
 import com.ritense.objectenapi.security.ObjectenApiHttpSecurityConfigurer
 import com.ritense.objectenapi.service.ZaakObjectDataResolver
 import com.ritense.objectenapi.service.ZaakObjectService
@@ -32,6 +34,9 @@ import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.zakenapi.ZaakUrlProvider
+import mu.KotlinLogging
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -57,9 +62,20 @@ class ObjectenApiAutoConfiguration {
     fun objectenApiClient(
         webclientBuilder: WebClient.Builder,
         outboxService: OutboxService,
-        objectMapper: ObjectMapper
+        objectMapper: ObjectMapper,
+        authorizationService: AuthorizationService,
+        @Value("\${valtimo.authorization.objectenapi.enabled:true}") authorizationEnabled: Boolean
     ): ObjectenApiClient {
-        return ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+        if (!authorizationEnabled) {
+            logger.warn { "Objecten API authorization is disabled. This is a potential security issue. The option to disable this will be removed with Valtimo 13." }
+        }
+        return ObjectenApiClient(
+            webclientBuilder,
+            outboxService,
+            objectMapper,
+            authorizationService,
+            authorizationEnabled
+        )
     }
 
     @Bean
@@ -133,5 +149,15 @@ class ObjectenApiAutoConfiguration {
     @ConditionalOnMissingBean(ObjectManagementInfoProvider::class)
     fun errorObjectManagementInfoProvider(): ObjectManagementInfoProvider {
         return ErrorObjectManagementInfoProvider()
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ObjectSpecificationFactory::class)
+    fun objectSpecificationFactory(): ObjectSpecificationFactory {
+        return ObjectSpecificationFactory()
+    }
+
+    companion object {
+        val logger = KotlinLogging.logger {}
     }
 }
