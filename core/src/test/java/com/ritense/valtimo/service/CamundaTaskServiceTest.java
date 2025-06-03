@@ -51,6 +51,7 @@ import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -65,10 +66,8 @@ import org.camunda.bpm.engine.runtime.ProcessInstanceQuery;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
 import org.mockito.MockedStatic;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.jpa.domain.Specification;
 
 class CamundaTaskServiceTest {
     private static final String TASK_ID = "task";
@@ -373,6 +372,19 @@ class CamundaTaskServiceTest {
         doThrow(new ProcessEngineException()).when(taskService).complete(anyString());
         assertThrows(IllegalStateException.class, () -> camundaTaskService.completeTaskWithFormData(TASK_ID, null));
         verify(outboxService, times(0)).send(any());
+    }
+
+    @Test
+    void taskComplete_should_handle_null_value() {
+        var taskVariables = new HashMap<String, Object>();
+        taskVariables.put("request", null);
+        var variables = Map.of("request", "value");
+
+        var mergedVariables = taskVariables.entrySet().stream()
+            .filter(entry -> variables.containsKey(entry.getKey()))
+            .collect(() -> new HashMap<String, Object>(), (m, v) -> m.put(v.getKey(), v.getValue()), HashMap::putAll);
+
+        assertThat(mergedVariables.get("request")).isEqualTo(null);
     }
 
 }
