@@ -35,6 +35,7 @@ import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.contract.mail.MailSender;
 import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSettingsService;
 import com.ritense.valtimo.helper.CamundaCollectionHelper;
+import com.ritense.valtimo.helper.CamundaDeploymentSourceHelper;
 import com.ritense.valtimo.helper.DelegateTaskHelper;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.web.rest.error.CamundaExceptionTranslator;
@@ -152,9 +153,10 @@ public class CamundaAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ProcessDefinitionDeployedEventPublisher.class)
     public ProcessDefinitionDeployedEventPublisher bpmnPropertyListener(
-        final ApplicationEventPublisher applicationEventPublisher
+        final ApplicationEventPublisher applicationEventPublisher,
+        final CamundaDeploymentSourceHelper camundaDeploymentSourceHelper
     ) {
-        return new ProcessDefinitionDeployedEventPublisher(applicationEventPublisher);
+        return new ProcessDefinitionDeployedEventPublisher(applicationEventPublisher, camundaDeploymentSourceHelper);
     }
 
     @Order(Ordered.HIGHEST_PRECEDENCE)

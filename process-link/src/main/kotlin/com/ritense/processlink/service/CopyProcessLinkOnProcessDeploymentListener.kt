@@ -16,30 +16,34 @@
 
 package com.ritense.processlink.service
 
+import com.ritense.processlink.domain.ProcessLinksCopiedEvent
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.valtimo.camunda.domain.CamundaDeploymentSource
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.event.ProcessDefinitionDeployedEvent
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.camunda.bpm.model.bpmn.instance.FlowNode
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.event.EventListener
 import java.util.UUID
 
 class CopyProcessLinkOnProcessDeploymentListener(
-    private val processLinkRepository: ProcessLinkRepository
+    private val processLinkRepository: ProcessLinkRepository,
+    private val applicationEventPublisher: ApplicationEventPublisher
 ) {
 
     @EventListener(ProcessDefinitionDeployedEvent::class)
     fun copyProcessLinks(event: ProcessDefinitionDeployedEvent) {
-        if (event.source == CamundaDeploymentSource.SKIP_PROCESS_LINKS_COPY.toString()) {
+        if (event.source.skipProcessLinksCopy == true) {
             return
         }
 
-        val previousProcessDefinitionId = event.previousProcessDefinitionId
+        val originalProcessDefinitionId = event.source.originalProcessDefinitionId ?: event.previousProcessDefinitionId
 
-        if (previousProcessDefinitionId != null) {
+        if (originalProcessDefinitionId != null) {
             val modelInstance = event.processDefinitionModelInstance
 
-            val newLinks = processLinkRepository.findByProcessDefinitionId(previousProcessDefinitionId)
+            val newLinks = processLinkRepository.findByProcessDefinitionId(originalProcessDefinitionId)
                 .filter { link -> modelInstance.getModelElementById<FlowNode>(link.activityId) != null }
                 .filter { link ->
                     processLinkRepository.findByProcessDefinitionIdAndActivityId(
@@ -48,12 +52,22 @@ class CopyProcessLinkOnProcessDeploymentListener(
                     ).isEmpty()
                 }
                 .onEach { link ->
-                    logger.debug { "Copying process link to newly deployed process with id ${event.processDefinitionId}. Activity: '${link.activityId}', type: '${link.processLinkType}'." }
+                    logger.debug { "Copying process link from original process with id ${originalProcessDefinitionId} to newly deployed process with id ${event.processDefinitionId}. Activity: '${link.activityId}', type: '${link.processLinkType}'." }
                 }.map { link ->
                     link.copy(id = UUID.randomUUID(), processDefinitionId = event.processDefinitionId)
                 }
 
             processLinkRepository.saveAll(newLinks)
+
+            applicationEventPublisher.publishEvent(
+                ProcessLinksCopiedEvent(
+                    newLinks,
+                    event.processDefinitionId,
+                    event.caseDefinitionId,
+                    event.source.originalProcessDefinitionId,
+                    CaseDefinitionId.fromProcessVersionTag(event.source.originalVersionTag),
+                )
+            )
         }
     }
 

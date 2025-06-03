@@ -43,6 +43,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import com.ritense.valtimo.helper.CamundaDeploymentSourceHelper;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
@@ -107,6 +108,9 @@ class CamundaProcessServiceTest {
     @Mock
     private ApplicationEventPublisher applicationEventPublisher;
 
+    @Mock
+    private CamundaDeploymentSourceHelper camundaDeploymentSourceHelper;
+
     private CamundaHistoryService historyService = mock(CamundaHistoryService.class, RETURNS_DEEP_STUBS);
 
     @BeforeEach
@@ -129,7 +133,8 @@ class CamundaProcessServiceTest {
             camundaExecutionRepository,
             processDefinitionCaseDefinitionLinker,
             camundaByteArrayService,
-            applicationEventPublisher
+            applicationEventPublisher,
+            camundaDeploymentSourceHelper
         );
 
         //when
@@ -175,7 +180,8 @@ class CamundaProcessServiceTest {
             camundaExecutionRepository,
             processDefinitionCaseDefinitionLinker,
             camundaByteArrayService,
-            applicationEventPublisher
+            applicationEventPublisher,
+            camundaDeploymentSourceHelper
         );
 
         //when
