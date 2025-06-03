@@ -49,6 +49,7 @@ import com.ritense.valtimo.exception.FileExtensionNotSupportedException;
 import com.ritense.valtimo.exception.NoFileExtensionFoundException;
 import com.ritense.valtimo.exception.ProcessDefinitionNotFoundException;
 import com.ritense.valtimo.exception.ProcessNotDeployableException;
+import com.ritense.valtimo.helper.CamundaDeploymentSourceHelper;
 import com.ritense.valtimo.service.util.FormUtils;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
@@ -122,6 +123,8 @@ public class CamundaProcessService {
 
     private final CamundaExecutionRepository camundaExecutionRepository;
 
+    private final CamundaDeploymentSourceHelper camundaDeploymentSourceHelper;
+
     public CamundaProcessService(
         RuntimeService runtimeService,
         CamundaRuntimeService camundaRuntimeService,
@@ -135,7 +138,8 @@ public class CamundaProcessService {
         CamundaExecutionRepository camundaExecutionRepository,
         ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker,
         CamundaByteArrayService camundaByteArrayService,
-        ApplicationEventPublisher applicationEventPublisher
+        ApplicationEventPublisher applicationEventPublisher,
+        CamundaDeploymentSourceHelper camundaDeploymentSourceHelper
     ) {
         this.runtimeService = runtimeService;
         this.camundaRuntimeService = camundaRuntimeService;
@@ -150,6 +154,7 @@ public class CamundaProcessService {
         this.processDefinitionCaseDefinitionLinker = processDefinitionCaseDefinitionLinker;
         this.camundaByteArrayService = camundaByteArrayService;
         this.applicationEventPublisher = applicationEventPublisher;
+        this.camundaDeploymentSourceHelper = camundaDeploymentSourceHelper;
     }
 
     public CamundaProcessDefinition findProcessDefinitionById(String processDefinitionId) {
@@ -479,7 +484,9 @@ public class CamundaProcessService {
         String fileName,
         ByteArrayInputStream fileInput,
         boolean skipProcessLinksCopy,
-        boolean skipIsDeployableCheck
+        boolean skipIsDeployableCheck,
+        @Nullable String originalVersionTag,
+        @Nullable String originalProcessDefinitionId
     ) throws ProcessNotDeployableException, FileExtensionNotSupportedException, NoFileExtensionFoundException {
         denyAuthorization();
 
@@ -517,11 +524,14 @@ public class CamundaProcessService {
             var deploymentBuilder = repositoryService.createDeployment()
                 .addModelInstance(fileName, bpmnModel);
 
-            if (skipProcessLinksCopy) {
-                deploymentBuilder.source(CamundaDeploymentSource.SKIP_PROCESS_LINKS_COPY.toString());
-            }
+            CamundaDeploymentSource deploymentSource = new CamundaDeploymentSource(skipProcessLinksCopy, originalVersionTag, originalProcessDefinitionId);
+
+            String deploymentSourceUuid = camundaDeploymentSourceHelper.store(deploymentSource);
+
+            deploymentBuilder.source(deploymentSourceUuid);
 
             DeploymentWithDefinitions deployment = deploymentBuilder.deployWithResult();
+
             if (caseDefinitionId != null) {
                 processDefinitionCaseDefinitionLinker.link(
                     caseDefinitionId,
@@ -581,8 +591,21 @@ public class CamundaProcessService {
             fileName,
             fileInput,
             false,
-            false
+            false,
+            null,
+            null
         );
+    }
+
+    @Transactional
+    public DeploymentWithDefinitions deploy(
+        CaseDefinitionId caseDefinitionId,
+        String fileName,
+        ByteArrayInputStream fileInput,
+        boolean skipProcessLinksCopy,
+        boolean skipIsDeployableCheck
+    ) throws ProcessNotDeployableException, FileExtensionNotSupportedException, NoFileExtensionFoundException {
+        return deploy(caseDefinitionId, fileName, fileInput, skipProcessLinksCopy, skipIsDeployableCheck, null, null);
     }
 
     private boolean isProcessDefinitionPreviouslyDeployed(
