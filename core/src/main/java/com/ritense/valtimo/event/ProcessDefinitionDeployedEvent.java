@@ -17,6 +17,7 @@
 package com.ritense.valtimo.event;
 
 import com.ritense.valtimo.camunda.domain.CamundaDeploymentSource;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import jakarta.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -29,36 +30,28 @@ public class ProcessDefinitionDeployedEvent {
     private final String previousProcessDefinitionId;
     private final String processDefinitionId;
     private final String processDefinitionKey;
+    @Nullable
+    private final CaseDefinitionId caseDefinitionId;
     private final BpmnModelInstance processDefinitionModelInstance;
-    private final String source;
+    private final CamundaDeploymentSource source;
 
-    public ProcessDefinitionDeployedEvent(DeploymentEntity deployment, ProcessDefinitionEntity processDefinition) {
+    public ProcessDefinitionDeployedEvent(
+        DeploymentEntity deployment,
+        ProcessDefinitionEntity processDefinition,
+        CamundaDeploymentSource source) {
+
         this.previousProcessDefinitionId = processDefinition.getPreviousProcessDefinitionId();
         this.processDefinitionId = processDefinition.getId();
         this.processDefinitionKey = processDefinition.getKey();
-        String deploymentSource = deployment.getSource();
-
-        if (deploymentSource != null) {
-            this.source = resolveSource(deploymentSource);
-        } else {
-            this.source = "";
-        }
+        this.caseDefinitionId = CaseDefinitionId.fromProcessVersionTag(processDefinition.getVersionTag());
+        this.source = source;
 
         var processDefinitionResource = deployment.getResource(processDefinition.getResourceName());
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(processDefinitionResource.getBytes())) {
             this.processDefinitionModelInstance = Bpmn.readModelFromStream(inputStream);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to parse BPMN model from deployment", e);
         }
-    }
-
-    private String resolveSource(String source) {
-        for (CamundaDeploymentSource deploymentSource : CamundaDeploymentSource.getEntries()) {
-            if (deploymentSource.getValue().equals(source)) {
-                return source;
-            }
-        }
-        return "";
     }
 
     @Nullable
@@ -74,7 +67,17 @@ public class ProcessDefinitionDeployedEvent {
         return processDefinitionKey;
     }
 
-    public String getSource() {
+    @Nullable
+    public CaseDefinitionId getCaseDefinitionId() {
+        return caseDefinitionId;
+    }
+
+    @Nullable
+    public CaseDefinitionId getPreviousCaseDefinitionId() {
+        return CaseDefinitionId.fromProcessVersionTag(this.getSource().getOriginalVersionTag());
+    }
+
+    public CamundaDeploymentSource getSource() {
         return source;
     }
 

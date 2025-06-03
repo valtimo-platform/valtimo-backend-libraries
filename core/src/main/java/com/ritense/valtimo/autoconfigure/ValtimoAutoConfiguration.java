@@ -39,6 +39,7 @@ import com.ritense.valtimo.contract.authentication.CurrentUserService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.helper.ActivityHelper;
+import com.ritense.valtimo.helper.CamundaDeploymentSourceHelper;
 import com.ritense.valtimo.helper.DelegateTaskHelper;
 import com.ritense.valtimo.processdefinition.repository.ProcessDefinitionPropertiesRepository;
 import com.ritense.valtimo.repository.CamundaReportingRepository;
@@ -144,8 +145,8 @@ public class ValtimoAutoConfiguration {
         final CamundaExecutionRepository camundaExecutionRepository,
         final ProcessDefinitionCaseDefinitionLinker processDefinitionCaseDefinitionLinker,
         final CamundaByteArrayService camundaByteArrayService,
-        final ApplicationEventPublisher applicationEventPublisher
-
+        final ApplicationEventPublisher applicationEventPublisher,
+        final CamundaDeploymentSourceHelper camundaDeploymentSourceHelper
     ) {
         return new CamundaProcessService(
             runtimeService,
@@ -160,7 +161,8 @@ public class ValtimoAutoConfiguration {
             camundaExecutionRepository,
             processDefinitionCaseDefinitionLinker,
             camundaByteArrayService,
-            applicationEventPublisher
+            applicationEventPublisher,
+            camundaDeploymentSourceHelper
         );
     }
 
