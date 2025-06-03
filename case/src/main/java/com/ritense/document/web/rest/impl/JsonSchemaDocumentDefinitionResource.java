@@ -58,7 +58,7 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
         Pageable pageable
     ) {
         if (active) {
-            return ok(documentDefinitionService.findAllActive(fixPageable(pageable)));
+            return ok(documentDefinitionService.findAll(fixPageable(pageable)));
         } else {
             return ok(documentDefinitionService.findAll(fixPageable(pageable)));
         }
@@ -88,7 +88,7 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     ) {
         return ok(runWithoutAuthorization(() -> {
             if (active) {
-                return documentDefinitionService.findAllActiveForManagement(fixPageable(pageable));
+                return documentDefinitionService.findAllForManagement(fixPageable(pageable));
             } else {
                 return documentDefinitionService.findAllForManagement(fixPageable(pageable));
             }

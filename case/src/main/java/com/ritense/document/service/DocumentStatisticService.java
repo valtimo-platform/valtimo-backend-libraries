@@ -52,7 +52,7 @@ public class DocumentStatisticService {
             ),
             null
         );
-        return documentDefinitionService.findAllActive(Pageable.unpaged())
+        return documentDefinitionService.findAll(Pageable.unpaged())
             .map(documentDefinition -> getUnassignedDocumentCountDto(documentDefinition.id().name(), authSpec))
             .toList();
     }
