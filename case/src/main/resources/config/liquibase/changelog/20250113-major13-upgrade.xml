@@ -83,61 +83,26 @@
                 case_definition_version_tag
             )
             select
-                mdd.json_schema->>'title',
+                jsdd.json_schema->>'title',
                 cd.can_have_assignee,
                 cd.auto_assign_tasks,
                 cd.has_external_start_form,
                 cd.external_start_form_url,
                 cd.external_start_form_description,
-                mdd.document_definition_name,
-                '000000.' || LPAD(mdd.document_definition_version::text, 6, '0') || '.000000-${environmentName}'
-            from (
-                     select distinct dd.*
-                     from json_schema_document_definition dd
-                          join json_schema_document jd
-                               on jd.document_definition_name = dd.document_definition_name
-                               and jd.document_definition_version = dd.document_definition_version
-
-                     union
-
-                     select dd1.*
-                     from json_schema_document_definition dd1
-                     where dd1.document_definition_version = (
-                         select max(dd2.document_definition_version)
-                         from json_schema_document_definition dd2
-                         where dd1.document_definition_name = dd2.document_definition_name
-                     )
-                 ) as mdd
-                     left join case_definition cd
-                               on mdd.document_definition_name = cd.case_definition_key
+                jsdd.document_definition_name,
+                '000000.' || LPAD(jsdd.document_definition_version::text, 6, '0') || '.000000-${environmentName}'
+            from json_schema_document_definition jsdd
+            left join case_definition cd
+                on jsdd.document_definition_name = cd.case_definition_key
         </sql>
     </changeSet>
 
     <changeSet id="1.4" author="Ritense">
         <sql>
             update json_schema_document_definition as ddu
-            set case_definition_version_tag = '000000.' || LPAD(mdd.document_definition_version::text, 6, '0') || '.000000-${environmentName}',
+            set case_definition_version_tag = '000000.' || LPAD(ddu.document_definition_version::text, 6, '0') || '.000000-${environmentName}',
                 case_definition_key = ddu.document_definition_name
-            from (
-                 select distinct dd.*
-                 from json_schema_document_definition dd
-                      join json_schema_document jd
-                           on jd.document_definition_name = dd.document_definition_name
-                           and jd.document_definition_version = dd.document_definition_version
-
-                 union
-
-                 select dd1.*
-                 from json_schema_document_definition dd1
-                 where dd1.document_definition_version = (
-                     select max(dd2.document_definition_version)
-                     from json_schema_document_definition dd2
-                     where dd1.document_definition_name = dd2.document_definition_name
-                 )
-             ) as mdd
-            where ddu.document_definition_name = mdd.document_definition_name
-            and ddu.document_definition_version = mdd.document_definition_version
-            and ddu.case_definition_version_tag is null
+            where ddu.case_definition_version_tag is null
         </sql>
     </changeSet>
 

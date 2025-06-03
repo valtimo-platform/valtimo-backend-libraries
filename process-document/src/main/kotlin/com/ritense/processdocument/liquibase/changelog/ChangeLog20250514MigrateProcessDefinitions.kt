@@ -32,6 +32,7 @@ import org.camunda.bpm.model.bpmn.instance.Process
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.sql.Timestamp
+import java.time.Instant
 import java.util.UUID
 import java.util.function.Consumer
 
@@ -59,17 +60,20 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
             val documentDefinitionVersion = result.getInt("document_definition_version")
             val caseDefinitionVersionTag =
                 translateDocumentDefVersionToCaseDefVersionTag(documentDefinitionVersion)
+            val caseDefinitionVersionTagForDatabase =
+                translateDocumentDefVersionToCaseDefVersionTagForDatabase(documentDefinitionVersion)
             val processDefinitionKey = result.getString("camunda_process_definition_key")
             val canInitializeDocument = result.getBoolean("can_initialize_document")
             val startableByUser = result.getBoolean("startable_by_user")
 
-            migrateProcessDefinition(
+            transformProcessDefinitionData(
                 connection,
                 caseDefinitionKey,
                 caseDefinitionVersionTag,
+                caseDefinitionVersionTagForDatabase,
                 processDefinitionKey,
                 canInitializeDocument,
-                startableByUser
+                startableByUser,
             )
         }
         logger.info { "Finished ${this::class.simpleName}" }
@@ -78,20 +82,27 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
     private fun translateDocumentDefVersionToCaseDefVersionTag(
         documentDefinitionVersion: Int,
     ): String {
+        return "0.$documentDefinitionVersion.0-env"
+    }
+
+    private fun translateDocumentDefVersionToCaseDefVersionTagForDatabase(
+        documentDefinitionVersion: Int,
+    ): String {
         val minorVersion = documentDefinitionVersion.toString().padStart(6, '0')
         return "000000.$minorVersion.000000-env"
     }
 
-    private fun migrateProcessDefinition(
+    private fun transformProcessDefinitionData(
         connection: JdbcConnection,
         caseDefinitionKey: String,
         caseDefinitionVersionTag: String,
+        caseDefinitionVersionTagForDatabase: String,
         processDefinitionKey: String,
         canInitializeDocument: Boolean,
-        startableByUser: Boolean
+        startableByUser: Boolean,
     ) {
         // since this can be called recursively, first check if the process has not been migrated already
-        if (isProcDefMigrated(connection, caseDefinitionKey, caseDefinitionVersionTag, processDefinitionKey)) {
+        if (isProcDefMigrated(connection, caseDefinitionKey, caseDefinitionVersionTagForDatabase, processDefinitionKey)) {
             return
         }
 
@@ -101,7 +112,7 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         val procDef = getLatestProcDef(connection, processDefinitionKey)
 
         // set version tag to the case definition version tag
-        val setCaseVersionTagResult = setCaseVersionTag(
+        val setCaseVersionTagResult = transformProcessDefinitionData(
             procDef,
             caseDefinitionKey,
             caseDefinitionVersionTag,
@@ -115,18 +126,21 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
             updatedProcDef,
             caseDefinitionKey,
             caseDefinitionVersionTag,
+            caseDefinitionVersionTagForDatabase,
             canInitializeDocument,
             startableByUser
         )
 
+        // also migrate subprocesses and decision definitions referenced in the process definition
         referencedEntities.processDefinitionKeys.forEach { subProcessDefinitionKey ->
-            migrateProcessDefinition(
+            transformProcessDefinitionData(
                 connection,
                 caseDefinitionKey,
                 caseDefinitionVersionTag,
+                caseDefinitionVersionTagForDatabase,
                 subProcessDefinitionKey,
                 false,
-                false
+                false,
             )
         }
     }
@@ -145,6 +159,7 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         processDefinition: ProcessDefinition,
         caseDefinitionKey: String,
         caseDefinitionVersionTag: String,
+        caseDefinitionVersionTagForDatabase: String,
         canInitializeDocument: Boolean,
         startableByUser: Boolean
     ) {
@@ -155,7 +170,7 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
             connection,
             processDefinition,
             caseDefinitionKey,
-            caseDefinitionVersionTag,
+            caseDefinitionVersionTagForDatabase,
             canInitializeDocument,
             startableByUser
         )
@@ -201,7 +216,13 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         statement.setInt(11, processDefinition.suspensionState)
         statement.setString(12, processDefinition.tenantId)
         statement.setString(13, processDefinition.versionTag)
-        statement.setInt(14, processDefinition.historyTtl)
+        processDefinition.historyTtl.let {
+            if (it == null) {
+                statement.setNull(14, java.sql.Types.INTEGER)
+            } else {
+                statement.setInt(14, it)
+            }
+        }
         statement.setBoolean(15, processDefinition.startable)
 
         statement.executeUpdate()
@@ -261,7 +282,13 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         statement.setString(3, processDefinition.byteArray.name)
         statement.setString(4, processDefinition.byteArray.deploymentId)
         statement.setBytes(5, processDefinition.byteArray.bytes)
-        statement.setBoolean(6, processDefinition.byteArray.generated)
+        processDefinition.byteArray.generated.let {
+            if (it == null) {
+                statement.setNull(6, java.sql.Types.BOOLEAN)
+            } else {
+                statement.setBoolean(6, it)
+            }
+        }
         statement.setString(7, processDefinition.byteArray.tenantId)
         statement.setInt(8, processDefinition.byteArray.type)
         statement.setTimestamp(9, processDefinition.byteArray.createTime)
@@ -275,7 +302,7 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         connection: JdbcConnection,
         processDefinition: ProcessDefinition,
         caseDefinitionKey: String,
-        caseDefinitionVersionTag: String,
+        caseDefinitionVersionTagForDatabase: String,
         canInitializeDocument: Boolean,
         startableByUser: Boolean
     ) {
@@ -292,16 +319,16 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         """.trimIndent()
 
         val statement = connection.prepareStatement(insertProcDefQuery)
-        statement.setString(1, processDefinition.byteArray.id)
+        statement.setString(1, processDefinition.id)
         statement.setString(2, caseDefinitionKey)
-        statement.setString(3, caseDefinitionVersionTag)
+        statement.setString(3, caseDefinitionVersionTagForDatabase)
         statement.setBoolean(4, canInitializeDocument)
         statement.setBoolean(5, startableByUser)
 
         statement.executeUpdate()
     }
 
-    private fun setCaseVersionTag(
+    private fun transformProcessDefinitionData(
         processDefinition: ProcessDefinition,
         caseDefinitionKey: String,
         caseDefinitionVersionTag: String,
@@ -319,11 +346,12 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         return Pair(
             processDefinition.copy(
                 id = UUID.randomUUID().toString(),
-                version = processDefinition.version,
+                version = processDefinition.version+1,
                 versionTag = versionTag,
                 deploymentId = deploymentId,
                 deployment = processDefinition.deployment.copy(
-                    id = deploymentId
+                    id = deploymentId,
+                    deployTime = Timestamp.from(Instant.now())
                 ),
                 byteArray = processDefinition.byteArray.copy(
                     id = UUID.randomUUID().toString(),
@@ -379,9 +407,10 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         """.trimIndent()
 
         val statement = connection.prepareStatement(processDefinitionQuery)
-        statement.setString(0, processDefinitionKey)
+        statement.setString(1, processDefinitionKey)
 
         val results = statement.executeQuery()
+        results.next()
 
         return ProcessDefinition(
             results.getString("id_"),
@@ -402,14 +431,14 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
             Deployment(
                 results.getString("deployment_id_"),
                 "gzacApplication",
-                results.getTimestamp("deploy_time_"),
+                null,
                 "migration",
                 results.getString("tenant_id_")
             ),
             CamundaByteArray(
                 results.getString("id_"),
                 results.getInt("be_rev_"),
-                results.getString("name_"),
+                results.getString("resource_name_"),
                 results.getString("deployment_id_"),
                 results.getBytes("bytes_"),
                 results.getBoolean("generated_"),
@@ -443,7 +472,9 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         statement.setString(2, caseDefinitionVersionTag)
         statement.setString(3, processDefinitionKey)
 
-        val numberOfProcesses = statement.executeQuery().getInt(0)
+        val resultSet = statement.executeQuery()
+        resultSet.next()
+        val numberOfProcesses = resultSet.getInt(1)
         return numberOfProcesses > 0
     }
 
@@ -456,7 +487,8 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
                 process!!.setCamundaVersionTag(CamundaProcessService.CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.toString())
                 process.getChildElementsByType<CallActivity>(CallActivity::class.java).forEach {callActivity ->
                     val elementBinding = callActivity.getCamundaCalledElementBinding()
-                    if (elementBinding == "latest") {
+                    // when the element binding is null, it means it's set to latest
+                    if (elementBinding == null) {
                         callActivity.setCamundaCalledElementBinding("versionTag")
                         callActivity.setCamundaCalledElementVersionTag(CamundaProcessService.CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId)
                         referencedProcesses.add(callActivity.calledElement)
@@ -464,7 +496,8 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
                 }
                 process.getChildElementsByType(BusinessRuleTask::class.java).forEach { businessRuleTask ->
                     val elementBinding = businessRuleTask.getCamundaDecisionRefBinding()
-                    if (elementBinding == "latest") {
+                    // when the element binding is null, it means it's set to latest
+                    if (elementBinding == null) {
                         businessRuleTask.setCamundaDecisionRefBinding("versionTag")
                         businessRuleTask.setCamundaDecisionRefVersionTag(CamundaProcessService.CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId)
                         referencedDecisions.add(businessRuleTask.camundaDecisionRef)
@@ -504,12 +537,12 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         val version: Int,
         val deploymentId: String,
         val resourceName: String,
-        val dgrmResourceName: String,
+        val dgrmResourceName: String?,
         val hasStartFormKey: Boolean,
         val suspensionState: Int,
-        val tenantId: String,
-        val versionTag: String,
-        val historyTtl: Int,
+        val tenantId: String?,
+        val versionTag: String?,
+        val historyTtl: Int?,
         val startable: Boolean,
         val deployment: Deployment,
         val byteArray: CamundaByteArray,
@@ -517,24 +550,24 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
 
     data class Deployment(
         val id: String,
-        val name: String,
-        val deployTime: Timestamp,
-        val source: String,
-        val tenantId: String,
+        val name: String?,
+        val deployTime: Timestamp?,
+        val source: String?,
+        val tenantId: String?,
     )
 
     data class CamundaByteArray(
         val id: String,
         val rev: Int,
         val name: String,
-        val deploymentId: String,
+        val deploymentId: String?,
         val bytes: ByteArray,
-        val generated: Boolean,
-        val tenantId: String,
+        val generated: Boolean?,
+        val tenantId: String?,
         val type: Int,
         val createTime: Timestamp,
-        val rootProcInstId: String,
-        val removalTime: Timestamp,
+        val rootProcInstId: String?,
+        val removalTime: Timestamp?,
     )
 
     data class ReferencedEntities(
