@@ -42,17 +42,12 @@ class JsonSchemaDocumentDefinitionSpecificationHelper {
                                    query: CriteriaQuery<*>,
                                    cb: CriteriaBuilder ->
                 val caseDefinitionIdPath = root.get<Any>(ID).get<String>(CASE_DEFINITION_ID)
-                val sub = query.subquery(Long::class.java)
-                val subRoot = sub.from(JsonSchemaDocumentDefinition::class.java)
-                sub.select(cb.max(caseDefinitionIdPath.get(VERSION_TAG)))
-                sub.where(
-                    cb.and(
-                        cb.equal(subRoot.get<String>(ID).get<Any>(KEY), caseDefinitionIdPath.get<String>(KEY)),
-                        cb.equal(subRoot.get<Any>(ID).get<String>(NAME), root.get<Any>(ID).get<String>(NAME)),
-                    )
-                )
+                val subquery = query.subquery(Long::class.java)
+                val subRoot = subquery.from(CaseDefinition::class.java)
+                subquery.select(cb.max(subRoot.get<Any>(ID).get(VERSION_TAG)))
+                subquery.where(cb.equal(subRoot.get<Any>(ID).get<String>(KEY), caseDefinitionIdPath.get<Any>(KEY)))
 
-                cb.equal(root.get<Any>(ID).get<CaseDefinitionId>(CASE_DEFINITION_ID).get<Long>(VERSION_TAG), sub)
+                cb.equal(subquery, caseDefinitionIdPath.get<Any>(VERSION_TAG))
             }
         }
 

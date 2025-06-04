@@ -42,7 +42,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -52,7 +51,6 @@ public interface DocumentDefinitionResource {
 
     @GetMapping("/v1/document-definition")
     ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(
-        @RequestParam(defaultValue = "false", required = false) boolean active,
         @PageableDefault(sort = {"id_name"}, direction = ASC) Pageable pageable
     );
 
@@ -62,7 +60,6 @@ public interface DocumentDefinitionResource {
 
     @GetMapping("/management/v1/document-definition")
     ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitionsForManagement(
-        @RequestParam(defaultValue = "false", required = false) boolean active,
         @PageableDefault(sort = {"id_name"}, direction = ASC) Pageable pageable
     );
 

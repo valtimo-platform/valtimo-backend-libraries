@@ -53,15 +53,8 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     }
 
     @Override
-    public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(
-        boolean active,
-        Pageable pageable
-    ) {
-        if (active) {
-            return ok(documentDefinitionService.findAll(fixPageable(pageable)));
-        } else {
-            return ok(documentDefinitionService.findAll(fixPageable(pageable)));
-        }
+    public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(Pageable pageable) {
+        return ok(documentDefinitionService.findAll(fixPageable(pageable)));
     }
 
     @Override
@@ -82,22 +75,13 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     }
 
     @Override
-    public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitionsForManagement(
-        boolean active,
-        Pageable pageable
-    ) {
-        return ok(runWithoutAuthorization(() -> {
-            if (active) {
-                return documentDefinitionService.findAllForManagement(fixPageable(pageable));
-            } else {
-                return documentDefinitionService.findAllForManagement(fixPageable(pageable));
-            }
-        }));
+    public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitionsForManagement(Pageable pageable) {
+        return ok(runWithoutAuthorization(() -> documentDefinitionService.findAllForManagement(fixPageable(pageable))));
     }
 
     @Override
     public ResponseEntity<? extends DocumentDefinition> getDocumentDefinitionForManagement(String name) {
-        return of(runWithoutAuthorization(() -> documentDefinitionService.findLatestByName(name)));
+        return of(runWithoutAuthorization(() -> documentDefinitionService.findActiveByName(name)));
     }
 
     /**
@@ -135,7 +119,7 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
 
     @Override
     public ResponseEntity<? extends DocumentDefinition> getDocumentDefinition(String name) {
-        return of(documentDefinitionService.findLatestByName(name));
+        return of(documentDefinitionService.findActiveByName(name));
     }
 
     @Override

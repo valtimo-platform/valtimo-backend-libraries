@@ -158,7 +158,7 @@ class DocumentenApiService(
         @LoggableResource("documentDefinitionName") caseDefinitionName: String
     ): List<DocumentenApiColumn> {
         logger.debug { "Get columns $caseDefinitionName" }
-        val documentDefinition = documentDefinitionService.findLatestByName(caseDefinitionName)
+        val documentDefinition = documentDefinitionService.findActiveByName(caseDefinitionName)
             .orElseThrow { IllegalArgumentException("Unknown case-definition '$caseDefinitionName'") }
         authorizationService.requirePermission(
             EntityAuthorizationRequest(
@@ -189,8 +189,9 @@ class DocumentenApiService(
         denyAuthorization()
         require(columns.isNotEmpty()) { "Failed to sort empty Document API columns" }
         val caseDefinitionName = columns[0].id.caseDefinitionName
-        documentDefinitionService.findLatestByName(caseDefinitionName)
-            .orElseThrow { IllegalArgumentException("Unknown case-definition '$caseDefinitionName'") }
+        require(documentDefinitionService.existsByName(caseDefinitionName)) {
+            "Unknown case-definition '$caseDefinitionName'"
+        }
         val existingColumns = this.getColumns(caseDefinitionName)
         require(existingColumns.size == columns.size) { "Incorrect number of Documenten API columns" }
         val newColumns = columns.map { column ->
@@ -203,8 +204,9 @@ class DocumentenApiService(
 
     fun createOrUpdateColumn(column: DocumentenApiColumn): DocumentenApiColumn {
         logger.info { "Create or updateColumn $column" }
-        documentDefinitionService.findLatestByName(column.id.caseDefinitionName)
-            .orElseThrow { IllegalArgumentException("Unknown case-definition '${column.id.caseDefinitionName}'") }
+        require(documentDefinitionService.existsByName(column.id.caseDefinitionName)) {
+            "Unknown case-definition '${column.id.caseDefinitionName}'"
+        }
         denyAuthorization()
         val order = documentenApiColumnRepository.findByIdCaseDefinitionNameAndIdKey(
             column.id.caseDefinitionName,
@@ -233,8 +235,9 @@ class DocumentenApiService(
     fun updateUploadField(uploadField: DocumentenApiUploadField): DocumentenApiUploadField {
         logger.info { "Create or update Documenten API UploadField $uploadField" }
         denyAuthorization()
-        documentDefinitionService.findLatestByName(uploadField.id.caseDefinitionName)
-            .orElseThrow { IllegalArgumentException("Unknown case-definition '${uploadField.id.caseDefinitionName}'") }
+        require(documentDefinitionService.existsByName(uploadField.id.caseDefinitionName)) {
+            "Unknown case-definition '${uploadField.id.caseDefinitionName}'"
+        }
         return documentenApiUploadFieldRepository.save(uploadField)
     }
 

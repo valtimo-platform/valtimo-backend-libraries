@@ -33,8 +33,6 @@ public interface DocumentDefinitionRepository<T extends DocumentDefinition> exte
 
     Optional<T> findByIdCaseDefinitionId(CaseDefinitionId caseDefinitionId);
 
-    List<T> findAllByIdName(String documentDefinitionName);
-
     List<CaseDefinitionId> findVersionsByName(String documentDefinitionName);
 
     void deleteByIdName(String documentDefinitionName);

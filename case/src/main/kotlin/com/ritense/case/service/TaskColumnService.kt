@@ -151,7 +151,7 @@ class TaskColumnService(
 
     @Throws(UnknownDocumentDefinitionException::class)
     private fun assertDocumentDefinitionExists(caseDefinitionName: String): DocumentDefinition {
-        return documentDefinitionService.findLatestByName(caseDefinitionName)
+        return documentDefinitionService.findActiveByName(caseDefinitionName)
             .getOrNull() ?: throw UnknownCaseDefinitionException(caseDefinitionName)
     }
 }

@@ -40,7 +40,9 @@ public interface DocumentDefinitionService {
 
     Optional<? extends DocumentDefinition> findBy(DocumentDefinition.Id id);
 
-    Optional<? extends DocumentDefinition> findLatestByName(String documentDefinitionName);
+    Optional<? extends DocumentDefinition> findActiveByName(String documentDefinitionName);
+
+    boolean existsByName(String documentDefinitionName);
 
     void requirePermission(String documentDefinitionName, Action action);
 

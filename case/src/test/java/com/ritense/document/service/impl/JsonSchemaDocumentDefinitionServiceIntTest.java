@@ -59,9 +59,9 @@ class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(username = USERNAME, authorities = USER)
     void shouldGetForRolesOnly() {
-        final var expectedDefinition = runWithoutAuthorization(() -> documentDefinitionService.findLatestByName("house")).get();
+        final var expectedDefinition = runWithoutAuthorization(() -> documentDefinitionService.findActiveByName("house")).get();
 
-        final var unexpectedDefinition = runWithoutAuthorization(() -> documentDefinitionService.findLatestByName("person")).get();
+        final var unexpectedDefinition = runWithoutAuthorization(() -> documentDefinitionService.findActiveByName("person")).get();
 
         permissionRepository.save(new Permission(
             UUID.randomUUID(),
