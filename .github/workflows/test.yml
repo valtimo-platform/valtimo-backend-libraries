@@ -86,6 +86,10 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
+            - uses: actions/setup-java@v4
+              with:
+                  distribution: "temurin"
+                  java-version: "21"
             - name: Run integration test suite
               run: ./gradlew ${{ matrix.integration_test_suite }}
 
