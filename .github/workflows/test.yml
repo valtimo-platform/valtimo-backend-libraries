@@ -1,11 +1,72 @@
 name: Run tests
+permissions:
+    contents: read
 on:
     pull_request:
         types: [synchronize, opened]
 
 jobs:
-    unit-testing:
+    determine-tests:
         runs-on: ubuntu-latest
+        outputs:
+            unit_test_matrix: ${{ steps.set_test_matrices.outputs.unit_test_matrix }}
+            integration_test_matrix: ${{ steps.set_test_matrices.outputs.integration_test_matrix }}
+            security_test_matrix: ${{ steps.set_test_matrices.outputs.security_test_matrix }}
+        env:
+            UNIT_TESTS_MATRIX: "/tmp/unit_tests_matrix"
+            INTEGRATION_TESTS_MATRIX: "/tmp/integration_tests_matrix"
+            SECURITY_TESTS_MATRIX: "/tmp/security_tests_matrix"
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            - name: "Setup jq"
+              uses: dcarbone/install-jq-action@v3
+
+            # Computing the test matrices takes ~2 minutes in GHA, so cache them with a cache key based on all the Gradle files
+            - name: Cache test definitions
+              id: cache-test-definitions
+              uses: actions/cache@v4
+              with:
+                  path: |
+                      ${{ env.UNIT_TESTS_MATRIX }}
+                      ${{ env.INTEGRATION_TESTS_MATRIX }}
+                      ${{ env.SECURITY_TESTS_MATRIX }}
+                  key: testdefinitions-${{ hashFiles('**/build.gradle', '**/build.gradle.kts', '**/settings.gradle', '**/settings.gradle.kts', '**/gradle.properties') }}
+            - name: Make test matrices
+              id: make_test_matrices
+              if: steps.cache-test-definitions.outputs.cache-hit != 'true'
+              run: |
+                  UNIT_TESTS_FILE='/tmp/unit_tests'
+                  INTEGRATION_TESTS_FILE='/tmp/integration_tests'
+                  SECURITY_TESTS_FILE='/tmp/security_tests'
+                  DRY_RUN=$(./gradlew test securityTesting integrationTesting --dry-run)
+                  touch $UNIT_TESTS_FILE $INTEGRATION_TESTS_FILE $SECURITY_TESTS_FILE
+                  while IFS= read -r line; do
+                    if [[ $line =~ (:[^[:space:]]+:test)\  ]]; then
+                      echo "$line" | cut -d ' ' -f 1 >> $UNIT_TESTS_FILE
+                    elif [[ $line =~ (:[^[:space:]]+:integrationTesting)\  ]]; then
+                      echo "$line" | cut -d ' ' -f 1 >> $INTEGRATION_TESTS_FILE
+                    elif [[ $line =~ (:[^[:space:]]+:securityTesting)\  ]]; then
+                      echo "$line" | cut -d ' ' -f 1 >> $SECURITY_TESTS_FILE
+                    fi
+                  done <<< "$DRY_RUN"
+                  cat $UNIT_TESTS_FILE | jq -R -s -c 'split("\n")[:-1]' > $UNIT_TESTS_MATRIX
+                  cat $INTEGRATION_TESTS_FILE | jq -R -s -c 'split("\n")[:-1]' > $INTEGRATION_TESTS_MATRIX
+                  cat $SECURITY_TESTS_FILE | jq -R -s -c 'split("\n")[:-1]' > $SECURITY_TESTS_MATRIX
+            - name: Set test matrices
+              id: set_test_matrices
+              run: |
+                  echo "unit_test_matrix=$(cat $UNIT_TESTS_MATRIX)" >> $GITHUB_OUTPUT
+                  echo "integration_test_matrix=$(cat $INTEGRATION_TESTS_MATRIX)" >> $GITHUB_OUTPUT
+                  echo "security_test_matrix=$(cat $SECURITY_TESTS_MATRIX)" >> $GITHUB_OUTPUT
+
+    # Run the following test suites in parallel
+    unit-testing:
+        needs: [determine-tests]
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                unit_test_suite: ${{ fromJson(needs.determine-tests.outputs.unit_test_matrix) }}
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
@@ -14,32 +75,35 @@ jobs:
                   distribution: "temurin"
                   java-version: "21"
             - name: Run Unit Tests
-              run: ./gradlew clean test
+              run: ./gradlew ${{ matrix.unit_test_suite }}
+
     integration-testing:
         runs-on: ubuntu-latest
+        needs: [determine-tests]
+        strategy:
+            matrix:
+                integration_test_suite: ${{ fromJson(needs.determine-tests.outputs.integration_test_matrix) }}
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
-            - uses: actions/setup-java@v4
-              with:
-                  distribution: "temurin"
-                  java-version: "21"
-            - name: Run Unit Tests
-              run: ./gradlew clean integrationTesting
+            - name: Run integration test suite
+              run: ./gradlew ${{ matrix.integration_test_suite }}
+
     security-testing:
+        needs: [determine-tests]
+        strategy:
+            matrix:
+                security_test_suite: ${{ fromJson(needs.determine-tests.outputs.security_test_matrix) }}
         if: |
-            github.ref_type == 'branch' && (
+            github.ref_type == 'branch' && 
+            (
               startsWith(github.ref_name, 'development/') ||
               startsWith(github.ref_name, 'rc/') ||
               startsWith(github.ref_name, 'release/') ||
               github.ref_name == 'next-minor' ||
-              github.ref_name == 'next-major' ||
-              (
-                github.actor != 'github-actions[bot]' &&
-                !startsWith(github.ref_name, 'PR-') &&
-                !startsWith(github.ref_name, 'poc/')
-              )
+              github.ref_name == 'next-major' 
             )
+
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
@@ -49,4 +113,4 @@ jobs:
                   distribution: "temurin"
                   java-version: "21"
             - name: Run Security Tests
-              run: ./gradlew clean securityTesting
+              run: ./gradlew ${{ matrix.security_test_suite }}
