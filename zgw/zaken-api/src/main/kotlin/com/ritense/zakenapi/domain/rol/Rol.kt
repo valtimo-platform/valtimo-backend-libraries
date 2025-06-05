@@ -31,6 +31,7 @@ data class Rol(
     val zaak: URI,
     val betrokkene: URI? = null,
     val betrokkeneType: BetrokkeneType,
+    val afwijkendeNaamBetrokkene: String? = null,
     val roltype: URI,
     val omschrijving: String? = null,
     val omschrijvingGeneriek: ZaakRolOmschrijving? = null,
@@ -38,17 +39,19 @@ data class Rol(
     val registratiedatum: LocalDateTime? = null,
     @JsonProperty("indicatieMachtiging")
     private val indicatieMachtigingString: String? = null,
+    val contactpersoonRol: ContactpersoonRol? = null,
+    val statussen: List<URI>? = null,
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXTERNAL_PROPERTY,
         property = "betrokkeneType",
         visible = true
     )
-    val betrokkeneIdentificatie: BetrokkeneIdentificatie?,
+    val betrokkeneIdentificatie: BetrokkeneIdentificatie? = null,
     val beginGeldigheid: LocalDate? = null,
     val eindeGeldigheid: LocalDate? = null,
 ) {
     val indicatieMachtiging = indicatieMachtigingString?.let {indicatieMachtiging ->
-        IndicatieMachtiging.values().find {it.key == indicatieMachtiging}
+        IndicatieMachtiging.entries.find {it.key == indicatieMachtiging}
     }
 }
