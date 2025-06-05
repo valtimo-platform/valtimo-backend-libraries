@@ -150,6 +150,7 @@ class ProcessLinkService(
 
     fun getSupportedProcessLinkTypes(activityType: String): List<ProcessLinkType> {
         if (!ActivityTypeWithEventName.contains(activityType)) {
+            logger.warn { "Unsupported activity type: $activityType" }
             return emptyList()
         }
         return processLinkTypes.mapNotNull {
