@@ -72,16 +72,25 @@ class FormResource(
         @PathVariable formKey: String,
         @LoggableResource(resourceType = JsonSchemaDocument::class) @RequestParam(required = false) documentId: UUID?,
     ): ResponseEntity<JsonNode> {
-        return if (documentId != null) {
-            val document = documentService.get(documentId.toString())
-            val formDefinition = formDefinitionService
-                .getFormDefinitionByName(formKey, document.definitionId().caseDefinitionId()).orElse(null)
-            ResponseEntity.ok(
-                prefillFormService.getPrefilledFormDefinition(formDefinition.id, documentId).formDefinition
-            )
-        } else {
-            ResponseEntity.notFound().build()
+        if (documentId == null) {
+            return ResponseEntity.notFound().build()
         }
+
+        val document = documentService.get(documentId.toString())
+
+        val formDefinition = formDefinitionService
+            .getFormDefinitionByName(formKey, document.definitionId().caseDefinitionId())
+            .orElse(null)
+
+        if (formDefinition == null) {
+            return ResponseEntity.notFound().build()
+        }
+
+        val prefilledForm = prefillFormService
+            .getPrefilledFormDefinition(formDefinition.id, documentId)
+            .formDefinition
+
+        return ResponseEntity.ok(prefilledForm)
     }
 
     fun <T : FormSubmissionResult?> applyResult(result: T): ResponseEntity<T> {
