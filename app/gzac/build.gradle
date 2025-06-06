@@ -7,6 +7,7 @@ dependencies {
     implementation(project(":logging"))
     implementation(project(":zgw:portaaltaak"))
     implementation(project(":outbox:outbox-rabbitmq"))
+    implementation(project(":process-link-url"))
 
     implementation("io.github.oshai:kotlin-logging")
 
