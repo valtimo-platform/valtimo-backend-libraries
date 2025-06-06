@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-package com.ritense.case_.widget
-
-import com.ritense.case_.domain.tab.CaseWidgetTab
-import com.ritense.case_.domain.tab.CaseWidgetTabWidget
-import org.springframework.data.domain.Pageable
-import java.util.UUID
-
-interface CaseWidgetDataProvider<WIDGET: CaseWidgetTabWidget> {
-    fun supportedWidgetType(): Class<WIDGET>
-    fun getData(documentId: UUID, widgetTab: CaseWidgetTab, widget: WIDGET, pageable: Pageable): Any?
-    fun getData(queryString: String, widgetTab: CaseWidgetTab, widget: WIDGET, pageable: Pageable): Any? = {}
+pluginManager.withPlugin('maven-publish') {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                pom {
+                    name = 'IKO module'
+                    description = 'The IKO module'
+                    developers {
+                        developer {
+                            id = "team-valtimo"
+                            name = "Team Valtimo"
+                            email = "team-valtimo@ritense.com"
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

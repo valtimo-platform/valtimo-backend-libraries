@@ -67,7 +67,9 @@ class ValueResolverServiceImpl(
     ): List<ValueResolverOption> {
         val prefixes = request.prefixes.ifEmpty { resolverFactoryMap.keys }
         return prefixes.fold(emptyList()) { list, prefix ->
-            val newOptions = resolverFactoryMap[prefix]?.getResolvableKeyOptions(documentDefinitionName, caseDefinitionId) ?: emptyList()
+            val newOptions =
+                resolverFactoryMap[prefix]?.getResolvableKeyOptions(documentDefinitionName, caseDefinitionId)
+                    ?: emptyList()
             list + newOptions.filter { option -> request.type.equals(option.type) }
         }
     }
@@ -200,7 +202,7 @@ class ValueResolverServiceImpl(
         values: Map<String, Any?>
     ) = propertyPaths.associate { propertyPath -> trimPrefix(propertyPath) to values[propertyPath] }
 
-    private fun toResolverFactoryMap(requestedValues: Collection<String>): Map<ValueResolverFactory, List<String>> {
+    fun toResolverFactoryMap(requestedValues: Collection<String>): Map<ValueResolverFactory, List<String>> {
         //Group by prefix
         return requestedValues.groupBy(::getPrefix)
             .mapNotNull { (prefix, requestedValues) ->
