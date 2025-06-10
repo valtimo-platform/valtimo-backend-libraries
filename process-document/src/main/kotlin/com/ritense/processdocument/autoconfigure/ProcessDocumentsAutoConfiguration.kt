@@ -302,6 +302,7 @@ class ProcessDocumentsAutoConfiguration {
         processDefinitionCaseDefinitionRepository: ProcessDefinitionCaseDefinitionRepository,
         documentService: JsonSchemaDocumentService,
         runtimeService: RuntimeService,
+        repositoryService: CamundaRepositoryService,
         caseDefinitionChecker: CaseDefinitionChecker,
     ): ProcessDefinitionCaseDefinitionService {
         return ProcessDefinitionCaseDefinitionService(
@@ -309,6 +310,7 @@ class ProcessDocumentsAutoConfiguration {
             processDefinitionCaseDefinitionRepository,
             documentService,
             runtimeService,
+            repositoryService,
             caseDefinitionChecker,
         )
     }
