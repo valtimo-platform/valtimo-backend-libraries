@@ -40,12 +40,70 @@
                 columnNames="case_definition_key, case_definition_version_tag, name"/>
     </changeSet>
 
-<!--    <changeSet id="11" author="Ritense">
+    <!-- migrate summary forms to case definitions -->
+    <changeSet id="11" author="Ritense">
         <sql>
-            INSERT INTO form_io_form_definition
-                (id, name, form_definition, read_only, case_definition_key, form_io_form_definition)
-            SELECT
+            insert into form_io_form_definition
+                (id, name, form_definition, read_only, case_definition_key, case_definition_version_tag)
+            select gen_random_uuid(), fd.name, fd.form_definition, fd.read_only, cd.case_definition_key, cd.case_definition_version_tag
+            from form_io_form_definition fd
+                 join case_definition cd
+                 on fd.name = concat(cd.case_definition_key, '.summary')
+            where fd.case_definition_key is null
         </sql>
-    </changeSet>-->
+    </changeSet>
+
+    <!-- migrate process link forms -->
+    <changeSet id="12" author="Ritense">
+        <preConditions>
+            <columnExists tableName="process_link" columnName="migration_form_name"/>
+        </preConditions>
+        <sql>
+            insert into form_io_form_definition
+            (
+                id,
+                name,
+                form_definition,
+                read_only,
+                case_definition_key,
+                case_definition_version_tag
+            )
+            select gen_random_uuid() as id, *
+            from (select distinct
+                fd.name,
+                fd.form_definition,
+                fd.read_only,
+                pdcd.case_definition_key,
+                pdcd.case_definition_version_tag
+            from form_io_form_definition fd
+            join process_link pl
+                on pl.form_definition_id = fd.id
+            join act_re_procdef pd
+                on pd.id_ = pl.process_definition_id
+            join process_definition_case_definition pdcd
+                on pdcd.process_definition_id = pd.id_
+            where pl.migration_form_name is not null
+                and fd.case_definition_key is null
+                and fd.case_definition_version_tag is null
+            )
+        </sql>
+        <sql>
+            update process_link
+            set form_definition_id = fd.id
+                from process_link pl
+            join act_re_procdef pd
+                on pd.id_ = pl.process_definition_id
+            join process_definition_case_definition pdcd
+                on pdcd.process_definition_id = pd.id_
+            join form_io_form_definition fd
+                on pl.migration_form_name = fd.name
+                and pdcd.case_definition_key = fd.case_definition_key
+                and pdcd.case_definition_version_tag = fd.case_definition_version_tag
+            where process_link.id = pl.id
+        </sql>
+        <dropColumn tableName="process_link">
+            <column name="migration_form_name" type="varchar(255)"/>
+        </dropColumn>
+    </changeSet>
 
 </databaseChangeLog>

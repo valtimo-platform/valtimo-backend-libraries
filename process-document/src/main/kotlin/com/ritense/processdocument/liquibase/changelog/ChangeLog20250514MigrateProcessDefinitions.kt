@@ -66,7 +66,7 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
             val canInitializeDocument = result.getBoolean("can_initialize_document")
             val startableByUser = result.getBoolean("startable_by_user")
 
-            transformProcessDefinitionData(
+            migrateProcessDefinition(
                 connection,
                 caseDefinitionKey,
                 caseDefinitionVersionTag,
@@ -92,7 +92,7 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         return "000000.$minorVersion.000000-env"
     }
 
-    private fun transformProcessDefinitionData(
+    private fun migrateProcessDefinition(
         connection: JdbcConnection,
         caseDefinitionKey: String,
         caseDefinitionVersionTag: String,
@@ -120,6 +120,14 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         val updatedProcDef = setCaseVersionTagResult.first
         val referencedEntities = setCaseVersionTagResult.second
 
+        migrateProcessLinksWithRelatedResources(
+            connection,
+            procDef,
+            updatedProcDef,
+            caseDefinitionKey,
+            caseDefinitionVersionTagForDatabase,
+        )
+
         // save updated process definition
         saveProcDefForCaseDef(
             connection,
@@ -133,7 +141,7 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
 
         // also migrate subprocesses and decision definitions referenced in the process definition
         referencedEntities.processDefinitionKeys.forEach { subProcessDefinitionKey ->
-            transformProcessDefinitionData(
+            migrateProcessDefinition(
                 connection,
                 caseDefinitionKey,
                 caseDefinitionVersionTag,
@@ -143,6 +151,123 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
                 false,
             )
         }
+    }
+
+    private fun migrateProcessLinksWithRelatedResources(
+        connection: JdbcConnection,
+        originalProcessDefinition: ProcessDefinition,
+        newProcessDefinition: ProcessDefinition,
+        caseDefinitionKey: String,
+        caseDefinitionVersionTagForDatabase: String,
+    ) {
+        val processLinks = getProcessLinksForProcess(connection, originalProcessDefinition.id)
+        processLinks.forEach {
+            val updatedLink = it.copy(processDefinitionId = newProcessDefinition.id, id = UUID.randomUUID().toString())
+            saveProcessLink(connection, updatedLink)
+        }
+    }
+
+    private fun getProcessLinksForProcess(
+        connection: JdbcConnection,
+        processDefinitionId: String,
+    ): List<ProcessLink> {
+        val query = """
+            select
+                id,
+                process_definition_id,
+                activity_id,
+                activity_type,
+                process_link_type,
+                component_key,
+                form_definition_id,
+                view_model_enabled,
+                form_display_type,
+                form_size,
+                subtitles,
+                action_properties,
+                plugin_configuration_id,
+                plugin_action_definition_key,
+                form_flow_definition_id
+            from process_link
+            where process_definition_id = ?
+        """.trimIndent()
+
+        val statement = connection.prepareStatement(query)
+        statement.setString(1, processDefinitionId)
+
+        val results = statement.executeQuery()
+        val processLinks = mutableListOf<ProcessLink>()
+        while (results.next()) {
+            processLinks.add(
+                ProcessLink(
+                    results.getString("id"),
+                    results.getString("process_definition_id"),
+                    results.getString("activity_id"),
+                    results.getString("activity_type"),
+                    results.getString("process_link_type"),
+                    results.getString("component_key"),
+                    results.getString("form_definition_id"),
+                    results.getBoolean("view_model_enabled"),
+                    results.getString("form_display_type"),
+                    results.getString("form_size"),
+                    results.getString("subtitles"),
+                    results.getString("action_properties"),
+                    results.getString("plugin_configuration_id"),
+                    results.getString("plugin_action_definition_key"),
+                    results.getString("form_flow_definition_id")
+                )
+            )
+        }
+        return processLinks
+    }
+
+    private fun saveProcessLink(
+        connection: JdbcConnection,
+        processLink: ProcessLink,
+    ) {
+        val insertProcessLinkQuery = """
+            insert into process_link
+            (
+                id,
+                process_definition_id,
+                activity_id,
+                activity_type,
+                process_link_type,
+                component_key,
+                form_definition_id,
+                view_model_enabled,
+                form_display_type,
+                form_size,
+                subtitles,
+                action_properties,
+                plugin_configuration_id,
+                plugin_action_definition_key,
+                form_flow_definition_id,
+                migration_form_name
+            )
+             select ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, name
+             from form_io_form_definition
+             where id = ?
+        """.trimIndent()
+
+        val statement = connection.prepareStatement(insertProcessLinkQuery)
+        statement.setString(1, processLink.id)
+        statement.setString(2, processLink.processDefinitionId)
+        statement.setString(3, processLink.activityId)
+        statement.setString(4, processLink.activityType)
+        statement.setString(5, processLink.processLinkType)
+        statement.setString(6, processLink.componentKey)
+        statement.setString(7, processLink.formDefinitionId)
+        statement.setBoolean(8, processLink.viewModelEnabled)
+        statement.setString(9, processLink.formDisplayType)
+        statement.setString(10, processLink.formSize)
+        statement.setString(11, processLink.subtitles)
+        statement.setString(12, processLink.actionProperties)
+        statement.setString(13, processLink.pluginConfigurationId)
+        statement.setString(14, processLink.pluginActionDefinitionKey)
+        statement.setString(15, processLink.formFlowDefinitionId)
+        statement.setString(16, processLink.formDefinitionId)
+        statement.executeUpdate()
     }
 
     private fun migrateDecisionDefinition(
@@ -573,5 +698,24 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
     data class ReferencedEntities(
         val processDefinitionKeys: List<String>,
         val decisionDefinitionKeys: List<String>,
+    )
+
+    data class ProcessLink(
+        val id: String,
+        val processDefinitionId: String,
+        val activityId: String,
+        val activityType: String,
+        val processLinkType: String,
+        val componentKey: String?,
+        val formDefinitionId: String?,
+        val viewModelEnabled: Boolean,
+        val formDisplayType: String?,
+        val formSize: String?,
+        val subtitles: String?,
+        val actionProperties: String?,
+        val pluginConfigurationId: String?,
+        val pluginActionDefinitionKey: String?,
+        val formFlowDefinitionId: String?,
+        val migrationFormName: String? = null,
     )
 }

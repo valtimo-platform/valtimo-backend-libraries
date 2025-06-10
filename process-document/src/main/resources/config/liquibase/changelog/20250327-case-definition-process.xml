@@ -33,7 +33,22 @@
         </addColumn>
     </changeSet>
 
+    <!-- This is only used temporarily during migration to major 13 -->
     <changeSet id="3" author="Ritense">
+        <preConditions>
+            <tableExists tableName="form_io_form_definition"/>
+            <tableExists tableName="process_link"/>
+        </preConditions>
+        <addColumn tableName="process_link">
+            <column name="migration_form_name" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="4" author="Ritense">
+        <preConditions>
+            <tableExists tableName="form_io_form_definition"/>
+            <tableExists tableName="process_link"/>
+        </preConditions>
         <customChange class="com.ritense.processdocument.liquibase.changelog.ChangeLog20250514MigrateProcessDefinitions"/>
     </changeSet>
 
