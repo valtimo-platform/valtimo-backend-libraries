@@ -48,7 +48,7 @@ class ValueResolverResourceIT @Autowired constructor(
     @Test
     fun `should get list of ALL possible value resolvers when prefix is empty`() {
 
-        val prefixes = """[]"""
+        val prefixes = """{"prefixes":[],"type":"FIELD"}"""
 
         mockMvc.perform(
             MockMvcRequestBuilders
@@ -58,18 +58,18 @@ class ValueResolverResourceIT @Autowired constructor(
         )
             .andDo(print())
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$[0]").value("testDoc:1"))
-            .andExpect(jsonPath("$[1]").value("testDoc:2"))
-            .andExpect(jsonPath("$[2]").value("testDoc:3"))
-            .andExpect(jsonPath("$[3]").value("testCase:4"))
-            .andExpect(jsonPath("$[4]").value("testCase:5"))
-            .andExpect(jsonPath("$[5]").value("testCase:6"))
+            .andExpect(jsonPath("$[0].path").value("testDoc:1"))
+            .andExpect(jsonPath("$[1].path").value("testDoc:2"))
+            .andExpect(jsonPath("$[2].path").value("testDoc:3"))
+            .andExpect(jsonPath("$[3].path").value("testCase:4"))
+            .andExpect(jsonPath("$[4].path").value("testCase:5"))
+            .andExpect(jsonPath("$[5].path").value("testCase:6"))
     }
 
     @Test
     fun `should get list of possible value resolvers for a single prefix`() {
 
-        val prefixes = """["testDoc"]"""
+        val prefixes = """{"prefixes":["testDoc"],"type":"FIELD"}"""
 
         mockMvc.perform(
             MockMvcRequestBuilders
@@ -79,9 +79,9 @@ class ValueResolverResourceIT @Autowired constructor(
         )
             .andDo(print())
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$[0]").value("testDoc:1"))
-            .andExpect(jsonPath("$[1]").value("testDoc:2"))
-            .andExpect(jsonPath("$[2]").value("testDoc:3"))
+            .andExpect(jsonPath("$[0].path").value("testDoc:1"))
+            .andExpect(jsonPath("$[1].path").value("testDoc:2"))
+            .andExpect(jsonPath("$[2].path").value("testDoc:3"))
     }
 
     @Test
@@ -135,7 +135,7 @@ class ValueResolverResourceIT @Autowired constructor(
     @Test
     fun `should return empty list when requesting non-existent value resolver prefixes`() {
 
-        val prefixes = """["nonExistent"]"""
+        val prefixes = """{"prefixes":["nonExistent"],"type":"FIELD"}"""
 
         val result = mockMvc.perform(
             MockMvcRequestBuilders
