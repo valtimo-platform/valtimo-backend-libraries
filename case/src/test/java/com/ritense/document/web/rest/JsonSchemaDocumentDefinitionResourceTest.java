@@ -199,7 +199,7 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     @Test
     void shouldReturnSingleDefinitionRecordByName() throws Exception {
         String definitionName = definition.getId().name();
-        when(documentDefinitionService.findLatestByName(anyString())).thenReturn(Optional.of(definition));
+        when(documentDefinitionService.findActiveByName(anyString())).thenReturn(Optional.of(definition));
         mockMvc.perform(get("/api/v1/document-definition/{name}", definitionName))
             .andDo(print())
             .andExpect(status().isOk())
@@ -210,14 +210,14 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     @Test
     void shouldReturnSingleDefinitionRecordByNameForManagement() throws Exception {
         String definitionName = definition.getId().name();
-        when(documentDefinitionService.findLatestByName(anyString())).thenReturn(Optional.of(definition));
+        when(documentDefinitionService.findActiveByName(anyString())).thenReturn(Optional.of(definition));
         mockMvc.perform(get("/api/management/v1/document-definition/{name}", definitionName))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$").isNotEmpty());
 
-        verify(documentDefinitionService).findLatestByName(definitionName);
+        verify(documentDefinitionService).findActiveByName(definitionName);
     }
 
     @Test

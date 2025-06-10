@@ -44,6 +44,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.data.jpa.domain.Specification;
 
 class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
 
@@ -192,8 +193,7 @@ class JsonSchemaDocumentDefinitionServiceTest extends BaseTest {
 
     public JsonSchemaDocumentDefinition mockDefinition(String definitionName) {
         var definition = definitionOfForUnitTests(definitionName);
-        when(jsonSchemaDocumentDefinitionRepository.findFirstByIdNameOrderByIdCaseDefinitionIdVersionTagDesc(
-            definitionName))
+        when(jsonSchemaDocumentDefinitionRepository.findOne(any(Specification.class)))
             .thenReturn(Optional.of(definition));
         return definition;
     }

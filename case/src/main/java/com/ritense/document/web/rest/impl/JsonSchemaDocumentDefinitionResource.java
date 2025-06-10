@@ -81,7 +81,7 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
 
     @Override
     public ResponseEntity<? extends DocumentDefinition> getDocumentDefinitionForManagement(String name) {
-        return of(runWithoutAuthorization(() -> documentDefinitionService.findLatestByName(name)));
+        return of(runWithoutAuthorization(() -> documentDefinitionService.findActiveByName(name)));
     }
 
     /**
@@ -119,7 +119,7 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
 
     @Override
     public ResponseEntity<? extends DocumentDefinition> getDocumentDefinition(String name) {
-        return of(documentDefinitionService.findLatestByName(name));
+        return of(documentDefinitionService.findActiveByName(name));
     }
 
     @Override
