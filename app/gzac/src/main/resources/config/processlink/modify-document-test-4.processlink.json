@@ -1,0 +1,20 @@
+[
+    {
+        "activityId": "startModifyDocumentStartEvent",
+        "activityType": "bpmn:StartEvent:start",
+        "processLinkType": "form",
+        "formDefinitionName": "start-form-modify-document"
+    },
+    {
+        "activityId": "UpdateDocumentTask1",
+        "activityType": "bpmn:UserTask:create",
+        "processLinkType": "form",
+        "formDefinitionName": "modify-document.update-document-1"
+    },
+    {
+        "activityId": "UpdateDocumentTask2",
+        "activityType": "bpmn:UserTask:create",
+        "processLinkType": "form",
+        "formDefinitionName": "modify-document.update-document-2"
+    }
+]

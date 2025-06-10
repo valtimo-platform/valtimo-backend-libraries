@@ -1,0 +1,22 @@
+[
+    {
+        "processDefinitionKey": "modify-document-test-1",
+        "canInitializeDocument": true,
+        "startableByUser": true
+    },
+    {
+        "processDefinitionKey": "modify-document-test-2",
+        "canInitializeDocument": true,
+        "startableByUser": true
+    },
+    {
+        "processDefinitionKey": "modify-document-test-3",
+        "canInitializeDocument": true,
+        "startableByUser": true
+    },
+    {
+        "processDefinitionKey": "modify-document-test-4",
+        "canInitializeDocument": true,
+        "startableByUser": true
+    }
+]

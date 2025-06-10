@@ -1,0 +1,59 @@
+{
+    "$id": "modify-document.schema",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Test modify document",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "aanvrager": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "voornaam": {
+                    "type": "string",
+                    "description": "Voornaam"
+                },
+                "achternaam": {
+                    "type": "string",
+                    "description": "Achternaam"
+                },
+                "bsn": {
+                    "type": "string",
+                    "description": "Burgerservicenummer"
+                },
+                "straatnaam": {
+                    "type": "string",
+                    "description": "Straatnaam"
+                },
+                "huisnummer": {
+                    "type": "string",
+                    "description": "Huisnummer"
+                },
+                "toevoeging": {
+                    "type": "string",
+                    "description": "Toevoeging"
+                },
+                "postcode": {
+                    "type": "string",
+                    "description": "Postcode"
+                },
+                "plaats": {
+                    "type": "string",
+                    "description": "Plaats"
+                },
+                "telefoonnummer": {
+                    "type": "string",
+                    "description": "Telefoonnummer"
+                },
+                "e-mailadres": {
+                    "type": "string",
+                    "description": "E-mailadres"
+                },
+                "zaaknummer": {
+                    "type": "string",
+                    "description": "Zaaknummer waar een bezwaar voor wordt ingediend"
+                }
+            }
+        }
+    }
+}

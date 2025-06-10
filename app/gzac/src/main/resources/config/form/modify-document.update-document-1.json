@@ -1,0 +1,29 @@
+{
+    "display": "form",
+    "components": [
+        {
+            "label": "Voornaam",
+            "placeholder": "Voornaam",
+            "tableView": true,
+            "key": "aanvrager.voornaam",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "label": "Achternaam",
+            "placeholder": "Achternaam",
+            "tableView": true,
+            "key": "aanvrager.achternaam",
+            "type": "textfield",
+            "input": true
+        },
+        {
+            "type": "button",
+            "label": "Start",
+            "key": "submit",
+            "disableOnInvalid": true,
+            "input": true,
+            "tableView": false
+        }
+    ]
+}

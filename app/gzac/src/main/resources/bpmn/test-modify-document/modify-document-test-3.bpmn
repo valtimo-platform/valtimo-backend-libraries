@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0d52mi4" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.35.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.23.0">
+  <bpmn:collaboration id="Collaboration_1d0l6d6">
+    <bpmn:participant id="ModifyDocumentTest3Participant" name="Modify document test 3" processRef="modify-document-test-3" />
+  </bpmn:collaboration>
+  <bpmn:process id="modify-document-test-3" name="Modify document test 3" isExecutable="true">
+    <bpmn:startEvent id="startModifyDocumentStartEvent" name="Start">
+      <bpmn:outgoing>Flow_0ylj36b</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:parallelGateway id="Gateway_0dwaatt">
+      <bpmn:incoming>Flow_0ylj36b</bpmn:incoming>
+      <bpmn:outgoing>Flow_0gtdqrh</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1672kc1</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:sequenceFlow id="Flow_0ylj36b" sourceRef="startModifyDocumentStartEvent" targetRef="Gateway_0dwaatt" />
+    <bpmn:sequenceFlow id="Flow_0gtdqrh" sourceRef="Gateway_0dwaatt" targetRef="PluginActie2Task" />
+    <bpmn:sequenceFlow id="Flow_1672kc1" sourceRef="Gateway_0dwaatt" targetRef="PluginActie1Task" />
+    <bpmn:sequenceFlow id="Flow_14cym6u" sourceRef="WriteToDocuemnt1Task" targetRef="Gateway_11ihw1e" />
+    <bpmn:sequenceFlow id="Flow_1jfs8p6" sourceRef="WriteToDocuemnt1Task2" targetRef="Gateway_11ihw1e" />
+    <bpmn:sequenceFlow id="Flow_13gnzy6" sourceRef="Gateway_11ihw1e" targetRef="Event_0x7b2df" />
+    <bpmn:sequenceFlow id="Flow_1nl0y27" sourceRef="PluginActie1Task" targetRef="Activity_0vwz90n" />
+    <bpmn:serviceTask id="PluginActie1Task" name="Get input 1" camunda:asyncAfter="true" camunda:expression="${true}">
+      <bpmn:incoming>Flow_1672kc1</bpmn:incoming>
+      <bpmn:outgoing>Flow_1nl0y27</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="PluginActie2Task" name="Get input 2" camunda:asyncAfter="true" camunda:expression="${true}">
+      <bpmn:incoming>Flow_0gtdqrh</bpmn:incoming>
+      <bpmn:outgoing>Flow_1n09c6k</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1n09c6k" sourceRef="PluginActie2Task" targetRef="Activity_0dsgh5e" />
+    <bpmn:serviceTask id="WriteToDocuemnt1Task" name="Write to document 1" camunda:asyncAfter="true" camunda:expression="${valueResolverDelegateService.handleValue(execution, &#34;doc:/aanvrager/voornaam&#34;, &#34;Test-Voornaam&#34;)}">
+      <bpmn:incoming>Flow_0yq2qvc</bpmn:incoming>
+      <bpmn:outgoing>Flow_14cym6u</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="WriteToDocuemnt1Task2" name="Write to document 2" camunda:asyncAfter="true" camunda:expression="${valueResolverDelegateService.handleValue(execution, &#34;doc:/aanvrager/achternaam&#34;, &#34;Test-Achternaam&#34;)}">
+      <bpmn:incoming>Flow_1vvbuhh</bpmn:incoming>
+      <bpmn:outgoing>Flow_1jfs8p6</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:parallelGateway id="Gateway_11ihw1e">
+      <bpmn:incoming>Flow_14cym6u</bpmn:incoming>
+      <bpmn:incoming>Flow_1jfs8p6</bpmn:incoming>
+      <bpmn:outgoing>Flow_13gnzy6</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:endEvent id="Event_0x7b2df">
+      <bpmn:incoming>Flow_13gnzy6</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0yq2qvc" sourceRef="Activity_0vwz90n" targetRef="WriteToDocuemnt1Task" />
+    <bpmn:sequenceFlow id="Flow_1vvbuhh" sourceRef="Activity_0dsgh5e" targetRef="WriteToDocuemnt1Task2" />
+    <bpmn:callActivity id="Activity_0vwz90n" name="Test bouwblok" camunda:asyncBefore="true" camunda:asyncAfter="true" calledElement="modify-document-test-bouwblok-1">
+      <bpmn:extensionElements>
+        <camunda:in businessKey="#{execution.processBusinessKey}" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1nl0y27</bpmn:incoming>
+      <bpmn:outgoing>Flow_0yq2qvc</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:callActivity id="Activity_0dsgh5e" name="Test bouwblok" camunda:asyncBefore="true" camunda:asyncAfter="true" calledElement="modify-document-test-bouwblok-1">
+      <bpmn:extensionElements>
+        <camunda:in businessKey="#{execution.processBusinessKey}" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1n09c6k</bpmn:incoming>
+      <bpmn:outgoing>Flow_1vvbuhh</bpmn:outgoing>
+    </bpmn:callActivity>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1d0l6d6">
+      <bpmndi:BPMNShape id="Participant_0920u06_di" bpmnElement="ModifyDocumentTest3Participant" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="890" height="320" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="startModifyDocumentStartEvent">
+        <dc:Bounds x="210" y="222" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="217" y="265" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1e3vbkv_di" bpmnElement="Gateway_0dwaatt">
+        <dc:Bounds x="303" y="215" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0n6p6ye_di" bpmnElement="PluginActie1Task">
+        <dc:Bounds x="390" y="130" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_07lgpu6" bpmnElement="PluginActie2Task">
+        <dc:Bounds x="390" y="270" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1lneq9w_di" bpmnElement="WriteToDocuemnt1Task">
+        <dc:Bounds x="738" y="130" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_09s3zq0_di" bpmnElement="WriteToDocuemnt1Task2">
+        <dc:Bounds x="738" y="270" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_105y84c_di" bpmnElement="Gateway_11ihw1e">
+        <dc:Bounds x="875" y="215" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0x7b2df_di" bpmnElement="Event_0x7b2df">
+        <dc:Bounds x="992" y="222" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0kt6mzh_di" bpmnElement="Activity_0vwz90n">
+        <dc:Bounds x="560" y="130" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0gshz6m_di" bpmnElement="Activity_0dsgh5e">
+        <dc:Bounds x="560" y="270" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0ylj36b_di" bpmnElement="Flow_0ylj36b">
+        <di:waypoint x="246" y="240" />
+        <di:waypoint x="303" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0gtdqrh_di" bpmnElement="Flow_0gtdqrh">
+        <di:waypoint x="328" y="265" />
+        <di:waypoint x="328" y="310" />
+        <di:waypoint x="390" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1672kc1_di" bpmnElement="Flow_1672kc1">
+        <di:waypoint x="328" y="215" />
+        <di:waypoint x="328" y="170" />
+        <di:waypoint x="390" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_14cym6u_di" bpmnElement="Flow_14cym6u">
+        <di:waypoint x="838" y="170" />
+        <di:waypoint x="900" y="170" />
+        <di:waypoint x="900" y="215" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1jfs8p6_di" bpmnElement="Flow_1jfs8p6">
+        <di:waypoint x="838" y="310" />
+        <di:waypoint x="900" y="310" />
+        <di:waypoint x="900" y="265" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_13gnzy6_di" bpmnElement="Flow_13gnzy6">
+        <di:waypoint x="925" y="240" />
+        <di:waypoint x="992" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1nl0y27_di" bpmnElement="Flow_1nl0y27">
+        <di:waypoint x="490" y="170" />
+        <di:waypoint x="560" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1n09c6k_di" bpmnElement="Flow_1n09c6k">
+        <di:waypoint x="490" y="310" />
+        <di:waypoint x="560" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0yq2qvc_di" bpmnElement="Flow_0yq2qvc">
+        <di:waypoint x="660" y="170" />
+        <di:waypoint x="738" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1vvbuhh_di" bpmnElement="Flow_1vvbuhh">
+        <di:waypoint x="660" y="310" />
+        <di:waypoint x="738" y="310" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

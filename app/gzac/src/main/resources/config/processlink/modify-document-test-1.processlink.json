@@ -1,0 +1,8 @@
+[
+    {
+        "activityId": "startModifyDocumentStartEvent",
+        "activityType": "bpmn:StartEvent:start",
+        "processLinkType": "form",
+        "formDefinitionName": "start-form-modify-document"
+    }
+]
