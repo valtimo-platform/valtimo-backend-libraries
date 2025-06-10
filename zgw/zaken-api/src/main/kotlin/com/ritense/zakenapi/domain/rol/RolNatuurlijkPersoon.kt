@@ -29,12 +29,12 @@ data class RolNatuurlijkPersoon(
     val voorletters: String? = null,
     val voornamen: String? = null,
     @JsonProperty("geslachtsaanduiding")
-    val geslachtsaanduidingString: String? = null,
+    private val geslachtsaanduidingString: String? = null,
     val geboortedatum: String? = null,
     val verblijfsadres: Verblijfsadres? = null,
     val subVerblijfBuitenland: SubVerblijfBuitenland? = null,
 ) : BetrokkeneIdentificatie() {
     val geslachtsaanduiding = geslachtsaanduidingString?.let {
-        GeslachtsaanduidingEnum.entries.find { it.name == geslachtsaanduidingString }
-    }
+        GeslachtsaanduidingEnum.entries.find { it.value == geslachtsaanduidingString }
+    }?.value
 }

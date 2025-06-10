@@ -6,8 +6,8 @@ package com.ritense.zakenapi.domain.rol
  * - V: Vrouw
  * - O: Onbekend
  */
-enum class GeslachtsaanduidingEnum {
-    M,
-    V,
-    O
+enum class GeslachtsaanduidingEnum(val value: String) {
+    M("m"),
+    V("v"),
+    O("o")
 }

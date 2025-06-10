@@ -25,14 +25,14 @@ data class RolNietNatuurlijkPersoon(
     val innNnpId: String? = null,
     val statutaireNaam: String? = null,
     @JsonProperty("innRechtsvorm")
-    val innRechtsvormString: String? = null,
+    private val innRechtsvormString: String? = null,
     val bezoekadres: String? = null,
     val subVerblijfBuitenland: SubVerblijfBuitenland? = null,
 ) : BetrokkeneIdentificatie() {
 
     val innRechtsvorm = innRechtsvormString?.let {
         InnRechtsvormEnum.entries.find {it.value == innRechtsvormString}
-    }
+    }?.value
 
     init {
         require(!annIdentificatie.isNullOrBlank() || !innNnpId.isNullOrBlank()) {
