@@ -355,9 +355,10 @@ class CaseDefinitionService(
     }
 
     @Throws(UnknownDocumentDefinitionException::class)
-    private fun assertDocumentDefinitionExists(caseDefinitionKey: String): DocumentDefinition {
-        return documentDefinitionService.findLatestByName(caseDefinitionKey)
-            .getOrNull() ?: throw UnknownCaseDefinitionException(caseDefinitionKey)
+    private fun assertDocumentDefinitionExists(caseDefinitionKey: String) {
+        if (!documentDefinitionService.existsByName(caseDefinitionKey)) {
+            throw UnknownCaseDefinitionException(caseDefinitionKey)
+        }
     }
 
     companion object {

@@ -546,7 +546,7 @@ internal class DocumentJsonValueResolverTest {
 
     private fun mockDefinition(definitionName: String): JsonSchemaDocumentDefinition {
         val definition: JsonSchemaDocumentDefinition = definitionOf(definitionName)
-        whenever(documentDefinitionService.findLatestByName(definitionName)).thenReturn(Optional.of(definition))
+        whenever(documentDefinitionService.findActiveByName(definitionName)).thenReturn(Optional.of(definition))
         return definition
     }
 

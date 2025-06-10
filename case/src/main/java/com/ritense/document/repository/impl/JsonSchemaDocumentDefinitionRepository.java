@@ -18,73 +18,13 @@ package com.ritense.document.repository.impl;
 
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.repository.DocumentDefinitionRepository;
-import java.util.List;
 import com.ritense.valtimo.contract.case_.CaseDefinitionId;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface JsonSchemaDocumentDefinitionRepository extends DocumentDefinitionRepository<JsonSchemaDocumentDefinition> {
-
-    @Query(nativeQuery = true, value = "" +
-        "select " +
-        "    distinct jsonschema.document_definition_name, " +
-        "    jsonschema.case_definition_key, " +
-        "    jsonschema.case_definition_version_tag, " +
-        "    jsonschema.created_on, " +
-        "    jsonschema.read_only, " +
-        "    jsonschema.json_schema " +
-        "from " +
-        "    json_schema_document_definition jsonschema " +
-        "inner join " +
-        "    json_schema_document_definition_role jsonschema_role " +
-        "        on (" +
-        "            jsonschema_role.document_definition_name = jsonschema.document_definition_name " +
-        "            and (" +
-        "                jsonschema_role.role in (:roles)" +
-        "            )" +
-        "        ) " +
-        "inner join (" +
-        "        select" +
-        "            max(jsonschema_for_max.case_definition_version_tag) as latest_version," +
-        "            jsonschema_for_max.case_definition_key" +
-        "            jsonschema_for_max.document_definition_name" +
-        "        from" +
-        "            json_schema_document_definition jsonschema_for_max " +
-        "        group by " +
-        "            jsonschema_for_max.document_definition_name" +
-        ") version_per_definition " +
-        "on version_per_definition.latest_version = jsonschema.case_definition_version_tag " +
-        "and version_per_definition.case_definition_key = jsonschema.case_definition_key " +
-        "and version_per_definition.document_definition_name = jsonschema.document_definition_name ")
-    Page<JsonSchemaDocumentDefinition> findAllForRoles(List<String> roles, Pageable pageable);
-
-    @Query(nativeQuery = true, value = "" +
-        "select " +
-        "    distinct jsonschema.document_definition_name, " +
-        "    jsonschema.case_definition_key, " +
-        "    jsonschema.case_definition_version_tag, " +
-        "    jsonschema.created_on, " +
-        "    jsonschema.read_only, " +
-        "    jsonschema.json_schema " +
-        "from " +
-        "    json_schema_document_definition jsonschema " +
-        "inner join (" +
-        "        select" +
-        "            max(jsonschema_for_max.case_definition_version_tag) as latest_version," +
-        "            jsonschema_for_max.case_definition_key" +
-        "            jsonschema_for_max.document_definition_name" +
-        "        from" +
-        "            json_schema_document_definition jsonschema_for_max " +
-        "        group by " +
-        "            jsonschema_for_max.document_definition_name" +
-        ") version_per_definition " +
-        "on version_per_definition.latest_version = jsonschema.document_definition_version " +
-        "and version_per_definition.case_definition_key = jsonschema.case_definition_key " +
-        "and version_per_definition.document_definition_name = jsonschema.document_definition_name ")
-    Page<JsonSchemaDocumentDefinition> findAll(Pageable pageable);
 
     @Query("" +
         "   SELECT      definition.id.caseDefinitionId" +
