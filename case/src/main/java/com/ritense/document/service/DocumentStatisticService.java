@@ -16,8 +16,8 @@
 
 package com.ritense.document.service;
 
-import static com.ritense.document.repository.impl.JsonSchemaDocumentSpecificationHelper.byDocumentDefinitionName;
-import static com.ritense.document.repository.impl.JsonSchemaDocumentSpecificationHelper.byUnassigned;
+import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentSpecificationHelper.byDocumentDefinitionIdName;
+import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentSpecificationHelper.byUnassigned;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
 
 import com.ritense.authorization.AuthorizationService;
@@ -58,7 +58,7 @@ public class DocumentStatisticService {
     }
 
     private UnassignedDocumentCountDto getUnassignedDocumentCountDto(String documentDefinitionName, Specification authSpec) {
-        long count = documentRepository.count(authSpec.and(byDocumentDefinitionName(documentDefinitionName).and(byUnassigned())));
+        long count = documentRepository.count(authSpec.and(byDocumentDefinitionIdName(documentDefinitionName).and(byUnassigned())));
         return new UnassignedDocumentCountDto(documentDefinitionName, count);
     }
 
