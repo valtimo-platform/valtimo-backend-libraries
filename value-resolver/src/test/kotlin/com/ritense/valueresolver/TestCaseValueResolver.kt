@@ -52,11 +52,11 @@ class TestCaseValueResolver(
         throw NotImplementedError("Unable to handle value: {${firstValue.key} to ${firstValue.value}}")
     }
 
-    override fun getResolvableKeyOptions(documentDefinitionName: String, caseDefinitionId: CaseDefinitionId): List<ValueResolverOption> {
+    override fun getResolvableKeyOptions(caseDefinitionId: CaseDefinitionId): List<ValueResolverOption> {
         return createFieldList(COLUMN_LIST)
     }
 
-    override fun getResolvableKeyOptions(documentDefinitionName: String): List<ValueResolverOption> {
+    override fun getResolvableKeyOptions(caseDefinitionKey: String): List<ValueResolverOption> {
         return createFieldList(COLUMN_LIST) +
             ValueResolverOption(
                 "test",
