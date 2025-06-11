@@ -260,7 +260,7 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         """.trimIndent()
 
         val statement = connection.prepareStatement(insertProcessLinkQuery)
-        statement.setString(1, processLink.id)
+        statement.setObject(1, processLink.id)
         statement.setString(2, processLink.processDefinitionId)
         statement.setString(3, processLink.activityId)
         statement.setString(4, processLink.activityType)
@@ -275,7 +275,7 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         statement.setString(13, processLink.pluginConfigurationId)
         statement.setString(14, processLink.pluginActionDefinitionKey)
         statement.setString(15, processLink.formFlowDefinitionId)
-        statement.setString(16, processLink.formDefinitionId)
+        statement.setObject(16, processLink.formDefinitionId)
         statement.executeUpdate()
     }
 
