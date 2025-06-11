@@ -26,6 +26,7 @@ import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.case.web.rest.mapper.CaseListColumnMapper
+import com.ritense.case_.domain.definition.CaseDefinition
 import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
@@ -34,12 +35,15 @@ import com.ritense.valueresolver.exception.ValueResolverValidationException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import java.util.Optional
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -353,6 +357,32 @@ class CaseDefinitionServiceTest : BaseTest() {
                 "' doesn't point to any property inside document definition '" + caseDefinitionName + "'",
             exception.message
         )
+    }
+
+    @Test
+    fun `should not delete an active draft when more drafts exist`() {
+        val caseDefinitionId = CaseDefinitionId("key", "1.0.0")
+        val caseDefinition = caseDefinition(id = caseDefinitionId, active = true, final = false)
+        whenever(caseDefinitionRepository.findAll(any(), any<Pageable>()))
+            .thenReturn(PageImpl(listOf<CaseDefinition>(caseDefinition, mock())))
+        whenever(caseDefinitionRepository.findById(caseDefinitionId))
+            .thenReturn(Optional.of(caseDefinition))
+
+        assertEquals("Failed to delete case-definition. Case-definition with id: '$caseDefinitionId' is the global active version.", assertThrows<Exception> {
+            service.deleteCaseDefinition(caseDefinitionId)
+        }.message)
+    }
+
+    @Test
+    fun `should delete an active draft when it is the last one`() {
+        val caseDefinitionId = CaseDefinitionId("key", "1.0.0")
+        val caseDefinition = caseDefinition(id = caseDefinitionId, active = true, final = false)
+        whenever(caseDefinitionRepository.findAll(any(), any<Pageable>()))
+            .thenReturn(PageImpl(listOf<CaseDefinition>(caseDefinition)))
+        whenever(caseDefinitionRepository.findById(caseDefinitionId))
+            .thenReturn(Optional.of(caseDefinition))
+
+        service.deleteCaseDefinition(caseDefinitionId)
     }
 
     private fun getListColumnDtoToFirstName(displayType: DisplayType): CaseListColumnDto {

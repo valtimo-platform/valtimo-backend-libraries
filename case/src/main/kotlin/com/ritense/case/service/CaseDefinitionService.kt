@@ -38,7 +38,6 @@ import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.case.web.rest.mapper.CaseListColumnMapper
 import com.ritense.case_.domain.definition.CaseDefinition
 import com.ritense.case_.repository.CaseDefinitionRepository
-import com.ritense.document.domain.DocumentDefinition
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
@@ -58,7 +57,6 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
-import kotlin.jvm.optionals.getOrNull
 
 @Transactional
 @Service
@@ -136,7 +134,11 @@ class CaseDefinitionService(
     fun deleteCaseDefinition(caseDefinitionId: CaseDefinitionId) {
         denyManagementOperation()
         caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId)
-        require(!getCaseDefinition(caseDefinitionId).active) {
+        val isLastCaseDefinition = getCaseDefinitions(
+            caseDefinitionKey = caseDefinitionId.key,
+            pageable = Pageable.ofSize(2)
+        ).count() == 1
+        require(isLastCaseDefinition || !getCaseDefinition(caseDefinitionId).active) {
             "Failed to delete case-definition. Case-definition with id: '$caseDefinitionId' is the global active version."
         }
         require(!getCaseDefinition(caseDefinitionId).final) {
