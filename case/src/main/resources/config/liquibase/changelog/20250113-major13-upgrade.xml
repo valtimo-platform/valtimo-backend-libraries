@@ -33,6 +33,9 @@
     </changeSet>
 
     <changeSet id="111.1" author="Ritense">
+        <preConditions>
+            <foreignKeyConstraintExists foreignKeyName="fk_task_list_column_case_definition"/>
+        </preConditions>
         <dropForeignKeyConstraint baseTableName="task_list_column"
                                   constraintName="fk_task_list_column_case_definition"/>
         <!--TODO: add this back based on the new information-->

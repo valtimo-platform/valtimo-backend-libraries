@@ -18,6 +18,7 @@ package com.ritense.processdocument.liquibase.changelog
 
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.service.CamundaProcessService
+import com.ritense.valtimo.service.CamundaProcessService.CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX
 import io.github.oshai.kotlinlogging.KotlinLogging
 import liquibase.change.custom.CustomTaskChange
 import liquibase.database.Database
@@ -276,7 +277,223 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         caseDefinitionVersionTag: String,
         decisionDefinitionKey: String,
     ) {
+        if (isDecisionDefinition(connection, caseDefinitionKey, caseDefinitionVersionTag, decisionDefinitionKey)) {
+            return
+        }
 
+        val decisionDefinitionSet: DecisionDefinitionSet? = getLatestDecisionDefinition(connection, caseDefinitionKey)
+            ?: error("No decision definition found for key: $decisionDefinitionKey")
+        val updatedDecisionDefinition = changeDecisionDefinitionData(
+            caseDefinitionKey,
+            caseDefinitionVersionTag,
+            decisionDefinitionSet!!
+        )
+        saveDecisionDefinition(connection, updatedDecisionDefinition)
+    }
+
+    private fun changeDecisionDefinitionData(
+        caseDefinitionKey: String,
+        caseDefinitionVersionTag: String,
+        decisionDefinitionSet: DecisionDefinitionSet,
+    ): DecisionDefinitionSet {
+        val deploymentId = UUID.randomUUID().toString()
+
+        return decisionDefinitionSet.copy(
+            decisionDefinitions = decisionDefinitionSet.decisionDefinitions.map { decisionDefinition ->
+                decisionDefinition.copy(
+                    versionTag = CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + CaseDefinitionId.of(caseDefinitionKey, caseDefinitionVersionTag),
+                    version = decisionDefinition.version + 1,
+                    deploymentId = deploymentId,
+                )
+            },
+            deployment = decisionDefinitionSet.deployment.copy(
+                id = deploymentId,
+                deployTime = Timestamp.from(Instant.now())
+            ),
+            byteArray = decisionDefinitionSet.byteArray.copy(
+                id = UUID.randomUUID().toString(),
+                deploymentId = deploymentId,
+            ),
+            decisionRequirementsDefinition = decisionDefinitionSet.decisionRequirementsDefinition?.copy(
+                deploymentId = deploymentId,
+                version = decisionDefinitionSet.decisionRequirementsDefinition.version + 1
+            )
+        )
+    }
+
+    private fun saveDecisionDefinition(
+        connection: JdbcConnection,
+        decisionDefinitionSet: DecisionDefinitionSet,
+    ) {
+        saveDeployment(connection, decisionDefinitionSet.deployment)
+        saveByteArray(connection, decisionDefinitionSet.byteArray)
+        decisionDefinitionSet.decisionRequirementsDefinition?.let {
+            saveDecisionRequirementsDefinition(connection, it)
+        }
+        decisionDefinitionSet.decisionDefinitions.forEach {
+            saveDecisionDefinition(
+                connection,
+                it,
+                decisionDefinitionSet.decisionRequirementsDefinition
+            )
+        }
+    }
+
+    private fun isDecisionDefinition(
+        connection: JdbcConnection,
+        caseDefinitionKey: String,
+        caseDefinitionVersionTag: String,
+        decisionDefinitionKey: String,
+    ): Boolean {
+        // since this can be called recursively, first check if the process has not been migrated already
+        val existingProcDefQuery = """
+            select count(*) as nr_of_decision_definitions
+            from act_re_decision_def
+            where key_ = ?
+            and version_tag_ = ?
+        """.trimIndent()
+
+        val statement = connection.prepareStatement(existingProcDefQuery)
+        statement.setString(1, decisionDefinitionKey)
+        statement.setString(2, CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + CaseDefinitionId.of(caseDefinitionKey, caseDefinitionVersionTag))
+
+        val resultSet = statement.executeQuery()
+        resultSet.next()
+        val numberOfDecisions = resultSet.getInt(1)
+        return numberOfDecisions > 0
+    }
+
+    private fun getLatestDecisionDefinition(
+        connection: JdbcConnection,
+        decisionDefinitionKey: String,
+    ): DecisionDefinitionSet? {
+        val query = """
+            select
+                ardd.id_ ardd_id_,
+                ardd.rev_ ardd_rev_,
+                ardd.category_ ardd_category_,
+                ardd.name_ ardd_name_,
+                ardd.key_ ardd_key_,
+                ardd.version_ ardd_version_,
+                ardd.deployment_id_ ardd_deployment_id_,
+                ardd.resource_name_ ardd_resource_name_,
+                ardd.dgrm_resource_name_ ardd_dgrm_resource_name_,
+                ardd.dec_req_id_ ardd_dec_req_id_,
+                ardd.dec_req_key_ ardd_dec_req_key_,
+                ardd.tenant_id_ ardd_tenant_id_,
+                ardd.history_ttl_ ardd_history_ttl_,
+                ardd.version_tag_ ardd_version_tag_,
+                ardrd.id_ ardrd_id_,
+                ardrd.rev_ ardrd_rev_,
+                ardrd.category_ ardrd_category_,
+                ardrd.name_ ardrd_name_,
+                ardrd.key_ ardrd_key_,
+                ardrd.version_ ardrd_version_,
+                ardrd.deployment_id_ ardrd_deployment_id_,
+                ardrd.resource_name_ ardrd_resource_name_,
+                ardrd.dgrm_resource_name_ ardrd_dgrm_resource_name_,
+                ardrd.tenant_id_ ardrd_tenant_id_,
+                ard.id_ ard_id_,
+                ard.name_ ard_name_,
+                ard.deploy_time_ ard_deploy_time_,
+                ard.source_ ard_source_,
+                ard.tenant_id_ ard_tenant_id_,
+                agb.rev_ agb_rev_,
+                agb.bytes_ agb_bytes_,
+                agb.generated_ agb_generated_,
+                agb.tenant_id_ agb_tenant_id_,
+                agb.type_ agb_type_,
+                agb.create_time_ agb_create_time_,
+                agb.root_proc_inst_id_ agb_root_proc_inst_id_,
+                agb.removal_time_ agb_removal_time_
+            from act_re_decision_def ardd
+            join act_re_deployment ard
+                on ardd.deployment_id_ = ard.id_
+            join act_ge_bytearray agb
+                on agb.deployment_id_ = ardd.deployment_id_
+                and agb.name_ = ardd.resource_name_
+            left join act_re_decision_req_def ardrd
+                on ardrd.deployment_id_ = ardd.deployment_id_
+                and ardrd.resource_name_ = ardd.resource_name_
+            where ardd.deployment_id_ = (
+                select ard2.id_
+                from act_re_deployment ard2
+                join act_re_decision_def ardd2
+                    on ardd2.deployment_id_ = ard2.id_
+                where ardd2.key_ = ?
+                order by version_ desc
+                limit 1
+            )
+        """.trimIndent()
+
+        val statement = connection.prepareStatement(query)
+        statement.setString(1, decisionDefinitionKey)
+
+        val results = statement.executeQuery()
+        var decisionDefinition: DecisionDefinitionSet? = null
+        val decisionDefinitions = mutableListOf<DecisionDefinition>()
+        while (results.next()) {
+            if (results.isFirst) {
+                val decisionRequirementsDefinition = if (results.getString("ardrd_id_") == null) {
+                    DecisionRequirementsDefinition(
+                        results.getString("ardrd_id_"),
+                        results.getInt("ardrd_rev_"),
+                        results.getString("ardrd_category_"),
+                        results.getString("ardrd_name_"),
+                        results.getString("ardrd_key_"),
+                        results.getInt("ardrd_version_"),
+                        results.getString("ardrd_deployment_id_"),
+                        results.getString("ardrd_resource_name_"),
+                        results.getString("ardrd_dgrm_resource_name_"),
+                        results.getString("ardrd_tenant_id_"),
+                    )
+                } else {
+                    null
+                }
+                decisionDefinition = DecisionDefinitionSet(
+                    deployment = Deployment(
+                        results.getString("ard_id_"),
+                        results.getString("ard_name_"),
+                        results.getTimestamp("ard_deploy_time_"),
+                        results.getString("ard_source_"),
+                        results.getString("ard_tenant_id_")
+                    ),
+                    decisionRequirementsDefinition = decisionRequirementsDefinition,
+                    decisionDefinitions = decisionDefinitions,
+                    byteArray = CamundaByteArray(
+                        results.getString("ard_id_"),
+                        results.getInt("agb_rev_"),
+                        results.getString("ard_resource_name_"),
+                        results.getString("ard_deployment_id_"),
+                        results.getBytes("agb_bytes_"),
+                        results.getBoolean("agb_generated_"),
+                        results.getString("agb_tenant_id_"),
+                        results.getInt("agb_type_"),
+                        results.getTimestamp("agb_create_time_"),
+                        results.getString("agb_root_proc_inst_id_"),
+                        results.getTimestamp("agb_removal_time_")
+                    )
+                )
+            }
+
+            decisionDefinitions.add(
+                DecisionDefinition(
+                    results.getString("ardd_id_"),
+                    results.getInt("ardd_rev_"),
+                    results.getString("ardd_category_"),
+                    results.getString("ardd_name_"),
+                    results.getString("ardd_key_"),
+                    results.getInt("ardd_version_"),
+                    results.getString("ardd_deployment_id_"),
+                    results.getString("ardd_resource_name_"),
+                    results.getString("ardd_dgrm_resource_name_"),
+                    results.getString("ardd_tenant_id_"),
+                    results.getString("ardd_version_tag_"),
+                    results.getInt("ardd_history_ttl_"),
+                )
+            )
+        }
+        return decisionDefinition
     }
 
     private fun saveProcDefForCaseDef(
@@ -288,8 +505,8 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         canInitializeDocument: Boolean,
         startableByUser: Boolean
     ) {
-        saveDeployment(connection, processDefinition)
-        saveByteArray(connection, processDefinition)
+        saveDeployment(connection, processDefinition.deployment)
+        saveByteArray(connection, processDefinition.byteArray)
         saveProcessDefinition(connection, processDefinition)
         saveProcessDefinitionCaseDefinition(
             connection,
@@ -355,7 +572,7 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
 
     private fun saveDeployment(
         connection: JdbcConnection,
-        processDefinition: ProcessDefinition,
+        deployment: Deployment,
     ) {
         val insertProcDefQuery = """
             insert into act_re_deployment (
@@ -370,18 +587,18 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         """.trimIndent()
 
         val statement = connection.prepareStatement(insertProcDefQuery)
-        statement.setString(1, processDefinition.deployment.id)
-        statement.setString(2, processDefinition.deployment.name)
-        statement.setTimestamp(3, processDefinition.deployment.deployTime)
-        statement.setString(4, processDefinition.deployment.source)
-        statement.setString(5, processDefinition.deployment.tenantId)
+        statement.setString(1, deployment.id)
+        statement.setString(2, deployment.name)
+        statement.setTimestamp(3, deployment.deployTime)
+        statement.setString(4, deployment.source)
+        statement.setString(5, deployment.tenantId)
 
         statement.executeUpdate()
     }
 
     private fun saveByteArray(
         connection: JdbcConnection,
-        processDefinition: ProcessDefinition,
+        byteArray: CamundaByteArray
     ) {
         val insertProcDefQuery = """
             insert into act_ge_bytearray (
@@ -402,23 +619,23 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         """.trimIndent()
 
         val statement = connection.prepareStatement(insertProcDefQuery)
-        statement.setString(1, processDefinition.byteArray.id)
-        statement.setInt(2, processDefinition.byteArray.rev)
-        statement.setString(3, processDefinition.byteArray.name)
-        statement.setString(4, processDefinition.byteArray.deploymentId)
-        statement.setBytes(5, processDefinition.byteArray.bytes)
-        processDefinition.byteArray.generated.let {
+        statement.setString(1, byteArray.id)
+        statement.setInt(2, byteArray.rev)
+        statement.setString(3, byteArray.name)
+        statement.setString(4, byteArray.deploymentId)
+        statement.setBytes(5, byteArray.bytes)
+        byteArray.generated.let {
             if (it == null) {
                 statement.setNull(6, java.sql.Types.BOOLEAN)
             } else {
                 statement.setBoolean(6, it)
             }
         }
-        statement.setString(7, processDefinition.byteArray.tenantId)
-        statement.setInt(8, processDefinition.byteArray.type)
-        statement.setTimestamp(9, processDefinition.byteArray.createTime)
-        statement.setString(10, processDefinition.byteArray.rootProcInstId)
-        statement.setTimestamp(11, processDefinition.byteArray.removalTime)
+        statement.setString(7, byteArray.tenantId)
+        statement.setInt(8, byteArray.type)
+        statement.setTimestamp(9, byteArray.createTime)
+        statement.setString(10, byteArray.rootProcInstId)
+        statement.setTimestamp(11, byteArray.removalTime)
 
         statement.executeUpdate()
     }
@@ -449,6 +666,93 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         statement.setString(3, caseDefinitionVersionTagForDatabase)
         statement.setBoolean(4, canInitializeDocument)
         statement.setBoolean(5, startableByUser)
+
+        statement.executeUpdate()
+    }
+
+    private fun saveDecisionRequirementsDefinition(
+        connection: JdbcConnection,
+        drd: DecisionRequirementsDefinition,
+    ) {
+        val insertProcDefQuery = """
+            insert into act_re_decision_req_def (
+                id_,
+                rev_,
+                category_,
+                name_,
+                key_,
+                version_,
+                deployment_id_,
+                resource_name_,
+                dgrm_resource_name_,
+                tenant_id_
+            ) values (
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+            )
+        """.trimIndent()
+
+        val statement = connection.prepareStatement(insertProcDefQuery)
+        statement.setString(1, drd.id)
+        statement.setInt(2, drd.rev)
+        statement.setString(3, drd.category)
+        statement.setString(4, drd.name)
+        statement.setString(5, drd.key)
+        statement.setInt(6, drd.version)
+        statement.setString(7, drd.deploymentId)
+        statement.setString(8, drd.resourceName)
+        statement.setString(9, drd.dgrmResourceName)
+        statement.setString(10, drd.tenantId)
+
+        statement.executeUpdate()
+    }
+
+    private fun saveDecisionDefinition(
+        connection: JdbcConnection,
+        decisionDefinition: DecisionDefinition,
+        drd: DecisionRequirementsDefinition? = null,
+    ) {
+        val insertProcDefQuery = """
+            insert into act_re_decision_def (
+                id_,
+                rev_,
+                category_,
+                name_,
+                key_,
+                version_,
+                deployment_id_,
+                resource_name_,
+                dgrm_resource_name_,
+                dec_req_id_,
+                dec_req_key_,
+                tenant_id_,
+                history_ttl_,
+                version_tag_
+            ) values (
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+            )
+        """.trimIndent()
+
+        val statement = connection.prepareStatement(insertProcDefQuery)
+        statement.setString(1, decisionDefinition.id)
+        statement.setInt(2, decisionDefinition.rev)
+        statement.setString(3, decisionDefinition.category)
+        statement.setString(4, decisionDefinition.name)
+        statement.setString(5, decisionDefinition.key)
+        statement.setInt(6, decisionDefinition.version)
+        statement.setString(7, decisionDefinition.deploymentId)
+        statement.setString(8, decisionDefinition.resourceName)
+        statement.setString(9, decisionDefinition.dgrmResourceName)
+        statement.setString(10, drd?.id)
+        statement.setString(11, drd?.key)
+        statement.setString(12, decisionDefinition.tenantId)
+        decisionDefinition.historyTtl.let {
+            if (it == null) {
+                statement.setNull(13, java.sql.Types.INTEGER)
+            } else {
+                statement.setInt(13, it)
+            }
+        }
+        statement.setString(14, decisionDefinition.versionTag)
 
         statement.executeUpdate()
     }
@@ -717,5 +1021,40 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         val pluginActionDefinitionKey: String?,
         val formFlowDefinitionId: String?,
         val migrationFormName: String? = null,
+    )
+
+    data class DecisionDefinitionSet(
+        val decisionDefinitions: List<DecisionDefinition> = mutableListOf(),
+        val decisionRequirementsDefinition: DecisionRequirementsDefinition? = null,
+        val deployment: Deployment,
+        val byteArray: CamundaByteArray
+    )
+
+    data class DecisionDefinition(
+        val id: String,
+        val rev: Int,
+        val category: String?,
+        val name: String,
+        val key: String,
+        val version: Int,
+        val deploymentId: String,
+        val resourceName: String?,
+        val dgrmResourceName: String?,
+        val tenantId: String?,
+        val versionTag: String?,
+        val historyTtl: Int? = null,
+    )
+
+    data class DecisionRequirementsDefinition(
+        val id: String,
+        val rev: Int,
+        val category: String?,
+        val name: String,
+        val key: String,
+        val version: Int,
+        val deploymentId: String,
+        val resourceName: String?,
+        val dgrmResourceName: String?,
+        val tenantId: String?,
     )
 }
