@@ -379,8 +379,7 @@ class DocumentenApiPlugin(
         )
 
         val bestandsdelenRequest = BestandsdelenRequest(
-            inhoud = inhoudAsInputStream,
-            lock = documentCreateResult.getLockOrEmpty()
+            inhoud = inhoudAsInputStream
         )
 
         client.storeDocumentInParts(
