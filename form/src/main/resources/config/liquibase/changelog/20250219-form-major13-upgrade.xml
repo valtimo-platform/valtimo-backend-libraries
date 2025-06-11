@@ -42,6 +42,9 @@
 
     <!-- migrate summary forms to case definitions -->
     <changeSet id="11" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="case_definition"/>
+        </preConditions>
         <sql>
             insert into form_io_form_definition
                 (id, name, form_definition, read_only, case_definition_key, case_definition_version_tag)
@@ -55,7 +58,7 @@
 
     <!-- migrate process link forms -->
     <changeSet id="12" author="Ritense">
-        <preConditions>
+        <preConditions onFail="MARK_RAN">
             <columnExists tableName="process_link" columnName="migration_form_name"/>
         </preConditions>
         <sql>

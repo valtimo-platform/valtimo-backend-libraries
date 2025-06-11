@@ -35,7 +35,7 @@
 
     <!-- This is only used temporarily during migration to major 13 -->
     <changeSet id="3" author="Ritense">
-        <preConditions>
+        <preConditions onFail="MARK_RAN">
             <tableExists tableName="form_io_form_definition"/>
             <tableExists tableName="process_link"/>
         </preConditions>
@@ -45,7 +45,7 @@
     </changeSet>
 
     <changeSet id="4" author="Ritense">
-        <preConditions>
+        <preConditions onFail="MARK_RAN">
             <tableExists tableName="form_io_form_definition"/>
             <tableExists tableName="process_link"/>
         </preConditions>

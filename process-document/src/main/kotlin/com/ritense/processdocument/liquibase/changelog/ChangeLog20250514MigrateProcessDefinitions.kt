@@ -152,6 +152,14 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
                 false,
             )
         }
+        referencedEntities.decisionDefinitionKeys.forEach { decisionDefinitionKey ->
+            migrateDecisionDefinition(
+                connection,
+                caseDefinitionKey,
+                caseDefinitionVersionTag,
+                decisionDefinitionKey
+            )
+        }
     }
 
     private fun migrateProcessLinksWithRelatedResources(
@@ -281,8 +289,10 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
             return
         }
 
-        val decisionDefinitionSet: DecisionDefinitionSet? = getLatestDecisionDefinition(connection, caseDefinitionKey)
-            ?: error("No decision definition found for key: $decisionDefinitionKey")
+        val decisionDefinitionSet: DecisionDefinitionSet? = getLatestDecisionDefinition(connection, decisionDefinitionKey)
+        if (decisionDefinitionSet == null) {
+            error("No decision definition found for key: $decisionDefinitionKey")
+        }
         val updatedDecisionDefinition = changeDecisionDefinitionData(
             caseDefinitionKey,
             caseDefinitionVersionTag,
@@ -301,6 +311,7 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         return decisionDefinitionSet.copy(
             decisionDefinitions = decisionDefinitionSet.decisionDefinitions.map { decisionDefinition ->
                 decisionDefinition.copy(
+                    id = UUID.randomUUID().toString(),
                     versionTag = CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + CaseDefinitionId.of(caseDefinitionKey, caseDefinitionVersionTag),
                     version = decisionDefinition.version + 1,
                     deploymentId = deploymentId,
@@ -315,6 +326,7 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
                 deploymentId = deploymentId,
             ),
             decisionRequirementsDefinition = decisionDefinitionSet.decisionRequirementsDefinition?.copy(
+                id = UUID.randomUUID().toString(),
                 deploymentId = deploymentId,
                 version = decisionDefinitionSet.decisionRequirementsDefinition.version + 1
             )
@@ -398,7 +410,9 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
                 ard.deploy_time_ ard_deploy_time_,
                 ard.source_ ard_source_,
                 ard.tenant_id_ ard_tenant_id_,
+                agb.id_ agb_id_,
                 agb.rev_ agb_rev_,
+                agb.name_ agb_name_,
                 agb.bytes_ agb_bytes_,
                 agb.generated_ agb_generated_,
                 agb.tenant_id_ agb_tenant_id_,
@@ -434,9 +448,10 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         val decisionDefinitions = mutableListOf<DecisionDefinition>()
         while (results.next()) {
             if (results.isFirst) {
-                val decisionRequirementsDefinition = if (results.getString("ardrd_id_") == null) {
+                val decisionRequirementsDefinitionId = results.getString("ardrd_id_")
+                val decisionRequirementsDefinition = if (decisionRequirementsDefinitionId != null) {
                     DecisionRequirementsDefinition(
-                        results.getString("ardrd_id_"),
+                        decisionRequirementsDefinitionId,
                         results.getInt("ardrd_rev_"),
                         results.getString("ardrd_category_"),
                         results.getString("ardrd_name_"),
@@ -461,10 +476,10 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
                     decisionRequirementsDefinition = decisionRequirementsDefinition,
                     decisionDefinitions = decisionDefinitions,
                     byteArray = CamundaByteArray(
-                        results.getString("ard_id_"),
+                        results.getString("agb_id_"),
                         results.getInt("agb_rev_"),
-                        results.getString("ard_resource_name_"),
-                        results.getString("ard_deployment_id_"),
+                        results.getString("agb_name_"),
+                        results.getString("ardd_deployment_id_"),
                         results.getBytes("agb_bytes_"),
                         results.getBoolean("agb_generated_"),
                         results.getString("agb_tenant_id_"),
@@ -728,7 +743,7 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
                 history_ttl_,
                 version_tag_
             ) values (
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
             )
         """.trimIndent()
 

@@ -19,20 +19,59 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
+    <changeSet id="111.1" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyTableName="task_list_column" foreignKeyName="fk_task_list_column_case_definition"/>
+        </preConditions>
+        <dropForeignKeyConstraint baseTableName="task_list_column"
+                                  constraintName="fk_task_list_column_case_definition"/>
+        <!--TODO: add this back based on the new information-->
+    </changeSet>
+
+    <changeSet id="1.13" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="case_definition" columnName="case_definition_version_tag"/>
+            </not>
+        </preConditions>
+        <dropPrimaryKey tableName="case_definition" constraintName="case_definition_pkey"/>
+    </changeSet>
+
+    <changeSet id="3" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="case_definition" columnName="case_definition_version_tag"/>
+            </not>
+        </preConditions>
+        <renameColumn tableName="case_definition"
+                      oldColumnName="case_definition_name"
+                      newColumnName="case_definition_key"
+                      columnDataType="varchar(256)"/>
+        <addColumn tableName="case_definition">
+            <column name="case_definition_version_tag" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="case_definition">
+            <column name="case_definition_name" type="VARCHAR(256)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="4" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <primaryKeyExists tableName="case_definition" primaryKeyName="case_definition_pkey"/>
+            </not>
+        </preConditions>
+        <addPrimaryKey tableName="case_definition" columnNames="case_definition_key, case_definition_version_tag"/>
+    </changeSet>
 
     <changeSet id="8" author="Ritense">
         <addColumn tableName="task_list_column">
             <column name="case_definition_version_tag" type="VARCHAR(200)"/>
         </addColumn>
-    </changeSet>
-
-    <changeSet id="9" author="Ritense">
-        <dropPrimaryKey tableName="json_schema_document_definition"/>
-        <dropPrimaryKey tableName="json_schema_document_definition_sequence_record"/>
-    </changeSet>
-
-    <changeSet id="10" author="Ritense">
-        <dropColumn tableName="json_schema_document_definition" columnName="document_definition_version"/>
     </changeSet>
 
 <!--    <changeSet id="13" author="Ritense">
