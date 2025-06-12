@@ -48,7 +48,7 @@ class ZaakTypeLinkImporter(
     fun deploy(caseDefinitionId: CaseDefinitionId, content: String) {
         val zaakTypeLinkConfig: CreateZaakTypeLinkRequest = getJson(content)
 
-            zaakTypeLinkService.createZaakTypeLink(caseDefinitionId, zaakTypeLinkConfig)
+        zaakTypeLinkService.createZaakTypeLink(caseDefinitionId, zaakTypeLinkConfig)
     }
 
     private fun getJson(rawJson: String): CreateZaakTypeLinkRequest {

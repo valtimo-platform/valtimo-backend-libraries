@@ -23,12 +23,12 @@ import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import com.ritense.zakenapi.service.ZaakTypeLinkService
+import com.ritense.zakenapi.web.rest.request.CreateZaakTypeLinkRequest
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional(readOnly = true)
 class ZaakTypeLinkExporter(
-    private val objectMapper: ObjectMapper,
-    private val zaakTypeLinkService: ZaakTypeLinkService
+    private val objectMapper: ObjectMapper, private val zaakTypeLinkService: ZaakTypeLinkService
 ) : Exporter<DocumentDefinitionExportRequest> {
     override fun supports() = DocumentDefinitionExportRequest::class.java
 
@@ -44,9 +44,10 @@ class ZaakTypeLinkExporter(
             "${it.major}-${it.minor}-${it.patch}"
         }
 
+
         val zaakTypeLinkExport = ExportFile(
             PATH.format(request.caseDefinitionId.key, formattedCaseDefinitionVersion, caseName),
-            objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(zaakTypeLink)
+            objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(CreateZaakTypeLinkRequest.of(zaakTypeLink))
         )
 
         return ExportResult(
