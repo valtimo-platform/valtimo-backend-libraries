@@ -32,5 +32,5 @@ data class RolMedewerker(
     val achternaam: String,
     val voorletters: String,
     val voorvoegselAchternaam: String
-)
+) : BetrokkeneIdentificatie()
 
