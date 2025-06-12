@@ -38,7 +38,7 @@ data class FileUploadPart(
                 "Check bestandsdeel: $bestandsdeel."
         }
 
-        return createMultiValueMap(createFileResource(chunk), bestandsdelenRequest.lock)
+        return createMultiValueMap(createFileResource(chunk), bestandsdeel.lock)
     }
 
     private fun createFileResource(chunk: ByteArray): ByteArrayResource {
