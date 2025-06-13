@@ -171,7 +171,7 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
     ) {
         val processLinks = getProcessLinksForProcess(connection, originalProcessDefinition.id)
         processLinks.forEach {
-            val updatedLink = it.copy(processDefinitionId = newProcessDefinition.id, id = UUID.randomUUID().toString())
+            val updatedLink = it.copy(processDefinitionId = newProcessDefinition.id, id = UUID.randomUUID())
             saveProcessLink(connection, updatedLink)
         }
     }
@@ -209,19 +209,19 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         while (results.next()) {
             processLinks.add(
                 ProcessLink(
-                    results.getString("id"),
+                    UUID.fromString(results.getString("id")),
                     results.getString("process_definition_id"),
                     results.getString("activity_id"),
                     results.getString("activity_type"),
                     results.getString("process_link_type"),
                     results.getString("component_key"),
-                    results.getString("form_definition_id"),
+                    results.getString("form_definition_id")?.let { UUID.fromString(it) },
                     results.getBoolean("view_model_enabled"),
                     results.getString("form_display_type"),
                     results.getString("form_size"),
                     results.getString("subtitles"),
                     results.getString("action_properties"),
-                    results.getString("plugin_configuration_id"),
+                    results.getString("plugin_configuration_id")?.let { UUID.fromString(it) },
                     results.getString("plugin_action_definition_key"),
                     results.getString("form_flow_definition_id")
                 )
@@ -254,7 +254,7 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
                 form_flow_definition_id,
                 migration_form_name
             )
-             select ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, name
+             select ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?::json, ?::json, ?, ?, ?, name
              from form_io_form_definition
              where id = ?
         """.trimIndent()
@@ -1020,19 +1020,19 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
     )
 
     data class ProcessLink(
-        val id: String,
+        val id: UUID,
         val processDefinitionId: String,
         val activityId: String,
         val activityType: String,
         val processLinkType: String,
         val componentKey: String?,
-        val formDefinitionId: String?,
+        val formDefinitionId: UUID?,
         val viewModelEnabled: Boolean,
         val formDisplayType: String?,
         val formSize: String?,
         val subtitles: String?,
         val actionProperties: String?,
-        val pluginConfigurationId: String?,
+        val pluginConfigurationId: UUID?,
         val pluginActionDefinitionKey: String?,
         val formFlowDefinitionId: String?,
         val migrationFormName: String? = null,
