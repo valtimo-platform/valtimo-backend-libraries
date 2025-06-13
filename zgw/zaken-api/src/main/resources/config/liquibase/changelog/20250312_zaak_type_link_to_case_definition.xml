@@ -48,7 +48,7 @@
                 rsin
             )
             select
-                ztl.zaak_type_link_id,
+                gen_random_uuid(),
                 ztl.case_definition_key,
                 cd.case_definition_version_tag,
                 ztl.zaak_type_url,
@@ -59,6 +59,10 @@
             join case_definition cd
                 on ztl.case_definition_key = cd.case_definition_key
             where ztl.case_definition_version_tag is null
+        </sql>
+        <sql>
+            delete from zaak_type_link
+            where case_definition_version_tag is null
         </sql>
     </changeSet>
 
