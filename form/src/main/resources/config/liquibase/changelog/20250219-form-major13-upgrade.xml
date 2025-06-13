@@ -71,7 +71,7 @@
                 case_definition_key,
                 case_definition_version_tag
             )
-            select gen_random_uuid() as id, *
+            select gen_random_uuid() as id, forms.*
             from (select distinct
                 fd.name,
                 fd.form_definition,
@@ -88,7 +88,7 @@
             where pl.migration_form_name is not null
                 and fd.case_definition_key is null
                 and fd.case_definition_version_tag is null
-            )
+            ) as forms
         </sql>
         <sql>
             update process_link

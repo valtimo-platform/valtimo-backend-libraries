@@ -41,17 +41,31 @@
     <changeSet id="2" author="Ritense">
         <addColumn tableName="document_objecten_api_sync">
             <column name="case_definition_key" type="VARCHAR(256)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="case_definition_version_tag" type="VARCHAR(200)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
         </addColumn>
     </changeSet>
 
     <changeSet id="3" author="Ritense">
+        <sql>
+            update document_objecten_api_sync
+            set case_definition_key = document_definition_name,
+                case_definition_version_tag = '000000.' || LPAD(document_definition_version::text, 6, '0') || '.000000-${environmentName}'
+            where case_definition_version_tag is null
+        </sql>
+    </changeSet>
+
+    <changeSet id="4" author="Ritense">
         <dropColumn tableName="document_objecten_api_sync" columnName="document_definition_name"/>
         <dropColumn tableName="document_objecten_api_sync" columnName="document_definition_version"/>
+    </changeSet>
+
+    <changeSet id="5" author="Ritense">
+        <addNotNullConstraint tableName="document_objecten_api_sync" columnName="case_definition_key"/>
+        <addNotNullConstraint tableName="document_objecten_api_sync" columnName="case_definition_version_tag"/>
     </changeSet>
 
 </databaseChangeLog>

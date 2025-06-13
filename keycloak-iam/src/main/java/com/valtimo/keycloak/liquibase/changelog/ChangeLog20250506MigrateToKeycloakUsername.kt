@@ -34,6 +34,7 @@ import org.springframework.boot.SpringApplication
 import org.springframework.boot.env.EnvironmentPostProcessor
 import org.springframework.core.env.ConfigurableEnvironment
 import org.springframework.core.env.Environment
+import java.util.UUID
 
 class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, EnvironmentPostProcessor {
 
@@ -79,7 +80,7 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
             .executeQuery()
 
         while (result.next()) {
-            val documentId = result.getString("json_schema_document_id")
+            val documentId = UUID.fromString(result.getString("json_schema_document_id"))
             val assignee = result.getString("assignee_Id")
             if (assignee != null) {
                 try {
