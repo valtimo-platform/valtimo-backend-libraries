@@ -86,6 +86,8 @@ include(
     "zgw:object-management",
     "zgw:objecten-api",
     "zgw:objecttypen-api",
+    "zgw:open-product",
+    "zgw:token-authentication",
     "zgw:verzoek",
     "zgw:zaakdetails",
     "zgw:zaken-api",
