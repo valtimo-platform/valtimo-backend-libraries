@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.case_.service.ActiveCaseDefinitionService
@@ -100,7 +101,7 @@ class DocumentenApiVersionService(
         @LoggableResource("documentDefinitionName") caseDefinitionName: String
     ): List<Triple<PluginConfiguration, DocumentenApiPlugin, DocumentenApiVersion?>> {
         return detectPluginConfigurations(caseDefinitionName)
-            .map {  pluginConfiguration ->
+            .map { pluginConfiguration ->
                 val plugin = pluginService.createInstance(pluginConfiguration) as DocumentenApiPlugin
                 val version = getVersionByTagOrNull(plugin.apiVersion)
                 Triple(pluginConfiguration, plugin, version)
@@ -113,7 +114,9 @@ class DocumentenApiVersionService(
         @LoggableResource("documentDefinitionName") caseDefinitionName: String
     ): List<PluginConfiguration> {
         documentDefinitionService.requirePermission(caseDefinitionName, JsonSchemaDocumentDefinitionActionProvider.VIEW)
-        val caseDefinition = activeCaseDefinitionService.getActiveCaseDefinition(caseDefinitionName)
+        val caseDefinition = runWithoutAuthorization {
+                activeCaseDefinitionService.getActiveCaseDefinition(caseDefinitionName)
+            }
         val link = caseDefinitionProcessLinkService.getDocumentDefinitionProcessLink(
             caseDefinition.id,
             "DOCUMENT_UPLOAD"
