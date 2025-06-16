@@ -179,8 +179,7 @@ DocumentenApiClientTest {
         val client = DocumentenApiClient(restClientBuilder, outboxService, objectMapper, mock(), authorizationService)
 
         val request = BestandsdelenRequest(
-            inhoud = InputStream.nullInputStream(),
-            lock = UUID.randomUUID().toString()
+            inhoud = InputStream.nullInputStream()
         )
 
         val putResponseBody = """

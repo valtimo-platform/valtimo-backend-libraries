@@ -24,7 +24,7 @@ class FileUploadPartTest {
             lock = "test-lock"
         )
         val inputStream: InputStream = ByteArrayInputStream(ByteArray(10) { 1 })
-        val bestandsdelenRequest = BestandsdelenRequest(inputStream, lock = "test-lock")
+        val bestandsdelenRequest = BestandsdelenRequest(inputStream)
         val fileUploadPart = FileUploadPart(bestandsdeel, bestandsdelenRequest, "testfile.txt")
 
         // Act
@@ -48,7 +48,7 @@ class FileUploadPartTest {
             lock = "test-lock"
         )
         val inputStream: InputStream = ByteArrayInputStream(ByteArray(5) { 1 })
-        val bestandsdelenRequest = BestandsdelenRequest(inputStream, lock = "test-lock")
+        val bestandsdelenRequest = BestandsdelenRequest(inputStream)
         val fileUploadPart = FileUploadPart(bestandsdeel, bestandsdelenRequest, "testfile.txt")
 
         // Act & Assert
