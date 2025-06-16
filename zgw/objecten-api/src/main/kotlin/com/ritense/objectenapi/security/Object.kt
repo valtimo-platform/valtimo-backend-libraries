@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2024 Ritense BV, the Netherlands.
+ * Copyright 2015-2025 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.valueresolver
+package com.ritense.objectenapi.security
 
-import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.context.annotation.Bean
-
-@TestConfiguration
-class TestAutoConfiguration {
-    @Bean
-    fun testDocumentValueResolver() = TestDocumentValueResolver()
-
-    @Bean
-    fun testCaseValueResolver() = TestCaseValueResolver()
-}
+/*
+ * This class is a placeholder for an Objecten API Object used in permission checks.
+ */
+class Object()

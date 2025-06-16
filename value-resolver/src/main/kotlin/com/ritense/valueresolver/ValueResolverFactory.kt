@@ -113,11 +113,11 @@ interface ValueResolverFactory {
         return values
     }
 
-    fun getResolvableKeyOptions(documentDefinitionName: String, caseDefinitionId: CaseDefinitionId): List<ValueResolverOption> {
+    fun getResolvableKeyOptions(caseDefinitionId: CaseDefinitionId): List<ValueResolverOption> {
         return emptyList()
     }
 
-    fun getResolvableKeyOptions(documentDefinitionName: String): List<ValueResolverOption> {
+    fun getResolvableKeyOptions(caseDefinitionKey: String): List<ValueResolverOption> {
         return emptyList()
     }
 
