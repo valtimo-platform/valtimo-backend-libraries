@@ -46,15 +46,13 @@ class ZaakTypeLinkImporter(
 
     @Throws(JsonProcessingException::class)
     fun deploy(caseDefinitionId: CaseDefinitionId, content: String) {
-        val zaakTypeLinkConfigItems: List<CreateZaakTypeLinkRequest> = getJson(content)
+        val zaakTypeLinkConfig: CreateZaakTypeLinkRequest = getJson(content)
 
-        zaakTypeLinkConfigItems.forEach {
-            zaakTypeLinkService.createZaakTypeLink(caseDefinitionId, it)
-        }
+        zaakTypeLinkService.createZaakTypeLink(caseDefinitionId, zaakTypeLinkConfig)
     }
 
-    private fun getJson(rawJson: String): List<CreateZaakTypeLinkRequest> {
-        return objectMapper.readValue<List<CreateZaakTypeLinkRequest>>(rawJson)
+    private fun getJson(rawJson: String): CreateZaakTypeLinkRequest {
+        return objectMapper.readValue<CreateZaakTypeLinkRequest>(rawJson)
     }
 
     companion object {
