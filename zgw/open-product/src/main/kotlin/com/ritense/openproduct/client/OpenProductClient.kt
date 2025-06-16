@@ -10,6 +10,23 @@ import org.springframework.web.client.RestClient
 @Component
 class OpenProductClient() {
 
+    fun getProduct(
+        baseUrl: String,
+        authenticationPlugin: TokenAuthenticationPlugin,
+        uuid: String
+    ): Product? {
+        val restClient = getRestclient(baseUrl, authenticationPlugin)
+
+        val response = restClient.get()
+            .uri("/producten/$uuid")
+            .retrieve()
+
+        val result = response.toEntity(Product::class.java)
+            ?: throw IllegalStateException("Failed to get product")
+
+        return result.body
+    }
+
     fun createProduct(
         baseUrl: String,
         authenticationPlugin: TokenAuthenticationPlugin,
