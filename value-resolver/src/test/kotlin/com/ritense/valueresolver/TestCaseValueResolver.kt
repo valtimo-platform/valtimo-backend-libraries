@@ -19,8 +19,12 @@ package com.ritense.valueresolver
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valueresolver.exception.ValueResolverValidationException
 import org.camunda.bpm.engine.delegate.VariableScope
+import org.springframework.core.annotation.Order
+import org.springframework.stereotype.Component
 import java.util.function.Function
 
+@Order(1)
+@Component
 class TestCaseValueResolver(
 ) : ValueResolverFactory {
 
@@ -52,11 +56,11 @@ class TestCaseValueResolver(
         throw NotImplementedError("Unable to handle value: {${firstValue.key} to ${firstValue.value}}")
     }
 
-    override fun getResolvableKeyOptions(documentDefinitionName: String, caseDefinitionId: CaseDefinitionId): List<ValueResolverOption> {
+    override fun getResolvableKeyOptions(caseDefinitionId: CaseDefinitionId): List<ValueResolverOption> {
         return createFieldList(COLUMN_LIST)
     }
 
-    override fun getResolvableKeyOptions(documentDefinitionName: String): List<ValueResolverOption> {
+    override fun getResolvableKeyOptions(caseDefinitionKey: String): List<ValueResolverOption> {
         return createFieldList(COLUMN_LIST) +
             ValueResolverOption(
                 "test",
