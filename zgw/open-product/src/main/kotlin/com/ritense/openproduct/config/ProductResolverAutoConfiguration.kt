@@ -1,7 +1,7 @@
 package com.ritense.openproduct.config
 
 import com.ritense.openproduct.resolver.ProductValueResolverFactory
-import com.ritense.openproduct.service.SomeService
+import com.ritense.openproduct.service.ProductService
 import com.ritense.processdocument.service.ProcessDocumentService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -17,10 +17,10 @@ class ProductResolverAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ProductValueResolverFactory::class)
     fun productValueResolverFactory(
-        someService: SomeService,
+        productService: ProductService,
         processDocumentService: ProcessDocumentService
     ) = ProductValueResolverFactory(
-        someService,
+        productService,
         processDocumentService
     )
 }

@@ -16,7 +16,7 @@
 
 package com.ritense.openproduct.resolver
 
-import com.ritense.openproduct.service.SomeService
+import com.ritense.openproduct.service.ProductService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valueresolver.ValueResolverFactory
@@ -25,7 +25,7 @@ import org.camunda.bpm.engine.delegate.VariableScope
 import java.util.function.Function
 
 class ProductValueResolverFactory(
-    private val someService: SomeService,
+    private val productService: ProductService,
     private val processDocumentService: ProcessDocumentService,
 ) : ValueResolverFactory {
 
@@ -44,7 +44,7 @@ class ProductValueResolverFactory(
 
     override fun createResolver(documentId: String): Function<String, Any?> {
         return Function { field ->
-            return@Function someService.doSomething(field)
+            return@Function productService.doSomething(field)
         }
     }
 
