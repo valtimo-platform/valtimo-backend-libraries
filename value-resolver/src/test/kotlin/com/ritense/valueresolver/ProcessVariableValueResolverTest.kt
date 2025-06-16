@@ -29,6 +29,7 @@ import org.camunda.bpm.engine.variable.impl.value.ObjectValueImpl
 import org.camunda.bpm.engine.variable.impl.value.builder.SerializedObjectValueBuilderImpl
 import org.camunda.community.mockito.delegate.DelegateCaseVariableInstanceFake
 import org.camunda.community.mockito.delegate.DelegateTaskFake
+import org.camunda.community.mockito.process.ProcessInstanceFake
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
