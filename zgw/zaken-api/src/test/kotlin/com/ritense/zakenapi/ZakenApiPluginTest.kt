@@ -61,6 +61,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import org.assertj.core.api.Assertions.assertThat
 
 internal class ZakenApiPluginTest {
 
@@ -1063,6 +1064,69 @@ internal class ZakenApiPluginTest {
 
         // then
         verify(zakenApiClient).deleteZaakeigenschap(any(), any(), any())
+    }
+
+    @Test
+    fun `should relateer zaken`() {
+
+        // given
+        val zakenApiClient: ZakenApiClient = mock()
+        val zaakUrlProvider: ZaakUrlProvider = mock()
+        val storageService: TemporaryResourceStorageService = mock()
+        val zaakInstanceLinkRepository: ZaakInstanceLinkRepository = mock()
+        val pluginService: PluginService = mock()
+        val zaakHersteltermijnRepository: ZaakHersteltermijnRepository = mock()
+        val platformTransactionManager: PlatformTransactionManager = mock()
+        val documentService: DocumentService = mock()
+        val processDocumentAssociationService: ProcessDocumentAssociationService = mock()
+        val authenticationMock = mock<ZakenApiAuthentication>()
+        val executionMock = mock<DelegateExecution>()
+        val zaakResponseMock: ZaakResponse = mock()
+
+        val documentId = UUID.randomUUID()
+        val zaakUrl = URI("https://example.com/zaken/1234")
+
+        val teRelaterenZaakUri = URI("https://example.com/zaken/5678")
+        val aardRelatie = "vervolg"
+
+        whenever(executionMock.businessKey).thenReturn(documentId.toString())
+        whenever(zaakUrlProvider.getZaakUrl(documentId)).thenReturn(zaakUrl)
+        whenever(zaakResponseMock.relevanteAndereZaken).thenReturn(listOf())
+        whenever(zakenApiClient.getZaak(authenticationMock, zaakUrl)).thenReturn(zaakResponseMock)
+
+        val plugin = ZakenApiPlugin(
+            zakenApiClient,
+            zaakUrlProvider,
+            storageService,
+            zaakInstanceLinkRepository,
+            pluginService,
+            zaakHersteltermijnRepository,
+            platformTransactionManager,
+            documentService,
+            processDocumentAssociationService
+        )
+        plugin.url = URI("https://zaken.plugin.url")
+        plugin.authenticationPluginConfiguration = authenticationMock
+
+        // when
+        plugin.relateerZaken(
+            execution = executionMock,
+            teRelaterenZaakUri = teRelaterenZaakUri,
+            aardRelatie = aardRelatie
+        )
+
+        // then
+        val captor = argumentCaptor<PatchZaakRequest>()
+        verify(zakenApiClient).patchZaak(
+            eq(authenticationMock),
+            eq(plugin.url),
+            eq(zaakUrl),
+            captor.capture())
+
+        val relevanteAndereZaken = captor.firstValue.relevanteAndereZaken
+        assertThat(relevanteAndereZaken).hasSize(1)
+        assertThat(relevanteAndereZaken!![0].url).isEqualTo(teRelaterenZaakUri)
+        assertThat(relevanteAndereZaken[0].aardRelatie).isEqualTo(aardRelatie)
     }
 
     @Test

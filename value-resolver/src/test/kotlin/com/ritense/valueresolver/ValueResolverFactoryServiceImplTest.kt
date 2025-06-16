@@ -19,7 +19,6 @@ package com.ritense.valueresolver
 import com.ritense.valtimo.contract.json.MapperSingleton
 import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
-import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.community.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.Test
@@ -30,10 +29,9 @@ import org.mockito.kotlin.verify
 internal class ValueResolverFactoryServiceImplTest {
 
     private val runtimeService: RuntimeService = mock()
-    private val historyService: HistoryService = mock()
     private val objectMapper = MapperSingleton.get()
     private val resolverService = ValueResolverServiceImpl(
-        listOf(ProcessVariableValueResolverFactory(runtimeService, historyService, objectMapper), FixedValueResolverFactory())
+        listOf(ProcessVariableValueResolverFactory(runtimeService, objectMapper), FixedValueResolverFactory())
     )
 
     @Test
@@ -41,8 +39,8 @@ internal class ValueResolverFactoryServiceImplTest {
         val exception = assertThrows<RuntimeException> {
             val resolverService = ValueResolverServiceImpl(
                 listOf(
-                    ProcessVariableValueResolverFactory(runtimeService, historyService, objectMapper),
-                    ProcessVariableValueResolverFactory(runtimeService, historyService, objectMapper)
+                    ProcessVariableValueResolverFactory(runtimeService, objectMapper),
+                    ProcessVariableValueResolverFactory(runtimeService, objectMapper)
                 )
             )
 

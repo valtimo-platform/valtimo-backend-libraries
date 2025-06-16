@@ -16,14 +16,18 @@
 
 package com.ritense.zakenapi.domain.rol
 
-import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonInclude
 
-@JsonSubTypes(
-    value = [
-        JsonSubTypes.Type(value = RolNatuurlijkPersoon::class, name = "natuurlijk_persoon"),
-        JsonSubTypes.Type(value = RolNietNatuurlijkPersoon::class, name = "niet_natuurlijk_persoon"),
-        JsonSubTypes.Type(value = RolVestiging::class, name = "vestiging"),
-        JsonSubTypes.Type(value = RolOrganisatorischeEenheid::class, name = "organisatorische_eenheid"),
-        JsonSubTypes.Type(value = RolMedewerker::class, name = "medewerker"),
-    ])
-sealed class BetrokkeneIdentificatie
+/**
+ * Data class voor een organisatorische eenheid.
+ *
+ * @property identificatie   Een korte identificatie van de organisatorische eenheid. Maximaal 24 tekens.
+ * @property naam            De feitelijke naam van de organisatorische eenheid. Maximaal 50 tekens.
+ * @property isGehuisvestIn  De aanduiding waar deze eenheid gehuisvest is. Maximaal 24 tekens.
+ */
+@JsonInclude(JsonInclude.Include.NON_NULL)
+data class RolOrganisatorischeEenheid(
+    val identificatie: String,
+    val naam: String,
+    val isGehuisvestIn: String
+) : BetrokkeneIdentificatie()

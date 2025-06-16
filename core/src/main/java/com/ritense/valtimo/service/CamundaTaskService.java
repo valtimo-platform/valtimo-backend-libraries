@@ -337,7 +337,7 @@ public class CamundaTaskService {
                 requirePermission(task, COMPLETE);
                 var mergedVariables = task.getVariables().entrySet().stream()
                     .filter(entry -> variables.containsKey(entry.getKey()))
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                    .collect(() -> new HashMap<String, Object>(), (m, v) -> m.put(v.getKey(), v.getValue()), HashMap::putAll);
                 mergeVariables(mergedVariables, variables);
                 formService.submitTaskForm(task.getId(), FormUtils.createTypedVariableMap(mergedVariables));
                 outboxService.send(() -> new TaskCompleted(taskId, objectMapper.valueToTree(task)));
