@@ -47,11 +47,11 @@ class ZaakValueResolverFactory(
         TODO()
     }
 
-    override fun getResolvableKeyOptions(documentDefinitionName: String, caseDefinitionId: CaseDefinitionId): List<ValueResolverOption> {
+    override fun getResolvableKeyOptions(caseDefinitionId: CaseDefinitionId): List<ValueResolverOption> {
         return createFieldList(ZAAK_FIELD_LIST)
     }
 
-    override fun getResolvableKeyOptions(documentDefinitionName: String): List<ValueResolverOption> {
+    override fun getResolvableKeyOptions(caseDefinitionKey: String): List<ValueResolverOption> {
         return createFieldList(ZAAK_FIELD_LIST)
     }
 
