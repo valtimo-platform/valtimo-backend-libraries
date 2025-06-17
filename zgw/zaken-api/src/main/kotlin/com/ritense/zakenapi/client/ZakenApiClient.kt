@@ -53,6 +53,7 @@ import com.ritense.zakenapi.event.ZaakPatched
 import com.ritense.zakenapi.event.ZaakResultaatCreated
 import com.ritense.zakenapi.event.ZaakResultaatViewed
 import com.ritense.zakenapi.event.ZaakRolCreated
+import com.ritense.zakenapi.event.ZaakRolUpdated
 import com.ritense.zakenapi.event.ZaakRollenListed
 import com.ritense.zakenapi.event.ZaakStatusCreated
 import com.ritense.zakenapi.event.ZaakStatusViewed
@@ -61,13 +62,17 @@ import com.ritense.zakenapi.event.ZaakeigenschapCreated
 import com.ritense.zakenapi.event.ZaakeigenschapDeleted
 import com.ritense.zakenapi.event.ZaakeigenschapListed
 import com.ritense.zakenapi.event.ZaakeigenschapUpdated
+import com.ritense.zakenapi.exception.ZaakRolNotUpdatedException
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
+import mu.KLogger
+import mu.KotlinLogging
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 import java.net.URI
+import java.util.UUID
 
 class ZakenApiClient(
     private val restClientBuilder: RestClient.Builder,
@@ -238,6 +243,30 @@ class ZakenApiClient(
         outboxService.send {
             ZaakRolCreated(result.url.toString(), objectMapper.valueToTree(result))
         }
+        return result
+    }
+
+    fun updateZaakRol(
+        authentication: ZakenApiAuthentication,
+        baseUrl: URI,
+        rolUuid: UUID,
+        rol: Rol
+    ): Rol {
+        val result = buildRestClient(authentication)
+            .put()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, baseUrl)
+                    .path("rollen/${rolUuid}")
+                    .build()
+            }
+            .body(rol)
+            .retrieve()
+            .body<Rol>() ?: throw ZaakRolNotUpdatedException("No body was returned when updating rol($rolUuid)")
+
+        outboxService.send {
+            ZaakRolUpdated(result.url.toString(), objectMapper.valueToTree(result))
+        }
+
         return result
     }
 
@@ -574,5 +603,9 @@ class ZakenApiClient(
                 authentication.applyAuth(it)
             }
             .build()
+    }
+
+    companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
     }
 }
