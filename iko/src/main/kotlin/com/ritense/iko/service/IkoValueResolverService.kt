@@ -11,10 +11,10 @@ class IkoValueResolverService(
         // return toResolverFactoryMap(requestedValues).map { (resolverFactory, requestedValues) ->
         val resolver = ikoValueResolver.createResolver(queryString)
         // Create a list of resolved Map entries
-        val aa = requestedValues.associateWith { requestedValue ->
+        val result = requestedValues.associateWith { requestedValue ->
             requestedValue to resolver.apply(trimPrefix(requestedValue))
         }
-        return aa
+        return result
     }
 
     private fun trimPrefix(value: String) = value.substringAfter(DELIMITER)
