@@ -53,6 +53,7 @@ import com.ritense.zakenapi.event.ZaakPatched
 import com.ritense.zakenapi.event.ZaakResultaatCreated
 import com.ritense.zakenapi.event.ZaakResultaatViewed
 import com.ritense.zakenapi.event.ZaakRolCreated
+import com.ritense.zakenapi.event.ZaakRolUpdated
 import com.ritense.zakenapi.event.ZaakRollenListed
 import com.ritense.zakenapi.event.ZaakStatusCreated
 import com.ritense.zakenapi.event.ZaakStatusViewed
@@ -68,6 +69,7 @@ import org.springframework.http.MediaType
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 import java.net.URI
+import java.util.UUID
 
 class ZakenApiClient(
     private val restClientBuilder: RestClient.Builder,
@@ -237,6 +239,29 @@ class ZakenApiClient(
 
         outboxService.send {
             ZaakRolCreated(result.url.toString(), objectMapper.valueToTree(result))
+        }
+        return result
+    }
+
+    fun updateZaakRol(
+        authentication: ZakenApiAuthentication,
+        baseUrl: URI,
+        rolUuid: UUID,
+        rol: Rol
+    ): Rol {
+        val result = buildRestClient(authentication)
+            .put()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, baseUrl)
+                    .path("rollen/${rolUuid}")
+                    .build()
+            }
+            .body(rol)
+            .retrieve()
+            .body<Rol>()!!
+
+        outboxService.send {
+            ZaakRolUpdated(result.url.toString(), objectMapper.valueToTree(result))
         }
         return result
     }
