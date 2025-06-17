@@ -17,9 +17,12 @@
 package com.ritense.document.service
 
 import com.ritense.authorization.Action
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.case.service.CaseDefinitionService
+import com.ritense.case_.authorization.CaseDefinitionActionProvider
+import com.ritense.case_.domain.definition.CaseDefinition
 import com.ritense.document.domain.InternalCaseStatus
 import com.ritense.document.domain.InternalCaseStatusId
 import com.ritense.document.exception.InternalCaseStatusAlreadyExistsException
@@ -45,8 +48,21 @@ class InternalCaseStatusService(
     private val authorizationService: AuthorizationService,
     private val caseDefinitionChecker: CaseDefinitionChecker,
 ) {
-    fun getInternalCaseStatuses(documentDefinitionName: String): List<InternalCaseStatus> {
-        return internalCaseStatusRepository.findByIdCaseDefinitionKeyOrderByOrder(documentDefinitionName)
+    fun getInternalCaseStatuses(caseDefinitionKey: String): List<InternalCaseStatus> {
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                CaseDefinition::class.java,
+                CaseDefinitionActionProvider.VIEW,
+                runWithoutAuthorization {
+                    caseDefinitionService.getCaseDefinitions(
+                        caseDefinitionKey = caseDefinitionKey,
+                        active = true
+                    )
+                }
+            )
+        )
+
+        return internalCaseStatusRepository.findByIdCaseDefinitionKeyOrderByOrder(caseDefinitionKey)
     }
 
     fun get(caseDefinitionName: String, statusKey: String): InternalCaseStatus {
