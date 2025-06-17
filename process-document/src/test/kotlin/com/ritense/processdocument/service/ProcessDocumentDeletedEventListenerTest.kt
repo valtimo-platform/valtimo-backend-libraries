@@ -19,8 +19,7 @@ package com.ritense.processdocument.service
 import com.ritense.processdocument.domain.ProcessDocumentInstance
 import com.ritense.processdocument.domain.ProcessDocumentInstanceId
 import com.ritense.valtimo.contract.event.DocumentDeletedEvent
-import com.ritense.valtimo.contract.result.FunctionResult
-import com.ritense.valtimo.contract.result.OperationError
+import com.ritense.valtimo.event.ProcessDefinitionDeleted
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.runtime.ProcessInstance
 import org.junit.jupiter.api.BeforeEach
@@ -43,9 +42,9 @@ class ProcessDocumentDeletedEventListenerTest {
 
     @BeforeEach
     fun setUp() {
-        processDocumentDeletedEventListener = ProcessDocumentDeletedEventListener(runtimeService, processDocumentAssociationService)
+        processDocumentDeletedEventListener =
+            ProcessDocumentDeletedEventListener(runtimeService, processDocumentAssociationService)
     }
-
 
     @Test
     fun `should delete process instances with business key`() {
@@ -58,23 +57,37 @@ class ProcessDocumentDeletedEventListenerTest {
         val processInstanceId2 = "a69cf6c5-5e65-4dc9-81f6-2b64c12e3f0f"
         whenever(processInstance2.processInstanceId).thenReturn(processInstanceId2)
 
-        val functionResult = mock<FunctionResult<ProcessDocumentInstance, OperationError>>()
-        whenever(processDocumentAssociationService.getProcessDocumentInstanceResult(any()))
-            .thenReturn(functionResult)
-
-        whenever(functionResult.isError).thenReturn(false)
         val processDocumentInstance = mock<ProcessDocumentInstance>()
-        whenever(functionResult.resultingValue()).thenReturn(Optional.of(processDocumentInstance))
+        whenever(processDocumentAssociationService.findProcessDocumentInstance(any()))
+            .thenReturn(Optional.of(processDocumentInstance))
+
         val pdiId = mock<ProcessDocumentInstanceId>()
         whenever(processDocumentInstance.processDocumentInstanceId()).thenReturn(pdiId)
 
-        whenever(runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(documentId.toString()).rootProcessInstances().list())
+        whenever(
+            runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(documentId.toString())
+                .rootProcessInstances().list()
+        )
             .thenReturn(listOf(processInstance1, processInstance2))
 
         processDocumentDeletedEventListener!!.handle(DocumentDeletedEvent(documentId))
 
-        verify(runtimeService).deleteProcessInstance("4320f9c0-5568-4ed2-91f9-d2c85fd4ce55", "Document deleted", true, true, true, false)
-        verify(runtimeService).deleteProcessInstance("a69cf6c5-5e65-4dc9-81f6-2b64c12e3f0f", "Document deleted", true, true, true, false)
+        verify(runtimeService).deleteProcessInstance(
+            "4320f9c0-5568-4ed2-91f9-d2c85fd4ce55",
+            "Document deleted",
+            true,
+            true,
+            true,
+            false
+        )
+        verify(runtimeService).deleteProcessInstance(
+            "a69cf6c5-5e65-4dc9-81f6-2b64c12e3f0f",
+            "Document deleted",
+            true,
+            true,
+            true,
+            false
+        )
         verify(processDocumentAssociationService, times(2)).deleteProcessDocumentInstance(pdiId)
     }
 
@@ -89,19 +102,57 @@ class ProcessDocumentDeletedEventListenerTest {
         val processInstanceId2 = "a69cf6c5-5e65-4dc9-81f6-2b64c12e3f0f"
         whenever(processInstance2.processInstanceId).thenReturn(processInstanceId2)
 
-        val functionResult = mock<FunctionResult<ProcessDocumentInstance, OperationError>>()
-        whenever(processDocumentAssociationService.getProcessDocumentInstanceResult(any()))
-            .thenReturn(functionResult)
-
-        whenever(functionResult.isError).thenReturn(true)
-
-        whenever(runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(documentId.toString()).rootProcessInstances().list())
+        whenever(
+            runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(documentId.toString())
+                .rootProcessInstances().list()
+        )
             .thenReturn(listOf(processInstance1, processInstance2))
 
         processDocumentDeletedEventListener!!.handle(DocumentDeletedEvent(documentId))
 
-        verify(runtimeService).deleteProcessInstance("4320f9c0-5568-4ed2-91f9-d2c85fd4ce55", "Document deleted", true, true, true, false)
-        verify(runtimeService).deleteProcessInstance("a69cf6c5-5e65-4dc9-81f6-2b64c12e3f0f", "Document deleted", true, true, true, false)
+        verify(runtimeService).deleteProcessInstance(
+            "4320f9c0-5568-4ed2-91f9-d2c85fd4ce55",
+            "Document deleted",
+            true,
+            true,
+            true,
+            false
+        )
+        verify(runtimeService).deleteProcessInstance(
+            "a69cf6c5-5e65-4dc9-81f6-2b64c12e3f0f",
+            "Document deleted",
+            true,
+            true,
+            true,
+            false
+        )
         verify(processDocumentAssociationService, never()).deleteProcessDocumentInstance(any())
+    }
+
+    @Test
+    fun `should delete process document association when deleing a process definition`() {
+        val processDefinitionId = UUID.fromString("d1f1b3ed-7575-45bb-a02b-18f378ddc34d").toString()
+
+        val processInstance1 = mock<ProcessInstance>()
+        whenever(processInstance1.processInstanceId).thenReturn("4320f9c0-5568-4ed2-91f9-d2c85fd4ce55")
+        val processInstance2 = mock<ProcessInstance>()
+        whenever(processInstance2.processInstanceId).thenReturn("a69cf6c5-5e65-4dc9-81f6-2b64c12e3f0f")
+
+        val processDocumentInstance = mock<ProcessDocumentInstance>()
+        whenever(processDocumentAssociationService.findProcessDocumentInstance(any()))
+            .thenReturn(Optional.of(processDocumentInstance))
+
+        val pdiId = mock<ProcessDocumentInstanceId>()
+        whenever(processDocumentInstance.processDocumentInstanceId()).thenReturn(pdiId)
+
+        whenever(
+            runtimeService.createProcessInstanceQuery().processDefinitionId(processDefinitionId).rootProcessInstances()
+                .list()
+        )
+            .thenReturn(listOf(processInstance1, processInstance2))
+
+        processDocumentDeletedEventListener!!.handle(ProcessDefinitionDeleted(processDefinitionId, null))
+
+        verify(processDocumentAssociationService, times(2)).deleteProcessDocumentInstance(pdiId)
     }
 }
