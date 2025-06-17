@@ -1,18 +1,30 @@
 package com.ritense.openproduct.service
 
+import com.ritense.openproduct.client.OpenProductClient
+import com.ritense.openproduct.client.Product
 import com.ritense.openproduct.plugin.OpenProductPlugin
 import com.ritense.plugin.service.PluginConfigurationSearchParameters
 import com.ritense.plugin.service.PluginService
 import org.springframework.stereotype.Service
+import kotlin.reflect.full.memberProperties
 
 @Service
 class ProductService(
-    private val pluginService: PluginService
+    private val pluginService: PluginService,
+    private val pluginClient: OpenProductClient
 ) {
 
-    fun doSomething(input: String ): String {
-        println(getPlugin().baseUrl)
-        return "Something - $input"
+    fun doSomething(uuid: String, propertyName: String): String {
+        val product = pluginClient.getProduct(
+            getPlugin().baseUrl,
+            getPlugin().authenticationPluginConfiguration,
+            uuid
+        ) ?: throw IllegalStateException("Product not found")
+
+        val property = Product::class.memberProperties.find { it.name == propertyName }
+            ?: throw IllegalArgumentException("Property $propertyName not found in Product class")
+
+        return property.get(product)?.toString() ?: ""
     }
 
     fun getPlugin() : OpenProductPlugin {

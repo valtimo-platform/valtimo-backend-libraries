@@ -44,7 +44,7 @@ class ProductValueResolverFactory(
 
     override fun createResolver(documentId: String): Function<String, Any?> {
         return Function { field ->
-            return@Function productService.doSomething(field)
+            return@Function productService.doSomething("a8cfd19b-8b0a-4fcd-834d-145261f33755", field)
         }
     }
 
