@@ -62,6 +62,7 @@ import com.ritense.zakenapi.event.ZaakeigenschapCreated
 import com.ritense.zakenapi.event.ZaakeigenschapDeleted
 import com.ritense.zakenapi.event.ZaakeigenschapListed
 import com.ritense.zakenapi.event.ZaakeigenschapUpdated
+import com.ritense.zakenapi.exception.ZaakRolNotUpdatedException
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
 import mu.KLogger
@@ -260,7 +261,7 @@ class ZakenApiClient(
             }
             .body(rol)
             .retrieve()
-            .body<Rol>() ?: throw NoSuchElementException("No body was returned when updating rol($rolUuid)")
+            .body<Rol>() ?: throw ZaakRolNotUpdatedException("No body was returned when updating rol($rolUuid)")
 
         outboxService.send {
             ZaakRolUpdated(result.url.toString(), objectMapper.valueToTree(result))
