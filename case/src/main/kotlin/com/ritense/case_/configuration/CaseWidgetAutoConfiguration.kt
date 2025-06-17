@@ -175,8 +175,9 @@ class CaseWidgetAutoConfiguration {
     @ConditionalOnMissingBean(ActiveCaseDefinitionService::class)
     @Bean
     fun activeCaseDefinitionService(
-        caseDefinitionService: CaseDefinitionService
-    ) = ActiveCaseDefinitionService(caseDefinitionService)
+        caseDefinitionService: CaseDefinitionService,
+        authorizationService: AuthorizationService
+    ) = ActiveCaseDefinitionService(caseDefinitionService, authorizationService)
 
     @ConditionalOnMissingBean(CaseTabCaseEventListener::class)
     @Bean
