@@ -64,6 +64,8 @@ import com.ritense.zakenapi.event.ZaakeigenschapListed
 import com.ritense.zakenapi.event.ZaakeigenschapUpdated
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
+import mu.KLogger
+import mu.KotlinLogging
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.web.client.RestClient
@@ -258,11 +260,12 @@ class ZakenApiClient(
             }
             .body(rol)
             .retrieve()
-            .body<Rol>()!!
+            .body<Rol>() ?: throw NoSuchElementException("No body was returned when updating rol($rolUuid)")
 
         outboxService.send {
             ZaakRolUpdated(result.url.toString(), objectMapper.valueToTree(result))
         }
+
         return result
     }
 
@@ -599,5 +602,9 @@ class ZakenApiClient(
                 authentication.applyAuth(it)
             }
             .build()
+    }
+
+    companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
     }
 }
