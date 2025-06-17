@@ -2,6 +2,7 @@ package com.ritense.openproduct.client
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.tokenauthentication.plugin.TokenAuthenticationPlugin
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
@@ -25,6 +26,20 @@ class OpenProductClient() {
             ?: throw IllegalStateException("Failed to get product")
 
         return result.body
+    }
+
+    fun getAllProducts(
+        baseUrl: String,
+        authenticationPlugin: TokenAuthenticationPlugin
+    ): List<ProductResponse>? {
+        val restClient = getRestclient(baseUrl, authenticationPlugin)
+
+        val response = restClient.get()
+            .uri("/producten")
+            .retrieve()
+            .body(PaginatedProductList::class.java)
+
+        return response!!.resultaten
     }
 
     fun createProduct(
@@ -94,5 +109,6 @@ class OpenProductClient() {
             .baseUrl(baseUrl)
             .build()
     }
+
 
 }

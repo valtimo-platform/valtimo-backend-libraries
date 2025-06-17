@@ -80,10 +80,10 @@ class ProductValueResolverFactory(
         const val PREFIX = "product"
         val PRODUCT_FIELD_LIST = listOf(
             "status",
-            "naam"
+            "naam",
+            "startDatum",
+            "eindDatum",
+            "prijs"
         ).sorted()
     }
-
-
-
 }

@@ -2,6 +2,7 @@ package com.ritense.openproduct.service
 
 import com.ritense.openproduct.client.OpenProductClient
 import com.ritense.openproduct.client.Product
+import com.ritense.openproduct.client.ProductResponse
 import com.ritense.openproduct.plugin.OpenProductPlugin
 import com.ritense.plugin.service.PluginConfigurationSearchParameters
 import com.ritense.plugin.service.PluginService
@@ -15,16 +16,15 @@ class ProductService(
 ) {
 
     fun doSomething(uuid: String, propertyName: String): String {
-        val product = pluginClient.getProduct(
+        val product = pluginClient.getAllProducts(
             getPlugin().baseUrl,
-            getPlugin().authenticationPluginConfiguration,
-            uuid
-        ) ?: throw IllegalStateException("Product not found")
+            getPlugin().authenticationPluginConfiguration
+        )?.last()
 
-        val property = Product::class.memberProperties.find { it.name == propertyName }
+        val property = ProductResponse::class.memberProperties.find { it.name == propertyName }
             ?: throw IllegalArgumentException("Property $propertyName not found in Product class")
 
-        return property.get(product)?.toString() ?: ""
+        return property.get(product!!)?.toString() ?: ""
     }
 
     fun getPlugin() : OpenProductPlugin {
