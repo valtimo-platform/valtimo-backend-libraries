@@ -21,6 +21,8 @@ import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.test.context.support.WithMockUser
 import kotlin.test.Test
@@ -29,6 +31,14 @@ import kotlin.test.assertEquals
 class DocumentDocumentDefinitionMapperIntTest @Autowired constructor(
     private val authorizationService: AuthorizationService,
 ) : BaseIntegrationTest() {
+
+    @BeforeEach
+    override fun beforeEachBase() {
+    }
+
+    @AfterEach
+    override fun afterEach() {
+    }
 
     @Test
     @WithMockUser(username = USERNAME, authorities = ["ROLE_DUPLICATE_TEST"])
