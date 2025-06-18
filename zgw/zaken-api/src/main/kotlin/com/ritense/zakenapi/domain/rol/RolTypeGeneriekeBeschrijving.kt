@@ -16,7 +16,7 @@
 
 package com.ritense.zakenapi.domain.rol
 
-enum class RolType {
+enum class RolTypeGeneriekeBeschrijving {
     ADVISEUR,
     BEHANDELAAR,
     BELANGHEBBENDE,

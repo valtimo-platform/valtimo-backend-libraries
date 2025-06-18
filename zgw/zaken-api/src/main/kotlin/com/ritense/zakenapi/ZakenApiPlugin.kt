@@ -55,7 +55,7 @@ import com.ritense.zakenapi.domain.rol.BetrokkeneType
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
-import com.ritense.zakenapi.domain.rol.RolType
+import com.ritense.zakenapi.domain.rol.RolTypeGeneriekeBeschrijving
 import com.ritense.zakenapi.repository.ZaakHersteltermijnRepository
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zgw.LoggingConstants
@@ -745,12 +745,12 @@ class ZakenApiPlugin(
         return result
     }
 
-    fun getZaakRollen(zaakUrl: URI, roleType: RolType? = null): List<Rol> {
+    fun getZaakRollen(zaakUrl: URI, omschrijvingGeneriek: RolTypeGeneriekeBeschrijving? = null): List<Rol> {
         logger.debug { "Fetching zaak rollen for zaak with URL '$zaakUrl'" }
         return Page.getAll(100) { page ->
             client.getZaakRollen(
                 authenticationPluginConfiguration,
-                url, zaakUrl, page, roleType
+                url, zaakUrl, page, omschrijvingGeneriek
             )
         }
     }
