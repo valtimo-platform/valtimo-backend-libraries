@@ -17,6 +17,9 @@
 package com.ritense.case.service
 
 import com.ritense.BaseTest
+import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.request.EntityAuthorizationRequest
+import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DisplayType
 import com.ritense.case.domain.EnumDisplayTypeParameter
@@ -44,6 +47,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.domain.Specification
 import java.util.Optional
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -55,6 +59,7 @@ class CaseDefinitionServiceTest : BaseTest() {
     lateinit var service: CaseDefinitionService
     lateinit var documentDefinitionService: DocumentDefinitionService
     lateinit var valueResolverService: ValueResolverService
+    lateinit var authorizationService: AuthorizationService
 
     @BeforeEach
     fun setUp() {
@@ -62,12 +67,13 @@ class CaseDefinitionServiceTest : BaseTest() {
         caseDefinitionListColumnRepository = mock()
         caseDefinitionRepository = mock()
         valueResolverService = mock()
+        authorizationService = mock()
         service = CaseDefinitionService(
             caseDefinitionListColumnRepository,
             documentDefinitionService,
             caseDefinitionRepository,
             valueResolverService,
-            mock(),
+            authorizationService,
             mock(),
             mock(),
         )
@@ -367,6 +373,10 @@ class CaseDefinitionServiceTest : BaseTest() {
             .thenReturn(PageImpl(listOf<CaseDefinition>(caseDefinition, mock())))
         whenever(caseDefinitionRepository.findById(caseDefinitionId))
             .thenReturn(Optional.of(caseDefinition))
+        val spec = mock<AuthorizationSpecification<CaseDefinition>>()
+        whenever(authorizationService.getAuthorizationSpecification<CaseDefinition>(any(), eq(null)))
+            .thenReturn(spec)
+        whenever(spec.and(any())).thenReturn(spec)
 
         assertEquals("Failed to delete case-definition. Case-definition with id: '$caseDefinitionId' is the global active version.", assertThrows<Exception> {
             service.deleteCaseDefinition(caseDefinitionId)
@@ -378,9 +388,13 @@ class CaseDefinitionServiceTest : BaseTest() {
         val caseDefinitionId = CaseDefinitionId("key", "1.0.0")
         val caseDefinition = caseDefinition(id = caseDefinitionId, active = true, final = false)
         whenever(caseDefinitionRepository.findAll(any(), any<Pageable>()))
-            .thenReturn(PageImpl(listOf<CaseDefinition>(caseDefinition)))
+            .thenReturn(PageImpl(listOf(caseDefinition)))
         whenever(caseDefinitionRepository.findById(caseDefinitionId))
             .thenReturn(Optional.of(caseDefinition))
+        val spec = mock<AuthorizationSpecification<CaseDefinition>>()
+        whenever(authorizationService.getAuthorizationSpecification<CaseDefinition>(any(), eq(null)))
+            .thenReturn(spec)
+        whenever(spec.and(any())).thenReturn(spec)
 
         service.deleteCaseDefinition(caseDefinitionId)
     }
