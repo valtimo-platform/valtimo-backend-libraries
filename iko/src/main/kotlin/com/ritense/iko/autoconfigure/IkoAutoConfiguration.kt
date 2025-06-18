@@ -1,30 +1,36 @@
-package autoconfigure
+package com.ritense.iko.autoconfigure
 
-import com.ritense.iko.service.ConfigurationService
-import com.ritense.iko.service.FieldsIkoWidgetDataProvider
-import com.ritense.iko.service.IkoValueResolver
-import com.ritense.iko.service.IkoValueResolverService
+import com.ritense.iko.repository.ViewRepository
+import com.ritense.iko.service.ViewService
+import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
-import org.springframework.web.client.RestClient
+import org.springframework.core.Ordered
+import org.springframework.core.annotation.Order
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @AutoConfiguration
+@EnableJpaRepositories(basePackages = ["com.ritense.iko.repository"])
+@EntityScan("com.ritense.iko.domain")
 class IkoAutoConfiguration {
 
     @Bean
-    fun configurationService() = ConfigurationService()
+    fun viewService(viewRepository: ViewRepository) = ViewService(viewRepository)
 
-    @Bean
-    fun ikoValueResolver(restClientBuilder: RestClient.Builder) = IkoValueResolver(restClientBuilder)
+    /*   @Order(300)
+       @Bean
+       @ConditionalOnMissingBean(CaseHttpSecurityConfigurer::class)
+       fun viewHttpSecurityConfigurer(): CaseHttpSecurityConfigurer {
+           return CaseHttpSecurityConfigurer()
+       }*/
 
+    @Order(Ordered.HIGHEST_PRECEDENCE + 34)
+    @ConditionalOnMissingBean(name = ["ikoLiquibaseMasterChangeLogLocation"])
     @Bean
-    fun ikoValueResolverService(ikoValueResolver: IkoValueResolver) = IkoValueResolverService(ikoValueResolver)
-
-    @Bean
-    fun fieldsIkoWidgetDataProvider(
-        ikoValueResolverService: IkoValueResolverService
-    ) = FieldsIkoWidgetDataProvider(
-        ikoValueResolverService
-    )
+    fun ikoLiquibaseMasterChangeLogLocation(): LiquibaseMasterChangeLogLocation {
+        return LiquibaseMasterChangeLogLocation("config/liquibase/iko-master.xml")
+    }
 
 }

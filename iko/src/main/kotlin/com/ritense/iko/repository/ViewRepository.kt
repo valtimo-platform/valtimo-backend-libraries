@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2024 Ritense BV, the Netherlands.
+ * Copyright 2015-2025 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 
 package com.ritense.iko.repository
 
-import com.ritense.case.domain.CaseTabId
-import com.ritense.case_.domain.tab.CaseWidgetTab
+import com.ritense.iko.domain.View
 import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import org.springframework.stereotype.Repository
+import java.util.UUID
 
-interface IkoWidgetTabRepository : JpaRepository<CaseWidgetTab, CaseTabId>, JpaSpecificationExecutor<CaseWidgetTab>
+@Repository
+interface ViewRepository : JpaRepository<View, UUID>
