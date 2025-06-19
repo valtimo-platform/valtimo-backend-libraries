@@ -42,10 +42,6 @@ class DashboardSpecification(
         query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
-        val groupList = query.groupList.toMutableList()
-        groupList.add(root.get<String>("key"))
-        query.groupBy(groupList)
-
         val predicates = permissions.stream()
             .filter { permission: Permission ->
                 Dashboard::class.java == permission.resourceType
@@ -56,7 +52,7 @@ class DashboardSpecification(
                     root,
                     query,
                     criteriaBuilder,
-                    authRequest.resourceType,
+                    authRequest,
                     queryDialectHelper
                 )
             }.toList()
