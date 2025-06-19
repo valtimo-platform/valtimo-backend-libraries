@@ -46,6 +46,10 @@ open class CaseDefinitionProcessLinkService(
         }
     }
 
+    fun getDocumentDefinitionProcessLinks(caseDefinitionId: CaseDefinitionId): List<CaseDefinitionProcessLink> {
+        return caseDefinitionProcessLinkRepository.findAllByIdCaseDefinitionId(caseDefinitionId)
+    }
+
     fun getDocumentDefinitionProcessLink(
         caseDefinitionId: CaseDefinitionId,
         type: String
@@ -53,6 +57,21 @@ open class CaseDefinitionProcessLinkService(
         return caseDefinitionProcessLinkRepository.findByIdCaseDefinitionIdAndType(caseDefinitionId, type)
     }
 
+    fun saveDocumentDefinitionProcessLink(
+        caseDefinitionId: CaseDefinitionId,
+        processDefinitionKey: String,
+        linkType: String
+    ): CaseDefinitionProcessLink {
+        return caseDefinitionProcessLinkRepository.save(
+            CaseDefinitionProcessLink(
+                newId(
+                    caseDefinitionId,
+                    processDefinitionKey
+                ),
+                linkType
+            )
+        )
+    }
 
     fun saveDocumentDefinitionProcess(
         caseDefinitionId: CaseDefinitionId,
