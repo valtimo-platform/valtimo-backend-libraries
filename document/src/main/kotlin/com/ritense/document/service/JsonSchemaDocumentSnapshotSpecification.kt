@@ -41,13 +41,6 @@ class JsonSchemaDocumentSnapshotSpecification(
         query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
-        // Filter the permissions for the relevant ones and use those to  find the filters that are required
-        // Turn those filters into predicates
-        if (query.groupList.isEmpty()) {
-            val groupList = ArrayList(query.groupList)
-            groupList.add(root.get<Any>("id").get<Any>("id"))
-            query.groupBy(groupList)
-        }
         val predicates = permissions
             .filter { permission: Permission ->
                 JsonSchemaDocumentSnapshot::class.java == permission.resourceType && authRequest.action == permission.action

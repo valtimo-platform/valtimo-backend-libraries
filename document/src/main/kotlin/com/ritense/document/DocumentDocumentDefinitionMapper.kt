@@ -38,18 +38,25 @@ class DocumentDocumentDefinitionMapper(
 
     override fun mapQuery(
         root: Root<JsonSchemaDocument>,
-        query: AbstractQuery<*>, criteriaBuilder: CriteriaBuilder
+        query: AbstractQuery<*>,
+        criteriaBuilder: CriteriaBuilder
     ): AuthorizationEntityMapperResult<JsonSchemaDocumentDefinition> {
-        val definitionRoot: Root<JsonSchemaDocumentDefinition> = query.from(JsonSchemaDocumentDefinition::class.java)
-        query.groupBy(query.groupList + root.get<JsonSchemaDocumentDefinitionId>("documentDefinitionId"))
+
+        val subquery = query.subquery(Int::class.java)
+        val subRoot = subquery.from(JsonSchemaDocumentDefinition::class.java)
+
+        subquery.select(criteriaBuilder.literal(1))
+            .where(
+                criteriaBuilder.equal(
+                    root.get<JsonSchemaDocumentDefinitionId>("documentDefinitionId"),
+                    subRoot.get<JsonSchemaDocumentDefinitionId>("id")
+                )
+            )
 
         return AuthorizationEntityMapperResult(
-            definitionRoot,
-            query,
-            criteriaBuilder.equal(
-                root.get<JsonSchemaDocumentDefinitionId>("documentDefinitionId"),
-                definitionRoot.get<JsonSchemaDocumentDefinitionId>("id")
-            )
+            subRoot,
+            subquery,
+            criteriaBuilder.exists(subquery),
         )
     }
 
