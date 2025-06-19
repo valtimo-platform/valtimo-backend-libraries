@@ -254,10 +254,13 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
                 form_flow_definition_id,
                 migration_form_name
             )
-             select ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?::json, ?::json, ?, ?, ?, name
-             from form_io_form_definition
-             where id = ?
+            values
+            (
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?::json, ?::json, ?, ?, ?,
+                (select name from form_io_form_definition where id = ?)
+            )
         """.trimIndent()
+
 
         val statement = connection.prepareStatement(insertProcessLinkQuery)
         statement.setObject(1, processLink.id)
