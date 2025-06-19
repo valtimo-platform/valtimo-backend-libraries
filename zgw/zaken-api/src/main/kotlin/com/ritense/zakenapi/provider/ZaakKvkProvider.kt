@@ -23,7 +23,7 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.zakenapi.ZakenApiPlugin
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
-import com.ritense.zakenapi.domain.rol.RolType
+import com.ritense.zakenapi.domain.rol.RolTypeGeneriekeBeschrijving
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.camunda.bpm.engine.delegate.DelegateTask
 import kotlin.contracts.ExperimentalContracts
@@ -45,7 +45,7 @@ class ZaakKvkProvider(
                 pluginService.createInstance(ZakenApiPlugin::class.java, ZakenApiPlugin.findConfigurationByUrl(zaakUrl))
             ) { "No plugin configuration was found for zaak with URL $zaakUrl" }
 
-            zakenPlugin.getZaakRollen(zaakUrl, RolType.INITIATOR).firstNotNullOfOrNull {
+            zakenPlugin.getZaakRollen(zaakUrl, RolTypeGeneriekeBeschrijving.INITIATOR).firstNotNullOfOrNull {
                 when (it.betrokkeneIdentificatie) {
                     is RolNietNatuurlijkPersoon -> it.betrokkeneIdentificatie.annIdentificatie
                     else -> null

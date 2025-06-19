@@ -41,7 +41,7 @@ import com.ritense.zakenapi.domain.ZaakeigenschapResponse
 import com.ritense.zakenapi.domain.ZaakopschortingRequest
 import com.ritense.zakenapi.domain.ZaakopschortingResponse
 import com.ritense.zakenapi.domain.rol.Rol
-import com.ritense.zakenapi.domain.rol.RolType
+import com.ritense.zakenapi.domain.rol.RolTypeGeneriekeBeschrijving
 import com.ritense.zakenapi.event.DocumentLinkedToZaak
 import com.ritense.zakenapi.event.ZaakCreated
 import com.ritense.zakenapi.event.ZaakInformatieObjectenListed
@@ -196,7 +196,7 @@ class ZakenApiClient(
         baseUrl: URI,
         zaakUrl: URI,
         page: Int,
-        roleType: RolType? = null
+        omschrijvingGeneriek: RolTypeGeneriekeBeschrijving? = null
     ): Page<Rol> {
         val result = buildRestClient(authentication)
             .get()
@@ -206,8 +206,8 @@ class ZakenApiClient(
                     .queryParam("page", page)
                     .queryParam("zaak", zaakUrl)
                     .apply {
-                        if (roleType != null) {
-                            queryParam("omschrijvingGeneriek", roleType.getApiValue())
+                        if (omschrijvingGeneriek != null) {
+                            queryParam("omschrijvingGeneriek", omschrijvingGeneriek.getApiValue())
                         }
                     }
                     .build()
