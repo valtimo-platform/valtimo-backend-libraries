@@ -32,6 +32,7 @@ import com.ritense.processdocument.listener.CaseAssigneeListener
 import com.ritense.processdocument.listener.CaseAssigneeTaskCreatedListener
 import com.ritense.processdocument.listener.DecisionCaseEventListener
 import com.ritense.processdocument.listener.ProcessDefinitionCaseEventListener
+import com.ritense.processdocument.listener.ProcessDocumentLinkEventListener
 import com.ritense.processdocument.repository.ProcessDefinitionCaseDefinitionRepository
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository
 import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
@@ -369,4 +370,10 @@ class ProcessDocumentsAutoConfiguration {
     ): DecisionCaseEventListener {
         return DecisionCaseEventListener(decisionService, processService)
     }
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun processDocumentLinkEventListener(
+        caseDefinitionProcessLinkService: CaseDefinitionProcessLinkService
+    ): ProcessDocumentLinkEventListener = ProcessDocumentLinkEventListener(caseDefinitionProcessLinkService)
 }
