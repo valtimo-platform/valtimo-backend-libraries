@@ -27,7 +27,6 @@ import com.ritense.case.repository.CaseDefinitionSpecificationHelper.Companion.b
 import com.ritense.case.repository.CaseDefinitionSpecificationHelper.Companion.byCaseDefinitionKey
 import com.ritense.case.repository.CaseDefinitionSpecificationHelper.Companion.byCaseDefinitionVersionTag
 import com.ritense.case.repository.CaseDefinitionSpecificationHelper.Companion.byFinal
-import com.ritense.case.repository.CaseDefinitionSpecificationHelper.Companion.query
 import com.ritense.case.service.validations.CreateCaseListColumnValidator
 import com.ritense.case.service.validations.ListColumnValidator
 import com.ritense.case.service.validations.Operation
@@ -36,9 +35,9 @@ import com.ritense.case.web.rest.dto.CaseDefinitionDraftCreateRequest
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.case.web.rest.mapper.CaseListColumnMapper
+import com.ritense.case_.authorization.CaseDefinitionActionProvider
 import com.ritense.case_.domain.definition.CaseDefinition
 import com.ritense.case_.repository.CaseDefinitionRepository
-import com.ritense.document.domain.DocumentDefinition
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
@@ -58,7 +57,6 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
-import kotlin.jvm.optionals.getOrNull
 
 @Transactional
 @Service
@@ -180,12 +178,14 @@ class CaseDefinitionService(
         if (active == null || !active) {
             denyManagementOperation()
         }
-        val spec = getCaseDefinitionsQuery(
-            caseDefinitionKey = caseDefinitionKey,
-            caseDefinitionVersionTag = caseDefinitionVersionTag,
-            active = active,
-            final = final,
-        )
+
+        val spec =
+            getCaseDefinitionsQuery(
+                caseDefinitionKey = caseDefinitionKey,
+                caseDefinitionVersionTag = caseDefinitionVersionTag,
+                active = active,
+                final = final,
+            )
         return caseDefinitionRepository.findAll(spec)
     }
 
@@ -287,10 +287,18 @@ class CaseDefinitionService(
 
     @Throws(UnknownDocumentDefinitionException::class)
     fun getListColumns(caseDefinitionKey: String): List<CaseListColumnDto> {
-        // TODO: Implement PBAC:
-        // It currently relies on the VIEW check in findLatestByName via assertDocumentDefinitionExists.
-        // Doing a check here forces this class to be a JsonSchemaDocument implementation, which is undesirable.
-        assertDocumentDefinitionExists(caseDefinitionKey)
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                CaseDefinition::class.java,
+                CaseDefinitionActionProvider.VIEW,
+                runWithoutAuthorization {
+                    getCaseDefinitions(
+                        caseDefinitionKey = caseDefinitionKey,
+                        active = true
+                    )
+                }
+            )
+        )
 
         return CaseListColumnMapper
             .toDtoList(
@@ -329,7 +337,13 @@ class CaseDefinitionService(
         active: Boolean? = null,
         final: Boolean? = null,
     ): Specification<CaseDefinition> {
-        var spec = query()
+        var spec: Specification<CaseDefinition> = authorizationService.getAuthorizationSpecification(
+            EntityAuthorizationRequest(
+                CaseDefinition::class.java,
+                CaseDefinitionActionProvider.VIEW_LIST
+            )
+        )
+
         if (caseDefinitionKey != null) {
             spec = spec.and(byCaseDefinitionKey(caseDefinitionKey))
         }
@@ -355,9 +369,10 @@ class CaseDefinitionService(
     }
 
     @Throws(UnknownDocumentDefinitionException::class)
-    private fun assertDocumentDefinitionExists(caseDefinitionKey: String): DocumentDefinition {
-        return documentDefinitionService.findLatestByName(caseDefinitionKey)
-            .getOrNull() ?: throw UnknownCaseDefinitionException(caseDefinitionKey)
+    private fun assertDocumentDefinitionExists(caseDefinitionKey: String) {
+        if (!documentDefinitionService.existsByName(caseDefinitionKey)) {
+            throw UnknownCaseDefinitionException(caseDefinitionKey)
+        }
     }
 
     companion object {

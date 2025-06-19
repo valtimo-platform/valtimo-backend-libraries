@@ -69,7 +69,7 @@ class DocumentJsonValueResolverFactory(
     }
 
     override fun createValidator(documentDefinitionName: String): Function<String, Unit> {
-        val documentDefinition = documentDefinitionService.findLatestByName(documentDefinitionName)
+        val documentDefinition = documentDefinitionService.findActiveByName(documentDefinitionName)
             .orElseThrow { UnknownDocumentDefinitionException(documentDefinitionName) }
 
         return Function { requestedValue ->
@@ -132,16 +132,17 @@ class DocumentJsonValueResolverFactory(
         return emptyDocumentContent
     }
 
-    override fun getResolvableKeyOptions(documentDefinitionName: String, caseDefinitionId: CaseDefinitionId): List<ValueResolverOption> {
+    override fun getResolvableKeyOptions(caseDefinitionId: CaseDefinitionId): List<ValueResolverOption> {
         val documentDefinition = documentDefinitionService.findByCaseDefinitionId(caseDefinitionId).orElseThrow()
-        val schemaAsNode = documentDefinition.getSchema()
+        val schemaAsNode = documentDefinition.schema
             .asJson() as ObjectNode
         return getPropertyNamesFromObjectNode(documentDefinition, schemaAsNode, "$PREFIX:")
     }
 
-    override fun getResolvableKeyOptions(documentDefinitionName: String): List<ValueResolverOption> {
-        val documentDefinition = documentDefinitionService.findLatestByName(documentDefinitionName).orElseThrow()
-        val schemaAsNode = documentDefinition.getSchema()
+    override fun getResolvableKeyOptions(caseDefinitionKey: String): List<ValueResolverOption> {
+        val documentDefinitionName = caseDefinitionKey
+        val documentDefinition = documentDefinitionService.findActiveByName(documentDefinitionName).orElseThrow()
+        val schemaAsNode = documentDefinition.schema
             .asJson() as ObjectNode
         return getPropertyNamesFromObjectNode(documentDefinition, schemaAsNode, "$PREFIX:")
     }

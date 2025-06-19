@@ -49,6 +49,7 @@ import com.ritense.case.web.rest.CaseInstanceResource
 import com.ritense.case.web.rest.CaseTabManagementResource
 import com.ritense.case.web.rest.CaseTabResource
 import com.ritense.case.web.rest.TaskListResource
+import com.ritense.case_.authorization.CaseDefinitionSpecificationFactory
 import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.document.service.DocumentDefinitionService
@@ -390,5 +391,17 @@ class CaseAutoConfiguration {
         @Lazy documentDefinitionService: DocumentDefinitionService,
     ): CaseTabDocumentDefinitionMapper {
         return CaseTabDocumentDefinitionMapper(documentDefinitionService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CaseDefinitionSpecificationFactory::class)
+    fun caseDefinitionSpecificationFactory(
+        @Lazy caseDefinitionService: CaseDefinitionService,
+        queryDialectHelper: QueryDialectHelper
+    ): CaseDefinitionSpecificationFactory {
+        return CaseDefinitionSpecificationFactory(
+            caseDefinitionService,
+            queryDialectHelper
+        )
     }
 }

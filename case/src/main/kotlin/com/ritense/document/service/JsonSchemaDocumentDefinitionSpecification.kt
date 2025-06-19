@@ -64,7 +64,7 @@ class JsonSchemaDocumentDefinitionSpecification(
 
     override fun identifierToEntity(identifier: String): JsonSchemaDocumentDefinition {
         return runWithoutAuthorization {
-            documentDefinitionService.findLatestByName(identifier).get()
+            documentDefinitionService.findActiveByName(identifier).get()
         }
     }
 }

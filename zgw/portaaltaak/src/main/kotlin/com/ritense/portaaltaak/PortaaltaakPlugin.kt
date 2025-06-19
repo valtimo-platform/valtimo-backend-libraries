@@ -45,7 +45,7 @@ import com.ritense.valueresolver.ValueResolverService
 import com.ritense.zakenapi.ZakenApiPlugin
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
-import com.ritense.zakenapi.domain.rol.RolType
+import com.ritense.zakenapi.domain.rol.RolTypeGeneriekeBeschrijving
 import com.ritense.zakenapi.link.ZaakInstanceLinkNotFoundException
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -228,7 +228,7 @@ class PortaaltaakPlugin(
         ) { "No plugin configuration was found for zaak with URL $zaakUrl" }
 
         val initiator = requireNotNull(
-            zakenPlugin.getZaakRollen(zaakUrl, RolType.INITIATOR).firstOrNull()
+            zakenPlugin.getZaakRollen(zaakUrl, RolTypeGeneriekeBeschrijving.INITIATOR).firstOrNull()
         ) { "No initiator role found for zaak with URL $zaakUrl" }
 
         return requireNotNull(

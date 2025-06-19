@@ -18,12 +18,11 @@ package com.ritense.processdocument.service
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.JsonSchemaDocument
-import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.logging.withLoggingContext
 import com.ritense.processdocument.domain.ProcessDocumentInstance
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
-import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstanceId
 import com.ritense.valtimo.contract.event.DocumentDeletedEvent
+import com.ritense.valtimo.event.ProcessDefinitionDeleted
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.camunda.bpm.engine.RuntimeService
 import org.springframework.context.event.EventListener
@@ -32,6 +31,20 @@ class ProcessDocumentDeletedEventListener(
     private val runtimeService: RuntimeService,
     private val processDocumentAssociationService: ProcessDocumentAssociationService
 ) {
+
+    @EventListener(ProcessDefinitionDeleted::class)
+    fun handle(event: ProcessDefinitionDeleted) {
+        runWithoutAuthorization {
+            runtimeService.createProcessInstanceQuery()
+                .processDefinitionId(event.processDefinitionId)
+                .rootProcessInstances()
+                .list()
+                .forEach {
+                    deleteProcessInstance(it.processInstanceId)
+                }
+        }
+    }
+
     @EventListener(DocumentDeletedEvent::class)
     fun handle(event: DocumentDeletedEvent) {
         withLoggingContext(JsonSchemaDocument::class, event.documentId) {
@@ -43,26 +56,30 @@ class ProcessDocumentDeletedEventListener(
                     .rootProcessInstances()
                     .list()
                     .forEach {
-                        runtimeService.deleteProcessInstance(
-                            it.processInstanceId,
-                            "Document deleted",
-                            true,
-                            true,
-                            true,
-                            false
-                        )
-                        processDocumentAssociationService.getProcessDocumentInstanceResult(
-                            CamundaProcessJsonSchemaDocumentInstanceId.existingId(CamundaProcessInstanceId(it.processInstanceId), JsonSchemaDocumentId.existingId(event.documentId))
-                        )?.let { processDocumentInstance ->
-                            if (processDocumentInstance.isError) {
-                                logger.debug { "Document ${event.documentId} is not related to process ${it.processInstanceId}. No ProcessDocumentInstance to delete." }
-                            } else {
-                                processDocumentInstance.resultingValue().map(ProcessDocumentInstance::processDocumentInstanceId)
-                                    .ifPresent(processDocumentAssociationService::deleteProcessDocumentInstance)
-                            }
-                        }
+                        deleteProcessInstance(it.processInstanceId)
                     }
+            }
+        }
+    }
 
+    private fun deleteProcessInstance(processInstanceId: String) {
+        runtimeService.deleteProcessInstance(
+            processInstanceId,
+            "Document deleted",
+            true,
+            true,
+            true,
+            false
+        )
+        processDocumentAssociationService.findProcessDocumentInstance(
+            CamundaProcessInstanceId(processInstanceId),
+        )?.let { processDocumentInstance ->
+            if (processDocumentInstance.isEmpty) {
+                logger.debug { "Process $processInstanceId has no relation to any Document. No ProcessDocumentInstance to delete." }
+            } else {
+                processDocumentInstance
+                    .map(ProcessDocumentInstance::processDocumentInstanceId)
+                    .ifPresent(processDocumentAssociationService::deleteProcessDocumentInstance)
             }
         }
     }

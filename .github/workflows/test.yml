@@ -4,6 +4,9 @@ permissions:
 on:
     pull_request:
         types: [synchronize, opened]
+    push:
+        branches: [next-minor, next-major, rc/*, release/*, development]
+    workflow_dispatch:
 
 jobs:
     determine-tests:

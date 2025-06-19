@@ -17,7 +17,9 @@
 package com.ritense.document.service.impl;
 
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
+import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentDefinitionSpecificationHelper.byCaseDefinitionActive;
 import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentDefinitionSpecificationHelper.byIdCaseDefinitionId;
+import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentDefinitionSpecificationHelper.byIdName;
 import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentDefinitionSpecificationHelper.byLatestVersion;
 import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.CREATE;
 import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.DELETE;
@@ -104,7 +106,8 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
                     VIEW_LIST
                 ),
                 null
-            );
+            )
+            .and(byCaseDefinitionActive());
         return documentDefinitionRepository.findAll(spec, pageable);
     }
 
@@ -129,7 +132,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
                 Action.deny()
             ));
 
-        final var spec = byLatestVersion();
+        final var spec = byCaseDefinitionActive();
         return documentDefinitionRepository.findAll(spec, pageable);
     }
 
@@ -137,7 +140,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     public JsonSchemaDocumentDefinitionId findIdByName(
         @LoggableResource("documentDefinitionName") String name
     ) {
-        return findLatestByName(name)
+        return findActiveByName(name)
             .orElseThrow(() -> new UnknownDocumentDefinitionException(name))
             .getId();
     }
@@ -162,12 +165,17 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     }
 
     @Override
-    public Optional<JsonSchemaDocumentDefinition> findLatestByName(
+    public Optional<JsonSchemaDocumentDefinition> findActiveByName(
         @LoggableResource("documentDefinitionName") String documentDefinitionName
     ) {
-        final var definition = documentDefinitionRepository.findFirstByIdNameOrderByIdCaseDefinitionIdVersionTagDesc(
-            documentDefinitionName
-        ).orElse(null);
+        final var definition = documentDefinitionRepository.findOne(
+            byIdName(documentDefinitionName).and(byCaseDefinitionActive())
+        ).orElse(
+            // There might not be an active case-definition when importing.
+            documentDefinitionRepository.findOne(
+                byIdName(documentDefinitionName).and(byLatestVersion())
+            ).orElse(null)
+        );
 
         if (definition != null) {
             authorizationService.requirePermission(
@@ -183,11 +191,30 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     }
 
     @Override
+    public boolean existsByName(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName
+    ) {
+        final var spec = authorizationService
+            .getAuthorizationSpecification(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocumentDefinition.class,
+                    VIEW_LIST
+                ),
+                null
+            );
+
+        return documentDefinitionRepository.findAll(
+            spec.and(byIdName(documentDefinitionName)),
+            Pageable.ofSize(1)
+        ).stream().findAny().isPresent();
+    }
+
+    @Override
     public void requirePermission(
         @LoggableResource("documentDefinitionName") String documentDefinitionName,
         Action action
     ) {
-        var definition = runWithoutAuthorization(() -> findLatestByName(documentDefinitionName).orElseThrow());
+        var definition = runWithoutAuthorization(() -> findActiveByName(documentDefinitionName).orElseThrow());
         authorizationService.requirePermission(
             new EntityAuthorizationRequest<>(
                 JsonSchemaDocumentDefinition.class,
@@ -304,13 +331,15 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
             assertArgumentNotNull(documentDefinition, "documentDefinition is required");
             caseDefinitionChecker.assertCanUpdateCaseDefinition(documentDefinition.id().caseDefinitionId());
 
-            JsonSchemaDocumentDefinitionId latestDefinitionId = documentDefinitionRepository.findFirstByIdNameOrderByIdCaseDefinitionIdVersionTagDesc(
-                documentDefinition.id().name()).map(JsonSchemaDocumentDefinition::getId).orElse(null);
+            final var documentDefinitionExists = documentDefinitionRepository.findOne(
+                byIdName(documentDefinition.id().name())
+                    .and(byIdCaseDefinitionId(documentDefinition.id().caseDefinitionId()))
+            ).isPresent();
 
             authorizationService.requirePermission(
                 new EntityAuthorizationRequest<>(
                     JsonSchemaDocumentDefinition.class,
-                    latestDefinitionId == null ? CREATE : MODIFY,
+                    documentDefinitionExists ? MODIFY : CREATE,
                     documentDefinition
                 )
             );
@@ -324,7 +353,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         @LoggableResource("documentDefinitionName") String documentDefinitionName
     ) {
         caseDefinitionChecker.assertCanUpdateGlobalConfiguration();
-        findLatestByName(documentDefinitionName).ifPresent(documentDefinition -> authorizationService.requirePermission(
+        findActiveByName(documentDefinitionName).ifPresent(documentDefinition -> authorizationService.requirePermission(
             new EntityAuthorizationRequest<>(
                 JsonSchemaDocumentDefinition.class,
                 DELETE,
@@ -359,7 +388,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     public boolean currentUserCanAccessDocumentDefinition(
         @LoggableResource("documentDefinitionName") String documentDefinitionName
     ) {
-        return findLatestByName(documentDefinitionName)
+        return findActiveByName(documentDefinitionName)
             .map(documentDefinition -> authorizationService.hasPermission(
                 new EntityAuthorizationRequest<>(
                     JsonSchemaDocumentDefinition.class,
@@ -374,7 +403,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         @LoggableResource("documentDefinitionName") String documentDefinitionName,
         String jsonPathExpression
     ) {
-        var definition = findLatestByName(documentDefinitionName)
+        var definition = findActiveByName(documentDefinitionName)
             .orElseThrow(() -> new UnknownDocumentDefinitionException(documentDefinitionName));
         if (jsonPathExpression.startsWith("doc:")) {
             jsonPathExpression = "$." + jsonPathExpression.substring("doc:".length());
@@ -418,7 +447,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         @LoggableResource("documentDefinitionName") String documentDefinitionName,
         String jsonPointer
     ) {
-        var definition = findLatestByName(documentDefinitionName)
+        var definition = findActiveByName(documentDefinitionName)
             .orElseThrow(() -> new UnknownDocumentDefinitionException(documentDefinitionName));
         if (!isValidJsonPointer(definition, jsonPointer)) {
             throw new ValidationException(

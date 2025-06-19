@@ -27,8 +27,6 @@ import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.case.web.rest.mapper.CaseListColumnMapper
 import com.ritense.case_.repository.CaseDefinitionRepository
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
-import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valueresolver.ValueResolverService
@@ -36,7 +34,6 @@ import com.ritense.valueresolver.exception.ValueResolverValidationException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.eq
@@ -138,8 +135,8 @@ class CaseDefinitionServiceTest : BaseTest() {
         val listColumnDto = getListColumnDtoToFirstName(
             DisplayType("enum", EnumDisplayTypeParameter(mapOf(Pair("Key1", "Value1"))))
         )
-        whenever(documentDefinitionService.findIdByName(caseDefinitionName))
-            .thenReturn(JsonSchemaDocumentDefinitionId.existingId("aName", CaseDefinitionId.of("bName", "1.0.2")))
+        whenever(documentDefinitionService.existsByName(caseDefinitionName))
+            .thenReturn(true)
         whenever(
             caseDefinitionListColumnRepository
                 .existsByIdCaseDefinitionKeyAndIdKey(
@@ -151,7 +148,7 @@ class CaseDefinitionServiceTest : BaseTest() {
         val exception = assertThrows<InvalidListColumnException> {
             service.createListColumn(caseDefinitionName, listColumnDto)
         }
-        verify(documentDefinitionService).findIdByName(caseDefinitionName)
+        verify(documentDefinitionService).existsByName(caseDefinitionName)
         verify(caseDefinitionListColumnRepository).existsByIdCaseDefinitionKeyAndIdKey(
             caseDefinitionName,
             listColumnDto.key
@@ -163,11 +160,6 @@ class CaseDefinitionServiceTest : BaseTest() {
     fun `should fail to validate list column on create when document definition doesn't exist`() {
         val caseDefinitionName = "name"
         val listColumnDto: CaseListColumnDto = mock()
-        whenever(documentDefinitionService.findIdByName(any())).thenThrow(
-            UnknownDocumentDefinitionException(
-                caseDefinitionName
-            )
-        )
         assertThrows<UnknownCaseDefinitionException> {
             service.createListColumn(caseDefinitionName, listColumnDto)
         }
@@ -179,8 +171,8 @@ class CaseDefinitionServiceTest : BaseTest() {
         val listColumnDto = getListColumnDtoToFirstName(
             DisplayType("enum", EnumDisplayTypeParameter(mapOf(Pair("Key1", "Value1"))))
         )
-        whenever(documentDefinitionService.findIdByName(caseDefinitionName))
-            .thenReturn(JsonSchemaDocumentDefinitionId.existingId("aName", CaseDefinitionId.of("bName", "1.0.2")))
+        whenever(documentDefinitionService.existsByName(caseDefinitionName))
+            .thenReturn(true)
         whenever(
             caseDefinitionListColumnRepository.findByIdCaseDefinitionKeyOrderByOrderAsc(
                 caseDefinitionName
@@ -194,7 +186,7 @@ class CaseDefinitionServiceTest : BaseTest() {
         val exception = assertThrows<InvalidListColumnException> {
             service.createListColumn(caseDefinitionName, listColumnDto)
         }
-        verify(documentDefinitionService).findIdByName(caseDefinitionName)
+        verify(documentDefinitionService).existsByName(caseDefinitionName)
         verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionKeyOrderByOrderAsc(
             caseDefinitionName
         )
@@ -208,8 +200,8 @@ class CaseDefinitionServiceTest : BaseTest() {
         val listColumnDto = getListColumnDtoToFirstName(
             DisplayType("enum", EnumDisplayTypeParameter(mapOf(Pair("Key1", "Value1"))))
         )
-        whenever(documentDefinitionService.findIdByName(caseDefinitionName))
-            .thenReturn(JsonSchemaDocumentDefinitionId.existingId("aName", CaseDefinitionId.of("bName", "1.0.2")))
+        whenever(documentDefinitionService.existsByName(caseDefinitionName))
+            .thenReturn(true)
         whenever(
             caseDefinitionListColumnRepository.findByIdCaseDefinitionKeyOrderByOrderAsc(
                 caseDefinitionName
@@ -229,7 +221,7 @@ class CaseDefinitionServiceTest : BaseTest() {
         val exception = assertThrows<InvalidListColumnException> {
             service.createListColumn(caseDefinitionName, listColumnDto)
         }
-        verify(documentDefinitionService).findIdByName(caseDefinitionName)
+        verify(documentDefinitionService).existsByName(caseDefinitionName)
         verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionKeyOrderByOrderAsc(
             caseDefinitionName
         )
@@ -249,8 +241,8 @@ class CaseDefinitionServiceTest : BaseTest() {
         val listColumnDto = getListColumnDtoToFirstName(
             DisplayType("enum", EnumDisplayTypeParameter(emptyMap()))
         )
-        whenever(documentDefinitionService.findIdByName(caseDefinitionName))
-            .thenReturn(JsonSchemaDocumentDefinitionId.existingId("aName", CaseDefinitionId.of("bName", "1.0.2")))
+        whenever(documentDefinitionService.existsByName(caseDefinitionName))
+            .thenReturn(true)
         whenever(
             caseDefinitionListColumnRepository.findByIdCaseDefinitionKeyOrderByOrderAsc(
                 caseDefinitionName
@@ -263,7 +255,7 @@ class CaseDefinitionServiceTest : BaseTest() {
         val exception = assertThrows<InvalidListColumnException> {
             service.createListColumn(caseDefinitionName, listColumnDto)
         }
-        verify(documentDefinitionService).findIdByName(caseDefinitionName)
+        verify(documentDefinitionService).existsByName(caseDefinitionName)
         verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionKeyOrderByOrderAsc(
             caseDefinitionName
         )
@@ -276,11 +268,6 @@ class CaseDefinitionServiceTest : BaseTest() {
     fun `should fail to validate column on update when document definition doesn't exist`() {
         val caseDefinitionName = "name"
         val listColumnDto: CaseListColumnDto = mock()
-        whenever(documentDefinitionService.findIdByName(any())).thenThrow(
-            UnknownDocumentDefinitionException(
-                caseDefinitionName
-            )
-        )
         assertThrows<UnknownCaseDefinitionException> {
             service.createListColumn(caseDefinitionName, listColumnDto)
         }
@@ -296,8 +283,8 @@ class CaseDefinitionServiceTest : BaseTest() {
             DisplayType("enum", EnumDisplayTypeParameter(mapOf(Pair("Key1", "Value1"))))
         )
         listColumnDtoLastName.defaultSort = ColumnDefaultSort.ASC
-        whenever(documentDefinitionService.findIdByName(caseDefinitionName))
-            .thenReturn(JsonSchemaDocumentDefinitionId.existingId("aName", CaseDefinitionId.of("bName", "1.0.2")))
+        whenever(documentDefinitionService.existsByName(caseDefinitionName))
+            .thenReturn(true)
         whenever(
             caseDefinitionListColumnRepository.findByIdCaseDefinitionKeyOrderByOrderAsc(
                 caseDefinitionName
@@ -315,7 +302,7 @@ class CaseDefinitionServiceTest : BaseTest() {
                 listOf(listColumnDtoFirstName, listColumnDtoLastName)
             )
         }
-        verify(documentDefinitionService).findIdByName(caseDefinitionName)
+        verify(documentDefinitionService).existsByName(caseDefinitionName)
         verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionKeyOrderByOrderAsc(
             caseDefinitionName
         )
@@ -331,8 +318,8 @@ class CaseDefinitionServiceTest : BaseTest() {
         val listColumnDtoLastName = getListColumnDtoLastName(
             DisplayType("enum", EnumDisplayTypeParameter(mapOf(Pair("Key1", "Value1"))))
         )
-        whenever(documentDefinitionService.findIdByName(caseDefinitionName))
-            .thenReturn(JsonSchemaDocumentDefinitionId.existingId("aName", CaseDefinitionId.of("bName", "1.0.2")))
+        whenever(documentDefinitionService.existsByName(caseDefinitionName))
+            .thenReturn(true)
         whenever(
             caseDefinitionListColumnRepository.findByIdCaseDefinitionKeyOrderByOrderAsc(
                 caseDefinitionName
@@ -355,7 +342,7 @@ class CaseDefinitionServiceTest : BaseTest() {
         val exception = assertThrows<InvalidListColumnException> {
             service.updateListColumns(caseDefinitionName, listOf(listColumnDtoFirstName))
         }
-        verify(documentDefinitionService).findIdByName(caseDefinitionName)
+        verify(documentDefinitionService).existsByName(caseDefinitionName)
         verify(caseDefinitionListColumnRepository).findByIdCaseDefinitionKeyOrderByOrderAsc(
             caseDefinitionName
         )
