@@ -64,6 +64,7 @@ class TaskListResource(
         return ResponseEntity.ok().build()
     }
 
+    @Deprecated("Since 13.0.0")
     @PostMapping("/management/v1/case/{caseDefinitionName}/task-list-column")
     @RunWithoutAuthorization
     fun swapColumnOrderForManagement(
@@ -71,6 +72,16 @@ class TaskListResource(
         @RequestBody taskListColumnDto: Pair<String, String>
     ): ResponseEntity<Any> {
         service.swapColumnOrder(caseDefinitionName, taskListColumnDto.first, taskListColumnDto.second)
+        return ResponseEntity.ok().build()
+    }
+
+    @PostMapping("/management/v2/case/{caseDefinitionName}/task-list-column")
+    @RunWithoutAuthorization
+    fun reorderColumnsForManagement(
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
+        @RequestBody taskListColumnsToReorder: List<String>
+    ): ResponseEntity<Any> {
+        service.reorderColumns(caseDefinitionName, taskListColumnsToReorder)
         return ResponseEntity.ok().build()
     }
 
