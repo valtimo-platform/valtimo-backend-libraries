@@ -38,6 +38,7 @@ import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPluginFactory
 import com.ritense.zakenapi.client.ZakenApiClient
+import com.ritense.zakenapi.exporter.ZaakTypeLinkExporter
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import com.ritense.zakenapi.provider.BsnProvider
 import com.ritense.zakenapi.provider.DefaultZaakUrlProvider
@@ -302,6 +303,18 @@ class ZakenApiAutoConfiguration {
         zaakTypeLinkService: ZaakTypeLinkService
     ): ZaakTypeLinkImporter {
         return ZaakTypeLinkImporter(
+            objectMapper,
+            zaakTypeLinkService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ZaakTypeLinkExporter::class)
+    fun zaakTypeLinkExporter(
+        objectMapper: ObjectMapper,
+        zaakTypeLinkService: ZaakTypeLinkService
+    ): ZaakTypeLinkExporter {
+        return ZaakTypeLinkExporter(
             objectMapper,
             zaakTypeLinkService
         )

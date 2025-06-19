@@ -17,15 +17,22 @@
 package com.ritense.zakenapi.domain.rol
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonProperty
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class RolNietNatuurlijkPersoon(
     val annIdentificatie: String? = null,
     val innNnpId: String? = null,
     val statutaireNaam: String? = null,
-    val innRechtsvorm: String? = null,
-    val bezoekadres: String? = null
+    @JsonProperty("innRechtsvorm")
+    private val innRechtsvormString: String? = null,
+    val bezoekadres: String? = null,
+    val subVerblijfBuitenland: SubVerblijfBuitenland? = null,
 ) : BetrokkeneIdentificatie() {
+
+    val innRechtsvorm = innRechtsvormString?.let {
+        InnRechtsvormEnum.entries.find {it.value == innRechtsvormString}
+    }?.value
 
     init {
         require(!annIdentificatie.isNullOrBlank() || !innNnpId.isNullOrBlank()) {

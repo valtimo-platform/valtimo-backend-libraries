@@ -27,7 +27,7 @@ import com.ritense.zakenapi.domain.rol.BetrokkeneType
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
-import com.ritense.zakenapi.domain.rol.RolType
+import com.ritense.zakenapi.domain.rol.RolTypeGeneriekeBeschrijving
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.community.mockito.delegate.DelegateTaskFake
@@ -71,7 +71,7 @@ class ZaakBsnProviderTest {
         val plugin = mock<ZakenApiPlugin>()
         whenever(pluginService.createInstance(eq(ZakenApiPlugin::class.java), any())).thenReturn(plugin)
 
-        whenever(plugin.getZaakRollen(zaakUrl, RolType.INITIATOR)).thenReturn(listOf(
+        whenever(plugin.getZaakRollen(zaakUrl, RolTypeGeneriekeBeschrijving.INITIATOR)).thenReturn(listOf(
                 createRol(BetrokkeneType.NATUURLIJK_PERSOON, RolNatuurlijkPersoon(inpBsn = "12345"), zaakUrl),
                 createRol(BetrokkeneType.NIET_NATUURLIJK_PERSOON, RolNietNatuurlijkPersoon(annIdentificatie = "1337"), zaakUrl)
         ))

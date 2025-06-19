@@ -17,6 +17,7 @@
 package com.ritense.zakenapi.domain.rol
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonProperty
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class RolNatuurlijkPersoon(
@@ -27,6 +28,13 @@ data class RolNatuurlijkPersoon(
     val voorvoegselGeslachtsnaam: String? = null,
     val voorletters: String? = null,
     val voornamen: String? = null,
-    val geslachtsaanduiding: String? = null,
-    val geboortedatum: String? = null
-) : BetrokkeneIdentificatie()
+    @JsonProperty("geslachtsaanduiding")
+    private val geslachtsaanduidingString: String? = null,
+    val geboortedatum: String? = null,
+    val verblijfsadres: Verblijfsadres? = null,
+    val subVerblijfBuitenland: SubVerblijfBuitenland? = null,
+) : BetrokkeneIdentificatie() {
+    val geslachtsaanduiding = geslachtsaanduidingString?.let {
+        GeslachtsaanduidingEnum.entries.find { it.value == geslachtsaanduidingString }
+    }?.value
+}
