@@ -30,4 +30,6 @@ interface CaseDefinitionProcessLinkRepository : JpaRepository<CaseDefinitionProc
     fun findAllByIdCaseDefinitionId(caseDefinitionId: CaseDefinitionId): List<CaseDefinitionProcessLink>
 
     fun deleteByIdCaseDefinitionIdAndType(caseDefinitionId: CaseDefinitionId, type: String)
+
+    fun deleteAllByIdCaseDefinitionId(caseDefinitionId: CaseDefinitionId)
 }

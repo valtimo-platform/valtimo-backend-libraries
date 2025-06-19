@@ -118,4 +118,9 @@ open class CaseDefinitionProcessLinkService(
         caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId)
         caseDefinitionProcessLinkRepository.deleteByIdCaseDefinitionIdAndType(caseDefinitionId, type)
     }
+
+    fun deleteDocumentDefinitionProcesses(caseDefinitionId: CaseDefinitionId) {
+        caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId)
+        caseDefinitionProcessLinkRepository.deleteAllByIdCaseDefinitionId(caseDefinitionId)
+    }
 }

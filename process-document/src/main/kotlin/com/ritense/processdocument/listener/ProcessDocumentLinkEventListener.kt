@@ -20,6 +20,7 @@ import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.event.CaseDefinitionCreatedEvent
+import com.ritense.valtimo.contract.event.CaseDefinitionPreDeleteEvent
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
@@ -47,6 +48,12 @@ class ProcessDocumentLinkEventListener(
                 )
             }
         }
+    }
+
+    @RunWithoutAuthorization
+    @EventListener(CaseDefinitionPreDeleteEvent::class)
+    fun handleCaseDefinitionPreDeleteEvent(event: CaseDefinitionPreDeleteEvent) {
+        caseDefinitionProcessLinkService.deleteDocumentDefinitionProcesses(event.caseDefinitionId)
     }
 
     companion object {
