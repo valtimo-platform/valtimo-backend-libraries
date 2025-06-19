@@ -39,6 +39,7 @@ class JsonSchemaDocumentDefinitionSpecification(
         query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
+
         val predicates = permissions
             .filter { permission: Permission ->
                 JsonSchemaDocumentDefinition::class.java == permission.resourceType && authRequest.action == permission.action
