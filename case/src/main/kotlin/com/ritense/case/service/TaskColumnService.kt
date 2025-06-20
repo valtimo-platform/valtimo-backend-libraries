@@ -78,6 +78,7 @@ class TaskColumnService(
             .save(TaskListColumnMapper.toEntity(caseDefinitionName, taskListColumnDto))
     }
 
+    @Deprecated("Since 13.0.0")
     @Throws(InvalidListColumnException::class)
     fun swapColumnOrder(
         caseDefinitionName: String,
@@ -108,6 +109,28 @@ class TaskColumnService(
         columnsToSwap[1] = columnsToSwap[1].copy(order = col1Order)
 
         taskListColumnRepository.saveAll(columnsToSwap)
+    }
+
+    @Throws(InvalidListColumnException::class)
+    fun reorderColumns(
+        caseDefinitionName: String,
+        columns: List<String>
+    ) {
+        denyManagementOperation()
+        caseDefinitionChecker.assertCanUpdateGlobalConfiguration()
+
+        assertDocumentDefinitionExists(caseDefinitionName)
+
+        val existingColumns =
+            taskListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAsc(caseDefinitionName)
+
+        val orderedColumns = columns.mapIndexed { index, columnKey ->
+            existingColumns.first {
+                it.id.key == columnKey
+            }.copy(order = index)
+        }
+
+        taskListColumnRepository.saveAll(orderedColumns)
     }
 
     @Throws(UnknownDocumentDefinitionException::class)
