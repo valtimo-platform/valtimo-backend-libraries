@@ -21,6 +21,7 @@ import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.note.domain.Note
+import com.ritense.note.service.NoteService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
@@ -31,7 +32,7 @@ import java.util.UUID
 class NoteSpecification(
         authRequest: AuthorizationRequest<Note>,
         permissions: List<Permission>,
-        private val noteRepository: NoteRepository,
+        private val noteService: NoteService,
         private val queryDialectHelper: QueryDialectHelper
 ) : AuthorizationSpecification<Note>(authRequest, permissions) {
     override fun toPredicate(
@@ -39,6 +40,12 @@ class NoteSpecification(
         query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
+        // Filter the permissions for the relevant ones and use those to  find the filters that are required
+        // Turn those filters into predicates
+        val groupList = query.groupList.toMutableList()
+        groupList.add(root.get<UUID>("id"))
+        query.groupBy(groupList)
+
         val predicates = permissions.stream()
             .filter { permission: Permission ->
                 Note::class.java == permission.resourceType
@@ -58,7 +65,7 @@ class NoteSpecification(
 
     override fun identifierToEntity(identifier: String): Note {
         return runWithoutAuthorization {
-            noteRepository.getReferenceById(UUID.fromString(identifier))
+            noteService.getNoteById(UUID.fromString(identifier))
         }
     }
 }

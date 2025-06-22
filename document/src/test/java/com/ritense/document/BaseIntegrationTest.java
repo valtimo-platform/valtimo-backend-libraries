@@ -48,7 +48,6 @@ import com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider;
 import com.ritense.document.service.JsonSchemaDocumentSnapshotActionProvider;
 import com.ritense.document.service.SearchFieldActionProvider;
 import com.ritense.document.service.SearchFieldService;
-import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.outbox.OutboxService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension;
@@ -84,7 +83,7 @@ public abstract class BaseIntegrationTest extends BaseTest {
     protected DocumentDefinitionService documentDefinitionService;
 
     @Inject
-    protected JsonSchemaDocumentService documentService;
+    protected DocumentService documentService;
 
     @SpyBean
     protected JsonSchemaDocumentRepository documentRepository;
@@ -145,7 +144,7 @@ public abstract class BaseIntegrationTest extends BaseTest {
             .build();
     }
 
-    protected JsonSchemaDocument createDocument(DocumentDefinition documentDefinition, String content) {
+    protected Document createDocument(DocumentDefinition documentDefinition, String content) {
         return AuthorizationContext
             .runWithoutAuthorization(
                 () -> documentService.createDocument(

@@ -35,27 +35,16 @@ class NoteDocumentMapper(
         return runWithoutAuthorization { listOf(documentRepository.findById(JsonSchemaDocumentId.existingId(entity.documentId)).get()) }
     }
 
-    override fun mapQuery(
-        root: Root<Note>,
-        query: AbstractQuery<*>,
-        criteriaBuilder: CriteriaBuilder
-    ): AuthorizationEntityMapperResult<JsonSchemaDocument> {
-
-        val subquery = query.subquery(Int::class.java)
-        val documentRoot = subquery.from(JsonSchemaDocument::class.java)
-
-        subquery.select(criteriaBuilder.literal(1))
-            .where(
-                criteriaBuilder.equal(
-                    root.get<UUID>("documentId"),
-                    documentRoot.get<JsonSchemaDocumentId>("id").get<UUID>("id")
-                )
-            )
+    override fun mapQuery(root: Root<Note>, query: AbstractQuery<*>, criteriaBuilder: CriteriaBuilder): AuthorizationEntityMapperResult<JsonSchemaDocument> {
+        val documentRoot: Root<JsonSchemaDocument> = query.from(JsonSchemaDocument::class.java)
+        val groupList = query.groupList.toMutableList()
+        groupList.add(root.get<UUID>("documentId"))
+        query.groupBy(groupList)
 
         return AuthorizationEntityMapperResult(
             documentRoot,
-            subquery,
-            criteriaBuilder.exists(subquery)
+            query,
+            criteriaBuilder.equal(root.get<UUID>("documentId"), documentRoot.get<JsonSchemaDocumentId>("id").get<UUID>("id"))
         )
     }
 

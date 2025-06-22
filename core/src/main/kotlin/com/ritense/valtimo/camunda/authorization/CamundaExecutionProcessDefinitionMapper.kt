@@ -29,27 +29,19 @@ class CamundaExecutionProcessDefinitionMapper : AuthorizationEntityMapper<Camund
         return listOf(entity.processDefinition!!)
     }
 
-    override fun mapQuery(
-        root: Root<CamundaExecution>,
-        query: AbstractQuery<*>,
-        criteriaBuilder: CriteriaBuilder
-    ): AuthorizationEntityMapperResult<CamundaProcessDefinition> {
-
-        val subquery = query.subquery(Int::class.java)
-        val processDefinitionRoot = subquery.from(CamundaProcessDefinition::class.java)
-
-        subquery.select(criteriaBuilder.literal(1))
-            .where(
-                criteriaBuilder.equal(
-                    root.get<CamundaProcessDefinition>("processDefinition").get<String>("id"),
-                    processDefinitionRoot.get<String>("id")
-                )
-            )
+    override fun mapQuery(root: Root<CamundaExecution>, query: AbstractQuery<*>, criteriaBuilder: CriteriaBuilder): AuthorizationEntityMapperResult<CamundaProcessDefinition> {
+        val processDefinitionRoot: Root<CamundaProcessDefinition> = query.from(CamundaProcessDefinition::class.java)
+        val groupList = query.groupList.toMutableList()
+        groupList.add(root.get<CamundaProcessDefinition>("processDefinition").get<String>("id"))
+        query.groupBy(groupList)
 
         return AuthorizationEntityMapperResult(
             processDefinitionRoot,
-            subquery,
-            criteriaBuilder.exists(subquery)
+            query,
+            criteriaBuilder.equal(
+                root.get<CamundaProcessDefinition>("processDefinition").get<String>("id"),
+                processDefinitionRoot.get<String>("id")
+            )
         )
     }
 

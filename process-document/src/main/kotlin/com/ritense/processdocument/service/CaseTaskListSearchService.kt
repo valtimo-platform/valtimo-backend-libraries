@@ -181,6 +181,13 @@ class CaseTaskListSearchService(
             )
         )
 
+        // Due to the JsonSchemaDocumentSpecification#toPredicate adding a groupBy (which is called when applying PBAC)
+        // ...we are forced to add all the columns we want to select, to the group by.
+        // This can be removed if we have a solution for this group by (TP story #106335)
+        val groupList = query.groupList.toMutableList()
+        groupList.addAll(selectCols)
+        query.groupBy(groupList)
+
         // TODO: look into ability to re-use where predicate in list and count query. improves performance
         query.where(constructWhere(cb, query, taskRoot, documentRoot, caseDefinitionName, advancedSearchRequest))
 
@@ -611,6 +618,14 @@ class CaseTaskListSearchService(
                         }
 
                         val path: Path<Any> = stringToPath(parent, docProperty)
+                        // This groupBy workaround is needed because PBAC adds a groupBy on 'id' by default.
+                        // Since sorting columns should be added to the groupBy, we do that here
+                        if (query.groupList.isNotEmpty() && !query.groupList.contains(path)) {
+                            val grouping =
+                                ArrayList(query.groupList)
+                            grouping.add(path)
+                            query.groupBy(grouping)
+                        }
                         expression = path
                     }
                 }

@@ -75,9 +75,9 @@ class ValtimoAuthorizationService(
         request: AuthorizationRequest<T>,
         permissions: List<Permission>?
     ): AuthorizationSpecification<T> {
-        val userPermissions = permissions ?: getPermissions(request)
+        val usedPermissions = permissions ?: getPermissions(request)
 
-        return getAuthorizationSpecification(request, userPermissions, enablePermissionLogging = true)
+        return getAuthorizationSpecification(request, usedPermissions, enablePermissionLogging = true)
     }
 
     override fun getPermissions(resourceType: Class<*>, action: Action<*>): List<Permission> {

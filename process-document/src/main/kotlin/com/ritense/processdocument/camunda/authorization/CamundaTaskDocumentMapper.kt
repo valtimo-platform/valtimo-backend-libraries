@@ -53,24 +53,20 @@ class CamundaTaskDocumentMapper(
         query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): AuthorizationEntityMapperResult<JsonSchemaDocument> {
-
-        val subquery = query.subquery(Int::class.java)
-        val documentRoot = subquery.from(JsonSchemaDocument::class.java)
-
+        val documentRoot = query.from(JsonSchemaDocument::class.java)
         val processBusinessKey = root.get<CamundaExecution>(PROCESS_INSTANCE).get<String>(BUSINESS_KEY)
-
+        if (!QueryUtils.isCountQuery(query)) {
+            query.groupBy(query.groupList + root.get<String>(ID))
+        }
         val documentId = queryDialectHelper.uuidToString(
             criteriaBuilder,
             documentRoot.get<JsonSchemaDocumentId>(ID).get(ID)
         )
 
-        subquery.select(criteriaBuilder.literal(1))
-            .where(criteriaBuilder.equal(processBusinessKey, documentId))
-
         return AuthorizationEntityMapperResult(
             documentRoot,
-            subquery,
-            criteriaBuilder.exists(subquery)
+            query,
+            criteriaBuilder.equal(processBusinessKey, documentId)
         )
     }
 
