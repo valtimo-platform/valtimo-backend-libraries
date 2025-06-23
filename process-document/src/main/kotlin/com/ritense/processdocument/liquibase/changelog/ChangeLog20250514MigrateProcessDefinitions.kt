@@ -32,6 +32,9 @@ import org.camunda.bpm.model.bpmn.instance.CallActivity
 import org.camunda.bpm.model.bpmn.instance.Process
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.nio.ByteBuffer
+import java.sql.PreparedStatement
+import java.sql.ResultSet
 import java.sql.Timestamp
 import java.time.Instant
 import java.util.UUID
@@ -69,6 +72,7 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
 
             migrateProcessDefinition(
                 connection,
+                database,
                 caseDefinitionKey,
                 caseDefinitionVersionTag,
                 caseDefinitionVersionTagForDatabase,
@@ -95,6 +99,7 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
 
     private fun migrateProcessDefinition(
         connection: JdbcConnection,
+        database: Database,
         caseDefinitionKey: String,
         caseDefinitionVersionTag: String,
         caseDefinitionVersionTagForDatabase: String,
@@ -123,6 +128,7 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
 
         migrateProcessLinksWithRelatedResources(
             connection,
+            database,
             procDef,
             updatedProcDef,
             caseDefinitionKey,
@@ -144,6 +150,7 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         referencedEntities.processDefinitionKeys.forEach { subProcessDefinitionKey ->
             migrateProcessDefinition(
                 connection,
+                database,
                 caseDefinitionKey,
                 caseDefinitionVersionTag,
                 caseDefinitionVersionTagForDatabase,
@@ -164,20 +171,22 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
 
     private fun migrateProcessLinksWithRelatedResources(
         connection: JdbcConnection,
+        database: Database,
         originalProcessDefinition: ProcessDefinition,
         newProcessDefinition: ProcessDefinition,
         caseDefinitionKey: String,
         caseDefinitionVersionTagForDatabase: String,
     ) {
-        val processLinks = getProcessLinksForProcess(connection, originalProcessDefinition.id)
+        val processLinks = getProcessLinksForProcess(connection, database, originalProcessDefinition.id)
         processLinks.forEach {
             val updatedLink = it.copy(processDefinitionId = newProcessDefinition.id, id = UUID.randomUUID())
-            saveProcessLink(connection, updatedLink)
+            saveProcessLink(connection, database, updatedLink)
         }
     }
 
     private fun getProcessLinksForProcess(
         connection: JdbcConnection,
+        database: Database,
         processDefinitionId: String,
     ): List<ProcessLink> {
         val query = """
@@ -209,19 +218,19 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         while (results.next()) {
             processLinks.add(
                 ProcessLink(
-                    UUID.fromString(results.getString("id")),
+                    getIdFromResultSet(database, results, "id")!!,
                     results.getString("process_definition_id"),
                     results.getString("activity_id"),
                     results.getString("activity_type"),
                     results.getString("process_link_type"),
                     results.getString("component_key"),
-                    results.getString("form_definition_id")?.let { UUID.fromString(it) },
+                    getIdFromResultSet(database, results, "form_definition_id"),
                     results.getBoolean("view_model_enabled"),
                     results.getString("form_display_type"),
                     results.getString("form_size"),
                     results.getString("subtitles"),
                     results.getString("action_properties"),
-                    results.getString("plugin_configuration_id")?.let { UUID.fromString(it) },
+                    getIdFromResultSet(database, results, "plugin_configuration_id"),
                     results.getString("plugin_action_definition_key"),
                     results.getString("form_flow_definition_id")
                 )
@@ -230,11 +239,26 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         return processLinks
     }
 
+    private fun getIdFromResultSet(
+        database: Database,
+        results: ResultSet,
+        columnName: String
+    ): UUID? {
+        return if (database.databaseProductName == "MySQL") {
+            val bytesResult = results.getBytes(columnName)
+            bytesResult?.let { UUID.nameUUIDFromBytes(it) }
+        } else {
+            val stringResult = results.getString(columnName)
+            stringResult?.let { UUID.fromString(it) }
+        }
+    }
+
     private fun saveProcessLink(
         connection: JdbcConnection,
+        database: Database,
         processLink: ProcessLink,
     ) {
-        val insertProcessLinkQuery = """
+        val insertProcessLinkPostgresQuery = """
             insert into process_link
             (
                 id,
@@ -261,25 +285,77 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
             )
         """.trimIndent()
 
+        val insertProcessLinkMysqlQuery = """
+            insert into process_link
+            (
+                id,
+                process_definition_id,
+                activity_id,
+                activity_type,
+                process_link_type,
+                component_key,
+                form_definition_id,
+                view_model_enabled,
+                form_display_type,
+                form_size,
+                subtitles,
+                action_properties,
+                plugin_configuration_id,
+                plugin_action_definition_key,
+                form_flow_definition_id,
+                migration_form_name
+            )
+            values
+            (
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                (select name from form_io_form_definition where id = ?)
+            )
+        """.trimIndent()
+
+        val insertProcessLinkQuery = if (database.databaseProductName == "MySQL") {
+            insertProcessLinkMysqlQuery
+        } else {
+            insertProcessLinkPostgresQuery
+        }
 
         val statement = connection.prepareStatement(insertProcessLinkQuery)
-        statement.setObject(1, processLink.id)
+        setUuidParameter(1, processLink.id, statement, database)
         statement.setString(2, processLink.processDefinitionId)
         statement.setString(3, processLink.activityId)
         statement.setString(4, processLink.activityType)
         statement.setString(5, processLink.processLinkType)
         statement.setString(6, processLink.componentKey)
-        statement.setObject(7, processLink.formDefinitionId)
+        setUuidParameter(7, processLink.formDefinitionId, statement, database)
         statement.setBoolean(8, processLink.viewModelEnabled)
         statement.setString(9, processLink.formDisplayType)
         statement.setString(10, processLink.formSize)
         statement.setString(11, processLink.subtitles)
         statement.setString(12, processLink.actionProperties)
-        statement.setObject(13, processLink.pluginConfigurationId)
+        setUuidParameter(13, processLink.pluginConfigurationId, statement, database)
         statement.setString(14, processLink.pluginActionDefinitionKey)
         statement.setString(15, processLink.formFlowDefinitionId)
-        statement.setObject(16, processLink.formDefinitionId)
+        setUuidParameter(16, processLink.formDefinitionId, statement, database)
         statement.executeUpdate()
+    }
+
+    private fun setUuidParameter(
+        index: Int,
+        value: UUID?,
+        statement: PreparedStatement,
+        database: Database,
+    ) {
+        if (database.databaseProductName == "MySQL") {
+            if (value == null) {
+                statement.setNull(index, java.sql.Types.BINARY)
+            } else {
+                val bb = ByteBuffer.wrap(ByteArray(16))
+                bb.putLong(value.getMostSignificantBits())
+                bb.putLong(value.getLeastSignificantBits())
+                statement.setBytes(index, bb.array())
+            }
+        } else {
+            statement.setObject(index, value)
+        }
     }
 
     private fun migrateDecisionDefinition(

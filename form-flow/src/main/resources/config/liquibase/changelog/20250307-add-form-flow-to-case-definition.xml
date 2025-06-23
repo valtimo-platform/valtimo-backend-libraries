@@ -75,6 +75,9 @@
     </changeSet>
 
     <changeSet id="8" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="process_link" columnName="form_flow_definition_id"/>
+        </preConditions>
         <renameColumn tableName="process_link"
                       oldColumnName="form_flow_definition_id"
                       newColumnName="form_flow_definition_key"
@@ -82,6 +85,10 @@
     </changeSet>
 
     <changeSet id="9" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="process_link" columnName="form_flow_definition_key"/>
+            <dbms type="postgresql"/>
+        </preConditions>
         <sql>
             insert into form_flow_definition
             (
@@ -142,10 +149,74 @@
     </changeSet>
 
     <changeSet id="10" author="Ritense">
-        <dropPrimaryKey tableName="form_flow_step" constraintName="form_flow_step_pkey"/>
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="process_link" columnName="form_flow_definition_key"/>
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql>
+            insert into form_flow_definition
+            (
+                form_flow_definition_key,
+                form_flow_definition_version,
+                start_step,
+                case_definition_key,
+                case_definition_version_tag,
+                migration_definition_key
+            )
+            select distinct *
+            from (
+                select distinct
+                    concat(ffd.form_flow_definition_key, '-', ffd.form_flow_definition_version) as form_flow_definition_key,
+                    ffi.form_flow_definition_version,
+                    ffd.start_step ,
+                    jsd.case_definition_key,
+                    jsd.case_definition_version_tag,
+                    ffd.form_flow_definition_key as migration_definition_key
+                from form_flow_instance ffi
+                join json_schema_document jsd
+                    on UUID_TO_BIN(additional_properties ->> '$.documentId') = jsd.json_schema_document_id
+                join form_flow_definition ffd
+                    on ffi.form_flow_definition_key = ffd.form_flow_definition_key
+                    and ffi.form_flow_definition_version = ffd.form_flow_definition_version
+
+                union all
+
+                select distinct
+                    concat(ffd.form_flow_definition_key, '-', ffd.form_flow_definition_version) as form_flow_definition_key,
+                    ffd.form_flow_definition_version as form_flow_definition_version,
+                    ffd.start_step,
+                    pdcd.case_definition_key,
+                    pdcd.case_definition_version_tag,
+                    ffd.form_flow_definition_key as migration_definition_key
+                from process_link pl
+                join form_flow_definition ffd
+                    on (
+                        (
+                            SUBSTRING_INDEX(pl.form_flow_definition_key, ':', -1) != 'latest'
+                            and CAST(SUBSTRING_INDEX(pl.form_flow_definition_key, ':', -1) as UNSIGNED) = ffd.form_flow_definition_version
+                        )
+                        or (
+                            SUBSTRING_INDEX(pl.form_flow_definition_key, ':', -1) = 'latest'
+                            and ffd.form_flow_definition_version = (
+                                select max(form_flow_definition_version) from form_flow_definition ffd2 where ffd2.form_flow_definition_key = ffd.form_flow_definition_key
+                            )
+                        )
+                    )
+                    and SUBSTRING_INDEX(pl.form_flow_definition_key, ':', 1) = ffd.form_flow_definition_key
+                join act_re_procdef pd
+                    on pd.id_ = pl.process_definition_id
+                join process_definition_case_definition pdcd
+                    on pdcd.process_definition_id = pd.id_
+                where pl.form_flow_definition_key is not null
+            ) as all_definition_to_migrate
+        </sql>
     </changeSet>
 
     <changeSet id="11" author="Ritense">
+        <dropPrimaryKey tableName="form_flow_step"/>
+    </changeSet>
+
+    <changeSet id="12" author="Ritense">
         <sql>
             insert into form_flow_step (
                 form_flow_step_key,
@@ -182,7 +253,10 @@
         </sql>
     </changeSet>
 
-    <changeSet id="12" author="Ritense">
+    <changeSet id="13" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
         <sql>
             update form_flow_instance ffi
             set case_definition_key = jsd.case_definition_key,
@@ -200,7 +274,30 @@
         </sql>
     </changeSet>
 
-    <changeSet id="13" author="Ritense">
+    <changeSet id="14" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql>
+            update form_flow_instance ffi
+            join json_schema_document jsd
+                on UUID_TO_BIN(ffi.additional_properties->>'$.documentId') = jsd.json_schema_document_id
+            join form_flow_definition ffd
+                on ffi.form_flow_definition_version = ffd.form_flow_definition_version
+                and ffi.form_flow_definition_key = ffd.migration_definition_key
+                and ffd.case_definition_key = jsd.case_definition_key
+                and ffd.case_definition_version_tag = jsd.case_definition_version_tag
+            set ffi.case_definition_key = jsd.case_definition_key,
+                ffi.case_definition_version_tag = jsd.case_definition_version_tag,
+                ffi.form_flow_definition_key = ffd.form_flow_definition_key
+        </sql>
+    </changeSet>
+
+    <changeSet id="15" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="process_link" columnName="form_flow_definition_key"/>
+            <dbms type="postgresql"/>
+        </preConditions>
         <sql>
             update process_link pl
             set form_flow_definition_key = ffd.form_flow_definition_key || '-' || ffd.form_flow_definition_version
@@ -223,25 +320,58 @@
         </sql>
     </changeSet>
 
-    <changeSet id="14" author="Ritense">
+    <changeSet id="16" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="process_link" columnName="form_flow_definition_key"/>
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql>
+            update process_link pl
+            join form_flow_definition ffd
+            on (
+                (
+                    SUBSTRING_INDEX(pl.form_flow_definition_key, ':', -1) != 'latest'
+                    and CAST(SUBSTRING_INDEX(pl.form_flow_definition_key, ':', -1) as UNSIGNED) = ffd.form_flow_definition_version
+                )
+                or (
+                    SUBSTRING_INDEX(pl.form_flow_definition_key, ':', -1) = 'latest'
+                    and ffd.form_flow_definition_version = (
+                        select max(form_flow_definition_version) from form_flow_definition ffd2 where ffd2.form_flow_definition_key = ffd.form_flow_definition_key
+                    )
+                )
+            )
+            and SUBSTRING_INDEX(pl.form_flow_definition_key, ':', 1) = ffd.form_flow_definition_key
+            set pl.form_flow_definition_key = concat(ffd.form_flow_definition_key, '-', ffd.form_flow_definition_version)
+        </sql>
+    </changeSet>
+
+    <changeSet id="17" author="Ritense">
         <sql>
             delete from form_flow_step
             where case_definition_key is null
         </sql>
     </changeSet>
 
-    <changeSet id="15" author="Ritense">
+    <changeSet id="18" author="Ritense">
         <sql>
             delete from form_flow_definition
             where case_definition_key is null
         </sql>
     </changeSet>
 
-    <changeSet id="16" author="Ritense">
+    <changeSet id="19" author="Ritense">
         <dropColumn tableName="form_flow_definition" columnName="migration_definition_key"/>
     </changeSet>
 
-    <changeSet id="17" author="Ritense">
+    <changeSet id="20" author="Ritense">
+        <modifyDataType tableName="form_flow_step" columnName="form_flow_step_key" newDataType="varchar(128)"/>
+        <modifyDataType tableName="form_flow_step_instance" columnName="form_flow_step_key" newDataType="varchar(128)"/>
+        <modifyDataType tableName="form_flow_step" columnName="form_flow_definition_key" newDataType="varchar(128)"/>
+        <modifyDataType tableName="form_flow_definition" columnName="form_flow_definition_key" newDataType="varchar(128)"/>
+        <modifyDataType tableName="form_flow_instance" columnName="form_flow_definition_key" newDataType="varchar(128)"/>
+    </changeSet>
+
+    <changeSet id="21" author="Ritense">
         <dropColumn tableName="form_flow_definition" columnName="form_flow_definition_version"/>
         <dropColumn tableName="form_flow_step" columnName="form_flow_definition_version"/>
         <dropColumn tableName="form_flow_instance" columnName="form_flow_definition_version"/>
@@ -259,7 +389,10 @@
                                  referencedColumnNames="form_flow_definition_key,case_definition_key,case_definition_version_tag"/>
     </changeSet>
 
-    <changeSet id="18" author="Ritense">
+    <changeSet id="22" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
         <sql>
             insert into form_io_form_definition
             (
@@ -282,6 +415,43 @@
                 join form_io_form_definition fd
                     on fd.name = ffs.type->'properties'->>'definition'
                 where ffs.type->>'name' = 'form'
+                and not exists (
+                    select *
+                    from form_io_form_definition fd2
+                    where fd.name = fd2.name
+                    and fd.case_definition_key = fd2.case_definition_key
+                    and fd.case_definition_version_tag = fd2.case_definition_version_tag
+                )
+            ) as forms
+        </sql>
+    </changeSet>
+
+    <changeSet id="23" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql>
+            insert into form_io_form_definition
+            (
+                id,
+                name,
+                form_definition,
+                read_only,
+                case_definition_key,
+                case_definition_version_tag
+            )
+            select UUID_TO_BIN(UUID()) as id, forms.*
+            from (
+                select distinct
+                    fd.name,
+                    fd.form_definition,
+                    fd.read_only,
+                    ffs.case_definition_key,
+                    ffs.case_definition_version_tag
+                from form_flow_step ffs
+                join form_io_form_definition fd
+                    on fd.name = ffs.type->>'$.properties.definition'
+                where ffs.type->>'$.name' = 'form'
                 and not exists (
                     select *
                     from form_io_form_definition fd2

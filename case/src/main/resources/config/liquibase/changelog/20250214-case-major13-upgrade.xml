@@ -19,15 +19,15 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
-    <changeSet id="1.2" author="Ritense">
+    <changeSet id="1" author="Ritense">
         <preConditions onFail="MARK_RAN">
             <not>
                 <columnExists tableName="case_definition" columnName="case_definition_version_tag"/>
             </not>
         </preConditions>
-        <renameColumn tableName="case_definition" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+        <renameColumn tableName="case_definition" oldColumnName="case_definition_name" newColumnName="case_definition_key" columnDataType="varchar(255)"/>
         <addColumn tableName="case_definition">
-            <column name="case_definition_version_tag" type="VARCHAR(256)">
+            <column name="case_definition_version_tag" type="VARCHAR(200)">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
@@ -38,19 +38,19 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="1" author="Ritense">
+    <changeSet id="2" author="Ritense">
         <renameColumn tableName="case_list_column"
                       oldColumnName="case_definition_name"
                       newColumnName="case_definition_key"
                       columnDataType="VARCHAR(256)"/>
     </changeSet>
 
-    <changeSet id="2" author="Ritense">
+    <changeSet id="3" author="Ritense">
         <dropForeignKeyConstraint baseTableName="case_widget_tab" constraintName="fk_case_widget_tab_case_tab"/>
         <dropForeignKeyConstraint baseTableName="case_widget_tab_widget" constraintName="fk_case_widget_tab_name_key"/>
     </changeSet>
 
-    <changeSet id="3" author="Ritense">
+    <changeSet id="4" author="Ritense">
         <renameColumn tableName="case_tab"
                       oldColumnName="case_definition_name"
                       newColumnName="case_definition_key"
@@ -130,21 +130,26 @@
             </column>
         </addColumn>
         <dropPrimaryKey tableName="case_widget_tab_widget"/>
+    </changeSet>
 
+    <changeSet id="5" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
         <sql>
             insert into case_widget_tab_widget
             (
-             key,
-             title,
-             case_widget_type,
-             case_definition_key,
-             case_definition_version_tag,
-             tab_key,
-             sort_order,
-             width,
-             high_contrast,
-             properties,
-             actions
+                key,
+                title,
+                case_widget_type,
+                case_definition_key,
+                case_definition_version_tag,
+                tab_key,
+                sort_order,
+                width,
+                high_contrast,
+                properties,
+                actions
             )
             select
                 cwtw.key,
@@ -159,10 +164,51 @@
                 cwtw.properties,
                 cwtw.actions
             from case_widget_tab_widget cwtw
-            join case_widget_tab cwt on cwtw.case_definition_key = cwt.case_definition_key and cwtw.tab_key = cwt.tab_key
+            join case_widget_tab cwt
+                on cwtw.case_definition_key = cwt.case_definition_key and cwtw.tab_key = cwt.tab_key
             where cwt.case_definition_version_tag is not null
         </sql>
+    </changeSet>
 
+    <changeSet id="6" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql>
+            insert into case_widget_tab_widget
+            (
+                `key`,
+                title,
+                case_widget_type,
+                case_definition_key,
+                case_definition_version_tag,
+                tab_key,
+                sort_order,
+                width,
+                high_contrast,
+                properties,
+                actions
+            )
+            select
+                cwtw.key,
+                cwtw.title,
+                cwtw.case_widget_type,
+                cwtw.case_definition_key,
+                cwt.case_definition_version_tag,
+                cwtw.tab_key,
+                cwtw.sort_order,
+                cwtw.width,
+                cwtw.high_contrast,
+                cwtw.properties,
+                cwtw.actions
+            from case_widget_tab_widget cwtw
+                     join case_widget_tab cwt
+                          on cwtw.case_definition_key = cwt.case_definition_key and cwtw.tab_key = cwt.tab_key
+            where cwt.case_definition_version_tag is not null
+        </sql>
+    </changeSet>
+
+    <changeSet id="7" author="Ritense">
         <sql>
             delete from case_widget_tab_widget
             where case_definition_version_tag is null
@@ -179,20 +225,20 @@
         </sql>
     </changeSet>
 
-    <changeSet id="4" author="Ritense">
+    <changeSet id="8" author="Ritense">
         <modifyDataType tableName="case_tab" columnName="tab_key" newDataType="VARCHAR(156)"/>
         <modifyDataType tableName="case_widget_tab" columnName="tab_key" newDataType="VARCHAR(156)"/>
         <modifyDataType tableName="case_widget_tab_widget" columnName="key" newDataType="VARCHAR(156)"/>
         <modifyDataType tableName="case_widget_tab_widget" columnName="tab_key" newDataType="VARCHAR(156)"/>
     </changeSet>
 
-    <changeSet id="5" author="Ritense">
+    <changeSet id="9" author="Ritense">
         <addPrimaryKey tableName="case_tab" columnNames="case_definition_key, case_definition_version_tag, tab_key"/>
         <addPrimaryKey tableName="case_widget_tab" columnNames="case_definition_key, case_definition_version_tag, tab_key"/>
         <addPrimaryKey tableName="case_widget_tab_widget" columnNames="case_definition_key, case_definition_version_tag, key, tab_key"/>
     </changeSet>
 
-    <changeSet id="6" author="Ritense">
+    <changeSet id="10" author="Ritense">
         <addForeignKeyConstraint
             baseTableName="case_widget_tab"
             baseColumnNames="case_definition_key, case_definition_version_tag, tab_key"
@@ -209,7 +255,10 @@
             onDelete="CASCADE"/>
     </changeSet>
 
-    <changeSet id="7" author="Ritense">
+    <changeSet id="11" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
         <sql>
             insert into form_io_form_definition
             (id, name, form_definition, read_only, case_definition_key, case_definition_version_tag)
@@ -227,7 +276,31 @@
         </sql>
     </changeSet>
 
-    <changeSet id="8" author="Ritense">
+    <changeSet id="12" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql>
+            insert into form_io_form_definition
+            (id, name, form_definition, read_only, case_definition_key, case_definition_version_tag)
+            select UUID(), fd.name, fd.form_definition, fd.read_only, ct.case_definition_key, ct.case_definition_version_tag
+            from case_tab ct
+                     join form_io_form_definition fd
+                          on ct.type = 'FORMIO'
+                              and fd.name = ct.content_key
+                              and fd.case_definition_key is null
+                     left join form_io_form_definition fd2
+                               on fd2.case_definition_key = ct.case_definition_key
+                                   and fd2.case_definition_version_tag = ct.case_definition_version_tag
+                                   and fd2.name = fd.name
+            where fd2.id is null
+        </sql>
+    </changeSet>
+
+    <changeSet id="13" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
         <sql>
             insert into form_io_form_definition
             (id, name, form_definition, read_only, case_definition_key, case_definition_version_tag)
@@ -244,25 +317,46 @@
         </sql>
     </changeSet>
 
-    <changeSet id="9" author="Ritense">
-        <dropIndex tableName="case_tag_link" indexName="idx_case_tag_link_case_tag_id"/>
-        <dropIndex tableName="case_tag_link" indexName="idx_case_tag_link_json_schema_document_id"/>
+    <changeSet id="14" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql>
+            insert into form_io_form_definition
+            (id, name, form_definition, read_only, case_definition_key, case_definition_version_tag)
+            select UUID(), fd.name, fd.form_definition, fd.read_only, cwtw.case_definition_key, cwtw.case_definition_version_tag
+            from case_widget_tab_widget cwtw
+                     join form_io_form_definition fd
+                          on fd.name = JSON_EXTRACT(cwtw.properties, '$.formDefinitionName')
+                and fd.case_definition_key is null
+                left join form_io_form_definition fd2
+            on fd2.case_definition_key = cwtw.case_definition_key
+                and fd2.case_definition_version_tag = cwtw.case_definition_version_tag
+                and fd2.name = fd.name
+            where fd2.id is null
+        </sql>
+    </changeSet>
+
+    <changeSet id="15" author="Ritense">
         <dropForeignKeyConstraint baseTableName="case_tag_link" constraintName="fk_case_tag_link_case_tag"/>
         <dropForeignKeyConstraint baseTableName="case_tag_link" constraintName="fk_case_tag_link_json_schema_document_id"/>
 
         <dropPrimaryKey tableName="case_tag_link"/>
         <dropPrimaryKey tableName="case_tag"/>
 
-        <renameColumn tableName="case_tag_link" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+        <dropIndex tableName="case_tag_link" indexName="idx_case_tag_link_case_tag_id"/>
+        <dropIndex tableName="case_tag_link" indexName="idx_case_tag_link_json_schema_document_id"/>
+
+        <renameColumn tableName="case_tag_link" oldColumnName="case_definition_name" newColumnName="case_definition_key" columnDataType="varchar(255)"/>
         <addColumn tableName="case_tag_link">
-            <column name="case_definition_version_tag" type="VARCHAR(256)">
+            <column name="case_definition_version_tag" type="VARCHAR(200)">
                 <constraints nullable="true"/>
             </column>
         </addColumn>
 
-        <renameColumn tableName="case_tag" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+        <renameColumn tableName="case_tag" oldColumnName="case_definition_name" newColumnName="case_definition_key" columnDataType="varchar(255)"/>
         <addColumn tableName="case_tag">
-            <column name="case_definition_version_tag" type="VARCHAR(256)">
+            <column name="case_definition_version_tag" type="VARCHAR(200)">
                 <constraints nullable="true"/>
             </column>
         </addColumn>
@@ -288,6 +382,12 @@
                      join case_definition cd on cd.case_definition_key = ct.case_definition_key
         </sql>
 
+    </changeSet>
+
+    <changeSet id="16" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
         <sql>
             update case_tag_link ctl
             set case_definition_version_tag = d.case_definition_version_tag
@@ -299,16 +399,44 @@
             delete from case_tag
             where case_definition_version_tag is null
         </sql>
-
     </changeSet>
 
-    <changeSet id="10" author="Ritense">
+    <changeSet id="17" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql>
+            update case_tag_link ctl
+            join json_schema_document d
+            on ctl.json_schema_document_id = d.json_schema_document_id
+            set ctl.case_definition_version_tag = d.case_definition_version_tag
+        </sql>
+
+        <sql>
+            delete from case_tag
+            where case_definition_version_tag is null
+        </sql>
+    </changeSet>
+
+    <changeSet id="18" author="Ritense">
         <addPrimaryKey tableName="case_tag"
-                       columnNames="case_definition_key, case_definition_version_tag, case_tag_key"/>
+                       columnNames="case_tag_key, case_definition_key, case_definition_version_tag"/>
         <addPrimaryKey tableName="case_tag_link"
                        columnNames="case_tag_key, case_definition_key, case_definition_version_tag, json_schema_document_id"
                        constraintName="pk_case_tag_link"/>
 
+        <createIndex indexName="idx_case_tag_link_json_schema_document_id" tableName="case_tag_link">
+            <column name="json_schema_document_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_case_tag_link_case_tag_id" tableName="case_tag_link">
+            <column name="case_tag_key"/>
+            <column name="case_definition_key"/>
+            <column name="case_definition_version_tag"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="19" author="Ritense">
         <addForeignKeyConstraint baseTableName="case_tag_link"
                                  baseColumnNames="case_tag_key, case_definition_key, case_definition_version_tag"
                                  referencedTableName="case_tag"
@@ -320,16 +448,6 @@
                                  referencedTableName="json_schema_document"
                                  referencedColumnNames="json_schema_document_id"
                                  constraintName="fk_case_tag_link_json_schema_document_id"/>
-
-        <createIndex indexName="idx_case_tag_link_json_schema_document_id" tableName="case_tag_link">
-            <column name="json_schema_document_id"/>
-        </createIndex>
-
-        <createIndex indexName="idx_case_tag_link_case_tag_id" tableName="case_tag_link">
-            <column name="case_tag_key"/>
-            <column name="case_definition_key"/>
-            <column name="case_definition_version_tag"/>
-        </createIndex>
     </changeSet>
 
 </databaseChangeLog>

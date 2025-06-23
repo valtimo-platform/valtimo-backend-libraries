@@ -19,25 +19,25 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
-    <changeSet id="92" author="Ritense">
+    <changeSet id="1" author="Ritense">
         <dropPrimaryKey tableName="json_schema_document_definition"/>
         <dropPrimaryKey tableName="json_schema_document_definition_sequence_record"/>
     </changeSet>
 
-    <changeSet id="1" author="Ritense">
+    <changeSet id="2" author="Ritense">
         <addColumn tableName="json_schema_document_definition">
             <column name="case_definition_key" type="VARCHAR(256)">
                 <constraints nullable="true"/>
             </column>
         </addColumn>
         <addColumn tableName="json_schema_document_definition">
-            <column name="case_definition_version_tag" type="VARCHAR(256)">
+            <column name="case_definition_version_tag" type="VARCHAR(200)">
                 <constraints nullable="true"/>
             </column>
         </addColumn>
     </changeSet>
 
-    <changeSet id="111.1" author="Ritense">
+    <changeSet id="3" author="Ritense">
         <preConditions onFail="MARK_RAN">
             <foreignKeyConstraintExists foreignKeyTableName="task_list_column" foreignKeyName="fk_task_list_column_case_definition"/>
         </preConditions>
@@ -46,34 +46,38 @@
         <!--TODO: add this back based on the new information-->
     </changeSet>
 
-    <changeSet id="1.12" author="Ritense">
+    <changeSet id="4" author="Ritense">
         <preConditions onFail="MARK_RAN">
             <foreignKeyConstraintExists foreignKeyName="zgw_document_trefwoord_case_definition_name_fk"/>
         </preConditions>
         <dropForeignKeyConstraint baseTableName="zgw_document_trefwoord" constraintName="zgw_document_trefwoord_case_definition_name_fk"/>
     </changeSet>
 
-    <changeSet id="2.1" author="Ritense">
+    <changeSet id="5" author="Ritense">
         <preConditions onFail="MARK_RAN">
             <foreignKeyConstraintExists foreignKeyName="zgw_document_upload_field_case_definition_name_fk"/>
         </preConditions>
         <dropForeignKeyConstraint baseTableName="zgw_document_upload_field" constraintName="zgw_document_upload_field_case_definition_name_fk"/>
     </changeSet>
 
-    <changeSet id="1.13" author="Ritense">
+    <changeSet id="6" author="Ritense">
         <preConditions onFail="MARK_RAN">
-            <primaryKeyExists tableName="case_definition" primaryKeyName="case_definition_pkey"/>
+            <primaryKeyExists tableName="case_definition"/>
         </preConditions>
         <dropPrimaryKey tableName="case_definition"/>
     </changeSet>
 
-    <changeSet id="1.2" author="Ritense">
+    <changeSet id="7" author="Ritense">
         <preConditions onFail="MARK_RAN">
             <tableExists tableName="case_definition"/>
         </preConditions>
-        <renameColumn tableName="case_definition" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+        <renameColumn
+            tableName="case_definition"
+            oldColumnName="case_definition_name"
+            newColumnName="case_definition_key"
+            columnDataType="VARCHAR(256)"/>
         <addColumn tableName="case_definition">
-            <column name="case_definition_version_tag" type="VARCHAR(256)">
+            <column name="case_definition_version_tag" type="VARCHAR(200)">
                 <constraints nullable="true"/>
             </column>
         </addColumn>
@@ -84,9 +88,10 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="1.3" author="Ritense">
+    <changeSet id="8" author="Ritense">
         <preConditions onFail="MARK_RAN">
             <tableExists tableName="case_definition"/>
+            <dbms type="postgresql"/>
         </preConditions>
         <sql splitStatements="false">
             insert into case_definition (
@@ -114,7 +119,41 @@
         </sql>
     </changeSet>
 
-    <changeSet id="1.4" author="Ritense">
+    <changeSet id="9" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="case_definition"/>
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql splitStatements="false">
+            insert into case_definition (
+                case_definition_name,
+                can_have_assignee,
+                auto_assign_tasks,
+                has_external_start_form,
+                external_start_form_url,
+                external_start_form_description,
+                case_definition_key,
+                case_definition_version_tag
+            )
+            select
+                JSON_EXTRACT(jsdd.json_schema, '$.title') as case_definition_name,
+                cd.can_have_assignee,
+                cd.auto_assign_tasks,
+                cd.has_external_start_form,
+                cd.external_start_form_url,
+                cd.external_start_form_description,
+                jsdd.document_definition_name,
+                CONCAT('000000.', LPAD(jsdd.document_definition_version, 6, '0'), '.000000-', '${environmentName}')
+            from json_schema_document_definition jsdd
+                left join case_definition cd
+            on jsdd.document_definition_name = cd.case_definition_key
+        </sql>
+    </changeSet>
+
+    <changeSet id="10" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
         <sql>
             update json_schema_document_definition as ddu
             set case_definition_version_tag = '000000.' || LPAD(ddu.document_definition_version::text, 6, '0') || '.000000-${environmentName}',
@@ -123,12 +162,25 @@
         </sql>
     </changeSet>
 
-    <changeSet id="6" author="Ritense">
+    <changeSet id="11" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql>
+            update json_schema_document_definition as ddu
+            set case_definition_version_tag = CONCAT('000000.', LPAD(ddu.document_definition_version, 6, '0'), '.000000-', '${environmentName}'),
+                case_definition_key = ddu.document_definition_name
+            where ddu.case_definition_version_tag is null
+        </sql>
+    </changeSet>
+
+    <changeSet id="12" author="Ritense">
         <renameColumn tableName="json_schema_document"
                       oldColumnName="case_definition_name"
-                      newColumnName="case_definition_key"/>
+                      newColumnName="case_definition_key"
+                      columnDataType="VARCHAR(256)"/>
         <addColumn tableName="json_schema_document">
-            <column name="case_definition_version_tag" type="VARCHAR(256)">
+            <column name="case_definition_version_tag" type="VARCHAR(200)">
                 <constraints nullable="true"/>
             </column>
         </addColumn>
@@ -138,7 +190,10 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="1.5" author="Ritense">
+    <changeSet id="13" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
         <sql>
             update json_schema_document as jd
             set case_definition_version_tag = dd.case_definition_version_tag,
@@ -149,7 +204,21 @@
         </sql>
     </changeSet>
 
-    <changeSet id="1.51" author="Ritense">
+    <changeSet id="14" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql>
+            update json_schema_document as jd
+            join json_schema_document_definition dd
+                on dd.case_definition_key = jd.document_definition_name
+                and dd.document_definition_version = jd.document_definition_version
+            set jd.case_definition_version_tag = dd.case_definition_version_tag,
+                jd.case_definition_key = dd.case_definition_key
+        </sql>
+    </changeSet>
+
+    <changeSet id="15" author="Ritense">
         <sql>
             update json_schema_document
             set ics_case_definition_key = case_definition_key
@@ -157,7 +226,7 @@
         </sql>
     </changeSet>
 
-    <changeSet id="1.6" author="Ritense">
+    <changeSet id="16" author="Ritense">
         <preConditions onFail="MARK_RAN">
             <tableExists tableName="case_definition"/>
         </preConditions>
@@ -167,45 +236,55 @@
         </sql>
     </changeSet>
 
-    <changeSet id="1.61" author="Ritense">
+    <changeSet id="17" author="Ritense">
         <preConditions onFail="MARK_RAN">
             <tableExists tableName="case_definition"/>
         </preConditions>
-        <addNotNullConstraint tableName="case_definition" columnName="case_definition_version_tag"/>
-        <addNotNullConstraint tableName="case_definition" columnName="case_definition_name"/>
+        <addNotNullConstraint tableName="case_definition" columnName="case_definition_version_tag" columnDataType="VARCHAR(200)"/>
+        <addNotNullConstraint tableName="case_definition" columnName="case_definition_name" columnDataType="VARCHAR(256)"/>
     </changeSet>
 
-    <changeSet id="1.15" author="Ritense">
+    <changeSet id="18" author="Ritense">
         <preConditions onFail="MARK_RAN">
             <tableExists tableName="case_definition"/>
         </preConditions>
         <addPrimaryKey tableName="case_definition" columnNames="case_definition_key, case_definition_version_tag"/>
     </changeSet>
 
-    <changeSet id="1.1" author="Ritense">
-        <addNotNullConstraint tableName="json_schema_document_definition" columnName="case_definition_key"/>
-        <addNotNullConstraint tableName="json_schema_document_definition" columnName="case_definition_version_tag"/>
+    <changeSet id="19" author="Ritense">
+        <addNotNullConstraint tableName="json_schema_document_definition" columnName="case_definition_key" columnDataType="VARCHAR(256)"/>
+        <addNotNullConstraint tableName="json_schema_document_definition" columnName="case_definition_version_tag" columnDataType="VARCHAR(200)"/>
         <addPrimaryKey tableName="json_schema_document_definition" columnNames="document_definition_name,case_definition_key,case_definition_version_tag"/>
     </changeSet>
 
-    <changeSet id="102" author="Ritense">
+    <changeSet id="20" author="Ritense">
         <dropColumn tableName="json_schema_document_definition" columnName="document_definition_version"/>
     </changeSet>
 
-    <changeSet id="3" author="Ritense">
-        <renameColumn tableName="search_field" oldColumnName="document_definition_name" newColumnName="case_definition_key"/>
+    <changeSet id="21" author="Ritense">
+        <renameColumn
+            tableName="search_field"
+            oldColumnName="document_definition_name"
+            newColumnName="case_definition_key"
+            columnDataType="VARCHAR(50)"/>
     </changeSet>
 
-    <changeSet id="4" author="Ritense">
-        <renameColumn tableName="internal_case_status" oldColumnName="case_definition_name" newColumnName="case_definition_key"/>
+    <changeSet id="22" author="Ritense">
+        <renameColumn
+            tableName="internal_case_status"
+            oldColumnName="case_definition_name"
+            newColumnName="case_definition_key"
+            columnDataType="VARCHAR(50)"/>
     </changeSet>
 
-    <changeSet id="5" author="Ritense">
-        <renameColumn tableName="json_schema_document_snapshot" oldColumnName="case_definition_name"
-                      newColumnName="ics_case_definition_key"/>
+    <changeSet id="23" author="Ritense">
+        <renameColumn tableName="json_schema_document_snapshot"
+                      oldColumnName="case_definition_name"
+                      newColumnName="ics_case_definition_key"
+                      columnDataType="VARCHAR(255)"/>
     </changeSet>
 
-    <changeSet id="7" author="Ritense">
+    <changeSet id="24" author="Ritense">
         <addColumn tableName="json_schema_document_snapshot">
             <column name="case_definition_key" type="VARCHAR(256)"/>
         </addColumn>
@@ -214,7 +293,7 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="8" author="Ritense">
+    <changeSet id="25" author="Ritense">
         <dropColumn tableName="json_schema_document_snapshot" columnName="document_definition_version"/>
     </changeSet>
 

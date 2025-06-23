@@ -34,6 +34,7 @@ import org.springframework.boot.SpringApplication
 import org.springframework.boot.env.EnvironmentPostProcessor
 import org.springframework.core.env.ConfigurableEnvironment
 import org.springframework.core.env.Environment
+import java.sql.ResultSet
 import java.util.UUID
 
 class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, EnvironmentPostProcessor {
@@ -46,7 +47,7 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
         logger.info("Starting ${this::class.simpleName}")
 
         val connection = database.connection as JdbcConnection
-        migrateJsonSchemaDocument(connection)
+        migrateJsonSchemaDocument(database, connection)
         migrateActRuTask(connection)
         migrateNote(connection)
         migrateActHiTask(connection)
@@ -72,7 +73,7 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
         return ValidationErrors()
     }
 
-    private fun migrateJsonSchemaDocument(connection: JdbcConnection) {
+    private fun migrateJsonSchemaDocument(database: Database, connection: JdbcConnection) {
         if (!checkTableExists(connection, "json_schema_document")) {
             return
         }
@@ -80,7 +81,7 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
             .executeQuery()
 
         while (result.next()) {
-            val documentId = UUID.fromString(result.getString("json_schema_document_id"))
+            val documentId = getIdFromResultSet(database, result, "json_schema_document_id")
             val assignee = result.getString("assignee_Id")
             if (assignee != null) {
                 try {
@@ -360,6 +361,20 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
             clientId,
             mapOf("secret" to secret)
         )
+    }
+
+    private fun getIdFromResultSet(
+        database: Database,
+        results: ResultSet,
+        columnName: String
+    ): UUID? {
+        return if (database.databaseProductName == "MySQL") {
+            val bytesResult = results.getBytes(columnName)
+            bytesResult?.let { UUID.nameUUIDFromBytes(it) }
+        } else {
+            val stringResult = results.getString(columnName)
+            stringResult?.let { UUID.fromString(it) }
+        }
     }
 
     private class KeycloakUserNotFoundException() : RuntimeException("Failed to find Keycloak user")

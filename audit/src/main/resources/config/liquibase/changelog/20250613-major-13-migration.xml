@@ -20,6 +20,9 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
     <changeSet author="Ritense" id="1">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
         <sql>
             update audit_record
             set audit_event = jsonb_set(
@@ -37,6 +40,22 @@
                 true
             )
             where audit_event->'definitionId'->>'version' is not null
+        </sql>
+    </changeSet>
+
+    <changeSet author="Ritense" id="2">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql>
+            update audit_record
+            set audit_event = JSON_SET(
+                audit_event,
+                '$.definitionId.name', JSON_EXTRACT(audit_event, '$.definitionId.name'),
+                '$.definitionId.caseDefinitionId.key', JSON_EXTRACT(audit_event, '$.definitionId.name'),
+                '$.definitionId.caseDefinitionId.version', concat('0.', JSON_EXTRACT(audit_event, '$.definitionId.version'), '.0-${environmentName}')
+            )
+            where JSON_EXTRACT(audit_event, '$.definitionId.version') is not null
         </sql>
     </changeSet>
 </databaseChangeLog>
