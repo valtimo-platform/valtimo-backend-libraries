@@ -49,6 +49,7 @@ import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.ProcessPropertyService;
 import com.ritense.valtimo.service.ProcessShortTimerService;
 import com.ritense.valtimo.web.rest.dto.CommentDto;
+import com.ritense.valtimo.web.rest.dto.DefinitionDeploymentResponseDto;
 import com.ritense.valtimo.web.rest.dto.FlowNodeMigrationDTO;
 import com.ritense.valtimo.web.rest.dto.HeatmapTaskAverageDurationDTO;
 import com.ritense.valtimo.web.rest.dto.HeatmapTaskCountDTO;
@@ -79,8 +80,10 @@ import org.camunda.bpm.engine.batch.Batch;
 import org.camunda.bpm.engine.history.HistoricActivityInstance;
 import org.camunda.bpm.engine.history.HistoricActivityInstanceQuery;
 import org.camunda.bpm.engine.history.UserOperationLogEntry;
+import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity;
 import org.camunda.bpm.engine.migration.MigrationPlan;
 import org.camunda.bpm.engine.migration.MigrationPlanBuilder;
+import org.camunda.bpm.engine.repository.DeploymentWithDefinitions;
 import org.camunda.bpm.engine.rest.dto.batch.BatchDto;
 import org.camunda.bpm.engine.rest.dto.history.HistoricActivityInstanceDto;
 import org.camunda.bpm.engine.rest.dto.history.UserOperationLogEntryDto;
@@ -627,14 +630,19 @@ public class ProcessResource extends AbstractProcessResource {
             return ResponseEntity.badRequest().body("Invalid file name. Must have '.bpmn' or '.dmn' suffix.");
         }
         try {
-            runWithoutAuthorization(() -> {
-                camundaProcessService.deploy(null, bpmn.getOriginalFilename(), new ByteArrayInputStream(bpmn.getBytes()));
-                return null;
-            });
+            return runWithoutAuthorization(
+                () -> {
+                    DeploymentWithDefinitions deployment = camundaProcessService.deploy(
+                        null,
+                        bpmn.getOriginalFilename(),
+                        new ByteArrayInputStream(bpmn.getBytes())
+                    );
+
+                    return ResponseEntity.ok(DefinitionDeploymentResponseDto.Companion.of((DeploymentEntity) deployment));
+                });
         } catch (ParseException e) {
             throw new BpmnParseException(e);
         }
-        return ResponseEntity.ok().build();
     }
 
 }
