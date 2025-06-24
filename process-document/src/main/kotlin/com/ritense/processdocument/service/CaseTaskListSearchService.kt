@@ -52,6 +52,7 @@ import com.ritense.valtimo.contract.utils.RequestHelper
 import com.ritense.valtimo.service.CamundaTaskService.TaskFilter
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.persistence.EntityManager
+import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Expression
@@ -219,7 +220,7 @@ class CaseTaskListSearchService(
         advancedSearchRequest: AdvancedSearchRequest
     ): Predicate? {
         val authorizationPredicate: Predicate =
-            getAuthorizationSpecification(CamundaTaskActionProvider.VIEW_LIST).toPredicate(taskRoot, query, cb)
+            getAuthorizationSpecification(CamundaTaskActionProvider.VIEW_LIST).toPredicate(taskRoot, query as AbstractQuery<*>, cb)
 
         val assignmentFilterPredicate: Predicate = constructAssignmentFilter(advancedSearchRequest.assigneeFilter, cb, taskRoot)
 
@@ -281,7 +282,7 @@ class CaseTaskListSearchService(
                         JsonSchemaDocumentActionProvider.VIEW_LIST
                     ),
                     null
-                ).toPredicate(documentRoot, query, cb)
+                ).toPredicate(documentRoot, query as AbstractQuery<*>, cb)
         )
 
         if (searchRequest.otherFilters != null && searchRequest.otherFilters.isNotEmpty()) {
@@ -392,7 +393,7 @@ class CaseTaskListSearchService(
         val values = searchCriteria.getValues<Boolean>()
 
         return if (values.size == 1 && values[0] == true) {
-            getAuthorizationSpecification(CamundaTaskActionProvider.VIEW).toPredicate(taskRoot, query, cb)
+            getAuthorizationSpecification(CamundaTaskActionProvider.VIEW).toPredicate(taskRoot, query as AbstractQuery<*>, cb)
         } else {
             // Returning a no-op/always true value so that
             // the code doesn't continue and try to find `hideInaccessibleTasks` in the task table.
