@@ -170,6 +170,31 @@ public class JsonSchemaDocumentService implements DocumentService {
         return optionalDocument;
     }
 
+    public Optional<JsonSchemaDocument> findByWithLock(
+        @LoggableResource(resourceType = JsonSchemaDocument.class) Document.Id documentId
+    ) {
+        Optional<JsonSchemaDocument> optionalDocument = documentRepository.findByIdWithLock(documentId);
+
+        if (optionalDocument.isPresent()) {
+            JsonSchemaDocument document = optionalDocument.get();
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    VIEW,
+                    document
+                )
+            );
+
+            outboxService.send(() ->
+                new DocumentViewed(
+                    document.id().toString(),
+                    objectMapper.valueToTree(document)
+                )
+            );
+        }
+        return optionalDocument;
+    }
+
     @Override
     public JsonSchemaDocument get(
         @LoggableResource(resourceType = JsonSchemaDocument.class) String documentId
@@ -320,6 +345,28 @@ public class JsonSchemaDocumentService implements DocumentService {
         });
     }
 
+    public void modifyDocumentWithLock(Document document, JsonNode jsonNode) {
+        withLoggingContext(JsonSchemaDocument.class, document.id().toString(), () -> {
+            JsonSchemaDocument jsonSchemaDocument = (JsonSchemaDocument) document;
+
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    MODIFY,
+                    jsonSchemaDocument
+                )
+            );
+
+            final var documentRequest = ModifyDocumentRequest.create(document, jsonNode);
+            final var modifyResult = runWithoutAuthorization(() -> modifyDocumentWithLock(documentRequest));
+            if (!modifyResult.errors().isEmpty()) {
+                var exception = new ModifyDocumentException(modifyResult.errors());
+                logger.error("Document could not be modified", exception);
+                throw exception;
+            }
+        });
+    }
+
     @Override
     @Transactional(timeout = 30, rollbackFor = {Exception.class})
     public JsonSchemaDocument.ModifyDocumentResultImpl modifyDocument(
@@ -329,6 +376,54 @@ public class JsonSchemaDocumentService implements DocumentService {
             final var documentId = JsonSchemaDocumentId.existingId(UUID.fromString(request.documentId()));
             final var document = runWithoutAuthorization(
                 () -> findBy(documentId)
+                    .orElseThrow(
+                        () -> new DocumentNotFoundException("Document not found with id " + request.documentId())
+                    )
+            );
+
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    MODIFY,
+                    document
+                )
+            );
+
+            final var modifiedContent = JsonDocumentContent.build(
+                document.content().asJson(),
+                request.content(),
+                request.jsonPatch()
+            );
+            var documentDefinition = runWithoutAuthorization(
+                () -> documentDefinitionService.findBy(document.definitionId()).orElseThrow()
+            );
+            final var result = document.applyModifiedContent(
+                modifiedContent,
+                documentDefinition
+            );
+
+            result.resultingDocument().ifPresent(modifiedDocument -> {
+                documentRepository.save(modifiedDocument);
+                outboxService.send(() ->
+                    new DocumentUpdated(
+                        modifiedDocument.id().toString(),
+                        objectMapper.valueToTree(modifiedDocument)
+                    )
+                );
+            });
+
+            return result;
+        });
+    }
+
+    @Transactional(timeout = 30, rollbackFor = {Exception.class})
+    public JsonSchemaDocument.ModifyDocumentResultImpl modifyDocumentWithLock(
+        ModifyDocumentRequest request
+    ) {
+        return withLoggingContext(JsonSchemaDocument.class, request.documentId(), () -> {
+            final var documentId = JsonSchemaDocumentId.existingId(UUID.fromString(request.documentId()));
+            final var document = runWithoutAuthorization(
+                () -> findByWithLock(documentId)
                     .orElseThrow(
                         () -> new DocumentNotFoundException("Document not found with id " + request.documentId())
                     )

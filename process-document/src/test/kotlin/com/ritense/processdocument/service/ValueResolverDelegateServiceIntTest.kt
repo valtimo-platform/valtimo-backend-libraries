@@ -65,4 +65,28 @@ class ValueResolverDelegateServiceIntTest : BaseIntegrationTest() {
             result.resultingDocument().get().content().asJson().toString()
         )
     }
+
+    @Test
+    @WithMockUser(username = "user@ritense.com", authorities = [AuthoritiesConstants.USER])
+    fun `should copy jsonObject in process variable to document with lock`() {
+        val processDefinitionKey = "pv-object-to-doc-process-with-lock"
+        val documentDefinitionName = "additional-properties"
+        val processVars = mapOf("person" to mapOf("firstName" to "John", "lastName" to "Doe"))
+        val documentContent = objectMapper.createObjectNode()
+
+        val result = runWithoutAuthorization {
+            processDocumentService.newDocumentAndStartProcess(
+                NewDocumentAndStartProcessRequest(
+                    processDefinitionKey,
+                    NewDocumentRequest(documentDefinitionName, documentContent)
+                ).withProcessVars(processVars)
+            )
+        }
+
+        assertTrue(result.errors().isEmpty())
+        assertEquals(
+            """{"person":{"firstName":"John","lastName":"Doe"}}""",
+            result.resultingDocument().get().content().asJson().toString()
+        )
+    }
 }

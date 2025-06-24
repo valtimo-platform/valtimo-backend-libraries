@@ -35,6 +35,7 @@ import com.ritense.processdocument.repository.ProcessDocumentDefinitionRepositor
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository;
 import com.ritense.processdocument.resolver.DocumentJsonValueResolverFactory;
 import com.ritense.processdocument.resolver.DocumentTableValueResolver;
+import com.ritense.processdocument.resolver.LockedDocumentJsonValueResolverFactory;
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentDeploymentService;
@@ -201,6 +202,22 @@ public class ProcessDocumentAutoConfiguration {
         ObjectMapper objectMapper
     ) {
         return new DocumentJsonValueResolverFactory(
+            processDocumentService,
+            documentService,
+            documentDefinitionService,
+            objectMapper
+        );
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(LockedDocumentJsonValueResolverFactory.class)
+    public ValueResolverFactory lockedDocumentJsonValueResolverFactory(
+        ProcessDocumentService processDocumentService,
+        JsonSchemaDocumentService documentService,
+        JsonSchemaDocumentDefinitionService documentDefinitionService,
+        ObjectMapper objectMapper
+    ) {
+        return new LockedDocumentJsonValueResolverFactory(
             processDocumentService,
             documentService,
             documentDefinitionService,
