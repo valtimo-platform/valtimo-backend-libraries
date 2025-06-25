@@ -172,17 +172,6 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
         this.sequence = sequence;
 
         addRelatedDocument(documentRelation);
-
-        registerEvent(
-            new JsonSchemaDocumentCreatedEvent(
-                UUID.randomUUID(),
-                RequestHelper.getOrigin(),
-                this.createdOn,
-                this.createdBy,
-                this.id,
-                this.documentDefinitionId
-            )
-        );
     }
 
     JsonSchemaDocument() {
@@ -250,17 +239,6 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
                 .stream(diff.spliterator(), false)
                 .map(JsonSchemaDocumentFieldChangedEvent::fromJsonNode)
                 .toList();
-
-            registerEvent(
-                new JsonSchemaDocumentModifiedEvent(
-                    UUID.randomUUID(),
-                    RequestHelper.getOrigin(),
-                    LocalDateTime.now(),
-                    AuditHelper.getActor(),
-                    id(),
-                    changes
-                )
-            );
         }
         return new ModifyDocumentResultImpl(this);
     }
@@ -279,18 +257,6 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     public void addRelatedFile(final JsonSchemaRelatedFile relatedFile, Map<String, Object> metadata) {
         assertArgumentNotNull(relatedFile, "relatedFile is required");
         if (this.relatedFiles.add(relatedFile)) {
-            registerEvent(
-                new DocumentRelatedFileAddedEvent(
-                    UUID.randomUUID(),
-                    RequestHelper.getOrigin(),
-                    LocalDateTime.now(),
-                    AuditHelper.getActor(),
-                    id.getId(),
-                    relatedFile.getFileId(),
-                    relatedFile.getFileName(),
-                    metadata
-                )
-            );
         } else {
             logger.warn("Related file not added");
         }
@@ -305,17 +271,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
             .orElseThrow();
 
         if (relatedFiles.remove(relatedFile)) {
-            registerEvent(
-                new DocumentRelatedFileRemovedEvent(
-                    UUID.randomUUID(),
-                    RequestHelper.getOrigin(),
-                    LocalDateTime.now(),
-                    AuditHelper.getActor(),
-                    id.getId(),
-                    relatedFile.getFileId(),
-                    relatedFile.getFileName()
-                )
-            );
+
         } else {
             logger.warn("Related file not removed");
         }
