@@ -97,7 +97,7 @@ class DecisionManagementResourceIT(
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
         .andDo(MockMvcResultHandlers.print())
-        .andExpect(status().isNoContent)
+        .andExpect(status().isOk)
 
         repositoryService.createDecisionDefinitionQuery()
             .decisionDefinitionKey("test-2")
