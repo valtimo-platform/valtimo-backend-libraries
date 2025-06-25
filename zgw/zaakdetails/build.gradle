@@ -33,6 +33,8 @@ dependencies {
     implementation project(":case")
     implementation project(":contract")
     implementation project(":plugin")
+    implementation project(":importer")
+    implementation project(":exporter")
     implementation project(":zgw")
     implementation project(":zgw:objecten-api")
     implementation project(":zgw:objecttypen-api")
