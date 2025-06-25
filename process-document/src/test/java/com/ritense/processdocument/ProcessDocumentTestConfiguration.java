@@ -21,6 +21,8 @@ import static org.mockito.Mockito.mock;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.document.service.DocumentService;
 import com.ritense.processdocument.config.DeadlockService;
+import com.ritense.processdocument.resolver.LockedDocumentJsonValueResolverFactory;
+import com.ritense.processdocument.resolver.SomeTestBean;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.annotation.ProcessBean;
 import com.ritense.valtimo.contract.mail.MailSender;
@@ -60,6 +62,17 @@ public class ProcessDocumentTestConfiguration {
             return new DeadlockService(
                 documentService,
                 objectMapper
+            );
+        }
+
+        @Bean
+        public SomeTestBean someTestBean(
+            LockedDocumentJsonValueResolverFactory lockedDocumentJsonValueResolver,
+            DocumentService documentService
+        ) {
+            return new SomeTestBean(
+                lockedDocumentJsonValueResolver,
+                documentService
             );
         }
 

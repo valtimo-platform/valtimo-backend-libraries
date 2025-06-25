@@ -211,7 +211,7 @@ public class ProcessDocumentAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(LockedDocumentJsonValueResolverFactory.class)
-    public ValueResolverFactory lockedDocumentJsonValueResolverFactory(
+    public LockedDocumentJsonValueResolverFactory lockedDocumentJsonValueResolverFactory(
         ProcessDocumentService processDocumentService,
         JsonSchemaDocumentService documentService,
         JsonSchemaDocumentDefinitionService documentDefinitionService,

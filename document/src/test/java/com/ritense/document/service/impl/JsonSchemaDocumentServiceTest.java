@@ -44,6 +44,7 @@ import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.valtimo.contract.resource.Resource;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -77,6 +78,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
     private InternalCaseStatusService internalCaseStatusService;
 
     private CaseTagService caseTagService;
+    private EntityManager entityManager;
 
     private final String documentDefinitionName = "name";
 
@@ -92,6 +94,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         outboxService = mock(OutboxService.class);
         internalCaseStatusService = mock();
         caseTagService = mock();
+        entityManager = mock();
 
         jsonSchemaDocumentService = spy(new JsonSchemaDocumentService(
             documentRepository,
@@ -104,7 +107,8 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
             outboxService,
             MapperSingleton.INSTANCE.get(),
             internalCaseStatusService,
-            caseTagService
+            caseTagService,
+            entityManager
         ));
 
         var content = new JsonDocumentContent("{\"firstname\": \"aName\"}");

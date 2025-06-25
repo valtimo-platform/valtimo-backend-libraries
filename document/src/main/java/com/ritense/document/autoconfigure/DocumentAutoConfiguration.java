@@ -85,7 +85,8 @@ public class DocumentAutoConfiguration {
         final OutboxService outboxService,
         final ObjectMapper objectMapper,
         final InternalCaseStatusService internalCaseStatusService,
-        final CaseTagService caseTagService
+        final CaseTagService caseTagService,
+        final EntityManager entityManager
     ) {
         return new JsonSchemaDocumentService(
             documentRepository,
@@ -98,7 +99,8 @@ public class DocumentAutoConfiguration {
             outboxService,
             objectMapper,
             internalCaseStatusService,
-            caseTagService
+            caseTagService,
+            entityManager
         );
     }
 

@@ -27,10 +27,10 @@ import com.jayway.jsonpath.internal.path.PathCompiler
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
+import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.document.exception.ModifyDocumentException
 import com.ritense.document.exception.UnknownDocumentDefinitionException
-import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
@@ -98,7 +98,7 @@ class LockedDocumentJsonValueResolverFactory(
         val documentId = AuthorizationContext.runWithoutAuthorization {
             processDocumentService.getDocumentId(CamundaProcessInstanceId(processInstanceId), variableScope)
         }
-        val document = documentService.findByWithLock(documentId).get()
+        val document = documentService.findBy(documentId).get()
         val documentContent = document.content().asJson()
         buildJsonPatch(documentContent, values)
 
@@ -116,12 +116,17 @@ class LockedDocumentJsonValueResolverFactory(
     }
 
     override fun handleValues(documentId: UUID, values: Map<String, Any?>) {
-        val document = AuthorizationContext.runWithoutAuthorization { documentService.get(documentId.toString()) }
+        val document = AuthorizationContext.runWithoutAuthorization {
+            documentService.findBy(JsonSchemaDocumentId.existingId(documentId.toString())).get()
+        }
+
+        logger.info("Getting document in value resolver ${document.hashCode()}")
+
         val documentContent = document.content().asJson()
         buildJsonPatch(documentContent, values)
 
         try {
-            AuthorizationContext.runWithoutAuthorization { documentService.modifyDocument(document, documentContent) }
+            AuthorizationContext.runWithoutAuthorization { documentService.modifyDocumentWithLock(document, documentContent) }
         } catch (exception: ModifyDocumentException) {
             throw RuntimeException(
                 "Failed to handle values for document '$documentId'. Values: ${values}.",
@@ -240,10 +245,6 @@ class LockedDocumentJsonValueResolverFactory(
         return objectMapper.valueToTree(value)
     }
 
-    companion object {
-        const val PREFIX = "doc-locked"
-    }
-
     private fun getPropertyNamesFromObjectNode(
         definition: JsonSchemaDocumentDefinition,
         node: ObjectNode,
@@ -289,4 +290,8 @@ class LockedDocumentJsonValueResolverFactory(
         return simpleTypes.contains(propertyType)
     }
 
+    companion object {
+        const val PREFIX = "doc-locked"
+        private val logger = mu.KotlinLogging.logger { }
+    }
 }

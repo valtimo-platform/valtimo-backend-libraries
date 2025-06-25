@@ -54,10 +54,8 @@ import com.ritense.document.event.DocumentAssigned;
 import com.ritense.document.event.DocumentAssigneeChangedEvent;
 import com.ritense.document.event.DocumentCreated;
 import com.ritense.document.event.DocumentDeleted;
-import com.ritense.document.event.DocumentTagsChanged;
-import com.ritense.document.service.CaseTagService;
-import com.ritense.valtimo.contract.event.DocumentDeletedEvent;
 import com.ritense.document.event.DocumentStatusChanged;
+import com.ritense.document.event.DocumentTagsChanged;
 import com.ritense.document.event.DocumentUnassigned;
 import com.ritense.document.event.DocumentUnassignedEvent;
 import com.ritense.document.event.DocumentUpdated;
@@ -67,6 +65,7 @@ import com.ritense.document.exception.DocumentNotFoundException;
 import com.ritense.document.exception.ModifyDocumentException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
+import com.ritense.document.service.CaseTagService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.InternalCaseStatusService;
 import com.ritense.logging.LoggableResource;
@@ -75,10 +74,12 @@ import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.event.DocumentDeletedEvent;
 import com.ritense.valtimo.contract.resource.Resource;
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
 import jakarta.annotation.Nullable;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -118,6 +119,8 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     private final CaseTagService caseTagService;
 
+    private EntityManager entityManager;
+
     public JsonSchemaDocumentService(
         JsonSchemaDocumentRepository documentRepository,
         JsonSchemaDocumentDefinitionService documentDefinitionService,
@@ -129,7 +132,8 @@ public class JsonSchemaDocumentService implements DocumentService {
         OutboxService outboxService,
         ObjectMapper objectMapper,
         InternalCaseStatusService internalCaseStatusService,
-        CaseTagService caseTagService
+        CaseTagService caseTagService,
+        EntityManager entityManager
     ) {
         this.documentRepository = documentRepository;
         this.documentDefinitionService = documentDefinitionService;
@@ -142,6 +146,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         this.objectMapper = objectMapper;
         this.internalCaseStatusService = internalCaseStatusService;
         this.caseTagService = caseTagService;
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -348,6 +353,9 @@ public class JsonSchemaDocumentService implements DocumentService {
     public void modifyDocumentWithLock(Document document, JsonNode jsonNode) {
         withLoggingContext(JsonSchemaDocument.class, document.id().toString(), () -> {
             JsonSchemaDocument jsonSchemaDocument = (JsonSchemaDocument) document;
+
+            //detach the document to force a reload from the database using the lock
+            entityManager.detach(document);
 
             authorizationService.requirePermission(
                 new EntityAuthorizationRequest<>(
