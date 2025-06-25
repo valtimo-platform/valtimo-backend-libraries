@@ -48,8 +48,8 @@ class TaskListResource (
         @RequestBody taskListSearchDto: TaskListSearchDto,
         pageable: Pageable
     ): ResponseEntity<Page<*>> {
-        return if (taskListSearchDto.caseDefinitionName != null) {
-            ResponseEntity.ok().body(service.getTasksByCaseDefinition(taskListSearchDto.caseDefinitionName, assignmentFilter, pageable))
+        return if (taskListSearchDto.caseDefinitionKey != null) {
+            ResponseEntity.ok().body(service.getTasksByCaseDefinition(taskListSearchDto.caseDefinitionKey, assignmentFilter, pageable))
         } else {
             val page: Page<TaskExtended> = camundaTaskService.findTasksFiltered(assignmentFilter, pageable)
             return ResponseEntity.ok(page)

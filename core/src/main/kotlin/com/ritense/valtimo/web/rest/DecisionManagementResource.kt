@@ -22,7 +22,8 @@ import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.valtimo.decision.CamundaDecisionService
 import com.ritense.valtimo.service.CamundaProcessService
-import org.camunda.bpm.engine.repository.DecisionDefinition
+import com.ritense.valtimo.web.rest.dto.DefinitionDeploymentResponseDto
+import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity
 import org.camunda.bpm.engine.rest.dto.repository.DecisionDefinitionDto
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -81,17 +82,19 @@ class DecisionManagementResource(
             return ResponseEntity.badRequest().body("Invalid file name. Must have '.dmn' suffix.")
         }
 
-        runWithoutAuthorization {
-            camundaProcessService.deploy(
-                caseDefinitionId,
-                dmn.originalFilename,
-                ByteArrayInputStream(dmn.bytes),
-                true,
-                false
+        return ResponseEntity.ok(
+            DefinitionDeploymentResponseDto.of(
+                runWithoutAuthorization {
+                    camundaProcessService.deploy(
+                        caseDefinitionId,
+                        dmn.originalFilename,
+                        ByteArrayInputStream(dmn.bytes),
+                        true,
+                        false
+                    )
+                } as DeploymentEntity
             )
-        }
-
-        return ResponseEntity.noContent().build()
+        )
     }
 
     @DeleteMapping(
