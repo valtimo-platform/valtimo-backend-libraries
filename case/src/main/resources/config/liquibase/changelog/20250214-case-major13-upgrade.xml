@@ -257,6 +257,7 @@
 
     <changeSet id="11" author="Ritense">
         <preConditions onFail="MARK_RAN">
+            <tableExists tableName="form_io_form_definition"/>
             <dbms type="postgresql"/>
         </preConditions>
         <sql>
@@ -278,6 +279,7 @@
 
     <changeSet id="12" author="Ritense">
         <preConditions onFail="MARK_RAN">
+            <tableExists tableName="form_io_form_definition"/>
             <dbms type="mysql"/>
         </preConditions>
         <sql>
@@ -285,20 +287,21 @@
             (id, name, form_definition, read_only, case_definition_key, case_definition_version_tag)
             select UUID(), fd.name, fd.form_definition, fd.read_only, ct.case_definition_key, ct.case_definition_version_tag
             from case_tab ct
-                     join form_io_form_definition fd
-                          on ct.type = 'FORMIO'
-                              and fd.name = ct.content_key
-                              and fd.case_definition_key is null
-                     left join form_io_form_definition fd2
-                               on fd2.case_definition_key = ct.case_definition_key
-                                   and fd2.case_definition_version_tag = ct.case_definition_version_tag
-                                   and fd2.name = fd.name
+            join form_io_form_definition fd
+                on ct.type = 'FORMIO'
+                and fd.name = ct.content_key
+                and fd.case_definition_key is null
+            left join form_io_form_definition fd2
+                on fd2.case_definition_key = ct.case_definition_key
+                and fd2.case_definition_version_tag = ct.case_definition_version_tag
+                and fd2.name = fd.name
             where fd2.id is null
         </sql>
     </changeSet>
 
     <changeSet id="13" author="Ritense">
         <preConditions onFail="MARK_RAN">
+            <tableExists tableName="form_io_form_definition"/>
             <dbms type="postgresql"/>
         </preConditions>
         <sql>
@@ -319,6 +322,7 @@
 
     <changeSet id="14" author="Ritense">
         <preConditions onFail="MARK_RAN">
+            <tableExists tableName="form_io_form_definition"/>
             <dbms type="mysql"/>
         </preConditions>
         <sql>
@@ -326,11 +330,11 @@
             (id, name, form_definition, read_only, case_definition_key, case_definition_version_tag)
             select UUID(), fd.name, fd.form_definition, fd.read_only, cwtw.case_definition_key, cwtw.case_definition_version_tag
             from case_widget_tab_widget cwtw
-                     join form_io_form_definition fd
-                          on fd.name = JSON_EXTRACT(cwtw.properties, '$.formDefinitionName')
+            join form_io_form_definition fd
+                on fd.name = JSON_EXTRACT(cwtw.properties, '$.formDefinitionName')
                 and fd.case_definition_key is null
-                left join form_io_form_definition fd2
-            on fd2.case_definition_key = cwtw.case_definition_key
+            left join form_io_form_definition fd2
+                on fd2.case_definition_key = cwtw.case_definition_key
                 and fd2.case_definition_version_tag = cwtw.case_definition_version_tag
                 and fd2.name = fd.name
             where fd2.id is null
