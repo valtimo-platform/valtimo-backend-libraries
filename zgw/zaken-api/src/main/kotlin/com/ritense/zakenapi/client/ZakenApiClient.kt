@@ -67,6 +67,7 @@ import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
 import mu.KLogger
 import mu.KotlinLogging
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.web.client.RestClient
@@ -80,6 +81,7 @@ class ZakenApiClient(
     private val objectMapper: ObjectMapper,
     private val authorizationService: AuthorizationService,
     private val authorizationEnabled: Boolean = false,
+    private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
     fun linkDocument(
         authentication: ZakenApiAuthentication,
@@ -108,7 +110,9 @@ class ZakenApiClient(
             .retrieve()
             .body<LinkDocumentResult>()!!
 
-        outboxService.send { DocumentLinkedToZaak(result.uuid, objectMapper.valueToTree(result)) }
+        val event = DocumentLinkedToZaak(result.uuid, objectMapper.valueToTree(result))
+        applicationEventPublisher.publishEvent(event)
+        outboxService.send { event }
         return result
     }
 
@@ -240,8 +244,10 @@ class ZakenApiClient(
             .retrieve()
             .body<Rol>()!!
 
+        val event = ZaakRolCreated(result.url.toString(), objectMapper.valueToTree(result))
+        applicationEventPublisher.publishEvent(event)
         outboxService.send {
-            ZaakRolCreated(result.url.toString(), objectMapper.valueToTree(result))
+            event
         }
         return result
     }
@@ -263,9 +269,9 @@ class ZakenApiClient(
             .retrieve()
             .body<Rol>() ?: throw ZaakRolNotUpdatedException("No body was returned when updating rol($rolUuid)")
 
-        outboxService.send {
-            ZaakRolUpdated(result.url.toString(), objectMapper.valueToTree(result))
-        }
+        val event =  ZaakRolUpdated(result.url.toString(), objectMapper.valueToTree(result))
+        applicationEventPublisher.publishEvent(event)
+        outboxService.send { event }
 
         return result
     }
@@ -288,7 +294,9 @@ class ZakenApiClient(
             .retrieve()
             .body<ZaakResponse>()!!
 
-        outboxService.send { ZaakCreated(result.url.toString(), objectMapper.valueToTree(result)) }
+        val event = ZaakCreated(result.url.toString(), objectMapper.valueToTree(result))
+        applicationEventPublisher.publishEvent(event)
+        outboxService.send { event }
         return result
     }
 
@@ -307,7 +315,10 @@ class ZakenApiClient(
             .body(request)
             .retrieve()
             .body<ZaakResponse>()!!
-        outboxService.send { ZaakPatched(result.url.toString(), objectMapper.valueToTree(result)) }
+
+        val event = ZaakPatched(result.url.toString(), objectMapper.valueToTree(result))
+        applicationEventPublisher.publishEvent(event)
+        outboxService.send { event }
         return result
     }
 
@@ -329,7 +340,9 @@ class ZakenApiClient(
             .retrieve()
             .body<CreateZaakStatusResponse>()!!
 
-        outboxService.send { ZaakStatusCreated(result.url.toString(), objectMapper.valueToTree(result)) }
+        val event = ZaakStatusCreated(result.url.toString(), objectMapper.valueToTree(result))
+        applicationEventPublisher.publishEvent(event)
+        outboxService.send { event }
         return result
     }
 
@@ -379,7 +392,9 @@ class ZakenApiClient(
             .retrieve()
             .body<CreateZaakResultaatResponse>()!!
 
-        outboxService.send { ZaakResultaatCreated(result.url.toString(), objectMapper.valueToTree(result)) }
+        val event = ZaakResultaatCreated(result.url.toString(), objectMapper.valueToTree(result))
+        applicationEventPublisher.publishEvent(event)
+        outboxService.send { event}
         return result
     }
 
@@ -397,7 +412,9 @@ class ZakenApiClient(
             .retrieve()
             .body<ZaakopschortingResponse>()!!
 
-        outboxService.send { ZaakOpschortingUpdated(result.url, objectMapper.valueToTree(result)) }
+        val event = ZaakOpschortingUpdated(result.url, objectMapper.valueToTree(result))
+        applicationEventPublisher.publishEvent(event)
+        outboxService.send { event }
         return result
     }
 
@@ -437,11 +454,13 @@ class ZakenApiClient(
             .retrieve()
             .body<ZaakeigenschapResponse>()!!
 
+        val event = ZaakeigenschapCreated(
+            result.url.toString(),
+            objectMapper.valueToTree(result)
+        )
+        applicationEventPublisher.publishEvent(event)
         outboxService.send {
-            ZaakeigenschapCreated(
-                result.url.toString(),
-                objectMapper.valueToTree(result)
-            )
+            event
         }
         return result
     }
@@ -463,12 +482,12 @@ class ZakenApiClient(
             .retrieve()
             .body<ZaakeigenschapResponse>()!!
 
-        outboxService.send {
-            ZaakeigenschapUpdated(
-                result.url.toString(),
-                objectMapper.valueToTree(result)
-            )
-        }
+        val event = ZaakeigenschapUpdated(
+            result.url.toString(),
+            objectMapper.valueToTree(result)
+        )
+        applicationEventPublisher.publishEvent(event)
+        outboxService.send { event }
         return result
     }
 
@@ -485,9 +504,9 @@ class ZakenApiClient(
             .retrieve()
             .toBodilessEntity()
 
-        outboxService.send {
-            ZaakeigenschapDeleted(zaakeigenschapUrl.toString())
-        }
+        val event = ZaakeigenschapDeleted(zaakeigenschapUrl.toString())
+        applicationEventPublisher.publishEvent(event)
+        outboxService.send { event }
     }
 
     fun getZaakeigenschappen(
@@ -577,9 +596,9 @@ class ZakenApiClient(
 
         result = result.copy(objectUrl = result.objectUrl)
 
-        outboxService.send {
-            ZaakObjectCreated(result.url.toString(), objectMapper.valueToTree(result))
-        }
+        val event = ZaakObjectCreated(result.url.toString(), objectMapper.valueToTree(result))
+        applicationEventPublisher.publishEvent(event)
+        outboxService.send { event }
         return result
     }
 
