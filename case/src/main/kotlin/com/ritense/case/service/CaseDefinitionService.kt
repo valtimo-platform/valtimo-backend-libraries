@@ -134,7 +134,11 @@ class CaseDefinitionService(
     fun deleteCaseDefinition(caseDefinitionId: CaseDefinitionId) {
         denyManagementOperation()
         caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId)
-        require(!getCaseDefinition(caseDefinitionId).active) {
+        val isLastCaseDefinition = getCaseDefinitions(
+            caseDefinitionKey = caseDefinitionId.key,
+            pageable = Pageable.ofSize(2)
+        ).count() == 1
+        require(isLastCaseDefinition || !getCaseDefinition(caseDefinitionId).active) {
             "Failed to delete case-definition. Case-definition with id: '$caseDefinitionId' is the global active version."
         }
         require(!getCaseDefinition(caseDefinitionId).final) {
