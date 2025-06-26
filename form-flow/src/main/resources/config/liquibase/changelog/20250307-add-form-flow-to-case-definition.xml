@@ -87,6 +87,7 @@
     <changeSet id="9" author="Ritense">
         <preConditions onFail="MARK_RAN">
             <columnExists tableName="process_link" columnName="form_flow_definition_key"/>
+            <tableExists tableName="json_schema_document"/>
             <dbms type="postgresql"/>
         </preConditions>
         <sql>
@@ -151,6 +152,7 @@
     <changeSet id="10" author="Ritense">
         <preConditions onFail="MARK_RAN">
             <columnExists tableName="process_link" columnName="form_flow_definition_key"/>
+            <tableExists tableName="json_schema_document"/>
             <dbms type="mysql"/>
         </preConditions>
         <sql>
@@ -255,6 +257,7 @@
 
     <changeSet id="13" author="Ritense">
         <preConditions onFail="MARK_RAN">
+            <tableExists tableName="json_schema_document"/>
             <dbms type="postgresql"/>
         </preConditions>
         <sql>
@@ -262,7 +265,7 @@
             set case_definition_key = jsd.case_definition_key,
                 case_definition_version_tag = jsd.case_definition_version_tag,
                 form_flow_definition_key = ffd.form_flow_definition_key
-                from json_schema_document jsd
+            from json_schema_document jsd
             join form_flow_instance ffi2
                 on (additional_properties->>'documentId')::uuid = jsd.json_schema_document_id
             join form_flow_definition ffd
@@ -276,6 +279,7 @@
 
     <changeSet id="14" author="Ritense">
         <preConditions onFail="MARK_RAN">
+            <tableExists tableName="json_schema_document"/>
             <dbms type="mysql"/>
         </preConditions>
         <sql>
@@ -391,6 +395,7 @@
 
     <changeSet id="22" author="Ritense">
         <preConditions onFail="MARK_RAN">
+            <tableExists tableName="form_io_form_definition"/>
             <dbms type="postgresql"/>
         </preConditions>
         <sql>
@@ -428,6 +433,7 @@
 
     <changeSet id="23" author="Ritense">
         <preConditions onFail="MARK_RAN">
+            <tableExists tableName="form_io_form_definition"/>
             <dbms type="mysql"/>
         </preConditions>
         <sql>
