@@ -48,7 +48,7 @@ import org.springframework.util.StreamUtils;
 public final class JsonSchema {
 
     @Transient
-    private static final String DEFAULT_REFERENCE_PATH_LOCATION = "classpath://document/definition/reference/";
+    private static final String DEFAULT_REFERENCE_PATH_LOCATION = "classpath://config/document/definition/reference/";
 
     @Transient
     private static final Validator VALIDATOR = Validator.builder()
