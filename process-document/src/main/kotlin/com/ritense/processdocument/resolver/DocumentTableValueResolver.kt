@@ -82,10 +82,10 @@ class DocumentTableValueResolver(
                 "assigneeId" -> document.assigneeId()
                 "createdBy" -> document.createdBy()
                 "createdOn" -> document.createdOn()
-                "definitionId" -> document.definitionId()
-                "definitionId.name" -> document.definitionId().name()
-                // TODO: change definitionId.caseDefinitionId
-                "definitionId.version" -> document.definitionId().caseDefinitionId()
+                "documentDefinitionId" -> document.definitionId()
+                "documentDefinitionId.name" -> document.definitionId().name()
+                "definitionId.key" -> document.definitionId().caseDefinitionId().key
+                "definitionId.versionTag" -> document.definitionId().caseDefinitionId().versionTag.version
                 "id" -> document.id().id
                 "internalStatus" -> document.internalStatus()
                 "caseTags" -> document.caseTags()
@@ -105,6 +105,8 @@ class DocumentTableValueResolver(
             "createdOn",
             "definitionId.name",
             "definitionId.version",
+            "documentDefinitionId",
+            "documentDefinitionId.name",
             "id",
             "internalStatus",
             "caseTags",

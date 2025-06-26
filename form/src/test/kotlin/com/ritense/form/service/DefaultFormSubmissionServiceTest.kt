@@ -36,7 +36,6 @@ import com.ritense.form.service.impl.DefaultFormSubmissionService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.form.web.rest.dto.FormSubmissionResultFailed
 import com.ritense.form.web.rest.dto.FormSubmissionResultSucceeded
-import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionId
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndStartProcessRequest
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest

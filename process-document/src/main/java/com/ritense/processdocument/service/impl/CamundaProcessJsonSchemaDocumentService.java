@@ -30,9 +30,7 @@ import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.service.impl.JsonSchemaDocumentService;
-import com.ritense.processdocument.domain.ProcessDefinitionCaseDefinition;
 import com.ritense.processdocument.domain.ProcessInstanceId;
-import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionId;
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstanceId;
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest;
@@ -41,7 +39,6 @@ import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProces
 import com.ritense.processdocument.domain.impl.request.NewDocumentForRunningProcessRequest;
 import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest;
 import com.ritense.processdocument.domain.request.Request;
-import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
 import com.ritense.processdocument.service.impl.result.ModifyDocumentAndCompleteTaskResultFailed;
@@ -68,7 +65,6 @@ import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import org.camunda.bpm.engine.delegate.BaseDelegateExecution;
 import org.camunda.bpm.engine.delegate.DelegateTask;
@@ -121,7 +117,7 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
         final NewDocumentAndStartProcessRequest request
     ) {
         try {
-            final var processDefinitionKey = new CamundaProcessDefinitionId(request.processDefinitionKey());
+            final var processDefinitionKey = request.processDefinitionKey();
             final var newDocumentRequest = request.newDocumentRequest();
 
             final var newDocumentResult = runWithoutAuthorization(
@@ -143,7 +139,7 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
 
             final var processInstanceWithDefinition = startProcess(
                 document,
-                processDefinitionKey.toString(),
+                processDefinitionKey,
                 request.getProcessVars()
             );
 
@@ -297,9 +293,9 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             request.doAdditionalModifications(document);
 
             //Part 2 process start
-            final var processDefinitionKey = new CamundaProcessDefinitionId(request.processDefinitionKey());
+            final var processDefinitionKey = request.processDefinitionKey();
             final var processInstanceWithDefinition = startProcess(
-                document, processDefinitionKey.toString(), request.getProcessVars());
+                document, processDefinitionKey, request.getProcessVars());
             final var camundaProcessInstanceId = new CamundaProcessInstanceId(
                 processInstanceWithDefinition.getProcessInstanceDto().getId()
             );
@@ -337,9 +333,9 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             );
 
             //Part 2 process start
-            final var processDefinitionKey = new CamundaProcessDefinitionId(request.getProcessDefinitionKey());
+            final var processDefinitionKey = request.getProcessDefinitionKey();
             final var processInstanceWithDefinition = startProcess(
-                document, processDefinitionKey.toString(), request.getProcessVars());
+                document, processDefinitionKey, request.getProcessVars());
             final var camundaProcessInstanceId = new CamundaProcessInstanceId(
                 processInstanceWithDefinition.getProcessInstanceDto().getId()
             );
