@@ -14,9 +14,21 @@
  * limitations under the License.
  */
 
-package com.ritense.iko
+package com.ritense.iko.web.rest.response
 
-import com.ritense.valtimo.contract.annotation.AllOpen
+import com.ritense.iko.domain.IkoDataRequest
+import com.ritense.search.web.rest.dto.SearchFieldV2Dto
 
-@AllOpen
-class BaseTest()
+data class IkoDataRequestUserListResponse(
+    val key: String,
+    val title: String,
+    val searchFields: List<SearchFieldV2Dto>,
+) {
+    companion object {
+        fun from(entity: IkoDataRequest) = IkoDataRequestUserListResponse(
+            key = entity.id.key,
+            title = entity.title,
+            searchFields = emptyList(), // TODO
+        )
+    }
+}

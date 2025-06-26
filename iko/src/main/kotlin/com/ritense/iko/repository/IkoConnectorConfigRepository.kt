@@ -16,10 +16,11 @@
 
 package com.ritense.iko.repository
 
-import com.ritense.iko.domain.View
+import com.ritense.iko.domain.IkoConnectorConfig
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.stereotype.Repository
-import java.util.UUID
 
 @Repository
-interface ViewRepository : JpaRepository<View, UUID>
+interface IkoConnectorConfigRepository : JpaRepository<IkoConnectorConfig, String>,
+    JpaSpecificationExecutor<IkoConnectorConfig>

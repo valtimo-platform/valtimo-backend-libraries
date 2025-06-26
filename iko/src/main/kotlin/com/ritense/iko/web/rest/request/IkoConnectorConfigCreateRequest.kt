@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.iko
+package com.ritense.iko.web.rest.request
 
-import com.ritense.valtimo.contract.annotation.AllOpen
-
-@AllOpen
-class BaseTest()
+data class IkoConnectorConfigCreateRequest(
+    val title: String,
+    val type: String,
+    val properties: Map<String, Any?>
+)

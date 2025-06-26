@@ -14,9 +14,22 @@
  * limitations under the License.
  */
 
-package com.ritense.iko
+package com.ritense.iko.web.rest.response
 
-import com.ritense.valtimo.contract.annotation.AllOpen
+import com.ritense.iko.domain.IkoConnectorConfig
 
-@AllOpen
-class BaseTest()
+data class IkoConnectorConfigResponse(
+    val key: String,
+    val title: String,
+    val type: String,
+    val properties: Map<String, Any?>
+) {
+    companion object {
+        fun from(entity: IkoConnectorConfig) = IkoConnectorConfigResponse(
+            key = entity.key,
+            title = entity.title,
+            type = entity.type,
+            properties = entity.properties,
+        )
+    }
+}

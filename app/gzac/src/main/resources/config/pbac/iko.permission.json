@@ -1,0 +1,15 @@
+{
+    "changesetId": "iko-v1",
+    "permissions": [
+        {
+            "resourceType": "com.ritense.iko.domain.IkoDataAggregate",
+            "action": "view",
+            "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.iko.domain.IkoDataAggregate",
+            "action": "view_list",
+            "roleKey": "ROLE_ADMIN"
+        }
+    ]
+}

@@ -14,9 +14,21 @@
  * limitations under the License.
  */
 
-package com.ritense.iko
+package com.ritense.iko.domain
 
-import com.ritense.valtimo.contract.annotation.AllOpen
+import jakarta.persistence.Column
+import jakarta.persistence.Embeddable
+import jakarta.persistence.FetchType.EAGER
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
 
-@AllOpen
-class BaseTest()
+@Embeddable
+class IkoDataRequestId(
+
+    @Column(name = "`key`", updatable = false, nullable = false, unique = true)
+    val key: String,
+
+    @ManyToOne(fetch = EAGER)
+    @JoinColumn(name = "iko_data_aggregate_key", referencedColumnName = "key")
+    val ikoDataAggregate: IkoDataAggregate,
+)

@@ -1,0 +1,88 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright 2015-2025 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Ritense" id="1">
+        <createTable tableName="iko_connector_config">
+            <column name="key" type="VARCHAR(256)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="title" type="VARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="properties" type="${jsonType}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="Ritense" id="2">
+        <createTable tableName="iko_data_aggregate">
+            <column name="key" type="VARCHAR(256)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="iko_connector_config_key" type="VARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="properties" type="${jsonType}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="iko_data_aggregate"
+                                 baseColumnNames="iko_connector_config_key"
+                                 referencedTableName="iko_connector_config"
+                                 referencedColumnNames="key"
+                                 constraintName="fk_iko_data_aggregate_iko_connector_config_key"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet author="Ritense" id="3">
+        <createTable tableName="iko_data_request">
+            <column name="key" type="VARCHAR(256)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="iko_data_aggregate_key" type="VARCHAR(256)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="title" type="VARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="iko_data_request_order" type="${intType}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="properties" type="${jsonType}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="iko_data_request"
+                                 baseColumnNames="iko_data_aggregate_key"
+                                 referencedTableName="iko_data_aggregate"
+                                 referencedColumnNames="key"
+                                 constraintName="fk_iko_data_request_iko_data_aggregate_key"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>

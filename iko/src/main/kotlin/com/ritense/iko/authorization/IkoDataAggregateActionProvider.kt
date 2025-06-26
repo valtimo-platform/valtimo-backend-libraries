@@ -14,9 +14,19 @@
  * limitations under the License.
  */
 
-package com.ritense.iko
+package com.ritense.iko.authorization
 
-import com.ritense.valtimo.contract.annotation.AllOpen
+import com.ritense.authorization.Action
+import com.ritense.authorization.ResourceActionProvider
+import com.ritense.iko.domain.IkoDataAggregate
 
-@AllOpen
-class BaseTest()
+class IkoDataAggregateActionProvider : ResourceActionProvider<IkoDataAggregate> {
+    override fun getAvailableActions(): List<Action<IkoDataAggregate>> {
+        return listOf(VIEW, VIEW_LIST)
+    }
+
+    companion object {
+        var VIEW = Action<IkoDataAggregate>(Action.VIEW)
+        var VIEW_LIST = Action<IkoDataAggregate>(Action.VIEW_LIST)
+    }
+}

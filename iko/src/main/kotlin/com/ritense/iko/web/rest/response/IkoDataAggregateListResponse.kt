@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.iko
+package com.ritense.iko.web.rest.response
 
-import com.ritense.valtimo.contract.annotation.AllOpen
+import com.ritense.iko.domain.IkoDataAggregate
 
-@AllOpen
-class BaseTest()
+data class IkoDataAggregateListResponse(
+    val key: String,
+    val title: String,
+) {
+    companion object {
+        fun from(entity: IkoDataAggregate) = IkoDataAggregateListResponse(
+            key = entity.key,
+            title = entity.title,
+        )
+    }
+}

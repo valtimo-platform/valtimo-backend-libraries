@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.iko
+package com.ritense.iko.repository
 
-import com.ritense.valtimo.contract.annotation.AllOpen
+import com.ritense.iko.domain.IkoDataAggregate
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import org.springframework.stereotype.Repository
 
-@AllOpen
-class BaseTest()
+@Repository
+interface IkoDataAggregateRepository : JpaRepository<IkoDataAggregate, String>,
+    JpaSpecificationExecutor<IkoDataAggregate>

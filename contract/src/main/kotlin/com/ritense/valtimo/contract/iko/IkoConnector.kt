@@ -14,9 +14,22 @@
  * limitations under the License.
  */
 
-package com.ritense.iko
+package com.ritense.valtimo.contract.iko
 
-import com.ritense.valtimo.contract.annotation.AllOpen
+import com.fasterxml.jackson.databind.JsonNode
+import org.springframework.data.domain.Pageable
 
-@AllOpen
-class BaseTest()
+interface IkoConnector {
+
+    fun getType(): String
+
+    fun getIkoConnectorPropertyFields(): List<PropertyField>
+
+    fun getDataAggregatePropertyFields(): List<PropertyField>
+
+    fun getDataRequestPropertyFields(): List<PropertyField>
+
+    fun findAll(config: Map<String, Any?>, filters: List<DataFilter>, pageable: Pageable): JsonNode
+
+    fun findAll(config: Map<String, Any?>, filters: List<DataFilter>): JsonNode
+}
