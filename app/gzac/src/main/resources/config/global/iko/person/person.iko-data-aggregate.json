@@ -1,0 +1,8 @@
+{
+    "key": "person",
+    "ikoConnectorConfigKey": "iko-api",
+    "title": "Person",
+    "properties": {
+        "dataAggregatePath": "person"
+    }
+}

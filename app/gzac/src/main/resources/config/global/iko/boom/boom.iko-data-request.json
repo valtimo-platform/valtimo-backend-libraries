@@ -1,0 +1,12 @@
+{
+    "ikoDataAggregateKey": "boom",
+    "ikoDataRequests": [
+        {
+            "key": "boombeeld",
+            "title": "Zoek met boombeeld",
+            "properties": {
+                "dataRequestPath": "ZoekMetBoombeeld"
+            }
+        }
+    ]
+}

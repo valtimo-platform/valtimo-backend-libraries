@@ -95,7 +95,7 @@ class IkoDataRequestManagementResource(
         @PathVariable key: String,
         @RequestBody request: List<IkoDataRequestUpdateRequest>,
     ): ResponseEntity<List<IkoDataRequestResponse>> {
-        val ikoDataRequests = service.updateIkoDataRequest(request)
+        val ikoDataRequests = service.saveIkoDataRequest(request)
         return ResponseEntity.ok(ikoDataRequests.map { IkoDataRequestResponse.from(it) })
     }
 

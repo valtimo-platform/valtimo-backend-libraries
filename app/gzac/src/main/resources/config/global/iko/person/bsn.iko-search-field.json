@@ -1,0 +1,14 @@
+{
+    "ikoDataAggregateKey": "person",
+    "ikoDataRequestKey": "bsn",
+    "ikoSearchFields": [
+        {
+            "key": "bsn",
+            "title": "BSN",
+            "path": "iko:/persoon/burgerservicenummer",
+            "dataType": "text",
+            "fieldType": "single",
+            "matchType": "exact"
+        }
+    ]
+}

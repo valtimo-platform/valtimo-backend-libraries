@@ -1,0 +1,14 @@
+{
+    "ikoDataAggregateKey": "boom",
+    "ikoDataRequestKey": "boombeeld",
+    "ikoSearchFields": [
+        {
+            "key": "boombeeld",
+            "title": "Boombeeld",
+            "path": "iko:/boombeeld",
+            "dataType": "text",
+            "fieldType": "single",
+            "matchType": "like"
+        }
+    ]
+}

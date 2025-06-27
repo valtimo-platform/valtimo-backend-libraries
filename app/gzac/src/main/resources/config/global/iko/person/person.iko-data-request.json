@@ -1,0 +1,26 @@
+{
+    "ikoDataAggregateKey": "person",
+    "ikoDataRequests": [
+        {
+            "key": "bsn",
+            "title": "Zoek met BSN",
+            "properties": {
+                "dataRequestPath": "ZoekMetBsn"
+            }
+        },
+        {
+            "key": "achternaam-geboortedatum",
+            "title": "Zoek met achternaam en geboortedatum",
+            "properties": {
+                "dataRequestPath": "ZoekMetAchternaamEnGeboortedatum"
+            }
+        },
+        {
+            "key": "adres",
+            "title": "Zoek met adres",
+            "properties": {
+                "dataRequestPath": "ZoekMetAdres"
+            }
+        }
+    ]
+}

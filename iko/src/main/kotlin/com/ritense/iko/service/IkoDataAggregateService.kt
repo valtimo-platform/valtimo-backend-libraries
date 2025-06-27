@@ -99,14 +99,13 @@ class IkoDataAggregateService(
         )
     }
 
-    fun updateIkoDataAggregate(
+    fun saveIkoDataAggregate(
         key: String,
         ikoConnectorConfigKey: String,
         title: String,
         properties: Map<String, Any?>,
     ): IkoDataAggregate {
         denyAuthorization()
-        require(existsByKey(key)) { "IKO data aggregate '$key' does not exist" }
         return ikoDataAggregateRepository.save(
             IkoDataAggregate(
                 key = key,

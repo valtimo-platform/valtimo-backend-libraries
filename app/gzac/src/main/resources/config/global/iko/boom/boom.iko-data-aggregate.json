@@ -1,0 +1,8 @@
+{
+    "key": "boom",
+    "ikoConnectorConfigKey": "iko-api",
+    "title": "Boom",
+    "properties": {
+        "dataAggregatePath": "boom"
+    }
+}

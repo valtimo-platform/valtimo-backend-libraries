@@ -16,11 +16,7 @@
             "action": "create",
             "roleKey": "ROLE_ADMIN"
         },
-        {
-            "resourceType": "com.ritense.resource.authorization.ResourcePermission",
-            "action": "modify",
-            "roleKey": "ROLE_ADMIN"
-        },
+        {"resourceType": "com.ritense.resource.authorization.ResourcePermission", "action": "modify", "roleKey": "ROLE_ADMIN"},
         {
             "resourceType": "com.ritense.resource.authorization.ResourcePermission",
             "action": "delete",

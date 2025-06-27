@@ -101,7 +101,7 @@ class IkoDataAggregateManagementResource(
         @PathVariable key: String,
         @RequestBody request: IkoDataAggregateUpdateRequest
     ): ResponseEntity<IkoDataAggregateResponse> {
-        val ikoDataAggregate = service.updateIkoDataAggregate(
+        val ikoDataAggregate = service.saveIkoDataAggregate(
             key = key,
             title = request.title,
             ikoConnectorConfigKey = request.ikoConnectorConfigKey,

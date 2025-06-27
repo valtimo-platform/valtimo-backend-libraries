@@ -1,0 +1,22 @@
+{
+    "ikoDataAggregateKey": "person",
+    "ikoDataRequestKey": "achternaam-geboortedatum",
+    "ikoSearchFields": [
+        {
+            "key": "achternaam",
+            "title": "Achternaam",
+            "path": "iko:/persoon/naam/geslachtsnaam",
+            "dataType": "text",
+            "fieldType": "single",
+            "matchType": "exact"
+        },
+        {
+            "key": "geboortedatum",
+            "title": "Geboortedatum",
+            "path": "iko:/persoon/geboorte/datum/datum",
+            "dataType": "date",
+            "fieldType": "single",
+            "matchType": "exact"
+        }
+    ]
+}

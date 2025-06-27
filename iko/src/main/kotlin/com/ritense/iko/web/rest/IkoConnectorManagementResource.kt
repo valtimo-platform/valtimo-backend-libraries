@@ -106,7 +106,7 @@ class IkoConnectorManagementResource(
         @PathVariable key: String,
         @RequestBody request: IkoConnectorConfigUpdateRequest
     ): ResponseEntity<IkoConnectorConfigResponse> {
-        val ikoConnectorConfig = service.updateIkoConnectorConfig(
+        val ikoConnectorConfig = service.saveIkoConnectorConfig(
             key = key,
             title = request.title,
             type = request.type,

@@ -16,11 +16,17 @@
 
 package com.ritense.iko.autoconfigure
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.iko.IkoApiDataRepository
 import com.ritense.iko.IkoValueResolverFactory
 import com.ritense.iko.authorization.IkoDataAggregateSpecificationFactory
 import com.ritense.iko.client.IkoApiClient
+import com.ritense.iko.importer.IkoConnectorConfigImporter
+import com.ritense.iko.importer.IkoDataAggregateImporter
+import com.ritense.iko.importer.IkoDataRequestImporter
+import com.ritense.iko.importer.IkoSearchFieldImporter
+import com.ritense.iko.mapper.IkoListSearchFieldV2Mapper
 import com.ritense.iko.repository.IkoConnectorConfigRepository
 import com.ritense.iko.repository.IkoDataAggregateRepository
 import com.ritense.iko.repository.IkoDataRequestRepository
@@ -33,6 +39,8 @@ import com.ritense.iko.web.rest.IkoDataAggregateManagementResource
 import com.ritense.iko.web.rest.IkoDataAggregateResource
 import com.ritense.iko.web.rest.IkoDataRequestManagementResource
 import com.ritense.iko.web.rest.IkoDataRequestResource
+import com.ritense.search.repository.SearchFieldV2Repository
+import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.contract.iko.IkoConnector
@@ -193,6 +201,66 @@ class IkoAutoConfiguration {
     ): IkoApiDataRepository {
         return IkoApiDataRepository(
             ikoApiClient,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IkoConnectorConfigImporter::class)
+    fun ikoConnectorConfigImporter(
+        objectMapper: ObjectMapper,
+        ikoConnectorService: IkoConnectorService,
+    ): IkoConnectorConfigImporter {
+        return IkoConnectorConfigImporter(
+            objectMapper,
+            ikoConnectorService,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IkoDataAggregateImporter::class)
+    fun ikoDataAggregateImporter(
+        objectMapper: ObjectMapper,
+        ikoDataAggregateService: IkoDataAggregateService,
+    ): IkoDataAggregateImporter {
+        return IkoDataAggregateImporter(
+            objectMapper,
+            ikoDataAggregateService,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IkoDataRequestImporter::class)
+    fun ikoDataRequestImporter(
+        objectMapper: ObjectMapper,
+        ikoDataRequestService: IkoDataRequestService,
+    ): IkoDataRequestImporter {
+        return IkoDataRequestImporter(
+            objectMapper,
+            ikoDataRequestService,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IkoSearchFieldImporter::class)
+    fun ikoSearchFieldImporter(
+        objectMapper: ObjectMapper,
+        repository: SearchFieldV2Repository,
+        searchFieldService: SearchFieldV2Service,
+    ): IkoSearchFieldImporter {
+        return IkoSearchFieldImporter(
+            objectMapper,
+            repository,
+            searchFieldService,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IkoListSearchFieldV2Mapper::class)
+    fun ikoListSearchFieldV2Mapper(
+        objectMapper: ObjectMapper,
+    ): IkoListSearchFieldV2Mapper {
+        return IkoListSearchFieldV2Mapper(
+            objectMapper,
         )
     }
 

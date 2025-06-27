@@ -87,14 +87,13 @@ class IkoConnectorService(
         )
     }
 
-    fun updateIkoConnectorConfig(
+    fun saveIkoConnectorConfig(
         key: String,
         title: String,
         type: String,
         properties: Map<String, Any?>
     ): IkoConnectorConfig {
         denyAuthorization()
-        require(existsByKey(key)) { "IKO conficonnectorguration '$key' does not exist" }
         return ikoConnectorConfigRepository.save(
             IkoConnectorConfig(
                 key = key,

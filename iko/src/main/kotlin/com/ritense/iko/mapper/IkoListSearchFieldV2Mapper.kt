@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2024 Ritense BV, the Netherlands.
+ *  Copyright 2015-2025 Ritense BV, the Netherlands.
  *
  *  Licensed under EUPL, Version 1.2 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,31 +14,31 @@
  *  limitations under the License.
  */
 
-package com.ritense.processdocument.tasksearch
+package com.ritense.iko.mapper
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.processdocument.service.TASK_SEARCH_FIELD_OWNER_TYPE
+import com.ritense.iko.importer.IkoSearchFieldImporter.Companion.IKO_OWNER_TYPE_KEY
 import com.ritense.search.domain.SearchFieldV2
 import com.ritense.search.mapper.SearchFieldV2Mapper
 import com.ritense.search.web.rest.dto.SearchFieldV2Dto
 
-class TaskListSearchFieldV2Mapper(
+class IkoListSearchFieldV2Mapper(
     objectMapper: ObjectMapper
 ): SearchFieldV2Mapper {
 
     init{
-        objectMapper.registerSubtypes(
-            TaskListSearchFieldV2Dto::class.java
-        )
+//        objectMapper.registerSubtypes(
+//            IkoListSearchFieldV2Dto::class.java
+//        )
     }
 
-    override fun supportsOwnerType(ownerType: String) = ownerType == TASK_SEARCH_FIELD_OWNER_TYPE
+    override fun supportsOwnerType(ownerType: String) = ownerType == IKO_OWNER_TYPE_KEY
 
     override fun toNewSearchFieldV2(searchFieldV2Dto: SearchFieldV2Dto): SearchFieldV2 =
         SearchFieldV2(
             id = searchFieldV2Dto.id,
             ownerId = searchFieldV2Dto.ownerId,
-            ownerType = TASK_SEARCH_FIELD_OWNER_TYPE,
+            ownerType = IKO_OWNER_TYPE_KEY,
             key = searchFieldV2Dto.key,
             title = searchFieldV2Dto.title,
             path = searchFieldV2Dto.path,

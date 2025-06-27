@@ -1,0 +1,14 @@
+{
+    "ikoDataAggregateKey": "person",
+    "ikoDataRequestKey": "adres",
+    "ikoSearchFields": [
+        {
+            "key": "adres",
+            "title": "Adres",
+            "path": "iko:/persoon/verblijfplaats/verblijfadres/officieleStraatnaam",
+            "dataType": "text",
+            "fieldType": "single",
+            "matchType": "exact"
+        }
+    ]
+}

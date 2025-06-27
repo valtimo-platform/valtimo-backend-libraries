@@ -96,12 +96,11 @@ class IkoDataRequestService(
         )
     }
 
-    fun updateIkoDataRequest(requests: List<IkoDataRequestUpdateRequest>): List<IkoDataRequest> {
+    fun saveIkoDataRequest(requests: List<IkoDataRequestUpdateRequest>): List<IkoDataRequest> {
         ikoDataAggregateService.denyAuthorization()
         val entities = requests.mapIndexed { i, request ->
             val ikoDataAggregate = ikoDataAggregateService.getByKey(request.ikoDataAggregateKey)
             val id = IkoDataRequestId(request.key, ikoDataAggregate)
-            require(existsByKey(request.key, request.ikoDataAggregateKey)) { "IKO data request '$id' does not exist" }
             IkoDataRequest(
                 id = id,
                 title = request.title,
