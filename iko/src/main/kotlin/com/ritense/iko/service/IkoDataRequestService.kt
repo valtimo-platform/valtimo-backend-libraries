@@ -111,11 +111,17 @@ class IkoDataRequestService(
         return ikoDataRequestRepository.saveAll(entities)
     }
 
-    fun deleteIkoDataRequest(key: String, ikoDataAggregateKey: String) {
+    fun delete(
+        key: String? = null,
+        ikoDataAggregateKey: String? = null,
+    ) {
         ikoDataAggregateService.denyAuthorization()
-        val ikoDataAggregate = ikoDataAggregateService.getByKey(ikoDataAggregateKey)
-        val id = IkoDataRequestId(key, ikoDataAggregate)
-        ikoDataRequestRepository.deleteById(id)
+        ikoDataRequestRepository.delete(
+            getSpecification(
+                key = key,
+                ikoDataAggregateKey = ikoDataAggregateKey,
+            )
+        )
     }
 
     private fun getSpecification(

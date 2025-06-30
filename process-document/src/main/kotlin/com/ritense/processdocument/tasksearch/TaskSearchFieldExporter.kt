@@ -26,7 +26,7 @@ class TaskSearchFieldExporter(
     objectMapper: ObjectMapper,
     searchFieldService: SearchFieldV2Service,
 ): SearchFieldExporter(objectMapper, searchFieldService) {
-    override fun ownerTypeKey(): String = TASK_SEARCH_FIELD_OWNER_TYPE
+    override fun ownerType(): String = TASK_SEARCH_FIELD_OWNER_TYPE
 
     override fun getPath(request: DocumentDefinitionExportRequest): String {
         val formattedCaseDefinitionVersion = request.caseDefinitionId.versionTag.let {

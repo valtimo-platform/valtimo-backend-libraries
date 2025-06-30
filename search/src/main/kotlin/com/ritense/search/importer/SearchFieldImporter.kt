@@ -16,31 +16,29 @@
 
 package com.ritense.search.importer
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.SEARCH_FIELD
 import com.ritense.search.deployment.ReadFileSearchFieldDto
-import com.ritense.search.repository.SearchFieldV2Repository
 import com.ritense.search.service.SearchFieldV2Service
 
 abstract class SearchFieldImporter(
-    private val objectMapper: ObjectMapper,
-    private val repository: SearchFieldV2Repository,
     private val searchFieldService: SearchFieldV2Service,
-    private val ownerTypeKey: String,
+    private val ownerType: String,
 ) : Importer {
     override fun type(): String = SEARCH_FIELD
 
+    override fun dependsOn(): Set<String> = emptySet()
+
     protected fun deploy(ownerId: String, searchFields: List<ReadFileSearchFieldDto>) {
-        repository.deleteAllByOwnerTypeAndOwnerId(ownerTypeKey, ownerId)
+        searchFieldService.deleteAllByOwner(ownerType, ownerId)
 
         searchFields.mapIndexed { index, searchField ->
-            val mappedField = searchField.toSearchFieldDto(ownerId, ownerTypeKey, index)
-            repository.findByOwnerTypeAndOwnerIdAndKeyOrderByOrder(ownerTypeKey, ownerId, mappedField.key)
-                ?.let { _ ->
-                    searchFieldService.update(ownerId, searchField.key, mappedField)
-                } ?: searchFieldService.create(mappedField)
+            val mappedField = searchField.toSearchFieldDto(ownerId, ownerType, index)
+            if (searchFieldService.findByOwnerAndKey(ownerType, ownerId, mappedField.key) != null) {
+                searchFieldService.update(mappedField)
+            } else {
+                searchFieldService.create(mappedField)
+            }
         }
     }
 }

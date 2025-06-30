@@ -105,7 +105,7 @@ class IkoDataRequestManagementResource(
         @PathVariable ikoDataAggregateKey: String,
         @PathVariable key: String,
     ): ResponseEntity<IkoDataRequestResponse> {
-        service.deleteIkoDataRequest(key, ikoDataAggregateKey)
+        service.delete(key, ikoDataAggregateKey)
         return ResponseEntity.noContent().build()
     }
 }

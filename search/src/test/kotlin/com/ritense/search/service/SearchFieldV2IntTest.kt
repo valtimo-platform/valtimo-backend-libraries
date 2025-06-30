@@ -19,8 +19,9 @@ package com.ritense.search.service
 import com.ritense.search.BaseIntegrationTest
 import com.ritense.search.domain.DataType
 import com.ritense.search.domain.FieldType
+import com.ritense.search.domain.LEGACY_OWNER_TYPE
 import com.ritense.search.domain.SearchFieldV2
-import com.ritense.search.web.rest.dto.LegacySearchFieldV2Dto
+import com.ritense.search.web.rest.dto.SearchFieldV2Dto
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -38,8 +39,9 @@ internal class SearchFieldV2IntTest : BaseIntegrationTest() {
         assertThat(searchField).isNotNull
 
         val updatedSearchField = searchField.copy(title = "New Title")
-        val updatedSearchFieldDto = LegacySearchFieldV2Dto(
+        val updatedSearchFieldDto = SearchFieldV2Dto(
             id = updatedSearchField.id,
+            ownerType = updatedSearchField.ownerType,
             ownerId = updatedSearchField.ownerId,
             key = updatedSearchField.key,
             title = updatedSearchField.title,
@@ -48,7 +50,8 @@ internal class SearchFieldV2IntTest : BaseIntegrationTest() {
             dataType = updatedSearchField.dataType,
             fieldType = updatedSearchField.fieldType,
             matchType = updatedSearchField.matchType,
-            dropdownDataProvider = updatedSearchField.dropdownDataProvider
+            dropdownDataProvider = updatedSearchField.dropdownDataProvider,
+            required = updatedSearchField.required,
         )
         val dbUpdatedSearchField = searchFieldV2Service.update(
             updatedSearchField.ownerId,
@@ -58,13 +61,13 @@ internal class SearchFieldV2IntTest : BaseIntegrationTest() {
 
         assertThat(dbUpdatedSearchField?.title).isEqualTo(updatedSearchField.title)
 
-        val dbLookUpByOwnerId = searchFieldV2Service.findAllByOwnerId(searchField.ownerId)
+        val dbLookUpByOwnerId = searchFieldV2Service.findAllByOwner(LEGACY_OWNER_TYPE, searchField.ownerId)
         assertThat(dbLookUpByOwnerId).isNotNull
-        assertThat(dbLookUpByOwnerId?.first()?.path).isEqualTo(searchField.path)
+        assertThat(dbLookUpByOwnerId.first().path).isEqualTo(searchField.path)
 
-        dbUpdatedSearchField?.ownerId?.let { searchFieldV2Service.delete(it, dbUpdatedSearchField.key) }
+        dbUpdatedSearchField?.ownerId?.let { searchFieldV2Service.delete(LEGACY_OWNER_TYPE, it, dbUpdatedSearchField.key) }
 
-        val list = searchFieldV2Service.findAllByOwnerId(searchField.ownerId)
+        val list = searchFieldV2Service.findAllByOwner(LEGACY_OWNER_TYPE, searchField.ownerId)
 
         assertThat(list).isEmpty()
     }
@@ -72,8 +75,9 @@ internal class SearchFieldV2IntTest : BaseIntegrationTest() {
 
     private fun createSearchField(ownerId: String? = null): SearchFieldV2 =
         searchFieldV2Service.create(
-            LegacySearchFieldV2Dto(
+            SearchFieldV2Dto(
                 ownerId = ownerId ?: "I own this",
+                ownerType = LEGACY_OWNER_TYPE,
                 key = "the magic key",
                 title = "Title",
                 path = "everywhere",

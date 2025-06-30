@@ -34,6 +34,8 @@ data class SearchListColumn(
     val id: UUID = UUID.randomUUID(),
     @Column(name = "owner_id")
     val ownerId: String,
+    @Column(name = "owner_type")
+    val ownerType: String,
     @Column(name = "column_key")
     val key: String,
     @Column(name = "title")

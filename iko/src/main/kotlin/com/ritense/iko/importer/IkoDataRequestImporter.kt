@@ -49,6 +49,7 @@ class IkoDataRequestImporter(
             )
         }
 
+        ikoDataRequestService.delete(ikoDataAggregateKey = dataRequests.ikoDataAggregateKey)
         ikoDataRequestService.saveIkoDataRequest(dataRequestUpdates)
     }
 

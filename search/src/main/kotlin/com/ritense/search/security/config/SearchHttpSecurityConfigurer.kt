@@ -33,6 +33,7 @@ class SearchHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(antMatcher(HttpMethod.PUT, "/api/v1/search/list-column/{ownerId}/{key}")).hasAuthority(AuthoritiesConstants.ADMIN)
                     .requestMatchers(antMatcher(HttpMethod.PUT, "/api/v1/search/list-column/{ownerId}/search-list-columns")).hasAuthority(AuthoritiesConstants.ADMIN)
                     .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/v1/search/list-column/{ownerId}/{key}")).hasAuthority(AuthoritiesConstants.ADMIN)
+
                     .requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/search/field/{ownerId}")).hasAuthority(AuthoritiesConstants.ADMIN)
                     .requestMatchers(antMatcher(HttpMethod.GET, "/api/v1/search/field/{ownerId}")).authenticated()
                     .requestMatchers(antMatcher(HttpMethod.GET, "/api/v1/search/field/{ownerType}/{ownerId}")).authenticated()

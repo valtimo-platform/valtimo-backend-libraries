@@ -140,7 +140,7 @@ class CaseTaskListSearchService(
     ): Page<CaseTask> {
         val zoneOffset = RequestHelper.getZoneOffset()
         val searchFieldMap: Map<String, SearchFieldV2> =
-            searchFieldV2Service.findAllByOwnerTypeAndOwnerId(TASK_SEARCH_FIELD_OWNER_TYPE, caseDefinitionName)
+            searchFieldV2Service.findAllByOwner(TASK_SEARCH_FIELD_OWNER_TYPE, caseDefinitionName)
                 .associateBy { it.key }
 
         val searchCriteria = searchWithConfigRequest.otherFilters.stream()

@@ -16,97 +16,50 @@
 
 package com.ritense.search.service
 
-import com.ritense.search.domain.LEGACY_OWNER_TYPE
 import com.ritense.search.domain.SearchFieldV2
-import com.ritense.search.mapper.SearchFieldV2Mapper
 import com.ritense.search.repository.SearchFieldV2Repository
 import com.ritense.search.web.rest.dto.SearchFieldV2Dto
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import org.springframework.web.server.ResponseStatusException
 
 @Service
 @SkipComponentScan
 class SearchFieldV2Service(
     private val searchFieldV2Repository: SearchFieldV2Repository,
-    private val searchFieldMappers: List<SearchFieldV2Mapper>
 ) {
 
-    fun create(searchFieldV2Dto: SearchFieldV2Dto): SearchFieldV2 {
-        val searchFieldV2 = getSearchFieldMapper(searchFieldV2Dto.ownerType).toNewSearchFieldV2(searchFieldV2Dto)
-
-        return searchFieldV2Repository.save(searchFieldV2)
+    fun create(searchFieldDto: SearchFieldV2Dto): SearchFieldV2 {
+        val searchField = searchFieldDto.toEntity()
+        require(searchFieldV2Repository.findById(searchField.id).isEmpty)
+        require(findByOwnerAndKey(searchFieldDto.ownerType, searchFieldDto.ownerId, searchFieldDto.key) == null)
+        return searchFieldV2Repository.save(searchField)
     }
 
-    fun update(ownerId: String, key: String, searchFieldV2Dto: SearchFieldV2Dto): SearchFieldV2? {
-        val searchFieldV2 = getSearchFieldMapper(searchFieldV2Dto.ownerType).toNewSearchFieldV2(searchFieldV2Dto)
-
-        if (searchFieldV2.ownerId != ownerId) {
-            throw ResponseStatusException(
-                HttpStatus.CONFLICT,
-                "Failed to update search field. Mismatching ownerId's"
-            )
-        } else if (searchFieldV2.key != key) {
-            throw ResponseStatusException(
-                HttpStatus.CONFLICT,
-                "Failed to update search field. Mismatching key's"
-            )
-        }
-
-        val existingSearchFieldV2 = findByOwnerTypeAndOwnerIdAndKey(searchFieldV2Dto.ownerType, ownerId, key)
-            ?: throw IllegalStateException("Failed to update search field. No Search field found with ownerId '$ownerId' and key '$key'")
-
-        return searchFieldV2Repository.save(
-            existingSearchFieldV2.copy(
-                ownerId = searchFieldV2.ownerId,
-                key = searchFieldV2.key,
-                path = searchFieldV2.path,
-                title = searchFieldV2.title,
-                order = searchFieldV2.order,
-                dataType = searchFieldV2.dataType,
-                fieldType = searchFieldV2.fieldType,
-                matchType = searchFieldV2.matchType
-            )
-        )
+    fun update(searchFieldDto: SearchFieldV2Dto): SearchFieldV2? {
+        val existingSearchField = searchFieldV2Repository.findById(searchFieldDto.id).orElse(null)
+            ?: findByOwnerAndKey(searchFieldDto.ownerType, searchFieldDto.ownerId, searchFieldDto.key)
+            ?: error("Failed to update search field. No Search field found with owner '${searchFieldDto.ownerType}:${searchFieldDto.ownerId}' and key '${searchFieldDto.key}'")
+        return searchFieldV2Repository.save(searchFieldDto.toEntity().copy(id = existingSearchField.id))
     }
 
-    fun findAllByOwnerType(ownerId: String) = searchFieldV2Repository.findAllByOwnerTypeOrderByOrder(ownerId)
+    fun findAllByOwnerType(ownerType: String) =
+        searchFieldV2Repository.findAllByOwnerTypeOrderByOrder(ownerType)
 
-    @Deprecated("Since 12.1.0", ReplaceWith("com.ritense.search.service.SearchFieldV2Service.findAllByOwnerTypeAndOwnerId()"))
-    fun findAllByOwnerId(ownerId: String) = searchFieldV2Repository.findAllByOwnerTypeAndOwnerIdOrderByOrder(LEGACY_OWNER_TYPE, ownerId)
+    fun findAllByOwner(ownerType: String, ownerId: String) =
+        searchFieldV2Repository.findAllByOwnerTypeAndOwnerIdOrderByOrder(ownerType, ownerId)
 
-    fun findAllByOwnerTypeAndOwnerId(ownerType: String, ownerId: String) = searchFieldV2Repository.findAllByOwnerTypeAndOwnerIdOrderByOrder(ownerType, ownerId)
-
-    @Deprecated("Since 12.1.0", ReplaceWith("com.ritense.search.service.SearchFieldV2Service.findByOwnerTypeAndOwnerIdAndKey()"))
-    fun findByOwnerIdAndKey(ownerId: String, key: String) = searchFieldV2Repository.findByOwnerTypeAndOwnerIdAndKeyOrderByOrder(LEGACY_OWNER_TYPE, ownerId, key)
-
-    fun findByOwnerTypeAndOwnerIdAndKey(ownerType: String, ownerId: String, key: String) = searchFieldV2Repository.findByOwnerTypeAndOwnerIdAndKeyOrderByOrder(ownerType, ownerId, key)
-
-    @Deprecated("Since 12.1.0", ReplaceWith("com.ritense.search.service.SearchFieldV2Service.delete()"))
-    fun delete(ownerId: String, key: String) =
-        with(findByOwnerIdAndKey(ownerId, key)) {
-            this?.let { searchFieldV2Repository.delete(it) }
-        }
+    fun findByOwnerAndKey(ownerType: String, ownerId: String, key: String) =
+        searchFieldV2Repository.findByOwnerTypeAndOwnerIdAndKeyOrderByOrder(ownerType, ownerId, key)
 
     fun delete(ownerType: String, ownerId: String, key: String) =
-        with(findByOwnerTypeAndOwnerIdAndKey(ownerType, ownerId, key)) {
-            this?.let { searchFieldV2Repository.delete(it) }
-        }
+        searchFieldV2Repository.deleteAllByOwnerTypeAndOwnerIdAndKey(ownerType, ownerId, key)
 
-    fun updateList(ownerId: String, searchFieldV2Dtos: List<SearchFieldV2Dto>): List<SearchFieldV2> {
-        val searchFieldV2 = searchFieldV2Dtos.map { getSearchFieldMapper(it.ownerType).toNewSearchFieldV2(it) }
+    fun deleteAllByOwner(ownerType: String, ownerId: String) =
+        searchFieldV2Repository.deleteAllByOwnerTypeAndOwnerId(ownerType, ownerId)
 
-        return searchFieldV2Repository.saveAll(
-            searchFieldV2.mapIndexed{
-                index, field ->  field.copy(order = index)
-            }
-        )
-    }
-
-    private fun getSearchFieldMapper(ownerType: String): SearchFieldV2Mapper {
-        return searchFieldMappers.singleOrNull { it.supportsOwnerType(ownerType) }
-            ?: throw IllegalStateException("No ProcessLinkMapper found for processLinkType $ownerType")
+    fun updateList(searchFieldDtos: List<SearchFieldV2Dto>): List<SearchFieldV2> {
+        val searchFields = searchFieldDtos.mapIndexed { index, field -> field.toEntity().copy(order = index) }
+        return searchFieldV2Repository.saveAll(searchFields)
     }
 
 }

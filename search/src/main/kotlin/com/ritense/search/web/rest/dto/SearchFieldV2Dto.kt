@@ -16,25 +16,39 @@
 
 package com.ritense.search.web.rest.dto
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.ritense.search.domain.DataType
 import com.ritense.search.domain.FieldType
+import com.ritense.search.domain.LEGACY_OWNER_TYPE
 import com.ritense.search.domain.SearchFieldMatchType
+import com.ritense.search.domain.SearchFieldV2
 import java.util.UUID
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, defaultImpl = LegacySearchFieldV2Dto::class, include = JsonTypeInfo.As.PROPERTY, property = "ownerType")
-@JsonIgnoreProperties("ownerType", allowGetters = true)
-interface SearchFieldV2Dto {
-    val id: UUID
-    val ownerId: String
-    val ownerType: String
-    val key: String
-    val title: String?
-    val path: String
-    val order: Int
-    val dataType: DataType
-    val fieldType: FieldType
-    val matchType: SearchFieldMatchType?
-    val dropdownDataProvider: String?
+data class SearchFieldV2Dto(
+    val id: UUID = UUID.randomUUID(),
+    val ownerId: String,
+    val ownerType: String = LEGACY_OWNER_TYPE,
+    val key: String,
+    val title: String?,
+    val path: String,
+    val order: Int,
+    val dataType: DataType,
+    val fieldType: FieldType,
+    val matchType: SearchFieldMatchType?,
+    val dropdownDataProvider: String?,
+    val required: Boolean = false,
+) {
+    fun toEntity() = SearchFieldV2(
+        id = this.id,
+        ownerId = this.ownerId,
+        ownerType = this.ownerType,
+        key = this.key,
+        title = this.title,
+        path = this.path,
+        order = this.order,
+        dataType = this.dataType,
+        fieldType = this.fieldType,
+        matchType = this.matchType,
+        dropdownDataProvider = this.dropdownDataProvider,
+        required = this.required,
+    )
 }

@@ -46,13 +46,11 @@ import com.ritense.processdocument.service.ProcessDocumentDeletedEventListener
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.ProcessDocumentsService
 import com.ritense.processdocument.service.ValueResolverDelegateService
-import com.ritense.processdocument.tasksearch.TaskListSearchFieldV2Mapper
 import com.ritense.processdocument.tasksearch.TaskSearchFieldExporter
 import com.ritense.processdocument.tasksearch.TaskSearchFieldImporter
 import com.ritense.processdocument.web.CaseDefinitionProcessManagementResource
 import com.ritense.processdocument.web.ProcessCaseManagementResource
 import com.ritense.processdocument.web.TaskListResource
-import com.ritense.search.repository.SearchFieldV2Repository
 import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
@@ -264,14 +262,6 @@ class ProcessDocumentsAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(TaskListSearchFieldV2Mapper::class)
-    fun taskListSearchFieldV2Mapper(
-        objectMapper: ObjectMapper
-    ): TaskListSearchFieldV2Mapper {
-        return TaskListSearchFieldV2Mapper(objectMapper)
-    }
-
-    @Bean
     @ConditionalOnMissingBean(TaskSearchFieldExporter::class)
     fun taskSearchFieldExporter(
         objectMapper: ObjectMapper,
@@ -287,11 +277,11 @@ class ProcessDocumentsAutoConfiguration {
     @ConditionalOnMissingBean(TaskSearchFieldImporter::class)
     fun taskSearchFieldImporter(
         objectMapper: ObjectMapper,
-        repository: SearchFieldV2Repository,
         searchFieldService: SearchFieldV2Service,
     ): TaskSearchFieldImporter {
         return TaskSearchFieldImporter(
-            objectMapper, repository, searchFieldService
+            objectMapper,
+            searchFieldService,
         )
     }
 

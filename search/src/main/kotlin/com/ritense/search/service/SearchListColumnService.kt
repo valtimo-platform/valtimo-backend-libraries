@@ -19,11 +19,9 @@ package com.ritense.search.service
 import com.ritense.search.domain.SearchListColumn
 import com.ritense.search.repository.SearchListColumnRepository
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import org.springframework.web.server.ResponseStatusException
-import java.util.Optional
 import java.util.UUID
+import kotlin.jvm.optionals.getOrNull
 
 @Service
 @SkipComponentScan
@@ -31,47 +29,33 @@ class SearchListColumnService(
     private val searchListColumnRepository: SearchListColumnRepository
 ) {
 
-    fun create(searchListColumn: SearchListColumn): SearchListColumn = searchListColumnRepository.save(searchListColumn)
-
-    fun update(ownerId: String, key: String, searchListColumn: SearchListColumn): SearchListColumn {
-        return findByOwnerIdAndKey(ownerId, key)?.let {
-            if (searchListColumn.ownerId != ownerId) {
-                throw ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "This ownerId already exists. Please choose another ownerId"
-                )
-            } else if (searchListColumn.key != key) {
-                throw ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "This key already exists. Please choose another key"
-                )
-            }
-
-            searchListColumnRepository.save(
-                it.copy(
-                    ownerId = searchListColumn.ownerId,
-                    key = searchListColumn.key,
-                    title = searchListColumn.title,
-                    path = searchListColumn.path,
-                    order = searchListColumn.order,
-                    displayType = searchListColumn.displayType,
-                    sortable = searchListColumn.sortable
-                )
-            )
-        } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Search list column not found")
+    fun create(column: SearchListColumn): SearchListColumn {
+        require(findById(column.id) == null)
+        require(findByOwnerAndKey(column.ownerType, column.ownerId, column.key) == null)
+        return searchListColumnRepository.save(column)
     }
 
-    fun findByOwnerId(ownerId: String) = searchListColumnRepository.findAllByOwnerIdOrderByOrder(ownerId)
+    fun update(column: SearchListColumn): SearchListColumn {
+        val existingColumn = findById(column.id)
+            ?: findByOwnerAndKey(column.ownerType, column.ownerId, column.key)
+            ?: throw IllegalStateException("Search list column not found")
+        return searchListColumnRepository.save(column.copy(id = existingColumn.id))
+    }
 
-    fun findById(id: UUID): Optional<SearchListColumn> = searchListColumnRepository.findById(id)
+    fun findByOwner(ownerType: String, ownerId: String) =
+        searchListColumnRepository.findAllByOwnerTypeAndOwnerIdOrderByOrder(ownerType, ownerId)
 
-    private fun findByOwnerIdAndKey(ownerId: String, key: String) =
-        searchListColumnRepository.findByOwnerIdAndKeyOrderByOrder(ownerId, key)
+    fun findById(id: UUID): SearchListColumn? =
+        searchListColumnRepository.findById(id).getOrNull()
 
-    fun delete(ownerId: String, key: String) =
-        with(findByOwnerIdAndKey(ownerId, key)) {
-            this?.let { searchListColumnRepository.delete(it) }
-        }
+    fun findByOwnerAndKey(ownerType: String, ownerId: String, key: String): SearchListColumn? =
+        searchListColumnRepository.findByOwnerTypeAndOwnerIdAndKeyOrderByOrder(ownerType, ownerId, key)
+
+    fun deleteAllByOwner(ownerType: String, ownerId: String) =
+        searchListColumnRepository.deleteAllByOwnerTypeAndOwnerId(ownerType, ownerId)
+
+    fun delete(ownerType: String, ownerId: String, key: String) =
+        searchListColumnRepository.deleteAllByOwnerTypeAndOwnerIdAndKey(ownerType, ownerId, key)
 
     fun updateList(searchListColumn: List<SearchListColumn>) {
         searchListColumnRepository.saveAll(
@@ -80,4 +64,5 @@ class SearchListColumnService(
             }
         )
     }
+
 }

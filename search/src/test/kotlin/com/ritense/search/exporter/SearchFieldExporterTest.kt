@@ -77,7 +77,7 @@ class SearchFieldExporterTest {
             name = "my-document-definition-name",
             CaseDefinitionId.of("test", "1.0.0")
         )
-        whenever(searchFieldService.findAllByOwnerTypeAndOwnerId(testExporter.ownerTypeKey(), request.name)).thenReturn(
+        whenever(searchFieldService.findAllByOwner(testExporter.ownerTypeKey(), request.name)).thenReturn(
             listOf(
                 SearchFieldV2(
                     ownerId = request.name,

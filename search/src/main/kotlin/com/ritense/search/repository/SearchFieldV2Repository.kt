@@ -35,4 +35,6 @@ interface SearchFieldV2Repository : JpaRepository<SearchFieldV2, UUID> {
     fun deleteAllByOwnerType(ownerType: String)
 
     fun deleteAllByOwnerTypeAndOwnerId(ownerType: String, ownerId: String)
+
+    fun deleteAllByOwnerTypeAndOwnerIdAndKey(ownerType: String, ownerId: String, key: String)
 }

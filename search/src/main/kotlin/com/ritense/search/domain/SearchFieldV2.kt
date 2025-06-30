@@ -64,7 +64,10 @@ data class SearchFieldV2(
     val matchType: SearchFieldMatchType? = null,
 
     @Column(name = "dropdown_data_provider", length = 255, nullable = true, updatable = true)
-    val dropdownDataProvider: String? = null
+    val dropdownDataProvider: String? = null,
+
+    @Column(name = "required", nullable = false, updatable = true)
+    val required: Boolean = false,
 ) {
     @Deprecated("Replaced by the primary constructor")
     constructor(
@@ -87,6 +90,7 @@ data class SearchFieldV2(
         fieldType = fieldType,
         ownerType = LEGACY_OWNER_TYPE,
         matchType = null,
-        dropdownDataProvider = null
+        dropdownDataProvider = null,
+        required = false,
     )
 }

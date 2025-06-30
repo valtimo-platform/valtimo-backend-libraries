@@ -32,7 +32,7 @@ internal class SearchListColumnDefinitionDeploymentServiceIntTest: BaseIntegrati
 
     @Test
     fun getById() {
-        val searchListColumn = searchListColumnService.findByOwnerId("5f35c270-21f4-4e99-a8a1-6c4f9d5a6c5c")
+        val searchListColumn = searchListColumnService.findByOwner("5f35c270-21f4-4e99-a8a1-6c4f9d5a6c5c")
         assertThat(searchListColumn).isNotEmpty
         assertThat(searchListColumn?.first()?.title).isEqualTo("My search list column")
     }

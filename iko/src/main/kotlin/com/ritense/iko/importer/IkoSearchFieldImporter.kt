@@ -22,14 +22,12 @@ import com.ritense.importer.ImportRequest
 import com.ritense.importer.ValtimoImportTypes.Companion.IKO_DATA_REQUEST
 import com.ritense.importer.ValtimoImportTypes.Companion.IKO_SEARCH_FIELD
 import com.ritense.search.importer.SearchFieldImporter
-import com.ritense.search.repository.SearchFieldV2Repository
 import com.ritense.search.service.SearchFieldV2Service
 
 class IkoSearchFieldImporter(
     private val objectMapper: ObjectMapper,
-    repository: SearchFieldV2Repository,
     searchFieldService: SearchFieldV2Service,
-) : SearchFieldImporter(objectMapper, repository, searchFieldService, IKO_OWNER_TYPE_KEY) {
+) : SearchFieldImporter(searchFieldService, IKO_OWNER_TYPE_KEY) {
 
     override fun type(): String = IKO_SEARCH_FIELD
 

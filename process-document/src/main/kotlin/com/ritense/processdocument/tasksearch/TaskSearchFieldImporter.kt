@@ -23,14 +23,12 @@ import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
 import com.ritense.processdocument.service.TASK_SEARCH_FIELD_OWNER_TYPE
 import com.ritense.search.deployment.ReadFileSearchFieldDto
 import com.ritense.search.importer.SearchFieldImporter
-import com.ritense.search.repository.SearchFieldV2Repository
 import com.ritense.search.service.SearchFieldV2Service
 
 class TaskSearchFieldImporter(
     private val objectMapper: ObjectMapper,
-    repository: SearchFieldV2Repository,
     searchFieldService: SearchFieldV2Service,
-) : SearchFieldImporter(objectMapper, repository, searchFieldService, OWNER_TYPE_KEY) {
+) : SearchFieldImporter(searchFieldService, OWNER_TYPE_KEY) {
 
     override fun dependsOn(): Set<String> = setOf(DOCUMENT_DEFINITION)
 

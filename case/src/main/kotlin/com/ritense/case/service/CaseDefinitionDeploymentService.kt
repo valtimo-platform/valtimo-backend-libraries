@@ -82,20 +82,12 @@ class CaseDefinitionDeploymentService(
 
     private fun deployGlobal() {
         try {
-            val resources =
-                ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(GLOBAL_DEFINITION_PATH)
-                    .groupBy {
-                        it.url.path.substringAfter(GLOBAL_DEFINITION_FOLDER_STRUCTURE)
-                    }
-                    .map { (key, files) ->
-                        key to (files.map {
-                           "/global" + it.url.path.substringAfter(GLOBAL_DEFINITION_FOLDER_STRUCTURE) to it
-                        })
-                    }
-            resources.forEach { (_, files) ->
-                runWithoutAuthorization {
-                    valtimoImportService.importGlobalDefinitions(files)
-                }
+            val resources = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
+                .getResources(GLOBAL_DEFINITION_PATH)
+                .map { "/global" + it.url.path.substringAfter(GLOBAL_DEFINITION_FOLDER_STRUCTURE) to it }
+
+            runWithoutAuthorization {
+                valtimoImportService.importGlobalDefinitions(resources)
             }
 
         } catch (ex: FileNotFoundException) {

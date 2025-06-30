@@ -44,22 +44,22 @@ class SearchListColumnDefinitionDeploymentService(
     @EventListener(ApplicationReadyEvent::class)
     @Order(Ordered.LOWEST_PRECEDENCE)
     fun deployAllFromResourceFiles() {
-        logger.info("Deploying all search list column configurations from {}", PATH)
+        logger.info { "Deploying all search list column configurations from $PATH" }
         val resources = loadResources()
 
         val searchListColumnList = resources.map { resource ->
-            require(resource != null)
+            requireNotNull(resource)
             try {
                 val searchListColumn = objectMapper.readValue<SearchListColumn>(resource.inputStream)
 
                 if (
-                    searchListColumnService.findById(searchListColumn.id).isEmpty
+                    searchListColumnService.findById(searchListColumn.id) == null
                 ) {
                     searchListColumnService.create(searchListColumn)
                 } else {
-                    searchListColumnService.update(searchListColumn.ownerId, searchListColumn.key, searchListColumn)
+                    searchListColumnService.update(searchListColumn)
                 }.also {
-                    logger.info("Deployed search list column configuration {}", searchListColumn.id)
+                    logger.info { "Deployed search list column configuration ${searchListColumn.id}" }
                 }
             } catch (e: IOException) {
                 throw RuntimeException("Error while deploying search list column configurations", e)

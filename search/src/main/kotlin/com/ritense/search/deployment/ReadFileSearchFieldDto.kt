@@ -30,9 +30,10 @@ class ReadFileSearchFieldDto(
     val fieldType: FieldType,
     val matchType: SearchFieldMatchType?,
     val dropdownDataProvider: String?,
+    val required: Boolean = false,
 ) {
     fun toSearchFieldDto(ownerId: String, ownerType: String, order: Int): SearchFieldV2Dto {
-        return DeploySearchFieldDto(
+        return SearchFieldV2Dto(
             id = UUID.randomUUID(),
             ownerId = ownerId,
             ownerType = ownerType,
@@ -43,7 +44,8 @@ class ReadFileSearchFieldDto(
             dataType = dataType,
             fieldType = fieldType,
             matchType = matchType,
-            dropdownDataProvider = dropdownDataProvider
+            dropdownDataProvider = dropdownDataProvider,
+            required = required,
         )
     }
 }

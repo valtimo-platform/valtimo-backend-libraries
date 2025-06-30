@@ -49,5 +49,6 @@ class ValtimoImportTypes {
         const val IKO_DATA_AGGREGATE = "ikodataaggregate"
         const val IKO_DATA_REQUEST = "ikodatarequest"
         const val IKO_SEARCH_FIELD = "ikosearchField"
+        const val IKO_SEARCH_LIST_COLUMN = "ikosearchlistcolumn"
     }
 }

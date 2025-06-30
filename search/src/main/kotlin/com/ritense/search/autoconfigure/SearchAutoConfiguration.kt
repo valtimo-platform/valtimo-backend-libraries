@@ -22,8 +22,6 @@ import com.ritense.search.ObjectMapperConfigurer
 import com.ritense.search.autodeployment.SearchListColumnDefinitionDeploymentService
 import com.ritense.search.domain.DateFormatDisplayTypeParameter
 import com.ritense.search.domain.EnumDisplayTypeParameter
-import com.ritense.search.mapper.LegacySearchFieldV2Mapper
-import com.ritense.search.mapper.SearchFieldV2Mapper
 import com.ritense.search.repository.SearchFieldV2Repository
 import com.ritense.search.repository.SearchListColumnRepository
 import com.ritense.search.security.config.SearchHttpSecurityConfigurer
@@ -69,11 +67,9 @@ class SearchAutoConfiguration {
     @ConditionalOnMissingBean(SearchFieldV2Service::class)
     fun searchFieldV2Service(
         searchFieldV2Repository: SearchFieldV2Repository,
-        searchFieldMappers: List<SearchFieldV2Mapper>
     ): SearchFieldV2Service {
         return SearchFieldV2Service(
             searchFieldV2Repository,
-            searchFieldMappers
         )
     }
 
@@ -110,14 +106,6 @@ class SearchAutoConfiguration {
         displayTypeParameterTypes: Collection<NamedType>
     ): ObjectMapperConfigurer {
         return ObjectMapperConfigurer(objectMapper, displayTypeParameterTypes)
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(LegacySearchFieldV2Mapper::class)
-    fun legacySearchFieldV2Mapper(
-        objectMapper: ObjectMapper
-    ): LegacySearchFieldV2Mapper {
-        return LegacySearchFieldV2Mapper(objectMapper)
     }
 
     @Bean

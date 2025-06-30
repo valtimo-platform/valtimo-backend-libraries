@@ -31,6 +31,7 @@ class ExportFileSearchFieldDto(
     val fieldType: FieldType,
     val matchType: SearchFieldMatchType?,
     val dropdownDataProvider: String?,
+    val required: Boolean = false,
 ) {
     companion object {
         fun from(entity: SearchFieldV2): ExportFileSearchFieldDto = ExportFileSearchFieldDto(
@@ -41,6 +42,7 @@ class ExportFileSearchFieldDto(
             fieldType = entity.fieldType,
             matchType = entity.matchType,
             dropdownDataProvider = entity.dropdownDataProvider,
+            required = entity.required,
         )
     }
 }
