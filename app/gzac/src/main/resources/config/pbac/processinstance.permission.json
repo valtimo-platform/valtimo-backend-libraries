@@ -2,13 +2,13 @@
     "changesetId": "processinstance-admin-v1",
     "permissions": [
         {
-            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaExecution",
+            "resourceType": "com.ritense.valtimo.operaton.domain.OperatonExecution",
             "action": "create",
             "roleKey": "ROLE_USER",
             "conditions": [
                 {
                     "type": "container",
-                    "resourceType": "com.ritense.valtimo.camunda.domain.CamundaProcessDefinition",
+                    "resourceType": "com.ritense.valtimo.operaton.domain.OperatonProcessDefinition",
                     "conditions": [
                         {
                             "type": "field",
@@ -21,7 +21,7 @@
             ]
         },
         {
-            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaExecution",
+            "resourceType": "com.ritense.valtimo.operaton.domain.OperatonExecution",
             "action": "create",
             "roleKey": "ROLE_ADMIN"
         }

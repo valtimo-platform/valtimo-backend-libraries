@@ -16,11 +16,11 @@
 
 package com.ritense.processdocument.sse.domain.listener
 
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.sse.event.TaskUpdateSseEvent
 import com.ritense.valtimo.web.sse.service.SseSubscriptionService
-import org.camunda.bpm.spring.boot.starter.event.TaskEvent
+import org.operaton.bpm.spring.boot.starter.event.TaskEvent
 import org.springframework.transaction.event.TransactionalEventListener
 
 class TaskUpdateListener(
@@ -36,7 +36,7 @@ class TaskUpdateListener(
         fallbackExecution = true
     )
     fun handle(taskEvent: TaskEvent) {
-        val document = processDocumentService.getDocument(CamundaProcessInstanceId(taskEvent.processInstanceId), null)
+        val document = processDocumentService.getDocument(OperatonProcessInstanceId(taskEvent.processInstanceId), null)
         sseSubscriptionService.notifySubscribers(
             TaskUpdateSseEvent(
                 taskId = taskEvent.id,

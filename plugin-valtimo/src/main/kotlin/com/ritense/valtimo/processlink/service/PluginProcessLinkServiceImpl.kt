@@ -22,12 +22,12 @@ import com.ritense.logging.LoggableResource
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.processlink.repository.ValtimoPluginProcessLinkRepository
 import com.ritense.processlink.service.ProcessLinkService
-import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
+import com.ritense.valtimo.operaton.domain.OperatonProcessDefinition
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.processlink.mapper.PluginProcessLinkMapper
 import com.ritense.valtimo.processlink.web.rest.result.CompatiblePluginProcessLinks
 import com.ritense.valtimo.processlink.web.rest.result.CompatibleProcessVersion
-import com.ritense.valtimo.service.CamundaProcessService
+import com.ritense.valtimo.service.OperatonProcessService
 import org.springframework.stereotype.Service
 
 @Service
@@ -36,11 +36,11 @@ class PluginProcessLinkServiceImpl(
     private val processLinkService: ProcessLinkService,
     private val pluginProcessLinkMapper: PluginProcessLinkMapper,
     private val valtimoPluginProcessLinkRepository: ValtimoPluginProcessLinkRepository,
-    private val camundaProcessService: CamundaProcessService
+    private val operatonProcessService: OperatonProcessService
 ) : PluginProcessLinkService {
 
     override fun getProcessLinks(
-        @LoggableResource(resourceType = CamundaProcessDefinition::class) processDefinitionId: String
+        @LoggableResource(resourceType = OperatonProcessDefinition::class) processDefinitionId: String
     ): List<PluginProcessLink> {
         return processLinkService.getProcessLinks(processDefinitionId)
             .filter { pluginProcessLinkMapper.supportsProcessLinkType(it.processLinkType) }
@@ -52,7 +52,7 @@ class PluginProcessLinkServiceImpl(
             valtimoPluginProcessLinkRepository.findByPluginActionDefinitionKey(pluginActionDefinitionKey)
         val uniqueProcessDefinitionIds = compatibleProcessLinks.map { it.processDefinitionId }.distinct()
         val correspondingProcessDefinitions =
-            uniqueProcessDefinitionIds.map { runWithoutAuthorization { camundaProcessService.getProcessDefinitionById(it) } }
+            uniqueProcessDefinitionIds.map { runWithoutAuthorization { operatonProcessService.getProcessDefinitionById(it) } }
         val groupedByProcessDefinitionKey = correspondingProcessDefinitions.groupBy { it.key }
         val compatiblePluginProcessLinksList = groupedByProcessDefinitionKey.map { (key, processDefinitions) ->
             CompatiblePluginProcessLinks(

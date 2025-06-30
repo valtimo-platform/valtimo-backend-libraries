@@ -16,7 +16,7 @@
 
 package com.ritense.zakenapi.provider
 
-import org.camunda.bpm.engine.delegate.DelegateTask
+import org.operaton.bpm.engine.delegate.DelegateTask
 import kotlin.contracts.ExperimentalContracts
 
 @ExperimentalContracts

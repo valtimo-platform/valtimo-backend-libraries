@@ -36,7 +36,7 @@ valtimo:
     import:
         whitelistedPaths: "example.properties.*"
 
-camunda:
+operaton:
     bpm:
         history-level: audit
         generic-properties:

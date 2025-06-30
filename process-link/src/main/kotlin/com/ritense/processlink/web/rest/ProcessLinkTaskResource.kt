@@ -21,7 +21,7 @@ import com.ritense.processlink.exception.ProcessLinkNotFoundException
 import com.ritense.processlink.service.ProcessLinkActivityService
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResultWithTask
-import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.operaton.domain.OperatonTask
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
@@ -40,7 +40,7 @@ class ProcessLinkTaskResource(
 ) {
     @GetMapping(value = ["/v2/process-link/task/{taskId}"])
     fun getTask(
-        @LoggableResource(resourceType = CamundaTask::class) @PathVariable taskId: UUID
+        @LoggableResource(resourceType = OperatonTask::class) @PathVariable taskId: UUID
     ): ResponseEntity<ProcessLinkActivityResult<*>> {
         return try {
             ResponseEntity.ok(processLinkActivityService.openTask(taskId))

@@ -48,7 +48,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-autoconfigure"
 
-    api "org.camunda.bpm:camunda-engine:${camundaVersion}"
+    api "org.operaton.bpm:operaton-engine:${operatonVersion}"
     api "org.zalando:problem-spring-web:${problemSpringWebVersion}"
 
     implementation "com.flipkart.zjsonpatch:zjsonpatch:${zjsonpatchVersion}"
@@ -57,7 +57,6 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
-    testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:${camundaMockitoVersion}"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
 
     jar {

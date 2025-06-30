@@ -66,7 +66,7 @@ dependencies {
     testImplementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion
 
     // Spring
-    implementation("org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:${camundaVersion}") {
+    implementation("org.operaton.bpm.springboot:operaton-bpm-spring-boot-starter-rest:${operatonVersion}") {
         exclude group: "com.sun.xml.bind"
     }
     implementation "org.springframework:spring-jdbc"

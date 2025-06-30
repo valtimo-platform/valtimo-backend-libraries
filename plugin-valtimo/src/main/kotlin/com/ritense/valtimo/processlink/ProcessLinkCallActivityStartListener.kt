@@ -21,7 +21,7 @@ import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.service.PluginService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.operaton.bpm.engine.delegate.DelegateExecution
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 
@@ -34,8 +34,8 @@ class ProcessLinkCallActivityStartListener(
 
     @EventListener(
         condition = """#execution.bpmnModelElementInstance != null
-            && #execution.bpmnModelElementInstance.elementType.typeName == T(org.camunda.bpm.engine.ActivityTypes).CALL_ACTIVITY
-            && #execution.eventName == T(org.camunda.bpm.engine.delegate.ExecutionListener).EVENTNAME_START"""
+            && #execution.bpmnModelElementInstance.elementType.typeName == T(org.operaton.bpm.engine.ActivityTypes).CALL_ACTIVITY
+            && #execution.eventName == T(org.operaton.bpm.engine.delegate.ExecutionListener).EVENTNAME_START"""
     )
     fun notify(execution: DelegateExecution) {
         withLoggingContext("com.ritense.document.domain.impl.JsonSchemaDocument", execution.processBusinessKey) {

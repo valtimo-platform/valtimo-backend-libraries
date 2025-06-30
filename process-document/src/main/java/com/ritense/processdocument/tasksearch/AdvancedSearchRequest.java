@@ -19,7 +19,7 @@ package com.ritense.processdocument.tasksearch;
 import com.ritense.document.domain.search.DatabaseSearchType;
 import com.ritense.document.domain.search.SearchOperator;
 import com.ritense.document.domain.search.SearchRequestValue;
-import com.ritense.valtimo.service.CamundaTaskService.TaskFilter;
+import com.ritense.valtimo.service.OperatonTaskService.TaskFilter;
 
 import java.util.ArrayList;
 import java.util.HashSet;

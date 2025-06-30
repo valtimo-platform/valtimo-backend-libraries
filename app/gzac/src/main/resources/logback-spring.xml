@@ -29,7 +29,7 @@
     <logger name="org.springframework.security.web.access" level="WARN"/>
     <logger name="org.springframework.cache" level="WARN"/>
     <logger name="org.thymeleaf" level="WARN"/>
-    <logger name="org.camunda" level="INFO"/>
+    <logger name="org.operaton" level="INFO"/>
     <logger name="org.xnio" level="WARN"/>
     <logger name="springfox" level="WARN"/>
     <logger name="sun.rmi" level="WARN"/>
