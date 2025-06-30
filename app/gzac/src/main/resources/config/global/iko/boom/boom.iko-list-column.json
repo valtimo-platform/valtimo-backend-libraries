@@ -1,0 +1,15 @@
+{
+    "ikoDataAggregateKey": "boom",
+    "ikoListColumns": [
+        {
+            "key": "boombeeld",
+            "title": "Boombeeld",
+            "path": "iko:/boombeeld",
+            "displayType": {
+                "type": "text",
+                "displayTypeParameters": {}
+            },
+            "sortable": true
+        }
+    ]
+}

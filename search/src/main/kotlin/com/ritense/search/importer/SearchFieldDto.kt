@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2024 Ritense BV, the Netherlands.
+ * Copyright 2015-2025 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.search.deployment
+package com.ritense.search.importer
 
 import com.ritense.search.domain.DataType
 import com.ritense.search.domain.FieldType
@@ -22,7 +22,7 @@ import com.ritense.search.domain.SearchFieldMatchType
 import com.ritense.search.web.rest.dto.SearchFieldV2Dto
 import java.util.UUID
 
-class ReadFileSearchFieldDto(
+class SearchFieldDto(
     val key: String,
     val title: String?,
     val path: String,
@@ -32,7 +32,7 @@ class ReadFileSearchFieldDto(
     val dropdownDataProvider: String?,
     val required: Boolean = false,
 ) {
-    fun toSearchFieldDto(ownerId: String, ownerType: String, order: Int): SearchFieldV2Dto {
+    fun toSearchFieldDto(ownerType: String, ownerId: String, order: Int): SearchFieldV2Dto {
         return SearchFieldV2Dto(
             id = UUID.randomUUID(),
             ownerId = ownerId,

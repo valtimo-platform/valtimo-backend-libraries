@@ -28,13 +28,14 @@ import com.ritense.case.repository.TaskListColumnRepository
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.processdocument.BaseIntegrationTest
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
+import com.ritense.processdocument.service.TASK_SEARCH_FIELD_OWNER_TYPE
 import com.ritense.processdocument.tasksearch.SearchWithConfigRequest
-import com.ritense.processdocument.tasksearch.TaskListSearchFieldV2Dto
 import com.ritense.processdocument.web.request.TaskListSearchDto
 import com.ritense.search.domain.DataType
 import com.ritense.search.domain.FieldType
 import com.ritense.search.domain.SearchFieldMatchType
 import com.ritense.search.service.SearchFieldV2Service
+import com.ritense.search.web.rest.dto.SearchFieldV2Dto
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import com.ritense.valtimo.service.CamundaTaskService
 import org.assertj.core.api.Assertions.assertThat
@@ -260,8 +261,9 @@ class TaskListResourceIntTest : BaseIntegrationTest() {
         taskListColumnRepository.saveAllAndFlush(taskListColumns)
 
         searchFieldV2Service.create(
-            TaskListSearchFieldV2Dto(
+            SearchFieldV2Dto(
                 ownerId = DOCUMENT_DEFINITION_NAME,
+                ownerType = TASK_SEARCH_FIELD_OWNER_TYPE,
                 key = "firstName",
                 title = "First name",
                 path = "doc:first-name",

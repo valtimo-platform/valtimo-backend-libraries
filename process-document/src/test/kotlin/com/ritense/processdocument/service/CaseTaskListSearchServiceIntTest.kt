@@ -28,11 +28,11 @@ import com.ritense.processdocument.BaseIntegrationTest
 import com.ritense.processdocument.domain.CaseTask
 import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest
 import com.ritense.processdocument.tasksearch.SearchWithConfigRequest
-import com.ritense.processdocument.tasksearch.TaskListSearchFieldV2Dto
 import com.ritense.search.domain.DataType
 import com.ritense.search.domain.FieldType
 import com.ritense.search.domain.SearchFieldMatchType
 import com.ritense.search.service.SearchFieldV2Service
+import com.ritense.search.web.rest.dto.SearchFieldV2Dto
 import com.ritense.valtimo.contract.Constants
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import com.ritense.valtimo.service.CamundaTaskService
@@ -97,9 +97,10 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
         }
 
         searchFieldV2Service.create(
-            TaskListSearchFieldV2Dto(
+            SearchFieldV2Dto(
                 id = UUID.randomUUID(),
                 ownerId = definition!!.id!!.name(),
+                ownerType = TASK_SEARCH_FIELD_OWNER_TYPE,
                 key = "street",
                 title = "Street",
                 path = "doc:street",
@@ -112,9 +113,10 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
         )
 
         searchFieldV2Service.create(
-            TaskListSearchFieldV2Dto(
+            SearchFieldV2Dto(
                 id = UUID.randomUUID(),
                 ownerId = definition!!.id!!.name(),
+                ownerType = TASK_SEARCH_FIELD_OWNER_TYPE,
                 key = "number",
                 title = "House number",
                 path = "doc:houseNumber",
@@ -127,9 +129,10 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
         )
 
         searchFieldV2Service.create(
-            TaskListSearchFieldV2Dto(
+            SearchFieldV2Dto(
                 id = UUID.randomUUID(),
                 ownerId = definition!!.id!!.name(),
+                ownerType = TASK_SEARCH_FIELD_OWNER_TYPE,
                 key = "caseCreatedBy",
                 title = "Case created by",
                 path = "case:createdBy",
@@ -142,9 +145,10 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
         )
 
         searchFieldV2Service.create(
-            TaskListSearchFieldV2Dto(
+            SearchFieldV2Dto(
                 id = UUID.randomUUID(),
                 ownerId = definition!!.id!!.name(),
+                ownerType = TASK_SEARCH_FIELD_OWNER_TYPE,
                 key = "taskName",
                 title = "Task name",
                 path = "task:name",
@@ -319,9 +323,10 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
         }
 
         searchFieldV2Service.create(
-            TaskListSearchFieldV2Dto(
+            SearchFieldV2Dto(
                 id = UUID.randomUUID(),
                 ownerId = museumDefinition.id!!.name(),
+                ownerType = TASK_SEARCH_FIELD_OWNER_TYPE,
                 key = "hideInaccessibleTasks",
                 title = "Hide inaccessible tasks",
                 path = "task:hideInaccessibleTasks",

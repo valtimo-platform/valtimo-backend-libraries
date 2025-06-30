@@ -77,11 +77,11 @@ class SearchFieldExporterTest {
             name = "my-document-definition-name",
             CaseDefinitionId.of("test", "1.0.0")
         )
-        whenever(searchFieldService.findAllByOwner(testExporter.ownerTypeKey(), request.name)).thenReturn(
+        whenever(searchFieldService.findAllByOwner(testExporter.ownerType(), request.name)).thenReturn(
             listOf(
                 SearchFieldV2(
                     ownerId = request.name,
-                    ownerType = testExporter.ownerTypeKey(),
+                    ownerType = testExporter.ownerType(),
                     key = "firstname",
                     title = "Firstname",
                     path = "doc:firstname",
@@ -92,7 +92,7 @@ class SearchFieldExporterTest {
                 ),
                 SearchFieldV2(
                     ownerId = request.name,
-                    ownerType = testExporter.ownerTypeKey(),
+                    ownerType = testExporter.ownerType(),
                     key = "lastname",
                     title = "Lastname",
                     path = "doc:lastname",
@@ -107,7 +107,7 @@ class SearchFieldExporterTest {
         val result = testExporter.export(request)
 
         val path = testExporter.getPath(request)
-        val ownerTypeKey = testExporter.ownerTypeKey()
+        val ownerType = testExporter.ownerType()
         val caseTaskListExport = result.exportFiles.singleOrNull {
             it.path == path
         }
@@ -116,14 +116,38 @@ class SearchFieldExporterTest {
 
         //Check if the changesetId ends with a timestamp
         val changesetIdField = "changesetId"
-        val changesetRegex = """(${request.name}\.$ownerTypeKey)\.\d+""".toRegex()
+        val changesetRegex = """(${request.name}\.$ownerType)\.\d+""".toRegex()
         val matchResult = changesetRegex.matchEntire(exportJson.get(changesetIdField).textValue())
         assertNotNull(matchResult)
 
         //Remove the timestamp from the changesetId, so we can compare it as usual
         (exportJson as ObjectNode).set<TextNode>(changesetIdField, TextNode(matchResult.groupValues[1]))
         JSONAssert.assertEquals(
-            """{"changesetId":"my-document-definition-name.some-owner-type","collection":[{"ownerId":"my-document-definition-name","searchFields":[{"key":"firstname","title":"Firstname","path":"doc:firstname","dataType":"text","fieldType":"single","matchType":"like"},{"key":"lastname","title":"Lastname","path":"doc:lastname","dataType":"text","fieldType":"single","matchType":"like"}]}]}""",
+            """{
+                "changesetId":"my-document-definition-name.some-owner-type",
+                "collection":[{
+                  "ownerId":"my-document-definition-name",
+                  "searchFields":[{
+                    "key":"firstname",
+                    "title":"Firstname",
+                    "path":"doc:firstname",
+                    "dataType":"text",
+                    "fieldType":"single",
+                    "matchType":"like",
+                    "required":false
+                  },
+                  {
+                    "key":"lastname",
+                    "title":"Lastname",
+                    "path":"doc:lastname",
+                    "dataType":"text",
+                    "fieldType":"single",
+                    "matchType":"like",
+                    "required":false
+                  }
+                ]}
+              ]}""".trimMargin(),
+
             objectMapper.writeValueAsString(exportJson),
             JSONCompareMode.NON_EXTENSIBLE
         )
@@ -135,6 +159,6 @@ class SearchFieldExporterTest {
     ) : SearchFieldExporter(objectMapper, searchFieldService) {
         override fun getPath(request: DocumentDefinitionExportRequest): String = "some/$request/path"
 
-        override fun ownerTypeKey(): String = "some-owner-type"
+        override fun ownerType(): String = "some-owner-type"
     }
 }

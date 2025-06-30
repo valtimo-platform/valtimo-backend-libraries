@@ -17,6 +17,7 @@
 package com.ritense.search.autodeployment
 
 import com.ritense.search.BaseIntegrationTest
+import com.ritense.search.domain.LEGACY_OWNER_TYPE
 import com.ritense.search.service.SearchListColumnService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -32,7 +33,7 @@ internal class SearchListColumnDefinitionDeploymentServiceIntTest: BaseIntegrati
 
     @Test
     fun getById() {
-        val searchListColumn = searchListColumnService.findByOwner("5f35c270-21f4-4e99-a8a1-6c4f9d5a6c5c")
+        val searchListColumn = searchListColumnService.findByOwner(LEGACY_OWNER_TYPE, "5f35c270-21f4-4e99-a8a1-6c4f9d5a6c5c")
         assertThat(searchListColumn).isNotEmpty
         assertThat(searchListColumn?.first()?.title).isEqualTo("My search list column")
     }

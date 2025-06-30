@@ -17,7 +17,6 @@ package com.ritense.search.autodeployment
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.ritense.search.domain.SearchListColumn
 import com.ritense.search.domain.SearchListColumnConfigurationAutoDeploymentFinishedEvent
 import com.ritense.search.service.SearchListColumnService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
@@ -50,14 +49,14 @@ class SearchListColumnDefinitionDeploymentService(
         val searchListColumnList = resources.map { resource ->
             requireNotNull(resource)
             try {
-                val searchListColumn = objectMapper.readValue<SearchListColumn>(resource.inputStream)
+                val searchListColumn = objectMapper.readValue<SearchListColumnDto>(resource.inputStream)
 
                 if (
                     searchListColumnService.findById(searchListColumn.id) == null
                 ) {
-                    searchListColumnService.create(searchListColumn)
+                    searchListColumnService.create(searchListColumn.toEntity())
                 } else {
-                    searchListColumnService.update(searchListColumn)
+                    searchListColumnService.update(searchListColumn.toEntity())
                 }.also {
                     logger.info { "Deployed search list column configuration ${searchListColumn.id}" }
                 }

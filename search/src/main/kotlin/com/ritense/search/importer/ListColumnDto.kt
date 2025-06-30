@@ -21,7 +21,7 @@ import com.ritense.search.domain.DisplayType
 import com.ritense.search.domain.SearchListColumn
 import java.util.UUID
 
-data class SearchListColumnDto(
+data class ListColumnDto(
     val id: UUID?,
     val key: String,
     val title: String?,

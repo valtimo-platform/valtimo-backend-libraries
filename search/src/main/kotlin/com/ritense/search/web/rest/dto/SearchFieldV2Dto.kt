@@ -33,8 +33,8 @@ data class SearchFieldV2Dto(
     val order: Int,
     val dataType: DataType,
     val fieldType: FieldType,
-    val matchType: SearchFieldMatchType?,
-    val dropdownDataProvider: String?,
+    val matchType: SearchFieldMatchType? = null,
+    val dropdownDataProvider: String? = null,
     val required: Boolean = false,
 ) {
     fun toEntity() = SearchFieldV2(

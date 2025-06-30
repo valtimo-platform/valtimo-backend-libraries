@@ -16,10 +16,10 @@
 
 package com.ritense.iko.importer
 
-import com.ritense.search.deployment.ReadFileSearchFieldDto
+import com.ritense.search.importer.SearchFieldDto
 
 data class IkoSearchFieldsDto(
     val ikoDataAggregateKey: String,
     val ikoDataRequestKey: String,
-    val ikoSearchFields: List<ReadFileSearchFieldDto>,
+    val ikoSearchFields: List<SearchFieldDto>,
 )

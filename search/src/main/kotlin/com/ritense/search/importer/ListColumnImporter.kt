@@ -19,16 +19,16 @@ package com.ritense.search.importer
 import com.ritense.importer.Importer
 import com.ritense.search.service.SearchListColumnService
 
-abstract class SearchListColumnImporter(
+abstract class ListColumnImporter(
     private val service: SearchListColumnService,
     private val ownerType: String,
 ) : Importer {
 
-    protected fun deploy(ownerId: String, listColumns: List<SearchListColumnDto>) {
+    protected fun deploy(ownerId: String, listColumns: List<ListColumnDto>) {
         service.deleteAllByOwner(ownerType, ownerId)
 
         listColumns.mapIndexed { index, listColumn ->
-            val mappedField = listColumn.toEntity(ownerId, ownerType, index)
+            val mappedField = listColumn.toEntity(ownerType, ownerId, index)
             if ((listColumn.id != null && service.findById(listColumn.id) != null) ||
                 service.findByOwnerAndKey(ownerType, ownerId, mappedField.key) != null) {
                 service.update(mappedField)

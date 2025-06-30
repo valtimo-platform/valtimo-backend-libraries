@@ -18,7 +18,6 @@ package com.ritense.search.importer
 
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.SEARCH_FIELD
-import com.ritense.search.deployment.ReadFileSearchFieldDto
 import com.ritense.search.service.SearchFieldV2Service
 
 abstract class SearchFieldImporter(
@@ -29,11 +28,11 @@ abstract class SearchFieldImporter(
 
     override fun dependsOn(): Set<String> = emptySet()
 
-    protected fun deploy(ownerId: String, searchFields: List<ReadFileSearchFieldDto>) {
+    protected fun deploy(ownerId: String, searchFields: List<SearchFieldDto>) {
         searchFieldService.deleteAllByOwner(ownerType, ownerId)
 
         searchFields.mapIndexed { index, searchField ->
-            val mappedField = searchField.toSearchFieldDto(ownerId, ownerType, index)
+            val mappedField = searchField.toSearchFieldDto(ownerType, ownerId, index)
             if (searchFieldService.findByOwnerAndKey(ownerType, ownerId, mappedField.key) != null) {
                 searchFieldService.update(mappedField)
             } else {

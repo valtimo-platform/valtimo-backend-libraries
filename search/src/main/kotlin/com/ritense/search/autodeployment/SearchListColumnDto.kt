@@ -14,42 +14,36 @@
  * limitations under the License.
  */
 
-package com.ritense.search.domain
+package com.ritense.search.autodeployment
 
-import io.hypersistence.utils.hibernate.type.json.JsonType
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
-import jakarta.persistence.Id
-import jakarta.persistence.Table
-import org.hibernate.annotations.Type
+import com.ritense.search.domain.ColumnDefaultSort
+import com.ritense.search.domain.DisplayType
+import com.ritense.search.domain.LEGACY_OWNER_TYPE
+import com.ritense.search.domain.SearchListColumn
 import java.util.UUID
 
-@Entity
-@Table(name = "search_list_column")
-data class SearchListColumn(
-    @Id
-    @Column(name = "id")
+data class SearchListColumnDto(
     val id: UUID = UUID.randomUUID(),
-    @Column(name = "owner_id")
     val ownerId: String,
-    @Column(name = "owner_type")
-    val ownerType: String = LEGACY_OWNER_TYPE,
-    @Column(name = "column_key")
+    val ownerType: String?,
     val key: String,
-    @Column(name = "title")
     val title: String?,
-    @Column(name = "path")
     val path: String,
-    @Column(name = "column_order")
     val order: Int,
-    @Type(value = JsonType::class)
-    @Column(name = "display_type")
     val displayType: DisplayType,
-    @Column(name = "sortable")
     val sortable: Boolean,
-    @Column(name = "default_sort")
-    @Enumerated(EnumType.STRING)
     val defaultSort: ColumnDefaultSort? = null,
-)
+) {
+    fun toEntity() = SearchListColumn(
+        id = this.id,
+        ownerId = this.ownerId,
+        ownerType = this.ownerType ?: LEGACY_OWNER_TYPE,
+        key = this.key,
+        title = this.title,
+        path = this.path,
+        order = this.order,
+        displayType = this.displayType,
+        sortable = this.sortable,
+        defaultSort = this.defaultSort,
+    )
+}

@@ -1,0 +1,45 @@
+{
+    "ikoDataAggregateKey": "person",
+    "ikoListColumns": [
+        {
+            "key": "naam",
+            "title": "Naam",
+            "path": "iko:/persoon/naam/volledigeNaam",
+            "displayType": {
+                "type": "text",
+                "displayTypeParameters": {}
+            },
+            "sortable": true
+        },
+        {
+            "key": "bsn",
+            "title": "BSN",
+            "path": "iko:/persoon/burgerservicenummer",
+            "displayType": {
+                "type": "text",
+                "displayTypeParameters": {}
+            },
+            "sortable": true
+        },
+        {
+            "key": "postcode",
+            "title": "Postcode",
+            "path": "iko:/persoon/geboorte/datum/datum",
+            "displayType": {
+                "type": "text",
+                "displayTypeParameters": {}
+            },
+            "sortable": true
+        },
+        {
+            "key": "huisnummer",
+            "title": "Huisnummer",
+            "path": "iko:/persoon/verblijfplaats/verblijfadres/officieleStraatnaam",
+            "displayType": {
+                "type": "number",
+                "displayTypeParameters": {}
+            },
+            "sortable": true
+        }
+    ]
+}

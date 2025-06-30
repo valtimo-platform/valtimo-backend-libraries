@@ -25,6 +25,7 @@ import com.ritense.iko.client.IkoApiClient
 import com.ritense.iko.importer.IkoConnectorConfigImporter
 import com.ritense.iko.importer.IkoDataAggregateImporter
 import com.ritense.iko.importer.IkoDataRequestImporter
+import com.ritense.iko.importer.IkoListColumnImporter
 import com.ritense.iko.importer.IkoSearchFieldImporter
 import com.ritense.iko.repository.IkoConnectorConfigRepository
 import com.ritense.iko.repository.IkoDataAggregateRepository
@@ -39,6 +40,7 @@ import com.ritense.iko.web.rest.IkoDataAggregateResource
 import com.ritense.iko.web.rest.IkoDataRequestManagementResource
 import com.ritense.iko.web.rest.IkoDataRequestResource
 import com.ritense.search.service.SearchFieldV2Service
+import com.ritense.search.service.SearchListColumnService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.contract.iko.IkoConnector
@@ -247,6 +249,18 @@ class IkoAutoConfiguration {
         return IkoSearchFieldImporter(
             objectMapper,
             searchFieldService,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IkoListColumnImporter::class)
+    fun ikoListColumnImporter(
+        objectMapper: ObjectMapper,
+        listColumnService: SearchListColumnService,
+    ): IkoListColumnImporter {
+        return IkoListColumnImporter(
+            objectMapper,
+            listColumnService,
         )
     }
 

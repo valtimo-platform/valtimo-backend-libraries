@@ -54,8 +54,6 @@ internal class SearchFieldV2IntTest : BaseIntegrationTest() {
             required = updatedSearchField.required,
         )
         val dbUpdatedSearchField = searchFieldV2Service.update(
-            updatedSearchField.ownerId,
-            updatedSearchField.key,
             updatedSearchFieldDto
         )
 

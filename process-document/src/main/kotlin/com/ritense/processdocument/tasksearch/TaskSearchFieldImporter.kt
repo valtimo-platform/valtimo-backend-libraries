@@ -21,7 +21,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
 import com.ritense.processdocument.service.TASK_SEARCH_FIELD_OWNER_TYPE
-import com.ritense.search.deployment.ReadFileSearchFieldDto
+import com.ritense.search.importer.SearchFieldDto
 import com.ritense.search.importer.SearchFieldImporter
 import com.ritense.search.service.SearchFieldV2Service
 
@@ -35,7 +35,7 @@ class TaskSearchFieldImporter(
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
-        val searchFields = objectMapper.readValue<List<ReadFileSearchFieldDto>>(
+        val searchFields = objectMapper.readValue<List<SearchFieldDto>>(
             request.content.toString(Charsets.UTF_8)
         )
         deploy(request.caseDefinitionId!!.key, searchFields)

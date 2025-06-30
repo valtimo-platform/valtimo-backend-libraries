@@ -3,9 +3,36 @@
     "ikoDataRequestKey": "adres",
     "ikoSearchFields": [
         {
-            "key": "adres",
-            "title": "Adres",
-            "path": "iko:/persoon/verblijfplaats/verblijfadres/officieleStraatnaam",
+            "key": "postcode",
+            "title": "Postcode",
+            "path": "iko:/persoon/verblijfplaats/verblijfadres/postcode",
+            "dataType": "text",
+            "fieldType": "single",
+            "matchType": "exact",
+            "required": true
+        },
+        {
+            "key": "huisnummer",
+            "title": "Huisnummer",
+            "path": "iko:/persoon/verblijfplaats/verblijfadres/huisnummer",
+            "dataType": "text",
+            "fieldType": "single",
+            "matchType": "exact",
+            "required": true
+        },
+        {
+            "key": "huisletter",
+            "title": "Huisletter",
+            "path": "iko:/persoon/verblijfplaats/verblijfadres/huisletter",
+            "dataType": "text",
+            "fieldType": "single",
+            "matchType": "exact",
+            "required": true
+        },
+        {
+            "key": "toevoeging",
+            "title": "Toevoeging",
+            "path": "iko:/persoon/verblijfplaats/verblijfadres/toevoeging",
             "dataType": "text",
             "fieldType": "single",
             "matchType": "exact",
