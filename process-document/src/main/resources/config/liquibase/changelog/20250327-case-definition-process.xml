@@ -52,4 +52,46 @@
         <customChange class="com.ritense.processdocument.liquibase.changelog.ChangeLog20250514MigrateProcessDefinitions"/>
     </changeSet>
 
+    <changeSet id="5" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <sql>
+            update act_ru_event_subscr es
+            set configuration_ = pd2.id_
+            from act_re_procdef pd
+            join act_re_procdef pd2
+                on pd.key_ = pd2.key_
+            join (
+                select key_, max(version_) as version_
+                from act_re_procdef pd3
+                group by key_
+            ) as latest_version
+                on pd2.key_ = latest_version.key_
+                and pd2.version_ = latest_version.version_
+            where es.configuration_ = pd.id_
+        </sql>
+    </changeSet>
+
+    <changeSet id="6" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql>
+            update act_ru_event_subscr es
+            join act_re_procdef pd
+                on es.configuration_ = pd.id_
+            join act_re_procdef pd2
+                on pd.key_ = pd2.key_
+            join (
+                select key_, max(version_) as version_
+                from act_re_procdef pd3
+                group by key_
+            ) as latest_version
+                on pd2.key_ = latest_version.key_
+                and pd2.version_ = latest_version.version_
+            set es.configuration_ = pd2.id_
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>

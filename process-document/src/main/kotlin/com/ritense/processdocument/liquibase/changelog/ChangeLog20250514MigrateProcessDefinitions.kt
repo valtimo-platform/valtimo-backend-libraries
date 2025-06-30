@@ -508,15 +508,17 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
             left join act_re_decision_req_def ardrd
                 on ardrd.deployment_id_ = ardd.deployment_id_
                 and ardrd.resource_name_ = ardd.resource_name_
-            where ardd.deployment_id_ = (
-                select ard2.id_
+            join (
+                select ard2.id_, ardd2.resource_name_
                 from act_re_deployment ard2
                 join act_re_decision_def ardd2
                     on ardd2.deployment_id_ = ard2.id_
                 where ardd2.key_ = ?
                 order by version_ desc
                 limit 1
-            )
+            ) as original_definition
+                on original_definition.id_ = ardd.deployment_id_
+                and original_definition.resource_name_ = ardd.resource_name_
         """.trimIndent()
 
         val statement = connection.prepareStatement(query)
