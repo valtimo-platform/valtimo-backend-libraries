@@ -29,7 +29,7 @@ import com.ritense.document.domain.relation.DocumentRelationType;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.processdocument.domain.ProcessDefinitionId;
 import com.ritense.processdocument.domain.ProcessInstanceId;
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
+import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId;
 import com.ritense.processdocument.domain.impl.event.NextJsonSchemaDocumentRelationAvailableEvent;
 import com.ritense.processdocument.domain.impl.request.NewDocumentForRunningProcessRequest;
 import com.ritense.processdocument.domain.listener.StartEventListener;
@@ -38,8 +38,8 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
 import java.io.IOException;
 import java.util.UUID;
-import org.camunda.bpm.engine.delegate.DelegateExecution;
-import org.camunda.bpm.engine.variable.value.StringValue;
+import org.operaton.bpm.engine.delegate.DelegateExecution;
+import org.operaton.bpm.engine.variable.value.StringValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -72,15 +72,15 @@ public class StartEventListenerImpl implements StartEventListener {
     }
 
     @EventListener(condition = "#execution.bpmnModelElementInstance != null " +
-        "&& #execution.bpmnModelElementInstance.elementType.typeName == T(org.camunda.bpm.engine.ActivityTypes).START_EVENT " +
-        "&& #execution.eventName == T(org.camunda.bpm.engine.delegate.ExecutionListener).EVENTNAME_START")
+        "&& #execution.bpmnModelElementInstance.elementType.typeName == T(org.operaton.bpm.engine.ActivityTypes).START_EVENT " +
+        "&& #execution.eventName == T(org.operaton.bpm.engine.delegate.ExecutionListener).EVENTNAME_START")
     public void notify(DelegateExecution execution) {
         if (execution.hasVariable(SOURCE_PROCESS_INSTANCE_ID)) {
             logger.info("Start event listener with source relation");
-            final var sourceProcessInstanceId = new CamundaProcessInstanceId(getStringValue(execution, SOURCE_PROCESS_INSTANCE_ID));
+            final var sourceProcessInstanceId = new OperatonProcessInstanceId(getStringValue(execution, SOURCE_PROCESS_INSTANCE_ID));
             final var documentRelationType = (DocumentRelationType) execution.getVariable(RELATION_TYPE);
             final var processDefinitionId = new ProcessDefinitionId(execution.getProcessDefinitionId());
-            final var processInstanceId = ProcessInstanceId.fromExecution(execution, CamundaProcessInstanceId.class);
+            final var processInstanceId = ProcessInstanceId.fromExecution(execution, OperatonProcessInstanceId.class);
 
             AuthorizationContext.runWithoutAuthorization(() -> {
                 final var caseDefinitionId = processDefinitionCaseDefinitionService.findByProcessDefinitionId(processDefinitionId)

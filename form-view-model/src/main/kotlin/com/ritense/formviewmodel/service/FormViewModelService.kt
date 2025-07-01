@@ -28,10 +28,10 @@ import com.ritense.formviewmodel.viewmodel.ViewModelLoaderFactory
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkService
-import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Companion.VIEW
-import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.operaton.authorization.OperatonTaskActionProvider.Companion.VIEW
+import com.ritense.valtimo.operaton.domain.OperatonTask
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.service.OperatonTaskService
 import org.springframework.stereotype.Service
 import java.util.UUID
 import kotlin.reflect.KClass
@@ -41,7 +41,7 @@ import kotlin.reflect.KClass
 class FormViewModelService(
     private val objectMapper: ObjectMapper,
     private val viewModelLoaderFactory: ViewModelLoaderFactory,
-    private val camundaTaskService: CamundaTaskService,
+    private val operatonTaskService: OperatonTaskService,
     private val authorizationService: AuthorizationService,
     private val processAuthorizationService: ProcessAuthorizationService,
     private val processLinkService: ProcessLinkService,
@@ -90,9 +90,9 @@ class FormViewModelService(
     fun getUserTaskFormViewModel(
         taskInstanceId: String
     ): ViewModel? {
-        val task = camundaTaskService.findTaskById(taskInstanceId)
+        val task = operatonTaskService.findTaskById(taskInstanceId)
         authorizationService.requirePermission(
-            EntityAuthorizationRequest(CamundaTask::class.java, VIEW, task)
+            EntityAuthorizationRequest(OperatonTask::class.java, VIEW, task)
         )
 
         val processLink = runWithoutAuthorization {
@@ -167,9 +167,9 @@ class FormViewModelService(
         submission: ObjectNode,
         page: Int?
     ): ViewModel? {
-        val task = camundaTaskService.findTaskById(taskInstanceId)
+        val task = operatonTaskService.findTaskById(taskInstanceId)
         authorizationService.requirePermission(
-            EntityAuthorizationRequest(CamundaTask::class.java, VIEW, task)
+            EntityAuthorizationRequest(OperatonTask::class.java, VIEW, task)
         )
 
         val processLink = runWithoutAuthorization {
@@ -194,7 +194,7 @@ class FormViewModelService(
         processDefinitionKey
     ).firstOrNull { it.activityType === ActivityTypeWithEventName.START_EVENT_START }
 
-    private fun getUserTaskProcessLink(task: CamundaTask): ProcessLink? {
+    private fun getUserTaskProcessLink(task: OperatonTask): ProcessLink? {
         return task.processDefinition?.let { processDefinition ->
             processLinkService.getProcessLinksByProcessDefinitionKey(
                 processDefinition.key,

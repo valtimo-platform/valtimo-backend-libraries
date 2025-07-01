@@ -22,8 +22,6 @@ dependencies {
     implementation project(':resource')
 
     testImplementation "org.springframework.security:spring-security-test"
-
-    testImplementation "org.camunda.bpm:camunda-bpm-assert:${camundaBpmAssertVersion}"
 }
 
 apply from: "gradle/publishing.gradle"

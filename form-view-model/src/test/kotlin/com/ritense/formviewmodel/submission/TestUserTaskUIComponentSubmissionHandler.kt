@@ -4,7 +4,7 @@ import com.ritense.formviewmodel.error.FormException
 import com.ritense.formviewmodel.viewmodel.TestViewModel
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.uicomponent.domain.UIComponentProcessLink
-import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.operaton.domain.OperatonTask
 
 open class TestUserTaskUIComponentSubmissionHandler(
     val componentKey: String = "my-component",
@@ -14,7 +14,7 @@ open class TestUserTaskUIComponentSubmissionHandler(
         return (processLink as? UIComponentProcessLink)?.componentKey == componentKey
     }
 
-    override fun <T> handle(submission: T, task: CamundaTask, businessKey: String) {
+    override fun <T> handle(submission: T, task: OperatonTask, businessKey: String) {
         submission as TestViewModel
 
         if (submission.age!! < 18) {

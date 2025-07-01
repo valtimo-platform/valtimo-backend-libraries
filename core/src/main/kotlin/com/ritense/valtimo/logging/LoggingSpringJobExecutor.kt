@@ -16,8 +16,8 @@
 
 package com.ritense.valtimo.logging
 
-import org.camunda.bpm.engine.impl.ProcessEngineImpl
-import org.camunda.bpm.engine.spring.components.jobexecutor.SpringJobExecutor
+import org.operaton.bpm.engine.impl.ProcessEngineImpl
+import org.operaton.bpm.engine.spring.components.jobexecutor.SpringJobExecutor
 
 class LoggingSpringJobExecutor(): SpringJobExecutor() {
     override fun getExecuteJobsRunnable(jobIds: List<String>, processEngine: ProcessEngineImpl): Runnable {

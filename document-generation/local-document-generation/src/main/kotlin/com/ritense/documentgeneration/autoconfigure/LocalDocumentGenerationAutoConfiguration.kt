@@ -16,7 +16,7 @@
 
 package com.ritense.documentgeneration.autoconfigure
 
-import com.ritense.documentgeneration.service.LocalCamundaProcessDocumentGenerator
+import com.ritense.documentgeneration.service.LocalOperatonProcessDocumentGenerator
 import com.ritense.documentgeneration.service.LocalPdfDocumentGenerator
 import com.ritense.documentgeneration.service.PdfDocumentGenerator
 import com.ritense.valtimo.contract.annotation.ProcessBean
@@ -35,9 +35,9 @@ class LocalDocumentGenerationAutoConfiguration {
 
     @Bean
     @ProcessBean
-    @ConditionalOnMissingBean(LocalCamundaProcessDocumentGenerator::class)
-    fun processDocumentGenerator(): LocalCamundaProcessDocumentGenerator {
-        return LocalCamundaProcessDocumentGenerator()
+    @ConditionalOnMissingBean(LocalOperatonProcessDocumentGenerator::class)
+    fun processDocumentGenerator(): LocalOperatonProcessDocumentGenerator {
+        return LocalOperatonProcessDocumentGenerator()
     }
 
 }

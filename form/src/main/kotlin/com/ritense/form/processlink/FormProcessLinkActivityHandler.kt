@@ -24,8 +24,8 @@ import com.ritense.logging.LoggableResource
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
-import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
-import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.operaton.domain.OperatonProcessDefinition
+import com.ritense.valtimo.operaton.domain.OperatonTask
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.springframework.stereotype.Component
 import java.util.UUID
@@ -41,7 +41,7 @@ class FormProcessLinkActivityHandler(
     }
 
     override fun openTask(
-        task: CamundaTask,
+        task: OperatonTask,
         processLink: ProcessLink
     ): ProcessLinkActivityResult<FormTaskOpenResultProperties> {
         processLink as FormProcessLink
@@ -64,7 +64,7 @@ class FormProcessLinkActivityHandler(
     }
 
     override fun getStartEventObject(
-        @LoggableResource(resourceType = CamundaProcessDefinition::class) processDefinitionId: String,
+        @LoggableResource(resourceType = OperatonProcessDefinition::class) processDefinitionId: String,
         @LoggableResource(resourceType = JsonSchemaDocument::class) documentId: UUID?,
         @LoggableResource("documentDefinitionName") documentDefinitionName: String?,
         processLink: ProcessLink

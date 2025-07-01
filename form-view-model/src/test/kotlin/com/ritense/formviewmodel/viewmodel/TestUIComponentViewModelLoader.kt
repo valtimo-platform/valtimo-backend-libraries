@@ -2,13 +2,13 @@ package com.ritense.formviewmodel.viewmodel
 
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.uicomponent.domain.UIComponentProcessLink
-import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.operaton.domain.OperatonTask
 
 class TestUIComponentViewModelLoader(
     private val componentKey: String = "my-component",
     ) : ViewModelLoader<TestViewModel> {
 
-    override fun load(task: CamundaTask?): TestViewModel {
+    override fun load(task: OperatonTask?): TestViewModel {
         return TestViewModel()
     }
 

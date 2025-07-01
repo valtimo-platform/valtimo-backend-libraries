@@ -5,12 +5,12 @@ import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthor
 import com.ritense.form.BaseIntegrationTest
 import com.ritense.form.service.IntermediateSubmissionService
 import com.ritense.form.web.rest.dto.IntermediateSaveRequest
-import com.ritense.valtimo.camunda.domain.CamundaExecution
-import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.operaton.domain.OperatonExecution
+import com.ritense.valtimo.operaton.domain.OperatonTask
 import com.ritense.valtimo.contract.authentication.ManageableUser
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.valtimo.contract.json.MapperSingleton
-import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.service.OperatonTaskService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -39,7 +39,7 @@ class IntermediateSubmissionResourceIntTest : BaseIntegrationTest() {
     lateinit var intermediateSubmissionService: IntermediateSubmissionService
 
     @MockitoBean
-    lateinit var camundaTaskService: CamundaTaskService
+    lateinit var operatonTaskService: OperatonTaskService
 
     lateinit var mockMvc: MockMvc
 
@@ -51,12 +51,12 @@ class IntermediateSubmissionResourceIntTest : BaseIntegrationTest() {
             .setCustomArgumentResolvers(PageableHandlerMethodArgumentResolver())
             .alwaysDo<StandaloneMockMvcBuilder>(MockMvcResultHandlers.print())
             .build()
-        val task: CamundaTask = mock()
-        val execution: CamundaExecution = mock()
+        val task: OperatonTask = mock()
+        val execution: OperatonExecution = mock()
         whenever(task.processInstance).thenReturn(execution)
         whenever(execution.businessKey).thenReturn("a business Key")
         whenever(task.id).thenReturn("taskInstanceId")
-        whenever(camundaTaskService.findTaskById(any())).thenReturn(task)
+        whenever(operatonTaskService.findTaskById(any())).thenReturn(task)
 
         val manageableUser: ManageableUser = mock()
         whenever(manageableUser.username).thenReturn("username")

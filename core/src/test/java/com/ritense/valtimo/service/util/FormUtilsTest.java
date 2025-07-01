@@ -22,7 +22,7 @@ import static org.hamcrest.core.CombinableMatcher.both;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import org.camunda.bpm.engine.variable.VariableMap;
+import org.operaton.bpm.engine.variable.VariableMap;
 import org.hamcrest.collection.IsMapContaining;
 import org.junit.jupiter.api.Test;
 

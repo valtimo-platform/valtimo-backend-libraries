@@ -28,11 +28,11 @@ import com.ritense.document.domain.relation.DocumentRelationType;
 import com.ritense.document.service.DocumentService;
 import com.ritense.processdocument.domain.ProcessInstanceId;
 import com.ritense.processdocument.domain.delegate.ProcessDocumentStartEventMessageDelegate;
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
+import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.valtimo.contract.json.JsonPointerHelper;
-import org.camunda.bpm.engine.RuntimeService;
-import org.camunda.bpm.engine.delegate.DelegateExecution;
+import org.operaton.bpm.engine.RuntimeService;
+import org.operaton.bpm.engine.delegate.DelegateExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +65,7 @@ public class ProcessDocumentStartEventMessageDelegateImpl implements ProcessDocu
         assertArgumentNotNull(message, "message is required");
         assertArgumentNotNull(relationType, "relationType is required");
 
-        final var processInstanceId = ProcessInstanceId.fromExecution(execution, CamundaProcessInstanceId.class);
+        final var processInstanceId = ProcessInstanceId.fromExecution(execution, OperatonProcessInstanceId.class);
         processDocumentAssociationService.findProcessDocumentInstance(processInstanceId)
             .flatMap(processDocumentInstance ->
                 AuthorizationContext.runWithoutAuthorization(

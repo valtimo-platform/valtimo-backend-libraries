@@ -25,7 +25,7 @@ import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.processdocument.domain.ProcessDefinitionCaseDefinition;
 import com.ritense.processdocument.domain.ProcessDocumentInstance;
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
+import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId;
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest;
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndStartProcessRequest;
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest;
@@ -109,7 +109,7 @@ public class ProcessDocumentResource {
     ) {
         return runWithoutAuthorization(() ->
             ResponseEntity.ok(processDefinitionCaseDefinitionService.findProcessDefinitionCaseDefinition(
-                new CamundaProcessInstanceId(processInstanceId))));
+                new OperatonProcessInstanceId(processInstanceId))));
     }
 
     @GetMapping("/v1/process-document/instance/document/{documentId}")

@@ -36,10 +36,10 @@ import com.ritense.search.domain.FieldType
 import com.ritense.search.domain.SearchFieldMatchType
 import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
-import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.service.OperatonTaskService
 import org.assertj.core.api.Assertions.assertThat
-import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.engine.TaskService
+import org.operaton.bpm.engine.RuntimeService
+import org.operaton.bpm.engine.TaskService
 import org.hamcrest.Matchers.hasItems
 import org.hamcrest.Matchers.hasKey
 import org.hamcrest.Matchers.hasSize
@@ -145,7 +145,7 @@ class TaskListResourceIntTest : BaseIntegrationTest() {
 
         mockMvc.perform(
             post("/api/v3/task")
-                .param("filter", CamundaTaskService.TaskFilter.ALL.toString())
+                .param("filter", OperatonTaskService.TaskFilter.ALL.toString())
                 .content(objectMapper.writeValueAsString(TaskListSearchDto(DOCUMENT_DEFINITION_NAME)))
                 .characterEncoding(StandardCharsets.UTF_8)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -196,7 +196,7 @@ class TaskListResourceIntTest : BaseIntegrationTest() {
 
         mockMvc.perform(
             post("/api/v3/task")
-                .param("filter", CamundaTaskService.TaskFilter.ALL.toString())
+                .param("filter", OperatonTaskService.TaskFilter.ALL.toString())
                 .content(objectMapper.writeValueAsString(TaskListSearchDto(null)))
                 .characterEncoding(StandardCharsets.UTF_8)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -333,7 +333,7 @@ class TaskListResourceIntTest : BaseIntegrationTest() {
                 )
             ).withProcessVars(mapOf("context" to context, "approved" to approved))
             AuthorizationContext.runWithoutAuthorization {
-                camundaProcessJsonSchemaDocumentService.newDocumentAndStartProcess(
+                operatonProcessJsonSchemaDocumentService.newDocumentAndStartProcess(
                     startRequest
                 )
             }

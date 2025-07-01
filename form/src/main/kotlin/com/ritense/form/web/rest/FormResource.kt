@@ -25,7 +25,7 @@ import com.ritense.form.service.PrefillFormService
 import com.ritense.form.web.rest.dto.FormSubmissionResult
 import com.ritense.logging.LoggableResource
 import com.ritense.processlink.domain.ProcessLink
-import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.operaton.domain.OperatonTask
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.HttpStatus
@@ -54,7 +54,7 @@ class FormResource(
         @LoggableResource(resourceType = ProcessLink::class) @PathVariable processLinkId: UUID,
         @LoggableResource("documentDefinitionName") @RequestParam(required = false) documentDefinitionName: String?,
         @LoggableResource(resourceType = JsonSchemaDocument::class) @RequestParam(required = false) documentId: String?,
-        @LoggableResource(resourceType = CamundaTask::class) @RequestParam(required = false) taskInstanceId: String?,
+        @LoggableResource(resourceType = OperatonTask::class) @RequestParam(required = false) taskInstanceId: String?,
         @RequestBody submission: JsonNode
     ): ResponseEntity<FormSubmissionResult> =
         applyResult(

@@ -18,7 +18,7 @@ package com.ritense.processlink.importer
 
 import com.ritense.importer.ValtimoImportTypes.Companion.PROCESS_DEFINITION
 import com.ritense.processlink.service.ProcessLinkService
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.operaton.service.OperatonRepositoryService
 import com.ritense.valtimo.contract.json.MapperSingleton
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -31,7 +31,7 @@ import org.mockito.kotlin.whenever
 @ExtendWith(MockitoExtension::class)
 class ProcessLinkImporterTest(
     @Mock private val processLinkService: ProcessLinkService,
-    @Mock private val repositoryService: CamundaRepositoryService
+    @Mock private val repositoryService: OperatonRepositoryService
 ) {
     private lateinit var importer: ProcessLinkImporter
 

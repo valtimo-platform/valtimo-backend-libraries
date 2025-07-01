@@ -18,12 +18,12 @@ package com.ritense.processdocument.domain.impl.listener;
 
 import com.ritense.authorization.annotation.RunWithoutAuthorization;
 import com.ritense.document.domain.Document;
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
+import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId;
 import com.ritense.processdocument.domain.listener.StartEventFromCallActivityListener;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
-import org.camunda.bpm.engine.delegate.DelegateExecution;
-import org.camunda.bpm.model.bpmn.impl.instance.ProcessImpl;
+import org.operaton.bpm.engine.delegate.DelegateExecution;
+import org.operaton.bpm.model.bpmn.impl.instance.ProcessImpl;
 import org.springframework.context.event.EventListener;
 
 public class StartEventFromCallActivityListenerImpl implements StartEventFromCallActivityListener {
@@ -41,8 +41,8 @@ public class StartEventFromCallActivityListenerImpl implements StartEventFromCal
 
     @RunWithoutAuthorization
     @EventListener(condition = "#execution.bpmnModelElementInstance != null " +
-        "&& #execution.bpmnModelElementInstance.elementType.typeName == T(org.camunda.bpm.engine.ActivityTypes).START_EVENT " +
-        "&& #execution.eventName == T(org.camunda.bpm.engine.delegate.ExecutionListener).EVENTNAME_START")
+        "&& #execution.bpmnModelElementInstance.elementType.typeName == T(org.operaton.bpm.engine.ActivityTypes).START_EVENT " +
+        "&& #execution.eventName == T(org.operaton.bpm.engine.delegate.ExecutionListener).EVENTNAME_START")
     public void notify(DelegateExecution execution) {
         Document.Id documentId = getDocumentId(execution);
         if (documentId != null) {
@@ -56,13 +56,13 @@ public class StartEventFromCallActivityListenerImpl implements StartEventFromCal
 
     private Document.Id getDocumentId(DelegateExecution execution) {
         if (execution.getSuperExecution() != null) {
-            var processId = new CamundaProcessInstanceId(execution.getSuperExecution().getProcessInstanceId());
+            var processId = new OperatonProcessInstanceId(execution.getSuperExecution().getProcessInstanceId());
             var documentId = processDocumentService.getDocumentId(processId, execution);
             if (documentId != null) {
                 return documentId;
             }
         }
-        var processId = new CamundaProcessInstanceId(execution.getProcessInstanceId());
+        var processId = new OperatonProcessInstanceId(execution.getProcessInstanceId());
         return processDocumentService.getDocumentId(processId, execution);
     }
 

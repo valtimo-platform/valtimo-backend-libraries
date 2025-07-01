@@ -22,7 +22,7 @@ import com.ritense.form.web.rest.dto.IntermediateSubmission
 import com.ritense.form.web.rest.dto.toResponse
 import com.ritense.logging.LoggableResource
 import com.ritense.logging.withLoggingContext
-import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.operaton.domain.OperatonTask
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
@@ -43,7 +43,7 @@ class IntermediateSubmissionResource(
 
     @GetMapping
     fun getIntermediateSubmission(
-        @LoggableResource(resourceType = CamundaTask::class) @RequestParam taskInstanceId: String
+        @LoggableResource(resourceType = OperatonTask::class) @RequestParam taskInstanceId: String
     ): ResponseEntity<IntermediateSubmission> {
         val intermediateSubmission = intermediateSubmissionService.get(taskInstanceId)
         return intermediateSubmission?.let { ResponseEntity.ok(it.toResponse()) } ?: ResponseEntity.notFound().build()
@@ -53,7 +53,7 @@ class IntermediateSubmissionResource(
     fun storeIntermediateSubmission(
         @RequestBody request: IntermediateSaveRequest
     ): ResponseEntity<IntermediateSubmission> {
-        return withLoggingContext(CamundaTask::class, request.taskInstanceId) {
+        return withLoggingContext(OperatonTask::class, request.taskInstanceId) {
             val intermediateSubmission = intermediateSubmissionService.store(
                 submission = request.submission,
                 taskInstanceId = request.taskInstanceId
@@ -64,7 +64,7 @@ class IntermediateSubmissionResource(
 
     @DeleteMapping
     fun clearIntermediateSubmission(
-        @LoggableResource(resourceType = CamundaTask::class) @RequestParam taskInstanceId: String
+        @LoggableResource(resourceType = OperatonTask::class) @RequestParam taskInstanceId: String
     ): ResponseEntity<Void> {
         intermediateSubmissionService.clear(
             taskInstanceId = taskInstanceId

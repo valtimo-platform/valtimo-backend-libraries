@@ -21,7 +21,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ritense.document.domain.search.SearchOperator;
 import com.ritense.document.domain.search.SearchRequestValue;
-import com.ritense.valtimo.service.CamundaTaskService.TaskFilter;
+import com.ritense.valtimo.service.OperatonTaskService.TaskFilter;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;

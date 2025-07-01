@@ -18,7 +18,7 @@ package com.ritense.formviewmodel.viewmodel
 
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.processlink.domain.ProcessLink
-import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.operaton.domain.OperatonTask
 import org.springframework.transaction.annotation.Transactional
 import kotlin.reflect.KClass
 import kotlin.reflect.full.allSupertypes
@@ -26,10 +26,10 @@ import kotlin.reflect.full.allSupertypes
 @Transactional
 interface ViewModelLoader<T : ViewModel> {
 
-    fun load(task: CamundaTask? = null, document: JsonSchemaDocument? = null): T = load(task)
+    fun load(task: OperatonTask? = null, document: JsonSchemaDocument? = null): T = load(task)
 
     @Deprecated("Since 12.6", ReplaceWith("load(task, documentId)"))
-    fun load(task: CamundaTask? = null): T = load(task, null)
+    fun load(task: OperatonTask? = null): T = load(task, null)
 
     fun supports(processLink: ProcessLink): Boolean
 
