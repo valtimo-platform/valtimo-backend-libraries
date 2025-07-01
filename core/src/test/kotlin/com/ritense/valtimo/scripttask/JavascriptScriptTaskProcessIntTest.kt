@@ -18,8 +18,8 @@ package com.ritense.valtimo.scripttask
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.valtimo.BaseIntegrationTest
-import com.ritense.valtimo.service.CamundaProcessService
-import org.camunda.bpm.engine.HistoryService
+import com.ritense.valtimo.service.OperatonProcessService
+import org.operaton.bpm.engine.HistoryService
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
@@ -30,7 +30,7 @@ import kotlin.test.assertEquals
 class JavascriptScriptTaskProcessIntTest : BaseIntegrationTest() {
 
     @Autowired
-    lateinit var camundaProcessService: CamundaProcessService
+    lateinit var operatonProcessService: OperatonProcessService
 
     @Autowired
     lateinit var historyService: HistoryService
@@ -38,7 +38,7 @@ class JavascriptScriptTaskProcessIntTest : BaseIntegrationTest() {
     @Test
     fun `should execute javascript in script-task`() {
         val processInstance = runWithoutAuthorization {
-            camundaProcessService.startProcess(
+            operatonProcessService.startProcess(
                 "javascript-script-task-process",
                 UUID.randomUUID().toString(),
                 mapOf("a" to 1, "b" to 2)

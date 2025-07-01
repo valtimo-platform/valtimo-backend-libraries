@@ -36,11 +36,11 @@ import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
 import com.ritense.portaaltaak.exception.CompleteTaakProcessVariableNotFoundException
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
-import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.service.OperatonTaskService
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.zakenapi.ZakenApiPlugin
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
@@ -49,8 +49,8 @@ import com.ritense.zakenapi.domain.rol.RolTypeGeneriekeBeschrijving
 import com.ritense.zakenapi.link.ZaakInstanceLinkNotFoundException
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.camunda.bpm.engine.delegate.DelegateExecution
-import org.camunda.bpm.engine.delegate.DelegateTask
+import org.operaton.bpm.engine.delegate.DelegateExecution
+import org.operaton.bpm.engine.delegate.DelegateTask
 import java.net.URI
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -68,7 +68,7 @@ class PortaaltaakPlugin(
     private val valueResolverService: ValueResolverService,
     private val processDocumentService: ProcessDocumentService,
     private val zaakInstanceLinkService: ZaakInstanceLinkService,
-    private val taskService: CamundaTaskService
+    private val taskService: OperatonTaskService
 ) {
     private val objectMapper = pluginService.getObjectMapper()
 
@@ -110,7 +110,7 @@ class PortaaltaakPlugin(
                     .existingId(objectManagement.objectenApiPluginConfigurationId)
             ) as ObjectenApiPlugin
 
-            val processInstanceId = CamundaProcessInstanceId(delegateTask.processInstanceId)
+            val processInstanceId = OperatonProcessInstanceId(delegateTask.processInstanceId)
             val documentId = processDocumentService.getDocumentId(processInstanceId, delegateTask).id
 
             val zaakUrl = try {
@@ -219,7 +219,7 @@ class PortaaltaakPlugin(
     }
 
     internal fun getZaakinitiator(delegateTask: DelegateTask): TaakIdentificatie {
-        val processInstanceId = CamundaProcessInstanceId(delegateTask.processInstanceId)
+        val processInstanceId = OperatonProcessInstanceId(delegateTask.processInstanceId)
         val documentId = processDocumentService.getDocumentId(processInstanceId, delegateTask)
 
         val zaakUrl = zaakInstanceLinkService.getByDocumentId(documentId.id).zaakInstanceUrl

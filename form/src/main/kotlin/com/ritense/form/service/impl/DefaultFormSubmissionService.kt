@@ -59,19 +59,19 @@ import com.ritense.processlink.domain.ActivityTypeWithEventName.START_EVENT_STAR
 import com.ritense.processlink.domain.ActivityTypeWithEventName.USER_TASK_CREATE
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkService
-import com.ritense.valtimo.camunda.authorization.CamundaExecutionActionProvider
-import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Companion.COMPLETE
-import com.ritense.valtimo.camunda.domain.CamundaExecution
-import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
-import com.ritense.valtimo.camunda.domain.CamundaTask
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.operaton.authorization.OperatonExecutionActionProvider
+import com.ritense.valtimo.operaton.authorization.OperatonTaskActionProvider.Companion.COMPLETE
+import com.ritense.valtimo.operaton.domain.OperatonExecution
+import com.ritense.valtimo.operaton.domain.OperatonProcessDefinition
+import com.ritense.valtimo.operaton.domain.OperatonTask
+import com.ritense.valtimo.operaton.service.OperatonRepositoryService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
 import com.ritense.valtimo.contract.json.patch.JsonPatch
 import com.ritense.valtimo.contract.result.OperationError
 import com.ritense.valtimo.contract.result.OperationError.FromException
-import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.service.OperatonTaskService
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.valueresolver.ValueResolverServiceImpl
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -92,8 +92,8 @@ class DefaultFormSubmissionService(
     private val documentDefinitionService: JsonSchemaDocumentDefinitionService,
     private val processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
     private val processDocumentService: ProcessDocumentService,
-    private val camundaTaskService: CamundaTaskService,
-    private val repositoryService: CamundaRepositoryService,
+    private val operatonTaskService: OperatonTaskService,
+    private val repositoryService: OperatonRepositoryService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val prefillFormService: PrefillFormService,
     private val authorizationService: AuthorizationService,
@@ -108,7 +108,7 @@ class DefaultFormSubmissionService(
         formData: JsonNode,
         @LoggableResource("documentDefinitionName") documentDefinitionName: String?,
         @LoggableResource(resourceType = JsonSchemaDocument::class) documentId: String?,
-        @LoggableResource(resourceType = CamundaTask::class) taskInstanceId: String?,
+        @LoggableResource(resourceType = OperatonTask::class) taskInstanceId: String?,
     ): FormSubmissionResult {
         return try {
             // TODO: Implement else, done by verifying what the processLink contains
@@ -171,10 +171,10 @@ class DefaultFormSubmissionService(
 
     private fun requirePermission(taskInstanceId: String?, document: JsonSchemaDocument?, processDefinitionId: String) {
         if (taskInstanceId != null) {
-            val task = camundaTaskService.findTaskById(taskInstanceId)
+            val task = operatonTaskService.findTaskById(taskInstanceId)
             authorizationService.requirePermission(
                 EntityAuthorizationRequest(
-                    CamundaTask::class.java,
+                    OperatonTask::class.java,
                     COMPLETE,
                     task
                 )
@@ -182,9 +182,9 @@ class DefaultFormSubmissionService(
         } else {
             authorizationService.requirePermission(
                 RelatedEntityAuthorizationRequest(
-                    CamundaExecution::class.java,
-                    CamundaExecutionActionProvider.CREATE,
-                    CamundaProcessDefinition::class.java,
+                    OperatonExecution::class.java,
+                    OperatonExecutionActionProvider.CREATE,
+                    OperatonProcessDefinition::class.java,
                     processDefinitionId
                 ).apply {
                     if (document != null) {
@@ -302,14 +302,14 @@ class DefaultFormSubmissionService(
 
     private fun getProcessDefinition(
         processLink: ProcessLink
-    ): CamundaProcessDefinition {
+    ): OperatonProcessDefinition {
         return runWithoutAuthorization {
             repositoryService.findProcessDefinitionById(processLink.processDefinitionId)!!
         }
     }
 
     private fun getProcessDocumentDefinition(
-        processDefinition: CamundaProcessDefinition,
+        processDefinition: OperatonProcessDefinition,
         document: Document?
     ): ProcessDefinitionCaseDefinition {
         val processDefinitionId =
@@ -336,7 +336,7 @@ class DefaultFormSubmissionService(
 
     private fun getProcessVariables(taskInstanceId: String?): JsonNode? {
         return if (!taskInstanceId.isNullOrEmpty()) {
-            objectMapper.valueToTree(camundaTaskService.getVariables(taskInstanceId))
+            objectMapper.valueToTree(operatonTaskService.getVariables(taskInstanceId))
         } else {
             null
         }

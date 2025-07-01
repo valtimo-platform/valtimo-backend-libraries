@@ -24,7 +24,7 @@ import com.ritense.document.repository.impl.JsonSchemaDocumentRepository
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
-import com.ritense.processdocument.camunda.authorization.CamundaTaskDocumentMapper
+import com.ritense.processdocument.operaton.authorization.OperatonTaskDocumentMapper
 import com.ritense.processdocument.domain.impl.delegate.DocumentDelegate
 import com.ritense.processdocument.exporter.ProcessDocumentLinkExporter
 import com.ritense.processdocument.importer.ProcessDocumentLinkImporter
@@ -55,21 +55,21 @@ import com.ritense.processdocument.web.ProcessCaseManagementResource
 import com.ritense.processdocument.web.TaskListResource
 import com.ritense.search.repository.SearchFieldV2Repository
 import com.ritense.search.service.SearchFieldV2Service
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
-import com.ritense.valtimo.camunda.service.CamundaRuntimeService
+import com.ritense.valtimo.operaton.service.OperatonRepositoryService
+import com.ritense.valtimo.operaton.service.OperatonRuntimeService
 import com.ritense.valtimo.contract.annotation.ProcessBean
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.database.QueryDialectHelper
-import com.ritense.valtimo.decision.CamundaDecisionService
-import com.ritense.valtimo.service.CamundaProcessService
-import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.decision.OperatonDecisionService
+import com.ritense.valtimo.service.OperatonProcessService
+import com.ritense.valtimo.service.OperatonTaskService
 import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.persistence.EntityManager
-import org.camunda.bpm.engine.RepositoryService
-import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.engine.TaskService
+import org.operaton.bpm.engine.RepositoryService
+import org.operaton.bpm.engine.RuntimeService
+import org.operaton.bpm.engine.TaskService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -128,18 +128,18 @@ class ProcessDocumentsAutoConfiguration {
     @ConditionalOnMissingBean(CorrelationService::class)
     fun correlationService(
         runtimeService: RuntimeService,
-        camundaRuntimeService: CamundaRuntimeService,
+        operatonRuntimeService: OperatonRuntimeService,
         documentService: DocumentService,
         processDocumentAssociationService: ProcessDocumentAssociationService,
-        camundaProcessService: CamundaProcessService,
+        operatonProcessService: OperatonProcessService,
         repositoryService: RepositoryService,
-        camundaRepositoryService: CamundaRepositoryService,
+        operatonRepositoryService: OperatonRepositoryService,
     ): CorrelationService {
         return CorrelationServiceImpl(
             runtimeService = runtimeService,
-            camundaRuntimeService = camundaRuntimeService,
+            operatonRuntimeService = operatonRuntimeService,
             documentService = documentService,
-            camundaRepositoryService = camundaRepositoryService,
+            operatonRepositoryService = operatonRepositoryService,
             repositoryService = repositoryService,
             associationService = processDocumentAssociationService
         )
@@ -150,24 +150,24 @@ class ProcessDocumentsAutoConfiguration {
     @ConditionalOnMissingBean(ProcessDocumentsService::class)
     fun processDocumentsService(
         documentService: DocumentService,
-        camundaProcessService: CamundaProcessService,
+        operatonProcessService: OperatonProcessService,
         associationService: ProcessDocumentAssociationService,
         processDocumentService: ProcessDocumentService,
         repositoryService: RepositoryService,
-        camundaRuntimeService: CamundaRuntimeService
+        operatonRuntimeService: OperatonRuntimeService
     ): ProcessDocumentsService {
         return ProcessDocumentsService(
             documentService,
-            camundaProcessService,
+            operatonProcessService,
             associationService,
             processDocumentService,
             repositoryService,
-            camundaRuntimeService
+            operatonRuntimeService
         )
     }
 
     @Bean
-    fun caseAssigneeCamundaTaskListener(
+    fun caseAssigneeOperatonTaskListener(
         taskService: TaskService,
         documentService: DocumentService,
         caseDefinitionService: CaseDefinitionService,
@@ -180,36 +180,36 @@ class ProcessDocumentsAutoConfiguration {
 
     @Bean
     fun caseAssigneeListener(
-        camundaTaskService: CamundaTaskService,
+        operatonTaskService: OperatonTaskService,
         documentService: DocumentService,
         caseDefinitionService: CaseDefinitionService,
         userManagementService: UserManagementService
     ): CaseAssigneeListener {
         return CaseAssigneeListener(
-            camundaTaskService, documentService, caseDefinitionService, userManagementService
+            operatonTaskService, documentService, caseDefinitionService, userManagementService
         )
     }
 
     @Bean
-    @ConditionalOnMissingBean(CamundaTaskDocumentMapper::class)
-    fun camundaTaskDocumentMapper(
+    @ConditionalOnMissingBean(OperatonTaskDocumentMapper::class)
+    fun operatonTaskDocumentMapper(
         processDocumentInstanceRepository: ProcessDocumentInstanceRepository,
         documentRepository: JsonSchemaDocumentRepository,
         queryDialectHelper: QueryDialectHelper
-    ): CamundaTaskDocumentMapper {
-        return CamundaTaskDocumentMapper(processDocumentInstanceRepository, documentRepository, queryDialectHelper)
+    ): OperatonTaskDocumentMapper {
+        return OperatonTaskDocumentMapper(processDocumentInstanceRepository, documentRepository, queryDialectHelper)
     }
 
     @Bean
     @ConditionalOnMissingBean(ProcessDocumentLinkExporter::class)
     fun processDocumentLinkExporter(
         objectMapper: ObjectMapper,
-        camundaRepositoryService: CamundaRepositoryService,
+        operatonRepositoryService: OperatonRepositoryService,
         processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService
     ): ProcessDocumentLinkExporter {
         return ProcessDocumentLinkExporter(
             objectMapper,
-            camundaRepositoryService,
+            operatonRepositoryService,
             processDefinitionCaseDefinitionService
         )
     }
@@ -220,7 +220,7 @@ class ProcessDocumentsAutoConfiguration {
         processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
         documentDefinitionService: DocumentDefinitionService,
         objectMapper: ObjectMapper,
-        processService: CamundaProcessService
+        processService: OperatonProcessService
     ): ProcessDocumentLinkImporter {
         return ProcessDocumentLinkImporter(
             processDefinitionCaseDefinitionService,
@@ -256,11 +256,11 @@ class ProcessDocumentsAutoConfiguration {
     @ConditionalOnMissingBean(TaskListResource::class)
     fun processDocumentTaskListResource(
         caseTaskListSearchService: CaseTaskListSearchService,
-        camundaTaskService: CamundaTaskService
+        operatonTaskService: OperatonTaskService
     ): TaskListResource {
         return TaskListResource(
             caseTaskListSearchService,
-            camundaTaskService
+            operatonTaskService
         )
     }
 
@@ -358,7 +358,7 @@ class ProcessDocumentsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ProcessDefinitionCaseEventListener::class)
     fun processDefinitionCaseEventListener(
-        processService: CamundaProcessService,
+        processService: OperatonProcessService,
         associationService: ProcessDefinitionCaseDefinitionService,
     ): ProcessDefinitionCaseEventListener {
         return ProcessDefinitionCaseEventListener(processService, associationService)
@@ -367,8 +367,8 @@ class ProcessDocumentsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DecisionCaseEventListener::class)
     fun decisionCaseEventListener(
-        decisionService: CamundaDecisionService,
-        processService: CamundaProcessService,
+        decisionService: OperatonDecisionService,
+        processService: OperatonProcessService,
     ): DecisionCaseEventListener {
         return DecisionCaseEventListener(decisionService, processService)
     }

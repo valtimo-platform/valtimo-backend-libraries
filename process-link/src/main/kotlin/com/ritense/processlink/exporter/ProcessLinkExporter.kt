@@ -24,13 +24,13 @@ import com.ritense.exporter.Exporter
 import com.ritense.exporter.request.ExportRequest
 import com.ritense.exporter.request.ProcessDefinitionExportRequest
 import com.ritense.processlink.service.ProcessLinkService
-import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.operaton.repository.OperatonProcessDefinitionSpecificationHelper
+import com.ritense.valtimo.operaton.service.OperatonRepositoryService
 
 class ProcessLinkExporter(
     private val objectMapper: ObjectMapper,
     private val processLinkService: ProcessLinkService,
-    private val repositoryService: CamundaRepositoryService
+    private val repositoryService: OperatonRepositoryService
 ) : Exporter<ProcessDefinitionExportRequest> {
 
     override fun supports(): Class<ProcessDefinitionExportRequest> = ProcessDefinitionExportRequest::class.java
@@ -69,7 +69,7 @@ class ProcessLinkExporter(
     private fun getProcessDefinitionKey(processDefinitionId: String): String {
         return requireNotNull(
             repositoryService.findProcessDefinition(
-                CamundaProcessDefinitionSpecificationHelper.byId(processDefinitionId)
+                OperatonProcessDefinitionSpecificationHelper.byId(processDefinitionId)
             )
         ).key
     }

@@ -28,13 +28,12 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valueresolver.ValueResolverOptionType
 import org.assertj.core.api.Assertions.assertThat
-import org.camunda.community.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -45,6 +44,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.operaton.bpm.engine.delegate.DelegateTask
 import java.net.URI
 import java.util.Collections
 import java.util.Optional
@@ -59,7 +59,7 @@ internal class DocumentJsonValueResolverTest {
     private lateinit var documentValueResolver: DocumentJsonValueResolverFactory
 
     private lateinit var processInstanceId: String
-    private lateinit var variableScope: DelegateTaskFake
+    private lateinit var variableScope: DelegateTask
     private lateinit var documentInstanceId: String
     private lateinit var document: Document
 
@@ -76,10 +76,10 @@ internal class DocumentJsonValueResolverTest {
         )
 
         processInstanceId = UUID.randomUUID().toString()
-        variableScope = DelegateTaskFake()
+        variableScope = mock<DelegateTask>()
         documentInstanceId = UUID.randomUUID().toString()
         document = mock()
-        whenever(processDocumentService.getDocument(CamundaProcessInstanceId(processInstanceId), variableScope)).thenReturn(document)
+        whenever(processDocumentService.getDocument(OperatonProcessInstanceId(processInstanceId), variableScope)).thenReturn(document)
         whenever(documentService.get(documentInstanceId)).thenReturn(document)
     }
 

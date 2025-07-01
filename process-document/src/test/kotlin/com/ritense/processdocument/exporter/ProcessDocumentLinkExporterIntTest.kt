@@ -20,7 +20,7 @@ import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthor
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import com.ritense.exporter.request.ProcessDefinitionExportRequest
 import com.ritense.processdocument.BaseIntegrationTest
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.operaton.service.OperatonRepositoryService
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -35,7 +35,7 @@ import org.springframework.util.StreamUtils
 @Transactional(readOnly = true)
 class ProcessDocumentLinkExporterIntTest @Autowired constructor(
     private val resourceLoader: ResourceLoader,
-    private val camundaRepositoryService: CamundaRepositoryService,
+    private val operatonRepositoryService: OperatonRepositoryService,
     private val processDocumentLinkExporter: ProcessDocumentLinkExporter
 ) : BaseIntegrationTest() {
 
@@ -62,7 +62,7 @@ class ProcessDocumentLinkExporterIntTest @Autowired constructor(
             JSONCompareMode.NON_EXTENSIBLE
         )
 
-        val processDefinitionId = camundaRepositoryService.findLatestProcessDefinition("loan-process-demo")!!.id
+        val processDefinitionId = operatonRepositoryService.findLatestProcessDefinition("loan-process-demo")!!.id
         assertThat(result.relatedRequests).contains(
             ProcessDefinitionExportRequest(processDefinitionId, caseDefinitionId)
         )

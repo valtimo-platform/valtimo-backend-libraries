@@ -23,7 +23,7 @@ import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionServic
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.event.CaseDefinitionCreatedEvent
 import com.ritense.valtimo.contract.event.CaseDefinitionPreDeleteEvent
-import com.ritense.valtimo.service.CamundaProcessService
+import com.ritense.valtimo.service.OperatonProcessService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional
 @Component
 @SkipComponentScan
 class ProcessDefinitionCaseEventListener(
-    private val processService: CamundaProcessService,
+    private val processService: OperatonProcessService,
     private val associationService: ProcessDefinitionCaseDefinitionService,
 ) {
 

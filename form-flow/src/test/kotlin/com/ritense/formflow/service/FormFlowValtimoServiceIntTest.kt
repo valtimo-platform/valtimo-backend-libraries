@@ -21,7 +21,6 @@ import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthor
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
-import com.ritense.formflow.service.FormFlowService
 import com.ritense.processdocument.domain.ProcessInstanceId
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
@@ -29,13 +28,13 @@ import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResu
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.service.ProcessLinkActivityService
 import com.ritense.processlink.service.ProcessLinkService
-import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper
+import com.ritense.valtimo.operaton.repository.OperatonTaskSpecificationHelper
 import com.ritense.formflow.BaseIntegrationTest
 import com.ritense.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.formflow.web.rest.dto.FormFlowProcessLinkCreateRequestDto
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
-import com.ritense.valtimo.service.CamundaTaskService
-import org.camunda.bpm.engine.RepositoryService
+import com.ritense.valtimo.service.OperatonTaskService
+import org.operaton.bpm.engine.RepositoryService
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
@@ -52,7 +51,7 @@ internal class FormFlowValtimoServiceIntTest: BaseIntegrationTest() {
     lateinit var processLinkService: ProcessLinkService
 
     @Autowired
-    lateinit var taskService: CamundaTaskService
+    lateinit var taskService: OperatonTaskService
 
     @Autowired
     lateinit var formFlowService: FormFlowService
@@ -127,7 +126,7 @@ internal class FormFlowValtimoServiceIntTest: BaseIntegrationTest() {
 
     private fun openTasks(processInstanceId: ProcessInstanceId): List<FormFlowInstance> {
         return runWithoutAuthorization {
-            taskService.findTasks(CamundaTaskSpecificationHelper.byProcessInstanceId(processInstanceId.toString()))
+            taskService.findTasks(OperatonTaskSpecificationHelper.byProcessInstanceId(processInstanceId.toString()))
                 .asSequence()
                 .map { processLinkActivityService.openTask(UUID.fromString(it.id)) }
                 .filter { it.properties is FormFlowTaskOpenResultProperties }

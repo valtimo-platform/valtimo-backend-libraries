@@ -5,17 +5,17 @@ import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.AuthorizationResourceContext
 import com.ritense.authorization.request.RelatedEntityAuthorizationRequest
 import com.ritense.document.domain.impl.JsonSchemaDocument
-import com.ritense.valtimo.camunda.authorization.CamundaExecutionActionProvider
-import com.ritense.valtimo.camunda.domain.CamundaExecution
-import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.operaton.authorization.OperatonExecutionActionProvider
+import com.ritense.valtimo.operaton.domain.OperatonExecution
+import com.ritense.valtimo.operaton.domain.OperatonProcessDefinition
+import com.ritense.valtimo.operaton.service.OperatonRepositoryService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.springframework.stereotype.Service
 
 @Service
 @SkipComponentScan
 class ProcessAuthorizationService(
-    private val camundaRepositoryService: CamundaRepositoryService,
+    private val operatonRepositoryService: OperatonRepositoryService,
     private val authorizationService: AuthorizationService
 ) {
 
@@ -24,7 +24,7 @@ class ProcessAuthorizationService(
         document: JsonSchemaDocument? = null,
     ) {
         val processDefinition = runWithoutAuthorization {
-            camundaRepositoryService.findLatestProcessDefinition(
+            operatonRepositoryService.findLatestProcessDefinition(
                 processDefinitionKey
             )
         }
@@ -32,9 +32,9 @@ class ProcessAuthorizationService(
 
         authorizationService.requirePermission(
             RelatedEntityAuthorizationRequest(
-                CamundaExecution::class.java,
-                CamundaExecutionActionProvider.CREATE,
-                CamundaProcessDefinition::class.java,
+                OperatonExecution::class.java,
+                OperatonExecutionActionProvider.CREATE,
+                OperatonProcessDefinition::class.java,
                 processDefinition.id
             ).apply {
                 if (document != null) {

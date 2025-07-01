@@ -17,8 +17,8 @@
 package com.ritense.valtimo
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import org.camunda.bpm.engine.impl.interceptor.Command
-import org.camunda.bpm.engine.impl.interceptor.CommandInterceptor
+import org.operaton.bpm.engine.impl.interceptor.Command
+import org.operaton.bpm.engine.impl.interceptor.CommandInterceptor
 
 
 class ValtimoCommandInterceptor() : CommandInterceptor() {

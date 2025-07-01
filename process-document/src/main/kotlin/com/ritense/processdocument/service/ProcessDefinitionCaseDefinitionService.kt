@@ -28,15 +28,15 @@ import com.ritense.processdocument.domain.ProcessDefinitionCaseDefinitionId
 import com.ritense.processdocument.domain.ProcessDefinitionId
 import com.ritense.processdocument.domain.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.domain.UpdateProcessDefinitionCaseDefinitionRequest
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId
 import com.ritense.processdocument.repository.ProcessDefinitionCaseDefinitionRepository
-import com.ritense.valtimo.camunda.authorization.CamundaExecutionActionProvider
-import com.ritense.valtimo.camunda.domain.CamundaExecution
-import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.operaton.authorization.OperatonExecutionActionProvider
+import com.ritense.valtimo.operaton.domain.OperatonExecution
+import com.ritense.valtimo.operaton.domain.OperatonProcessDefinition
+import com.ritense.valtimo.operaton.service.OperatonRepositoryService
 import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
-import org.camunda.bpm.engine.RuntimeService
+import org.operaton.bpm.engine.RuntimeService
 import java.util.UUID
 
 class ProcessDefinitionCaseDefinitionService(
@@ -44,7 +44,7 @@ class ProcessDefinitionCaseDefinitionService(
     private val processDefinitionCaseDefinitionRepository: ProcessDefinitionCaseDefinitionRepository,
     private val documentService: JsonSchemaDocumentService,
     private val runtimeService: RuntimeService,
-    private val repositoryService: CamundaRepositoryService,
+    private val repositoryService: OperatonRepositoryService,
     private val caseDefinitionChecker: CaseDefinitionChecker,
 ) {
     fun findById(id: ProcessDefinitionCaseDefinitionId): ProcessDefinitionCaseDefinition? {
@@ -59,9 +59,9 @@ class ProcessDefinitionCaseDefinitionService(
         return processDefinitionCaseDefinitionRepository.findByIdCaseDefinitionId(caseDefinitionId)
     }
 
-    fun findProcessDefinitionCaseDefinition(camundaProcessInstanceId: CamundaProcessInstanceId): ProcessDefinitionCaseDefinition {
+    fun findProcessDefinitionCaseDefinition(operatonProcessInstanceId: OperatonProcessInstanceId): ProcessDefinitionCaseDefinition {
         val processInstance = (runtimeService.createProcessInstanceQuery()
-            .processInstanceId(camundaProcessInstanceId.toString())
+            .processInstanceId(operatonProcessInstanceId.toString())
             .singleResult()
             ?: throw IllegalArgumentException("Process instance not found"))
 
@@ -94,10 +94,10 @@ class ProcessDefinitionCaseDefinitionService(
         return definitions
             .filter {
                 authorizationService.hasPermission(
-                    RelatedEntityAuthorizationRequest<CamundaExecution>(
-                        CamundaExecution::class.java,
-                        CamundaExecutionActionProvider.CREATE,
-                        CamundaProcessDefinition::class.java,
+                    RelatedEntityAuthorizationRequest<OperatonExecution>(
+                        OperatonExecution::class.java,
+                        OperatonExecutionActionProvider.CREATE,
+                        OperatonProcessDefinition::class.java,
                         it.id.processDefinitionId.id
                     )
                 )
@@ -120,10 +120,10 @@ class ProcessDefinitionCaseDefinitionService(
         return definitions
             .filter {
                 authorizationService.hasPermission(
-                    RelatedEntityAuthorizationRequest<CamundaExecution>(
-                        CamundaExecution::class.java,
-                        CamundaExecutionActionProvider.CREATE,
-                        CamundaProcessDefinition::class.java,
+                    RelatedEntityAuthorizationRequest<OperatonExecution>(
+                        OperatonExecution::class.java,
+                        OperatonExecutionActionProvider.CREATE,
+                        OperatonProcessDefinition::class.java,
                         it.id.processDefinitionId.id
                     ).withContext(
                         AuthorizationResourceContext(

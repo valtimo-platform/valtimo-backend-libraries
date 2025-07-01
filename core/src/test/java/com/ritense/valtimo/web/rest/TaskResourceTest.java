@@ -28,10 +28,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ritense.valtimo.camunda.dto.TaskExtended;
+import com.ritense.valtimo.operaton.dto.TaskExtended;
 import com.ritense.valtimo.contract.json.MapperSingleton;
-import com.ritense.valtimo.service.CamundaProcessService;
-import com.ritense.valtimo.service.CamundaTaskService;
+import com.ritense.valtimo.service.OperatonProcessService;
+import com.ritense.valtimo.service.OperatonTaskService;
 import com.ritense.valtimo.service.request.AssigneeRequest;
 import com.ritense.valtimo.service.request.SetDueDateRequest;
 import java.nio.charset.StandardCharsets;
@@ -39,7 +39,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
-import org.camunda.bpm.engine.FormService;
+import org.operaton.bpm.engine.FormService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageImpl;
@@ -56,8 +56,8 @@ class TaskResourceTest {
     private MockMvc mockMvc;
     private TaskResource taskResource;
     private FormService formService;
-    private CamundaTaskService camundaTaskService;
-    private CamundaProcessService camundaProcessService;
+    private OperatonTaskService operatonTaskService;
+    private OperatonProcessService operatonProcessService;
     private AssigneeRequest assigneeRequest;
     private SetDueDateRequest dueDateRequest;
     private ObjectMapper objectMapper;
@@ -68,13 +68,13 @@ class TaskResourceTest {
     @BeforeEach
     void init() {
         formService = mock(FormService.class);
-        camundaTaskService = mock(CamundaTaskService.class);
-        camundaProcessService = mock(CamundaProcessService.class);
+        operatonTaskService = mock(OperatonTaskService.class);
+        operatonProcessService = mock(OperatonProcessService.class);
 
         taskResource = new TaskResource(
             formService,
-            camundaTaskService,
-            camundaProcessService
+            operatonTaskService,
+                operatonProcessService
         );
         objectMapper = MapperSingleton.INSTANCE.get();
 
@@ -103,7 +103,7 @@ class TaskResourceTest {
             .andDo(print())
             .andExpect(status().isOk());
 
-        verify(camundaTaskService, times(1)).assign(taskId, assigneeId);
+        verify(operatonTaskService, times(1)).assign(taskId, assigneeId);
     }
 
     @Test
@@ -117,7 +117,7 @@ class TaskResourceTest {
             .andDo(print())
             .andExpect(status().isOk());
 
-        verify(camundaTaskService, times(1)).setDueDate(taskId, dueDate);
+        verify(operatonTaskService, times(1)).setDueDate(taskId, dueDate);
     }
 
     @Test
@@ -130,7 +130,7 @@ class TaskResourceTest {
             .andDo(print())
             .andExpect(status().isOk());
 
-        verify(camundaTaskService, times(1)).setDueDate(taskId, null);
+        verify(operatonTaskService, times(1)).setDueDate(taskId, null);
     }
 
     @Test
@@ -167,7 +167,7 @@ class TaskResourceTest {
 
         Pageable pageable = PageRequest.of(1, 1);
 
-        when(camundaTaskService.findTasksFiltered(any(), any())).thenReturn(new PageImpl<>(tasks, pageable, 5L));
+        when(operatonTaskService.findTasksFiltered(any(), any())).thenReturn(new PageImpl<>(tasks, pageable, 5L));
 
         mockMvc.perform(get("/api/v2/task?filter=all")
                 .content(objectMapper.writeValueAsString(assigneeRequest))

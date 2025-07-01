@@ -21,8 +21,8 @@ import com.ritense.exporter.request.DecisionDefinitionExportRequest
 import com.ritense.valtimo.BaseIntegrationTest
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
-import org.camunda.bpm.engine.RepositoryService
-import org.camunda.bpm.model.dmn.Dmn
+import org.operaton.bpm.engine.RepositoryService
+import org.operaton.bpm.model.dmn.Dmn
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional

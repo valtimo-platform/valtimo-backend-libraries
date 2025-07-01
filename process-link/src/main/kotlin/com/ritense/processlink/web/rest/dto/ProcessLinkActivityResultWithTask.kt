@@ -16,7 +16,7 @@
 
 package com.ritense.processlink.web.rest.dto
 
-import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink
+import com.ritense.valtimo.repository.operaton.dto.TaskInstanceWithIdentityLink
 
 data class ProcessLinkActivityResultWithTask(
     val task: TaskInstanceWithIdentityLink,

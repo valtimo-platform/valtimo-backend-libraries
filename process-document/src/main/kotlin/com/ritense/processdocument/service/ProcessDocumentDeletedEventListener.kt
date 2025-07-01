@@ -20,11 +20,11 @@ import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthor
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.logging.withLoggingContext
 import com.ritense.processdocument.domain.ProcessDocumentInstance
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId
 import com.ritense.valtimo.contract.event.DocumentDeletedEvent
 import com.ritense.valtimo.event.ProcessDefinitionDeleted
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.camunda.bpm.engine.RuntimeService
+import org.operaton.bpm.engine.RuntimeService
 import org.springframework.context.event.EventListener
 
 class ProcessDocumentDeletedEventListener(
@@ -72,7 +72,7 @@ class ProcessDocumentDeletedEventListener(
             false
         )
         processDocumentAssociationService.findProcessDocumentInstance(
-            CamundaProcessInstanceId(processInstanceId),
+            OperatonProcessInstanceId(processInstanceId),
         )?.let { processDocumentInstance ->
             if (processDocumentInstance.isEmpty) {
                 logger.debug { "Process $processInstanceId has no relation to any Document. No ProcessDocumentInstance to delete." }

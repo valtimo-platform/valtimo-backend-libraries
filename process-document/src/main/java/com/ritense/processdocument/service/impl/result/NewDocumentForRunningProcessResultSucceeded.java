@@ -20,7 +20,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 
 import com.ritense.document.domain.Document;
 import com.ritense.processdocument.domain.ProcessInstanceId;
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
+import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId;
 import com.ritense.processdocument.service.result.NewDocumentForRunningProcessResult;
 import com.ritense.valtimo.contract.result.OperationError;
 import java.util.Collections;
@@ -30,9 +30,9 @@ import java.util.Optional;
 public class NewDocumentForRunningProcessResultSucceeded implements NewDocumentForRunningProcessResult {
 
     private final Document document;
-    private final CamundaProcessInstanceId processInstanceId;
+    private final OperatonProcessInstanceId processInstanceId;
 
-    public NewDocumentForRunningProcessResultSucceeded(Document document, CamundaProcessInstanceId processInstanceId) {
+    public NewDocumentForRunningProcessResultSucceeded(Document document, OperatonProcessInstanceId processInstanceId) {
         assertArgumentNotNull(document, "document is required");
         assertArgumentNotNull(processInstanceId, "processInstanceId is required");
         this.document = document;
