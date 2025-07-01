@@ -49,6 +49,7 @@ class IkoHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(antMatcher(DELETE, "/api/management/v1/iko-data-aggregate/{key}")).hasAuthority(ADMIN)
 
                     .requestMatchers(antMatcher(GET, "/api/v1/iko-data-aggregate/{key}/data-request")).authenticated()
+                    .requestMatchers(antMatcher(POST, "/api/v1/iko-data-aggregate/{key}/data-request/{key}/search")).authenticated()
                     .requestMatchers(antMatcher(GET, "/api/management/v1/iko-property-fields/{type}/data-request")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "/api/management/v1/iko-data-aggregate/{key}/data-request")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "/api/management/v1/iko-data-aggregate/{key}/data-request/{key}")).hasAuthority(ADMIN)

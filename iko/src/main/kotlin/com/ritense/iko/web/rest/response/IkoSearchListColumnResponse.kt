@@ -14,41 +14,23 @@
  * limitations under the License.
  */
 
-package com.ritense.search.importer
+package com.ritense.iko.web.rest.response
 
 import com.ritense.search.domain.ColumnDefaultSort
 import com.ritense.search.domain.DisplayType
 import com.ritense.search.domain.SearchListColumn
-import java.util.UUID
 
-data class ListColumnDto(
-    val id: UUID?,
+data class IkoSearchListColumnResponse(
     val key: String,
     val title: String?,
-    val path: String,
     val displayType: DisplayType,
     val sortable: Boolean,
     val defaultSort: ColumnDefaultSort? = null,
 ) {
-    fun toEntity(ownerType: String, ownerId: String, order: Int) = SearchListColumn(
-        id = this.id ?: UUID.randomUUID(),
-        ownerType = ownerType,
-        ownerId = ownerId,
-        key = this.key,
-        title = this.title,
-        path = this.path,
-        order = order,
-        displayType = this.displayType,
-        sortable = this.sortable,
-        defaultSort = this.defaultSort,
-    )
-
     companion object {
-        fun from(entity: SearchListColumn) = ListColumnDto(
-            id = entity.id,
+        fun from(entity: SearchListColumn) = IkoSearchListColumnResponse(
             key = entity.key,
             title = entity.title,
-            path = entity.path,
             displayType = entity.displayType,
             sortable = entity.sortable,
             defaultSort = entity.defaultSort,

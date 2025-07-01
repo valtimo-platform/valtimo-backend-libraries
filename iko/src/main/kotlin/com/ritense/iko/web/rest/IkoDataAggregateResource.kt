@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam
 @SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class IkoDataAggregateResource(
-    private val service: IkoDataAggregateService,
+    private val dataAggregateService: IkoDataAggregateService,
 ) {
 
     @GetMapping("/v1/iko-data-aggregate")
@@ -43,7 +43,7 @@ class IkoDataAggregateResource(
         @RequestParam title: String?,
         @PageableDefault(size = 10000, sort = ["title"], direction = ASC) pageable: Pageable
     ): ResponseEntity<Page<IkoDataAggregateListResponse>> {
-        val ikoDataAggregates = service.findAll(
+        val ikoDataAggregates = dataAggregateService.findAll(
             key = key,
             title = title,
             pageable = pageable,

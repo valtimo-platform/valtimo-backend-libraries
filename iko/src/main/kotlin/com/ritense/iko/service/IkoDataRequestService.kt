@@ -16,6 +16,7 @@
 
 package com.ritense.iko.service
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.iko.authorization.IkoDataAggregateActionProvider.Companion.VIEW
@@ -28,8 +29,10 @@ import com.ritense.iko.repository.IkoDataRequestSpecificationHelper.Companion.by
 import com.ritense.iko.repository.IkoDataRequestSpecificationHelper.Companion.byTitleContains
 import com.ritense.iko.repository.IkoDataRequestSpecificationHelper.Companion.query
 import com.ritense.iko.web.rest.request.IkoDataRequestUpdateRequest
+import com.ritense.valtimo.contract.iko.DataFilter
 import com.ritense.valtimo.contract.iko.IkoConnector
 import com.ritense.valtimo.contract.iko.PropertyField
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction.ASC
 import org.springframework.data.jpa.domain.Specification
@@ -42,6 +45,19 @@ class IkoDataRequestService(
     private val authorizationService: AuthorizationService,
     private val ikoConnectors: List<IkoConnector>,
 ) {
+
+    fun search(key: String, ikoDataAggregateKey: String, filters: List<DataFilter>): Page<JsonNode> {
+        val dataRequest = getByKey(key, ikoDataAggregateKey)
+        val dataRepository = ikoConnectors.first {
+            it.getType() == dataRequest.id.ikoDataAggregate.ikoConnectorConfig.type
+        }
+        return dataRepository.findAll(
+            dataRequest.id.ikoDataAggregate.ikoConnectorConfig.properties +
+                dataRequest.id.ikoDataAggregate.properties +
+                dataRequest.properties,
+            filters
+        )
+    }
 
     fun findAll(
         key: String? = null,

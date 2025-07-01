@@ -167,10 +167,14 @@ class IkoAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(IkoDataRequestResource::class)
     fun ikoDataRequestResource(
-        service: IkoDataRequestService,
+        dataRequestService: IkoDataRequestService,
+        listColumnService: SearchListColumnService,
+        searchFieldService: SearchFieldV2Service,
     ): IkoDataRequestResource {
         return IkoDataRequestResource(
-            service,
+            dataRequestService,
+            listColumnService,
+            searchFieldService,
         )
     }
 
@@ -198,9 +202,11 @@ class IkoAutoConfiguration {
     @ConditionalOnMissingBean(IkoApiDataRepository::class)
     fun ikoApiDataRepository(
         ikoApiClient: IkoApiClient,
+        objectMapper: ObjectMapper,
     ): IkoApiDataRepository {
         return IkoApiDataRepository(
             ikoApiClient,
+            objectMapper,
         )
     }
 

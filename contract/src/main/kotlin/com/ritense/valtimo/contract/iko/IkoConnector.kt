@@ -17,6 +17,7 @@
 package com.ritense.valtimo.contract.iko
 
 import com.fasterxml.jackson.databind.JsonNode
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
 interface IkoConnector {
@@ -29,7 +30,7 @@ interface IkoConnector {
 
     fun getDataRequestPropertyFields(): List<PropertyField>
 
-    fun findAll(config: Map<String, Any?>, filters: List<DataFilter>, pageable: Pageable): JsonNode
+    fun findAll(config: Map<String, Any?>, filters: List<DataFilter>, pageable: Pageable): Page<JsonNode>
 
-    fun findAll(config: Map<String, Any?>, filters: List<DataFilter>): JsonNode
+    fun findAll(config: Map<String, Any?>, filters: List<DataFilter>): Page<JsonNode>
 }

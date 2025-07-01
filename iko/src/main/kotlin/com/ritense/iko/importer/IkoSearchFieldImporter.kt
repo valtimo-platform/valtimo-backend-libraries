@@ -27,7 +27,7 @@ import com.ritense.search.service.SearchFieldV2Service
 class IkoSearchFieldImporter(
     private val objectMapper: ObjectMapper,
     searchFieldService: SearchFieldV2Service,
-) : SearchFieldImporter(searchFieldService, IKO_OWNER_TYPE_KEY) {
+) : SearchFieldImporter(searchFieldService, IKO_SEARCH_OWNER) {
 
     override fun type(): String = IKO_SEARCH_FIELD
 
@@ -44,7 +44,7 @@ class IkoSearchFieldImporter(
     override fun partOfCaseDefinition(): Boolean = false
 
     companion object {
-        const val IKO_OWNER_TYPE_KEY = "IkoDataRequest"
+        const val IKO_SEARCH_OWNER = "IkoDataRequest"
         private val FILENAME_REGEX = """/global/iko/(?:.*/)?(.+)\.iko-search-field\.json""".toRegex()
     }
 }

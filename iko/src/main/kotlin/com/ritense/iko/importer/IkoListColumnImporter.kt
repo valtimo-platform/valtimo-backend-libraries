@@ -27,7 +27,7 @@ import com.ritense.search.service.SearchListColumnService
 class IkoListColumnImporter(
     private val objectMapper: ObjectMapper,
     listColumnService: SearchListColumnService,
-) : ListColumnImporter(listColumnService, IKO_OWNER_TYPE_KEY) {
+) : ListColumnImporter(listColumnService, IKO_LIST_OWNER) {
 
     override fun type(): String = IKO_LIST_COLUMN
 
@@ -44,7 +44,7 @@ class IkoListColumnImporter(
     override fun partOfCaseDefinition(): Boolean = false
 
     companion object {
-        const val IKO_OWNER_TYPE_KEY = "IkoDataAggregate"
+        const val IKO_LIST_OWNER = "IkoDataAggregate"
         private val FILENAME_REGEX = """/global/iko/(?:.*/)?(.+)\.iko-list-column\.json""".toRegex()
     }
 }

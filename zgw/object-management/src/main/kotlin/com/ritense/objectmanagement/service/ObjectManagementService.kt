@@ -195,7 +195,7 @@ class ObjectManagementService(
         objectsList: List<ObjectWrapper>,
         objectManagementId: UUID
     ): List<ObjectsListRowDto> {
-        val listColumns = searchListColumnService.findByOwner(LEGACY_OWNER_TYPE, objectManagementId.toString())
+        val listColumns = searchListColumnService.findAllByOwner(LEGACY_OWNER_TYPE, objectManagementId.toString())
         return objectsList.map { objectApiObject ->
             val listRowDto = listColumns?.map { listColumn ->
                 if (!listColumn.path.startsWith("object:/") && !listColumn.path.startsWith("/")) {

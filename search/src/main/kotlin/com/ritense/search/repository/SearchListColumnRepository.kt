@@ -23,7 +23,7 @@ import java.util.UUID
 interface SearchListColumnRepository : JpaRepository<SearchListColumn, UUID> {
 
     fun findByOwnerTypeAndOwnerIdAndKeyOrderByOrder(ownerType: String, ownerId: String, key: String): SearchListColumn?
-    fun findAllByOwnerTypeAndOwnerIdOrderByOrder(ownerType: String, ownerId: String): List<SearchListColumn>?
+    fun findAllByOwnerTypeAndOwnerIdOrderByOrder(ownerType: String, ownerId: String): List<SearchListColumn>
     fun deleteAllByOwnerTypeAndOwnerId(ownerType: String, ownerId: String)
     fun deleteAllByOwnerTypeAndOwnerIdAndKey(ownerType: String, ownerId: String, key: String)
 }

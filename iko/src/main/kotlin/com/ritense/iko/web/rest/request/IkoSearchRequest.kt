@@ -14,15 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.contract.iko
+package com.ritense.iko.web.rest.request
 
-data class DataFilter(
-    val property: String,
-    val comparator: Comparator,
-    val value: Any?,
+data class IkoSearchRequest(
+    val filters: Map<String, Any?>
 )
-
-enum class Comparator() {
-    EQUAL_TO,
-    STRING_CONTAINS,
-}

@@ -27,6 +27,7 @@ import com.ritense.iko.repository.IkoDataAggregateRepository
 import com.ritense.iko.repository.IkoDataAggregateSpecificationHelper.Companion.byIkoConnectorConfigKey
 import com.ritense.iko.repository.IkoDataAggregateSpecificationHelper.Companion.byKey
 import com.ritense.iko.repository.IkoDataAggregateSpecificationHelper.Companion.byTitleContains
+import com.ritense.valtimo.contract.iko.DataFilter
 import com.ritense.valtimo.contract.iko.IkoConnector
 import com.ritense.valtimo.contract.iko.PropertyField
 import org.springframework.data.domain.Page
@@ -42,12 +43,15 @@ class IkoDataAggregateService(
     private val ikoConnectors: List<IkoConnector>,
 ) {
 
-    fun findData(key: String): JsonNode {
+    fun search(key: String, filters: List<DataFilter>): Page<JsonNode> {
         val dataAggregate = getByKey(key)
-        val dataRepository = ikoConnectors.first { it.getType() == dataAggregate.ikoConnectorConfig.type }
+        val dataRepository = ikoConnectors.first {
+            it.getType() == dataAggregate.ikoConnectorConfig.type
+        }
         return dataRepository.findAll(
-            dataAggregate.ikoConnectorConfig.properties + dataAggregate.properties,
-            emptyList()
+            dataAggregate.ikoConnectorConfig.properties +
+                dataAggregate.properties,
+            filters
         )
     }
 

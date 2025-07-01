@@ -86,13 +86,13 @@ class SearchListColumnResource(
     @Deprecated("Since 13.1.0", replaceWith = ReplaceWith("getByOwner(ownerType, ownerId)"))
     @GetMapping("/{ownerId}")
     fun getByOwnerId(@PathVariable ownerId: String) =
-        ResponseEntity.ok(searchListColumnService.findByOwner(LEGACY_OWNER_TYPE, ownerId))
+        ResponseEntity.ok(searchListColumnService.findAllByOwner(LEGACY_OWNER_TYPE, ownerId))
 
     @GetMapping("/{ownerType}/{ownerId}")
     fun getByOwner(
         @PathVariable ownerType: String,
         @PathVariable ownerId: String,
-    ) = ResponseEntity.ok(searchListColumnService.findByOwner(ownerType, ownerId))
+    ) = ResponseEntity.ok(searchListColumnService.findAllByOwner(ownerType, ownerId))
 
     @Deprecated("Since 13.1.0", replaceWith = ReplaceWith("delete(ownerType, ownerId, key)"))
     @DeleteMapping("/{ownerId}/{key}")

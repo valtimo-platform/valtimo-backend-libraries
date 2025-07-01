@@ -44,7 +44,7 @@ class IkoValueResolverFactory(
     fun createResolver(): Function<String, Any?> {
         return Function { requestedValue ->
             val (dataAggregateKey, jsonPointer) = getDataAggregateKeyAndJsonPointer(requestedValue)
-            ikoDataAggregateService.findData(dataAggregateKey).at(jsonPointer)
+            ikoDataAggregateService.search(dataAggregateKey, emptyList()).singleOrNull()?.at(jsonPointer)
         }
     }
 

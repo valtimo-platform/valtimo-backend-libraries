@@ -42,7 +42,7 @@ class SearchListColumnService(
         return searchListColumnRepository.save(column.copy(id = existingColumn.id))
     }
 
-    fun findByOwner(ownerType: String, ownerId: String) =
+    fun findAllByOwner(ownerType: String, ownerId: String) =
         searchListColumnRepository.findAllByOwnerTypeAndOwnerIdOrderByOrder(ownerType, ownerId)
 
     fun findById(id: UUID): SearchListColumn? =

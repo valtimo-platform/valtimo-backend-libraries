@@ -44,13 +44,13 @@ internal class SearchListColumnIntTest : BaseIntegrationTest() {
 
         assertThat(dbUpdatedSearchListColumn.title).isEqualTo(updatedSearchListColumn.title)
 
-        val dbLookUpByOwnerId = searchListColumnService.findByOwner(LEGACY_OWNER_TYPE, searchListColumn.ownerId)
+        val dbLookUpByOwnerId = searchListColumnService.findAllByOwner(LEGACY_OWNER_TYPE, searchListColumn.ownerId)
         assertThat(dbLookUpByOwnerId).isNotNull
         assertThat(dbLookUpByOwnerId?.first()?.path).isEqualTo(searchListColumn.path)
 
         dbUpdatedSearchListColumn.ownerId.let { searchListColumnService.delete(LEGACY_OWNER_TYPE, it, dbUpdatedSearchListColumn.key) }
 
-        val list = searchListColumnService.findByOwner(LEGACY_OWNER_TYPE, searchListColumn.ownerId)
+        val list = searchListColumnService.findAllByOwner(LEGACY_OWNER_TYPE, searchListColumn.ownerId)
 
         assertThat(list).isEmpty()
     }
