@@ -1,7 +1,7 @@
 package com.ritense.exact.client.endpoints
 
 import com.fasterxml.jackson.databind.JsonNode
-import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.operaton.bpm.engine.delegate.DelegateExecution
 
 interface ExactPutRequest {
 

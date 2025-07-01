@@ -22,9 +22,9 @@ import java.util.Map;
 import java.util.Properties;
 import org.apache.ibatis.logging.slf4j.Slf4jImpl;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
-import org.camunda.bpm.engine.impl.db.sql.DbSqlSessionFactory;
-import org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration;
+import org.operaton.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
+import org.operaton.bpm.engine.impl.db.sql.DbSqlSessionFactory;
+import org.operaton.bpm.engine.spring.SpringProcessEngineConfiguration;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.transaction.SpringManagedTransactionFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -74,8 +74,8 @@ public class ValtimoMybatisAutoConfiguration {
         sqlSessionFactoryBean.setDataSource(springProcessEngineConfiguration.getDataSource());
         sqlSessionFactoryBean.setMapperLocations(
             new ClassPathResource("common.xml"),
-            new ClassPathResource("camunda-queries.xml"),
-            new ClassPathResource("camunda-process-instance-v2.xml")
+            new ClassPathResource("operaton-queries.xml"),
+            new ClassPathResource("operaton-process-instance-v2.xml")
         );
         org.apache.ibatis.session.Configuration configuration = new org.apache.ibatis.session.Configuration();
         configuration.setLazyLoadingEnabled(false);

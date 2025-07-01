@@ -15,7 +15,7 @@ spring-actuator:
     username: test
     password: test
 
-camunda:
+operaton:
     bpm:
         history-level: audit
         generic-properties:

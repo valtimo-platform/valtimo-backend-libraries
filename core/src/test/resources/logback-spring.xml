@@ -25,7 +25,7 @@
     <logger name="org.springframework.security.web.access" level="DEBUG"/>
     <logger name="org.apache.ibatis" level="TRACE"/>
     <logger name="java.sql.Connection" level="TRACE"/>
-    <logger name="org.camunda" level="INFO"/>
+    <logger name="org.operaton" level="INFO"/>
 
 
 </configuration>

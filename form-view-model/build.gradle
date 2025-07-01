@@ -70,7 +70,6 @@ dependencies {
     testImplementation "org.apache.httpcomponents.client5:httpclient5"
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
-    testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:${camundaMockitoVersion}"
 
     jar {
         enabled = true

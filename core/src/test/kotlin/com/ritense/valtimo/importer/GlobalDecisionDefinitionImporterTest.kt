@@ -17,9 +17,8 @@
 package com.ritense.valtimo.importer
 
 import com.ritense.importer.ImportRequest
-import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
-import com.ritense.valtimo.service.CamundaProcessService
+import com.ritense.valtimo.service.OperatonProcessService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -32,13 +31,13 @@ import java.io.ByteArrayInputStream
 
 @ExtendWith(MockitoExtension::class)
 class GlobalDecisionDefinitionImporterTest(
-    @Mock private val camundaProcessService: CamundaProcessService
+    @Mock private val operatonProcessService: OperatonProcessService
 ) {
     private lateinit var importer: GlobalDecisionDefinitionImporter
 
     @BeforeEach
     fun before() {
-        importer = GlobalDecisionDefinitionImporter(camundaProcessService)
+        importer = GlobalDecisionDefinitionImporter(operatonProcessService)
     }
 
     @Test
@@ -74,7 +73,7 @@ class GlobalDecisionDefinitionImporterTest(
         val nameCaptor = argumentCaptor<String>()
         val contentCaptor = argumentCaptor<ByteArrayInputStream>()
 
-        verify(camundaProcessService).deploy(
+        verify(operatonProcessService).deploy(
             caseDefinitionIdCaptor.capture(),
             nameCaptor.capture(),
             contentCaptor.capture()

@@ -20,8 +20,8 @@ import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.event.CaseDefinitionCreatedEvent
 import com.ritense.valtimo.contract.event.CaseDefinitionPreDeleteEvent
-import com.ritense.valtimo.decision.CamundaDecisionService
-import com.ritense.valtimo.service.CamundaProcessService
+import com.ritense.valtimo.decision.OperatonDecisionService
+import com.ritense.valtimo.service.OperatonProcessService
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -30,8 +30,8 @@ import org.springframework.transaction.annotation.Transactional
 @Component
 @SkipComponentScan
 class DecisionCaseEventListener(
-    private val decisionService: CamundaDecisionService,
-    private val processService: CamundaProcessService,
+    private val decisionService: OperatonDecisionService,
+    private val processService: OperatonProcessService,
 ) {
 
     @RunWithoutAuthorization

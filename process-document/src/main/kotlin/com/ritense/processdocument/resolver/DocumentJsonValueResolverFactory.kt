@@ -32,7 +32,7 @@ import com.ritense.document.exception.ModifyDocumentException
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
@@ -40,7 +40,7 @@ import com.ritense.valueresolver.ValueResolverFactory
 import com.ritense.valueresolver.ValueResolverOption
 import com.ritense.valueresolver.ValueResolverOptionType
 import com.ritense.valueresolver.exception.ValueResolverValidationException
-import org.camunda.bpm.engine.delegate.VariableScope
+import org.operaton.bpm.engine.delegate.VariableScope
 import java.util.UUID
 import java.util.function.Function
 
@@ -64,7 +64,7 @@ class DocumentJsonValueResolverFactory(
         processInstanceId: String,
         variableScope: VariableScope
     ): Function<String, Any?> {
-        val document = processDocumentService.getDocument(CamundaProcessInstanceId(processInstanceId), variableScope)
+        val document = processDocumentService.getDocument(OperatonProcessInstanceId(processInstanceId), variableScope)
         return createResolver(document)
     }
 
@@ -93,7 +93,7 @@ class DocumentJsonValueResolverFactory(
         values: Map<String, Any?>
     ) {
         val document = AuthorizationContext.runWithoutAuthorization {
-            processDocumentService.getDocument(CamundaProcessInstanceId(processInstanceId), variableScope)
+            processDocumentService.getDocument(OperatonProcessInstanceId(processInstanceId), variableScope)
         }
         val documentContent = document.content().asJson()
         buildJsonPatch(documentContent, values)

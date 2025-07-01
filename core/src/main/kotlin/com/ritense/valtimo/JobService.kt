@@ -19,10 +19,10 @@ package com.ritense.valtimo
 
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.camunda.bpm.engine.ManagementService
-import org.camunda.bpm.engine.ProcessEngineException
-import org.camunda.bpm.engine.delegate.DelegateExecution
-import org.camunda.bpm.engine.runtime.Job
+import org.operaton.bpm.engine.ManagementService
+import org.operaton.bpm.engine.ProcessEngineException
+import org.operaton.bpm.engine.delegate.DelegateExecution
+import org.operaton.bpm.engine.runtime.Job
 import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
 import java.util.Date

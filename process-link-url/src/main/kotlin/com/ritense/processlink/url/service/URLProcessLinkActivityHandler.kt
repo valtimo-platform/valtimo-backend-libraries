@@ -21,7 +21,7 @@ import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.processlink.url.domain.URLProcessLink
 import com.ritense.processlink.url.domain.URLTaskOpenResultProperties
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
-import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.operaton.domain.OperatonTask
 import java.util.UUID
 
 class URLProcessLinkActivityHandler(
@@ -32,7 +32,7 @@ class URLProcessLinkActivityHandler(
     }
 
     override fun openTask(
-        task: CamundaTask,
+        task: OperatonTask,
         processLink: ProcessLink
     ): ProcessLinkActivityResult<URLTaskOpenResultProperties> {
         processLink as URLProcessLink

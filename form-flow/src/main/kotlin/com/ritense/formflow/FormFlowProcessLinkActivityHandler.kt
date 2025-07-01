@@ -29,11 +29,11 @@ import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionServic
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
-import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
-import com.ritense.valtimo.camunda.domain.CamundaTask
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.operaton.domain.OperatonProcessDefinition
+import com.ritense.valtimo.operaton.domain.OperatonTask
+import com.ritense.valtimo.operaton.service.OperatonRepositoryService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import org.camunda.bpm.engine.RuntimeService
+import org.operaton.bpm.engine.RuntimeService
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -42,7 +42,7 @@ import java.util.UUID
 @SkipComponentScan
 class FormFlowProcessLinkActivityHandler(
     private val formFlowService: FormFlowService,
-    private val repositoryService: CamundaRepositoryService,
+    private val repositoryService: OperatonRepositoryService,
     private val processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
     documentService: DocumentService,
     runtimeService: RuntimeService,
@@ -56,13 +56,13 @@ class FormFlowProcessLinkActivityHandler(
 
     @Transactional
     override fun openTask(
-        task: CamundaTask,
+        task: OperatonTask,
         processLink: ProcessLink
     ): ProcessLinkActivityResult<FormFlowTaskOpenResultProperties> {
         withLoggingContext(
             mapOf(
                 JsonSchemaDocument::class.java.canonicalName to task.processInstance?.businessKey,
-                CamundaTask::class.java.canonicalName to task.id,
+                OperatonTask::class.java.canonicalName to task.id,
                 ProcessLink::class.java.canonicalName to processLink.id.toString()
             )
         ) {
@@ -87,7 +87,7 @@ class FormFlowProcessLinkActivityHandler(
     }
 
     override fun getStartEventObject(
-        @LoggableResource(resourceType = CamundaProcessDefinition::class) processDefinitionId: String,
+        @LoggableResource(resourceType = OperatonProcessDefinition::class) processDefinitionId: String,
         @LoggableResource(resourceType = JsonSchemaDocument::class) documentId: UUID?,
         @LoggableResource("documentDefinitionName") documentDefinitionName: String?,
         processLink: ProcessLink
@@ -116,7 +116,7 @@ class FormFlowProcessLinkActivityHandler(
         }
     }
 
-    private fun createFormFlowInstance(task: CamundaTask, processLink: FormFlowProcessLink): FormFlowInstance {
+    private fun createFormFlowInstance(task: OperatonTask, processLink: FormFlowProcessLink): FormFlowInstance {
         val additionalProperties = getAdditionalProperties(task)
         val processDefinitionCaseDefinitionLink = processDefinitionCaseDefinitionService
             .findByProcessDefinitionId(ProcessDefinitionId(processLink.processDefinitionId))

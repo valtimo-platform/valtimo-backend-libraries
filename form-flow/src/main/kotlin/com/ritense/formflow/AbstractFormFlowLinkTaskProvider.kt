@@ -20,16 +20,16 @@ import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
 import com.ritense.logging.withLoggingContext
-import com.ritense.valtimo.camunda.domain.CamundaTask
-import org.camunda.bpm.engine.RuntimeService
+import com.ritense.valtimo.operaton.domain.OperatonTask
+import org.operaton.bpm.engine.RuntimeService
 
 abstract class AbstractFormFlowLinkTaskProvider(
     private val documentService: DocumentService,
     private val runtimeService: RuntimeService,
 ) {
 
-    protected fun getAdditionalProperties(task: CamundaTask): Map<String, Any> {
-        return withLoggingContext(CamundaTask::class, task.id) {
+    protected fun getAdditionalProperties(task: OperatonTask): Map<String, Any> {
+        return withLoggingContext(OperatonTask::class, task.id) {
             val processInstance = runtimeService.createProcessInstanceQuery()
                 .processInstanceId(task.getProcessInstanceId())
                 .singleResult()

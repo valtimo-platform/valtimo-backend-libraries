@@ -16,15 +16,15 @@
 
 package com.ritense.valtimo.event;
 
-import com.ritense.valtimo.camunda.domain.CamundaDeploymentSource;
+import com.ritense.valtimo.operaton.domain.OperatonDeploymentSource;
 import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import jakarta.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity;
-import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
-import org.camunda.bpm.model.bpmn.Bpmn;
-import org.camunda.bpm.model.bpmn.BpmnModelInstance;
+import org.operaton.bpm.engine.impl.persistence.entity.DeploymentEntity;
+import org.operaton.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.operaton.bpm.model.bpmn.Bpmn;
+import org.operaton.bpm.model.bpmn.BpmnModelInstance;
 
 public class ProcessDefinitionDeployedEvent {
     private final String previousProcessDefinitionId;
@@ -33,12 +33,12 @@ public class ProcessDefinitionDeployedEvent {
     @Nullable
     private final CaseDefinitionId caseDefinitionId;
     private final BpmnModelInstance processDefinitionModelInstance;
-    private final CamundaDeploymentSource source;
+    private final OperatonDeploymentSource source;
 
     public ProcessDefinitionDeployedEvent(
         DeploymentEntity deployment,
         ProcessDefinitionEntity processDefinition,
-        CamundaDeploymentSource source) {
+        OperatonDeploymentSource source) {
 
         this.previousProcessDefinitionId = processDefinition.getPreviousProcessDefinitionId();
         this.processDefinitionId = processDefinition.getId();
@@ -77,7 +77,7 @@ public class ProcessDefinitionDeployedEvent {
         return CaseDefinitionId.fromProcessVersionTag(this.getSource().getOriginalVersionTag());
     }
 
-    public CamundaDeploymentSource getSource() {
+    public OperatonDeploymentSource getSource() {
         return source;
     }
 

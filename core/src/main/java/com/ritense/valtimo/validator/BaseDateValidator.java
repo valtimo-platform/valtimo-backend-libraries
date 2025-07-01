@@ -21,7 +21,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
-import org.camunda.bpm.engine.impl.form.validator.FormFieldValidatorContext;
+import org.operaton.bpm.engine.impl.form.validator.FormFieldValidatorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +43,7 @@ public abstract class BaseDateValidator {
         try {
             configValue = dateFormat.parse(validatorContext.getConfiguration());
         } catch (ParseException e) {
-            logger.error("Invalid date set in Camunda Modeler. Please make sure the format is {}", DATE_FORMAT);
+            logger.error("Invalid date set in Operaton Modeler. Please make sure the format is {}", DATE_FORMAT);
         }
 
         if (configValue != null && submittedValueDate != null) {

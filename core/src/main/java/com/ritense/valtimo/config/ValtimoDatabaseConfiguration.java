@@ -17,16 +17,16 @@
 package com.ritense.valtimo.config;
 
 import javax.sql.DataSource;
-import org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration;
-import org.camunda.bpm.spring.boot.starter.configuration.CamundaDatasourceConfiguration;
-import org.camunda.bpm.spring.boot.starter.configuration.impl.AbstractCamundaConfiguration;
-import org.camunda.bpm.spring.boot.starter.property.DatabaseProperty;
+import org.operaton.bpm.engine.spring.SpringProcessEngineConfiguration;
+import org.operaton.bpm.spring.boot.starter.configuration.OperatonDatasourceConfiguration;
+import org.operaton.bpm.spring.boot.starter.configuration.impl.AbstractOperatonConfiguration;
+import org.operaton.bpm.spring.boot.starter.property.DatabaseProperty;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.StringUtils;
 
 @AutoConfiguration
-public class ValtimoDatabaseConfiguration extends AbstractCamundaConfiguration implements CamundaDatasourceConfiguration {
+public class ValtimoDatabaseConfiguration extends AbstractOperatonConfiguration implements OperatonDatasourceConfiguration {
 
     protected final PlatformTransactionManager transactionManager;
     protected final DataSource dataSource;
@@ -38,7 +38,7 @@ public class ValtimoDatabaseConfiguration extends AbstractCamundaConfiguration i
 
     @Override
     public void preInit(SpringProcessEngineConfiguration configuration) {
-        final DatabaseProperty database = camundaBpmProperties.getDatabase();
+        final DatabaseProperty database = operatonBpmProperties.getDatabase();
         configuration.setTransactionManager(transactionManager);
         configuration.setDataSource(dataSource);
         configuration.setDatabaseType(database.getType());

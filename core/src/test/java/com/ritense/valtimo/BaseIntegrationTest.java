@@ -20,16 +20,16 @@ import com.ritense.outbox.OutboxService;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.mail.MailSender;
-import com.ritense.valtimo.repository.CamundaSearchProcessInstanceRepository;
+import com.ritense.valtimo.repository.OperatonSearchProcessInstanceRepository;
 import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker;
-import org.camunda.bpm.engine.RuntimeService;
-import org.camunda.bpm.engine.TaskService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
+import org.operaton.bpm.engine.RuntimeService;
+import org.operaton.bpm.engine.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.event.EventListener;
@@ -61,10 +61,10 @@ public abstract class BaseIntegrationTest {
     public OutboxService outboxService;
 
     @MockitoSpyBean
-    public CamundaSearchProcessInstanceRepository camundaSearchProcessInstanceRepository;
+    public OperatonSearchProcessInstanceRepository operatonSearchProcessInstanceRepository;
 
     @MockitoSpyBean
-    public TaskService camundaTaskService;
+    public TaskService operatonTaskService;
 
     @BeforeAll
     static void beforeAll() {

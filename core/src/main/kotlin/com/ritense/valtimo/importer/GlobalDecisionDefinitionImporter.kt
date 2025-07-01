@@ -19,12 +19,12 @@ package com.ritense.valtimo.importer
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.GLOBAL_DECISION_DEFINITION
-import com.ritense.valtimo.service.CamundaProcessService
+import com.ritense.valtimo.service.OperatonProcessService
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 class GlobalDecisionDefinitionImporter(
-    private val camundaProcessService: CamundaProcessService
+    private val operatonProcessService: OperatonProcessService
 ) : Importer {
     override fun type() = GLOBAL_DECISION_DEFINITION
 
@@ -35,7 +35,7 @@ class GlobalDecisionDefinitionImporter(
     override fun import(request: ImportRequest) {
         val fileName = request.fileName.substringAfterLast("/")
         request.content.inputStream().use {
-            camundaProcessService.deploy(null, fileName, it)
+            operatonProcessService.deploy(null, fileName, it)
         }
     }
 

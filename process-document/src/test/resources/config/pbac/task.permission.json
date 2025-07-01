@@ -2,7 +2,7 @@
     "changesetId": "task-v1",
     "permissions": [
         {
-            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
+            "resourceType": "com.ritense.valtimo.operaton.domain.OperatonTask",
             "action": "view",
             "roleKey": "ROLE_USER",
             "conditions": [
@@ -23,13 +23,13 @@
             ]
         },
         {
-            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
+            "resourceType": "com.ritense.valtimo.operaton.domain.OperatonTask",
             "action": "view",
             "roleKey": "ROLE_HOUSE_OWNER",
             "conditions": [
                 {
                     "type": "container",
-                    "resourceType": "com.ritense.valtimo.camunda.domain.CamundaIdentityLink",
+                    "resourceType": "com.ritense.valtimo.operaton.domain.OperatonIdentityLink",
                     "conditions": [
                         {
                             "type": "field",
@@ -42,7 +42,7 @@
             ]
         },
         {
-            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
+            "resourceType": "com.ritense.valtimo.operaton.domain.OperatonTask",
             "action": "view_list",
             "roleKey": "ROLE_USER",
             "conditions": [
@@ -61,7 +61,7 @@
             ]
         },
         {
-            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
+            "resourceType": "com.ritense.valtimo.operaton.domain.OperatonTask",
             "action": "view_list",
             "roleKey": "ROLE_USER",
             "conditions": [
@@ -80,7 +80,7 @@
             ]
         },
         {
-            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
+            "resourceType": "com.ritense.valtimo.operaton.domain.OperatonTask",
             "action": "view_list",
             "roleKey": "ROLE_USER",
             "conditions": [
@@ -99,7 +99,7 @@
             ]
         },
         {
-            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
+            "resourceType": "com.ritense.valtimo.operaton.domain.OperatonTask",
             "action": "view_list",
             "roleKey": "ROLE_HOUSE_OWNER",
             "conditions": [

@@ -27,8 +27,8 @@ import com.ritense.valtimo.security.SpringSecurityAuditorAware;
 import com.ritense.valtimo.security.ValtimoCoreSecurityFactory;
 import com.ritense.valtimo.security.config.AccountHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ApiLoginHttpSecurityConfigurer;
-import com.ritense.valtimo.security.config.CamundaCockpitHttpSecurityConfigurer;
-import com.ritense.valtimo.security.config.CamundaRestHttpSecurityConfigurer;
+import com.ritense.valtimo.security.config.OperatonCockpitHttpSecurityConfigurer;
+import com.ritense.valtimo.security.config.OperatonRestHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ChoiceFieldHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.CsrfHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.DenyAllHttpSecurityConfigurer;
@@ -50,7 +50,7 @@ import com.ritense.valtimo.security.matcher.SecurityWhitelistProperties;
 import com.ritense.valtimo.security.matcher.WhitelistIpRequestMatcher;
 import java.util.List;
 import java.util.Optional;
-import org.camunda.bpm.engine.IdentityService;
+import org.operaton.bpm.engine.IdentityService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointProperties;
@@ -242,19 +242,19 @@ public class HttpSecurityAutoConfiguration {
 
     @Order(460)
     @Bean
-    @ConditionalOnMissingBean(CamundaRestHttpSecurityConfigurer.class)
-    public CamundaRestHttpSecurityConfigurer camundaRestHttpSecurityConfigurer() {
-        return new CamundaRestHttpSecurityConfigurer();
+    @ConditionalOnMissingBean(OperatonRestHttpSecurityConfigurer.class)
+    public OperatonRestHttpSecurityConfigurer operatonRestHttpSecurityConfigurer() {
+        return new OperatonRestHttpSecurityConfigurer();
     }
 
     @Order(470)
     @Bean
-    @ConditionalOnMissingBean(CamundaCockpitHttpSecurityConfigurer.class)
-    public CamundaCockpitHttpSecurityConfigurer camundaCockpitHttpSecurityConfigurer(
+    @ConditionalOnMissingBean(OperatonCockpitHttpSecurityConfigurer.class)
+    public OperatonCockpitHttpSecurityConfigurer operatonCockpitHttpSecurityConfigurer(
         SecurityWhitelistProperties whitelistProperties
     ) {
         WhitelistIpRequestMatcher whitelistIpRequestMatcher = new WhitelistIpRequestMatcher(whitelistProperties.getHosts());
-        return new CamundaCockpitHttpSecurityConfigurer(whitelistIpRequestMatcher);
+        return new OperatonCockpitHttpSecurityConfigurer(whitelistIpRequestMatcher);
     }
 
     @Order(500)

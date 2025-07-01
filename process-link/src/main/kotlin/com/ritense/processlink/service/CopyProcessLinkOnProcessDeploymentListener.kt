@@ -18,11 +18,10 @@ package com.ritense.processlink.service
 
 import com.ritense.processlink.domain.ProcessLinksCopiedEvent
 import com.ritense.processlink.repository.ProcessLinkRepository
-import com.ritense.valtimo.camunda.domain.CamundaDeploymentSource
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.event.ProcessDefinitionDeployedEvent
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.camunda.bpm.model.bpmn.instance.FlowNode
+import org.operaton.bpm.model.bpmn.instance.FlowNode
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.event.EventListener
 import java.util.UUID

@@ -16,9 +16,9 @@
 
 package com.ritense.valtimo.web.rest.dto
 
-import org.camunda.bpm.engine.impl.dmn.entity.repository.DecisionDefinitionEntity
-import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity
-import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity
+import org.operaton.bpm.engine.impl.dmn.entity.repository.DecisionDefinitionEntity
+import org.operaton.bpm.engine.impl.persistence.entity.DeploymentEntity
+import org.operaton.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity
 
 data class DefinitionDeploymentResponseDto(
     val identifier: String

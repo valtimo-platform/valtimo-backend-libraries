@@ -74,17 +74,17 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 
-    // Camunda
-    api ("org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:${camundaVersion}") {
+    // Operaton
+    api ("org.operaton.bpm.springboot:operaton-bpm-spring-boot-starter-rest:${operatonVersion}") {
         exclude group: "com.sun.xml.bind"
     }
-    api ("org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-webapp:${camundaVersion}") {
+    api ("org.operaton.bpm.springboot:operaton-bpm-spring-boot-starter-webapp:${operatonVersion}") {
         exclude group: "com.sun.xml.bind"
     }
 
-    // Camunda plugins
-    implementation "org.camunda.bpm:camunda-engine-plugin-spin:${camundaVersion}"
-    implementation "org.camunda.bpm:camunda-engine-plugin-connect:${camundaVersion}"
+    // Operaton plugins
+    implementation "org.operaton.bpm:operaton-engine-plugin-spin:${operatonVersion}"
+    implementation "org.operaton.bpm:operaton-engine-plugin-connect:${operatonVersion}"
 
     // spring boot admin client
     implementation "de.codecentric:spring-boot-admin-starter-client:${springBootAdminStarterClientVersion}"
@@ -105,7 +105,7 @@ dependencies {
     implementation "com.fasterxml.jackson.module:jackson-module-blackbird"
     implementation "com.fasterxml.jackson.module:jackson-module-parameter-names"
 
-    // MyBatis (for camunda and our custom queries)
+    // MyBatis (for operaton and our custom queries)
     implementation "org.mybatis.spring.boot:mybatis-spring-boot-starter:${mybatisSpringBootStarterVersion}"
 
     implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
@@ -135,9 +135,8 @@ dependencies {
         exclude(group: "com.ritense.valtimo", module: "core")
     }
 
-    // Camunda test
+    // Operaton test
     testImplementation project(":test-utils-common")
-    testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:${camundaMockitoVersion}"
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.junit.jupiter:junit-jupiter-engine"
     testImplementation "org.apache.groovy:groovy-all:${groovyVersion}"

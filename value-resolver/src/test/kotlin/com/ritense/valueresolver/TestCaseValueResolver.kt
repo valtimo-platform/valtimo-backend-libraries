@@ -18,7 +18,7 @@ package com.ritense.valueresolver
 
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valueresolver.exception.ValueResolverValidationException
-import org.camunda.bpm.engine.delegate.VariableScope
+import org.operaton.bpm.engine.delegate.VariableScope
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import java.util.function.Function

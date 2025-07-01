@@ -100,7 +100,7 @@ spring:
             max-file-size: 10MB
             max-request-size: 10MB
     jersey:
-        application-path: /api/camunda-rest
+        application-path: /api/operaton-rest
     autoconfigure:
         exclude:
             - org.springframework.boot.actuate.autoconfigure.metrics.web.tomcat.TomcatMetricsAutoConfiguration
@@ -262,7 +262,7 @@ scheduling:
         cron:
             cleanupAuditEvents: 0 0 4 * * ? # Every day at 00:00
             taskNotificationReminder: 0 0 10 * * ? # Every day at 10:00
-camunda:
+operaton:
     bpm:
         history-level: AUDIT
         history-level-default: AUDIT

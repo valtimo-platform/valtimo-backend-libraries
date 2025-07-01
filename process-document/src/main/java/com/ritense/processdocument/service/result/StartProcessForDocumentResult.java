@@ -18,7 +18,7 @@ package com.ritense.processdocument.service.result;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.document.domain.Document;
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
+import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId;
 import com.ritense.valtimo.contract.result.OperationError;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +29,7 @@ public interface StartProcessForDocumentResult extends DocumentFunctionResult {
     Optional<? extends Document> resultingDocument();
 
     @JsonProperty("processInstanceId")
-    Optional<CamundaProcessInstanceId> processInstanceId();
+    Optional<OperatonProcessInstanceId> processInstanceId();
 
     @JsonProperty("errors")
     List<OperationError> errors();

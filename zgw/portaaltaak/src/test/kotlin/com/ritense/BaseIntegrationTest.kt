@@ -23,7 +23,7 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.ResourceService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
-import com.ritense.valtimo.service.CamundaProcessService
+import com.ritense.valtimo.service.OperatonProcessService
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.zakenapi.ResourceProvider
 import com.ritense.zakenapi.ZaakUrlProvider
@@ -50,7 +50,7 @@ abstract class BaseIntegrationTest {
     lateinit var valueResolverService: ValueResolverService
 
     @MockitoSpyBean
-    lateinit var camundaProcessService: CamundaProcessService
+    lateinit var operatonProcessService: OperatonProcessService
 
     @MockitoSpyBean
     lateinit var zaakInstanceLinkService: ZaakInstanceLinkService

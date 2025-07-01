@@ -21,7 +21,7 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPlugin
-import org.camunda.bpm.engine.delegate.VariableScope
+import org.operaton.bpm.engine.delegate.VariableScope
 import java.net.URI
 import java.util.UUID
 import java.util.function.Function

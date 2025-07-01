@@ -17,8 +17,8 @@
 package com.ritense.valtimo.validator;
 
 import java.util.Optional;
-import org.camunda.bpm.engine.impl.form.validator.FormFieldValidator;
-import org.camunda.bpm.engine.impl.form.validator.FormFieldValidatorContext;
+import org.operaton.bpm.engine.impl.form.validator.FormFieldValidator;
+import org.operaton.bpm.engine.impl.form.validator.FormFieldValidatorContext;
 
 public class MaxDateValidator extends BaseDateValidator implements FormFieldValidator {
 

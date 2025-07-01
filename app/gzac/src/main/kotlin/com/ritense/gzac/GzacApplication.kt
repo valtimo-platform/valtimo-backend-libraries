@@ -18,7 +18,7 @@ package com.ritense.gzac
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock
-import org.camunda.bpm.spring.boot.starter.annotation.EnableProcessApplication
+import org.operaton.bpm.spring.boot.starter.annotation.EnableProcessApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.core.env.Environment

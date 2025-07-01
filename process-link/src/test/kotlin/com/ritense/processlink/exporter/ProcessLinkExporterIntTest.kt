@@ -23,8 +23,8 @@ import com.ritense.exporter.request.ProcessDefinitionExportRequest
 import com.ritense.processlink.BaseIntegrationTest
 import com.ritense.processlink.autodeployment.ProcessLinkDeploymentApplicationReadyEventListener
 import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
-import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.operaton.repository.OperatonProcessDefinitionSpecificationHelper
+import com.ritense.valtimo.operaton.service.OperatonRepositoryService
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class ProcessLinkExporterIntTest @Autowired constructor(
     private val objectMapper: ObjectMapper,
-    private val camundaRepositoryService: CamundaRepositoryService,
+    private val operatonRepositoryService: OperatonRepositoryService,
     private val processLinkExporter: ProcessLinkExporter,
     private val listener: ProcessLinkDeploymentApplicationReadyEventListener
 ) : BaseIntegrationTest() {
@@ -72,9 +72,9 @@ class ProcessLinkExporterIntTest @Autowired constructor(
 
     fun getProcessDefinitionId(processDefinitionKey: String): String {
         return requireNotNull(
-            camundaRepositoryService.findProcessDefinition(
-                CamundaProcessDefinitionSpecificationHelper.byKey(processDefinitionKey)
-                    .and(CamundaProcessDefinitionSpecificationHelper.byLatestVersion())
+            operatonRepositoryService.findProcessDefinition(
+                OperatonProcessDefinitionSpecificationHelper.byKey(processDefinitionKey)
+                    .and(OperatonProcessDefinitionSpecificationHelper.byLatestVersion())
             )
         ).id
     }

@@ -22,9 +22,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.flipkart.zjsonpatch.JsonPatch
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
-import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.engine.delegate.VariableScope
-import org.camunda.bpm.engine.impl.context.Context
+import io.github.oshai.kotlinlogging.KotlinLogging
+import org.operaton.bpm.engine.RuntimeService
+import org.operaton.bpm.engine.delegate.VariableScope
+import org.operaton.bpm.engine.impl.context.Context
 import java.util.function.Function
 
 /**
@@ -70,11 +71,17 @@ class ProcessVariableValueResolverFactory(
 
         return Function { requestedValue ->
             val jsonPointer = toJsonPointer(requestedValue)
-            val values = runtimeService.createVariableInstanceQuery()
+            val variables = runtimeService.createVariableInstanceQuery()
                 .processInstanceIdIn(*processInstanceIds)
                 .variableName(jsonPointer.matchingProperty)
                 .list()
-                .map { getValue(objectMapper.valueToTree<JsonNode>(it.value).at(jsonPointer.tail())) }
+
+            val values = variables
+                .map {
+                    logger.info {it }
+                    logger.info { it.value }
+                    getValue(objectMapper.valueToTree<JsonNode>(it.value).at(jsonPointer.tail()))
+                }
                 .distinct()
             if (values.size > 1) {
                 throw RuntimeException(
@@ -145,5 +152,6 @@ class ProcessVariableValueResolverFactory(
 
     companion object {
         const val PREFIX = "pv"
+        private val logger = KotlinLogging.logger {}
     }
 }

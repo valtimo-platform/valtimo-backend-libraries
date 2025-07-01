@@ -17,10 +17,10 @@
 package com.ritense.valtimo.logging
 
 import com.ritense.valtimo.contract.LoggingConstants
-import org.camunda.bpm.engine.impl.ProcessEngineImpl
-import org.camunda.bpm.engine.impl.interceptor.CommandExecutor
-import org.camunda.bpm.engine.impl.jobexecutor.ExecuteJobsRunnable
-import org.camunda.bpm.engine.impl.jobexecutor.JobFailureCollector
+import org.operaton.bpm.engine.impl.ProcessEngineImpl
+import org.operaton.bpm.engine.impl.interceptor.CommandExecutor
+import org.operaton.bpm.engine.impl.jobexecutor.ExecuteJobsRunnable
+import org.operaton.bpm.engine.impl.jobexecutor.JobFailureCollector
 import org.slf4j.MDC
 import java.util.UUID
 

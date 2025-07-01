@@ -21,7 +21,7 @@ import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.service.PluginService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import org.camunda.bpm.engine.delegate.DelegateTask
+import org.operaton.bpm.engine.delegate.DelegateTask
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -36,8 +36,8 @@ open class ProcessLinkUserTaskCreateListener(
     @Transactional
     @EventListener(
         condition = """#delegateTask.bpmnModelElementInstance != null
-            && #delegateTask.bpmnModelElementInstance.elementType.typeName == T(org.camunda.bpm.engine.ActivityTypes).TASK_USER_TASK
-            && #delegateTask.eventName == T(org.camunda.bpm.engine.delegate.TaskListener).EVENTNAME_CREATE"""
+            && #delegateTask.bpmnModelElementInstance.elementType.typeName == T(org.operaton.bpm.engine.ActivityTypes).TASK_USER_TASK
+            && #delegateTask.eventName == T(org.operaton.bpm.engine.delegate.TaskListener).EVENTNAME_CREATE"""
     )
     fun notify(delegateTask: DelegateTask) {
         withLoggingContext(

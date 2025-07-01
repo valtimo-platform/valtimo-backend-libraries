@@ -23,9 +23,9 @@ import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionServic
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.exception.BpmnParseException
-import com.ritense.valtimo.service.CamundaProcessService
-import org.camunda.bpm.engine.ParseException
-import org.camunda.bpm.model.bpmn.Bpmn
+import com.ritense.valtimo.service.OperatonProcessService
+import org.operaton.bpm.engine.ParseException
+import org.operaton.bpm.model.bpmn.Bpmn
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import java.io.ByteArrayInputStream
@@ -34,7 +34,7 @@ import kotlin.reflect.full.primaryConstructor
 
 @Transactional
 class ProcessDeploymentService(
-    private val camundaProcessService: CamundaProcessService,
+    private val operatonProcessService: OperatonProcessService,
     private val processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
     private val processLinkService: ProcessLinkService,
 ) {
@@ -59,7 +59,7 @@ class ProcessDeploymentService(
                 deployedProcessDefinitionId
             } else {
                 val model = Bpmn.readModelFromStream(bpmn!!.inputStream)
-                val previouslyDeployProcess = camundaProcessService.getExistingProcessForFile(caseDefinitionId, model)
+                val previouslyDeployProcess = operatonProcessService.getExistingProcessForFile(caseDefinitionId, model)
                 ProcessDefinitionId(previouslyDeployProcess.id)
             }
 
@@ -85,7 +85,7 @@ class ProcessDeploymentService(
         if (bpmn != null) {
             try {
                 val deployment = runWithoutAuthorization {
-                    camundaProcessService.deploy(
+                    operatonProcessService.deploy(
                         caseDefinitionId,
                         bpmn.originalFilename,
                         ByteArrayInputStream(bpmn.bytes),
@@ -99,7 +99,7 @@ class ProcessDeploymentService(
                     runWithoutAuthorization {
                         val model = Bpmn.readModelFromStream(bpmn!!.inputStream)
                         val previouslyDeployProcess =
-                            camundaProcessService.getExistingProcessForFile(caseDefinitionId, model)
+                            operatonProcessService.getExistingProcessForFile(caseDefinitionId, model)
                         processLinkService.deleteProcessLinksForProcessDefinition(previouslyDeployProcess.id)
                         createProcessLinks(processLinks = processLinks, caseDefinitionId = caseDefinitionId)
                     }
@@ -107,7 +107,7 @@ class ProcessDeploymentService(
                 }
 
                 val deployedProcessDefinition = runWithoutAuthorization {
-                    camundaProcessService.getProcessDefinitionByDeploymentId(deployment.id)
+                    operatonProcessService.getProcessDefinitionByDeploymentId(deployment.id)
                 }
 
                 deployedProcessDefinitionId = deployedProcessDefinition.id
@@ -117,7 +117,7 @@ class ProcessDeploymentService(
         } else {
             try {
                 val deployment = runWithoutAuthorization {
-                    camundaProcessService.duplicateProcessDefinitionById(
+                    operatonProcessService.duplicateProcessDefinitionById(
                         caseDefinitionId,
                         processDefinitionId,
                         true,
@@ -130,7 +130,7 @@ class ProcessDeploymentService(
                 }
 
                 val deployedProcessDefinition = runWithoutAuthorization {
-                    camundaProcessService.getProcessDefinitionByDeploymentId(deployment.id)
+                    operatonProcessService.getProcessDefinitionByDeploymentId(deployment.id)
                 }
 
                 deployedProcessDefinitionId = deployedProcessDefinition.id

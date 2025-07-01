@@ -65,7 +65,7 @@ internal class DeadlockIntTest : BaseIntegrationTest() {
             threads.add(async(Dispatchers.IO) {
                 runWithoutAuthorization {
                     logger.info { "Thread: $i" }
-                    camundaProcessJsonSchemaDocumentService.startProcessForDocument(
+                    operatonProcessJsonSchemaDocumentService.startProcessForDocument(
                         StartProcessForDocumentRequest(
                             document.id,
                             "deadlock-process",
