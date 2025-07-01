@@ -24,7 +24,6 @@ import com.ritense.document.repository.impl.JsonSchemaDocumentRepository
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
-import com.ritense.processdocument.operaton.authorization.OperatonTaskDocumentMapper
 import com.ritense.processdocument.domain.impl.delegate.DocumentDelegate
 import com.ritense.processdocument.exporter.ProcessDocumentLinkExporter
 import com.ritense.processdocument.importer.ProcessDocumentLinkImporter
@@ -33,6 +32,7 @@ import com.ritense.processdocument.listener.CaseAssigneeTaskCreatedListener
 import com.ritense.processdocument.listener.DecisionCaseEventListener
 import com.ritense.processdocument.listener.ProcessDefinitionCaseEventListener
 import com.ritense.processdocument.listener.ProcessDocumentLinkEventListener
+import com.ritense.processdocument.operaton.authorization.OperatonTaskDocumentMapper
 import com.ritense.processdocument.repository.ProcessDefinitionCaseDefinitionRepository
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository
 import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
@@ -55,13 +55,13 @@ import com.ritense.processdocument.web.ProcessCaseManagementResource
 import com.ritense.processdocument.web.TaskListResource
 import com.ritense.search.repository.SearchFieldV2Repository
 import com.ritense.search.service.SearchFieldV2Service
-import com.ritense.valtimo.operaton.service.OperatonRepositoryService
-import com.ritense.valtimo.operaton.service.OperatonRuntimeService
 import com.ritense.valtimo.contract.annotation.ProcessBean
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.decision.OperatonDecisionService
+import com.ritense.valtimo.operaton.service.OperatonRepositoryService
+import com.ritense.valtimo.operaton.service.OperatonRuntimeService
 import com.ritense.valtimo.service.OperatonProcessService
 import com.ritense.valtimo.service.OperatonTaskService
 import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker
@@ -303,7 +303,7 @@ class ProcessDocumentsAutoConfiguration {
         processDefinitionCaseDefinitionRepository: ProcessDefinitionCaseDefinitionRepository,
         documentService: JsonSchemaDocumentService,
         runtimeService: RuntimeService,
-        repositoryService: CamundaRepositoryService,
+        repositoryService: OperatonRepositoryService,
         caseDefinitionChecker: CaseDefinitionChecker,
     ): ProcessDefinitionCaseDefinitionService {
         return ProcessDefinitionCaseDefinitionService(

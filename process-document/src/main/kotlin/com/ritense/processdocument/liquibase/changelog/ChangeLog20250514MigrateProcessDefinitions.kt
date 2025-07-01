@@ -17,19 +17,18 @@
 package com.ritense.processdocument.liquibase.changelog
 
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
-import com.ritense.valtimo.service.CamundaProcessService
-import com.ritense.valtimo.service.CamundaProcessService.CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX
+import com.ritense.valtimo.service.OperatonProcessService.OPERATON_CASE_DEFINITION_VERSION_TAG_PREFIX
 import io.github.oshai.kotlinlogging.KotlinLogging
 import liquibase.change.custom.CustomTaskChange
 import liquibase.database.Database
 import liquibase.database.jvm.JdbcConnection
 import liquibase.exception.ValidationErrors
 import liquibase.resource.ResourceAccessor
-import org.camunda.bpm.model.bpmn.Bpmn
-import org.camunda.bpm.model.bpmn.BpmnModelInstance
-import org.camunda.bpm.model.bpmn.instance.BusinessRuleTask
-import org.camunda.bpm.model.bpmn.instance.CallActivity
-import org.camunda.bpm.model.bpmn.instance.Process
+import org.operaton.bpm.model.bpmn.Bpmn
+import org.operaton.bpm.model.bpmn.BpmnModelInstance
+import org.operaton.bpm.model.bpmn.instance.BusinessRuleTask
+import org.operaton.bpm.model.bpmn.instance.CallActivity
+import org.operaton.bpm.model.bpmn.instance.Process
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
@@ -391,7 +390,7 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
             decisionDefinitions = decisionDefinitionSet.decisionDefinitions.map { decisionDefinition ->
                 decisionDefinition.copy(
                     id = UUID.randomUUID().toString(),
-                    versionTag = CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + CaseDefinitionId.of(caseDefinitionKey, caseDefinitionVersionTag),
+                    versionTag = OPERATON_CASE_DEFINITION_VERSION_TAG_PREFIX + CaseDefinitionId.of(caseDefinitionKey, caseDefinitionVersionTag),
                     version = decisionDefinition.version + 1,
                     deploymentId = deploymentId,
                 )
@@ -446,7 +445,7 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
 
         val statement = connection.prepareStatement(existingProcDefQuery)
         statement.setString(1, decisionDefinitionKey)
-        statement.setString(2, CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + CaseDefinitionId.of(caseDefinitionKey, caseDefinitionVersionTag))
+        statement.setString(2, OPERATON_CASE_DEFINITION_VERSION_TAG_PREFIX + CaseDefinitionId.of(caseDefinitionKey, caseDefinitionVersionTag))
 
         val resultSet = statement.executeQuery()
         resultSet.next()
@@ -1009,23 +1008,23 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
 
         bpmnModel.getDefinitions().getChildElementsByType<Process?>(Process::class.java).forEach(
             Consumer { process: Process? ->
-                process!!.setCamundaVersionTag(CamundaProcessService.CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.toString())
+                process!!.setOperatonVersionTag(OPERATON_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.toString())
                 process.getChildElementsByType<CallActivity>(CallActivity::class.java).forEach {callActivity ->
-                    val elementBinding = callActivity.getCamundaCalledElementBinding()
+                    val elementBinding = callActivity.getOperatonCalledElementBinding()
                     // when the element binding is null, it means it's set to latest
                     if (elementBinding == null) {
-                        callActivity.setCamundaCalledElementBinding("versionTag")
-                        callActivity.setCamundaCalledElementVersionTag(CamundaProcessService.CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId)
+                        callActivity.setOperatonCalledElementBinding("versionTag")
+                        callActivity.setOperatonCalledElementVersionTag(OPERATON_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId)
                         referencedProcesses.add(callActivity.calledElement)
                     }
                 }
                 process.getChildElementsByType(BusinessRuleTask::class.java).forEach { businessRuleTask ->
-                    val elementBinding = businessRuleTask.getCamundaDecisionRefBinding()
+                    val elementBinding = businessRuleTask.getOperatonDecisionRefBinding()
                     // when the element binding is null, it means it's set to latest
                     if (elementBinding == null) {
-                        businessRuleTask.setCamundaDecisionRefBinding("versionTag")
-                        businessRuleTask.setCamundaDecisionRefVersionTag(CamundaProcessService.CAMUNDA_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId)
-                        referencedDecisions.add(businessRuleTask.camundaDecisionRef)
+                        businessRuleTask.setOperatonDecisionRefBinding("versionTag")
+                        businessRuleTask.setOperatonDecisionRefVersionTag(OPERATON_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId)
+                        referencedDecisions.add(businessRuleTask.operatonDecisionRef)
                     }
                 }
             }

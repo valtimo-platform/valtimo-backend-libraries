@@ -66,7 +66,7 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
     lateinit var formFlowService: FormFlowService
 
     @Test
-    fun `should not create form flow instance when Camunda user task is created`() {
+    fun `should not create form flow instance when Operaton user task is created`() {
         val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         val processDefinition = repositoryService.createProcessDefinitionQuery()
             .latestVersion()
