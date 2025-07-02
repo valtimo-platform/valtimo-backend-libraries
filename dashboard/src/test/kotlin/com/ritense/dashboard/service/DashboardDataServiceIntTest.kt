@@ -11,6 +11,7 @@ import com.ritense.dashboard.TestWidgetNumberResult
 import com.ritense.dashboard.TestWidgetNumbersResult
 import com.ritense.dashboard.domain.WidgetConfiguration
 import com.ritense.dashboard.repository.WidgetConfigurationRepository
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -24,6 +25,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.CacheManager
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 
 class DashboardDataServiceIntTest @Autowired constructor(
@@ -78,6 +80,7 @@ class DashboardDataServiceIntTest @Autowired constructor(
         }
     }
     @Test
+    @WithMockUser(username = "user@ritense.com", authorities = [USER])
     fun `should get data from test datasource`() {
         runWithoutAuthorization {
             dashboardService.createDashboard("Test", "Test description")
