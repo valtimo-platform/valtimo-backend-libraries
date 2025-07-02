@@ -53,7 +53,11 @@ class IkoDataRequestResource(
         val ikoDataRequests = dataRequestService.findAll(
             ikoDataAggregateKey = ikoDataAggregateKey,
         )
-        return ResponseEntity.ok(ikoDataRequests.map { IkoDataRequestUserListResponse.from(it) })
+        val response = ikoDataRequests.map {
+            val searchFields = searchFieldService.findAllByOwner(IKO_SEARCH_OWNER, "$ikoDataAggregateKey:${it.id.key}")
+            IkoDataRequestUserListResponse.from(it, searchFields)
+        }
+        return ResponseEntity.ok(response)
     }
 
     @PostMapping("/v1/iko-data-aggregate/{ikoDataAggregateKey}/data-request/{key}/search")

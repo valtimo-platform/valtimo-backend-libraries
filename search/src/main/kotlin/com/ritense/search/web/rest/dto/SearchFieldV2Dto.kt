@@ -51,4 +51,23 @@ data class SearchFieldV2Dto(
         dropdownDataProvider = this.dropdownDataProvider,
         required = this.required,
     )
+
+    companion object {
+        fun of(entity: SearchFieldV2): SearchFieldV2Dto {
+            return SearchFieldV2Dto(
+                id = entity.id,
+                ownerId = entity.ownerId,
+                ownerType = entity.ownerType,
+                key = entity.key,
+                title = entity.title,
+                path = entity.path,
+                order = entity.order,
+                dataType = entity.dataType,
+                fieldType = entity.fieldType,
+                matchType = entity.matchType,
+                dropdownDataProvider = entity.dropdownDataProvider,
+                required = entity.required,
+            )
+        }
+    }
 }
