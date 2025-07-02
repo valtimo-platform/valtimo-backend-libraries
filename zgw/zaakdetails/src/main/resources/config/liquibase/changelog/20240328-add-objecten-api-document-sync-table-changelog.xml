@@ -56,7 +56,7 @@
         <sql>
             update document_objecten_api_sync
             set case_definition_key = document_definition_name,
-                case_definition_version_tag = '000000.' || LPAD(document_definition_version::text, 6, '0') || '.000000-${environmentName}'
+                case_definition_version_tag = '000000.' || LPAD(document_definition_version::text, 6, '0') || '.000000-migrated'
             where case_definition_version_tag is null
         </sql>
     </changeSet>
@@ -68,7 +68,7 @@
         <sql>
             update document_objecten_api_sync
             set case_definition_key = document_definition_name,
-                case_definition_version_tag = CONCAT('000000.', LPAD(document_definition_version, 6, '0'), '.000000-', '${environmentName}')
+                case_definition_version_tag = CONCAT('000000.', LPAD(document_definition_version, 6, '0'), '.000000-migrated')
             where case_definition_version_tag is null
         </sql>
     </changeSet>

@@ -86,14 +86,14 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
     private fun translateDocumentDefVersionToCaseDefVersionTag(
         documentDefinitionVersion: Int,
     ): String {
-        return "0.$documentDefinitionVersion.0-env"
+        return "0.$documentDefinitionVersion.0-migrated"
     }
 
     private fun translateDocumentDefVersionToCaseDefVersionTagForDatabase(
         documentDefinitionVersion: Int,
     ): String {
         val minorVersion = documentDefinitionVersion.toString().padStart(6, '0')
-        return "000000.$minorVersion.000000-env"
+        return "000000.$minorVersion.000000-migrated"
     }
 
     private fun migrateProcessDefinition(

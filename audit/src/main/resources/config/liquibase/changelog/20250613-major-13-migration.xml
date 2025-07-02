@@ -35,7 +35,7 @@
                     audit_event->'definitionId'->>'name',
                     '","versionTag":"0.',
                     audit_event->'definitionId'->>'version',
-                    '.0-${environmentName}"}}'
+                    '.0-migrated"}}'
                 )::jsonb,
                 true
             )
@@ -53,7 +53,7 @@
                 audit_event,
                 '$.definitionId.name', JSON_EXTRACT(audit_event, '$.definitionId.name'),
                 '$.definitionId.caseDefinitionId.key', JSON_EXTRACT(audit_event, '$.definitionId.name'),
-                '$.definitionId.caseDefinitionId.version', concat('0.', JSON_EXTRACT(audit_event, '$.definitionId.version'), '.0-${environmentName}')
+                '$.definitionId.caseDefinitionId.version', concat('0.', JSON_EXTRACT(audit_event, '$.definitionId.version'), '.0-migrated')
             )
             where JSON_EXTRACT(audit_event, '$.definitionId.version') is not null
         </sql>

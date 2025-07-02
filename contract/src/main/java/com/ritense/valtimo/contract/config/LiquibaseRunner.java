@@ -80,8 +80,6 @@ public class LiquibaseRunner {
     @SuppressWarnings({"squid:S2095", "java:S2095"}) // Liquibase connection is closed elsewhere
     private void runChangeLog(Database database, String filePath) throws LiquibaseException {
         Liquibase liquibase = new Liquibase(filePath, new ClassLoaderResourceAccessor(), database);
-        //TODO: get environment name from somewhere
-        liquibase.getChangeLogParameters().set("environmentName", "env");
         logger.info("Running liquibase master changelog: {}", liquibase.getChangeLogFile());
         liquibase.update(context);
     }
