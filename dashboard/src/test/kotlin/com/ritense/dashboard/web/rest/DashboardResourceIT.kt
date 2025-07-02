@@ -77,6 +77,7 @@ class DashboardResourceIT @Autowired constructor(
     }
 
     @Test
+    @WithMockUser(username = "user@ritense.com", authorities = [USER])
     fun `should get dashboards`() {
         val dashboard = runWithoutAuthorization {
             dashboardService.createDashboard("Test dashboard", "Test description")
