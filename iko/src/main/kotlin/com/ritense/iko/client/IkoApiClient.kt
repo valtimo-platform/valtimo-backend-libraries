@@ -17,6 +17,7 @@
 package com.ritense.iko.client
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
@@ -57,31 +58,39 @@ class IkoApiClient(
         searchType: String? = null,
         filters: Map<String, String>,
     ): JsonNode {
-        val result = restClientBuilder
-            .clone()
-            .build()
-            .get()
-            .uri { uriBuilder ->
-                uriBuilder
-                    .scheme(baseUrl.scheme)
-                    .host(baseUrl.host)
-                    .path(baseUrl.path)
-                    .port(baseUrl.port)
-                    .pathSegment("searches")
-                    .pathSegment(searchPath)
-                    .queryParam("type", searchType)
-                    .queryParams(
-                        LinkedMultiValueMap(
-                            filters
-                                .map { (key, value) -> key to listOf(value) }
-                                .associate { it })
-                    )
-                    .build()
-            }
-            .retrieve()
-            .body<JsonNode>()!!
+        try {
+            val result = restClientBuilder
+                .clone()
+                .build()
+                .get()
+                .uri { uriBuilder ->
+                    uriBuilder
+                        .scheme(baseUrl.scheme)
+                        .host(baseUrl.host)
+                        .path(baseUrl.path)
+                        .port(baseUrl.port)
+                        .pathSegment("searches")
+                        .pathSegment(searchPath)
+                        .queryParam("type", searchType)
+                        .queryParams(
+                            LinkedMultiValueMap(
+                                filters
+                                    .map { (key, value) -> key to listOf(value) }
+                                    .associate { it })
+                        )
+                        .build()
+                }
+                .retrieve()
+                .body<JsonNode>()!!
 
-        return result
+            return result
+        } catch (e: Exception) {
+            e.printStackTrace()
+            // TODO: remove try-catch with mock data
+            return jacksonObjectMapper().readTree(
+                """{"type": "ZoekMetGeslachtsnaamEnGeboortedatum","personen": [{"burgerservicenummer": "999993653","naam": {"voornamen": "Suzanne","geslachtsnaam": "Moulin","voorletters": "S.","volledigeNaam": "Suzanne Moulin","aanduidingNaamgebruik": {"code": "E","omschrijving": "eigen geslachtsnaam"}}}]}"""
+            )
+        }
     }
 
 }
