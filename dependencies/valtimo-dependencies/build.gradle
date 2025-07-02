@@ -43,6 +43,7 @@ dependencies {
     api(project(":search"))
     api(project(":value-resolver"))
     api(project(":web"))
+    api(project(":widget"))
 }
 
 apply from: "gradle/publishing.gradle"

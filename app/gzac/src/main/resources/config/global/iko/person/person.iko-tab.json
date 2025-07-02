@@ -1,0 +1,45 @@
+{
+    "ikoDataAggregateKey": "person",
+    "ikoTabs": [
+        {
+            "title": "Algemeen",
+            "key": "general",
+            "type": "widgets"
+        },
+        {
+            "title": "Lopende Zaken",
+            "key": "case-progress",
+            "type": "widgets"
+        },
+        {
+            "title": "Notities",
+            "key": "notes",
+            "type": "widgets"
+        },
+        {
+            "title": "Producten",
+            "key": "products",
+            "type": "widgets"
+        },
+        {
+            "title": "Contactmomenten",
+            "key": "contact-moments",
+            "type": "widgets"
+        },
+        {
+            "title": "Documenten",
+            "key": "zaakobjecten",
+            "type": "widgets"
+        },
+        {
+            "title": "Werk",
+            "key": "work",
+            "type": "widgets"
+        },
+        {
+            "title": "Inkomen",
+            "key": "income",
+            "type": "widgets"
+        }
+    ]
+}

@@ -43,6 +43,7 @@ dependencies {
     implementation project(':process-document')
     implementation project(':search')
     implementation project(':value-resolver')
+    implementation project(':widget')
 
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter"

@@ -65,6 +65,7 @@ dependencies {
         api(project(":test-utils-common"))
         api(project(":value-resolver"))
         api(project(":dependencies:valtimo-dependencies"))
+        api(project(":widget"))
         api(project(":web"))
         api(project(":mail:wordpress-mail"))
 
