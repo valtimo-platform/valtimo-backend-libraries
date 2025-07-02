@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<process-application xmlns="http://www.camunda.org/schema/1.0/ProcessApplication">
+<process-application xmlns="http://www.operaton.org/schema/1.0/ProcessApplication">
 
     <process-archive>
         <process-engine>default</process-engine>
