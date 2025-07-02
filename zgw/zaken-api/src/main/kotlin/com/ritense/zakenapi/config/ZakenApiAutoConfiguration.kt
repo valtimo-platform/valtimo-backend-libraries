@@ -87,14 +87,11 @@ class ZakenApiAutoConfiguration {
         outboxService: OutboxService,
         objectMapper: ObjectMapper,
         authorizationService: AuthorizationService,
-        @Value("\${valtimo.authorization.zgwDocuments.enabled:false}")
-        authorizationEnabled: Boolean,
     ) = ZakenApiClient(
         restClientBuilder,
         outboxService,
         objectMapper,
         authorizationService,
-        authorizationEnabled,
     )
 
     @Bean

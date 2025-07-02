@@ -47,14 +47,11 @@ class UploadProcessAutoConfiguration {
         resourceService: TemporaryResourceStorageService,
         uploadProcessService: UploadProcessService,
         authorizationService: AuthorizationService,
-        @Value("\${valtimo.authorization.zgwDocuments.enabled:false}")
-        authorizationEnabled: Boolean,
     ): ResourceUploadedToDocumentEventListener {
         return ResourceUploadedToDocumentEventListener(
             resourceService,
             uploadProcessService,
             authorizationService,
-            authorizationEnabled,
         )
     }
 
