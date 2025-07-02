@@ -46,7 +46,6 @@ spring:
                 elideSetAutoCommits: true
                 maintainTimeStats: false
                 serverTimezone: UTC
-                stringtype: unspecified
                 allowPublicKeyRetrieval: true
     security:
         oauth2:

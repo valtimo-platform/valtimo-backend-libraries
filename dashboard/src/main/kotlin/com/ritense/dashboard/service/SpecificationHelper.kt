@@ -17,11 +17,7 @@
 package com.ritense.dashboard.service
 
 import com.ritense.dashboard.domain.Dashboard
-import jakarta.persistence.criteria.CriteriaBuilder
-import jakarta.persistence.criteria.CriteriaQuery
-import jakarta.persistence.criteria.Root
 import org.springframework.data.jpa.domain.Specification
-import java.util.*
 
 class SpecificationHelper {
     companion object {
