@@ -3,7 +3,6 @@
     "title": "IKO API",
     "type": "iko",
     "properties": {
-        "baseUrl": "localhost:8080",
-        "token": "*****"
+        "baseUrl": "http://localhost:9090"
     }
 }

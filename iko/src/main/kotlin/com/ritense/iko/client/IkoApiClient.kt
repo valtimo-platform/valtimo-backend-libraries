@@ -17,6 +17,7 @@
 package com.ritense.iko.client
 
 import com.fasterxml.jackson.databind.JsonNode
+import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 import java.net.URI
@@ -24,21 +25,23 @@ import java.net.URI
 class IkoApiClient(
     private val restClientBuilder: RestClient.Builder,
 ) {
-    fun get(
+    fun getById(
         baseUrl: URI,
-        dataAggregate: String,
+        searchPath: String,
         id: String,
     ): JsonNode {
         val result = restClientBuilder
             .clone()
             .build()
             .get()
-            .uri {
-                it.scheme(baseUrl.scheme)
+            .uri { uriBuilder ->
+                uriBuilder
+                    .scheme(baseUrl.scheme)
                     .host(baseUrl.host)
                     .path(baseUrl.path)
                     .port(baseUrl.port)
-                    .pathSegment(dataAggregate)
+                    .pathSegment("searches")
+                    .pathSegment(searchPath)
                     .pathSegment(id)
                     .build()
             }
@@ -50,20 +53,29 @@ class IkoApiClient(
 
     fun search(
         baseUrl: URI,
-        dataAggregate: String,
-        searchQuery: String,
+        searchPath: String,
+        searchType: String? = null,
+        filters: Map<String, String>,
     ): JsonNode {
         val result = restClientBuilder
             .clone()
             .build()
             .get()
-            .uri {
-                it.scheme(baseUrl.scheme)
+            .uri { uriBuilder ->
+                uriBuilder
+                    .scheme(baseUrl.scheme)
                     .host(baseUrl.host)
                     .path(baseUrl.path)
                     .port(baseUrl.port)
-                    .pathSegment(dataAggregate)
-                    .pathSegment(searchQuery)
+                    .pathSegment("searches")
+                    .pathSegment(searchPath)
+                    .queryParam("type", searchType)
+                    .queryParams(
+                        LinkedMultiValueMap(
+                            filters
+                                .map { (key, value) -> key to listOf(value) }
+                                .associate { it })
+                    )
                     .build()
             }
             .retrieve()

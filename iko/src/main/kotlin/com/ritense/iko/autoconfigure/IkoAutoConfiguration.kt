@@ -18,7 +18,7 @@ package com.ritense.iko.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
-import com.ritense.iko.IkoApiDataRepository
+import com.ritense.iko.IkoApiConnector
 import com.ritense.iko.IkoValueResolverFactory
 import com.ritense.iko.authorization.IkoDataAggregateSpecificationFactory
 import com.ritense.iko.client.IkoApiClient
@@ -199,14 +199,12 @@ class IkoAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(IkoApiDataRepository::class)
-    fun ikoApiDataRepository(
+    @ConditionalOnMissingBean(IkoApiConnector::class)
+    fun ikoApiConnector(
         ikoApiClient: IkoApiClient,
-        objectMapper: ObjectMapper,
-    ): IkoApiDataRepository {
-        return IkoApiDataRepository(
+    ): IkoApiConnector {
+        return IkoApiConnector(
             ikoApiClient,
-            objectMapper,
         )
     }
 

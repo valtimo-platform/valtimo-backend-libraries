@@ -5,7 +5,7 @@
         {
             "key": "bsn",
             "title": "BSN",
-            "path": "iko:/persoon/burgerservicenummer",
+            "path": "iko:/bsn",
             "dataType": "text",
             "fieldType": "single",
             "matchType": "exact",

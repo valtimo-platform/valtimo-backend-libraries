@@ -5,7 +5,7 @@
             "key": "boombeeld",
             "title": "Zoek met boombeeld",
             "properties": {
-                "dataRequestPath": "ZoekMetBoombeeld"
+                "searchType": "ZoekMetBoombeeld"
             }
         }
     ]

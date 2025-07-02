@@ -3,6 +3,6 @@
     "ikoConnectorConfigKey": "iko-api",
     "title": "Boom",
     "properties": {
-        "dataAggregatePath": "boom"
+        "searchPath": "boom"
     }
 }

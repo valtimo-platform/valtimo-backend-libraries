@@ -3,6 +3,6 @@
     "ikoConnectorConfigKey": "iko-api",
     "title": "Person",
     "properties": {
-        "dataAggregatePath": "person"
+        "searchPath": "personen"
     }
 }
