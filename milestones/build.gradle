@@ -80,6 +80,10 @@ dependencies {
     implementation "org.hibernate.orm:hibernate-envers:${hibernateCoreVersion}"
 
     testImplementation "org.springframework.security:spring-security-test"
+
+    configurations.all {
+        exclude group: 'org.graalvm.truffle', module: 'truffle-enterprise'
+    }
 }
 
 apply from: "gradle/publishing.gradle"
