@@ -323,15 +323,14 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
         assertNotNull(runWithoutAuthorization { taskService.findTaskById(task.id) })
 
         val portaaltaakPlugin = spy(pluginService.createInstance(portaalTaakPluginDefinition.id) as PortaaltaakPlugin)
-        val delegateExecution = mock<DelegateExecution> {
-            on { variables }.thenReturn(
-                mapOf(
-                    "verwerkerTaakId" to task.id,
-                    "objectenApiPluginConfigurationId" to objectenPlugin.id.id.toString(),
-                    "portaalTaakObjectUrl" to "http://some.resource/url"
-                )
+        val delegateExecution = mockExecution(
+            mapOf(
+                "verwerkerTaakId" to task.id,
+                "objectenApiPluginConfigurationId" to objectenPlugin.id.id.toString(),
+                "portaalTaakObjectUrl" to "http://some.resource/url"
             )
-        }
+        )
+
         val objectenApiPlugin: ObjectenApiPlugin = mock()
         val objectWrapperCaptor = argumentCaptor<ObjectWrapper>()
         val jsonNodeCaptor = argumentCaptor<JsonNode>()
@@ -387,11 +386,10 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
         """.trimIndent()
         )
         val portaaltaakPlugin = pluginService.createInstance(portaalTaakPluginDefinition.id) as PortaaltaakPlugin
-        val delegateExecution = mock<DelegateExecution> {
-            on { variables }.thenReturn(
-                mapOf("verwerkerTaakId" to task.id)
-            )
-        }
+        val delegateExecution = mockExecution(
+            mapOf("verwerkerTaakId" to task.id)
+        )
+
         val result =
             assertThrows<CompleteTaakProcessVariableNotFoundException> {
                 portaaltaakPlugin.completePortaalTaak(
@@ -411,14 +409,13 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
         """.trimIndent()
         )
         val portaaltaakPlugin = pluginService.createInstance(portaalTaakPluginDefinition.id) as PortaaltaakPlugin
-        val delegateExecution = mock<DelegateExecution> {
-            on { variables }.thenReturn(
-                mapOf(
-                    "verwerkerTaakId" to task.id,
-                    "objectenApiPluginConfigurationId" to objectenPlugin.id.id.toString()
-                )
+        val delegateExecution = mockExecution(
+            mapOf(
+                "verwerkerTaakId" to task.id,
+                "objectenApiPluginConfigurationId" to objectenPlugin.id.id.toString()
             )
-        }
+        )
+
 
         val result =
             assertThrows<CompleteTaakProcessVariableNotFoundException> {
@@ -687,6 +684,14 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
 
         override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
             return next.exchange(request)
+        }
+    }
+
+    private fun mockExecution(variables: Map<String, Any>): DelegateExecution {
+        return mock<DelegateExecution> {
+            on { variables }.thenReturn(variables)
+            on { processInstanceId }.thenReturn(UUID.randomUUID().toString())
+            on { getVariable(any()) }.thenAnswer { variables.get(it.arguments[0]) }
         }
     }
 
