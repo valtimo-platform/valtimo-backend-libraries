@@ -51,9 +51,12 @@
             update audit_record
             set audit_event = JSON_SET(
                 audit_event,
-                '$.definitionId.name', JSON_EXTRACT(audit_event, '$.definitionId.name'),
-                '$.definitionId.caseDefinitionId.key', JSON_EXTRACT(audit_event, '$.definitionId.name'),
-                '$.definitionId.caseDefinitionId.version', concat('0.', JSON_EXTRACT(audit_event, '$.definitionId.version'), '.0-migrated')
+                '$.definitionId.name', audit_event ->> '$.definitionId.name',
+                '$.definitionId.caseDefinitionId', JSON_SET(
+                    '{}',
+                    '$.key', audit_event ->> '$.definitionId.name',
+                    '$.versionTag', concat('0.', audit_event ->> '$.definitionId.version', '.0-migrated')
+                )
             )
             where JSON_EXTRACT(audit_event, '$.definitionId.version') is not null
         </sql>

@@ -136,7 +136,7 @@
                 case_definition_version_tag
             )
             select
-                JSON_EXTRACT(jsdd.json_schema, '$.title') as case_definition_name,
+                jsdd.json_schema->> '$.title' as case_definition_name,
                 cd.can_have_assignee,
                 cd.auto_assign_tasks,
                 cd.has_external_start_form,
