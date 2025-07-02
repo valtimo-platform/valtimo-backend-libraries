@@ -53,6 +53,7 @@ import com.ritense.zakenapi.event.ZaakPatched
 import com.ritense.zakenapi.event.ZaakResultaatCreated
 import com.ritense.zakenapi.event.ZaakResultaatViewed
 import com.ritense.zakenapi.event.ZaakRolCreated
+import com.ritense.zakenapi.event.ZaakRolUpdated
 import com.ritense.zakenapi.event.ZaakRollenListed
 import com.ritense.zakenapi.event.ZaakStatusCreated
 import com.ritense.zakenapi.event.ZaakStatusViewed
@@ -61,13 +62,18 @@ import com.ritense.zakenapi.event.ZaakeigenschapCreated
 import com.ritense.zakenapi.event.ZaakeigenschapDeleted
 import com.ritense.zakenapi.event.ZaakeigenschapListed
 import com.ritense.zakenapi.event.ZaakeigenschapUpdated
+import com.ritense.zakenapi.exception.ZaakRolNotUpdatedException
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
+import mu.KLogger
+import mu.KotlinLogging
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 import java.net.URI
+import java.util.UUID
 
 class ZakenApiClient(
     private val restClientBuilder: RestClient.Builder,
@@ -75,6 +81,7 @@ class ZakenApiClient(
     private val objectMapper: ObjectMapper,
     private val authorizationService: AuthorizationService,
     private val authorizationEnabled: Boolean = false,
+    private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
     fun linkDocument(
         authentication: ZakenApiAuthentication,
@@ -103,7 +110,9 @@ class ZakenApiClient(
             .retrieve()
             .body<LinkDocumentResult>()!!
 
-        outboxService.send { DocumentLinkedToZaak(result.uuid, objectMapper.valueToTree(result)) }
+        val event = DocumentLinkedToZaak(result.uuid, objectMapper.valueToTree(result))
+        applicationEventPublisher.publishEvent(event)
+        outboxService.send { event }
         return result
     }
 
@@ -235,9 +244,35 @@ class ZakenApiClient(
             .retrieve()
             .body<Rol>()!!
 
+        val event = ZaakRolCreated(result.url.toString(), objectMapper.valueToTree(result))
+        applicationEventPublisher.publishEvent(event)
         outboxService.send {
-            ZaakRolCreated(result.url.toString(), objectMapper.valueToTree(result))
+            event
         }
+        return result
+    }
+
+    fun updateZaakRol(
+        authentication: ZakenApiAuthentication,
+        baseUrl: URI,
+        rolUuid: UUID,
+        rol: Rol
+    ): Rol {
+        val result = buildRestClient(authentication)
+            .put()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, baseUrl)
+                    .path("rollen/${rolUuid}")
+                    .build()
+            }
+            .body(rol)
+            .retrieve()
+            .body<Rol>() ?: throw ZaakRolNotUpdatedException("No body was returned when updating rol($rolUuid)")
+
+        val event =  ZaakRolUpdated(result.url.toString(), objectMapper.valueToTree(result))
+        applicationEventPublisher.publishEvent(event)
+        outboxService.send { event }
+
         return result
     }
 
@@ -259,7 +294,9 @@ class ZakenApiClient(
             .retrieve()
             .body<ZaakResponse>()!!
 
-        outboxService.send { ZaakCreated(result.url.toString(), objectMapper.valueToTree(result)) }
+        val event = ZaakCreated(result.url.toString(), objectMapper.valueToTree(result))
+        applicationEventPublisher.publishEvent(event)
+        outboxService.send { event }
         return result
     }
 
@@ -278,7 +315,10 @@ class ZakenApiClient(
             .body(request)
             .retrieve()
             .body<ZaakResponse>()!!
-        outboxService.send { ZaakPatched(result.url.toString(), objectMapper.valueToTree(result)) }
+
+        val event = ZaakPatched(result.url.toString(), objectMapper.valueToTree(result))
+        applicationEventPublisher.publishEvent(event)
+        outboxService.send { event }
         return result
     }
 
@@ -300,7 +340,9 @@ class ZakenApiClient(
             .retrieve()
             .body<CreateZaakStatusResponse>()!!
 
-        outboxService.send { ZaakStatusCreated(result.url.toString(), objectMapper.valueToTree(result)) }
+        val event = ZaakStatusCreated(result.url.toString(), objectMapper.valueToTree(result))
+        applicationEventPublisher.publishEvent(event)
+        outboxService.send { event }
         return result
     }
 
@@ -350,7 +392,9 @@ class ZakenApiClient(
             .retrieve()
             .body<CreateZaakResultaatResponse>()!!
 
-        outboxService.send { ZaakResultaatCreated(result.url.toString(), objectMapper.valueToTree(result)) }
+        val event = ZaakResultaatCreated(result.url.toString(), objectMapper.valueToTree(result))
+        applicationEventPublisher.publishEvent(event)
+        outboxService.send { event}
         return result
     }
 
@@ -368,7 +412,9 @@ class ZakenApiClient(
             .retrieve()
             .body<ZaakopschortingResponse>()!!
 
-        outboxService.send { ZaakOpschortingUpdated(result.url, objectMapper.valueToTree(result)) }
+        val event = ZaakOpschortingUpdated(result.url, objectMapper.valueToTree(result))
+        applicationEventPublisher.publishEvent(event)
+        outboxService.send { event }
         return result
     }
 
@@ -408,11 +454,13 @@ class ZakenApiClient(
             .retrieve()
             .body<ZaakeigenschapResponse>()!!
 
+        val event = ZaakeigenschapCreated(
+            result.url.toString(),
+            objectMapper.valueToTree(result)
+        )
+        applicationEventPublisher.publishEvent(event)
         outboxService.send {
-            ZaakeigenschapCreated(
-                result.url.toString(),
-                objectMapper.valueToTree(result)
-            )
+            event
         }
         return result
     }
@@ -434,12 +482,12 @@ class ZakenApiClient(
             .retrieve()
             .body<ZaakeigenschapResponse>()!!
 
-        outboxService.send {
-            ZaakeigenschapUpdated(
-                result.url.toString(),
-                objectMapper.valueToTree(result)
-            )
-        }
+        val event = ZaakeigenschapUpdated(
+            result.url.toString(),
+            objectMapper.valueToTree(result)
+        )
+        applicationEventPublisher.publishEvent(event)
+        outboxService.send { event }
         return result
     }
 
@@ -456,9 +504,9 @@ class ZakenApiClient(
             .retrieve()
             .toBodilessEntity()
 
-        outboxService.send {
-            ZaakeigenschapDeleted(zaakeigenschapUrl.toString())
-        }
+        val event = ZaakeigenschapDeleted(zaakeigenschapUrl.toString())
+        applicationEventPublisher.publishEvent(event)
+        outboxService.send { event }
     }
 
     fun getZaakeigenschappen(
@@ -546,9 +594,11 @@ class ZakenApiClient(
             .retrieve()
             .body<ZaakObject>()!!
 
-        outboxService.send {
-            ZaakObjectCreated(result.url.toString(), objectMapper.valueToTree(result))
-        }
+        result = result.copy(objectUrl = result.objectUrl)
+
+        val event = ZaakObjectCreated(result.url.toString(), objectMapper.valueToTree(result))
+        applicationEventPublisher.publishEvent(event)
+        outboxService.send { event }
         return result
     }
 
@@ -577,5 +627,6 @@ class ZakenApiClient(
     companion object {
         private const val HOST_DOCKER_INTERNAL = "host.docker.internal"
         private const val LOCALHOST = "localhost"
+        private val logger: KLogger = KotlinLogging.logger {}
     }
 }

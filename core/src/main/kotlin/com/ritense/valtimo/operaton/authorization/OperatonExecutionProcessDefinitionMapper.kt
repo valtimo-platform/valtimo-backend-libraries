@@ -29,19 +29,25 @@ class OperatonExecutionProcessDefinitionMapper : AuthorizationEntityMapper<Opera
         return listOf(entity.processDefinition!!)
     }
 
-    override fun mapQuery(root: Root<OperatonExecution>, query: AbstractQuery<*>, criteriaBuilder: CriteriaBuilder): AuthorizationEntityMapperResult<OperatonProcessDefinition> {
-        val processDefinitionRoot: Root<OperatonProcessDefinition> = query.from(OperatonProcessDefinition::class.java)
-        val groupList = query.groupList.toMutableList()
-        groupList.add(root.get<OperatonProcessDefinition>("processDefinition").get<String>("id"))
-        query.groupBy(groupList)
+    override fun mapQuery(
+        root: Root<OperatonExecution>,
+        query: AbstractQuery<*>,
+        criteriaBuilder: CriteriaBuilder
+    ): AuthorizationEntityMapperResult<OperatonProcessDefinition> {
+        val subquery = query.subquery(Int::class.java)
+        val processDefinitionRoot: Root<OperatonProcessDefinition> = subquery.from(OperatonProcessDefinition::class.java)
+        subquery.select(criteriaBuilder.literal(1))
+            .where(
+                criteriaBuilder.equal(
+                    root.get<OperatonProcessDefinition>("processDefinition").get<String>("id"),
+                    processDefinitionRoot.get<String>("id")
+                )
+            )
 
         return AuthorizationEntityMapperResult(
             processDefinitionRoot,
-            query,
-            criteriaBuilder.equal(
-                root.get<OperatonProcessDefinition>("processDefinition").get<String>("id"),
-                processDefinitionRoot.get<String>("id")
-            )
+            subquery,
+            criteriaBuilder.exists(subquery)
         )
     }
 

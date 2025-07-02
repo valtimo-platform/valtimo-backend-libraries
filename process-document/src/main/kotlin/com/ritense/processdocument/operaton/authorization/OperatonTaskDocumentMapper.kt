@@ -52,20 +52,24 @@ class OperatonTaskDocumentMapper(
         query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): AuthorizationEntityMapperResult<JsonSchemaDocument> {
-        val documentRoot = query.from(JsonSchemaDocument::class.java)
+
+        val subquery = query.subquery(Int::class.java)
+        val documentRoot = subquery.from(JsonSchemaDocument::class.java)
+
         val processBusinessKey = root.get<OperatonExecution>(PROCESS_INSTANCE).get<String>(BUSINESS_KEY)
-        if (!QueryUtils.isCountQuery(query)) {
-            query.groupBy(query.groupList + root.get<String>(ID))
-        }
+
         val documentId = queryDialectHelper.uuidToString(
             criteriaBuilder,
             documentRoot.get<JsonSchemaDocumentId>(ID).get(ID)
         )
 
+        subquery.select(criteriaBuilder.literal(1))
+            .where(criteriaBuilder.equal(processBusinessKey, documentId))
+
         return AuthorizationEntityMapperResult(
             documentRoot,
-            query,
-            criteriaBuilder.equal(processBusinessKey, documentId)
+            subquery,
+            criteriaBuilder.exists(subquery)
         )
     }
 

@@ -28,7 +28,6 @@ import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
-import java.util.UUID
 
 class CaseTabSpecification(
     authRequest: AuthorizationRequest<CaseTab>,
@@ -41,12 +40,6 @@ class CaseTabSpecification(
         query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
-        // Filter the permissions for the relevant ones and use those to  find the filters that are required
-        // Turn those filters into predicates
-        val groupList = query.groupList.toMutableList()
-        groupList.add(root.get<UUID>("id"))
-        query.groupBy(groupList)
-
         val predicates = permissions.stream()
             .filter { permission: Permission ->
                 CaseTab::class.java == permission.resourceType
