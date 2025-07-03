@@ -23,6 +23,8 @@ import com.ritense.iko.web.rest.request.IkoSearchRequest
 import com.ritense.iko.web.rest.response.IkoDataRequestUserListResponse
 import com.ritense.iko.web.rest.response.IkoSearchResponse
 import com.ritense.search.domain.SearchFieldMatchType
+import com.ritense.search.domain.SearchFieldV2
+import com.ritense.search.domain.SearchListColumn
 import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.search.service.SearchListColumnService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
@@ -75,20 +77,27 @@ class IkoDataRequestResource(
         require(searchFields.filter { it.required }.all { request.filters.containsKey(it.key) }) {
             "Missing required SearchField for DataRequest '$ikoDataAggregateKey:$key'"
         }
-        val dataFilters = request.filters.map { filter ->
-            val searchField = searchFields.firstOrNull { it.key == filter.key }
-                ?: error("DataRequest '$ikoDataAggregateKey:$key' does not have SearchField: '${filter.key}'")
-            DataFilter(searchField.path, searchField.matchType!!.toComparator(), filter.value)
-        }
-        val pathSort = Sort.by(pageable.sort.map { Sort.Order.by(it.property) })
-        val pathPageable = PageRequest.of(pageable.pageNumber, pageable.pageSize, pathSort)
         val data = dataRequestService.search(
             key = key,
             ikoDataAggregateKey = ikoDataAggregateKey,
-            filters = dataFilters,
-            pageable = pathPageable,
+            filters = toDataFilers(request.filters, searchFields),
+            pageable = toPageableByPath(headers, pageable),
         )
         return ResponseEntity.ok(IkoSearchResponse.from(headers, data))
+    }
+
+    private fun toDataFilers(filters: Map<String, Any?>, searchFields: List<SearchFieldV2>): List<DataFilter> {
+        return filters.map { filter ->
+            val searchField = searchFields.single { it.key == filter.key }
+            DataFilter(searchField.path, searchField.matchType!!.toComparator(), filter.value)
+        }
+    }
+
+    private fun toPageableByPath(headers: List<SearchListColumn>, pageable: Pageable): Pageable {
+        val sortOrders = pageable.sort.map { sort ->
+            Sort.Order.by(headers.single { header -> header.key == sort.property }.path)
+        }
+        return PageRequest.of(pageable.pageNumber, pageable.pageSize, Sort.by(sortOrders.toList()))
     }
 
     private fun SearchFieldMatchType.toComparator(): Comparator {
