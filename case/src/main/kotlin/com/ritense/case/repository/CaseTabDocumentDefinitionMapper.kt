@@ -50,16 +50,22 @@ class CaseTabDocumentDefinitionMapper(
         query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): AuthorizationEntityMapperResult<JsonSchemaDocumentDefinition> {
-        val documentDefinitionRoot: Root<JsonSchemaDocumentDefinition> =
-            query.from(JsonSchemaDocumentDefinition::class.java)
-        return AuthorizationEntityMapperResult(
-            documentDefinitionRoot,
-            query,
-            criteriaBuilder.equal(
-                root.get<CaseTabId>("id").get<String>("caseDefinitionId"),
-                documentDefinitionRoot.get<JsonSchemaDocumentDefinitionId>("id")
-                    .get<CaseDefinitionId>("caseDefinitionId")
+        val subquery = query.subquery(Int::class.java)
+        val subRoot = subquery.from(JsonSchemaDocumentDefinition::class.java)
+
+        subquery.select(criteriaBuilder.literal(1))
+            .where(
+                criteriaBuilder.equal(
+                    root.get<CaseTabId>("id").get<String>("caseDefinitionId"),
+                    subRoot.get<JsonSchemaDocumentDefinitionId>("id")
+                        .get<CaseDefinitionId>("caseDefinitionId")
+                )
             )
+
+        return AuthorizationEntityMapperResult(
+            subRoot,
+            subquery,
+            criteriaBuilder.exists(subquery)
         )
     }
 
