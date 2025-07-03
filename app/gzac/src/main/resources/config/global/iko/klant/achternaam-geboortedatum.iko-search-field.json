@@ -1,5 +1,5 @@
 {
-    "ikoDataAggregateKey": "person",
+    "ikoDataAggregateKey": "klant",
     "ikoDataRequestKey": "achternaam-geboortedatum",
     "ikoSearchFields": [
         {

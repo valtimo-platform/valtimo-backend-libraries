@@ -1,5 +1,5 @@
 {
-    "ikoDataAggregateKey": "person",
+    "ikoDataAggregateKey": "klant",
     "ikoDataRequests": [
         {
             "key": "bsn",

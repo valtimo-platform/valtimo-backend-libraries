@@ -2,8 +2,8 @@
     "ikoDataAggregateKey": "boom",
     "ikoDataRequests": [
         {
-            "key": "boombeeld",
-            "title": "Zoek met boombeeld"
+            "key": "boom",
+            "title": "Zoek boom"
         }
     ]
 }

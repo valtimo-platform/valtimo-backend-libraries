@@ -1,7 +1,7 @@
 {
-    "key": "person",
+    "key": "klant",
     "ikoConnectorConfigKey": "iko-api",
-    "title": "Person",
+    "title": "Klant",
     "properties": {
         "searchPath": "personen"
     }
