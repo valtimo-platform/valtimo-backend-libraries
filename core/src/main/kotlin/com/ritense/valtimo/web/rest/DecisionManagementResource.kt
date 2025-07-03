@@ -20,10 +20,11 @@ import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthor
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
-import com.ritense.valtimo.decision.CamundaDecisionService
-import com.ritense.valtimo.service.CamundaProcessService
-import org.camunda.bpm.engine.repository.DecisionDefinition
-import org.camunda.bpm.engine.rest.dto.repository.DecisionDefinitionDto
+import com.ritense.valtimo.decision.OperatonDecisionService
+import com.ritense.valtimo.service.OperatonProcessService
+import com.ritense.valtimo.web.rest.dto.DefinitionDeploymentResponseDto
+import org.operaton.bpm.engine.impl.persistence.entity.DeploymentEntity
+import org.operaton.bpm.engine.rest.dto.repository.DecisionDefinitionDto
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.transaction.annotation.Transactional
@@ -41,8 +42,8 @@ import java.io.ByteArrayInputStream
 @SkipComponentScan
 @RequestMapping("/api/management", produces = [APPLICATION_JSON_UTF8_VALUE])
 class DecisionManagementResource(
-    private val camundaProcessService: CamundaProcessService,
-    private val camundaDecisionService: CamundaDecisionService,
+    private val operatonProcessService: OperatonProcessService,
+    private val operatonDecisionService: OperatonDecisionService,
 ) {
 
     @GetMapping(
@@ -55,7 +56,7 @@ class DecisionManagementResource(
     ): ResponseEntity<List<DecisionDefinitionDto>> {
 
         val decisionDefinitions = runWithoutAuthorization {
-            camundaDecisionService.getDecisionDefinitions(CaseDefinitionId(caseDefinitionKey, caseDefinitionVersionTag))
+            operatonDecisionService.getDecisionDefinitions(CaseDefinitionId(caseDefinitionKey, caseDefinitionVersionTag))
         }
 
         return ResponseEntity.ok(decisionDefinitions.map {
@@ -81,17 +82,19 @@ class DecisionManagementResource(
             return ResponseEntity.badRequest().body("Invalid file name. Must have '.dmn' suffix.")
         }
 
-        runWithoutAuthorization {
-            camundaProcessService.deploy(
-                caseDefinitionId,
-                dmn.originalFilename,
-                ByteArrayInputStream(dmn.bytes),
-                true,
-                false
+        return ResponseEntity.ok(
+            DefinitionDeploymentResponseDto.of(
+                runWithoutAuthorization {
+                    operatonProcessService.deploy(
+                        caseDefinitionId,
+                        dmn.originalFilename,
+                        ByteArrayInputStream(dmn.bytes),
+                        true,
+                        false
+                    )
+                } as DeploymentEntity
             )
-        }
-
-        return ResponseEntity.noContent().build()
+        )
     }
 
     @DeleteMapping(
@@ -105,7 +108,7 @@ class DecisionManagementResource(
     ): ResponseEntity<Any> {
 
         runWithoutAuthorization {
-            camundaDecisionService.deleteDecisionDefinition(
+            operatonDecisionService.deleteDecisionDefinition(
                 CaseDefinitionId(caseDefinitionKey, caseDefinitionVersionTag),
                 decisionDefinitionKey
             )

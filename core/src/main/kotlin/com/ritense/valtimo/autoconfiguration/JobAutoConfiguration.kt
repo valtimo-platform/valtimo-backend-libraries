@@ -19,7 +19,7 @@ package com.ritense.valtimo.autoconfiguration
 
 import com.ritense.valtimo.JobService
 import com.ritense.valtimo.contract.annotation.ProcessBean
-import org.camunda.bpm.engine.ManagementService
+import org.operaton.bpm.engine.ManagementService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean

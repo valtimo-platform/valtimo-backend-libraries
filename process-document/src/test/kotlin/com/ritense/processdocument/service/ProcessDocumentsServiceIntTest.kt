@@ -26,11 +26,11 @@ import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.BaseIntegrationTest
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository
-import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byName
-import com.ritense.valtimo.service.CamundaProcessService
-import com.ritense.valtimo.service.CamundaTaskService
-import org.camunda.bpm.engine.ProcessEngineException
-import org.camunda.bpm.engine.RuntimeService
+import com.ritense.valtimo.operaton.repository.OperatonTaskSpecificationHelper.Companion.byName
+import com.ritense.valtimo.service.OperatonProcessService
+import com.ritense.valtimo.service.OperatonTaskService
+import org.operaton.bpm.engine.ProcessEngineException
+import org.operaton.bpm.engine.RuntimeService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -59,13 +59,13 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
     lateinit var documentService: DocumentService
 
     @Autowired
-    lateinit var taskService: CamundaTaskService
+    lateinit var taskService: OperatonTaskService
 
     @Autowired
     lateinit var objectMapper: ObjectMapper
 
     @Autowired
-    lateinit var camundaProcessService: CamundaProcessService
+    lateinit var operatonProcessService: OperatonProcessService
 
     lateinit var documentJson: String
     lateinit var document: Document
@@ -137,7 +137,7 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
                 )
             )
         val resultProcessInstance = runWithoutAuthorization {
-            camundaProcessService.findProcessInstanceById(startedProcessId).get()
+            operatonProcessService.findProcessInstanceById(startedProcessId).get()
         }
         assertEquals(document.id().toString(), resultProcessInstance.businessKey)
         assertEquals(associatedProcessDocuments.size, 2)

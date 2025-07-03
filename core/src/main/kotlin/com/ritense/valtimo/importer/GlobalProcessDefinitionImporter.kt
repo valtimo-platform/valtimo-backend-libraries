@@ -19,12 +19,12 @@ package com.ritense.valtimo.importer
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.GLOBAL_PROCESS_DEFINITION
-import com.ritense.valtimo.service.CamundaProcessService
+import com.ritense.valtimo.service.OperatonProcessService
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 class GlobalProcessDefinitionImporter(
-    private val camundaProcessService: CamundaProcessService
+    private val operatonProcessService: OperatonProcessService
 ) : Importer {
     override fun type() = GLOBAL_PROCESS_DEFINITION
 
@@ -34,7 +34,7 @@ class GlobalProcessDefinitionImporter(
 
     override fun import(request: ImportRequest) {
         request.content.inputStream().use {
-            camundaProcessService.deploy(null, fileNameWithoutPath(request.fileName), it, false, true)
+            operatonProcessService.deploy(null, fileNameWithoutPath(request.fileName), it, false, true)
         }
     }
 

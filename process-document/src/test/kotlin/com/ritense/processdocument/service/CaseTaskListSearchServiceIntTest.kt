@@ -35,7 +35,7 @@ import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.search.web.rest.dto.SearchFieldV2Dto
 import com.ritense.valtimo.contract.Constants
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
-import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.service.OperatonTaskService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -161,7 +161,7 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
         )
 
         runWithoutAuthorization {
-            camundaProcessJsonSchemaDocumentService.startProcessForDocument(
+            operatonProcessJsonSchemaDocumentService.startProcessForDocument(
                 StartProcessForDocumentRequest(
                     originalDocument!!.resultingDocument().orElseThrow().id(),
                     "loan-process-demo",
@@ -293,7 +293,7 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
         }
 
         runWithoutAuthorization {
-            camundaProcessJsonSchemaDocumentService.startProcessForDocument(
+            operatonProcessJsonSchemaDocumentService.startProcessForDocument(
                 StartProcessForDocumentRequest(
                     museumDocument.resultingDocument().orElseThrow().id(),
                     "conditional-candidate-group",
@@ -303,7 +303,7 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
         }
 
         runWithoutAuthorization {
-            camundaProcessJsonSchemaDocumentService.startProcessForDocument(
+            operatonProcessJsonSchemaDocumentService.startProcessForDocument(
                 StartProcessForDocumentRequest(
                     museumDocument.resultingDocument().orElseThrow().id(),
                     "conditional-candidate-group",
@@ -313,7 +313,7 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
         }
 
         runWithoutAuthorization {
-            camundaProcessJsonSchemaDocumentService.startProcessForDocument(
+            operatonProcessJsonSchemaDocumentService.startProcessForDocument(
                 StartProcessForDocumentRequest(
                     museumDocument.resultingDocument().orElseThrow().id(),
                     "conditional-candidate-group",
@@ -367,7 +367,7 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
         createDocumentAndTwoProcesses("Funenpark11", definition2.id().name())
         createDocumentAndTwoProcesses("Funenpark12", definition2.id().name())
 
-        val filter = CamundaTaskService.TaskFilter.ALL
+        val filter = OperatonTaskService.TaskFilter.ALL
         val searchResult = caseTaskListSearchService.getTasksByCaseDefinition(
             definition2.id().name(),
             filter,
@@ -393,7 +393,7 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
         }
 
         runWithoutAuthorization {
-            camundaProcessJsonSchemaDocumentService.startProcessForDocument(
+            operatonProcessJsonSchemaDocumentService.startProcessForDocument(
                 StartProcessForDocumentRequest(
                     document.resultingDocument().orElseThrow().id(),
                     "loan-process-demo-3",
@@ -403,7 +403,7 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
         }
 
         runWithoutAuthorization {
-            camundaProcessJsonSchemaDocumentService.startProcessForDocument(
+            operatonProcessJsonSchemaDocumentService.startProcessForDocument(
                 StartProcessForDocumentRequest(
                     document.resultingDocument().orElseThrow().id(),
                     "loan-process-demo-3",

@@ -20,7 +20,7 @@ import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationE
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import com.ritense.valtimo.security.jwt.JwtSecurityConfigurerAdapter;
 import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationService;
-import org.camunda.bpm.engine.IdentityService;
+import org.operaton.bpm.engine.IdentityService;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 public class JwtHttpSecurityConfigurer implements HttpSecurityConfigurer {

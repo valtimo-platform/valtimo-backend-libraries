@@ -21,29 +21,29 @@ import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
 import com.ritense.exporter.request.DecisionDefinitionExportRequest
 import com.ritense.exporter.request.ProcessDefinitionExportRequest
-import com.ritense.valtimo.camunda.repository.CamundaDecisionDefinitionSpecificationHelper
-import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
-import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersion
-import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byVersion
-import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byVersionTag
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.operaton.repository.OperatonDecisionDefinitionSpecificationHelper
+import com.ritense.valtimo.operaton.repository.OperatonProcessDefinitionSpecificationHelper.Companion.byKey
+import com.ritense.valtimo.operaton.repository.OperatonProcessDefinitionSpecificationHelper.Companion.byLatestVersion
+import com.ritense.valtimo.operaton.repository.OperatonProcessDefinitionSpecificationHelper.Companion.byVersion
+import com.ritense.valtimo.operaton.repository.OperatonProcessDefinitionSpecificationHelper.Companion.byVersionTag
+import com.ritense.valtimo.operaton.service.OperatonRepositoryService
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
-import org.camunda.bpm.engine.RepositoryService
-import org.camunda.bpm.model.bpmn.Bpmn
-import org.camunda.bpm.model.bpmn.BpmnModelInstance
-import org.camunda.bpm.model.bpmn.instance.BusinessRuleTask
-import org.camunda.bpm.model.bpmn.instance.CallActivity
+import org.operaton.bpm.engine.RepositoryService
+import org.operaton.bpm.model.bpmn.Bpmn
+import org.operaton.bpm.model.bpmn.BpmnModelInstance
+import org.operaton.bpm.model.bpmn.instance.BusinessRuleTask
+import org.operaton.bpm.model.bpmn.instance.CallActivity
 import java.io.ByteArrayOutputStream
 
 class ProcessDefinitionExporter(
-    private val camundaRepositoryService: CamundaRepositoryService,
+    private val operatonRepositoryService: OperatonRepositoryService,
     private val repositoryService: RepositoryService,
 ) : Exporter<ProcessDefinitionExportRequest> {
     override fun supports(): Class<ProcessDefinitionExportRequest> = ProcessDefinitionExportRequest::class.java
 
     override fun export(request: ProcessDefinitionExportRequest): ExportResult {
         val processDefinition = requireNotNull(
-            camundaRepositoryService.findProcessDefinitionById(request.processDefinitionId)
+            operatonRepositoryService.findProcessDefinitionById(request.processDefinitionId)
         )
 
         val bpmnModelInstance = repositoryService.getProcessModel(processDefinition.id).use { inputStream ->
@@ -75,11 +75,11 @@ class ProcessDefinitionExporter(
             if (it.calledElement != null) {
                 val spec = byKey(it.calledElement)
                 val processDefinitionId = checkNotNull(
-                    when (it.camundaCalledElementBinding) {
-                        "version" -> camundaRepositoryService.findProcessDefinition(spec.and(byVersion(it.camundaCalledElementVersion.toInt())))
-                        "versionTag" -> camundaRepositoryService.findProcessDefinition(spec.and(byVersionTag(it.camundaCalledElementVersionTag)))
+                    when (it.operatonCalledElementBinding) {
+                        "version" -> operatonRepositoryService.findProcessDefinition(spec.and(byVersion(it.operatonCalledElementVersion.toInt())))
+                        "versionTag" -> operatonRepositoryService.findProcessDefinition(spec.and(byVersionTag(it.operatonCalledElementVersionTag)))
                         "deployment" -> null
-                        else -> camundaRepositoryService.findProcessDefinition(spec.and(byLatestVersion()))
+                        else -> operatonRepositoryService.findProcessDefinition(spec.and(byLatestVersion()))
                     }
                 ) {
                     "Process definition with key '${it.calledElement}' could not be found!"
@@ -93,17 +93,17 @@ class ProcessDefinitionExporter(
 
     private fun getDecisionExportRequests(caseDefinitionId: CaseDefinitionId, bpmnModelInstance: BpmnModelInstance): Set<DecisionDefinitionExportRequest> {
         return bpmnModelInstance.getModelElementsByType(BusinessRuleTask::class.java).mapNotNull {
-            if (it.camundaDecisionRef != null) {
-                val spec = CamundaDecisionDefinitionSpecificationHelper.byKey(it.camundaDecisionRef)
+            if (it.operatonDecisionRef != null) {
+                val spec = OperatonDecisionDefinitionSpecificationHelper.byKey(it.operatonDecisionRef)
                 val decisionDefinitionId = checkNotNull(
-                    when (it.camundaDecisionRefBinding) {
-                        "version" -> camundaRepositoryService.findDecisionDefinition(spec.and(CamundaDecisionDefinitionSpecificationHelper.byVersion(it.camundaDecisionRefVersion.toInt())))
-                        "versionTag" -> camundaRepositoryService.findDecisionDefinition(spec.and(CamundaDecisionDefinitionSpecificationHelper.byVersionTag(it.camundaDecisionRefVersionTag)))
+                    when (it.operatonDecisionRefBinding) {
+                        "version" -> operatonRepositoryService.findDecisionDefinition(spec.and(OperatonDecisionDefinitionSpecificationHelper.byVersion(it.operatonDecisionRefVersion.toInt())))
+                        "versionTag" -> operatonRepositoryService.findDecisionDefinition(spec.and(OperatonDecisionDefinitionSpecificationHelper.byVersionTag(it.operatonDecisionRefVersionTag)))
                         "deployment" -> null
-                        else -> camundaRepositoryService.findDecisionDefinition(spec.and(CamundaDecisionDefinitionSpecificationHelper.byLatestVersion()))
+                        else -> operatonRepositoryService.findDecisionDefinition(spec.and(OperatonDecisionDefinitionSpecificationHelper.byLatestVersion()))
                     }
                 ) {
-                    "Decision definition with reference '${it.camundaDecisionRef}' could not be found!"
+                    "Decision definition with reference '${it.operatonDecisionRef}' could not be found!"
                 }.id
                 DecisionDefinitionExportRequest(decisionDefinitionId, caseDefinitionId)
             } else {

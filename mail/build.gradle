@@ -35,7 +35,7 @@ dockerCompose {
 
 dependencies {
     api project(":contract")
-    api "org.camunda.bpm:camunda-engine:${camundaVersion}"
+    api "org.operaton.bpm:operaton-engine:${operatonVersion}"
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
@@ -62,7 +62,6 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 
-    testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:${camundaMockitoVersion}"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
     testImplementation project(':test-utils-common')
 }

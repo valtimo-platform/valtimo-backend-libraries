@@ -18,7 +18,7 @@ package com.ritense.gzac.fvm
 
 import com.ritense.formviewmodel.viewmodel.ViewModelLoader
 import com.ritense.processlink.domain.ProcessLink
-import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.operaton.domain.OperatonTask
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
@@ -30,7 +30,7 @@ class ExampleFormViewModelLoader(
 
     override fun supports(processLink: ProcessLink) = true
 
-    override fun load(task: CamundaTask?): ExampleViewModel {
+    override fun load(task: OperatonTask?): ExampleViewModel {
         return ExampleViewModel()
     }
 }

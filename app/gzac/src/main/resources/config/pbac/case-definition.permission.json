@@ -1,31 +1,17 @@
 {
-    "changesetId": "case-definition-v2",
+    "changesetId": "case-definition-v3",
     "permissions": [
         {
             "resourceType": "com.ritense.case_.domain.definition.CaseDefinition",
             "action": "view_list",
             "roleKey": "ROLE_ADMIN",
-            "conditions": [
-                {
-                    "type": "field",
-                    "field": "id.key",
-                    "operator": "==",
-                    "value": "bezwaar"
-                }
-            ]
+            "conditions": []
         },
         {
             "resourceType": "com.ritense.case_.domain.definition.CaseDefinition",
             "action": "view",
             "roleKey": "ROLE_ADMIN",
-            "conditions": [
-                {
-                    "type": "field",
-                    "field": "id.key",
-                    "operator": "==",
-                    "value": "bezwaar"
-                }
-            ]
+            "conditions": []
         }
     ]
 }

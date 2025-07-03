@@ -164,10 +164,12 @@ abstract class AuthorizationSpecification<T : Any>(
      */
     override fun toPredicate(
         root: Root<T>,
-        query: CriteriaQuery<*>,
+        query: CriteriaQuery<*>?,
         criteriaBuilder: CriteriaBuilder
-    ): Predicate {
-        return toPredicate(root, query as AbstractQuery<*>, criteriaBuilder)
+    ): Predicate? {
+        return query?.let {
+            toPredicate(root, it as AbstractQuery<*>, criteriaBuilder)
+        }
     }
 
     /**

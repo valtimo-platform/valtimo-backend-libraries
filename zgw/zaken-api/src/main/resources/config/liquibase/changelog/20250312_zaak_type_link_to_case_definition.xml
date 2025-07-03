@@ -37,6 +37,72 @@
     </changeSet>
 
     <changeSet id="3" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <sql>
+            insert into zaak_type_link (
+                zaak_type_link_id,
+                case_definition_key,
+                case_definition_version_tag,
+                zaak_type_url,
+                create_with_dossier,
+                zaken_api_plugin_configuration_id,
+                rsin
+            )
+            select
+                gen_random_uuid(),
+                ztl.case_definition_key,
+                cd.case_definition_version_tag,
+                ztl.zaak_type_url,
+                ztl.create_with_dossier,
+                ztl.zaken_api_plugin_configuration_id,
+                ztl.rsin
+            from zaak_type_link ztl
+            join case_definition cd
+                on ztl.case_definition_key = cd.case_definition_key
+            where ztl.case_definition_version_tag is null
+        </sql>
+        <sql>
+            delete from zaak_type_link
+            where case_definition_version_tag is null
+        </sql>
+    </changeSet>
+
+    <changeSet id="4" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql>
+            insert into zaak_type_link (
+                zaak_type_link_id,
+                case_definition_key,
+                case_definition_version_tag,
+                zaak_type_url,
+                create_with_dossier,
+                zaken_api_plugin_configuration_id,
+                rsin
+            )
+            select
+                UUID_TO_BIN(UUID()),
+                ztl.case_definition_key,
+                cd.case_definition_version_tag,
+                ztl.zaak_type_url,
+                ztl.create_with_dossier,
+                ztl.zaken_api_plugin_configuration_id,
+                ztl.rsin
+            from zaak_type_link ztl
+            join case_definition cd
+                on ztl.case_definition_key = cd.case_definition_key
+            where ztl.case_definition_version_tag is null
+        </sql>
+        <sql>
+            delete from zaak_type_link
+            where case_definition_version_tag is null
+        </sql>
+    </changeSet>
+
+    <changeSet id="5" author="Ritense">
         <addUniqueConstraint tableName="zaak_type_link"
                              columnNames="case_definition_key, case_definition_version_tag, zaak_type_url"
                              constraintName="zaak_type_url_constraint"

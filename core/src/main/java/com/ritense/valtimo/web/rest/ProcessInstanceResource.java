@@ -20,8 +20,8 @@ import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_J
 
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.logging.LoggableResource;
-import com.ritense.valtimo.camunda.domain.CamundaExecution;
-import com.ritense.valtimo.camunda.service.CamundaRuntimeService;
+import com.ritense.valtimo.operaton.domain.OperatonExecution;
+import com.ritense.valtimo.operaton.service.OperatonRuntimeService;
 import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import java.util.List;
 import java.util.Map;
@@ -37,15 +37,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class ProcessInstanceResource {
 
-    private final CamundaRuntimeService runtimeService;
+    private final OperatonRuntimeService runtimeService;
 
-    public ProcessInstanceResource(CamundaRuntimeService runtimeService) {
+    public ProcessInstanceResource(OperatonRuntimeService runtimeService) {
         this.runtimeService = runtimeService;
     }
 
     @PostMapping("/v1/process-instance/{id}/variables")
     public ResponseEntity<Map<String, Object>> getProcessInstanceVariables(
-        @LoggableResource(resourceType = CamundaExecution.class) @PathVariable String id,
+        @LoggableResource(resourceType = OperatonExecution.class) @PathVariable String id,
         @RequestBody List<String> variableNames
     ) {
         final Map<String, Object> processVariables = AuthorizationContext

@@ -41,7 +41,6 @@ class ObjectenApiClient(
     private val outboxService: OutboxService,
     private val objectMapper: ObjectMapper,
     private val authorizationService: AuthorizationService,
-    private val authorizationEnabled: Boolean,
 ) {
 
     fun getObject(
@@ -54,15 +53,13 @@ class ObjectenApiClient(
             .retrieve()
             .body<ObjectWrapper>()!!
 
-        if (authorizationEnabled) {
-            authorizationService.requirePermission(
-                EntityAuthorizationRequest(
-                    Object::class.java,
-                    ObjectActionProvider.VIEW,
-                    Object()
-                )
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                Object::class.java,
+                ObjectActionProvider.VIEW,
+                Object()
             )
-        }
+        )
 
         outboxService.send {
             ObjectViewed(
@@ -90,15 +87,13 @@ class ObjectenApiClient(
             .retrieve()
             .body<ObjectRecord>()!!
 
-        if (authorizationEnabled) {
-            authorizationService.requirePermission(
-                EntityAuthorizationRequest(
-                    Object::class.java,
-                    ObjectActionProvider.VIEW,
-                    Object()
-                )
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                Object::class.java,
+                ObjectActionProvider.VIEW,
+                Object()
             )
-        }
+        )
 
         outboxService.send {
             ObjectViewed(
@@ -154,15 +149,13 @@ class ObjectenApiClient(
             .retrieve()
             .body<ObjectsList>()!!
 
-        if (authorizationEnabled) {
-            authorizationService.requirePermission(
-                EntityAuthorizationRequest(
-                    Object::class.java,
-                    ObjectActionProvider.VIEW_LIST,
-                    Object()
-                )
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                Object::class.java,
+                ObjectActionProvider.VIEW_LIST,
+                Object()
             )
-        }
+        )
 
         outboxService.send {
             ObjectsListed(
@@ -219,15 +212,13 @@ class ObjectenApiClient(
             .retrieve()
             .body<ObjectsList>()!!
 
-        if (authorizationEnabled) {
-            authorizationService.requirePermission(
-                EntityAuthorizationRequest(
-                    Object::class.java,
-                    ObjectActionProvider.VIEW_LIST,
-                    Object()
-                )
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                Object::class.java,
+                ObjectActionProvider.VIEW_LIST,
+                Object()
             )
-        }
+        )
 
         outboxService.send {
             ObjectsListed(
@@ -242,15 +233,13 @@ class ObjectenApiClient(
         objectsApiUrl: URI,
         objectRequest: ObjectRequest
     ): ObjectWrapper {
-        if (authorizationEnabled) {
-            authorizationService.requirePermission(
-                EntityAuthorizationRequest(
-                    Object::class.java,
-                    ObjectActionProvider.CREATE,
-                    Object()
-                )
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                Object::class.java,
+                ObjectActionProvider.CREATE,
+                Object()
             )
-        }
+        )
 
         val result = buildRestClient(authentication, objectsApiUrl.toASCIIString())
             .post()
@@ -276,15 +265,13 @@ class ObjectenApiClient(
         objectRequest: ObjectRequest
     ): ObjectWrapper {
 
-        if (authorizationEnabled) {
-            authorizationService.requirePermission(
-                EntityAuthorizationRequest(
-                    Object::class.java,
-                    ObjectActionProvider.MODIFY,
-                    Object()
-                )
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                Object::class.java,
+                ObjectActionProvider.MODIFY,
+                Object()
             )
-        }
+        )
 
         val result = buildRestClient(authentication)
             .patch()
@@ -308,15 +295,13 @@ class ObjectenApiClient(
         objectUrl: URI,
         objectRequest: ObjectRequest
     ): ObjectWrapper {
-        if (authorizationEnabled) {
-            authorizationService.requirePermission(
-                EntityAuthorizationRequest(
-                    Object::class.java,
-                    ObjectActionProvider.MODIFY,
-                    Object()
-                )
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                Object::class.java,
+                ObjectActionProvider.MODIFY,
+                Object()
             )
-        }
+        )
 
         val result = buildRestClient(authentication)
             .put()
@@ -336,15 +321,13 @@ class ObjectenApiClient(
     }
 
     fun deleteObject(authentication: ObjectenApiAuthentication, objectUrl: URI): HttpStatus {
-        if (authorizationEnabled) {
-            authorizationService.requirePermission(
-                EntityAuthorizationRequest(
-                    Object::class.java,
-                    ObjectActionProvider.DELETE,
-                    Object()
-                )
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                Object::class.java,
+                ObjectActionProvider.DELETE,
+                Object()
             )
-        }
+        )
 
         val result = buildRestClient(authentication)
             .delete()

@@ -18,7 +18,7 @@
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.ritense.valtimo.camunda.common">
+<mapper namespace="com.ritense.valtimo.operaton.common">
 
     <!-- Ordering -->
 
@@ -29,7 +29,7 @@
         <choose>
             <when test="orderingProperties.size > 0">
                 <foreach collection="orderingProperties" item="orderingProperty" index="index">
-                    <bind name="newOrderBy" value="@com.ritense.valtimo.helper.CamundaOrderByHelper@orderBy(orderingProperty, '${tablealias}')" />
+                    <bind name="newOrderBy" value="@com.ritense.valtimo.helper.OperatonOrderByHelper@orderBy(orderingProperty, '${tablealias}')" />
 
                     <if test="index == 0">
                         <bind name="internalOrderBy" value="newOrderBy"/>

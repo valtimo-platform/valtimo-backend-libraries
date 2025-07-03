@@ -20,8 +20,8 @@ import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthor
 import com.ritense.valtimo.BaseIntegrationTest
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.security.DecisionHttpSecurityConfigurer.Companion.DECISION_MANAGEMENT_URL
-import com.ritense.valtimo.service.CamundaProcessService
-import org.camunda.bpm.engine.RepositoryService
+import com.ritense.valtimo.service.OperatonProcessService
+import org.operaton.bpm.engine.RepositoryService
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
@@ -33,7 +33,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
 import java.io.ByteArrayInputStream
@@ -43,7 +42,7 @@ import kotlin.test.assertEquals
 @Transactional
 class DecisionManagementResourceIT(
     @Autowired
-    private val camundaProcessService: CamundaProcessService,
+    private val operatonProcessService: OperatonProcessService,
 
     @Autowired
     private val webApplicationContext: WebApplicationContext,
@@ -97,7 +96,7 @@ class DecisionManagementResourceIT(
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
         .andDo(MockMvcResultHandlers.print())
-        .andExpect(status().isNoContent)
+        .andExpect(status().isOk)
 
         repositoryService.createDecisionDefinitionQuery()
             .decisionDefinitionKey("test-2")
@@ -128,7 +127,7 @@ class DecisionManagementResourceIT(
         val dmnExample = getDecisionXml(key)
 
         val deployment = runWithoutAuthorization {
-            camundaProcessService.deploy(
+            operatonProcessService.deploy(
                 caseDefinitionId,
                 "test.dmn",
                 ByteArrayInputStream(dmnExample.toByteArray()),

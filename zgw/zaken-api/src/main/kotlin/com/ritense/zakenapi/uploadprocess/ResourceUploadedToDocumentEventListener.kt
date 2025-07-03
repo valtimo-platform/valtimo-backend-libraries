@@ -30,7 +30,6 @@ class ResourceUploadedToDocumentEventListener(
     private val resourceService: TemporaryResourceStorageService,
     private val uploadProcessService: UploadProcessService,
     private val authorizationService: AuthorizationService,
-    private val authorizationEnabled: Boolean = false,
 ) {
 
     @EventListener(TemporaryResourceUploadedEvent::class)
@@ -41,15 +40,13 @@ class ResourceUploadedToDocumentEventListener(
         val caseId = metadata[MetadataType.DOCUMENT_ID.key] as String?
 
         if (caseId != null) {
-            if (authorizationEnabled) {
-                authorizationService.requirePermission(
-                    EntityAuthorizationRequest(
-                        ResourcePermission::class.java,
-                        CREATE,
-                        ResourcePermission()
-                    )
+            authorizationService.requirePermission(
+                EntityAuthorizationRequest(
+                    ResourcePermission::class.java,
+                    CREATE,
+                    ResourcePermission()
                 )
-            }
+            )
 
             logger.debug { "Uploading resource to document: ${event.resourceId}" }
             uploadProcessService.startUploadResourceProcess(caseId, event.resourceId)

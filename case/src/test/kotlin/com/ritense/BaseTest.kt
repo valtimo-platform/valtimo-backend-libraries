@@ -146,6 +146,7 @@ class BaseTest(
         autoAssignTasks: Boolean = false,
         hasExternalStartForm: Boolean = false,
         externalStartFormUrl: String? = null,
+        final: Boolean = true,
     ): CaseDefinition {
         return CaseDefinition(
             id = id,
@@ -154,7 +155,7 @@ class BaseTest(
             createdBy = "system",
             createdDate = LocalDateTime.now(),
             basedOnVersionTag = Semver.parse("1.0.0-SNAPSHOT"),
-            final = true,
+            final = final,
             active = active,
 
             canHaveAssignee = canHaveAssignee,

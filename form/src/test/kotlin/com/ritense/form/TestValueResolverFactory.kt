@@ -17,7 +17,7 @@
 package com.ritense.form
 
 import com.ritense.valueresolver.ValueResolverFactory
-import org.camunda.bpm.engine.delegate.VariableScope
+import org.operaton.bpm.engine.delegate.VariableScope
 import org.springframework.context.ApplicationEventPublisher
 import java.util.function.Function
 

@@ -19,11 +19,11 @@ package com.ritense.processdocument;
 import com.ritense.audit.service.impl.AuditServiceImpl;
 import com.ritense.authorization.specification.impl.NoopAuthorizationSpecificationFactory;
 import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService;
-import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService;
-import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService;
+import com.ritense.processdocument.service.impl.OperatonProcessJsonSchemaDocumentAssociationService;
+import com.ritense.processdocument.service.impl.OperatonProcessJsonSchemaDocumentService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
-import com.ritense.valtimo.service.CamundaTaskService;
+import com.ritense.valtimo.service.OperatonTaskService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
@@ -42,16 +42,16 @@ public abstract class BaseIntegrationTest extends BaseTest {
     protected UserManagementService userManagementService;
 
     @Autowired
-    protected CamundaProcessJsonSchemaDocumentAssociationService camundaProcessJsonSchemaDocumentAssociationService;
+    protected OperatonProcessJsonSchemaDocumentAssociationService operatonProcessJsonSchemaDocumentAssociationService;
 
     @Autowired
-    protected CamundaProcessJsonSchemaDocumentService camundaProcessJsonSchemaDocumentService;
+    protected OperatonProcessJsonSchemaDocumentService operatonProcessJsonSchemaDocumentService;
 
     @Autowired
     protected ProcessDefinitionCaseDefinitionService processDefinitionCaseDefinitionService;
 
     @Autowired
-    protected CamundaTaskService camundaTaskService;
+    protected OperatonTaskService operatonTaskService;
 
     @MockitoBean
     protected AuditServiceImpl auditService;

@@ -16,34 +16,28 @@
 
 package com.ritense.processdocument.domain.impl.listener;
 
-import com.ritense.authorization.AuthorizationContext;
 import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
-import com.ritense.valtimo.contract.event.UndeployDocumentDefinitionEvent;
-import com.ritense.valtimo.service.CamundaProcessService;
+import com.ritense.valtimo.service.OperatonProcessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
 
 public class UndeployDocumentDefinitionEventListener {
 
     private static final Logger logger = LoggerFactory.getLogger(UndeployDocumentDefinitionEventListener.class);
     private final ProcessDocumentAssociationService processDocumentAssociationService;
     private final ProcessDefinitionCaseDefinitionService processDefinitionCaseDefinitionService;
-    private final CamundaProcessService camundaProcessService;
+    private final OperatonProcessService operatonProcessService;
     private static final String REASON = "Triggerd undeployment of document definition";
 
     public UndeployDocumentDefinitionEventListener(
         ProcessDocumentAssociationService processDocumentAssociationService,
         ProcessDefinitionCaseDefinitionService processDefinitionCaseDefinitionService,
-        CamundaProcessService camundaProcessService
+        OperatonProcessService operatonProcessService
     ) {
         this.processDocumentAssociationService = processDocumentAssociationService;
         this.processDefinitionCaseDefinitionService = processDefinitionCaseDefinitionService;
-        this.camundaProcessService = camundaProcessService;
+        this.operatonProcessService = operatonProcessService;
     }
 
 //TODO: How do we want to support this?
@@ -54,7 +48,7 @@ public class UndeployDocumentDefinitionEventListener {
         String documentDefinitionName = event.getDocumentDefinitionName();
         AuthorizationContext.runWithoutAuthorization(() -> {
             processDefinitionCaseDefinitionService.findByDocumentDefinitionName(documentDefinitionName).ifPresent(processDocumentDefinition -> {
-                camundaProcessService.deleteAllProcesses(
+                operatonProcessService.deleteAllProcesses(
                     processDocumentDefinition.processDocumentDefinitionId().processDefinitionKey().toString(), REASON
                 );
                 processDocumentAssociationService.deleteProcessDocumentInstances(

@@ -42,7 +42,7 @@ import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
 import com.ritense.resource.service.TemporaryResourceStorageService
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.operaton.service.OperatonRepositoryService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valtimo.processlink.service.PluginProcessLinkService
 import com.ritense.valueresolver.ValueResolverService
@@ -73,15 +73,12 @@ class DocumentenApiAutoConfiguration {
         objectMapper: ObjectMapper,
         platformTransactionManager: PlatformTransactionManager,
         authorizationService: AuthorizationService,
-        @Value("\${valtimo.authorization.zgwDocuments.enabled:false}")
-        authorizationEnabled: Boolean,
     ) = DocumentenApiClient(
         restClientBuilder,
         outboxService,
         objectMapper,
         platformTransactionManager,
         authorizationService,
-        authorizationEnabled,
     )
 
     @Bean
@@ -143,7 +140,7 @@ class DocumentenApiAutoConfiguration {
         documentDefinitionService: DocumentDefinitionService,
         caseDefinitionProcessLinkService: CaseDefinitionProcessLinkService,
         pluginProcessLinkService: PluginProcessLinkService,
-        camundaRepositoryService: CamundaRepositoryService,
+        operatonRepositoryService: OperatonRepositoryService,
         activeCaseDefinitionService: ActiveCaseDefinitionService,
     ): DocumentenApiVersionService {
         return DocumentenApiVersionService(
@@ -156,7 +153,7 @@ class DocumentenApiAutoConfiguration {
             documentDefinitionService,
             caseDefinitionProcessLinkService,
             pluginProcessLinkService,
-            camundaRepositoryService,
+            operatonRepositoryService,
             activeCaseDefinitionService,
         )
     }

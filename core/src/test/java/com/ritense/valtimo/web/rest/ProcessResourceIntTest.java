@@ -27,11 +27,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.valtimo.BaseIntegrationTest;
-import com.ritense.valtimo.repository.camunda.dto.ProcessInstance;
+import com.ritense.valtimo.repository.operaton.dto.ProcessInstance;
 import com.ritense.valtimo.web.rest.dto.ProcessInstanceSearchDTO;
 import java.util.Date;
 import java.util.List;
-import org.camunda.bpm.engine.RepositoryService;
+import org.operaton.bpm.engine.RepositoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -132,7 +132,7 @@ class ProcessResourceIntTest extends BaseIntegrationTest {
 
         Pageable pageable = PageRequest.of(1, 1);
 
-        doReturn(new PageImpl<>(processInstances, pageable, 5)).when(camundaSearchProcessInstanceRepository).searchInstances(any(), any(), any());
+        doReturn(new PageImpl<>(processInstances, pageable, 5)).when(operatonSearchProcessInstanceRepository).searchInstances(any(), any(), any());
 
         mockMvc.perform(post("/api/v2/process/test-process/search")
             .content(objectMapper.writeValueAsString(new ProcessInstanceSearchDTO()))

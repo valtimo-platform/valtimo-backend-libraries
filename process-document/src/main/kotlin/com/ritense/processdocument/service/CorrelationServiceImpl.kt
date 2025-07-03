@@ -18,23 +18,23 @@ package com.ritense.processdocument.service
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.service.DocumentService
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
-import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
-import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
-import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersion
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
-import com.ritense.valtimo.camunda.service.CamundaRuntimeService
-import org.camunda.bpm.engine.RepositoryService
-import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.engine.delegate.DelegateExecution
-import org.camunda.bpm.engine.runtime.MessageCorrelationResult
-import org.camunda.bpm.engine.runtime.ProcessInstance
+import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId
+import com.ritense.valtimo.operaton.domain.OperatonProcessDefinition
+import com.ritense.valtimo.operaton.repository.OperatonProcessDefinitionSpecificationHelper.Companion.byKey
+import com.ritense.valtimo.operaton.repository.OperatonProcessDefinitionSpecificationHelper.Companion.byLatestVersion
+import com.ritense.valtimo.operaton.service.OperatonRepositoryService
+import com.ritense.valtimo.operaton.service.OperatonRuntimeService
+import org.operaton.bpm.engine.RepositoryService
+import org.operaton.bpm.engine.RuntimeService
+import org.operaton.bpm.engine.delegate.DelegateExecution
+import org.operaton.bpm.engine.runtime.MessageCorrelationResult
+import org.operaton.bpm.engine.runtime.ProcessInstance
 
 class CorrelationServiceImpl(
     val runtimeService: RuntimeService,
-    val camundaRuntimeService: CamundaRuntimeService,
+    val operatonRuntimeService: OperatonRuntimeService,
     val documentService: DocumentService,
-    val camundaRepositoryService: CamundaRepositoryService,
+    val operatonRepositoryService: OperatonRepositoryService,
     val repositoryService: RepositoryService,
     val associationService: ProcessDocumentAssociationService
 ) : CorrelationService {
@@ -159,16 +159,16 @@ class CorrelationServiceImpl(
         return results
     }
 
-    private fun getLatestProcessDefinitionIdByKey(processDefinitionKey: String): CamundaProcessDefinition {
+    private fun getLatestProcessDefinitionIdByKey(processDefinitionKey: String): OperatonProcessDefinition {
         return runWithoutAuthorization {
-            camundaRepositoryService.findProcessDefinition(byKey(processDefinitionKey).and(byLatestVersion()))
+            operatonRepositoryService.findProcessDefinition(byKey(processDefinitionKey).and(byLatestVersion()))
                 ?: throw RuntimeException("Failed to get process definition with key $processDefinitionKey")
         }
     }
 
     private fun associationExists(processInstanceId: String): Boolean {
         return runWithoutAuthorization {
-            associationService.findProcessDocumentInstance(CamundaProcessInstanceId(processInstanceId)).isPresent
+            associationService.findProcessDocumentInstance(OperatonProcessInstanceId(processInstanceId)).isPresent
         }
     }
 
@@ -237,7 +237,7 @@ class CorrelationServiceImpl(
 
     private fun getProcessDefinitionName(processDefinitionId: String): String {
         val process = runWithoutAuthorization {
-            camundaRepositoryService.findProcessDefinitionById(processDefinitionId)
+            operatonRepositoryService.findProcessDefinitionById(processDefinitionId)
                 ?: throw IllegalStateException("No process definition exists with id '$processDefinitionId'")
         }
 
@@ -247,7 +247,7 @@ class CorrelationServiceImpl(
 
     private fun getProcessDefinitionNameByProcessInstanceId(processInstanceId: String): String {
         return runWithoutAuthorization {
-            val processInstance = camundaRuntimeService.findProcessInstanceById(processInstanceId)!!
+            val processInstance = operatonRuntimeService.findProcessInstanceById(processInstanceId)!!
             getProcessDefinitionName(processInstance.processDefinitionId)
         }
     }

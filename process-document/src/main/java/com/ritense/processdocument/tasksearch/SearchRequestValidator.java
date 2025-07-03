@@ -16,8 +16,8 @@
 
 package com.ritense.processdocument.tasksearch;
 
-import static com.ritense.valtimo.service.CamundaTaskService.TaskFilter.MINE;
-import static com.ritense.valtimo.service.CamundaTaskService.TaskFilter.OPEN;
+import static com.ritense.valtimo.service.OperatonTaskService.TaskFilter.MINE;
+import static com.ritense.valtimo.service.OperatonTaskService.TaskFilter.OPEN;
 import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
@@ -31,7 +31,7 @@ import com.ritense.search.domain.DataType;
 import com.ritense.search.domain.FieldType;
 import com.ritense.search.domain.SearchFieldV2;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
-import com.ritense.valtimo.service.CamundaTaskService.TaskFilter;
+import com.ritense.valtimo.service.OperatonTaskService.TaskFilter;
 import jakarta.validation.ValidationException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;

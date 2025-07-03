@@ -19,13 +19,13 @@ package com.ritense.processdocument.resolver
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
 import com.ritense.document.service.DocumentService
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valueresolver.ValueResolverFactory
 import com.ritense.valueresolver.ValueResolverOption
 import com.ritense.valueresolver.exception.ValueResolverValidationException
-import org.camunda.bpm.engine.delegate.VariableScope
+import org.operaton.bpm.engine.delegate.VariableScope
 import java.util.function.Function
 
 /**
@@ -46,7 +46,7 @@ class DocumentTableValueResolver(
         processInstanceId: String,
         variableScope: VariableScope
     ): Function<String, Any?> {
-        val document = processDocumentService.getDocument(CamundaProcessInstanceId(processInstanceId), variableScope)
+        val document = processDocumentService.getDocument(OperatonProcessInstanceId(processInstanceId), variableScope)
         return createResolver(document)
     }
 
@@ -82,10 +82,10 @@ class DocumentTableValueResolver(
                 "assigneeId" -> document.assigneeId()
                 "createdBy" -> document.createdBy()
                 "createdOn" -> document.createdOn()
-                "definitionId" -> document.definitionId()
-                "definitionId.name" -> document.definitionId().name()
-                // TODO: change definitionId.caseDefinitionId
-                "definitionId.version" -> document.definitionId().caseDefinitionId()
+                "documentDefinitionId" -> document.definitionId()
+                "documentDefinitionId.name" -> document.definitionId().name()
+                "definitionId.key" -> document.definitionId().caseDefinitionId().key
+                "definitionId.versionTag" -> document.definitionId().caseDefinitionId().versionTag.version
                 "id" -> document.id().id
                 "internalStatus" -> document.internalStatus()
                 "caseTags" -> document.caseTags()
@@ -105,6 +105,8 @@ class DocumentTableValueResolver(
             "createdOn",
             "definitionId.name",
             "definitionId.version",
+            "documentDefinitionId",
+            "documentDefinitionId.name",
             "id",
             "internalStatus",
             "caseTags",

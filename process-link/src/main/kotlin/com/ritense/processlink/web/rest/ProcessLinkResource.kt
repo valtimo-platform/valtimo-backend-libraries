@@ -32,14 +32,14 @@ import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
-import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
+import com.ritense.valtimo.operaton.domain.OperatonProcessDefinition
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
-import com.ritense.valtimo.service.CamundaProcessService
+import com.ritense.valtimo.service.OperatonProcessService
 import com.ritense.valtimo.web.rest.dto.ProcessDefinitionWithPropertiesDto
-import org.camunda.bpm.engine.RepositoryService
-import org.camunda.bpm.engine.impl.util.IoUtil
+import org.operaton.bpm.engine.RepositoryService
+import org.operaton.bpm.engine.impl.util.IoUtil
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -65,7 +65,7 @@ import java.util.stream.Collectors
 class ProcessLinkResource(
     private var processLinkService: ProcessLinkService,
     private val processLinkMappers: List<ProcessLinkMapper>,
-    private val camundaProcessService: CamundaProcessService,
+    private val operatonProcessService: OperatonProcessService,
     private val processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
     private val repositoryService: RepositoryService,
     private val processDeploymentService: ProcessDeploymentService
@@ -73,7 +73,7 @@ class ProcessLinkResource(
 
     @GetMapping("/v1/process-link")
     fun getProcessLinks(
-        @LoggableResource(resourceType = CamundaProcessDefinition::class) @RequestParam("processDefinitionId") processDefinitionId: String,
+        @LoggableResource(resourceType = OperatonProcessDefinition::class) @RequestParam("processDefinitionId") processDefinitionId: String,
         @RequestParam("activityId") activityId: String?
     ): ResponseEntity<List<ProcessLinkResponseDto>> {
         val list = if (activityId.isNullOrEmpty()) {
@@ -96,7 +96,7 @@ class ProcessLinkResource(
     fun createProcessLink(
         @RequestBody processLink: ProcessLinkCreateRequestDto
     ): ResponseEntity<Unit> {
-        return withLoggingContext(CamundaProcessDefinition::class.java, processLink.processDefinitionId) {
+        return withLoggingContext(OperatonProcessDefinition::class.java, processLink.processDefinitionId) {
             // To
             processLinkService.createProcessLink(processLink, null)
             ResponseEntity.status(HttpStatus.NO_CONTENT).build()
@@ -145,10 +145,10 @@ class ProcessLinkResource(
         @PathVariable("versionTag") versionTag: String
     ): ResponseEntity<List<CaseProcessDefinitionResponseDto>> {
         val definitions = runWithoutAuthorization {
-            camundaProcessService
+            operatonProcessService
                 .getDeployedDefinitions(CaseDefinitionId.of(caseDefinitionKey, versionTag))
                 .stream()
-                .map { definition: CamundaProcessDefinition? ->
+                .map { definition: OperatonProcessDefinition? ->
                     CaseProcessDefinitionResponseDto(
                         ProcessDefinitionWithPropertiesDto.fromProcessDefinition(
                             definition
@@ -177,7 +177,7 @@ class ProcessLinkResource(
     @Transactional
     fun getUnlinkedProcessDefinitionsAndProcessLinks(): ResponseEntity<List<ProcessDefinitionResponseDto>> {
         val definitions = runWithoutAuthorization {
-            camundaProcessService
+            operatonProcessService
                 .getUnlinkedDeployedDefinitions()
                 .stream()
                 .map { definition ->
@@ -206,7 +206,7 @@ class ProcessLinkResource(
         @PathVariable("processDefinitionKey") processDefinitionKey: String
     ): ResponseEntity<List<ProcessDefinitionResponseDto>> {
         val definitions = runWithoutAuthorization {
-            camundaProcessService.getUnlinkedDeployedDefinitionsByKey(processDefinitionKey)
+            operatonProcessService.getUnlinkedDeployedDefinitionsByKey(processDefinitionKey)
         }
 
         val responseDtos = definitions.map { definition ->
@@ -237,7 +237,7 @@ class ProcessLinkResource(
         @PathVariable("versionTag") versionTag: String,
         @PathVariable("processDefinitionId") processDefinitionId: String
     ): ResponseEntity<CaseProcessDefinitionResponseDto> {
-        val definition = camundaProcessService.getProcessDefinitionById(processDefinitionId)
+        val definition = operatonProcessService.getProcessDefinitionById(processDefinitionId)
 
         val responseDto = CaseProcessDefinitionResponseDto(
             ProcessDefinitionWithPropertiesDto.fromProcessDefinition(definition),
@@ -263,7 +263,7 @@ class ProcessLinkResource(
     fun getUnlinkedProcessDefinitionsWithLinks(
         @PathVariable("processDefinitionKey") processDefinitionKey: String
     ): ResponseEntity<List<ProcessDefinitionResponseDto>> {
-        val definitions = camundaProcessService.getDefinitionsByKey(processDefinitionKey)
+        val definitions = operatonProcessService.getDefinitionsByKey(processDefinitionKey)
 
         val responseDto = definitions.map {
             ProcessDefinitionResponseDto(
@@ -295,7 +295,7 @@ class ProcessLinkResource(
         val caseDefinitionId = CaseDefinitionId.of(caseDefinitionKey, versionTag)
 
         val definition = runWithoutAuthorization {
-            camundaProcessService
+            operatonProcessService
                 .getDefinitionsByKeyAndCaseDefinition(caseDefinitionId, processDefinitionKey)
                 .firstOrNull()
                 ?: throw IllegalStateException("No process definition found for key '$processDefinitionKey' in case definition '$caseDefinitionId'")
@@ -330,18 +330,18 @@ class ProcessLinkResource(
         @PathVariable("processDefinitionKey") processDefinitionKey: String,
     ): ResponseEntity<Any> {
         runWithoutAuthorization {
-            camundaProcessService
+            operatonProcessService
                 .getDefinitionsByKeyAndCaseDefinition(
                     CaseDefinitionId.of(caseDefinitionKey, versionTag),
                     processDefinitionKey
                 )
-                .forEach { definition: CamundaProcessDefinition ->
+                .forEach { definition: OperatonProcessDefinition ->
                     processDefinitionCaseDefinitionService.deleteProcessDefinitionCaseDefinition(
                         ProcessDefinitionId(definition.id),
                         CaseDefinitionId.of(caseDefinitionKey, versionTag)
                     )
                     processLinkService.deleteProcessLinksForProcessDefinition(definition.id)
-                    camundaProcessService.deleteProcessDefinition(definition.id)
+                    operatonProcessService.deleteProcessDefinition(definition.id)
                 }
         }
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
@@ -353,10 +353,10 @@ class ProcessLinkResource(
         @PathVariable("processDefinitionKey") processDefinitionKey: String
     ): ResponseEntity<Any> {
         runWithoutAuthorization {
-            camundaProcessService.getDefinitionsByKey(processDefinitionKey)
+            operatonProcessService.getDefinitionsByKey(processDefinitionKey)
                 .forEach { definition ->
                     processLinkService.deleteProcessLinksForProcessDefinition(definition.id)
-                    camundaProcessService.deleteProcessDefinition(definition.id)
+                    operatonProcessService.deleteProcessDefinition(definition.id)
                 }
         }
 

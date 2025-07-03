@@ -56,12 +56,12 @@ import com.ritense.outbox.OutboxService
 import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.service.ProcessLinkActivityHandler
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.operaton.service.OperatonRepositoryService
 import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
-import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.service.OperatonTaskService
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.persistence.EntityManager
-import org.camunda.bpm.engine.RuntimeService
+import org.operaton.bpm.engine.RuntimeService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -166,7 +166,7 @@ class FormFlowAutoConfiguration {
     @Bean
     fun formFlowProcessLinkTaskProvider(
         formFlowService: FormFlowService,
-        repositoryService: CamundaRepositoryService,
+        repositoryService: OperatonRepositoryService,
         processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
         documentService: DocumentService,
         runtimeService: RuntimeService,
@@ -239,7 +239,7 @@ class FormFlowAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ValtimoFormFlow::class)
     fun valtimoFormFlow(
-        taskService: CamundaTaskService,
+        taskService: OperatonTaskService,
         objectMapper: ObjectMapper,
         valueResolverService: ValueResolverService,
         formFlowService: FormFlowService,

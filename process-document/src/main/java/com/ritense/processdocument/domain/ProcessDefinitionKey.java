@@ -20,8 +20,8 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import java.lang.reflect.InvocationTargetException;
-import org.camunda.bpm.engine.delegate.DelegateExecution;
-import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
+import org.operaton.bpm.engine.delegate.DelegateExecution;
+import org.operaton.bpm.engine.impl.persistence.entity.ExecutionEntity;
 
 public interface ProcessDefinitionKey {
 

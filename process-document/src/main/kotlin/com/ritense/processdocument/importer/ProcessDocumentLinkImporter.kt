@@ -32,7 +32,7 @@ import com.ritense.processdocument.domain.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.domain.config.ProcessDocumentLinkConfigItem
 import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
-import com.ritense.valtimo.service.CamundaProcessService
+import com.ritense.valtimo.service.OperatonProcessService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.transaction.annotation.Transactional
 
@@ -41,7 +41,7 @@ class ProcessDocumentLinkImporter(
     private val processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
     private val documentDefinitionService: DocumentDefinitionService,
     private val objectMapper: ObjectMapper,
-    private val processService: CamundaProcessService,
+    private val processService: OperatonProcessService,
 ) : Importer {
 
     override fun type() = PROCESS_DOCUMENT_LINK

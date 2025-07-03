@@ -72,7 +72,6 @@ dependencies {
     testImplementation project(":mail")
     testImplementation project(':resource')
     testImplementation "org.springframework.security:spring-security-test"
-    testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:${camundaMockitoVersion}"
 
     //Kotlin
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
