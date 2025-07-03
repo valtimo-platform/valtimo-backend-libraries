@@ -24,26 +24,36 @@ import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Root
 
-class OperatonExecutionProcessDefinitionMapper : AuthorizationEntityMapper<OperatonExecution, OperatonProcessDefinition> {
+class OperatonExecutionProcessDefinitionMapper :
+    AuthorizationEntityMapper<OperatonExecution, OperatonProcessDefinition> {
     override fun mapRelated(entity: OperatonExecution): List<OperatonProcessDefinition> {
         return listOf(entity.processDefinition!!)
     }
 
-    override fun mapQuery(root: Root<OperatonExecution>, query: AbstractQuery<*>, criteriaBuilder: CriteriaBuilder): AuthorizationEntityMapperResult<OperatonProcessDefinition> {
-        val processDefinitionRoot: Root<OperatonProcessDefinition> = query.from(OperatonProcessDefinition::class.java)
-        val groupList = query.groupList.toMutableList()
-        groupList.add(root.get<OperatonProcessDefinition>("processDefinition").get<String>("id"))
-        query.groupBy(groupList)
+    override fun mapQuery(
+        root: Root<OperatonExecution>,
+        query: AbstractQuery<*>,
+        criteriaBuilder: CriteriaBuilder
+    ): AuthorizationEntityMapperResult<OperatonProcessDefinition> {
+
+        val subquery = query.subquery(Int::class.java)
+        val processDefinitionRoot = subquery.from(OperatonProcessDefinition::class.java)
+
+        subquery.select(criteriaBuilder.literal(1))
+            .where(
+                criteriaBuilder.equal(
+                    root.get<OperatonProcessDefinition>("processDefinition").get<String>("id"),
+                    processDefinitionRoot.get<String>("id")
+                )
+            )
 
         return AuthorizationEntityMapperResult(
             processDefinitionRoot,
-            query,
-            criteriaBuilder.equal(
-                root.get<OperatonProcessDefinition>("processDefinition").get<String>("id"),
-                processDefinitionRoot.get<String>("id")
-            )
+            subquery,
+            criteriaBuilder.exists(subquery)
         )
     }
+
 
     override fun supports(fromClass: Class<*>, toClass: Class<*>): Boolean {
         return fromClass == OperatonExecution::class.java && toClass == OperatonProcessDefinition::class.java

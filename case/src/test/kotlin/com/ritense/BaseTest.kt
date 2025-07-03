@@ -58,8 +58,8 @@ class BaseTest(
         return JsonSchemaDocumentDefinition(jsonSchemaDocumentDefinitionId, schema)
     }
 
-    protected fun definitionOf(name: String?): JsonSchemaDocumentDefinition {
-        val documentDefinitionName = JsonSchemaDocumentDefinitionId.of(name, caseDefinitionId())
+    protected fun definitionOf(name: String = "house", versionTag: String = "1.0.0"): JsonSchemaDocumentDefinition {
+        val documentDefinitionName = JsonSchemaDocumentDefinitionId.of(name, of(name, versionTag))
         val schema = JsonSchema.fromResourceUri(
             path(
                 documentDefinitionName.caseDefinitionId(),

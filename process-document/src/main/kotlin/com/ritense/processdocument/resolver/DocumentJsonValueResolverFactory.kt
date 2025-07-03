@@ -240,7 +240,7 @@ class DocumentJsonValueResolverFactory(
             if (isSimpleObject(propertyType)) {
                 options += ValueResolverOption(path, ValueResolverOptionType.FIELD)
             } else if (propertyType == "object") {
-                node["properties"].fields().forEach { jsonNode ->
+                node["properties"]?.fields()?.forEach { jsonNode ->
                     options += getPropertyNamesFromObjectNode(
                         definition,
                         jsonNode.value as ObjectNode,

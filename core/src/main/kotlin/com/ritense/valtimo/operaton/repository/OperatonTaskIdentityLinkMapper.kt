@@ -36,14 +36,21 @@ class OperatonTaskIdentityLinkMapper : AuthorizationEntityMapper<OperatonTask, O
         query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): AuthorizationEntityMapperResult<OperatonIdentityLink> {
-        val subquery = query.subquery(String::class.java)
+
+        val subquery = query.subquery(Int::class.java)
         val subRoot = subquery.from(OperatonIdentityLink::class.java)
-        subquery.select(subRoot.get<OperatonTask>(TASK).get(ID))
+
+        subquery.select(criteriaBuilder.literal(1)).where(
+            criteriaBuilder.equal(
+                subRoot.get<OperatonTask>(TASK).get<String>(ID),
+                root.get<String>(ID)
+            )
+        )
 
         return AuthorizationEntityMapperResult(
             subRoot,
             subquery,
-            criteriaBuilder.`in`(root.get<Any>(ID)).value(subquery),
+            criteriaBuilder.exists(subquery)
         )
     }
 
