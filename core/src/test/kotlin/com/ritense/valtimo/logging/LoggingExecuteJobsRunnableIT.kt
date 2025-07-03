@@ -18,12 +18,12 @@ package com.ritense.valtimo.logging
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.valtimo.BaseIntegrationTest
-import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition
+import com.ritense.valtimo.operaton.domain.ProcessInstanceWithDefinition
 import com.ritense.valtimo.contract.LoggingConstants
 import com.ritense.valtimo.logging.impl.LoggingTestBean
-import com.ritense.valtimo.service.CamundaProcessService
-import org.camunda.bpm.engine.ManagementService
-import org.camunda.bpm.engine.impl.jobexecutor.JobExecutor
+import com.ritense.valtimo.service.OperatonProcessService
+import org.operaton.bpm.engine.ManagementService
+import org.operaton.bpm.engine.impl.jobexecutor.JobExecutor
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.slf4j.MDC
@@ -32,7 +32,7 @@ import java.util.UUID
 import kotlin.test.junit5.JUnit5Asserter.fail
 
 class LoggingExecuteJobsRunnableIT @Autowired constructor(
-    private val camundaProcessService: CamundaProcessService,
+    private val operatonProcessService: OperatonProcessService,
     private val managementService: ManagementService,
     private val jobExecutor: JobExecutor
 ) : BaseIntegrationTest() {
@@ -42,7 +42,7 @@ class LoggingExecuteJobsRunnableIT @Autowired constructor(
     @Test
     fun `should log correlation id for log messages in job execution`() {
         val processInstanceWithDefinition = runWithoutAuthorization<Any?> {
-            camundaProcessService.startProcess(
+            operatonProcessService.startProcess(
                 "logging-test-process",
                 businessKey,
                 mapOf()

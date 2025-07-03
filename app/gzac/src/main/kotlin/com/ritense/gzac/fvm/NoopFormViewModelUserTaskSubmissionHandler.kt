@@ -18,9 +18,8 @@ package com.ritense.gzac.fvm
 
 import com.ritense.formviewmodel.submission.FormViewModelUserTaskSubmissionHandler
 import com.ritense.processlink.domain.ProcessLink
-import com.ritense.valtimo.camunda.domain.CamundaTask
-import mu.KLogger
-import mu.KotlinLogging
+import com.ritense.valtimo.operaton.domain.OperatonTask
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
@@ -31,11 +30,11 @@ class NoopFormViewModelUserTaskSubmissionHandler: FormViewModelUserTaskSubmissio
 
     override fun supports(processLink: ProcessLink) = true
 
-    override fun <T> handle(submission: T, task: CamundaTask, businessKey: String) {
+    override fun <T> handle(submission: T, task: OperatonTask, businessKey: String) {
         logger.debug { "User task submission handle: taskId=${task.id}, businessKey=$businessKey" }
     }
 
     companion object {
-        private val logger: KLogger = KotlinLogging.logger {}
+        private val logger = KotlinLogging.logger {}
     }
 }

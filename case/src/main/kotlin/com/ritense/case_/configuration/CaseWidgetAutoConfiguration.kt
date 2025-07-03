@@ -18,14 +18,16 @@ package com.ritense.case_.configuration
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.case.repository.CaseTabRepository
+import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.service.CaseTabService
-import com.ritense.case_.deployment.CaseWidgetTabDeployer
 import com.ritense.case_.domain.tab.CaseWidgetTabWidget
+import com.ritense.case_.listener.CaseTabCaseEventListener
 import com.ritense.case_.repository.CaseWidgetTabRepository
 import com.ritense.case_.repository.CaseWidgetTabWidgetSpecificationFactory
 import com.ritense.case_.rest.CaseWidgetTabManagementResource
 import com.ritense.case_.rest.CaseWidgetTabResource
 import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
+import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.case_.service.CaseWidgetTabExporter
 import com.ritense.case_.service.CaseWidgetTabImporter
 import com.ritense.case_.service.CaseWidgetTabService
@@ -41,12 +43,10 @@ import com.ritense.case_.widget.fields.FieldsCaseWidgetMapper
 import com.ritense.case_.widget.table.TableCaseWidgetDataProvider
 import com.ritense.case_.widget.table.TableCaseWidgetMapper
 import com.ritense.document.service.DocumentService
-import com.ritense.valtimo.changelog.service.ChangelogDeployer
-import com.ritense.valtimo.changelog.service.ChangelogService
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.validation.Validator
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -72,33 +72,16 @@ class CaseWidgetAutoConfiguration {
         authorizationService: AuthorizationService,
         caseWidgetMappers: List<CaseWidgetMapper<*, *>>,
         caseWidgetDataProviders: List<CaseWidgetDataProvider<*>>,
-        documentService: DocumentService
+        documentService: DocumentService,
+        caseDefinitionChecker: CaseDefinitionChecker,
     ) = CaseWidgetTabService(
         documentService,
         caseWidgetTabRepository,
         caseTabRepository,
         authorizationService,
         caseWidgetMappers as List<CaseWidgetMapper<CaseWidgetTabWidget, CaseWidgetTabWidgetDto>>,
-        caseWidgetDataProviders as List<CaseWidgetDataProvider<CaseWidgetTabWidget>>
-    )
-
-    @Suppress("UNCHECKED_CAST")
-    @Bean
-    @ConditionalOnMissingBean(CaseWidgetTabDeployer::class)
-    fun caseWidgetTabDeployer(
-        objectMapper: ObjectMapper,
-        caseWidgetTabRepository: CaseWidgetTabRepository,
-        caseWidgetMappers: List<CaseWidgetMapper<*, *>>,
-        changelogService: ChangelogService,
-        @Value("\${valtimo.changelog.case-widget-tab.clear-tables:false}") clearTables: Boolean,
-        validator: Validator
-    ) = CaseWidgetTabDeployer(
-        objectMapper,
-        caseWidgetTabRepository,
-        caseWidgetMappers as List<CaseWidgetMapper<CaseWidgetTabWidget, CaseWidgetTabWidgetDto>>,
-        changelogService,
-        clearTables,
-        validator
+        caseWidgetDataProviders as List<CaseWidgetDataProvider<CaseWidgetTabWidget>>,
+        caseDefinitionChecker,
     )
 
     @ConditionalOnMissingBean(CaseWidgetTabWidgetSpecificationFactory::class)
@@ -118,9 +101,16 @@ class CaseWidgetAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(CaseWidgetTabImporter::class)
     fun caseWidgetTabImporter(
-        caseWidgetTabDeployer: CaseWidgetTabDeployer,
-        changelogDeployer: ChangelogDeployer
-    ) = CaseWidgetTabImporter(caseWidgetTabDeployer, changelogDeployer)
+        objectMapper: ObjectMapper,
+        validator: Validator,
+        caseWidgetTabRepository: CaseWidgetTabRepository,
+        caseWidgetMappers: List<CaseWidgetMapper<*, *>>,
+    ) = CaseWidgetTabImporter(
+        objectMapper,
+        validator,
+        caseWidgetTabRepository,
+        caseWidgetMappers as List<CaseWidgetMapper<CaseWidgetTabWidget, CaseWidgetTabWidgetDto>>
+    )
 
     @ConditionalOnMissingBean(CaseWidgetTabResource::class)
     @Bean
@@ -181,4 +171,21 @@ class CaseWidgetAutoConfiguration {
     @ConditionalOnMissingBean(CustomCaseWidgetMapper::class)
     @Bean
     fun customCaseWidgetMapper() = CustomCaseWidgetMapper()
+
+    @ConditionalOnMissingBean(ActiveCaseDefinitionService::class)
+    @Bean
+    fun activeCaseDefinitionService(
+        caseDefinitionService: CaseDefinitionService,
+        authorizationService: AuthorizationService
+    ) = ActiveCaseDefinitionService(caseDefinitionService, authorizationService)
+
+    @ConditionalOnMissingBean(CaseTabCaseEventListener::class)
+    @Bean
+    fun caseTabCaseEventListener(
+        caseTabService: CaseTabService,
+        caseWidgetTabRepository: CaseWidgetTabRepository,
+    ) = CaseTabCaseEventListener(
+        caseTabService,
+        caseWidgetTabRepository,
+    )
 }

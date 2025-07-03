@@ -41,19 +41,17 @@ import com.ritense.portaaltaak.exception.CompleteTaakProcessVariableNotFoundExce
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
-import com.ritense.valtimo.camunda.domain.CamundaTask
-import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byActive
-import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byId
-import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byProcessInstanceId
-import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.operaton.domain.OperatonTask
+import com.ritense.valtimo.operaton.repository.OperatonTaskSpecificationHelper.Companion.byActive
+import com.ritense.valtimo.operaton.repository.OperatonTaskSpecificationHelper.Companion.byId
+import com.ritense.valtimo.operaton.repository.OperatonTaskSpecificationHelper.Companion.byProcessInstanceId
+import com.ritense.valtimo.service.OperatonTaskService
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
-import org.camunda.bpm.engine.RepositoryService
-import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.hamcrest.CoreMatchers.anyOf
 import org.hamcrest.CoreMatchers.endsWith
 import org.hamcrest.CoreMatchers.equalTo
@@ -72,6 +70,8 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.operaton.bpm.engine.RepositoryService
+import org.operaton.bpm.engine.delegate.DelegateExecution
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpMethod
 import org.springframework.transaction.annotation.Transactional
@@ -107,7 +107,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
     lateinit var procesDocumentService: ProcessDocumentService
 
     @Autowired
-    lateinit var taskService: CamundaTaskService
+    lateinit var taskService: OperatonTaskService
 
     @Autowired
     lateinit var objectMapper: ObjectMapper
@@ -312,7 +312,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
     }
 
     @Test
-    fun `should complete Camunda Task`() {
+    fun `should complete Operaton Task`() {
         val task = startPortaalTaakProcess(
             """
             {
@@ -323,10 +323,14 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
         assertNotNull(runWithoutAuthorization { taskService.findTaskById(task.id) })
 
         val portaaltaakPlugin = spy(pluginService.createInstance(portaalTaakPluginDefinition.id) as PortaaltaakPlugin)
-        val delegateExecution = DelegateExecutionFake()
-        delegateExecution.setVariable("verwerkerTaakId", task.id)
-        delegateExecution.setVariable("objectenApiPluginConfigurationId", objectenPlugin.id.id.toString())
-        delegateExecution.setVariable("portaalTaakObjectUrl", "http://some.resource/url")
+        val delegateExecution = mockExecution(
+            mapOf(
+                "verwerkerTaakId" to task.id,
+                "objectenApiPluginConfigurationId" to objectenPlugin.id.id.toString(),
+                "portaalTaakObjectUrl" to "http://some.resource/url"
+            )
+        )
+
         val objectenApiPlugin: ObjectenApiPlugin = mock()
         val objectWrapperCaptor = argumentCaptor<ObjectWrapper>()
         val jsonNodeCaptor = argumentCaptor<JsonNode>()
@@ -362,7 +366,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
     @Test
     fun `should throw exception due to missing verwerkerTaakId`() {
         val portaaltaakPlugin = pluginService.createInstance(portaalTaakPluginDefinition.id) as PortaaltaakPlugin
-        val delegateExecution = DelegateExecutionFake()
+        val delegateExecution = mock<DelegateExecution>()
         val result =
             assertThrows<CompleteTaakProcessVariableNotFoundException> {
                 portaaltaakPlugin.completePortaalTaak(
@@ -382,8 +386,10 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
         """.trimIndent()
         )
         val portaaltaakPlugin = pluginService.createInstance(portaalTaakPluginDefinition.id) as PortaaltaakPlugin
-        val delegateExecution = DelegateExecutionFake()
-        delegateExecution.setVariable("verwerkerTaakId", task.id)
+        val delegateExecution = mockExecution(
+            mapOf("verwerkerTaakId" to task.id)
+        )
+
         val result =
             assertThrows<CompleteTaakProcessVariableNotFoundException> {
                 portaaltaakPlugin.completePortaalTaak(
@@ -403,9 +409,13 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
         """.trimIndent()
         )
         val portaaltaakPlugin = pluginService.createInstance(portaalTaakPluginDefinition.id) as PortaaltaakPlugin
-        val delegateExecution = DelegateExecutionFake()
-        delegateExecution.setVariable("verwerkerTaakId", task.id)
-        delegateExecution.setVariable("objectenApiPluginConfigurationId", objectenPlugin.id.id.toString())
+        val delegateExecution = mockExecution(
+            mapOf(
+                "verwerkerTaakId" to task.id,
+                "objectenApiPluginConfigurationId" to objectenPlugin.id.id.toString()
+            )
+        )
+
 
         val result =
             assertThrows<CompleteTaakProcessVariableNotFoundException> {
@@ -427,10 +437,15 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
     private fun startPortaalTaakProcess(
         content: String,
         processDefinitionKey: String = PROCESS_DEFINITION_KEY
-    ): CamundaTask {
+    ): OperatonTask {
         return runWithoutAuthorization {
             val newDocumentRequest =
-                NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.readTree(content))
+                NewDocumentRequest(
+                    DOCUMENT_DEFINITION_KEY,
+                    "profile",
+                    "1.0.0",
+                    objectMapper.readTree(content)
+                )
             val request = NewDocumentAndStartProcessRequest(processDefinitionKey, newDocumentRequest)
             val processResult = procesDocumentService.newDocumentAndStartProcess(request)
             taskService.findTask(
@@ -669,6 +684,14 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
 
         override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
             return next.exchange(request)
+        }
+    }
+
+    private fun mockExecution(variables: Map<String, Any>): DelegateExecution {
+        return mock<DelegateExecution> {
+            on { variables }.thenReturn(variables)
+            on { processInstanceId }.thenReturn(UUID.randomUUID().toString())
+            on { getVariable(any()) }.thenAnswer { variables.get(it.arguments[0]) }
         }
     }
 

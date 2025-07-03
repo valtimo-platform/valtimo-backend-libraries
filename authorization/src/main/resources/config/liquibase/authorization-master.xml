@@ -28,5 +28,6 @@
     <include file="changelog/20230424-create-authorization-table.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20230910-create-json-array-contains-function.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20240612-add-context-columns.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20250701-operaton-migration.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

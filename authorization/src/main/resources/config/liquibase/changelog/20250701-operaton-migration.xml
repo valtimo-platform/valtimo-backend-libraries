@@ -1,0 +1,125 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright 2015-2025 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="Ritense" id="1">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql>
+            UPDATE permission
+            SET resource_type = replace(resource_type, 'com.ritense.valtimo.camunda.domain.CamundaTask', 'com.ritense.valtimo.operaton.domain.OperatonTask'),
+                conditions = replace(conditions, 'com.ritense.valtimo.camunda.domain.CamundaTask', 'com.ritense.valtimo.operaton.domain.OperatonTask'),
+                context_resource_type = replace(context_resource_type, 'com.ritense.valtimo.camunda.domain.CamundaTask', 'com.ritense.valtimo.operaton.domain.OperatonTask'),
+                context_conditions = replace(context_conditions, 'com.ritense.valtimo.camunda.domain.CamundaTask', 'com.ritense.valtimo.operaton.domain.OperatonTask')
+        </sql>
+    </changeSet>
+
+    <changeSet author="Ritense" id="2">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql>
+            UPDATE permission
+            SET resource_type = replace(resource_type, 'com.ritense.valtimo.camunda.domain.CamundaExecution', 'com.ritense.valtimo.operaton.domain.OperatonExecution'),
+                conditions = replace(conditions, 'com.ritense.valtimo.camunda.domain.CamundaExecution', 'com.ritense.valtimo.operaton.domain.OperatonExecution'),
+                context_resource_type = replace(context_resource_type, 'com.ritense.valtimo.camunda.domain.CamundaExecution', 'com.ritense.valtimo.operaton.domain.OperatonExecution'),
+                context_conditions = replace(context_conditions, 'com.ritense.valtimo.camunda.domain.CamundaExecution', 'com.ritense.valtimo.operaton.domain.OperatonExecution')
+        </sql>
+    </changeSet>
+
+    <changeSet author="Ritense" id="3">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql>
+            UPDATE permission
+            SET resource_type = replace(resource_type, 'com.ritense.valtimo.camunda.domain.CamundaIdentityLink', 'com.ritense.valtimo.operaton.domain.OperatonIdentityLink'),
+                conditions = replace(conditions, 'com.ritense.valtimo.camunda.domain.CamundaIdentityLink', 'com.ritense.valtimo.operaton.domain.OperatonIdentityLink'),
+                context_resource_type = replace(context_resource_type, 'com.ritense.valtimo.camunda.domain.CamundaIdentityLink', 'com.ritense.valtimo.operaton.domain.OperatonIdentityLink'),
+                context_conditions = replace(context_conditions, 'com.ritense.valtimo.camunda.domain.CamundaIdentityLink', 'com.ritense.valtimo.operaton.domain.OperatonIdentityLink')
+        </sql>
+    </changeSet>
+
+    <changeSet author="Ritense" id="4">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql>
+            UPDATE permission
+            SET resource_type = replace(resource_type, 'com.ritense.valtimo.camunda.domain.CamundaProcessDefinition', 'com.ritense.valtimo.operaton.domain.OperatonProcessDefinition'),
+                conditions = replace(conditions, 'com.ritense.valtimo.camunda.domain.CamundaProcessDefinition', 'com.ritense.valtimo.operaton.domain.OperatonProcessDefinition'),
+                context_resource_type = replace(context_resource_type, 'com.ritense.valtimo.camunda.domain.CamundaProcessDefinition', 'com.ritense.valtimo.operaton.domain.OperatonProcessDefinition'),
+                context_conditions = replace(context_conditions, 'com.ritense.valtimo.camunda.domain.CamundaProcessDefinition', 'com.ritense.valtimo.operaton.domain.OperatonProcessDefinition')
+        </sql>
+    </changeSet>
+
+    <changeSet author="Ritense" id="5">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <sql>
+            UPDATE permission
+            SET resource_type = replace(resource_type, 'com.ritense.valtimo.camunda.domain.CamundaTask', 'com.ritense.valtimo.operaton.domain.OperatonTask'),
+                conditions = replace(conditions::text, 'com.ritense.valtimo.camunda.domain.CamundaTask', 'com.ritense.valtimo.operaton.domain.OperatonTask')::json,
+                context_resource_type = replace(context_resource_type, 'com.ritense.valtimo.camunda.domain.CamundaTask', 'com.ritense.valtimo.operaton.domain.OperatonTask'),
+                context_conditions = replace(context_conditions::text, 'com.ritense.valtimo.camunda.domain.CamundaTask', 'com.ritense.valtimo.operaton.domain.OperatonTask')::json
+        </sql>
+    </changeSet>
+
+    <changeSet author="Ritense" id="6">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <sql>
+            UPDATE permission
+            SET resource_type = replace(resource_type, 'com.ritense.valtimo.camunda.domain.CamundaExecution', 'com.ritense.valtimo.operaton.domain.OperatonExecution'),
+                conditions = replace(conditions::text, 'com.ritense.valtimo.camunda.domain.CamundaExecution', 'com.ritense.valtimo.operaton.domain.OperatonExecution')::json,
+                context_resource_type = replace(context_resource_type, 'com.ritense.valtimo.camunda.domain.CamundaExecution', 'com.ritense.valtimo.operaton.domain.OperatonExecution'),
+                context_conditions = replace(context_conditions::text, 'com.ritense.valtimo.camunda.domain.CamundaExecution', 'com.ritense.valtimo.operaton.domain.OperatonExecution')::json
+        </sql>
+    </changeSet>
+
+    <changeSet author="Ritense" id="7">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <sql>
+            UPDATE permission
+            SET resource_type = replace(resource_type, 'com.ritense.valtimo.camunda.domain.CamundaIdentityLink', 'com.ritense.valtimo.operaton.domain.OperatonIdentityLink'),
+                conditions = replace(conditions::text, 'com.ritense.valtimo.camunda.domain.CamundaIdentityLink', 'com.ritense.valtimo.operaton.domain.OperatonIdentityLink')::json,
+                context_resource_type = replace(context_resource_type, 'com.ritense.valtimo.camunda.domain.CamundaIdentityLink', 'com.ritense.valtimo.operaton.domain.OperatonIdentityLink'),
+                context_conditions = replace(context_conditions::text, 'com.ritense.valtimo.camunda.domain.CamundaIdentityLink', 'com.ritense.valtimo.operaton.domain.OperatonIdentityLink')::json
+        </sql>
+    </changeSet>
+
+    <changeSet author="Ritense" id="8">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <sql>
+            UPDATE permission
+            SET resource_type = replace(resource_type, 'com.ritense.valtimo.camunda.domain.CamundaProcessDefinition', 'com.ritense.valtimo.operaton.domain.OperatonProcessDefinition'),
+                conditions = replace(conditions::text, 'com.ritense.valtimo.camunda.domain.CamundaProcessDefinition', 'com.ritense.valtimo.operaton.domain.OperatonProcessDefinition')::json,
+                context_resource_type = replace(context_resource_type, 'com.ritense.valtimo.camunda.domain.CamundaProcessDefinition', 'com.ritense.valtimo.operaton.domain.OperatonProcessDefinition'),
+                context_conditions = replace(context_conditions::text, 'com.ritense.valtimo.camunda.domain.CamundaProcessDefinition', 'com.ritense.valtimo.operaton.domain.OperatonProcessDefinition')::json
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

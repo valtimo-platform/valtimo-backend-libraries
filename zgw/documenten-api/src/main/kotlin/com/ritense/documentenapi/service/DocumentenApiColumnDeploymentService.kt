@@ -28,8 +28,7 @@ import com.ritense.documentenapi.domain.DocumentenApiColumnKey.INFORMATIEOBJECTT
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.TITEL
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import mu.KLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -45,8 +44,7 @@ class DocumentenApiColumnDeploymentService(
     @EventListener(DocumentDefinitionDeployedEvent::class)
     fun createDocumentenApiColumns(event: DocumentDefinitionDeployedEvent) {
         logger.info { "Create columns for document definition ${event.documentDefinition().id().name()}" }
-        if (event.documentDefinition().id()
-                .version() == 1L && !columnsExistForDocumentDefinitionName(event.documentDefinition().id().name())
+        if (!columnsExistForDocumentDefinitionName(event.documentDefinition().id().name())
         ) {
             getDefaultColumns(event.documentDefinition().id().name()).forEach { column ->
                 documentenApiService.createOrUpdateColumn(column)
@@ -69,6 +67,6 @@ class DocumentenApiColumnDeploymentService(
     }
 
     companion object {
-        private val logger: KLogger = KotlinLogging.logger {}
+        private val logger = KotlinLogging.logger {}
     }
 }

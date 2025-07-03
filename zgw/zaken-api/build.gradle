@@ -30,9 +30,9 @@ dockerCompose {
 }
 
 dependencies {
+    implementation project(":case")
     implementation project(":core")
     implementation project(":contract")
-    implementation project(":document")
     implementation project(":plugin")
     implementation project(":process-document")
     implementation project(":resource")
@@ -43,8 +43,10 @@ dependencies {
     implementation project(':zgw:documenten-api')
     implementation project(":outbox")
     implementation project(":logging")
+    implementation project(":importer")
+    implementation project(":exporter")
 
-    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "io.github.oshai:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
     implementation "org.springframework.boot:spring-boot-starter-security"
@@ -64,7 +66,6 @@ dependencies {
     testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
     //Kotlin
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
-    testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:${camundaMockitoVersion}"
 
     testImplementation project(":test-utils-common")
 

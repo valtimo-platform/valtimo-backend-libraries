@@ -21,7 +21,7 @@ import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.service.OperatonTaskService
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 
@@ -31,7 +31,7 @@ class PortaaltaakPluginFactory(
     private val valueResolverService: ValueResolverService,
     private val processDocumentService: ProcessDocumentService,
     private val zaakInstanceLinkService: ZaakInstanceLinkService,
-    private val taskService: CamundaTaskService
+    private val taskService: OperatonTaskService
 ) : PluginFactory<PortaaltaakPlugin>(pluginService) {
 
     override fun create(): PortaaltaakPlugin {

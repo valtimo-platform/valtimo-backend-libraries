@@ -1,5 +1,5 @@
 {
-    "changesetId": "documents-v1",
+    "changesetId": "documents-v2",
     "permissions": [
         {
             "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
@@ -16,9 +16,15 @@
                 },
                 {
                     "type": "field",
-                    "field": "documentDefinitionId.name",
+                    "field": "documentDefinitionId.caseDefinitionId.key",
                     "operator": "==",
                     "value": "leningen"
+                },
+                {
+                    "type": "field",
+                    "field": "documentDefinitionId.caseDefinitionId.versionTag",
+                    "operator": "==",
+                    "value": "${ACTIVE}"
                 }
             ]
         },

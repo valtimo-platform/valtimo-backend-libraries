@@ -7,13 +7,13 @@ import com.ritense.form.domain.IntermediateSubmission
 import com.ritense.form.repository.IntermediateSubmissionRepository
 import com.ritense.form.util.EventDispatcherHelper.Companion.dispatchEvents
 import com.ritense.logging.LoggableResource
-import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Companion.COMPLETE
-import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Companion.VIEW
-import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.operaton.authorization.OperatonTaskActionProvider.Companion.COMPLETE
+import com.ritense.valtimo.operaton.authorization.OperatonTaskActionProvider.Companion.VIEW
+import com.ritense.valtimo.operaton.domain.OperatonTask
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import com.ritense.valtimo.service.CamundaTaskService
-import mu.KotlinLogging
+import com.ritense.valtimo.service.OperatonTaskService
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -24,28 +24,28 @@ class IntermediateSubmissionService(
     private val intermediateSubmissionRepository: IntermediateSubmissionRepository,
     private val userManagementService: UserManagementService,
     private val authorizationService: AuthorizationService,
-    private val camundaTaskService: CamundaTaskService
+    private val operatonTaskService: OperatonTaskService
 ) {
 
     fun get(
-        @LoggableResource(resourceType = CamundaTask::class) taskInstanceId: String
+        @LoggableResource(resourceType = OperatonTask::class) taskInstanceId: String
     ): IntermediateSubmission? {
-        val task = camundaTaskService.findTaskById(taskInstanceId)
+        val task = operatonTaskService.findTaskById(taskInstanceId)
         authorizationService.requirePermission(
-            EntityAuthorizationRequest(CamundaTask::class.java, VIEW, task)
+            EntityAuthorizationRequest(OperatonTask::class.java, VIEW, task)
         )
         return intermediateSubmissionRepository.getByTaskInstanceId(taskInstanceId)
     }
 
     fun store(
         submission: ObjectNode,
-        @LoggableResource(resourceType = CamundaTask::class) taskInstanceId: String
+        @LoggableResource(resourceType = OperatonTask::class) taskInstanceId: String
     ): IntermediateSubmission {
-        val task = camundaTaskService.findTaskById(taskInstanceId)
+        val task = operatonTaskService.findTaskById(taskInstanceId)
         authorizationService.requirePermission(
-            EntityAuthorizationRequest(CamundaTask::class.java, COMPLETE, task)
+            EntityAuthorizationRequest(OperatonTask::class.java, COMPLETE, task)
         )
-        val currentUser: String = userManagementService.currentUser.userIdentifier
+        val currentUser: String = userManagementService.currentUser.username
         val existingIntermediateSubmission = intermediateSubmissionRepository.getByTaskInstanceId(taskInstanceId)
         if (existingIntermediateSubmission != null) {
             return intermediateSubmissionRepository.save(
@@ -72,11 +72,11 @@ class IntermediateSubmissionService(
     }
 
     fun clear(
-        @LoggableResource(resourceType = CamundaTask::class) taskInstanceId: String
+        @LoggableResource(resourceType = OperatonTask::class) taskInstanceId: String
     ) {
-        val task = camundaTaskService.findTaskById(taskInstanceId)
+        val task = operatonTaskService.findTaskById(taskInstanceId)
         authorizationService.requirePermission(
-            EntityAuthorizationRequest(CamundaTask::class.java, COMPLETE, task)
+            EntityAuthorizationRequest(OperatonTask::class.java, COMPLETE, task)
         )
         intermediateSubmissionRepository.getByTaskInstanceId(taskInstanceId)?.let { intermediateSubmission ->
             intermediateSubmissionRepository.deleteById(intermediateSubmission.intermediateSubmissionId)

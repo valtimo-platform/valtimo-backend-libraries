@@ -28,6 +28,7 @@ import com.ritense.form.processlink.FormProcessLinkActivityHandler
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
@@ -53,6 +54,7 @@ internal class FormProcessLinkActivityHandlerIntTest : BaseIntegrationTest() {
     @Test
     fun `should retrieve form definition`() {
         val formDefinition = formDefinitionService.createFormDefinition(
+            CaseDefinitionId.of("person", "1.0.0"),
             CreateFormDefinitionRequest(
                 "aName",
                 getForm(),
@@ -63,6 +65,8 @@ internal class FormProcessLinkActivityHandlerIntTest : BaseIntegrationTest() {
             documentService.createDocument(
                 NewDocumentRequest(
                     "person",
+                    "person",
+                    "1.0.0",
                     objectMapper.readTree(getDocument())
                 )
             ).resultingDocument().get().id()

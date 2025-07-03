@@ -16,8 +16,8 @@
 
 package com.ritense.valtimo.domain.formfields;
 
-import org.camunda.bpm.engine.impl.form.type.AbstractFormFieldType;
-import org.camunda.bpm.engine.variable.value.TypedValue;
+import org.operaton.bpm.engine.impl.form.type.AbstractFormFieldType;
+import org.operaton.bpm.engine.variable.value.TypedValue;
 
 public class ChoiceFieldFormFieldType extends AbstractFormFieldType {
 

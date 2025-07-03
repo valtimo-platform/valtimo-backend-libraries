@@ -40,7 +40,7 @@ jhipster:
 
 
 ## Task notifcations
-You can use the following expression within Camunda:
+You can use the following expression within Operaton:
 
 ```
 ${mandrillMailer.sendNotification(task)}
@@ -54,13 +54,13 @@ ${mandrillMailer.sendNotification(task,'CUSTOM_TEMPLATE')}
 
 This send out a mail to the assignee using a custom specified Mandrill template.
 
-``` 
+```
 ${mandrillMailer.sendNotification(task, "niels.leemburg@ritense.com", "Niels", "Leemburg")}
 ```
 
 This sends out a mail to the email provided within the method. This only send a
 notification if the task is accessible publicly. This is done via the properties
-panel within the Camunda Modeller. You can access and add properties in the 
+panel within the Operaton Modeller. You can access and add properties in the
 properties tab. Add a property with name `public` and as value `true` to make it accessible publicly.
 
 

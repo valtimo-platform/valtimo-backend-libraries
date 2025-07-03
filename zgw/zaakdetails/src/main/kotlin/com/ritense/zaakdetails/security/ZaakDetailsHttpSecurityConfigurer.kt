@@ -42,6 +42,6 @@ class ZaakDetailsHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     companion object {
         private const val SYNC_MANAGEMENT_URL =
-            "/api/management/v1/document-definition/{name}/version/{version}/objecten-api-sync"
+            "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/objecten-api-sync"
     }
 }

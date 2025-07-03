@@ -16,20 +16,37 @@
 
 package com.ritense.case.domain
 
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.domain.AbstractId
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
+import jakarta.persistence.Embedded
 
 @Embeddable
 data class CaseTabId(
-    @Column(name = "case_definition_name")
-    val caseDefinitionName: String,
+    @Embedded
+    val caseDefinitionId: CaseDefinitionId,
     @Column(name = "tab_key")
     val key: String
 ) : AbstractId<CaseTabId>() {
     init {
-        require(caseDefinitionName.isNotBlank()) { "caseDefinitionName was blank!" }
-        require(key.isNotBlank()) { "key was blank!"}
-        require(key.matches(Regex("^[a-zA-Z0-9\\-]+$"))) { "key contains characters that are not allowed (only alphanumeric characters and dashes)"}
+        require(key.isNotBlank()) { "key was blank!" }
+        require(key.matches(Regex("^[a-zA-Z0-9\\-]+$"))) { "key contains characters that are not allowed (only alphanumeric characters and dashes)" }
+    }
+
+    override fun toString(): String {
+        return "$caseDefinitionId:$key)"
+    }
+
+    companion object {
+        @JvmStatic
+        fun of(idAsString: String): CaseTabId? {
+            val strings = idAsString.split(':')
+            return if (strings.size != 3) {
+                null
+            } else {
+                CaseTabId(CaseDefinitionId.of(strings[0], strings[1]), strings[2])
+            }
+        }
     }
 }

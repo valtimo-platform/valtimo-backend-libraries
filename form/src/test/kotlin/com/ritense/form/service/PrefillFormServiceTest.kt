@@ -33,13 +33,14 @@ import com.ritense.form.BaseTest
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.form.FormFieldDataResolver
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.json.patch.operation.AddOperation
 import com.ritense.valtimo.contract.json.patch.operation.Operation
 import com.ritense.valtimo.contract.json.patch.operation.ReplaceOperation
-import com.ritense.valtimo.service.CamundaProcessService
-import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.service.OperatonProcessService
+import com.ritense.valtimo.service.OperatonTaskService
 import com.ritense.valueresolver.ValueResolverService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -57,8 +58,8 @@ class PrefillFormServiceTest : BaseTest() {
     lateinit var prefillFormService: PrefillFormService
     lateinit var documentService: JsonSchemaDocumentService
     lateinit var formDefinitionService: FormIoFormDefinitionService
-    lateinit var camundaProcessService: CamundaProcessService
-    lateinit var taskService: CamundaTaskService
+    lateinit var operatonProcessService: OperatonProcessService
+    lateinit var taskService: OperatonTaskService
     lateinit var formFieldDataResolver: FormFieldDataResolver
     lateinit var processDocumentAssociationService: ProcessDocumentAssociationService
     lateinit var valueResolverService: ValueResolverService
@@ -67,7 +68,7 @@ class PrefillFormServiceTest : BaseTest() {
     fun setUp() {
         documentService = mock()
         formDefinitionService = mock()
-        camundaProcessService = mock()
+        operatonProcessService = mock()
         taskService = mock()
         formFieldDataResolver = mock()
         processDocumentAssociationService = mock()
@@ -76,7 +77,7 @@ class PrefillFormServiceTest : BaseTest() {
         prefillFormService = PrefillFormService(
             documentService,
             formDefinitionService,
-            camundaProcessService,
+            operatonProcessService,
             taskService,
             listOf(formFieldDataResolver),
             processDocumentAssociationService,
@@ -335,7 +336,7 @@ class PrefillFormServiceTest : BaseTest() {
     private fun document(): JsonSchemaDocument {
         val schema = JsonSchemaDocumentDefinition(
             JsonSchemaDocumentDefinitionId.existingId(
-                "test", 1L
+                "test", CaseDefinitionId.of("person", "1.0.0"),
             ),
             JsonSchema.fromString("""
                 {

@@ -19,7 +19,7 @@ package com.ritense.processlink.web.rest
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.processlink.BaseIntegrationTest
 import com.ritense.processlink.service.ProcessLinkActivityService
-import com.ritense.valtimo.service.CamundaProcessService
+import com.ritense.valtimo.service.OperatonProcessService
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -34,12 +34,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
+import java.util.UUID
 
 @Transactional
 @Import(ProcessLinkActivityService::class)
 internal class ProcessLinkTaskResourceIT @Autowired constructor(
     private val webApplicationContext: WebApplicationContext,
-    private val camundaProcessService: CamundaProcessService,
+    private val operatonProcessService: OperatonProcessService,
 ) : BaseIntegrationTest() {
 
     lateinit var mockMvc: MockMvc
@@ -54,7 +55,13 @@ internal class ProcessLinkTaskResourceIT @Autowired constructor(
     @Test
     fun `should list tasks with process links`() {
         val processInstanceWithDefinition =
-            runWithoutAuthorization { camundaProcessService.startProcess(PROCESS_DEF_ID, "", emptyMap()) }
+            runWithoutAuthorization {
+                operatonProcessService.startProcess(
+                    PROCESS_DEF_ID,
+                    UUID.randomUUID().toString(),
+                    emptyMap()
+                )
+            }
 
         runWithoutAuthorization {
             mockMvc.perform(

@@ -17,17 +17,10 @@
 package com.ritense.smartdocuments
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.connector.domain.Connector
-import com.ritense.connector.domain.ConnectorInstance
-import com.ritense.connector.domain.ConnectorInstanceId
-import com.ritense.connector.repository.ConnectorTypeInstanceRepository
-import com.ritense.connector.service.ConnectorDeploymentService
-import com.ritense.connector.service.ConnectorService
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginPropertyRepository
-import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
-import java.util.UUID
+import com.ritense.smartdocuments.config.SmartDocumentsAuthentication
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -38,21 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpMethod
 
 class BaseSmartDocumentsIntegrationTest : BaseIntegrationTest() {
-
-    @Autowired
-    lateinit var smartDocumentsConnector: Connector
-
-    @Autowired
-    lateinit var smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties
-
-    @Autowired
-    lateinit var connectorService: ConnectorService
-
-    @Autowired
-    lateinit var connectorTypeInstanceRepository: ConnectorTypeInstanceRepository
-
-    @Autowired
-    lateinit var connectorDeploymentService: ConnectorDeploymentService
 
     @Autowired
     lateinit var pluginDefinitionRepository: PluginDefinitionRepository
@@ -72,7 +50,6 @@ class BaseSmartDocumentsIntegrationTest : BaseIntegrationTest() {
     @BeforeEach
     internal fun setUp() {
         startMockServer()
-        setupConnector()
     }
 
     @AfterEach
@@ -118,22 +95,11 @@ class BaseSmartDocumentsIntegrationTest : BaseIntegrationTest() {
             .setBody(readFileAsString(fileName))
     }
 
-    private fun setupConnector() {
-        smartDocumentsConnectorProperties.url = server.url("/").toString()
-        smartDocumentsConnectorProperties.username = "valtimo-test"
-        smartDocumentsConnectorProperties.password = "41625e22-c4ef-487b-93fc-e46a25278d11"
-        connectorDeploymentService.deployAll(listOf(smartDocumentsConnector))
-
-        val connectorType = connectorService.getConnectorTypes().first { it.name == "SmartDocuments" }
-        val connectorInstanceId = ConnectorInstanceId.newId(UUID.fromString("731008bb-a062-4840-9d32-e29c08d32942"))
-        val connectorInstance = ConnectorInstance(
-            connectorInstanceId,
-            connectorType,
-            "test-connector",
-            smartDocumentsConnectorProperties
+    fun getSmartDocumentsAuthentication(): SmartDocumentsAuthentication {
+        return SmartDocumentsAuthentication(
+            url = server.url("/").toString(),
+            username = "valtimo-test",
+            password = "41625e22-c4ef-487b-93fc-e46a25278d11"
         )
-        connectorTypeInstanceRepository.save(connectorInstance)
-
-        smartDocumentsConnector = connectorService.loadByClassName(smartDocumentsConnector::class.java)
     }
 }

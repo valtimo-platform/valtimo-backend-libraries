@@ -24,39 +24,43 @@ import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.form.domain.request.ModifyFormDefinitionRequest;
 import java.util.Optional;
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
-public class FormIoFormDefinitionServiceIntTest extends BaseIntegrationTest {
+class FormIoFormDefinitionServiceIntTest extends BaseIntegrationTest {
 
     private FormIoFormDefinitionService formIoFormDefinitionService;
+    @Autowired
+    private CaseDefinitionChecker caseDefinitionChecker;
 
     @BeforeEach
-    public void setUp() {
-        formIoFormDefinitionService = new FormIoFormDefinitionService(formDefinitionRepository);
+    void setUp() {
+        formIoFormDefinitionService = new FormIoFormDefinitionService(formDefinitionRepository, caseDefinitionChecker);
     }
 
     @Test
-    public void shouldCreateFormDefinition() {
+    void shouldCreateFormDefinition() {
         var request = new CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}", false);
         var formDefinition = formIoFormDefinitionService.createFormDefinition(request);
 
         assertThat(formDefinition.getName()).isEqualTo(DEFAULT_FORM_DEFINITION_NAME);
-        assertThat(formDefinition.getFormDefinition().toString()).isEqualTo("{}");
+        assertThat(formDefinition.getFormDefinition().toString()).hasToString("{}");
         assertThat(formDefinition.isReadOnly()).isFalse();
     }
 
     @Test
-    public void shouldCreateReadonlyFormDefinition() {
+    void shouldCreateReadonlyFormDefinition() {
         var request = new CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}", true);
         var formDefinition = formIoFormDefinitionService.createFormDefinition(request);
         assertThat(formDefinition.isReadOnly()).isTrue();
     }
 
     @Test
-    public void shouldModifyFormDefinition() {
+    void shouldModifyFormDefinition() {
         var request = new CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}", false);
         var formDefinition = formIoFormDefinitionService.createFormDefinition(request);
 
@@ -73,7 +77,7 @@ public class FormIoFormDefinitionServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldNotModifyFormDefinition() {
+    void shouldNotModifyFormDefinition() {
         var request = new CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}", true);
         var formDefinition = formIoFormDefinitionService.createFormDefinition(request);
 
@@ -88,7 +92,7 @@ public class FormIoFormDefinitionServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldModifyFormDefinitionSystem() {
+    void shouldModifyFormDefinitionSystem() {
         var request = new CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}", true);
         var formDefinition = formIoFormDefinitionService.createFormDefinition(request);
 
@@ -105,7 +109,7 @@ public class FormIoFormDefinitionServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldGetFormDefinitionByNameIgnoringCase() {
+    void shouldGetFormDefinitionByNameIgnoringCase() {
         var request = new CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}", true);
         var formDefinition = formIoFormDefinitionService.createFormDefinition(request);
 

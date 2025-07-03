@@ -25,12 +25,13 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.BaseIntegrationTest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
-import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byName
+import com.ritense.valtimo.operaton.repository.OperatonTaskSpecificationHelper.Companion.byName
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.ManageableUser
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
-import com.ritense.valtimo.service.CamundaTaskService
-import org.camunda.bpm.engine.RuntimeService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.valtimo.service.OperatonTaskService
+import org.operaton.bpm.engine.RuntimeService
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -57,7 +58,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
     lateinit var runtimeService: RuntimeService
 
     @Autowired
-    lateinit var taskService: CamundaTaskService
+    lateinit var taskService: OperatonTaskService
 
     @Autowired
     lateinit var objectMapper: ObjectMapper
@@ -68,10 +69,15 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
 
     lateinit var testUser2: ManageableUser
 
+    lateinit var caseDefinitionId: CaseDefinitionId
+
     @BeforeEach
     fun init() {
+        caseDefinitionId = CaseDefinitionId("house", "1.0.0")
+
         testUser = ValtimoUserBuilder()
             .id("AAAA-1111")
+            .username("test1")
             .firstName("Test")
             .lastName("User")
             .email("test@valtimo.nl")
@@ -80,6 +86,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
 
         testUser2 = ValtimoUserBuilder()
             .id("BBBB-2222")
+            .username("test2")
             .firstName("Test")
             .lastName("User 2")
             .email("test2@valtimo.nl")
@@ -97,14 +104,17 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
         testDocument = runWithoutAuthorization {
             documentService.createDocument(
                 NewDocumentRequest(
-                    "house", objectMapper.readTree(documentJson)
+                    "house",
+                    "house",
+                    "1.0.0",
+                    objectMapper.readTree(documentJson)
                 )
             ).resultingDocument().orElseThrow()
         }
 
         runWithoutAuthorization {
             caseDefinitionService.updateCaseSettings(
-                caseDefinitionName = "house",
+                caseDefinitionId,
                 CaseSettingsDto(
                     canHaveAssignee = true,
                     autoAssignTasks = true
@@ -117,10 +127,10 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
     fun `should set assignee when task is created and autoAssignTasks is on`() {
 
         whenever(userManagementService.findById(any())).thenReturn(testUser)
-        whenever(userManagementService.findByUserIdentifier(any())).thenReturn(testUser)
+        whenever(userManagementService.findByUsername(any())).thenReturn(testUser)
         whenever(userManagementService.currentUser).thenReturn(testUser)
 
-        runWithoutAuthorization { documentService.assignUserToDocument(testDocument.id().id, testUser.userIdentifier) }
+        runWithoutAuthorization { documentService.assignUserToDocument(testDocument.id().id, testUser.username) }
         val processInstance = runtimeService.startProcessInstanceByKey(
             "parent-process",
             testDocument.id().toString()
@@ -136,14 +146,14 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
         val task = runWithoutAuthorization {
             taskService.findTask(byName("child process user task"))
         }
-        assertEquals(task.assignee, testUser.userIdentifier)
+        assertEquals(task.assignee, testUser.username)
     }
 
     @Test
     fun `should do nothing when and task is created and autoAssignTasks is off`() {
         runWithoutAuthorization {
             caseDefinitionService.updateCaseSettings(
-                caseDefinitionName = "house",
+                caseDefinitionId,
                 CaseSettingsDto(
                     canHaveAssignee = true,
                     autoAssignTasks = false
@@ -152,11 +162,11 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
         }
 
         whenever(userManagementService.findById(any())).thenReturn(testUser)
-        whenever(userManagementService.findByUserIdentifier(any())).thenReturn(testUser)
+        whenever(userManagementService.findByUsername(any())).thenReturn(testUser)
         whenever(userManagementService.currentUser).thenReturn(testUser)
 
         val task = runWithoutAuthorization {
-            documentService.assignUserToDocument(testDocument.id().id, testUser.userIdentifier)
+            documentService.assignUserToDocument(testDocument.id().id, testUser.username)
             val processInstance = runtimeService.startProcessInstanceByKey(
                 "parent-process",
                 testDocument.id().toString()
@@ -177,11 +187,11 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
     fun `should should update task assignee when document assignee is changed`() {
 
         whenever(userManagementService.findById(any())).thenReturn(testUser)
-        whenever(userManagementService.findByUserIdentifier(any())).thenReturn(testUser, testUser2)
+        whenever(userManagementService.findByUsername(any())).thenReturn(testUser, testUser2)
         whenever(userManagementService.currentUser).thenReturn(testUser)
 
         val updatedTask = runWithoutAuthorization {
-            documentService.assignUserToDocument(testDocument.id().id, testUser.userIdentifier)
+            documentService.assignUserToDocument(testDocument.id().id, testUser.username)
             val processInstance = runtimeService.startProcessInstanceByKey(
                 "parent-process",
                 testDocument.id().toString()
@@ -193,11 +203,11 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
                 "parent process"
             )
 
-            documentService.assignUserToDocument(testDocument.id().id, testUser2.userIdentifier)
+            documentService.assignUserToDocument(testDocument.id().id, testUser2.username)
 
             taskService.findTask(byName("child process user task"))
         }
-        assertEquals(updatedTask.assignee, testUser2.userIdentifier)
+        assertEquals(updatedTask.assignee, testUser2.username)
     }
 
     @Test
@@ -205,11 +215,11 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
     fun `should should remove task assignee when document assignee is removed`() {
 
         whenever(userManagementService.findById(any())).thenReturn(testUser)
-        whenever(userManagementService.findByUserIdentifier(any())).thenReturn(testUser)
+        whenever(userManagementService.findByUsername(any())).thenReturn(testUser)
         whenever(userManagementService.currentUser).thenReturn(testUser)
 
         val task = runWithoutAuthorization {
-            documentService.assignUserToDocument(testDocument.id().id, testUser.userIdentifier)
+            documentService.assignUserToDocument(testDocument.id().id, testUser.username)
             val processInstance = runtimeService.startProcessInstanceByKey(
                 "parent-process",
                 testDocument.id().toString()

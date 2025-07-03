@@ -21,7 +21,7 @@ import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
-import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.operaton.domain.OperatonTask
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import java.util.UUID
@@ -36,7 +36,7 @@ class FormViewModelProcessLinkActivityHandler(
     }
 
     override fun openTask(
-        task: CamundaTask,
+        task: OperatonTask,
         processLink: ProcessLink
     ): ProcessLinkActivityResult<FormViewModelTaskOpenResultProperties> {
         processLink as FormProcessLink

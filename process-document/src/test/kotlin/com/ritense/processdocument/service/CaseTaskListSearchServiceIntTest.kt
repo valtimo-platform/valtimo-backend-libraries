@@ -35,7 +35,7 @@ import com.ritense.search.domain.SearchFieldMatchType
 import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.valtimo.contract.Constants
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
-import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.service.OperatonTaskService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -74,6 +74,8 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
             val result: CreateDocumentResult = documentService.createDocument(
                 NewDocumentRequest(
                     definition!!.id().name(),
+                    definition!!.id.caseDefinitionId().key,
+                    definition!!.id.caseDefinitionId().versionTag.version,
                     content.asJson()
                 )
             )
@@ -86,6 +88,8 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
             val result: CreateDocumentResult = documentService.createDocument(
                 NewDocumentRequest(
                     definition!!.id().name(),
+                    definition!!.id.caseDefinitionId().key,
+                    definition!!.id.caseDefinitionId().versionTag.version,
                     content2.asJson()
                 )
             )
@@ -153,7 +157,7 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
         )
 
         runWithoutAuthorization {
-            camundaProcessJsonSchemaDocumentService.startProcessForDocument(
+            operatonProcessJsonSchemaDocumentService.startProcessForDocument(
                 StartProcessForDocumentRequest(
                     originalDocument!!.resultingDocument().orElseThrow().id(),
                     "loan-process-demo",
@@ -276,6 +280,8 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
             val result: CreateDocumentResult = documentService.createDocument(
                 NewDocumentRequest(
                     museumDefinition!!.id().name(),
+                    museumDefinition!!.id.caseDefinitionId().key,
+                    museumDefinition!!.id.caseDefinitionId().versionTag.version,
                     content.asJson()
                 )
             )
@@ -283,7 +289,7 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
         }
 
         runWithoutAuthorization {
-            camundaProcessJsonSchemaDocumentService.startProcessForDocument(
+            operatonProcessJsonSchemaDocumentService.startProcessForDocument(
                 StartProcessForDocumentRequest(
                     museumDocument.resultingDocument().orElseThrow().id(),
                     "conditional-candidate-group",
@@ -293,7 +299,7 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
         }
 
         runWithoutAuthorization {
-            camundaProcessJsonSchemaDocumentService.startProcessForDocument(
+            operatonProcessJsonSchemaDocumentService.startProcessForDocument(
                 StartProcessForDocumentRequest(
                     museumDocument.resultingDocument().orElseThrow().id(),
                     "conditional-candidate-group",
@@ -303,7 +309,7 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
         }
 
         runWithoutAuthorization {
-            camundaProcessJsonSchemaDocumentService.startProcessForDocument(
+            operatonProcessJsonSchemaDocumentService.startProcessForDocument(
                 StartProcessForDocumentRequest(
                     museumDocument.resultingDocument().orElseThrow().id(),
                     "conditional-candidate-group",
@@ -342,7 +348,7 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = [AuthoritiesConstants.USER])
     fun shouldReturnMoreThan10Results() {
-        val definition2 = definition("notahouse")
+        val definition2 = definition("task")
         createDocumentAndTwoProcesses("Funenpark1", definition2.id().name())
         createDocumentAndTwoProcesses("Funenpark2", definition2.id().name())
         createDocumentAndTwoProcesses("Funenpark3", definition2.id().name())
@@ -356,7 +362,7 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
         createDocumentAndTwoProcesses("Funenpark11", definition2.id().name())
         createDocumentAndTwoProcesses("Funenpark12", definition2.id().name())
 
-        val filter = CamundaTaskService.TaskFilter.ALL
+        val filter = OperatonTaskService.TaskFilter.ALL
         val searchResult = caseTaskListSearchService.getTasksByCaseDefinition(
             definition2.id().name(),
             filter,
@@ -373,6 +379,8 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
             val result: CreateDocumentResult = documentService.createDocument(
                 NewDocumentRequest(
                     documentName,
+                    documentName,
+                    "1.0.0",
                     content2.asJson()
                 )
             )
@@ -380,20 +388,20 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
         }
 
         runWithoutAuthorization {
-            camundaProcessJsonSchemaDocumentService.startProcessForDocument(
+            operatonProcessJsonSchemaDocumentService.startProcessForDocument(
                 StartProcessForDocumentRequest(
                     document.resultingDocument().orElseThrow().id(),
-                    "loan-process-demo",
+                    "loan-process-demo-3",
                     mapOf()
                 )
             )
         }
 
         runWithoutAuthorization {
-            camundaProcessJsonSchemaDocumentService.startProcessForDocument(
+            operatonProcessJsonSchemaDocumentService.startProcessForDocument(
                 StartProcessForDocumentRequest(
                     document.resultingDocument().orElseThrow().id(),
-                    "loan-process-demo",
+                    "loan-process-demo-3",
                     mapOf()
                 )
             )

@@ -120,7 +120,7 @@
             "rsin": "051845623",
             "verzoekProperties": [{
                 "type": "bezwaar",
-                "caseDefinitionName": "bezwaar",
+                "caseDefinitionKey": "bezwaar",
                 "processDefinitionKey": "bezwaar",
                 "objectManagementId": "29400564-d25f-491c-abb2-afc42894ac9d",
                 "initiatorRoltypeUrl": "${CATALOGI_API_URL}roltypen/1c359a1b-c38d-47b8-bed5-994db88ead61",

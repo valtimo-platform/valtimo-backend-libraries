@@ -1,8 +1,0 @@
-[
-    {
-        "url": "http://localhost:8000/api/v1/kanaal/75de0cc1-7695-45bb-a355-8bcde6e66db6",
-        "naam": "objecten",
-        "documentatieLink": "http://example.com",
-        "filters": []
-    }
-]

@@ -24,11 +24,11 @@ import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import mu.KotlinLogging
-import org.camunda.bpm.engine.delegate.DelegateExecution
+import io.github.oshai.kotlinlogging.KotlinLogging
+import org.operaton.bpm.engine.delegate.DelegateExecution
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.util.Optional
@@ -77,7 +77,7 @@ class DocumentDelegateService(
 
     fun getDocument(execution: DelegateExecution): Document {
         val documentId =
-            processDocumentService.getDocumentId(CamundaProcessInstanceId(execution.processInstanceId), execution)
+            processDocumentService.getDocumentId(OperatonProcessInstanceId(execution.processInstanceId), execution)
         return jsonSchemaDocumentService.getDocumentBy(documentId)
     }
 
@@ -95,7 +95,7 @@ class DocumentDelegateService(
         }
         logger.debug("Assigning user {} to document {}", userEmail, execution.processBusinessKey)
 
-        val processInstanceId = CamundaProcessInstanceId(execution.processInstanceId)
+        val processInstanceId = OperatonProcessInstanceId(execution.processInstanceId)
         val documentId = processDocumentService.getDocumentId(processInstanceId, execution)
         val user = userManagementService.findByEmail(userEmail)
             .orElseThrow { IllegalArgumentException("No user found with email: $userEmail") }
@@ -103,21 +103,21 @@ class DocumentDelegateService(
     }
 
     fun setInternalStatus(execution: DelegateExecution, statusKey: String?) {
-        val processInstanceId = CamundaProcessInstanceId(execution.processInstanceId)
+        val processInstanceId = OperatonProcessInstanceId(execution.processInstanceId)
         val documentId = processDocumentService.getDocumentId(processInstanceId, execution)
 
         documentService.setInternalStatus(documentId, statusKey)
     }
 
     fun addCaseTag(execution: DelegateExecution, caseTagKey: String) {
-        val processInstanceId = CamundaProcessInstanceId(execution.processInstanceId)
+        val processInstanceId = OperatonProcessInstanceId(execution.processInstanceId)
         val documentId = processDocumentService.getDocumentId(processInstanceId, execution)
 
         documentService.addCaseTag(documentId, caseTagKey)
     }
 
     fun removeCaseTag(execution: DelegateExecution, caseTagKey: String) {
-        val processInstanceId = CamundaProcessInstanceId(execution.processInstanceId)
+        val processInstanceId = OperatonProcessInstanceId(execution.processInstanceId)
         val documentId = processDocumentService.getDocumentId(processInstanceId, execution)
 
         documentService.removeCaseTag(documentId, caseTagKey)
@@ -126,7 +126,7 @@ class DocumentDelegateService(
     fun unassign(execution: DelegateExecution) {
         logger.debug("Unassigning user from document {}", execution.processBusinessKey)
 
-        val processInstanceId = CamundaProcessInstanceId(execution.processInstanceId)
+        val processInstanceId = OperatonProcessInstanceId(execution.processInstanceId)
         val documentId = processDocumentService.getDocumentId(processInstanceId, execution)
         documentService.unassignUserFromDocument(documentId.id)
     }

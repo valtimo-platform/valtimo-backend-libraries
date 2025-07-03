@@ -41,8 +41,8 @@ import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.validation.Validation
-import org.camunda.bpm.engine.delegate.DelegateExecution
-import org.camunda.bpm.engine.delegate.DelegateTask
+import org.operaton.bpm.engine.delegate.DelegateExecution
+import org.operaton.bpm.engine.delegate.DelegateTask
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -97,7 +97,8 @@ internal class PluginServiceTest {
             Validation.buildDefaultValidatorFactory().validator,
             applicationEventPublisher,
             encryptionService,
-            environment
+            environment,
+            mock()
         ))
     }
 

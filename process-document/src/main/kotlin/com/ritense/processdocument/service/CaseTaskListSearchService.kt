@@ -41,17 +41,18 @@ import com.ritense.processdocument.tasksearch.SearchWithConfigRequest
 import com.ritense.processdocument.web.result.TaskListRowDto
 import com.ritense.search.domain.SearchFieldV2
 import com.ritense.search.service.SearchFieldV2Service
-import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider
-import com.ritense.valtimo.camunda.domain.CamundaExecution
-import com.ritense.valtimo.camunda.domain.CamundaTask
-import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper
+import com.ritense.valtimo.operaton.authorization.OperatonTaskActionProvider
+import com.ritense.valtimo.operaton.domain.OperatonExecution
+import com.ritense.valtimo.operaton.domain.OperatonTask
+import com.ritense.valtimo.operaton.repository.OperatonTaskSpecificationHelper
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.contract.utils.RequestHelper
-import com.ritense.valtimo.service.CamundaTaskService.TaskFilter
+import com.ritense.valtimo.service.OperatonTaskService.TaskFilter
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.persistence.EntityManager
+import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Expression
@@ -161,7 +162,7 @@ class CaseTaskListSearchService(
     fun search(caseDefinitionName: String, advancedSearchRequest: AdvancedSearchRequest, pageable: Pageable): Page<CaseTask> {
         val cb: CriteriaBuilder = entityManager.criteriaBuilder
         val query = cb.createQuery(CaseTask::class.java)
-        val taskRoot = query.from(CamundaTask::class.java)
+        val taskRoot = query.from(OperatonTask::class.java)
         val documentRoot = query.from(JsonSchemaDocument::class.java)
 
         val selectCols = arrayOf(
@@ -170,7 +171,7 @@ class CaseTaskListSearchService(
             taskRoot.get<String?>(CaseTaskProperties.NAME.propertyName),
             taskRoot.get<String?>(CaseTaskProperties.ASSIGNEE.propertyName),
             taskRoot.get<LocalDateTime?>(CaseTaskProperties.DUE_DATE.propertyName),
-            taskRoot.get<CamundaExecution?>("processInstance").get<String>("id"),
+            taskRoot.get<OperatonExecution?>("processInstance").get<String>("id"),
             documentRoot.get<JsonSchemaDocumentId>("id").get<UUID>("id")
         )
 
@@ -196,7 +197,7 @@ class CaseTaskListSearchService(
     private fun count(caseDefinitionName: String, advancedSearchRequest: AdvancedSearchRequest): Long {
         val cb: CriteriaBuilder = entityManager.criteriaBuilder
         val query = cb.createQuery(Long::class.java)
-        val taskRoot = query.from(CamundaTask::class.java)
+        val taskRoot = query.from(OperatonTask::class.java)
         val documentRoot = query.from(JsonSchemaDocument::class.java)
         query.select(cb.countDistinct(taskRoot))
         query.where(constructWhere(cb, query, taskRoot, documentRoot, caseDefinitionName, advancedSearchRequest))
@@ -206,13 +207,13 @@ class CaseTaskListSearchService(
     private fun constructWhere(
         cb: CriteriaBuilder,
         query: CriteriaQuery<*>,
-        taskRoot: Root<CamundaTask>,
+        taskRoot: Root<OperatonTask>,
         documentRoot: Root<JsonSchemaDocument>,
         caseDefinitionName: String,
         advancedSearchRequest: AdvancedSearchRequest
     ): Predicate? {
         val authorizationPredicate: Predicate =
-            getAuthorizationSpecification(CamundaTaskActionProvider.VIEW_LIST).toPredicate(taskRoot, query, cb)
+            getAuthorizationSpecification(OperatonTaskActionProvider.VIEW_LIST).toPredicate(taskRoot, query as AbstractQuery<*>, cb)
 
         val assignmentFilterPredicate: Predicate = constructAssignmentFilter(advancedSearchRequest.assigneeFilter, cb, taskRoot)
 
@@ -225,7 +226,7 @@ class CaseTaskListSearchService(
                 caseDefinitionName
             ),
             cb.equal(
-                taskRoot.get<CamundaExecution>("processInstance").get<String>("businessKey"),
+                taskRoot.get<OperatonExecution>("processInstance").get<String>("businessKey"),
                 queryDialectHelper.uuidToString(cb, documentRoot.get<JsonSchemaDocumentId>("id").get("id"))
             ),
             assignmentFilterPredicate,
@@ -238,12 +239,12 @@ class CaseTaskListSearchService(
     private fun constructAssignmentFilter(
         assignmentFilter: TaskFilter,
         cb: CriteriaBuilder,
-        taskRoot: Root<CamundaTask>
+        taskRoot: Root<OperatonTask>
     ): Predicate {
         val assignmentFilterPredicate: Predicate = when (assignmentFilter) {
             TaskFilter.MINE -> {
-                val userIdentifier = userManagementService.currentUser.userIdentifier
-                cb.and(cb.equal(taskRoot.get<Any>(CamundaTaskSpecificationHelper.ASSIGNEE), userIdentifier))
+                val username = userManagementService.currentUser.username
+                cb.and(cb.equal(taskRoot.get<Any>(OperatonTaskSpecificationHelper.ASSIGNEE), username))
             }
 
             TaskFilter.ALL -> {
@@ -251,7 +252,7 @@ class CaseTaskListSearchService(
             }
 
             TaskFilter.OPEN -> {
-                cb.and(taskRoot.get<Any>(CamundaTaskSpecificationHelper.ASSIGNEE).isNull)
+                cb.and(taskRoot.get<Any>(OperatonTaskSpecificationHelper.ASSIGNEE).isNull)
             }
         }
         return assignmentFilterPredicate
@@ -261,7 +262,7 @@ class CaseTaskListSearchService(
         searchRequest: AdvancedSearchRequest,
         cb: CriteriaBuilder,
         query: CriteriaQuery<*>,
-        taskRoot: Root<CamundaTask>,
+        taskRoot: Root<OperatonTask>,
         documentRoot: Root<JsonSchemaDocument>
     ): Array<Predicate> {
         val predicates = mutableListOf<Predicate>()
@@ -274,7 +275,7 @@ class CaseTaskListSearchService(
                         JsonSchemaDocumentActionProvider.VIEW_LIST
                     ),
                     null
-                ).toPredicate(documentRoot, query, cb)
+                ).toPredicate(documentRoot, query as AbstractQuery<*>, cb)
         )
 
         if (searchRequest.otherFilters != null && searchRequest.otherFilters.isNotEmpty()) {
@@ -291,7 +292,7 @@ class CaseTaskListSearchService(
     private fun getOtherFiltersPredicate(
         cb: CriteriaBuilder,
         query: CriteriaQuery<*>,
-        taskRoot: Root<CamundaTask>,
+        taskRoot: Root<OperatonTask>,
         documentRoot: Root<JsonSchemaDocument>,
         searchRequest: AdvancedSearchRequest
     ): Predicate {
@@ -332,7 +333,7 @@ class CaseTaskListSearchService(
     private fun buildQueryForSearchCriteria(
         cb: CriteriaBuilder,
         query: CriteriaQuery<*>,
-        taskRoot: Root<CamundaTask>,
+        taskRoot: Root<OperatonTask>,
         documentRoot: Root<JsonSchemaDocument>,
         searchCriteria: AdvancedSearchRequest.OtherFilter
     ): Predicate {
@@ -366,7 +367,7 @@ class CaseTaskListSearchService(
     private fun handleSpecialPaths(
         cb: CriteriaBuilder,
         query: CriteriaQuery<*>,
-        taskRoot: Root<CamundaTask>,
+        taskRoot: Root<OperatonTask>,
         searchCriteria: AdvancedSearchRequest.OtherFilter
     ): Predicate? {
         return if (searchCriteria.path == TASK_PREFIX + "hideInaccessibleTasks") {
@@ -378,14 +379,14 @@ class CaseTaskListSearchService(
 
     private fun handleHideInaccessibleTasksFilter(
         searchCriteria: AdvancedSearchRequest.OtherFilter,
-        taskRoot: Root<CamundaTask>,
+        taskRoot: Root<OperatonTask>,
         query: CriteriaQuery<*>,
         cb: CriteriaBuilder
     ): Predicate? {
         val values = searchCriteria.getValues<Boolean>()
 
         return if (values.size == 1 && values[0] == true) {
-            getAuthorizationSpecification(CamundaTaskActionProvider.VIEW).toPredicate(taskRoot, query, cb)
+            getAuthorizationSpecification(OperatonTaskActionProvider.VIEW).toPredicate(taskRoot, query as AbstractQuery<*>, cb)
         } else {
             // Returning a no-op/always true value so that
             // the code doesn't continue and try to find `hideInaccessibleTasks` in the task table.
@@ -409,7 +410,7 @@ class CaseTaskListSearchService(
     }
 
     private fun getValueExpressionForTaskPrefix(
-        taskRoot: Root<CamundaTask>,
+        taskRoot: Root<OperatonTask>,
         searchCriteria: AdvancedSearchRequest.OtherFilter
     ): Expression<Comparable<Any>> {
         val taskColumnName = searchCriteria.path.substring(TASK_PREFIX.length)
@@ -553,7 +554,7 @@ class CaseTaskListSearchService(
     private fun constructOrderBy(
         query: CriteriaQuery<*>,
         cb: CriteriaBuilder,
-        taskRoot: Root<CamundaTask>,
+        taskRoot: Root<OperatonTask>,
         documentRoot: Root<JsonSchemaDocument>,
         sort: Sort
     ): List<Order> {
@@ -619,9 +620,9 @@ class CaseTaskListSearchService(
             .collect(Collectors.toList())
     }
 
-    private fun getAuthorizationSpecification(action: Action<CamundaTask>): AuthorizationSpecification<CamundaTask> {
+    private fun getAuthorizationSpecification(action: Action<OperatonTask>): AuthorizationSpecification<OperatonTask> {
         return authorizationService.getAuthorizationSpecification(
-            EntityAuthorizationRequest(CamundaTask::class.java, action),
+            EntityAuthorizationRequest(OperatonTask::class.java, action),
             null
         )
     }
@@ -669,7 +670,7 @@ class CaseTaskListSearchService(
                 "assignee" -> {
                     CaseTaskProperties.getByPropertyName("assignee")
                         ?.getValueFromObject(caseTask)
-                        ?.let { assigneeId -> userManagementService.findByUserIdentifier(assigneeId as String)?.fullName }
+                        ?.let { assigneeUsername -> userManagementService.findByUsername(assigneeUsername as String)?.fullName }
                 }
 
                 else -> CaseTaskProperties.getByPropertyName(path)?.getValueFromObject(caseTask)

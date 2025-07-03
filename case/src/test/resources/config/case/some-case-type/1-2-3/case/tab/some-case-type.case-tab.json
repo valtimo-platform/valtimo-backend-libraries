@@ -1,0 +1,23 @@
+[
+    {
+        "name": "Standard",
+        "key": "standard",
+        "type": "standard",
+        "contentKey": "standard",
+        "showTasks": false
+    },
+    {
+        "name": "Custom tab",
+        "key": "custom-tab",
+        "type": "custom",
+        "contentKey": "some-custom-component",
+        "showTasks": false
+    },
+    {
+        "name": "FormIO tab",
+        "key": "formio-tab",
+        "type": "formio",
+        "contentKey": "test-form",
+        "showTasks": false
+    }
+]

@@ -19,10 +19,10 @@ package com.ritense.case.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
+import com.ritense.BaseIntegrationTest
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.case.BaseIntegrationTest
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
-import com.ritense.exporter.request.FormDefinitionExportRequest
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -44,7 +44,7 @@ class CaseTaskListExporterIntTest @Autowired constructor(
     fun `should export tabs for case definition`(): Unit = runWithoutAuthorization {
         val caseDefinitionName = "some-case-type"
 
-        val request = DocumentDefinitionExportRequest(caseDefinitionName, 1)
+        val request = DocumentDefinitionExportRequest(caseDefinitionName, CaseDefinitionId("some-case-type", "1.2.3"))
         val exportResult = caseTaskListExporter.export(request)
 
         val path = PATH.format(caseDefinitionName)
@@ -54,14 +54,6 @@ class CaseTaskListExporterIntTest @Autowired constructor(
         requireNotNull(caseTaskListExport)
         val exportJson = objectMapper.readTree(caseTaskListExport.content)
 
-        //Check if the changesetId ends with a timestamp
-        val changesetIdField = "changesetId"
-        val changesetRegex = """(some-case-type\.case-task-list)\.\d+""".toRegex()
-        val matchResult = changesetRegex.matchEntire(exportJson.get(changesetIdField).textValue())
-        assertThat(matchResult).isNotNull
-
-        //Remove the timestamp from the changesetId, so we can compare it as usual
-        (exportJson as ObjectNode).set<TextNode>(changesetIdField, TextNode(matchResult!!.groupValues[1]))
         val expectedJson = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
             .getResource("classpath:${PATH.format(caseDefinitionName)}")
             .inputStream
@@ -76,6 +68,6 @@ class CaseTaskListExporterIntTest @Autowired constructor(
     }
 
     companion object {
-        private const val PATH = "config/case-task-list/%s.case-task-list.json"
+        private const val PATH = "config/case/some-case-type/1-2-3/case/task-list/%s.case-task-list.json"
     }
 }

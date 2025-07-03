@@ -21,8 +21,7 @@ import com.ritense.plugin.events.PluginConfigurationDeletedEvent
 import com.ritense.plugin.events.PluginConfigurationIdUpdatedEvent
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.ZakenApiPlugin
-import mu.KLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.core.annotation.Order
 
@@ -33,7 +32,7 @@ class ZakenApiEventListener(
     @Order(0)
     @EventListener(DocumentCreatedEvent::class)
     fun handle(event: DocumentCreatedEvent) {
-        val zaakTypeLink = zaakTypeLinkService.get(event.definitionId().name())
+        val zaakTypeLink = zaakTypeLinkService.get(event.definitionId().caseDefinitionId())
         zaakTypeLink?.let {
             if (it.createWithDossier && it.zakenApiPluginConfigurationId != null) {
                 val zakenApiPlugin = pluginService.createInstance(it.zakenApiPluginConfigurationId!!) as ZakenApiPlugin
@@ -62,6 +61,6 @@ class ZakenApiEventListener(
     }
 
     companion object {
-        private val logger: KLogger = KotlinLogging.logger {}
+        private val logger = KotlinLogging.logger {}
     }
 }

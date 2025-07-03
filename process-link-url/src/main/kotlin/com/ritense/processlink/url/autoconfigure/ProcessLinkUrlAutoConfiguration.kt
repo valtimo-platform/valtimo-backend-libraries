@@ -20,7 +20,7 @@ package com.ritense.processlink.url.autoconfigure
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.ValtimoAuthorizationService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
-import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.processlink.url.configuration.URLProcessLinkSecurityConfigurer
@@ -30,9 +30,9 @@ import com.ritense.processlink.url.service.URLProcessLinkActivityHandler
 import com.ritense.processlink.url.service.URLProcessLinkService
 import com.ritense.processlink.url.service.URLSupportedProcessLinksHandler
 import com.ritense.processlink.url.web.rest.URLProcessLinkResource
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.operaton.service.OperatonRepositoryService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
-import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.service.OperatonTaskService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.ApplicationEventPublisher
@@ -81,23 +81,23 @@ class ProcessLinkUrlAutoConfiguration {
     fun urlProcessLinkService(
         processLinkService: ProcessLinkService,
         documentService: JsonSchemaDocumentService,
-        processDocumentAssociationService: ProcessDocumentAssociationService,
+        processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
         processDocumentService: ProcessDocumentService,
-        repositoryService: CamundaRepositoryService,
+        repositoryService: OperatonRepositoryService,
         applicationEventPublisher: ApplicationEventPublisher,
         objectMapper: ObjectMapper,
         URLVariables: URLVariables,
-        camundaTaskService: CamundaTaskService,
+        operatonTaskService: OperatonTaskService,
         authorizationService: ValtimoAuthorizationService
     ) = URLProcessLinkService(
         processLinkService,
         documentService,
-        processDocumentAssociationService,
+        processDefinitionCaseDefinitionService,
         processDocumentService,
         repositoryService,
         objectMapper,
         URLVariables,
-        camundaTaskService,
+        operatonTaskService,
         authorizationService
     )
 

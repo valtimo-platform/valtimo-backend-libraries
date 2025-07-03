@@ -29,10 +29,10 @@ import com.ritense.form.service.impl.DefaultFormSubmissionService
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.service.ProcessLinkService
-import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byProcessInstanceId
-import com.ritense.valtimo.service.CamundaProcessService
-import com.ritense.valtimo.service.CamundaTaskService
-import org.camunda.bpm.engine.RuntimeService
+import com.ritense.valtimo.operaton.repository.OperatonTaskSpecificationHelper.Companion.byProcessInstanceId
+import com.ritense.valtimo.service.OperatonProcessService
+import com.ritense.valtimo.service.OperatonTaskService
+import org.operaton.bpm.engine.RuntimeService
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.BeforeEach
@@ -50,8 +50,8 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
     private val processLinkService: ProcessLinkService,
     private val documentService: JsonSchemaDocumentService,
     private val processDocumentService: ProcessDocumentService,
-    private val taskService: CamundaTaskService,
-    private val processService: CamundaProcessService,
+    private val taskService: OperatonTaskService,
+    private val processService: OperatonProcessService,
     private val testValueResolverFactory: TestValueResolverFactory,
     private val objectMapper: ObjectMapper,
     private val runtimeService: RuntimeService,
@@ -137,6 +137,8 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
                     "prefill-process",
                     NewDocumentRequest(
                         "person",
+                        "person",
+                        "1.0.0",
                         objectMapper.readTree(
                             """{
                                 "fruitTypes":[{"apples":2}],

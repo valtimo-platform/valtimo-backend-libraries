@@ -16,48 +16,47 @@
 
 package com.ritense.processdocument.domain.impl.listener;
 
-import com.ritense.authorization.AuthorizationContext;
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
-import com.ritense.valtimo.contract.event.UndeployDocumentDefinitionEvent;
-import com.ritense.valtimo.service.CamundaProcessService;
+import com.ritense.valtimo.service.OperatonProcessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
 
 public class UndeployDocumentDefinitionEventListener {
 
     private static final Logger logger = LoggerFactory.getLogger(UndeployDocumentDefinitionEventListener.class);
     private final ProcessDocumentAssociationService processDocumentAssociationService;
-    private final CamundaProcessService camundaProcessService;
+    private final ProcessDefinitionCaseDefinitionService processDefinitionCaseDefinitionService;
+    private final OperatonProcessService operatonProcessService;
     private static final String REASON = "Triggerd undeployment of document definition";
 
     public UndeployDocumentDefinitionEventListener(
         ProcessDocumentAssociationService processDocumentAssociationService,
-        CamundaProcessService camundaProcessService
+        ProcessDefinitionCaseDefinitionService processDefinitionCaseDefinitionService,
+        OperatonProcessService operatonProcessService
     ) {
         this.processDocumentAssociationService = processDocumentAssociationService;
-        this.camundaProcessService = camundaProcessService;
+        this.processDefinitionCaseDefinitionService = processDefinitionCaseDefinitionService;
+        this.operatonProcessService = operatonProcessService;
     }
 
-    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
+//TODO: How do we want to support this?
+/*    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleEvent(UndeployDocumentDefinitionEvent event) {
         logger.debug("process document definition to be removed due to undeployment document definition with name: {}", event.getDocumentDefinitionName());
         String documentDefinitionName = event.getDocumentDefinitionName();
         AuthorizationContext.runWithoutAuthorization(() -> {
-            processDocumentAssociationService.findByDocumentDefinitionName(documentDefinitionName).ifPresent(processDocumentDefinition -> {
-                camundaProcessService.deleteAllProcesses(
+            processDefinitionCaseDefinitionService.findByDocumentDefinitionName(documentDefinitionName).ifPresent(processDocumentDefinition -> {
+                operatonProcessService.deleteAllProcesses(
                     processDocumentDefinition.processDocumentDefinitionId().processDefinitionKey().toString(), REASON
                 );
                 processDocumentAssociationService.deleteProcessDocumentInstances(
                     processDocumentDefinition.processName());
-                processDocumentAssociationService.deleteProcessDocumentDefinition(documentDefinitionName);
+                processDefinitionCaseDefinitionService.deleteProcessDocumentDefinition(documentDefinitionName);
             });
             return null;
         });
-    }
+    }*/
 
 }

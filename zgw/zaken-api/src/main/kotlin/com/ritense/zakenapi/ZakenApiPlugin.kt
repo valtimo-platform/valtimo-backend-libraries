@@ -55,7 +55,7 @@ import com.ritense.zakenapi.domain.rol.BetrokkeneType
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
-import com.ritense.zakenapi.domain.rol.RolType
+import com.ritense.zakenapi.domain.rol.RolTypeGeneriekeBeschrijving
 import com.ritense.zakenapi.repository.ZaakHersteltermijnRepository
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zgw.LoggingConstants
@@ -63,9 +63,8 @@ import com.ritense.zgw.LoggingConstants.CATALOGI_API
 import com.ritense.zgw.LoggingConstants.DOCUMENTEN_API
 import com.ritense.zgw.Page
 import com.ritense.zgw.Rsin
-import mu.KLogger
-import mu.KotlinLogging
-import org.camunda.bpm.engine.delegate.DelegateExecution
+import io.github.oshai.kotlinlogging.KotlinLogging
+import org.operaton.bpm.engine.delegate.DelegateExecution
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
 import java.net.URI
@@ -746,12 +745,12 @@ class ZakenApiPlugin(
         return result
     }
 
-    fun getZaakRollen(zaakUrl: URI, roleType: RolType? = null): List<Rol> {
+    fun getZaakRollen(zaakUrl: URI, omschrijvingGeneriek: RolTypeGeneriekeBeschrijving? = null): List<Rol> {
         logger.debug { "Fetching zaak rollen for zaak with URL '$zaakUrl'" }
         return Page.getAll(100) { page ->
             client.getZaakRollen(
                 authenticationPluginConfiguration,
-                url, zaakUrl, page, roleType
+                url, zaakUrl, page, omschrijvingGeneriek
             )
         }
     }
@@ -802,7 +801,7 @@ class ZakenApiPlugin(
     }
 
     companion object {
-        private val logger: KLogger = KotlinLogging.logger {}
+        private val logger = KotlinLogging.logger {}
         const val PLUGIN_KEY = "zakenapi"
         const val URL_PROPERTY = "url"
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"

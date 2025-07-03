@@ -1,0 +1,554 @@
+/*
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.ritense.document.service.impl;
+
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
+import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentDefinitionSpecificationHelper.byCaseDefinitionActive;
+import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentDefinitionSpecificationHelper.byIdCaseDefinitionId;
+import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentDefinitionSpecificationHelper.byIdName;
+import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentDefinitionSpecificationHelper.byLatestVersion;
+import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.CREATE;
+import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.DELETE;
+import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.MODIFY;
+import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.VIEW;
+import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.VIEW_LIST;
+import static com.ritense.logging.LoggingContextKt.withLoggingContext;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.jayway.jsonpath.InvalidPathException;
+import com.jayway.jsonpath.internal.path.ArrayPathToken;
+import com.jayway.jsonpath.internal.path.CompiledPath;
+import com.jayway.jsonpath.internal.path.FunctionPathToken;
+import com.jayway.jsonpath.internal.path.PathCompiler;
+import com.jayway.jsonpath.internal.path.PathToken;
+import com.jayway.jsonpath.internal.path.PredicatePathToken;
+import com.jayway.jsonpath.internal.path.RootPathToken;
+import com.jayway.jsonpath.internal.path.ScanPathToken;
+import com.jayway.jsonpath.internal.path.WildcardPathToken;
+import com.ritense.authorization.Action;
+import com.ritense.authorization.AuthorizationService;
+import com.ritense.authorization.request.EntityAuthorizationRequest;
+import com.ritense.document.domain.DocumentDefinition;
+import com.ritense.document.domain.EveritSchemaAllowsPropertyKt;
+import com.ritense.document.domain.impl.JsonSchema;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
+import com.ritense.document.exception.UnknownDocumentDefinitionException;
+import com.ritense.document.repository.DocumentDefinitionRepository;
+import com.ritense.document.service.DocumentDefinitionService;
+import com.ritense.document.service.result.DeployDocumentDefinitionResult;
+import com.ritense.document.service.result.DeployDocumentDefinitionResultFailed;
+import com.ritense.document.service.result.DeployDocumentDefinitionResultSucceeded;
+import com.ritense.document.service.result.error.DocumentDefinitionError;
+import com.ritense.logging.LoggableResource;
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker;
+import com.ritense.valtimo.contract.case_.CaseDefinitionId;
+import jakarta.validation.ValidationException;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.ResourcePatternUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.transaction.annotation.Transactional;
+
+@Transactional
+public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionService {
+
+    private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocumentDefinitionService.class);
+    private static final String PATH = "classpath*:config/document/definition/*.json";
+
+    private final ResourceLoader resourceLoader;
+    private final DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository;
+    private final AuthorizationService authorizationService;
+    private final CaseDefinitionChecker caseDefinitionChecker;
+
+    public JsonSchemaDocumentDefinitionService(
+        ResourceLoader resourceLoader,
+        DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository,
+        AuthorizationService authorizationService,
+        CaseDefinitionChecker caseDefinitionChecker
+    ) {
+        this.resourceLoader = resourceLoader;
+        this.documentDefinitionRepository = documentDefinitionRepository;
+        this.authorizationService = authorizationService;
+        this.caseDefinitionChecker = caseDefinitionChecker;
+    }
+
+    @Override
+    public Page<JsonSchemaDocumentDefinition> findAll(Pageable pageable) {
+        final var spec = authorizationService
+            .getAuthorizationSpecification(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocumentDefinition.class,
+                    VIEW_LIST
+                ),
+                null
+            )
+            .and(byCaseDefinitionActive());
+        return documentDefinitionRepository.findAll(spec, pageable);
+    }
+
+    @Override
+    public List<JsonSchemaDocumentDefinition> findAllBy(CaseDefinitionId caseDefinitionId) {
+        final var spec = authorizationService
+            .getAuthorizationSpecification(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocumentDefinition.class,
+                    VIEW_LIST
+                ),
+                null
+            );
+        return documentDefinitionRepository.findAll(spec.and(byIdCaseDefinitionId(caseDefinitionId)));
+    }
+
+    @Override
+    public Page<JsonSchemaDocumentDefinition> findAllForManagement(Pageable pageable) {
+        authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocumentDefinition.class,
+                Action.deny()
+            ));
+
+        final var spec = byCaseDefinitionActive();
+        return documentDefinitionRepository.findAll(spec, pageable);
+    }
+
+    @Override
+    public JsonSchemaDocumentDefinitionId findIdByName(
+        @LoggableResource("documentDefinitionName") String name
+    ) {
+        return findActiveByName(name)
+            .orElseThrow(() -> new UnknownDocumentDefinitionException(name))
+            .getId();
+    }
+
+    @Override
+    public Optional<JsonSchemaDocumentDefinition> findBy(
+        @LoggableResource(resourceType = JsonSchemaDocumentDefinition.class) DocumentDefinition.Id id
+    ) {
+        final var definition = documentDefinitionRepository.findById(id).orElse(null);
+
+        if (definition != null) {
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocumentDefinition.class,
+                    VIEW,
+                    definition
+                )
+            );
+        }
+
+        return Optional.ofNullable(definition);
+    }
+
+    @Override
+    public Optional<JsonSchemaDocumentDefinition> findActiveByName(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName
+    ) {
+        final var definition = documentDefinitionRepository.findOne(
+            byIdName(documentDefinitionName).and(byCaseDefinitionActive())
+        ).orElse(
+            // There might not be an active case-definition when importing.
+            documentDefinitionRepository.findOne(
+                byIdName(documentDefinitionName).and(byLatestVersion())
+            ).orElse(null)
+        );
+
+        if (definition != null) {
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocumentDefinition.class,
+                    VIEW,
+                    definition
+                )
+            );
+        }
+
+        return Optional.ofNullable(definition);
+    }
+
+    @Override
+    public boolean existsByName(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName
+    ) {
+        final var spec = authorizationService
+            .getAuthorizationSpecification(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocumentDefinition.class,
+                    VIEW_LIST
+                ),
+                null
+            );
+
+        return documentDefinitionRepository.findAll(
+            spec.and(byIdName(documentDefinitionName)),
+            Pageable.ofSize(1)
+        ).stream().findAny().isPresent();
+    }
+
+    @Override
+    public void requirePermission(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName,
+        Action action
+    ) {
+        var definition = runWithoutAuthorization(() -> findActiveByName(documentDefinitionName).orElseThrow());
+        authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocumentDefinition.class,
+                action,
+                definition
+            )
+        );
+    }
+
+    @Override
+    public Optional<JsonSchemaDocumentDefinition> findByCaseDefinitionId(
+        CaseDefinitionId caseDefinitionId
+    ) {
+        final var optionalDefinition = documentDefinitionRepository.findByIdCaseDefinitionId(caseDefinitionId);
+
+        optionalDefinition.ifPresent(definition -> authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocumentDefinition.class,
+                VIEW,
+                definition
+            )
+        ));
+
+        return optionalDefinition;
+    }
+
+    @Override
+    public Optional<JsonSchemaDocumentDefinition> findByNameAndCaseDefinitionId(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName,
+        CaseDefinitionId caseDefinitionId
+    ) {
+        final var documentDefinitionId = JsonSchemaDocumentDefinitionId
+            .existingId(documentDefinitionName, caseDefinitionId);
+        final var optionalDefinition = documentDefinitionRepository.findById(documentDefinitionId);
+
+        optionalDefinition.ifPresent(definition -> authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocumentDefinition.class,
+                VIEW,
+                definition
+            )
+        ));
+
+        return optionalDefinition;
+    }
+
+    @Override
+    public List<String> getPropertyNames(DocumentDefinition definition) {
+        return withLoggingContext(JsonSchemaDocumentDefinition.class, definition.id(), () -> {
+            JsonSchemaDocumentDefinition jsonSchemaDocumentDefinition = (JsonSchemaDocumentDefinition) definition;
+            ObjectNode propertiesObjectNode = (ObjectNode) jsonSchemaDocumentDefinition.getSchema()
+                .asJson()
+                .get("properties");
+            return getPropertyNamesFromObjectNode(jsonSchemaDocumentDefinition, propertiesObjectNode, "/");
+        });
+    }
+
+    @Override
+    public List<CaseDefinitionId> findVersionsByName(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName
+    ) {
+        final var optionalDefinition = documentDefinitionRepository.findFirstByIdNameOrderByIdCaseDefinitionIdVersionTagDesc(
+            documentDefinitionName
+        );
+
+        optionalDefinition.ifPresent(definition -> authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocumentDefinition.class,
+                VIEW,
+                definition
+            )
+        ));
+
+        return documentDefinitionRepository.findVersionsByName(documentDefinitionName);
+    }
+
+    @Override
+    public DeployDocumentDefinitionResult deploy(String schema, CaseDefinitionId caseDefinitionId) {
+        //Authorization check is delegated to the store() method
+        var jsonSchema = JsonSchema.fromString(schema);
+        return deploy(jsonSchema, caseDefinitionId);
+    }
+
+    public DeployDocumentDefinitionResult deploy(JsonSchema jsonSchema, CaseDefinitionId caseDefinitionId) {
+        //Authorization check is delegated to the store() method
+        try {
+            caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId);
+            final var documentDefinitionName = jsonSchema.getSchema().getId().replace(".schema", "");
+            return withLoggingContext("documentDefinitionName", documentDefinitionName, () -> {
+
+                final JsonSchemaDocumentDefinitionId documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId(
+                    documentDefinitionName,
+                    caseDefinitionId
+                );
+
+                logger.info("Deploying schema {} for case definition {}", jsonSchema.getSchema().getId(), caseDefinitionId);
+
+                var documentDefinition = new JsonSchemaDocumentDefinition(documentDefinitionId, jsonSchema);
+                store(documentDefinition);
+                return new DeployDocumentDefinitionResultSucceeded(documentDefinition);
+            });
+        } catch (AccessDeniedException accessDeniedException) {
+            throw accessDeniedException;
+        } catch (Exception ex) {
+            DocumentDefinitionError error = ex::getMessage;
+            logger.warn(ex.getMessage());
+            return new DeployDocumentDefinitionResultFailed(List.of(error));
+        }
+    }
+
+    @Override
+    public void store(JsonSchemaDocumentDefinition documentDefinition) {
+        withLoggingContext(JsonSchemaDocumentDefinition.class, documentDefinition.id().toString(), () -> {
+            assertArgumentNotNull(documentDefinition, "documentDefinition is required");
+            caseDefinitionChecker.assertCanUpdateCaseDefinition(documentDefinition.id().caseDefinitionId());
+
+            final var documentDefinitionExists = documentDefinitionRepository.findOne(
+                byIdName(documentDefinition.id().name())
+                    .and(byIdCaseDefinitionId(documentDefinition.id().caseDefinitionId()))
+            ).isPresent();
+
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocumentDefinition.class,
+                    documentDefinitionExists ? MODIFY : CREATE,
+                    documentDefinition
+                )
+            );
+
+            documentDefinitionRepository.saveAndFlush(documentDefinition);
+        });
+    }
+
+    @Override
+    public void removeDocumentDefinition(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName
+    ) {
+        caseDefinitionChecker.assertCanUpdateGlobalConfiguration();
+        findActiveByName(documentDefinitionName).ifPresent(documentDefinition -> authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocumentDefinition.class,
+                DELETE,
+                documentDefinition
+            )
+        ));
+
+        documentDefinitionRepository.deleteByIdName(documentDefinitionName);
+    }
+
+    @Override
+    public void removeDocumentDefinition(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName,
+        CaseDefinitionId caseDefinitionId
+    ) {
+        caseDefinitionChecker.assertCanUpdateCaseDefinition(caseDefinitionId);
+
+        findByNameAndCaseDefinitionId(documentDefinitionName, caseDefinitionId).ifPresent(documentDefinition -> {
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocumentDefinition.class,
+                    DELETE,
+                    documentDefinition
+                )
+            );
+
+            documentDefinitionRepository.delete(documentDefinition);
+        });
+    }
+
+    @Override
+    public boolean currentUserCanAccessDocumentDefinition(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName
+    ) {
+        return findActiveByName(documentDefinitionName)
+            .map(documentDefinition -> authorizationService.hasPermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocumentDefinition.class,
+                    VIEW,
+                    documentDefinition
+                )
+            )).orElse(false);
+    }
+
+    @Override
+    public void validateJsonPath(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName,
+        String jsonPathExpression
+    ) {
+        var definition = findActiveByName(documentDefinitionName)
+            .orElseThrow(() -> new UnknownDocumentDefinitionException(documentDefinitionName));
+        if (jsonPathExpression.startsWith("doc:")) {
+            jsonPathExpression = "$." + jsonPathExpression.substring("doc:".length());
+        } else if (jsonPathExpression.startsWith("case:")) {
+            return;
+        }
+        try {
+            PathCompiler.compile(jsonPathExpression);
+        } catch (InvalidPathException e) {
+            throw new ValidationException(
+                "Failed to compile JsonPath '" + jsonPathExpression + "' for document definition '" + documentDefinitionName + "'",
+                e
+            );
+        }
+        if (!isValidJsonPath(definition, jsonPathExpression)) {
+            throw new ValidationException(
+                "JsonPath '" + jsonPathExpression + "' doesn't point to any property inside document definition '" + documentDefinitionName + "'");
+        }
+    }
+
+    @Override
+    public boolean isValidJsonPath(JsonSchemaDocumentDefinition definition, String jsonPathExpression) {
+        return withLoggingContext(JsonSchemaDocumentDefinition.class, definition.id().toString(), () -> {
+            CompiledPath compiledJsonPath;
+            try {
+                compiledJsonPath = (CompiledPath) PathCompiler.compile(jsonPathExpression);
+            } catch (InvalidPathException e) {
+                logger.error(
+                    "Failed to compile JsonPath '{}' for document definition '{}'", jsonPathExpression,
+                    definition.id().name(), e
+                );
+                return false;
+            }
+            var jsonPointer = toJsonPointerRecursive(compiledJsonPath.getRoot());
+            return isValidJsonPointer(definition, jsonPointer);
+        });
+    }
+
+    @Override
+    public void validateJsonPointer(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName,
+        String jsonPointer
+    ) {
+        var definition = findActiveByName(documentDefinitionName)
+            .orElseThrow(() -> new UnknownDocumentDefinitionException(documentDefinitionName));
+        if (!isValidJsonPointer(definition, jsonPointer)) {
+            throw new ValidationException(
+                "JsonPointer '" + jsonPointer + "' doesn't point to any property inside document definition '" + documentDefinitionName + "'");
+        }
+    }
+
+    private boolean isValidJsonPointer(JsonSchemaDocumentDefinition definition, String jsonPointer) {
+        return EveritSchemaAllowsPropertyKt.allowsProperty(definition.getSchema().getSchema(), jsonPointer);
+    }
+
+    private String toJsonPointerRecursive(PathToken pathToken) {
+        var jsonPointerPart = toJsonPointerPart(pathToken);
+        if (jsonPointerPart == null) {
+            return "";
+        } else {
+            return jsonPointerPart + toJsonPointerRecursive(pathToken.getNext());
+        }
+    }
+
+    private String toJsonPointerPart(PathToken pathToken) {
+        if (pathToken == null
+            || pathToken instanceof PredicatePathToken
+            || pathToken instanceof WildcardPathToken
+            || pathToken instanceof FunctionPathToken
+            || pathToken instanceof ScanPathToken) {
+            return null;
+        } else if (pathToken instanceof RootPathToken) {
+            return "";
+        } else if (pathToken instanceof ArrayPathToken) {
+            return "/0";
+        } else {
+            return "/" + trim(getPathFragment(pathToken), "['", "']", "[", "]");
+        }
+    }
+
+    private String getPathFragment(PathToken pathToken) {
+        try {
+            var getPathFragmentMethod = PathToken.class.getDeclaredMethod("getPathFragment");
+            getPathFragmentMethod.setAccessible(true);
+            return (String) getPathFragmentMethod.invoke(pathToken);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalStateException("Broken method. The Jayway JsonPath library might've changed.", e);
+        }
+    }
+
+    private String trim(String value, String... trims) {
+        for (var trim : trims) {
+            if (value.startsWith(trim)) {
+                value = value.substring(trim.length());
+            }
+            if (value.endsWith(trim)) {
+                value = value.substring(0, value.length() - trim.length());
+            }
+        }
+        return value;
+    }
+
+    private Resource[] loadResources() throws IOException {
+        return ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(PATH);
+    }
+
+    private List<String> getPropertyNamesFromObjectNode(
+        JsonSchemaDocumentDefinition definition,
+        ObjectNode node,
+        String parent
+    ) {
+        List<String> propertyNames = new ArrayList<>();
+        if (node != null) {
+            node.fields().forEachRemaining((jsonNode -> {
+                if (jsonNode.getValue().has("type")) {
+                    String propertyType = jsonNode.getValue().get("type").asText();
+                    if (isSimpleObject(propertyType)) {
+                        propertyNames.add(parent + jsonNode.getKey());
+                    } else if (propertyType.equals("object")) {
+                        ObjectNode objectNode = (ObjectNode) jsonNode.getValue();
+                        propertyNames.addAll(getPropertyNamesFromObjectNode(
+                            definition,
+                            (ObjectNode) objectNode.get("properties"),
+                            parent.concat(jsonNode.getKey() + "/")
+                        ));
+                    }
+                } else if (jsonNode.getValue().has("$ref")) {
+                    String internalDefinition = jsonNode.getValue().get("$ref").asText().substring(1);
+                    if (internalDefinition.startsWith("/")) {
+                        ObjectNode jsonNode1 = (ObjectNode) definition.schema().at(internalDefinition).get("properties");
+                        propertyNames.addAll(getPropertyNamesFromObjectNode(
+                            definition,
+                            jsonNode1,
+                            parent.concat(jsonNode.getKey() + "/")
+                        ));
+                    }
+                }
+            }));
+        }
+
+        return propertyNames;
+    }
+
+    private boolean isSimpleObject(String propertyType) {
+        List<String> simpleTypes = List.of("string", "boolean", "integer", "number");
+        return simpleTypes.contains(propertyType);
+    }
+}

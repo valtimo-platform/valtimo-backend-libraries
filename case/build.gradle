@@ -38,34 +38,67 @@ dockerCompose {
 dependencies {
     implementation project(":authorization")
     implementation project(":changelog")
-    implementation project(":contract")
-    implementation project(":document")
+    api project(":contract")
+    implementation project(":data-provider")
     implementation project(":exporter")
     implementation project(":importer")
     implementation project(":logging")
+    implementation project(":outbox")
+    implementation project(":resource")
     implementation project(":value-resolver")
     implementation project(":web")
 
+    api "org.springframework.security:spring-security-core"
+    api "org.springframework.boot:spring-boot"
+    api "org.springframework.data:spring-data-commons"
+
     implementation "org.springframework.boot:spring-boot-starter"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-security"
     implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-validation"
+    implementation "org.springframework.integration:spring-integration-core"
 
-    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "com.fasterxml.jackson.core:jackson-annotations"
+    implementation "com.fasterxml.jackson.module:jackson-module-blackbird"
+    implementation "com.fasterxml.jackson.module:jackson-module-parameter-names"
+    implementation "com.fasterxml.jackson.module:jackson-module-jaxb-annotations"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+
+    implementation "org.springframework.boot:spring-boot-autoconfigure"
+
+    implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
+    implementation "org.liquibase.ext:liquibase-hibernate6:${liquibaseVersion}"
+
+    implementation "io.github.oshai:kotlin-logging:${kotlinLoggingVersion}"
     implementation "com.github.erosb:everit-json-schema:${everitJsonSchemaVersion}"
+    implementation "com.flipkart.zjsonpatch:zjsonpatch:${zjsonpatchVersion}"
     implementation "com.jayway.jsonpath:json-path:${jaywayJsonpathVersion}"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
 
-    testImplementation project(':changelog')
+    implementation "io.hypersistence:hypersistence-utils-hibernate-62:${hypersistenceUtilsVersion}"
+    implementation "org.hibernate.orm:hibernate-core:${hibernateCoreVersion}"
+
+    implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
+
+    implementation "org.springframework.retry:spring-retry:${springRetryVersion}"
+
+    annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
+
     testImplementation project(':core')
-    testImplementation project(':resource')
     testImplementation project(':test-utils-common')
 
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.springframework.security:spring-security-test"
+    testImplementation "org.mockito:mockito-core"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${kotlinCoroutinesVersion}"
+    testImplementation "org.skyscreamer:jsonassert:${jsonassertVersion}"
 
     jar {
         enabled = true

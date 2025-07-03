@@ -18,7 +18,7 @@ package com.ritense.formviewmodel.submission
 
 import com.ritense.formviewmodel.viewmodel.Submission
 import com.ritense.processlink.domain.ProcessLink
-import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.operaton.domain.OperatonTask
 import org.springframework.transaction.annotation.Transactional
 import kotlin.reflect.KClass
 import kotlin.reflect.full.allSupertypes
@@ -55,14 +55,14 @@ interface FormViewModelUserTaskSubmissionHandler<T : Submission> {
      * )
      * ```
      * @param submission the submission to be handled
-     * @param task the Camunda task associated with the submission
+     * @param task the Operaton task associated with the submission
      * @param businessKey the business key associated with the submission
      * @param <T> the type of the submission
      * @see com.ritense.formviewmodel.commandhandling.CompleteTaskCommand}`
      */
     fun <T> handle(
         submission: T,
-        task: CamundaTask,
+        task: OperatonTask,
         businessKey: String
     )
 

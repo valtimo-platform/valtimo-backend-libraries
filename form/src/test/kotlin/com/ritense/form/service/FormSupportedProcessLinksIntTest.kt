@@ -21,6 +21,7 @@ import com.ritense.form.BaseIntegrationTest
 import com.ritense.form.domain.request.CreateFormDefinitionRequest
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
@@ -44,6 +45,7 @@ internal class FormSupportedProcessLinksIntTest @Autowired constructor(
     @Test
     fun `should return a form process link type for StartEventStart with enabled true`() {
         formDefinitionService.createFormDefinition(
+            CaseDefinitionId.of("person", "1.0.0"),
             CreateFormDefinitionRequest(
                 "FormName",
                 "{}",

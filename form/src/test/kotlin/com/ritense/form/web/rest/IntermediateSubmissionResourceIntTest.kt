@@ -5,21 +5,21 @@ import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthor
 import com.ritense.form.BaseIntegrationTest
 import com.ritense.form.service.IntermediateSubmissionService
 import com.ritense.form.web.rest.dto.IntermediateSaveRequest
-import com.ritense.valtimo.camunda.domain.CamundaExecution
-import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.operaton.domain.OperatonExecution
+import com.ritense.valtimo.operaton.domain.OperatonTask
 import com.ritense.valtimo.contract.authentication.ManageableUser
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.valtimo.contract.json.MapperSingleton
-import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.service.OperatonTaskService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -38,8 +38,8 @@ class IntermediateSubmissionResourceIntTest : BaseIntegrationTest() {
     @Autowired
     lateinit var intermediateSubmissionService: IntermediateSubmissionService
 
-    @MockBean
-    lateinit var camundaTaskService: CamundaTaskService
+    @MockitoBean
+    lateinit var operatonTaskService: OperatonTaskService
 
     lateinit var mockMvc: MockMvc
 
@@ -51,18 +51,18 @@ class IntermediateSubmissionResourceIntTest : BaseIntegrationTest() {
             .setCustomArgumentResolvers(PageableHandlerMethodArgumentResolver())
             .alwaysDo<StandaloneMockMvcBuilder>(MockMvcResultHandlers.print())
             .build()
-        val task: CamundaTask = mock()
-        val execution: CamundaExecution = mock()
+        val task: OperatonTask = mock()
+        val execution: OperatonExecution = mock()
         whenever(task.processInstance).thenReturn(execution)
         whenever(execution.businessKey).thenReturn("a business Key")
         whenever(task.id).thenReturn("taskInstanceId")
-        whenever(camundaTaskService.findTaskById(any())).thenReturn(task)
+        whenever(operatonTaskService.findTaskById(any())).thenReturn(task)
 
         val manageableUser: ManageableUser = mock()
-        whenever(manageableUser.userIdentifier).thenReturn("userIdentifier")
+        whenever(manageableUser.username).thenReturn("username")
         whenever(manageableUser.fullName).thenReturn("FullName")
         whenever(userManagementService.currentUser).thenReturn(manageableUser)
-        whenever(userManagementService.findByUserIdentifier(any())).thenReturn(manageableUser)
+        whenever(userManagementService.findByUsername(any())).thenReturn(manageableUser)
     }
 
     @Test

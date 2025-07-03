@@ -17,7 +17,7 @@
 package com.ritense.logging
 
 import com.ritense.valtimo.contract.annotation.AllOpen
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.util.ErrorHandler
 
 @AllOpen

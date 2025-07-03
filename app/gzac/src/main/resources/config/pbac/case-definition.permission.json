@@ -1,0 +1,17 @@
+{
+    "changesetId": "case-definition-v3",
+    "permissions": [
+        {
+            "resourceType": "com.ritense.case_.domain.definition.CaseDefinition",
+            "action": "view_list",
+            "roleKey": "ROLE_ADMIN",
+            "conditions": []
+        },
+        {
+            "resourceType": "com.ritense.case_.domain.definition.CaseDefinition",
+            "action": "view",
+            "roleKey": "ROLE_ADMIN",
+            "conditions": []
+        }
+    ]
+}

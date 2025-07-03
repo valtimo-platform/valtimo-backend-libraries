@@ -19,7 +19,7 @@ package com.ritense.zakenapi.service
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.logging.withLoggingContext
 import com.ritense.zakenapi.event.ResourceStorageDocumentMetadataAvailableEvent
-import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.operaton.bpm.engine.delegate.DelegateExecution
 import org.springframework.context.ApplicationEventPublisher
 
 class UploadProcessDelegate(
