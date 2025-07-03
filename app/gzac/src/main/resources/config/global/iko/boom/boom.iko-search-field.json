@@ -5,7 +5,34 @@
         {
             "key": "boombeeld",
             "title": "Boombeeld",
-            "path": "iko:/boombeeld",
+            "path": "/record/data/boombeeld",
+            "dataType": "text",
+            "fieldType": "single",
+            "matchType": "like",
+            "required": false
+        },
+        {
+            "key": "leeftijd",
+            "title": "Leeftijd",
+            "path": "/record/data/leeftijd",
+            "dataType": "text",
+            "fieldType": "single",
+            "matchType": "like",
+            "required": false
+        },
+        {
+            "key": "groeifase",
+            "title": "Groeifase",
+            "path": "/record/data/groeifase",
+            "dataType": "text",
+            "fieldType": "single",
+            "matchType": "like",
+            "required": false
+        },
+        {
+            "key": "boomveiligheidsklasse",
+            "title": "Boomveiligheidsklasse",
+            "path": "/record/data/boomveiligheidsklasse",
             "dataType": "text",
             "fieldType": "single",
             "matchType": "like",

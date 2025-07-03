@@ -24,14 +24,14 @@ interface IkoConnector {
 
     fun getType(): String
 
-    fun getIkoConnectorPropertyFields(): List<PropertyField>
+    fun getIkoConnectorPropertyFields(): List<PropertyField> = emptyList()
 
-    fun getDataAggregatePropertyFields(): List<PropertyField>
+    fun getDataAggregatePropertyFields(): List<PropertyField> = emptyList()
 
-    fun getDataRequestPropertyFields(): List<PropertyField>
+    fun getDataRequestPropertyFields(): List<PropertyField> = emptyList()
 
     fun findAll(config: Map<String, Any?>, filters: List<DataFilter>, pageable: Pageable): Page<JsonNode>
 
     fun findAll(config: Map<String, Any?>, filters: List<DataFilter>): Page<JsonNode> =
-        findAll(config, filters, Pageable.unpaged())
+        findAll(config, filters, Pageable.ofSize(10))
 }

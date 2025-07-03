@@ -5,7 +5,7 @@
         {
             "key": "postcode",
             "title": "Postcode",
-            "path": "iko:/postcode",
+            "path":" /postcode",
             "dataType": "text",
             "fieldType": "single",
             "matchType": "exact",
@@ -14,7 +14,7 @@
         {
             "key": "huisnummer",
             "title": "Huisnummer",
-            "path": "iko:/huisnummer",
+            "path": "/huisnummer",
             "dataType": "text",
             "fieldType": "single",
             "matchType": "exact",
@@ -23,7 +23,7 @@
         {
             "key": "huisletter",
             "title": "Huisletter",
-            "path": "iko:/huisletter",
+            "path": "/huisletter",
             "dataType": "text",
             "fieldType": "single",
             "matchType": "exact",
@@ -32,7 +32,7 @@
         {
             "key": "toevoeging",
             "title": "Toevoeging",
-            "path": "iko:/toevoeging",
+            "path": "/toevoeging",
             "dataType": "text",
             "fieldType": "single",
             "matchType": "exact",

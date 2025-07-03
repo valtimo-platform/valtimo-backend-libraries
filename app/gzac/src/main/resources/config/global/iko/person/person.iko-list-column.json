@@ -4,7 +4,7 @@
         {
             "key": "naam",
             "title": "Naam",
-            "path": "iko:/naam/volledigeNaam",
+            "path": "/naam/volledigeNaam",
             "displayType": {
                 "type": "text",
                 "displayTypeParameters": {}
@@ -14,7 +14,7 @@
         {
             "key": "bsn",
             "title": "BSN",
-            "path": "iko:/burgerservicenummer",
+            "path": "/burgerservicenummer",
             "displayType": {
                 "type": "text",
                 "displayTypeParameters": {}
@@ -24,7 +24,7 @@
         {
             "key": "geboortedatum",
             "title": "Geboortedatum",
-            "path": "iko:/geboorte/datum/datum",
+            "path": "/geboorte/datum/datum",
             "displayType": {
                 "type": "text",
                 "displayTypeParameters": {}
@@ -34,9 +34,9 @@
         {
             "key": "adres",
             "title": "Adres",
-            "path": "iko:/verblijfplaats/verblijfadres/officieleStraatnaam",
+            "path": "/verblijfplaats/verblijfadres/officieleStraatnaam",
             "displayType": {
-                "type": "number",
+                "type": "text",
                 "displayTypeParameters": {}
             },
             "sortable": true

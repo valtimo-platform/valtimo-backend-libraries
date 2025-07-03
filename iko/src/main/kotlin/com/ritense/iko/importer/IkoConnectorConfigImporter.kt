@@ -42,7 +42,7 @@ class IkoConnectorConfigImporter(
             key = connectorConfig.key,
             title = connectorConfig.title,
             type = connectorConfig.type,
-            properties = connectorConfig.properties,
+            properties = connectorConfig.properties ?: emptyMap(),
         )
     }
 

@@ -29,6 +29,9 @@ import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.valtimo.contract.iko.Comparator
 import com.ritense.valtimo.contract.iko.DataFilter
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
@@ -64,7 +67,8 @@ class IkoDataRequestResource(
     fun search(
         @PathVariable ikoDataAggregateKey: String,
         @PathVariable key: String,
-        @RequestBody request: IkoSearchRequest
+        @RequestBody request: IkoSearchRequest,
+        pageable: Pageable,
     ): ResponseEntity<IkoSearchResponse> {
         val headers = listColumnService.findAllByOwner(IKO_LIST_OWNER, ikoDataAggregateKey)
         val searchFields = searchFieldService.findAllByOwner(IKO_SEARCH_OWNER, "$ikoDataAggregateKey:$key")
@@ -76,10 +80,13 @@ class IkoDataRequestResource(
                 ?: error("DataRequest '$ikoDataAggregateKey:$key' does not have SearchField: '${filter.key}'")
             DataFilter(searchField.path, searchField.matchType!!.toComparator(), filter.value)
         }
+        val pathSort = Sort.by(pageable.sort.map { Sort.Order.by(it.property) })
+        val pathPageable = PageRequest.of(pageable.pageNumber, pageable.pageSize, pathSort)
         val data = dataRequestService.search(
             key = key,
             ikoDataAggregateKey = ikoDataAggregateKey,
             filters = dataFilters,
+            pageable = pathPageable,
         )
         return ResponseEntity.ok(IkoSearchResponse.from(headers, data))
     }

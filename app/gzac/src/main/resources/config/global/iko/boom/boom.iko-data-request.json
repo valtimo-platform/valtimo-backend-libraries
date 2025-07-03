@@ -3,10 +3,7 @@
     "ikoDataRequests": [
         {
             "key": "boombeeld",
-            "title": "Zoek met boombeeld",
-            "properties": {
-                "searchType": "ZoekMetBoombeeld"
-            }
+            "title": "Zoek met boombeeld"
         }
     ]
 }

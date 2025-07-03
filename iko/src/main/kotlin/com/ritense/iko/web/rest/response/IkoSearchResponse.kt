@@ -42,7 +42,7 @@ data class IkoSearchResponse(
         companion object {
             fun from(header: SearchListColumn, rowData: JsonNode) = IkoItemDto(
                 key = header.key,
-                value = rowData.at(header.path.substringAfter("iko:"))
+                value = rowData.at(header.path.substringAfterLast(':'))
             )
         }
     }

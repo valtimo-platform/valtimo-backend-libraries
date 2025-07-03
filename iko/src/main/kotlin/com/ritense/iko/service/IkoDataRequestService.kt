@@ -33,6 +33,7 @@ import com.ritense.valtimo.contract.iko.DataFilter
 import com.ritense.valtimo.contract.iko.IkoConnector
 import com.ritense.valtimo.contract.iko.PropertyField
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction.ASC
 import org.springframework.data.jpa.domain.Specification
@@ -46,7 +47,12 @@ class IkoDataRequestService(
     private val ikoConnectors: List<IkoConnector>,
 ) {
 
-    fun search(key: String, ikoDataAggregateKey: String, filters: List<DataFilter>): Page<JsonNode> {
+    fun search(
+        key: String,
+        ikoDataAggregateKey: String,
+        filters: List<DataFilter>,
+        pageable: Pageable
+    ): Page<JsonNode> {
         val dataRequest = getByKey(key, ikoDataAggregateKey)
         val dataRepository = ikoConnectors.first {
             it.getType() == dataRequest.id.ikoDataAggregate.ikoConnectorConfig.type
@@ -55,7 +61,8 @@ class IkoDataRequestService(
             dataRequest.id.ikoDataAggregate.ikoConnectorConfig.properties +
                 dataRequest.id.ikoDataAggregate.properties +
                 dataRequest.properties,
-            filters
+            filters,
+            pageable
         )
     }
 

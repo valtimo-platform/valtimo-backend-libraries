@@ -244,6 +244,8 @@ valtimo:
     docker:
         filter:
             enabled: true
+    import:
+        whitelistedPaths: "VALTIMO_.*"
 
 spring-actuator:
     username: admin

@@ -13,7 +13,7 @@
     },
     {
         "key": "informatieobjecttype",
-        "defaultValue": "${CATALOGI_API_URL}informatieobjecttypen/${INFORMATIEOBJECTTYPE}",
+        "defaultValue": "${VALTIMO_CATALOGI_API_URL}informatieobjecttypen/${VALTIMO_INFORMATIEOBJECTTYPE}",
         "visible": true,
         "readonly": false
     },

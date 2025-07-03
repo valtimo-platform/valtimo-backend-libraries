@@ -1,0 +1,9 @@
+{
+    "key": "objecten-api",
+    "title": "Objecten API",
+    "type": "objectenApi",
+    "properties": {
+        "objectenApiBaseUrl": "${VALTIMO_OBJECTEN_API_URL}",
+        "token": "${VALTIMO_OBJECTEN_API_TOKEN}"
+    }
+}

@@ -24,5 +24,5 @@ data class IkoDataRequestsDto(
 data class IkoDataRequestDto(
     val key: String,
     val title: String,
-    val properties: Map<String, Any?>
+    val properties: Map<String, Any?>?
 )

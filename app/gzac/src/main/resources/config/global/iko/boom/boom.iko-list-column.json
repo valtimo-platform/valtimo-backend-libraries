@@ -4,7 +4,37 @@
         {
             "key": "boombeeld",
             "title": "Boombeeld",
-            "path": "iko:/boombeeld",
+            "path": "/record/data/boombeeld",
+            "displayType": {
+                "type": "text",
+                "displayTypeParameters": {}
+            },
+            "sortable": true
+        },
+        {
+            "key": "leeftijd",
+            "title": "Leeftijd",
+            "path": "/record/data/leeftijd",
+            "displayType": {
+                "type": "text",
+                "displayTypeParameters": {}
+            },
+            "sortable": true
+        },
+        {
+            "key": "groeifase",
+            "title": "Groeifase",
+            "path": "/record/data/groeifase",
+            "displayType": {
+                "type": "text",
+                "displayTypeParameters": {}
+            },
+            "sortable": true
+        },
+        {
+            "key": "boomveiligheidsklasse",
+            "title": "Boomveiligheidsklasse",
+            "path": "/record/data/boomveiligheidsklasse",
             "displayType": {
                 "type": "text",
                 "displayTypeParameters": {}

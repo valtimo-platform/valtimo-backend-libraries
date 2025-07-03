@@ -20,5 +20,5 @@ data class IkoConnectorConfigDto(
     val key: String,
     val title: String,
     val type: String,
-    val properties: Map<String, Any?>
+    val properties: Map<String, Any?>?
 )

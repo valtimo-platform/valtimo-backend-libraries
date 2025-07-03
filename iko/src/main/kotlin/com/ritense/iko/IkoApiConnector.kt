@@ -48,8 +48,12 @@ class IkoApiConnector(
         pageable: Pageable
     ): Page<JsonNode> {
         require(filters.all { it.comparator == Comparator.EQUAL_TO })
-        val filterMap =
-            filters.associate { it.property.substringAfter("iko:/").replace("/", "__") to it.value.toString() }
+        val filterMap = filters.associate {
+            it.property
+                .substringAfterLast(':')
+                .replace("/", "__")
+                .trim('_') to it.value.toString()
+        }
         val data = ikoApiClient.search(
             baseUrl = URI(config[BASE_URL].toString()),
             searchPath = config[SEARCH_PATH].toString(),

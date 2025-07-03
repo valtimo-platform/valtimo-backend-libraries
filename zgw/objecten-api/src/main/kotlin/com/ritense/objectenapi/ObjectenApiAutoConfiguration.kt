@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.form.service.FormDefinitionService
 import com.ritense.objectenapi.client.ObjectenApiClient
+import com.ritense.objectenapi.ikoconnector.ObjectenApiIkoConnector
 import com.ritense.objectenapi.listener.ZaakObjectListener
 import com.ritense.objectenapi.management.ErrorObjectManagementInfoProvider
 import com.ritense.objectenapi.management.ObjectManagementInfoProvider
@@ -149,6 +150,18 @@ class ObjectenApiAutoConfiguration {
     @ConditionalOnMissingBean(ObjectSpecificationFactory::class)
     fun objectSpecificationFactory(): ObjectSpecificationFactory {
         return ObjectSpecificationFactory()
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ObjectenApiIkoConnector::class)
+    fun objectenApiIkoConnector(
+        objectenApiClient: ObjectenApiClient,
+        objectMapper: ObjectMapper,
+    ): ObjectenApiIkoConnector {
+        return ObjectenApiIkoConnector(
+            objectenApiClient,
+            objectMapper,
+        )
     }
 
     companion object {

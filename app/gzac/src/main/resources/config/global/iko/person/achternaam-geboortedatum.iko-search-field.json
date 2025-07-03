@@ -5,7 +5,7 @@
         {
             "key": "achternaam",
             "title": "Achternaam",
-            "path": "iko:/geslachtsnaam",
+            "path": "/geslachtsnaam",
             "dataType": "text",
             "fieldType": "single",
             "matchType": "exact",
@@ -14,7 +14,7 @@
         {
             "key": "geboortedatum",
             "title": "Geboortedatum",
-            "path": "iko:/geboortedatum",
+            "path": "/geboortedatum",
             "dataType": "date",
             "fieldType": "single",
             "matchType": "exact",

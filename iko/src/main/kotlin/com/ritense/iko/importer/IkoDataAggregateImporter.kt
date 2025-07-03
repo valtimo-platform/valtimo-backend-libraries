@@ -43,7 +43,7 @@ class IkoDataAggregateImporter(
             key = dataAggregate.key,
             ikoConnectorConfigKey = dataAggregate.ikoConnectorConfigKey,
             title = dataAggregate.title,
-            properties = dataAggregate.properties,
+            properties = dataAggregate.properties ?: emptyMap(),
         )
     }
 

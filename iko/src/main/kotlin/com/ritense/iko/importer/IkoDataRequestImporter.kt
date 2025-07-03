@@ -45,7 +45,7 @@ class IkoDataRequestImporter(
                 key = it.key,
                 ikoDataAggregateKey = dataRequests.ikoDataAggregateKey,
                 title = it.title,
-                properties = it.properties,
+                properties = it.properties ?: emptyMap(),
             )
         }
 

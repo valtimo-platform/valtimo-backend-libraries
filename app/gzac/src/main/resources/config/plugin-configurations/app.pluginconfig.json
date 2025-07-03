@@ -4,8 +4,8 @@
         "title": "OpenZaak Authentication",
         "pluginDefinitionKey": "openzaak",
         "properties": {
-            "clientId": "${OPEN_ZAAK_CLIENT_ID}",
-            "clientSecret": "${OPEN_ZAAK_CLIENT_SECRET}"
+            "clientId": "${VALTIMO_OPEN_ZAAK_CLIENT_ID}",
+            "clientSecret": "${VALTIMO_OPEN_ZAAK_CLIENT_SECRET}"
         }
     },
     {
@@ -13,7 +13,7 @@
         "title": "Zaken API",
         "pluginDefinitionKey": "zakenapi",
         "properties": {
-            "url": "${ZAKEN_API_URL}",
+            "url": "${VALTIMO_ZAKEN_API_URL}",
             "authenticationPluginConfiguration": "b609a0a3-886e-4b3d-ae0d-c01effb311ee"
         }
     },
@@ -22,7 +22,7 @@
         "title": "Besluiten API",
         "pluginDefinitionKey": "besluitenapi",
         "properties": {
-            "url": "${BESLUITEN_API_URL}",
+            "url": "${VALTIMO_BESLUITEN_API_URL}",
             "rsin": "051845623",
             "authenticationPluginConfiguration": "b609a0a3-886e-4b3d-ae0d-c01effb311ee"
         }
@@ -32,7 +32,7 @@
         "title": "Catalogi API",
         "pluginDefinitionKey": "catalogiapi",
         "properties": {
-            "url": "${CATALOGI_API_URL}",
+            "url": "${VALTIMO_CATALOGI_API_URL}",
             "authenticationPluginConfiguration": "b609a0a3-886e-4b3d-ae0d-c01effb311ee"
         }
     },
@@ -41,7 +41,7 @@
         "title": "Documenten API",
         "pluginDefinitionKey": "documentenapi",
         "properties": {
-            "url": "${DOCUMENTEN_API_URL}",
+            "url": "${VALTIMO_DOCUMENTEN_API_URL}",
             "bronorganisatie": "051845623",
             "authenticationPluginConfiguration": "b609a0a3-886e-4b3d-ae0d-c01effb311ee",
             "apiVersion": "1.4.2-maykin-1.13.0"
@@ -52,8 +52,8 @@
         "title": "OpenNotificaties Authentication",
         "pluginDefinitionKey": "notificatiesapiauthentication",
         "properties": {
-            "clientId": "${OPEN_NOTIFICATIES_CLIENT_ID}",
-            "clientSecret": "${OPEN_NOTIFICATIES_CLIENT_SECRET}"
+            "clientId": "${VALTIMO_OPEN_NOTIFICATIES_CLIENT_ID}",
+            "clientSecret": "${VALTIMO_OPEN_NOTIFICATIES_CLIENT_SECRET}"
         }
     },
     {
@@ -61,7 +61,7 @@
         "title": "Notificaties API",
         "pluginDefinitionKey": "notificatiesapi",
         "properties": {
-            "url": "${NOTIFICATIES_API_URL}",
+            "url": "${VALTIMO_NOTIFICATIES_API_URL}",
             "callbackUrl": "${VALTIMO_API_URL}notificatiesapi/callback",
             "authenticationPluginConfiguration": "df36cd33-d0dd-429a-a8ad-e16f307ac434"
         }
@@ -71,7 +71,7 @@
         "title": "Objecten API Authentication",
         "pluginDefinitionKey": "objecttokenauthentication",
         "properties": {
-            "token": "${OBJECTEN_API_TOKEN}"
+            "token": "${VALTIMO_OBJECTEN_API_TOKEN}"
         }
     },
     {
@@ -79,7 +79,7 @@
         "title": "Objecten API",
         "pluginDefinitionKey": "objectenapi",
         "properties": {
-            "url": "${OBJECTEN_API_URL}",
+            "url": "${VALTIMO_OBJECTEN_API_URL}",
             "authenticationPluginConfiguration": "21a006f9-7833-4cdf-a6b7-1927705dd543"
         }
     },
@@ -88,7 +88,7 @@
         "title": "Objecttypen API Authentication",
         "pluginDefinitionKey": "objecttokenauthentication",
         "properties": {
-            "token": "${OBJECTTYPEN_API_TOKEN}"
+            "token": "${VALTIMO_OBJECTTYPEN_API_TOKEN}"
         }
     },
     {
@@ -96,7 +96,7 @@
         "title": "Objecttypen API",
         "pluginDefinitionKey": "objecttypenapi",
         "properties": {
-            "url": "${OBJECTTYPEN_API_URL}",
+            "url": "${VALTIMO_OBJECTTYPEN_API_URL}",
             "authenticationPluginConfiguration": "acb0687a-075e-4435-923b-e6cb01d4d5db"
         }
     },
@@ -105,9 +105,9 @@
         "title": "SmartDocuments",
         "pluginDefinitionKey": "smartdocuments",
         "properties": {
-            "url": "${SMART_DOCUMENTS_URL}",
-            "username": "${SMART_DOCUMENTS_USERNAME}",
-            "password": "${SMART_DOCUMENTS_PASSWORD}"
+            "url": "${VALTIMO_SMART_DOCUMENTS_URL}",
+            "username": "${VALTIMO_SMART_DOCUMENTS_USERNAME}",
+            "password": "${VALTIMO_SMART_DOCUMENTS_PASSWORD}"
         }
     },
     {
@@ -123,7 +123,7 @@
                 "caseDefinitionKey": "bezwaar",
                 "processDefinitionKey": "bezwaar",
                 "objectManagementId": "29400564-d25f-491c-abb2-afc42894ac9d",
-                "initiatorRoltypeUrl": "${CATALOGI_API_URL}roltypen/1c359a1b-c38d-47b8-bed5-994db88ead61",
+                "initiatorRoltypeUrl": "${VALTIMO_CATALOGI_API_URL}roltypen/1c359a1b-c38d-47b8-bed5-994db88ead61",
                 "initiatorRolDescription": "Initiator",
                 "copyStrategy": "full"
             }]
