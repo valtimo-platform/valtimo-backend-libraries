@@ -60,6 +60,7 @@ public interface Document {
     String assigneeFullName();
 
     @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = DocumentContentFilter.class)
+    @JsonProperty
     DocumentContent content();
 
     @JsonProperty

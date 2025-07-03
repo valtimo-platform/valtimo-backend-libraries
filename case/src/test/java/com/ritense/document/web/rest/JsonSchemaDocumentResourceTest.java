@@ -33,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ritense.BaseTest;
+import com.ritense.document.domain.impl.DocumentContentFilter;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
@@ -107,6 +108,27 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.content").doesNotExist());
+    }
+
+    @Test
+    void shouldReturnDocumentWithContentWhenEnabled() throws Exception {
+        when(documentService.findBy(any()))
+            .thenReturn(Optional.of(document));
+
+        //enable output of document content
+        DocumentContentFilter.setIncludeDocumentContent(true);
+
+        mockMvc.perform(get("/api/v1/document/{id}", UUID.randomUUID().toString())
+                .accept(APPLICATION_JSON_VALUE)
+                .contentType(APPLICATION_JSON_VALUE)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.content").exists());
+
+        //reset to default for cleanup
+        DocumentContentFilter.setIncludeDocumentContent(false);
     }
 
     @Test
