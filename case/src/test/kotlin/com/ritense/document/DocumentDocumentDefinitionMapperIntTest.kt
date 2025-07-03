@@ -16,6 +16,7 @@
 
 package com.ritense.document
 
+import com.ritense.BaseIntegrationTest
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
@@ -37,7 +38,7 @@ class DocumentDocumentDefinitionMapperIntTest @Autowired constructor(
     }
 
     @AfterEach
-    override fun afterEach() {
+    fun afterEach() {
     }
 
     @Test

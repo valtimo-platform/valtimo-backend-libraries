@@ -145,7 +145,7 @@ class BaseIntegrationTest: BaseTest() {
             .build()
     }
 
-    protected fun createDocument(documentDefinition: DocumentDefinition, content: String?): Document {
+    protected fun createDocument(documentDefinition: DocumentDefinition, content: String?): JsonSchemaDocument {
         return runWithoutAuthorization {
             documentService.createDocument(
                 NewDocumentRequest(
