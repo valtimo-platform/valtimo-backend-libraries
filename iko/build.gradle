@@ -74,7 +74,6 @@ dependencies {
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
-    testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:${camundaMockitoVersion}"
 
     jar {
         enabled = true

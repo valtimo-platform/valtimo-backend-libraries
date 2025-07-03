@@ -19,7 +19,7 @@ package com.ritense.iko
 import com.ritense.iko.service.IkoDataAggregateService
 import com.ritense.valueresolver.ValueResolverFactory
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.camunda.bpm.engine.delegate.VariableScope
+import org.operaton.bpm.engine.delegate.VariableScope
 import java.util.function.Function
 
 class IkoValueResolverFactory(
