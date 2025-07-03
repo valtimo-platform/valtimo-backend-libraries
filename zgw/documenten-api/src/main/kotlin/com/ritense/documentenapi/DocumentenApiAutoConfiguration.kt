@@ -73,15 +73,12 @@ class DocumentenApiAutoConfiguration {
         objectMapper: ObjectMapper,
         platformTransactionManager: PlatformTransactionManager,
         authorizationService: AuthorizationService,
-        @Value("\${valtimo.authorization.zgwDocuments.enabled:false}")
-        authorizationEnabled: Boolean,
     ) = DocumentenApiClient(
         restClientBuilder,
         outboxService,
         objectMapper,
         platformTransactionManager,
         authorizationService,
-        authorizationEnabled,
     )
 
     @Bean
