@@ -86,15 +86,13 @@ class ZakenApiClient(
         baseUrl: URI,
         request: LinkDocumentRequest
     ): LinkDocumentResult {
-        if (authorizationEnabled) {
-            authorizationService.requirePermission(
-                EntityAuthorizationRequest(
-                    ResourcePermission::class.java,
-                    ResourcePermissionActionProvider.CREATE,
-                    ResourcePermission()
-                )
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                ResourcePermission::class.java,
+                ResourcePermissionActionProvider.CREATE,
+                ResourcePermission()
             )
-        }
+        )
 
         val result = buildRestClient(authentication)
             .post()
@@ -166,7 +164,7 @@ class ZakenApiClient(
         zaakUrl: URI? = null,
         informatieobjectUrl: URI? = null,
     ): List<ZaakInformatieObject> {
-        if (authorizationEnabled && !authorizationService.hasPermission(
+        if (!authorizationService.hasPermission(
             EntityAuthorizationRequest(
                 ResourcePermission::class.java,
                 ResourcePermissionActionProvider.VIEW_LIST,
@@ -533,15 +531,13 @@ class ZakenApiClient(
         require(zaakInformatieobjectUrl.toString().startsWith(baseUrl.toString())) {
             "zaakInformatieobjectUrl '$zaakInformatieobjectUrl' does not start with baseUrl '$baseUrl'"
         }
-        if (authorizationEnabled) {
-            authorizationService.requirePermission(
-                EntityAuthorizationRequest(
-                    ResourcePermission::class.java,
-                    ResourcePermissionActionProvider.DELETE,
-                    ResourcePermission()
-                )
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                ResourcePermission::class.java,
+                ResourcePermissionActionProvider.DELETE,
+                ResourcePermission()
             )
-        }
+        )
 
         buildRestClient(authentication)
             .delete()
