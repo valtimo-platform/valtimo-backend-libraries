@@ -43,7 +43,10 @@ public abstract class BaseTest {
     protected static final String DOCUMENT_DEFINITION_NAME = "house";
     protected static final String PROCESS_INSTANCE_ID = UUID.randomUUID().toString();
     protected static final String PROCESS_DEFINITION_KEY = "def-key";
-    protected static final CaseDefinitionId CASE_DEFINITION_ID = new CaseDefinitionId(DOCUMENT_DEFINITION_NAME, "1.0.0");
+    protected static final CaseDefinitionId CASE_DEFINITION_ID = new CaseDefinitionId(
+        DOCUMENT_DEFINITION_NAME,
+        "1.0.0"
+    );
 
     public BaseTest() {
         documentSequenceGeneratorService = mock(DocumentSequenceGeneratorService.class);
@@ -62,10 +65,6 @@ public abstract class BaseTest {
         return JsonSchemaDocumentDefinitionId.of(DOCUMENT_DEFINITION_NAME, CASE_DEFINITION_ID);
     }
 
-    protected OperatonProcessDefinitionId processDefinitionKey() {
-        return new OperatonProcessDefinitionId(PROCESS_DEFINITION_KEY);
-    }
-
     protected JsonSchemaDocumentId documentId() {
         return JsonSchemaDocumentId.newId(UUID.randomUUID());
     }
@@ -80,17 +79,27 @@ public abstract class BaseTest {
 
     protected JsonSchemaDocumentDefinition definition(String name) {
         CaseDefinitionId caseDefinitionId = new CaseDefinitionId(name, "1.0.0");
-        final JsonSchemaDocumentDefinitionId jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.of(name, caseDefinitionId);
+        final JsonSchemaDocumentDefinitionId jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.of(
+            name,
+            caseDefinitionId
+        );
         final JsonSchema jsonSchema = JsonSchema.fromResourceUri(path(jsonSchemaDocumentDefinitionId.name()));
         return new JsonSchemaDocumentDefinition(jsonSchemaDocumentDefinitionId, jsonSchema);
     }
 
-    protected JsonSchemaDocument.CreateDocumentResultImpl createDocument(JsonSchemaDocumentDefinition definition, JsonDocumentContent content) {
+    protected JsonSchemaDocument.CreateDocumentResultImpl createDocument(
+        JsonSchemaDocumentDefinition definition,
+        JsonDocumentContent content
+    ) {
         return JsonSchemaDocument.create(definition, content, USERNAME, documentSequenceGeneratorService, null);
     }
 
     public URI path(String name) {
-        return URI.create(String.format("config/case/%s/1-0-0/document/definition/%s.json", name, name + ".schema.document-definition"));
+        return URI.create(String.format(
+            "config/case/%s/1-0-0/document/definition/%s.json",
+            name,
+            name + ".schema.document-definition"
+        ));
     }
 
 }

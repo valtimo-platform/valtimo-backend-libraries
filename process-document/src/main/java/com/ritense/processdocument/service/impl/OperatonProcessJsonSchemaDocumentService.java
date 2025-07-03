@@ -118,7 +118,7 @@ public class OperatonProcessJsonSchemaDocumentService implements ProcessDocument
         final NewDocumentAndStartProcessRequest request
     ) {
         try {
-            final var processDefinitionKey = new OperatonProcessDefinitionId(request.processDefinitionKey());
+            final var processDefinitionKey = request.processDefinitionKey();
             final var newDocumentRequest = request.newDocumentRequest();
 
             final var newDocumentResult = runWithoutAuthorization(
@@ -140,7 +140,7 @@ public class OperatonProcessJsonSchemaDocumentService implements ProcessDocument
 
             final var processInstanceWithDefinition = startProcess(
                 document,
-                processDefinitionKey.toString(),
+                processDefinitionKey,
                 request.getProcessVars()
             );
 
@@ -294,9 +294,9 @@ public class OperatonProcessJsonSchemaDocumentService implements ProcessDocument
             request.doAdditionalModifications(document);
 
             //Part 2 process start
-            final var processDefinitionKey = new OperatonProcessDefinitionId(request.processDefinitionKey());
+            final var processDefinitionKey = request.processDefinitionKey();
             final var processInstanceWithDefinition = startProcess(
-                document, processDefinitionKey.toString(), request.getProcessVars());
+                document, processDefinitionKey, request.getProcessVars());
             final var operatonProcessInstanceId = new OperatonProcessInstanceId(
                 processInstanceWithDefinition.getProcessInstanceDto().getId()
             );
@@ -334,9 +334,9 @@ public class OperatonProcessJsonSchemaDocumentService implements ProcessDocument
             );
 
             //Part 2 process start
-            final var processDefinitionKey = new OperatonProcessDefinitionId(request.getProcessDefinitionKey());
+            final var processDefinitionKey = request.getProcessDefinitionKey();
             final var processInstanceWithDefinition = startProcess(
-                document, processDefinitionKey.toString(), request.getProcessVars());
+                document, processDefinitionKey, request.getProcessVars());
             final var operatonProcessInstanceId = new OperatonProcessInstanceId(
                 processInstanceWithDefinition.getProcessInstanceDto().getId()
             );
