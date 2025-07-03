@@ -1,5 +1,5 @@
 {
-    "changesetId": "documents-v1",
+    "changesetId": "documents-v2",
     "permissions": [
         {
             "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",

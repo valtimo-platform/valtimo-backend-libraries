@@ -18,14 +18,14 @@ package com.ritense.formviewmodel.commandhandling.handler
 
 import com.ritense.commandhandling.CommandHandler
 import com.ritense.formviewmodel.commandhandling.CompleteTaskCommand
-import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.service.OperatonTaskService
 
 class CompleteTaskCommandHandler(
-    private val camundaTaskService: CamundaTaskService
+    private val operatonTaskService: OperatonTaskService
 ) : CommandHandler<CompleteTaskCommand, Unit> {
 
     override fun execute(command: CompleteTaskCommand) {
-        camundaTaskService.complete(command.taskId)
+        operatonTaskService.complete(command.taskId)
     }
 
 }

@@ -26,7 +26,7 @@ import com.ritense.smartdocuments.domain.TemplateGroup
 import com.ritense.smartdocuments.domain.TemplatesStructure
 import com.ritense.valueresolver.ValueResolverService
 import org.assertj.core.api.Assertions.assertThat
-import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.operaton.bpm.engine.delegate.DelegateExecution
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith

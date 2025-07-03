@@ -31,7 +31,7 @@ import com.ritense.processlink.domain.TestProcessLinkUpdateRequestDto
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.domain.ValtimoMediaType
-import com.ritense.valtimo.service.CamundaProcessService
+import com.ritense.valtimo.service.OperatonProcessService
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -61,7 +61,7 @@ import kotlin.test.assertEquals
 internal class ProcessLinkResourceIT @Autowired constructor(
     private val webApplicationContext: WebApplicationContext,
     private val processLinkRepository: ProcessLinkRepository,
-    private val camundaProcessService: CamundaProcessService,
+    private val operatonProcessService: OperatonProcessService,
     private val listener: ProcessLinkDeploymentApplicationReadyEventListener,
     private val processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
 ) : BaseIntegrationTest() {
@@ -193,9 +193,9 @@ internal class ProcessLinkResourceIT @Autowired constructor(
 
         runWithoutAuthorization {
             // deplot process
-            camundaProcessService.deploy(caseDefinitionId, "test-process.bpmn", ByteArrayInputStream(bpmnFile))
+            operatonProcessService.deploy(caseDefinitionId, "test-process.bpmn", ByteArrayInputStream(bpmnFile))
 
-            val procdef = camundaProcessService.getProcessDefinition("test-process-2")
+            val procdef = operatonProcessService.getProcessDefinition("test-process-2")
 
             // add process links
             processLinkRepository.save(TestProcessLink(UUID.randomUUID(), procdef.id, "start", SERVICE_TASK_START))
@@ -284,10 +284,10 @@ internal class ProcessLinkResourceIT @Autowired constructor(
             .andExpect(status().isNoContent)
 
         runWithoutAuthorization {
-            val deployedProcess = camundaProcessService.getProcessDefinition("test-process")
+            val deployedProcess = operatonProcessService.getProcessDefinition("test-process")
             assertEquals("CD:autodeploy:1.0.0", deployedProcess?.versionTag)
 
-            val procdef = camundaProcessService.getProcessDefinition("test-process")
+            val procdef = operatonProcessService.getProcessDefinition("test-process")
             val processCaseLink = processDefinitionCaseDefinitionService.findByProcessDefinitionId(ProcessDefinitionId(procdef.id))
 
             assertEquals("autodeploy", processCaseLink.id.caseDefinitionId.key)

@@ -35,8 +35,8 @@ import com.ritense.logging.LoggableResource
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
-import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.operaton.repository.OperatonProcessDefinitionSpecificationHelper
+import com.ritense.valtimo.operaton.service.OperatonRepositoryService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.processlink.service.PluginProcessLinkService
 import org.springframework.core.io.Resource
@@ -59,7 +59,7 @@ class DocumentenApiVersionService(
     private val documentDefinitionService: DocumentDefinitionService,
     private val caseDefinitionProcessLinkService: CaseDefinitionProcessLinkService,
     private val pluginProcessLinkService: PluginProcessLinkService,
-    private val camundaRepositoryService: CamundaRepositoryService,
+    private val operatonRepositoryService: OperatonRepositoryService,
     private val activeCaseDefinitionService: ActiveCaseDefinitionService
 ) {
 
@@ -126,10 +126,10 @@ class DocumentenApiVersionService(
         }
         val processDefinitionKey = link.id.processDefinitionKey
         val detectedConfigurations = AuthorizationContext.runWithoutAuthorization {
-            camundaRepositoryService.findLinkedProcessDefinitions(
-                CamundaProcessDefinitionSpecificationHelper.byKey(
+            operatonRepositoryService.findLinkedProcessDefinitions(
+                OperatonProcessDefinitionSpecificationHelper.byKey(
                     processDefinitionKey
-                ).and(CamundaProcessDefinitionSpecificationHelper.byLatestVersion())
+                ).and(OperatonProcessDefinitionSpecificationHelper.byLatestVersion())
             )
                 .asSequence()
                 .flatMap { pluginProcessLinkService.getProcessLinks(it.id) }

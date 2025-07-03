@@ -27,8 +27,8 @@ import com.ritense.valtimo.domain.formfields.FileUploadFormFieldType;
 import com.ritense.valtimo.domain.formfields.TextAreaFormFieldType;
 import java.util.ArrayList;
 import java.util.List;
-import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
-import org.camunda.bpm.engine.impl.form.type.AbstractFormFieldType;
+import org.operaton.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
+import org.operaton.bpm.engine.impl.form.type.AbstractFormFieldType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

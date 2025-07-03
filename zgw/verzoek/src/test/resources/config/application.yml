@@ -31,7 +31,7 @@ valtimo:
   plugin:
     encryption-secret: "abcdefghijklmnop"
 
-camunda:
+operaton:
     bpm:
         history-level: audit
         generic-properties:

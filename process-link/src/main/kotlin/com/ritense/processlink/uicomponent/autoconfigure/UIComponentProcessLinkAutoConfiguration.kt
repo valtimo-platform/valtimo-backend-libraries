@@ -21,7 +21,7 @@ import com.ritense.processlink.uicomponent.mapper.UIComponentProcessLinkMapper
 import com.ritense.processlink.uicomponent.mapper.UIComponentProcessLinkModule
 import com.ritense.processlink.uicomponent.service.UIComponentProcessLinkActivityHandler
 import com.ritense.processlink.uicomponent.service.UIComponentSupportedProcessLinksHandler
-import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.operaton.domain.OperatonTask
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -51,6 +51,6 @@ class UIComponentProcessLinkAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(UIComponentProcessLinkActivityHandler::class)
-    @ConditionalOnClass(CamundaTask::class) // This bean cannot be instantiated when :core is excluded (see :plugin)
+    @ConditionalOnClass(OperatonTask::class) // This bean cannot be instantiated when :core is excluded (see :plugin)
     fun uiComponentProcessLinkActivityHandler() = UIComponentProcessLinkActivityHandler()
 }

@@ -32,16 +32,16 @@ import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.logging.LoggableResource
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
-import com.ritense.valtimo.camunda.domain.CamundaExecution
-import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.operaton.domain.OperatonExecution
+import com.ritense.valtimo.operaton.domain.OperatonTask
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.form.DataResolvingContext
 import com.ritense.valtimo.contract.form.FormFieldDataResolver
 import com.ritense.valtimo.contract.json.JsonPointerHelper
 import com.ritense.valtimo.contract.json.patch.JsonPatch
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
-import com.ritense.valtimo.service.CamundaProcessService
-import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.service.OperatonProcessService
+import com.ritense.valtimo.service.OperatonTaskService
 import com.ritense.valueresolver.ValueResolverService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -53,8 +53,8 @@ import java.util.UUID
 class PrefillFormService(
     private val documentService: DocumentService,
     private val formDefinitionService: FormIoFormDefinitionService,
-    private val camundaProcessService: CamundaProcessService,
-    private val taskService: CamundaTaskService,
+    private val operatonProcessService: OperatonProcessService,
+    private val taskService: OperatonTaskService,
     private val formFieldDataResolvers: List<FormFieldDataResolver>,
     private val processDocumentAssociationService: ProcessDocumentAssociationService,
     private val valueResolverService: ValueResolverService,
@@ -64,11 +64,11 @@ class PrefillFormService(
 
     fun getPrefilledFormDefinition(
         formDefinitionId: UUID,
-        @LoggableResource(resourceType = CamundaExecution::class) processInstanceId: String,
-        @LoggableResource(resourceType = CamundaTask::class) taskInstanceId: String,
+        @LoggableResource(resourceType = OperatonExecution::class) processInstanceId: String,
+        @LoggableResource(resourceType = OperatonTask::class) taskInstanceId: String,
     ): FormIoFormDefinition {
         val processInstance = runWithoutAuthorization {
-            camundaProcessService.findExecutionByProcessInstanceId(processInstanceId)
+            operatonProcessService.findExecutionByProcessInstanceId(processInstanceId)
                 ?: throw RuntimeException("Process instance not found by id $processInstanceId")
         }
         val documentId = processInstance.businessKey
@@ -101,7 +101,7 @@ class PrefillFormService(
     ) {
         val processInstance = processInstanceId?.let {
             runWithoutAuthorization {
-                camundaProcessService.findExecutionByProcessInstanceId(processInstanceId)
+                operatonProcessService.findExecutionByProcessInstanceId(processInstanceId)
                     ?: throw RuntimeException("Process instance not found by id $processInstanceId")
             }
         }
@@ -125,7 +125,7 @@ class PrefillFormService(
     private fun prefillValueResolverFields(
         formDefinition: FormIoFormDefinition,
         documentInstanceId: Document.Id,
-        processInstance: CamundaExecution?,
+        processInstance: OperatonExecution?,
         taskInstanceId: String?
     ) {
         // Map input fields to Map<{input.key}, {input.properties.sourceKey}>
@@ -168,7 +168,7 @@ class PrefillFormService(
         val processInstanceVariables = runWithoutAuthorization {
             processDocumentAssociationService.findProcessDocumentInstances(document.id())
                 .map { it.processDocumentInstanceId().processInstanceId().toString() }
-                .flatMap { camundaProcessService.getProcessInstanceVariablesByJsonPointers(it, processVarPointers).entries }
+                .flatMap { operatonProcessService.getProcessInstanceVariablesByJsonPointers(it, processVarPointers).entries }
                 .associate { it.key to it.value }
         }
         if (processInstanceVariables.isNotEmpty()) {

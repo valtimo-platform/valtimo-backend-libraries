@@ -59,6 +59,6 @@ class SearchFieldExporter(
     }
 
     companion object {
-        private const val PATH = "config/case/%s/%s/case/search-field/%s.schema.case-search-field.json"
+        private const val PATH = "config/case/%s/%s/case/search-field/%s.case-search-field.json"
     }
 }

@@ -28,10 +28,10 @@ import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
-import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
-import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
-import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersion
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.operaton.domain.OperatonProcessDefinition
+import com.ritense.valtimo.operaton.repository.OperatonProcessDefinitionSpecificationHelper.Companion.byKey
+import com.ritense.valtimo.operaton.repository.OperatonProcessDefinitionSpecificationHelper.Companion.byLatestVersion
+import com.ritense.valtimo.operaton.service.OperatonRepositoryService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
@@ -49,7 +49,7 @@ class ProcessLinkService(
     private val processLinkRepository: ProcessLinkRepository,
     private val processLinkMappers: List<ProcessLinkMapper>,
     private val processLinkTypes: List<SupportedProcessLinkTypeHandler>,
-    private val camundaRepositoryService: CamundaRepositoryService,
+    private val operatonRepositoryService: OperatonRepositoryService,
     private val caseDefinitionChecker: CaseDefinitionChecker,
 ) {
 
@@ -68,14 +68,14 @@ class ProcessLinkService(
     }
 
     fun getProcessLinks(
-        @LoggableResource(resourceType = CamundaProcessDefinition::class) processDefinitionId: String,
+        @LoggableResource(resourceType = OperatonProcessDefinition::class) processDefinitionId: String,
         activityId: String
     ): List<ProcessLink> {
         return processLinkRepository.findByProcessDefinitionIdAndActivityId(processDefinitionId, activityId)
     }
 
     fun getProcessLinks(
-        @LoggableResource(resourceType = CamundaProcessDefinition::class) processDefinitionId: String
+        @LoggableResource(resourceType = OperatonProcessDefinition::class) processDefinitionId: String
     ): List<ProcessLink> {
         return processLinkRepository.findByProcessDefinitionId(processDefinitionId)
     }
@@ -83,12 +83,12 @@ class ProcessLinkService(
     fun getProcessLinksByProcessDefinitionKey(
         @LoggableResource("processDefinitionKey") processDefinitionKey: String
     ): List<ProcessLink> {
-        return camundaRepositoryService.findProcessDefinitions(byKey(processDefinitionKey).and(byLatestVersion()))
+        return operatonRepositoryService.findProcessDefinitions(byKey(processDefinitionKey).and(byLatestVersion()))
             .flatMap { processLinkRepository.findByProcessDefinitionId(it.id) }
     }
 
     fun getProcessLinksByProcessDefinitionIdAndActivityType(
-        @LoggableResource(resourceType = CamundaProcessDefinition::class) processDefinitionId: String,
+        @LoggableResource(resourceType = OperatonProcessDefinition::class) processDefinitionId: String,
         activityType: ActivityTypeWithEventName
     ): ProcessLink? {
         return processLinkRepository.findByProcessDefinitionIdAndActivityType(processDefinitionId, activityType)
@@ -97,7 +97,7 @@ class ProcessLinkService(
     @Transactional(noRollbackFor = [ProcessLinkExistsException::class])
     @Throws(ProcessLinkExistsException::class)
     fun createProcessLink(createRequest: ProcessLinkCreateRequestDto, caseDefinitionId: CaseDefinitionId?): ProcessLink {
-        return withLoggingContext(CamundaProcessDefinition::class, createRequest.processDefinitionId) {
+        return withLoggingContext(OperatonProcessDefinition::class, createRequest.processDefinitionId) {
             val mapper = getProcessLinkMapper(createRequest.processLinkType)
             val newProcessLink = mapper.toNewProcessLink(createRequest, caseDefinitionId)
 

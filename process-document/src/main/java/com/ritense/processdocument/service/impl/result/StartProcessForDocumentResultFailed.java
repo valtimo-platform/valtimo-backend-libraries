@@ -20,7 +20,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 
 import com.ritense.document.domain.impl.JsonSchemaDocument;
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
+import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId;
 import com.ritense.processdocument.service.result.StartProcessForDocumentResult;
 import com.ritense.processdocument.service.result.TransactionalResult;
 import com.ritense.valtimo.contract.result.OperationError;
@@ -50,7 +50,7 @@ public class StartProcessForDocumentResultFailed implements StartProcessForDocum
     }
 
     @Override
-    public Optional<CamundaProcessInstanceId> processInstanceId() {
+    public Optional<OperatonProcessInstanceId> processInstanceId() {
         return Optional.empty();
     }
 

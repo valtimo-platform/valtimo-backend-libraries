@@ -24,8 +24,8 @@ import com.ritense.document.service.DocumentService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.camunda.bpm.engine.TaskService
-import org.camunda.bpm.engine.delegate.DelegateTask
+import org.operaton.bpm.engine.TaskService
+import org.operaton.bpm.engine.delegate.DelegateTask
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import java.util.UUID
@@ -42,8 +42,8 @@ open class CaseAssigneeTaskCreatedListener(
 
     @EventListener(
         condition = """#delegateTask.bpmnModelElementInstance != null
-            && #delegateTask.bpmnModelElementInstance.elementType.typeName == T(org.camunda.bpm.engine.ActivityTypes).TASK_USER_TASK
-            && #delegateTask.eventName == T(org.camunda.bpm.engine.delegate.TaskListener).EVENTNAME_CREATE"""
+            && #delegateTask.bpmnModelElementInstance.elementType.typeName == T(org.operaton.bpm.engine.ActivityTypes).TASK_USER_TASK
+            && #delegateTask.eventName == T(org.operaton.bpm.engine.delegate.TaskListener).EVENTNAME_CREATE"""
     )
     fun notify(delegateTask: DelegateTask) {
         val documentId = JsonSchemaDocumentId.existingId(UUID.fromString(delegateTask.execution.businessKey))

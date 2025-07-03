@@ -64,7 +64,7 @@ import com.ritense.zgw.LoggingConstants.DOCUMENTEN_API
 import com.ritense.zgw.Page
 import com.ritense.zgw.Rsin
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.operaton.bpm.engine.delegate.DelegateExecution
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
 import java.net.URI

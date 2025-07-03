@@ -20,7 +20,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.annotation.RunWithoutAuthorization;
 import com.ritense.document.service.DocumentService;
-import org.camunda.bpm.engine.delegate.DelegateExecution;
+import org.operaton.bpm.engine.delegate.DelegateExecution;
 import org.springframework.transaction.annotation.Transactional;
 
 public class DeadlockService {

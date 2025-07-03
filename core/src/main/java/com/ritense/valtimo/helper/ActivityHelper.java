@@ -22,16 +22,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.camunda.bpm.engine.RepositoryService;
-import org.camunda.bpm.engine.delegate.DelegateTask;
-import org.camunda.bpm.engine.history.HistoricTaskInstance;
-import org.camunda.bpm.engine.rest.dto.history.HistoricTaskInstanceDto;
-import org.camunda.bpm.model.bpmn.BpmnModelException;
-import org.camunda.bpm.model.bpmn.BpmnModelInstance;
-import org.camunda.bpm.model.bpmn.instance.ExtensionElements;
-import org.camunda.bpm.model.bpmn.instance.Task;
-import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties;
-import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperty;
+import org.operaton.bpm.engine.RepositoryService;
+import org.operaton.bpm.engine.delegate.DelegateTask;
+import org.operaton.bpm.engine.history.HistoricTaskInstance;
+import org.operaton.bpm.engine.rest.dto.history.HistoricTaskInstanceDto;
+import org.operaton.bpm.model.bpmn.BpmnModelException;
+import org.operaton.bpm.model.bpmn.BpmnModelInstance;
+import org.operaton.bpm.model.bpmn.instance.ExtensionElements;
+import org.operaton.bpm.model.bpmn.instance.Task;
+import org.operaton.bpm.model.bpmn.instance.operaton.OperatonProperties;
+import org.operaton.bpm.model.bpmn.instance.operaton.OperatonProperty;
 
 public class ActivityHelper {
 
@@ -41,28 +41,28 @@ public class ActivityHelper {
         this.repositoryService = repositoryService;
     }
 
-    public List<CamundaProperty> getCamundaProperties(HistoricTaskInstanceDto historicTaskInstance, String propertyName) {
+    public List<OperatonProperty> getOperatonProperties(HistoricTaskInstanceDto historicTaskInstance, String propertyName) {
         BpmnModelInstance bpmnModelInstance = repositoryService.getBpmnModelInstance(historicTaskInstance.getProcessDefinitionId());
         Task task = bpmnModelInstance.getModelElementById(historicTaskInstance.getTaskDefinitionKey());
-        return getCamundaProperties(task, propertyName);
+        return getOperatonProperties(task, propertyName);
     }
 
-    public List<CamundaProperty> getCamundaProperties(HistoricTaskInstance historicTaskInstance, String propertyName) {
+    public List<OperatonProperty> getOperatonProperties(HistoricTaskInstance historicTaskInstance, String propertyName) {
         BpmnModelInstance bpmnModelInstance = repositoryService.getBpmnModelInstance(historicTaskInstance.getProcessDefinitionId());
         Task task = bpmnModelInstance.getModelElementById(historicTaskInstance.getTaskDefinitionKey());
-        return getCamundaProperties(task, propertyName);
+        return getOperatonProperties(task, propertyName);
     }
 
-    public List<CamundaProperty> getCamundaProperties(Task taskInstance, String propertyName) {
+    public List<OperatonProperty> getOperatonProperties(Task taskInstance, String propertyName) {
         ExtensionElements extensionElements = taskInstance.getExtensionElements();
         if (extensionElements != null) {
-            List<CamundaProperties> camundaExtensionProperties = extensionElements
+            List<OperatonProperties> operatonExtensionProperties = extensionElements
                 .getElementsQuery()
-                .filterByType(CamundaProperties.class)
+                .filterByType(OperatonProperties.class)
                 .list();
 
-            if (camundaExtensionProperties.size() == 1) {
-                return filterProperties(propertyName, camundaExtensionProperties.get(0));
+            if (operatonExtensionProperties.size() == 1) {
+                return filterProperties(propertyName, operatonExtensionProperties.get(0));
             } else {
                 return Collections.emptyList();
             }
@@ -71,37 +71,37 @@ public class ActivityHelper {
         }
     }
 
-    public List<CamundaProperty> getCamundaProperties(DelegateTask delegateTask, String propertyName) {
+    public List<OperatonProperty> getOperatonProperties(DelegateTask delegateTask, String propertyName) {
         try {
-            CamundaProperties camundaExtensionProperties = delegateTask.getBpmnModelElementInstance()
+            OperatonProperties operatonExtensionProperties = delegateTask.getBpmnModelElementInstance()
                 .getExtensionElements()
                 .getElementsQuery()
-                .filterByType(CamundaProperties.class)
+                .filterByType(OperatonProperties.class)
                 .singleResult();
-            return filterProperties(propertyName, camundaExtensionProperties);
+            return filterProperties(propertyName, operatonExtensionProperties);
         } catch (BpmnModelException ex) {
             throw new IllegalStateException("No extension elements found for this task " + delegateTask.getName());
         }
     }
 
-    public Map<String, Object> getCamundaProperties(ExtensionElements bpmnExtensionElements) {
-        Map<String, Object> camundaPropertiesMap = new HashMap<>();
+    public Map<String, Object> getOperatonProperties(ExtensionElements bpmnExtensionElements) {
+        Map<String, Object> operatonPropertiesMap = new HashMap<>();
 
-        Collection<CamundaProperty> camundaProperties = bpmnExtensionElements
+        Collection<OperatonProperty> operatonProperties = bpmnExtensionElements
             .getElementsQuery()
-            .filterByType(CamundaProperties.class)
-            .singleResult().getCamundaProperties();
+            .filterByType(OperatonProperties.class)
+            .singleResult().getOperatonProperties();
 
-        for (CamundaProperty property : camundaProperties) {
-            camundaPropertiesMap.put(property.getAttributeValue("name"), property.getCamundaValue());
+        for (OperatonProperty property : operatonProperties) {
+            operatonPropertiesMap.put(property.getAttributeValue("name"), property.getOperatonValue());
         }
 
-        return camundaPropertiesMap;
+        return operatonPropertiesMap;
     }
 
-    private List<CamundaProperty> filterProperties(String propertyName, CamundaProperties camundaExtensionProperties) {
-        return camundaExtensionProperties.getCamundaProperties().stream()
-            .filter(camundaProperty -> camundaProperty.getCamundaName().equalsIgnoreCase(propertyName))
+    private List<OperatonProperty> filterProperties(String propertyName, OperatonProperties operatonExtensionProperties) {
+        return operatonExtensionProperties.getOperatonProperties().stream()
+            .filter(OperatonProperty -> OperatonProperty.getOperatonName().equalsIgnoreCase(propertyName))
             .collect(Collectors.toList());
     }
 }

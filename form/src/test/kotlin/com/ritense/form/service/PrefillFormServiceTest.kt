@@ -39,8 +39,8 @@ import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.json.patch.operation.AddOperation
 import com.ritense.valtimo.contract.json.patch.operation.Operation
 import com.ritense.valtimo.contract.json.patch.operation.ReplaceOperation
-import com.ritense.valtimo.service.CamundaProcessService
-import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.service.OperatonProcessService
+import com.ritense.valtimo.service.OperatonTaskService
 import com.ritense.valueresolver.ValueResolverService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -58,8 +58,8 @@ class PrefillFormServiceTest : BaseTest() {
     lateinit var prefillFormService: PrefillFormService
     lateinit var documentService: JsonSchemaDocumentService
     lateinit var formDefinitionService: FormIoFormDefinitionService
-    lateinit var camundaProcessService: CamundaProcessService
-    lateinit var taskService: CamundaTaskService
+    lateinit var operatonProcessService: OperatonProcessService
+    lateinit var taskService: OperatonTaskService
     lateinit var formFieldDataResolver: FormFieldDataResolver
     lateinit var processDocumentAssociationService: ProcessDocumentAssociationService
     lateinit var valueResolverService: ValueResolverService
@@ -68,7 +68,7 @@ class PrefillFormServiceTest : BaseTest() {
     fun setUp() {
         documentService = mock()
         formDefinitionService = mock()
-        camundaProcessService = mock()
+        operatonProcessService = mock()
         taskService = mock()
         formFieldDataResolver = mock()
         processDocumentAssociationService = mock()
@@ -77,7 +77,7 @@ class PrefillFormServiceTest : BaseTest() {
         prefillFormService = PrefillFormService(
             documentService,
             formDefinitionService,
-            camundaProcessService,
+            operatonProcessService,
             taskService,
             listOf(formFieldDataResolver),
             processDocumentAssociationService,

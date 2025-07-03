@@ -16,7 +16,7 @@
 
 package com.ritense.valtimo.autoconfiguration
 
-import com.ritense.valtimo.camunda.repository.CamundaTaskRepository
+import com.ritense.valtimo.operaton.repository.OperatonTaskRepository
 import com.ritense.valtimo.dashboard.TaskWidgetDataSource
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -27,6 +27,6 @@ class TaskWidgetAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(TaskWidgetDataSource::class)
     fun taskWidgetDataSource(
-        taskRepository: CamundaTaskRepository
+        taskRepository: OperatonTaskRepository
     ) = TaskWidgetDataSource(taskRepository)
 }

@@ -17,8 +17,8 @@
 package com.ritense.valtimo.web.rest.dto;
 
 import java.util.List;
-import org.camunda.bpm.engine.history.HistoricActivityInstance;
-import org.camunda.bpm.engine.rest.dto.repository.ProcessDefinitionDiagramDto;
+import org.operaton.bpm.engine.history.HistoricActivityInstance;
+import org.operaton.bpm.engine.rest.dto.repository.ProcessDefinitionDiagramDto;
 
 public class ProcessInstanceDiagramDto {
 
