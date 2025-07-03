@@ -37,7 +37,6 @@ import org.operaton.bpm.engine.RuntimeService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.any
@@ -52,8 +51,6 @@ import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
 
-// TODO: Fix all verzoek plugin related things
-@Disabled
 @Transactional
 internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
 
@@ -332,7 +329,10 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
         assertEquals("John Doe", processVariableMap["fullname"])
         assertEquals("objection", processVariableMap["type"])
         assertEquals("999999999", processVariableMap["bsn"])
-        assertEquals("http://localhost:8011/api/v1/objecttypes/107f0b7d-c6f7-4269-85e1-62003310230b", processVariableMap["informatieobjecttype"])
+        assertEquals(
+            "http://localhost:8011/api/v1/objecttypes/107f0b7d-c6f7-4269-85e1-62003310230b",
+            processVariableMap["informatieobjecttype"]
+        )
         assertEquals("[https://example-document-url.com/]", processVariableMap["attachments"].toString())
     }
 
@@ -441,7 +441,10 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
             verzoekPluginEventListener.createZaakFromNotificatie(createEvent())
         }
         //assertions
-        assertEquals("VerzoekObject /record/data/data cannot be found! For verzoek with type 'objection'", exception.message)
+        assertEquals(
+            "VerzoekObject /record/data/data cannot be found! For verzoek with type 'objection'",
+            exception.message
+        )
     }
 
     private fun createObjectWrapper(withMetaData: Boolean, withType: String, withObjectData: Boolean): ObjectWrapper {
