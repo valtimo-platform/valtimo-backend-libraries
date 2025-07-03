@@ -140,6 +140,10 @@ dependencies {
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.junit.jupiter:junit-jupiter-engine"
     testImplementation "org.apache.groovy:groovy-all:${groovyVersion}"
+
+    configurations.all {
+        exclude group: 'org.graalvm.truffle', module: 'truffle-enterprise'
+    }
 }
 
 apply from: "gradle/publishing.gradle"
