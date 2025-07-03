@@ -231,13 +231,6 @@ valtimo:
                 delivery-timeout: "PT0.5S"
             polling.rate: "PT15M"
 
-    authorization:
-        objectenapi:
-            enabled: true
-        dashboard:
-            enabled: true
-        zgwDocuments:
-            enabled:true
     logging:
         retentionInMinutes: 1440
     docker:
