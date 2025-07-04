@@ -50,6 +50,38 @@
             "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
             "action": "delete",
             "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "action": "view_list",
+            "roleKey": "ROLE_DUPLICATE_TEST",
+            "conditions": [
+                {
+                    "type": "field",
+                    "field": "documentDefinitionId.name",
+                    "operator": "!=",
+                    "value": "house"
+                }
+            ]
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "action": "view_list",
+            "roleKey": "ROLE_DUPLICATE_TEST",
+            "conditions": [
+                {
+                    "type": "container",
+                    "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocumentDefinition",
+                    "conditions": [
+                        {
+                            "type": "field",
+                            "field": "id.name",
+                            "operator": "==",
+                            "value": "person"
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }
