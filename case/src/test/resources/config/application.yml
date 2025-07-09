@@ -28,10 +28,12 @@ spring-actuator:
   password: test
 
 valtimo:
+  versioning:
+    enabled: false
   plugin:
     encryption-secret: "abcdefghijklmnop"
 
-camunda:
+operaton:
     bpm:
         history-level: audit
         generic-properties:

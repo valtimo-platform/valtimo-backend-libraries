@@ -20,21 +20,26 @@ import com.ritense.logging.withLoggingContext
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.service.PluginService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
-import org.camunda.bpm.engine.ActivityTypes
-import org.camunda.bpm.engine.delegate.DelegateExecution
-import org.camunda.bpm.engine.delegate.ExecutionListener
-import org.camunda.bpm.extension.reactor.bus.CamundaSelector
-import org.camunda.bpm.extension.reactor.spring.listener.ReactorExecutionListener
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import org.operaton.bpm.engine.delegate.DelegateExecution
+import org.springframework.context.event.EventListener
+import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
-@CamundaSelector(type = ActivityTypes.TASK_SERVICE, event = ExecutionListener.EVENTNAME_START)
-open class ProcessLinkServiceTaskStartListener(
+@Component
+@SkipComponentScan
+class ProcessLinkServiceTaskStartListener(
     private val pluginProcessLinkRepository: PluginProcessLinkRepository,
     private val pluginService: PluginService,
-) : ReactorExecutionListener() {
+) {
 
     @Transactional
-    override fun notify(execution: DelegateExecution) {
+    @EventListener(
+        condition = """#execution.bpmnModelElementInstance != null
+            && #execution.bpmnModelElementInstance.elementType.typeName == T(org.operaton.bpm.engine.ActivityTypes).TASK_SERVICE
+            && #execution.eventName == T(org.operaton.bpm.engine.delegate.ExecutionListener).EVENTNAME_START"""
+    )
+    fun notify(execution: DelegateExecution) {
         withLoggingContext("com.ritense.document.domain.impl.JsonSchemaDocument", execution.processBusinessKey) {
             val pluginProcessLinks = pluginProcessLinkRepository.findByProcessDefinitionIdAndActivityIdAndActivityType(
                 execution.processDefinitionId,

@@ -31,13 +31,14 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="2" author="Ritense">
-        <addForeignKeyConstraint
-            baseTableName="zgw_document_trefwoord"
-            baseColumnNames="case_definition_name"
-            constraintName="zgw_document_trefwoord_case_definition_name_fk"
-            referencedTableName="case_definition"
-            referencedColumnNames="case_definition_name" />
+    <changeSet id="2" author="Ritense" runOnChange="true">
+        <empty/>
+        <!-- changeset is empty after valtimo 13 changes -->
+    </changeSet>
+
+    <changeSet id="3" author="Ritense" runOnChange="true">
+        <empty/>
+        <!-- changeset is empty after valtimo 13 changes -->
     </changeSet>
 
 </databaseChangeLog>

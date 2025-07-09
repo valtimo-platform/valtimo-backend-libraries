@@ -17,11 +17,11 @@
 package com.ritense.valtimo.web.rest;
 
 import com.ritense.authorization.AuthorizationContext;
-import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
-import com.ritense.valtimo.camunda.domain.CamundaTask;
-import com.ritense.valtimo.camunda.dto.CamundaTaskDto;
-import com.ritense.valtimo.service.CamundaProcessService;
-import com.ritense.valtimo.service.CamundaTaskService;
+import com.ritense.valtimo.operaton.domain.OperatonProcessDefinition;
+import com.ritense.valtimo.operaton.domain.OperatonTask;
+import com.ritense.valtimo.operaton.dto.OperatonTaskDto;
+import com.ritense.valtimo.service.OperatonProcessService;
+import com.ritense.valtimo.service.OperatonTaskService;
 import com.ritense.valtimo.service.util.FormUtils;
 import com.ritense.valtimo.web.rest.dto.CustomTaskDto;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,40 +29,40 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
-import org.camunda.bpm.engine.FormService;
-import org.camunda.bpm.engine.form.FormField;
-import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.operaton.bpm.engine.FormService;
+import org.operaton.bpm.engine.form.FormField;
+import org.operaton.bpm.engine.runtime.ProcessInstance;
 
 public abstract class AbstractTaskResource {
 
     final FormService formService;
-    final CamundaTaskService camundaTaskService;
-    private final CamundaProcessService camundaProcessService;
+    final OperatonTaskService operatonTaskService;
+    private final OperatonProcessService operatonProcessService;
 
     AbstractTaskResource(
         final FormService formService,
-        final CamundaTaskService camundaTaskService,
-        final CamundaProcessService camundaProcessService
+        final OperatonTaskService operatonTaskService,
+        final OperatonProcessService operatonProcessService
     ) {
         this.formService = formService;
-        this.camundaTaskService = camundaTaskService;
-        this.camundaProcessService = camundaProcessService;
+        this.operatonTaskService = operatonTaskService;
+        this.operatonProcessService = operatonProcessService;
     }
 
     public CustomTaskDto createCustomTaskDto(String id, HttpServletRequest request) {
-        final CamundaTask task = camundaTaskService.findTaskById(id);
-        CamundaTaskDto taskDto = CamundaTaskDto.of(task);
+        final OperatonTask task = operatonTaskService.findTaskById(id);
+        OperatonTaskDto taskDto = OperatonTaskDto.of(task);
 
         ProcessInstance processInstance = AuthorizationContext
             .runWithoutAuthorization(
-                () -> camundaProcessService.findProcessInstanceById(taskDto.getProcessInstanceId()).orElseThrow()
+                () -> operatonProcessService.findProcessInstanceById(taskDto.getProcessInstanceId()).orElseThrow()
             );
-        CamundaProcessDefinition processDefinition = AuthorizationContext
+        OperatonProcessDefinition processDefinition = AuthorizationContext
             .runWithoutAuthorization(
-                () -> camundaProcessService.findProcessDefinitionById(processInstance.getProcessDefinitionId())
+                () -> operatonProcessService.findProcessDefinitionById(processInstance.getProcessDefinitionId())
             );
 
-        Map<String, Object> variables = camundaTaskService.getVariables(id);
+        Map<String, Object> variables = operatonTaskService.getVariables(id);
         List<FormField> taskFormData = new ArrayList<>();
 
         String formLocation = null;

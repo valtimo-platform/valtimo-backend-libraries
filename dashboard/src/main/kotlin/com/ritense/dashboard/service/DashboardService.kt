@@ -31,8 +31,7 @@ import com.ritense.dashboard.web.rest.dto.SingleWidgetConfigurationUpdateRequest
 import com.ritense.dashboard.web.rest.dto.WidgetConfigurationUpdateRequestDto
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import mu.KLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -49,25 +48,20 @@ class DashboardService(
     private val widgetConfigurationRepository: WidgetConfigurationRepository,
     private val userManagementService: UserManagementService,
     private val widgetDataSourceResolver: WidgetDataSourceResolver,
-    private val authorizationService: AuthorizationService,
-    private val authorizationEnabled: Boolean
+    private val authorizationService: AuthorizationService
 ) {
 
     @Transactional(readOnly = true)
     fun getDashboards(): List<Dashboard> {
-        return if(authorizationEnabled) {
-            val spec = authorizationService.getAuthorizationSpecification(
-                EntityAuthorizationRequest(
-                    Dashboard::class.java,
-                    DashboardActionProvider.VIEW_LIST
-                ),
-                null
-            )
+        val spec = authorizationService.getAuthorizationSpecification(
+            EntityAuthorizationRequest(
+                Dashboard::class.java,
+                DashboardActionProvider.VIEW_LIST
+            ),
+            null
+        )
 
-            dashboardRepository.findAll(SpecificationHelper.orderByOrder(spec))
-        } else {
-            dashboardRepository.findAllByOrderByOrder()
-        }
+        return dashboardRepository.findAll(SpecificationHelper.orderByOrder(spec))
     }
 
     @Transactional(readOnly = true)
@@ -311,18 +305,16 @@ class DashboardService(
     }
 
     private fun checkAuthorization(dashboard: Dashboard) {
-        if(authorizationEnabled) {
-            authorizationService.requirePermission(
-                EntityAuthorizationRequest(
-                    Dashboard::class.java,
-                    DashboardActionProvider.VIEW,
-                    dashboard
-                )
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                Dashboard::class.java,
+                DashboardActionProvider.VIEW,
+                dashboard
             )
-        }
+        )
     }
 
     companion object {
-        private val logger: KLogger = KotlinLogging.logger {}
+        private val logger = KotlinLogging.logger {}
     }
 }

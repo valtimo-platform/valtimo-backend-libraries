@@ -1,0 +1,6 @@
+{
+    "zaakTypeUrl": "http://localhost:8001/catalogi/api/v1/zaaktypen/744ca059-f412-49d4-8963-5800e4afd486",
+    "zakenApiPluginConfigurationId": "3079d6fe-42e3-4f8f-a9db-52ce2507b7ee",
+    "createWithDossier": true,
+    "rsin": "000000000"
+}

@@ -1,0 +1,8 @@
+{
+    "key": "portal-person",
+    "name": "Person",
+    "versionTag": "1.0.0",
+    "final": true,
+    "canHaveAssignee": true,
+    "autoAssignTasks": true
+}

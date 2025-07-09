@@ -42,4 +42,14 @@ class FieldsCaseWidget(
     val properties: FieldsWidgetProperties
 ) : CaseWidgetTabWidget(
     id, title, order, width, highContrast, actions
-)
+) {
+    override fun copy(id: CaseWidgetTabWidgetId) = FieldsCaseWidget(
+        id = id,
+        title = title,
+        order = order,
+        width = width,
+        highContrast = highContrast,
+        actions = actions,
+        properties = properties
+    )
+}

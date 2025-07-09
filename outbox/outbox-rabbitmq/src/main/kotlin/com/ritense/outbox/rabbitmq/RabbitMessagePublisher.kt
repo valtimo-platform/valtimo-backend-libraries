@@ -19,8 +19,7 @@ package com.ritense.outbox.rabbitmq
 import com.ritense.outbox.OutboxMessage
 import com.ritense.outbox.publisher.MessagePublisher
 import com.ritense.outbox.publisher.MessagePublishingFailed
-import mu.KLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.amqp.core.Message
 import org.springframework.amqp.rabbit.connection.CorrelationData
 import org.springframework.amqp.rabbit.core.RabbitTemplate
@@ -58,7 +57,7 @@ class RabbitMessagePublisher(
         rabbitTemplate.convertAndSend(exchange, routingKey, message.message, correlationData)
 
         try {
-            val result = correlationData.future.get(deliveryTimeout.toMillis(), TimeUnit.MILLISECONDS)
+            val result = correlationData.future[deliveryTimeout.toMillis(), TimeUnit.MILLISECONDS]
             if (!result!!.isAck) {
                 throw MessagePublishingFailed("Outbox message was not acknowledged: reason=${result.reason}, routingKey=${routingKey}, msgId=${message.id}, correlationId= ${correlationData.id}\"")
             } else if (correlationData.returned != null) {
@@ -71,6 +70,6 @@ class RabbitMessagePublisher(
     }
 
     companion object {
-        private val logger: KLogger = KotlinLogging.logger {}
+        private val logger = KotlinLogging.logger {}
     }
 }

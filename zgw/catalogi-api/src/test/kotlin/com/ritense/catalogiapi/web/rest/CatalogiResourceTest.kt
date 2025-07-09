@@ -16,6 +16,9 @@
 
 package com.ritense.catalogiapi.web.rest
 
+import com.ritense.case.service.CaseDefinitionService
+import com.ritense.case_.domain.definition.CaseDefinition
+import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.catalogiapi.BaseTest
 import com.ritense.catalogiapi.domain.Besluittype
 import com.ritense.catalogiapi.domain.Eigenschap
@@ -25,9 +28,14 @@ import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.catalogiapi.domain.Specificatie
 import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.service.CatalogiService
+import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
+import com.ritense.document.service.DocumentService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.springframework.http.MediaType
@@ -38,17 +46,28 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.net.URI
 import java.nio.charset.StandardCharsets
+import java.util.Optional
+import java.util.UUID
 
 internal class CatalogiResourceTest : BaseTest() {
 
     lateinit var mockMvc: MockMvc
     lateinit var catalogiService: CatalogiService
     lateinit var catalogiResource: CatalogiResource
+    lateinit var activeCaseDefinitionService: ActiveCaseDefinitionService
+    lateinit var caseDefinitionService: CaseDefinitionService
+    lateinit var documentService: DocumentService
+
+    val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
 
     @BeforeEach
     fun init() {
         catalogiService = mock()
-        catalogiResource = CatalogiResource(catalogiService)
+        activeCaseDefinitionService = mock()
+        caseDefinitionService = mock()
+        documentService = mock()
+        catalogiResource =
+            CatalogiResource(catalogiService, activeCaseDefinitionService, caseDefinitionService, documentService)
 
         mockMvc = MockMvcBuilders
             .standaloneSetup(catalogiResource)
@@ -56,8 +75,8 @@ internal class CatalogiResourceTest : BaseTest() {
     }
 
     @Test
-    fun `should get documenttypes for documentDefinitionName`() {
-        val documentDefinitionName = "case-name"
+    fun `should get documenttypes for caseDefinitionId`() {
+        val caseDefinitionKey = caseDefinitionId.key
 
         val type1 = mock<Informatieobjecttype>()
         whenever(type1.url).thenReturn(URI("http://example.com/1"))
@@ -67,12 +86,17 @@ internal class CatalogiResourceTest : BaseTest() {
         whenever(type2.url).thenReturn(URI("http://example.com/2"))
         whenever(type2.omschrijving).thenReturn("name 2")
 
-        whenever(catalogiService.getInformatieobjecttypes(documentDefinitionName))
+        val caseDefinition = mock<CaseDefinition>()
+        whenever(caseDefinition.id).thenReturn(caseDefinitionId)
+        whenever(caseDefinitionService.getCaseDefinition(any()))
+            .thenReturn(caseDefinition)
+
+        whenever(catalogiService.getInformatieobjecttypes(caseDefinitionId))
             .thenReturn(listOf(type1, type2))
 
         mockMvc
             .perform(
-                MockMvcRequestBuilders.get("/api/v1/documentdefinition/$documentDefinitionName/zaaktype/documenttype")
+                MockMvcRequestBuilders.get("/api/v1/case-definition/$caseDefinitionKey/version/${caseDefinitionId.versionTag}/zaaktype/documenttype")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -89,8 +113,47 @@ internal class CatalogiResourceTest : BaseTest() {
     }
 
     @Test
-    fun `should get roltypes for caseDefinitionName`() {
-        val caseDefinitionName = "case-name"
+    fun `should get documenttypes for jsonSchemaDocument`() {
+        val documentId = UUID.randomUUID()
+        val documentDefinitionId = JsonSchemaDocumentDefinitionId.of("test", caseDefinitionId)
+
+        val type1 = mock<Informatieobjecttype>()
+        whenever(type1.url).thenReturn(URI("http://example.com/1"))
+        whenever(type1.omschrijving).thenReturn("name 1")
+
+        val type2 = mock<Informatieobjecttype>()
+        whenever(type2.url).thenReturn(URI("http://example.com/2"))
+        whenever(type2.omschrijving).thenReturn("name 2")
+
+        val document = mock<Document>()
+        whenever(document.definitionId()).thenReturn(documentDefinitionId)
+        whenever(documentService.findBy(any()))
+            .thenReturn(Optional.of(document))
+
+        whenever(catalogiService.getInformatieobjecttypes(caseDefinitionId))
+            .thenReturn(listOf(type1, type2))
+
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.get("/api/v1/document/$documentId/zaaktype/documenttype")
+                    .characterEncoding(StandardCharsets.UTF_8.name())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .accept(MediaType.APPLICATION_JSON_VALUE)
+            )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isArray)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.*", Matchers.hasSize<Int>(2)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[0].url").value("http://example.com/1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[1].url").value("http://example.com/2"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[0].name").value("name 1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[1].name").value("name 2"))
+    }
+
+    @Test
+    fun `should get roltypes for caseDefinitionId`() {
+        val caseDefinitionKey = caseDefinitionId.key
 
         val type1 = mock<Roltype>()
         whenever(type1.url).thenReturn(URI("http://example.com/1"))
@@ -100,12 +163,17 @@ internal class CatalogiResourceTest : BaseTest() {
         whenever(type2.url).thenReturn(URI("http://example.com/2"))
         whenever(type2.omschrijving).thenReturn("name 2")
 
-        whenever(catalogiService.getRoltypes(caseDefinitionName))
+        val caseDefinition = mock<CaseDefinition>()
+        whenever(caseDefinition.id).thenReturn(caseDefinitionId)
+        whenever(activeCaseDefinitionService.getActiveCaseDefinition(caseDefinitionKey))
+            .thenReturn(caseDefinition)
+
+        whenever(catalogiService.getRoltypes(caseDefinitionId))
             .thenReturn(listOf(type1, type2))
 
         mockMvc
             .perform(
-                MockMvcRequestBuilders.get("/api/v1/case-definition/$caseDefinitionName/zaaktype/roltype")
+                MockMvcRequestBuilders.get("/api/v1/case-definition/$caseDefinitionKey/zaaktype/roltype")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -122,8 +190,8 @@ internal class CatalogiResourceTest : BaseTest() {
     }
 
     @Test
-    fun `should get statustypen for caseDefinitionName`() {
-        val caseDefinitionName = "case-name"
+    fun `should get statustypen for caseDefinitionId`() {
+        val caseDefinitionKey = "case-name"
 
         val type1 = mock<Statustype>()
         whenever(type1.url).thenReturn(URI("http://example.com/1"))
@@ -133,12 +201,17 @@ internal class CatalogiResourceTest : BaseTest() {
         whenever(type2.url).thenReturn(URI("http://example.com/2"))
         whenever(type2.omschrijving).thenReturn("name 2")
 
-        whenever(catalogiService.getStatustypen(caseDefinitionName))
+        val caseDefinition = mock<CaseDefinition>()
+        whenever(caseDefinition.id).thenReturn(caseDefinitionId)
+        whenever(caseDefinitionService.getCaseDefinition(any()))
+            .thenReturn(caseDefinition)
+
+        whenever(catalogiService.getStatustypen(caseDefinitionId))
             .thenReturn(listOf(type1, type2))
 
         mockMvc
             .perform(
-                MockMvcRequestBuilders.get("/api/v1/case-definition/$caseDefinitionName/zaaktype/statustype")
+                MockMvcRequestBuilders.get("/api/v1/case-definition/$caseDefinitionKey/version/${caseDefinitionId.versionTag}/zaaktype/statustype")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -155,8 +228,8 @@ internal class CatalogiResourceTest : BaseTest() {
     }
 
     @Test
-    fun `should get resultaattypen for caseDefinitionName`() {
-        val caseDefinitionName = "case-name"
+    fun `should get resultaattypen for caseDefinitionId`() {
+        val caseDefinitionKey = caseDefinitionId.key
 
         val type1 = mock<Resultaattype>()
         whenever(type1.url).thenReturn(URI("http://example.com/1"))
@@ -166,12 +239,17 @@ internal class CatalogiResourceTest : BaseTest() {
         whenever(type2.url).thenReturn(URI("http://example.com/2"))
         whenever(type2.omschrijving).thenReturn("name 2")
 
-        whenever(catalogiService.getResultaattypen(caseDefinitionName))
+        val caseDefinition = mock<CaseDefinition>()
+        whenever(caseDefinition.id).thenReturn(caseDefinitionId)
+        whenever(caseDefinitionService.getCaseDefinition(any()))
+            .thenReturn(caseDefinition)
+
+        whenever(catalogiService.getResultaattypen(caseDefinitionId))
             .thenReturn(listOf(type1, type2))
 
         mockMvc
             .perform(
-                MockMvcRequestBuilders.get("/api/v1/case-definition/$caseDefinitionName/zaaktype/resultaattype")
+                MockMvcRequestBuilders.get("/api/v1/case-definition/$caseDefinitionKey/version/${caseDefinitionId.versionTag}/zaaktype/resultaattype")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -188,8 +266,8 @@ internal class CatalogiResourceTest : BaseTest() {
     }
 
     @Test
-    fun `should get besluittypen for caseDefinitionName`() {
-        val caseDefinitionName = "case-name"
+    fun `should get besluittypen for caseDefinitionId`() {
+        val caseDefinitionKey = caseDefinitionId.key
 
         val type1 = mock<Besluittype>()
         whenever(type1.url).thenReturn(URI("http://example.com/1"))
@@ -199,12 +277,17 @@ internal class CatalogiResourceTest : BaseTest() {
         whenever(type2.url).thenReturn(URI("http://example.com/2"))
         whenever(type2.omschrijving).thenReturn("name 2")
 
-        whenever(catalogiService.getBesluittypen(caseDefinitionName))
+        val caseDefinition = mock<CaseDefinition>()
+        whenever(caseDefinition.id).thenReturn(caseDefinitionId)
+        whenever(caseDefinitionService.getCaseDefinition(any()))
+            .thenReturn(caseDefinition)
+
+        whenever(catalogiService.getBesluittypen(caseDefinitionId))
             .thenReturn(listOf(type1, type2))
 
         mockMvc
             .perform(
-                MockMvcRequestBuilders.get("/api/v1/case-definition/$caseDefinitionName/zaaktype/besluittype")
+                MockMvcRequestBuilders.get("/api/v1/case-definition/$caseDefinitionKey/version/${caseDefinitionId.versionTag}/zaaktype/besluittype")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -250,8 +333,8 @@ internal class CatalogiResourceTest : BaseTest() {
     }
 
     @Test
-    fun `should get eigenschappen`() {
-        val caseDefinitionName = "test-case"
+    fun `should get eigenschappen for caseDefinitionId`() {
+        val caseDefinitionKey = caseDefinitionId.key
 
         val eigenschappen = IntRange(1, 2).map { n ->
             Eigenschap(
@@ -268,10 +351,19 @@ internal class CatalogiResourceTest : BaseTest() {
             )
         }
 
-        whenever(catalogiService.getEigenschappen(caseDefinitionName)).thenReturn(eigenschappen)
+        val caseDefinition = mock<CaseDefinition>()
+        whenever(caseDefinition.id).thenReturn(caseDefinitionId)
+        whenever(caseDefinitionService.getCaseDefinition(any()))
+            .thenReturn(caseDefinition)
+
+        whenever(catalogiService.getEigenschappen(caseDefinitionId)).thenReturn(eigenschappen)
 
         mockMvc.perform(
-            MockMvcRequestBuilders.get("/api/management/v1/case-definition/{caseDefinitionName}/catalogi-eigenschappen", caseDefinitionName)
+            MockMvcRequestBuilders.get(
+                "/api/management/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/catalogi-eigenschappen",
+                caseDefinitionKey,
+                caseDefinitionId.versionTag
+            )
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)

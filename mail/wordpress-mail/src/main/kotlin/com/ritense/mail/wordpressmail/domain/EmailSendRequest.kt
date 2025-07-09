@@ -19,7 +19,7 @@ package com.ritense.mail.wordpressmail.domain
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import com.ritense.valtimo.contract.mail.model.value.Recipient
 import com.ritense.valtimo.contract.mail.model.value.Subject
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 data class EmailSendRequest(
     val variables: Map<String, Any>?,

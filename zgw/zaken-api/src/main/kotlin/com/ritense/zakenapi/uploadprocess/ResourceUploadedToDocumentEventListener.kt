@@ -23,14 +23,13 @@ import com.ritense.resource.authorization.ResourcePermissionActionProvider.Compa
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.domain.TemporaryResourceUploadedEvent
 import com.ritense.resource.service.TemporaryResourceStorageService
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.event.EventListener
 
 class ResourceUploadedToDocumentEventListener(
     private val resourceService: TemporaryResourceStorageService,
     private val uploadProcessService: UploadProcessService,
     private val authorizationService: AuthorizationService,
-    private val authorizationEnabled: Boolean = false,
 ) {
 
     @EventListener(TemporaryResourceUploadedEvent::class)
@@ -41,15 +40,13 @@ class ResourceUploadedToDocumentEventListener(
         val caseId = metadata[MetadataType.DOCUMENT_ID.key] as String?
 
         if (caseId != null) {
-            if (authorizationEnabled) {
-                authorizationService.requirePermission(
-                    EntityAuthorizationRequest(
-                        ResourcePermission::class.java,
-                        CREATE,
-                        ResourcePermission()
-                    )
+            authorizationService.requirePermission(
+                EntityAuthorizationRequest(
+                    ResourcePermission::class.java,
+                    CREATE,
+                    ResourcePermission()
                 )
-            }
+            )
 
             logger.debug { "Uploading resource to document: ${event.resourceId}" }
             uploadProcessService.startUploadResourceProcess(caseId, event.resourceId)

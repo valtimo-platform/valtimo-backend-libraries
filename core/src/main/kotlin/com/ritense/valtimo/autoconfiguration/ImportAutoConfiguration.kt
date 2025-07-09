@@ -17,9 +17,11 @@
 
 package com.ritense.valtimo.autoconfiguration
 
-import com.ritense.valtimo.importer.CamundaDecisionDefinitionImporter
-import com.ritense.valtimo.importer.CamundaProcessDefinitionImporter
-import com.ritense.valtimo.service.CamundaProcessService
+import com.ritense.valtimo.importer.OperatonDecisionDefinitionImporter
+import com.ritense.valtimo.importer.OperatonProcessDefinitionImporter
+import com.ritense.valtimo.importer.GlobalProcessDefinitionImporter
+import com.ritense.valtimo.importer.GlobalDecisionDefinitionImporter
+import com.ritense.valtimo.service.OperatonProcessService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -29,14 +31,26 @@ class ImportAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    fun camundaProcessDefinitionImporter(
-        camundaProcessService: CamundaProcessService
-    ) = CamundaProcessDefinitionImporter(camundaProcessService)
+    fun operatonProcessDefinitionImporter(
+        operatonProcessService: OperatonProcessService
+    ) = OperatonProcessDefinitionImporter(operatonProcessService)
 
     @Bean
     @ConditionalOnMissingBean
-    fun camundaDecisionDefinitionImporter(
-        camundaProcessService: CamundaProcessService
-    ) = CamundaDecisionDefinitionImporter(camundaProcessService)
+    fun operatonDecisionDefinitionImporter(
+        operatonProcessService: OperatonProcessService
+    ) = OperatonDecisionDefinitionImporter(operatonProcessService)
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun globalProcessDefinitionImporter(
+        operatonProcessService: OperatonProcessService
+    ) = GlobalProcessDefinitionImporter(operatonProcessService)
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun systemDecisionDefinitionImporter(
+        operatonProcessService: OperatonProcessService
+    ) = GlobalDecisionDefinitionImporter(operatonProcessService)
 
 }

@@ -21,8 +21,8 @@ import com.ritense.case.domain.CaseListColumnId
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface CaseDefinitionListColumnRepository : JpaRepository<CaseListColumn, CaseListColumnId> {
-    fun existsByIdCaseDefinitionNameAndIdKey(caseDefinitionName: String, key: String): Boolean
-    fun findByIdCaseDefinitionNameOrderByOrderAsc(caseDefinitionName: String): List<CaseListColumn>
-    fun deleteByIdCaseDefinitionNameAndIdKey(caseDefinitionName: String, key: String)
-    fun countByIdCaseDefinitionName(caseDefinitionName: String): Int
+    fun existsByIdCaseDefinitionKeyAndIdKey(caseDefinitionKey: String, key: String): Boolean
+    fun findByIdCaseDefinitionKeyOrderByOrderAsc(caseDefinitionKey: String): List<CaseListColumn>
+    fun deleteByIdCaseDefinitionKeyAndIdKey(caseDefinitionKey: String, key: String)
+    fun countByIdCaseDefinitionKey(caseDefinitionKey: String): Int
 }

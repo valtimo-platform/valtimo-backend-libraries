@@ -54,13 +54,14 @@ import com.ritense.plugin.web.rest.result.PluginProcessLinkResultDto
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valueresolver.ValueResolverService
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.ConstraintViolationException
 import jakarta.validation.ValidationException
 import jakarta.validation.Validator
-import mu.KotlinLogging
-import org.camunda.bpm.engine.delegate.DelegateExecution
-import org.camunda.bpm.engine.delegate.DelegateTask
+import org.operaton.bpm.engine.delegate.DelegateExecution
+import org.operaton.bpm.engine.delegate.DelegateTask
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.core.env.Environment
 import org.springframework.data.repository.findByIdOrNull
@@ -87,7 +88,8 @@ class PluginService(
     private val validator: Validator,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val encryptionService: EncryptionService,
-    private val environment: Environment
+    private val environment: Environment,
+    private val caseDefinitionChecker: CaseDefinitionChecker,
 ) {
 
     fun getObjectMapper(): ObjectMapper {
@@ -315,7 +317,7 @@ class PluginService(
 
     @Deprecated("Marked for removal since 10.6.0", ReplaceWith("processLinkService.getProcessLinks(i,j)"))
     fun getProcessLinks(
-        @LoggableResource("com.ritense.valtimo.camunda.domain.CamundaProcessDefinition") processDefinitionId: String,
+        @LoggableResource("com.ritense.valtimo.operaton.domain.OperatonProcessDefinition") processDefinitionId: String,
         activityId: String
     ): List<PluginProcessLinkResultDto> {
         return pluginProcessLinkRepository.findByProcessDefinitionIdAndActivityId(processDefinitionId, activityId)
@@ -337,7 +339,7 @@ class PluginService(
         if (getProcessLinks(processLink.processDefinitionId, processLink.activityId).isNotEmpty()) {
             throw ValidationException("A process-link for this process-definition and activity already exists!")
         }
-
+        caseDefinitionChecker.assertCanUpdateGlobalConfiguration()
         val newProcessLink = PluginProcessLink(
             id = PluginProcessLinkId.newId(),
             processDefinitionId = processLink.processDefinitionId,
@@ -352,6 +354,7 @@ class PluginService(
 
     @Deprecated("Marked for removal since 10.6.0", ReplaceWith("processLinkService.updateProcessLink(i)"))
     fun updateProcessLink(processLink: PluginProcessLinkUpdateDto) {
+        caseDefinitionChecker.assertCanUpdateGlobalConfiguration()
         withLoggingContext(ProcessLink::class, processLink.id) {
             val link = pluginProcessLinkRepository.getById(
                 PluginProcessLinkId.existingId(processLink.id)
@@ -368,6 +371,7 @@ class PluginService(
     fun deleteProcessLink(
         @LoggableResource(resourceType = ProcessLink::class) id: UUID
     ) {
+        caseDefinitionChecker.assertCanUpdateGlobalConfiguration()
         pluginProcessLinkRepository.deleteById(PluginProcessLinkId.existingId(id))
     }
 
@@ -471,7 +475,7 @@ class PluginService(
         task: DelegateTask,
         actionProperties: ObjectNode?
     ): Array<Any?> {
-        return withLoggingContext("com.ritense.valtimo.camunda.domain.CamundaTask", task.id) {
+        return withLoggingContext("com.ritense.valtimo.operaton.domain.OperatonTask", task.id) {
 
             val actionParamValueMap = resolveActionParamValues(task, method, actionProperties)
 
@@ -526,7 +530,7 @@ class PluginService(
         method: Method,
         actionProperties: ObjectNode?
     ): Map<Parameter, Any> {
-        return withLoggingContext("com.ritense.valtimo.camunda.domain.CamundaTask", task.id) {
+        return withLoggingContext("com.ritense.valtimo.operaton.domain.OperatonTask", task.id) {
 
             if (actionProperties == null) {
                 return@withLoggingContext mapOf()

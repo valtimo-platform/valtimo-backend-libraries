@@ -23,13 +23,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ritense.valtimo.camunda.repository.CustomRepositoryServiceImpl;
+import com.ritense.valtimo.operaton.repository.CustomRepositoryServiceImpl;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.domain.process.event.ProcessDefinitionDeletedEvent;
 import java.io.IOException;
-import org.camunda.bpm.engine.impl.cmd.GetDeployedProcessDefinitionCmd;
-import org.camunda.bpm.engine.impl.interceptor.CommandExecutor;
-import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.operaton.bpm.engine.impl.cmd.GetDeployedProcessDefinitionCmd;
+import org.operaton.bpm.engine.impl.interceptor.CommandExecutor;
+import org.operaton.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

@@ -17,10 +17,10 @@
 
 package com.ritense.valtimo.autoconfiguration
 
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
-import com.ritense.valtimo.export.DecisionDefinitionExporter
-import com.ritense.valtimo.export.ProcessDefinitionExporter
-import org.camunda.bpm.engine.RepositoryService
+import com.ritense.valtimo.operaton.service.OperatonRepositoryService
+import com.ritense.valtimo.exporter.DecisionDefinitionExporter
+import com.ritense.valtimo.exporter.ProcessDefinitionExporter
+import org.operaton.bpm.engine.RepositoryService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -31,9 +31,9 @@ class ExportAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ProcessDefinitionExporter::class)
     fun processDefinitionExporter(
-        camundaRepositoryService: CamundaRepositoryService,
+        operatonRepositoryService: OperatonRepositoryService,
         repositoryService: RepositoryService
-    ) = ProcessDefinitionExporter(camundaRepositoryService, repositoryService)
+    ) = ProcessDefinitionExporter(operatonRepositoryService, repositoryService)
 
     @Bean
     @ConditionalOnMissingBean(DecisionDefinitionExporter::class)

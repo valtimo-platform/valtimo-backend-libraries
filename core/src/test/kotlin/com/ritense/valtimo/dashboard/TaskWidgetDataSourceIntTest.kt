@@ -17,13 +17,13 @@
 package com.ritense.document.dashboard
 
 import com.ritense.valtimo.BaseIntegrationTest
-import com.ritense.authorization.UserManagementServiceHolder
+import com.ritense.valtimo.contract.authorization.UserManagementServiceHolder
 import com.ritense.valtimo.contract.dashboard.QueryCondition
 import com.ritense.valtimo.contract.repository.ExpressionOperator
 import com.ritense.valtimo.dashboard.TaskCountDataSourceProperties
 import com.ritense.valtimo.dashboard.TaskWidgetDataSource
 import org.assertj.core.api.Assertions.assertThat
-import org.camunda.bpm.engine.task.Task
+import org.operaton.bpm.engine.task.Task
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
@@ -46,8 +46,8 @@ class TaskWidgetDataSourceIntTest @Autowired constructor(
         whenever(userManagementService.currentUser.email)
             .thenReturn(mockedUserEmail)
 
-        whenever(userManagementService.currentUser.userIdentifier)
-            .thenReturn(mockedUserIdentifier)
+        whenever(userManagementService.currentUser.username)
+            .thenReturn(mockedUsername)
     }
 
     @Test
@@ -139,7 +139,7 @@ class TaskWidgetDataSourceIntTest @Autowired constructor(
     fun `should support current user criteria`() {
         createTask(mockedUserId)
         createTask(mockedUserEmail)
-        createTask(mockedUserIdentifier)
+        createTask(mockedUsername)
 
         val properties1 = TaskCountDataSourceProperties(
             queryConditions = listOf(
@@ -157,7 +157,7 @@ class TaskWidgetDataSourceIntTest @Autowired constructor(
                 QueryCondition(
                     "task:name",
                     ExpressionOperator.EQUAL_TO,
-                    "\${currentUserIdentifier}"
+                    "\${currentUsername}"
                 )
             )
         )
@@ -187,17 +187,17 @@ class TaskWidgetDataSourceIntTest @Autowired constructor(
         name: String? = "Test",
         assignee: String = defaultAssignee,
     ) {
-        val task: Task = camundaTaskService.newTask()
+        val task: Task = operatonTaskService.newTask()
         task.setName(name)
         task.setAssignee(assignee)
 
-        camundaTaskService.saveTask(task)
+        operatonTaskService.saveTask(task)
     }
 
     companion object {
         private val mockedUserId = "mockUserId"
         private val mockedUserEmail = "mockUserEmail"
-        private val mockedUserIdentifier = "mockUserIdentifier"
+        private val mockedUsername = "mockUsername"
         private val defaultAssignee = "test@test.com"
     }
 }

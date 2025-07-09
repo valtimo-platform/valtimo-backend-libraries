@@ -16,21 +16,21 @@
 
 package com.ritense.valtimo.web.rest;
 
-import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byEndTimeAfter;
-import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byEndTimeBefore;
-import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byFinished;
-import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byProcessDefinitionKey;
-import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byUnfinished;
+import static com.ritense.valtimo.operaton.repository.OperatonHistoricProcessInstanceSpecificationHelper.byEndTimeAfter;
+import static com.ritense.valtimo.operaton.repository.OperatonHistoricProcessInstanceSpecificationHelper.byEndTimeBefore;
+import static com.ritense.valtimo.operaton.repository.OperatonHistoricProcessInstanceSpecificationHelper.byFinished;
+import static com.ritense.valtimo.operaton.repository.OperatonHistoricProcessInstanceSpecificationHelper.byProcessDefinitionKey;
+import static com.ritense.valtimo.operaton.repository.OperatonHistoricProcessInstanceSpecificationHelper.byUnfinished;
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
 import com.ritense.authorization.AuthorizationContext;
-import com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper;
-import com.ritense.valtimo.camunda.service.CamundaHistoryService;
+import com.ritense.valtimo.operaton.repository.OperatonHistoricProcessInstanceSpecificationHelper;
+import com.ritense.valtimo.operaton.service.OperatonHistoryService;
 import com.ritense.valtimo.contract.annotation.SkipComponentScan;
-import com.ritense.valtimo.repository.CamundaReportingRepository;
-import com.ritense.valtimo.repository.camunda.dto.ChartInstance;
-import com.ritense.valtimo.repository.camunda.dto.ChartInstanceSeries;
-import com.ritense.valtimo.repository.camunda.dto.InstanceCountChart;
+import com.ritense.valtimo.repository.OperatonReportingRepository;
+import com.ritense.valtimo.repository.operaton.dto.ChartInstance;
+import com.ritense.valtimo.repository.operaton.dto.ChartInstanceSeries;
+import com.ritense.valtimo.repository.operaton.dto.InstanceCountChart;
 import com.ritense.valtimo.web.rest.dto.ProcessInstanceStatisticsDTO;
 import java.sql.Date;
 import java.time.Instant;
@@ -42,10 +42,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.ibatis.session.SqlSession;
-import org.camunda.bpm.engine.HistoryService;
-import org.camunda.bpm.engine.history.HistoricActivityInstance;
-import org.camunda.bpm.engine.history.HistoricActivityInstanceQuery;
-import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
+import org.operaton.bpm.engine.HistoryService;
+import org.operaton.bpm.engine.history.HistoricActivityInstance;
+import org.operaton.bpm.engine.history.HistoricActivityInstanceQuery;
+import org.operaton.bpm.engine.impl.db.ListQueryParameterObject;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,26 +64,26 @@ public class ReportingResource {
     private static final String ACTIVITY_USER_TASK = "userTask";
     private final SqlSession session;
     private final HistoryService historyService;
-    private final CamundaHistoryService camundaHistoryService;
-    private final CamundaReportingRepository camundaReportingRepository;
+    private final OperatonHistoryService operatonHistoryService;
+    private final OperatonReportingRepository operatonReportingRepository;
 
     public ReportingResource(
         SqlSession session,
         HistoryService historyService,
-        CamundaHistoryService camundaHistoryService,
-        CamundaReportingRepository camundaReportingRepository
+        OperatonHistoryService operatonHistoryService,
+        OperatonReportingRepository operatonReportingRepository
     ) {
         this.session = session;
         this.historyService = historyService;
-        this.camundaHistoryService = camundaHistoryService;
-        this.camundaReportingRepository = camundaReportingRepository;
+        this.operatonHistoryService = operatonHistoryService;
+        this.operatonReportingRepository = operatonReportingRepository;
     }
 
     @GetMapping("/v1/reporting/instancecount")
     public ResponseEntity<InstanceCountChart> instanceCount(
         @RequestParam(value = "processFilter", required = false) String processId
     ) {
-        InstanceCountChart instanceCounts = camundaReportingRepository.getProcessInstanceCounts(processId);
+        InstanceCountChart instanceCounts = operatonReportingRepository.getProcessInstanceCounts(processId);
         return new ResponseEntity<>(instanceCounts, HttpStatus.OK);
     }
 
@@ -204,7 +204,7 @@ public class ReportingResource {
         @RequestParam(value = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
         @RequestParam(value = "processFilter", required = false) String processId
     ) {
-        return new ResponseEntity<>(camundaReportingRepository.getTasksPerRole(processId, fromDate, toDate), HttpStatus.OK);
+        return new ResponseEntity<>(operatonReportingRepository.getTasksPerRole(processId, fromDate, toDate), HttpStatus.OK);
     }
 
     @GetMapping("/v1/reporting/unfinishedTasksPerType")
@@ -248,8 +248,8 @@ public class ReportingResource {
         @RequestParam(value = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
         @RequestParam(value = "processFilter", required = false) String processDefinitionKey
     ) {
-        var historicProcessInstanceQueryFinished = CamundaHistoricProcessInstanceSpecificationHelper.query();
-        var historicProcessInstanceQueryUnfinished = CamundaHistoricProcessInstanceSpecificationHelper.query();
+        var historicProcessInstanceQueryFinished = OperatonHistoricProcessInstanceSpecificationHelper.query();
+        var historicProcessInstanceQueryUnfinished = OperatonHistoricProcessInstanceSpecificationHelper.query();
 
         if (Optional.ofNullable(processDefinitionKey).isPresent()) {
             historicProcessInstanceQueryFinished.and(byProcessDefinitionKey(processDefinitionKey));
@@ -270,12 +270,12 @@ public class ReportingResource {
 
         Long unfinishedInstances = AuthorizationContext
             .runWithoutAuthorization(
-                () -> camundaHistoryService
+                () -> operatonHistoryService
                     .countHistoricProcessInstances(historicProcessInstanceQueryUnfinished.and(byUnfinished()))
             );
         Long finishedInstances = AuthorizationContext
             .runWithoutAuthorization(
-                () -> camundaHistoryService
+                () -> operatonHistoryService
                     .countHistoricProcessInstances(historicProcessInstanceQueryFinished.and(byFinished()))
             );
 

@@ -18,7 +18,7 @@ package com.ritense.zakenapi.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.ritense.plugin.domain.PluginConfigurationId
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.domain.AggregateRoot
 import com.ritense.valtimo.contract.domain.DomainEvent
 import com.ritense.valtimo.contract.repository.UriAttributeConverter
@@ -28,11 +28,10 @@ import com.ritense.zgw.Rsin
 import com.ritense.zgw.converter.RsinAttributeConverter
 import jakarta.persistence.Column
 import jakarta.persistence.Convert
+import jakarta.persistence.Embedded
 import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
 import jakarta.persistence.Table
-import jakarta.validation.constraints.NotBlank
-import org.hibernate.validator.constraints.Length
 import org.springframework.data.domain.Persistable
 import java.net.URI
 import java.util.UUID
@@ -45,10 +44,8 @@ data class ZaakTypeLink(
     @JsonProperty("id")
     val zaakTypeLinkId: ZaakTypeLinkId,
 
-    @Column(name = "document_definition_name", columnDefinition = "VARCHAR(50)", nullable = false)
-    @field:Length(max = 50)
-    @field:NotBlank
-    val documentDefinitionName: String,
+    @Embedded
+    val caseDefinitionId: CaseDefinitionId,
 
     @Convert(converter = UriAttributeConverter::class)
     @Column(name = "zaak_type_url", columnDefinition = "VARCHAR(512)", nullable = false)

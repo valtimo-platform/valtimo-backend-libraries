@@ -1,6 +1,6 @@
 package com.ritense.formviewmodel.viewmodel
 
-import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.operaton.domain.OperatonTask
 
 data class TestViewModel(
     val test: String? = null,
@@ -9,7 +9,7 @@ data class TestViewModel(
     val reversedString: String? = null
 ) : ViewModel, Submission {
 
-    override fun update(task: CamundaTask?, page: Int?): ViewModel {
+    override fun update(task: OperatonTask?, page: Int?): ViewModel {
         return this.copy(reversedString = reversedString?.reversed())
     }
 

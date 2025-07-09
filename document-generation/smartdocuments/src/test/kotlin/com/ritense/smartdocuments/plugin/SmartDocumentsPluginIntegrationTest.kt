@@ -31,10 +31,10 @@ import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.BaseSmartDocumentsIntegrationTest
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
-import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.operaton.domain.OperatonProcessDefinition
+import com.ritense.valtimo.operaton.service.OperatonRepositoryService
 import org.assertj.core.api.Assertions.assertThat
-import org.camunda.bpm.engine.RuntimeService
+import org.operaton.bpm.engine.RuntimeService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -52,14 +52,14 @@ class SmartDocumentsPluginIntegrationTest @Autowired constructor(
     private val pluginService: PluginService,
     private val smartDocumentsPluginFactory: SmartDocumentsPluginFactory,
     private val pluginProcessLinkRepository: PluginProcessLinkRepository,
-    private val camundaRepositoryService: CamundaRepositoryService,
+    private val operatonRepositoryService: OperatonRepositoryService,
     private val runtimeService: RuntimeService,
     private val temporaryResourceStorageService: TemporaryResourceStorageService,
-): BaseSmartDocumentsIntegrationTest() {
+) : BaseSmartDocumentsIntegrationTest() {
 
     lateinit var smartDocumentsPlugin: SmartDocumentsPlugin
     lateinit var pluginConfiguration: PluginConfiguration
-    lateinit var processDefinition: CamundaProcessDefinition
+    lateinit var processDefinition: OperatonProcessDefinition
 
     @BeforeEach
     internal fun beforeEach() {
@@ -104,7 +104,7 @@ class SmartDocumentsPluginIntegrationTest @Autowired constructor(
 
         smartDocumentsPlugin = smartDocumentsPluginFactory.create(pluginConfiguration)
         processDefinition = runWithoutAuthorization {
-            camundaRepositoryService.findLatestProcessDefinition("document-generation-plugin")!!
+            operatonRepositoryService.findLatestProcessDefinition("document-generation-plugin")!!
         }
 
         saveProcessLink(generateDocumentActionProperties)
@@ -114,7 +114,12 @@ class SmartDocumentsPluginIntegrationTest @Autowired constructor(
     fun `should generate document`() {
         // given
         val documentContent = objectMapper.readTree("{\"lastname\": \"Klaveren\"}")
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, documentContent)
+        val newDocumentRequest = NewDocumentRequest(
+            DOCUMENT_DEFINITION_KEY,
+            "profile",
+            "1.0.0",
+            documentContent
+        )
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("age" to 138))
 
@@ -128,19 +133,26 @@ class SmartDocumentsPluginIntegrationTest @Autowired constructor(
             findRequestBody(HttpMethod.POST, "/wsxmldeposit/deposit/unattended", SmartDocumentsRequest::class.java)
         assertThat(requestBody.smartDocument.selection.templateGroup).isNotEqualTo("test-template-group")
         assertThat(requestBody.smartDocument.selection.template).isEqualTo("test-template-name")
-        assertThat(requestBody.customerData).isEqualTo(mapOf(
-            "achternaam" to "Klaveren",
-            "leeftijd" to 138,
-            "nonExistingDocumentVar" to null,
-            "nonExistingProcessVar" to null,
-            "fixedValue" to "My fixed value",
-        ))
+        assertThat(requestBody.customerData).isEqualTo(
+            mapOf(
+                "achternaam" to "Klaveren",
+                "leeftijd" to 138,
+                "nonExistingDocumentVar" to null,
+                "nonExistingProcessVar" to null,
+                "fixedValue" to "My fixed value",
+            )
+        )
     }
 
     @Test
     fun `should create temp file when generating document`() {
         // given
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(
+            DOCUMENT_DEFINITION_KEY,
+            "profile",
+            "1.0.0",
+            objectMapper.createObjectNode()
+        )
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
 
         // when
@@ -184,7 +196,12 @@ class SmartDocumentsPluginIntegrationTest @Autowired constructor(
             }
         """.trimIndent()
         )
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(
+            DOCUMENT_DEFINITION_KEY,
+            "profile",
+            "1.0.0",
+            objectMapper.createObjectNode()
+        )
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("my-template-name-variable" to "my-custom-template-name"))
 
@@ -213,7 +230,12 @@ class SmartDocumentsPluginIntegrationTest @Autowired constructor(
             }
         """.trimIndent()
         )
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(
+            DOCUMENT_DEFINITION_KEY,
+            "profile",
+            "1.0.0",
+            objectMapper.createObjectNode()
+        )
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
 
         // when

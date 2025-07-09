@@ -1,0 +1,7 @@
+{
+    "key": "widgets",
+    "name": "Widgets",
+    "versionTag": "1.0.0",
+    "canHaveAssignee": true,
+    "autoAssignTasks": true
+}

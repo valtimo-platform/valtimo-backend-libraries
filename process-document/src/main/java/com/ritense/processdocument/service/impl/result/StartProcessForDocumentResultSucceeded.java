@@ -19,7 +19,7 @@ package com.ritense.processdocument.service.impl.result;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 import com.ritense.document.domain.Document;
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
+import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId;
 import com.ritense.processdocument.service.result.StartProcessForDocumentResult;
 import com.ritense.valtimo.contract.result.OperationError;
 import java.util.Collections;
@@ -29,9 +29,9 @@ import java.util.Optional;
 public class StartProcessForDocumentResultSucceeded implements StartProcessForDocumentResult {
 
     private final Document document;
-    private final CamundaProcessInstanceId processInstanceId;
+    private final OperatonProcessInstanceId processInstanceId;
 
-    public StartProcessForDocumentResultSucceeded(Document document, CamundaProcessInstanceId processInstanceId) {
+    public StartProcessForDocumentResultSucceeded(Document document, OperatonProcessInstanceId processInstanceId) {
         assertArgumentNotNull(document, "document is required");
         assertArgumentNotNull(processInstanceId, "processInstanceId is required");
         this.document = document;
@@ -44,7 +44,7 @@ public class StartProcessForDocumentResultSucceeded implements StartProcessForDo
     }
 
     @Override
-    public Optional<CamundaProcessInstanceId> processInstanceId() {
+    public Optional<OperatonProcessInstanceId> processInstanceId() {
         return Optional.of(processInstanceId);
     }
 

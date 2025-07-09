@@ -28,7 +28,7 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import org.camunda.bpm.engine.IdentityService;
+import org.operaton.bpm.engine.IdentityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -64,7 +64,7 @@ public class JwtFilter extends GenericFilterBean {
                     authenticatedUserId = authentication.getName();
                 }
             }
-            // user id should always be set or reset to null because the camunda implementation will remember the user id from a previous request.
+            // user id should always be set or reset to null because the operaton implementation will remember the user id from a previous request.
             identityService.setAuthenticatedUserId(authenticatedUserId);
             filterChain.doFilter(servletRequest, servletResponse);
             identityService.clearAuthentication();

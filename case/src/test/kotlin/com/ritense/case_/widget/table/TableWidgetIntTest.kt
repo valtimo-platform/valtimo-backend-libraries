@@ -16,21 +16,19 @@
 
 package com.ritense.case_.widget.table
 
+import com.ritense.BaseIntegrationTest
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.case.BaseIntegrationTest
-import com.ritense.case.TestResolverFactory
 import com.ritense.case.domain.CaseTabType
 import com.ritense.case.service.CaseTabService
 import com.ritense.case.web.rest.dto.CaseTabDto
+import com.ritense.case_.TestResolverFactory
 import com.ritense.case_.rest.dto.CaseWidgetTabDto
 import com.ritense.case_.service.CaseWidgetTabService
 import com.ritense.case_.widget.displayproperties.BooleanFieldDisplayProperties
 import com.ritense.document.domain.impl.request.NewDocumentRequest
-import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.json.MapperSingleton
-import com.ritense.valueresolver.ValueResolverFactory
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -53,7 +51,6 @@ class TableWidgetIntTest @Autowired constructor(
     private val webApplicationContext: WebApplicationContext,
     private val tabService: CaseTabService,
     private val widgetTabService: CaseWidgetTabService,
-    private val documentService: JsonSchemaDocumentService,
     private val testValueResolverFactory: TestResolverFactory
 ) : BaseIntegrationTest() {
 
@@ -71,8 +68,16 @@ class TableWidgetIntTest @Autowired constructor(
         val tabKey = "my-tab"
         val widgetKey = "my-widget"
         val documentId = runWithoutAuthorization {
-            createCaseWidgetTab(caseDefinitionName, tabKey, widgetKey)
-            documentService.createDocument(NewDocumentRequest(caseDefinitionName, MapperSingleton.get().createObjectNode())).resultingDocument().get().id()
+            val document = documentService.createDocument(
+                NewDocumentRequest(
+                    caseDefinitionName,
+                    caseDefinitionName,
+                    "1.2.3",
+                    MapperSingleton.get().createObjectNode()
+                )
+            ).resultingDocument().get()
+            createCaseWidgetTab(document.definitionId().caseDefinitionId(), tabKey, widgetKey)
+            document.id
         }
         mockMvc.perform(
             get("/api/v1/document/{documentId}/widget-tab/{tabKey}", documentId, tabKey)
@@ -102,17 +107,27 @@ class TableWidgetIntTest @Autowired constructor(
         val tabKey = "my-tab"
         val widgetKey = "my-widget"
         val documentId = runWithoutAuthorization {
-            createCaseWidgetTab(caseDefinitionName, tabKey, widgetKey)
-            documentService.createDocument(NewDocumentRequest(caseDefinitionName, MapperSingleton.get().createObjectNode())).resultingDocument().get().id()
+            val document = documentService.createDocument(
+                NewDocumentRequest(
+                    caseDefinitionName,
+                    caseDefinitionName,
+                    "1.2.3",
+                    MapperSingleton.get().createObjectNode()
+                )
+            ).resultingDocument().get()
+            createCaseWidgetTab(document.definitionId().caseDefinitionId(), tabKey, widgetKey)
+            document.id
         }
 
         whenever(testValueResolverFactory.createResolver(documentId.toString())).thenReturn(Function { collectionPlaceholder ->
             assertThat(collectionPlaceholder).isEqualTo("myCollection")
 
-            listOf(mapOf(
-                "someKey" to "x",
-                "someOtherKey" to "y"
-            ))
+            listOf(
+                mapOf(
+                    "someKey" to "x",
+                    "someOtherKey" to "y"
+                )
+            )
         })
         mockMvc.perform(
             get("/api/v1/document/{documentId}/widget-tab/{tabKey}/widget/{widgetKey}", documentId, tabKey, widgetKey)
@@ -130,14 +145,18 @@ class TableWidgetIntTest @Autowired constructor(
     }
 
     private fun createCaseWidgetTab(
-        caseDefinitionName: String,
+        caseDefinitionId: CaseDefinitionId,
         tabKey: String,
         widgetKey: String
     ): CaseWidgetTabDto {
-        tabService.createCaseTab(caseDefinitionName, CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-"))
+        tabService.createCaseTab(
+            caseDefinitionId,
+            CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-")
+        )
         return widgetTabService.updateWidgetTab(
             CaseWidgetTabDto(
-                caseDefinitionName = caseDefinitionName,
+                caseDefinitionKey = caseDefinitionId.key,
+                caseDefinitionVersionTag = caseDefinitionId.versionTag.version,
                 key = tabKey,
                 widgets = listOf(
                     TableCaseWidgetDto(

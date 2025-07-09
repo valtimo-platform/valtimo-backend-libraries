@@ -20,8 +20,8 @@ import com.ritense.authorization.AuthorizationContext
 import com.ritense.processlink.BaseIntegrationTest
 import com.ritense.processlink.domain.TestProcessLink
 import com.ritense.processlink.repository.ProcessLinkRepository
-import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.operaton.domain.OperatonProcessDefinition
+import com.ritense.valtimo.operaton.service.OperatonRepositoryService
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers
 import org.hamcrest.Matchers.hasSize
@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 class ProcessLinkDeploymentApplicationReadyEventListenerIntTest @Autowired constructor(
-    private val repositoryService: CamundaRepositoryService,
+    private val repositoryService: OperatonRepositoryService,
     private val processLinkRepository: ProcessLinkRepository,
     private val listener: ProcessLinkDeploymentApplicationReadyEventListener
 ) : BaseIntegrationTest() {
@@ -52,7 +52,7 @@ class ProcessLinkDeploymentApplicationReadyEventListenerIntTest @Autowired const
         assertThat(processLink.someValue, Matchers.equalTo("changed"))
     }
 
-    private fun getLatestProcessDefinition(): CamundaProcessDefinition {
+    private fun getLatestProcessDefinition(): OperatonProcessDefinition {
         return AuthorizationContext.runWithoutAuthorization {
             repositoryService.findLatestProcessDefinition("auto-deploy-process-link-with-long-key")!!
         }

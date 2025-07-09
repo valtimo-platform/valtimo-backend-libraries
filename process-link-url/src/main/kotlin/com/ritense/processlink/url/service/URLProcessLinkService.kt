@@ -24,36 +24,37 @@ import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentService
-import com.ritense.processdocument.domain.ProcessDocumentDefinition
-import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey
+import com.ritense.processdocument.domain.ProcessDefinitionCaseDefinition
+import com.ritense.processdocument.domain.ProcessDefinitionId
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndStartProcessRequest
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.domain.request.Request
-import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkService
-import com.ritense.processlink.url.domain.URLVariables
 import com.ritense.processlink.url.domain.URLProcessLink
+import com.ritense.processlink.url.domain.URLVariables
 import com.ritense.processlink.url.web.rest.dto.URLSubmissionResult
-import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider
-import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
-import com.ritense.valtimo.camunda.domain.CamundaTask
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
-import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.operaton.authorization.OperatonTaskActionProvider
+import com.ritense.valtimo.operaton.domain.OperatonProcessDefinition
+import com.ritense.valtimo.operaton.domain.OperatonTask
+import com.ritense.valtimo.operaton.service.OperatonRepositoryService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.valtimo.service.OperatonTaskService
 import java.util.UUID
 
 class URLProcessLinkService(
     private val processLinkService: ProcessLinkService,
     private val documentService: JsonSchemaDocumentService,
-    private val processDocumentAssociationService: ProcessDocumentAssociationService,
+    private val processDefinitionCaseDefinitionService: ProcessDefinitionCaseDefinitionService,
     private val processDocumentService: ProcessDocumentService,
-    private val repositoryService: CamundaRepositoryService,
+    private val repositoryService: OperatonRepositoryService,
     private val objectMapper: ObjectMapper,
     private val urlVariables: URLVariables,
-    private val camundaTaskService: CamundaTaskService,
+    private val operatonTaskService: OperatonTaskService,
     private val authorizationService: ValtimoAuthorizationService
 ) {
 
@@ -71,15 +72,15 @@ class URLProcessLinkService(
         val processDefinition = getProcessDefinition(processLink)
         val documentDefinitionNameToUse = document?.definitionId()?.name()
             ?: documentDefinitionName
-            ?: getProcessDocumentDefinition(processDefinition, document).processDocumentDefinitionId()
-                .documentDefinitionId().name()
+            ?: getProcessDefinitionCaseDefinition(processDefinition).id.caseDefinitionId.key
 
         val request = getRequest(
             processLink,
             document,
             taskInstanceId,
             documentDefinitionNameToUse,
-            processDefinition.key
+            processDefinition.key,
+            processDefinition.getCaseDefinitionId()
         )
 
         return dispatchRequest(
@@ -89,11 +90,11 @@ class URLProcessLinkService(
 
     private fun requireCompleteTaskPermission(taskInstanceId: String?) {
         if (taskInstanceId != null) {
-            val task = camundaTaskService.findTaskById(taskInstanceId)
+            val task = operatonTaskService.findTaskById(taskInstanceId)
             authorizationService.requirePermission(
                 EntityAuthorizationRequest(
-                    CamundaTask::class.java,
-                    CamundaTaskActionProvider.COMPLETE,
+                    OperatonTask::class.java,
+                    OperatonTaskActionProvider.COMPLETE,
                     task
                 )
             )
@@ -102,26 +103,18 @@ class URLProcessLinkService(
 
     private fun getProcessDefinition(
         processLink: ProcessLink
-    ): CamundaProcessDefinition {
+    ): OperatonProcessDefinition {
         return AuthorizationContext.runWithoutAuthorization {
             repositoryService.findProcessDefinitionById(processLink.processDefinitionId)!!
         }
     }
 
-    private fun getProcessDocumentDefinition(
-        processDefinition: CamundaProcessDefinition,
-        document: Document?
-    ): ProcessDocumentDefinition {
-        val processDefinitionKey = CamundaProcessDefinitionKey(processDefinition.key)
+    private fun getProcessDefinitionCaseDefinition(
+        processDefinition: OperatonProcessDefinition
+    ): ProcessDefinitionCaseDefinition {
+        val processDefinitionId = ProcessDefinitionId(processDefinition.id)
         return AuthorizationContext.runWithoutAuthorization {
-            if (document == null) {
-                processDocumentAssociationService.getProcessDocumentDefinition(processDefinitionKey)
-            } else {
-                processDocumentAssociationService.getProcessDocumentDefinition(
-                    processDefinitionKey,
-                    document.definitionId().version()
-                )
-            }
+            processDefinitionCaseDefinitionService.findByProcessDefinitionId(processDefinitionId)
         }
     }
 
@@ -131,17 +124,19 @@ class URLProcessLinkService(
         taskInstanceId: String?,
         documentDefinitionName: String,
         processDefinitionKey: String,
+        caseDefinitionId: CaseDefinitionId?
     ): Request {
         return if (processLink.activityType == ActivityTypeWithEventName.START_EVENT_START) {
             if (document == null) {
                 newDocumentAndStartProcessRequest(
                     documentDefinitionName,
-                    processDefinitionKey
+                    processDefinitionKey,
+                    caseDefinitionId
                 )
             } else {
                 modifyDocumentAndStartProcessRequest(
                     document,
-                    processDefinitionKey
+                    processDefinitionKey,
                 )
             }
         } else if (processLink.activityType == ActivityTypeWithEventName.USER_TASK_CREATE) {
@@ -157,11 +152,14 @@ class URLProcessLinkService(
     private fun newDocumentAndStartProcessRequest(
         documentDefinitionName: String,
         processDefinitionKey: String,
+        caseDefinitionId: CaseDefinitionId?,
     ): NewDocumentAndStartProcessRequest {
         return NewDocumentAndStartProcessRequest(
             processDefinitionKey,
             NewDocumentRequest(
                 documentDefinitionName,
+                caseDefinitionId?.key,
+                caseDefinitionId?.versionTag?.version,
                 objectMapper.createObjectNode()
             )
         )
@@ -195,7 +193,7 @@ class URLProcessLinkService(
 
     private fun dispatchRequest(
         request: Request
-    ) : URLSubmissionResult {
+    ): URLSubmissionResult {
         val result = processDocumentService.dispatch(request)
         return if (result.errors().isNotEmpty()) {
             URLSubmissionResult(result.errors().map { it.asString() }, "")

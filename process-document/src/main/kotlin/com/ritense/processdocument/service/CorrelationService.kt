@@ -16,8 +16,8 @@
 
 package com.ritense.processdocument.service
 
-import org.camunda.bpm.engine.delegate.DelegateExecution
-import org.camunda.bpm.engine.runtime.MessageCorrelationResult
+import org.operaton.bpm.engine.delegate.DelegateExecution
+import org.operaton.bpm.engine.runtime.MessageCorrelationResult
 
 interface CorrelationService {
 

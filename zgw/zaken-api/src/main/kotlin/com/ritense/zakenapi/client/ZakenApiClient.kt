@@ -41,7 +41,7 @@ import com.ritense.zakenapi.domain.ZaakeigenschapResponse
 import com.ritense.zakenapi.domain.ZaakopschortingRequest
 import com.ritense.zakenapi.domain.ZaakopschortingResponse
 import com.ritense.zakenapi.domain.rol.Rol
-import com.ritense.zakenapi.domain.rol.RolType
+import com.ritense.zakenapi.domain.rol.RolTypeGeneriekeBeschrijving
 import com.ritense.zakenapi.event.DocumentLinkedToZaak
 import com.ritense.zakenapi.event.ZaakCreated
 import com.ritense.zakenapi.event.ZaakInformatieObjectenListed
@@ -65,8 +65,6 @@ import com.ritense.zakenapi.event.ZaakeigenschapUpdated
 import com.ritense.zakenapi.exception.ZaakRolNotUpdatedException
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
-import mu.KLogger
-import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
@@ -88,15 +86,13 @@ class ZakenApiClient(
         baseUrl: URI,
         request: LinkDocumentRequest
     ): LinkDocumentResult {
-        if (authorizationEnabled) {
-            authorizationService.requirePermission(
-                EntityAuthorizationRequest(
-                    ResourcePermission::class.java,
-                    ResourcePermissionActionProvider.CREATE,
-                    ResourcePermission()
-                )
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                ResourcePermission::class.java,
+                ResourcePermissionActionProvider.CREATE,
+                ResourcePermission()
             )
-        }
+        )
 
         val result = buildRestClient(authentication)
             .post()
@@ -168,7 +164,7 @@ class ZakenApiClient(
         zaakUrl: URI? = null,
         informatieobjectUrl: URI? = null,
     ): List<ZaakInformatieObject> {
-        if (authorizationEnabled && !authorizationService.hasPermission(
+        if (!authorizationService.hasPermission(
             EntityAuthorizationRequest(
                 ResourcePermission::class.java,
                 ResourcePermissionActionProvider.VIEW_LIST,
@@ -205,7 +201,7 @@ class ZakenApiClient(
         baseUrl: URI,
         zaakUrl: URI,
         page: Int,
-        roleType: RolType? = null
+        omschrijvingGeneriek: RolTypeGeneriekeBeschrijving? = null
     ): Page<Rol> {
         val result = buildRestClient(authentication)
             .get()
@@ -215,8 +211,8 @@ class ZakenApiClient(
                     .queryParam("page", page)
                     .queryParam("zaak", zaakUrl)
                     .apply {
-                        if (roleType != null) {
-                            queryParam("omschrijvingGeneriek", roleType.getApiValue())
+                        if (omschrijvingGeneriek != null) {
+                            queryParam("omschrijvingGeneriek", omschrijvingGeneriek.getApiValue())
                         }
                     }
                     .build()
@@ -535,15 +531,13 @@ class ZakenApiClient(
         require(zaakInformatieobjectUrl.toString().startsWith(baseUrl.toString())) {
             "zaakInformatieobjectUrl '$zaakInformatieobjectUrl' does not start with baseUrl '$baseUrl'"
         }
-        if (authorizationEnabled) {
-            authorizationService.requirePermission(
-                EntityAuthorizationRequest(
-                    ResourcePermission::class.java,
-                    ResourcePermissionActionProvider.DELETE,
-                    ResourcePermission()
-                )
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                ResourcePermission::class.java,
+                ResourcePermissionActionProvider.DELETE,
+                ResourcePermission()
             )
-        }
+        )
 
         buildRestClient(authentication)
             .delete()
@@ -622,9 +616,5 @@ class ZakenApiClient(
                 authentication.applyAuth(it)
             }
             .build()
-    }
-
-    companion object {
-        private val logger: KLogger = KotlinLogging.logger {}
     }
 }

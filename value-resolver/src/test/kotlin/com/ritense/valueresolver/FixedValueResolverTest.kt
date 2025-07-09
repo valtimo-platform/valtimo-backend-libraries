@@ -16,11 +16,12 @@
 
 package com.ritense.valueresolver
 
-import java.util.UUID
 import org.assertj.core.api.Assertions
-import org.camunda.community.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.kotlin.mock
+import org.operaton.bpm.engine.delegate.DelegateTask
+import java.util.UUID
 
 internal class FixedValueResolverTest {
 
@@ -29,7 +30,7 @@ internal class FixedValueResolverTest {
     @Test
     fun `should resolve boolean value from requestedValue`() {
         val processInstanceId = UUID.randomUUID().toString()
-        val variableScope = DelegateTaskFake()
+        val variableScope = mock<DelegateTask>()
 
         val resolvedValue = fixedValueResolver.createResolver(
             processInstanceId = processInstanceId,
@@ -44,7 +45,7 @@ internal class FixedValueResolverTest {
     @Test
     fun `should resolve long value from requestedValue`() {
         val processInstanceId = UUID.randomUUID().toString()
-        val variableScope = DelegateTaskFake()
+        val variableScope = mock<DelegateTask>()
 
         val resolvedValue = fixedValueResolver.createResolver(
             processInstanceId = processInstanceId,
@@ -72,7 +73,7 @@ internal class FixedValueResolverTest {
     @Test
     fun `should resolve double value from requestedValue`() {
         val processInstanceId = UUID.randomUUID().toString()
-        val variableScope = DelegateTaskFake()
+        val variableScope = mock<DelegateTask>()
 
         val resolvedValue = fixedValueResolver.createResolver(
             processInstanceId = processInstanceId,
@@ -100,7 +101,7 @@ internal class FixedValueResolverTest {
     @Test
     fun `should resolve string value from requestedValue`() {
         val processInstanceId = UUID.randomUUID().toString()
-        val variableScope = DelegateTaskFake()
+        val variableScope = mock<DelegateTask>()
 
         val resolvedValue = fixedValueResolver.createResolver(
             processInstanceId = processInstanceId,
@@ -115,7 +116,7 @@ internal class FixedValueResolverTest {
     @Test
     fun `should resolve prefixed value from requestedValue`() {
         val processInstanceId = UUID.randomUUID().toString()
-        val variableScope = DelegateTaskFake()
+        val variableScope = mock<DelegateTask>()
 
         val resolvedValue = FixedValueResolverFactory("http").createResolver(
             processInstanceId = processInstanceId,
@@ -143,7 +144,7 @@ internal class FixedValueResolverTest {
     @Test
     fun `should NOT handle value`() {
         val processInstanceId = UUID.randomUUID().toString()
-        val variableScope = DelegateTaskFake()
+        val variableScope = mock<DelegateTask>()
 
         val throwable = assertThrows<RuntimeException> {
             fixedValueResolver.handleValues(processInstanceId, variableScope, mapOf("firstName" to "John"))

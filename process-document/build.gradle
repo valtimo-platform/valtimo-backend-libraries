@@ -39,17 +39,16 @@ dependencies {
     implementation project(":changelog")
     implementation project(":contract")
     implementation project(":core")
-    implementation project(":document")
     implementation project(":exporter")
     implementation project(":importer")
     implementation project(":resource")
     implementation project(":value-resolver")
     implementation project(":search")
+    implementation project(":web")
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "jakarta.inject:jakarta.inject-api:${jakartaInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -66,7 +65,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
-    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "io.github.oshai:kotlin-logging:${kotlinLoggingVersion}"
     implementation "com.jayway.jsonpath:json-path:${jaywayJsonpathVersion}"
     implementation "com.github.erosb:everit-json-schema:${everitJsonSchemaVersion}"
 
@@ -75,6 +74,8 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
+
+    implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
 
     implementation "org.hibernate.orm:hibernate-core:${hibernateCoreVersion}"
 
@@ -86,7 +87,6 @@ dependencies {
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
-    testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:${camundaMockitoVersion}"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${kotlinCoroutinesVersion}"
 

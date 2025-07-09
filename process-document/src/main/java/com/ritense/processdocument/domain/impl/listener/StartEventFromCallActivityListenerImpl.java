@@ -18,19 +18,15 @@ package com.ritense.processdocument.domain.impl.listener;
 
 import com.ritense.authorization.annotation.RunWithoutAuthorization;
 import com.ritense.document.domain.Document;
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
+import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId;
 import com.ritense.processdocument.domain.listener.StartEventFromCallActivityListener;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
-import org.camunda.bpm.engine.ActivityTypes;
-import org.camunda.bpm.engine.delegate.DelegateExecution;
-import org.camunda.bpm.engine.delegate.ExecutionListener;
-import org.camunda.bpm.extension.reactor.bus.CamundaSelector;
-import org.camunda.bpm.extension.reactor.spring.listener.ReactorExecutionListener;
-import org.camunda.bpm.model.bpmn.impl.instance.ProcessImpl;
+import org.operaton.bpm.engine.delegate.DelegateExecution;
+import org.operaton.bpm.model.bpmn.impl.instance.ProcessImpl;
+import org.springframework.context.event.EventListener;
 
-@CamundaSelector(type = ActivityTypes.START_EVENT, event = ExecutionListener.EVENTNAME_START)
-public class StartEventFromCallActivityListenerImpl extends ReactorExecutionListener implements StartEventFromCallActivityListener {
+public class StartEventFromCallActivityListenerImpl implements StartEventFromCallActivityListener {
 
     private final ProcessDocumentAssociationService processDocumentAssociationService;
     private final ProcessDocumentService processDocumentService;
@@ -43,8 +39,10 @@ public class StartEventFromCallActivityListenerImpl extends ReactorExecutionList
         this.processDocumentService = processDocumentService;
     }
 
-    @Override
     @RunWithoutAuthorization
+    @EventListener(condition = "#execution.bpmnModelElementInstance != null " +
+        "&& #execution.bpmnModelElementInstance.elementType.typeName == T(org.operaton.bpm.engine.ActivityTypes).START_EVENT " +
+        "&& #execution.eventName == T(org.operaton.bpm.engine.delegate.ExecutionListener).EVENTNAME_START")
     public void notify(DelegateExecution execution) {
         Document.Id documentId = getDocumentId(execution);
         if (documentId != null) {
@@ -58,13 +56,13 @@ public class StartEventFromCallActivityListenerImpl extends ReactorExecutionList
 
     private Document.Id getDocumentId(DelegateExecution execution) {
         if (execution.getSuperExecution() != null) {
-            var processId = new CamundaProcessInstanceId(execution.getSuperExecution().getProcessInstanceId());
+            var processId = new OperatonProcessInstanceId(execution.getSuperExecution().getProcessInstanceId());
             var documentId = processDocumentService.getDocumentId(processId, execution);
             if (documentId != null) {
                 return documentId;
             }
         }
-        var processId = new CamundaProcessInstanceId(execution.getProcessInstanceId());
+        var processId = new OperatonProcessInstanceId(execution.getProcessInstanceId());
         return processDocumentService.getDocumentId(processId, execution);
     }
 

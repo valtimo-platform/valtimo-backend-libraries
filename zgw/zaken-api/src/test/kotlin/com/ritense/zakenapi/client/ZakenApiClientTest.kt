@@ -29,7 +29,7 @@ import com.ritense.zakenapi.domain.rol.IndicatieMachtiging
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
-import com.ritense.zakenapi.domain.rol.RolType
+import com.ritense.zakenapi.domain.rol.RolTypeGeneriekeBeschrijving
 import com.ritense.zakenapi.domain.rol.ZaakRolOmschrijving
 import com.ritense.zakenapi.event.*
 import com.ritense.zgw.Rsin
@@ -527,7 +527,7 @@ internal class ZakenApiClientTest {
             URI(mockApi.url("/").toString()),
             URI("https://example.com"),
             1,
-            RolType.INITIATOR
+            RolTypeGeneriekeBeschrijving.INITIATOR
         )
 
         val recordedRequest = mockApi.takeRequest()
@@ -583,7 +583,7 @@ internal class ZakenApiClientTest {
             URI(mockApi.url("/").toString()),
             URI("https://example.com"),
             1,
-            RolType.INITIATOR
+            RolTypeGeneriekeBeschrijving.INITIATOR
         )
 
         mockApi.takeRequest()
@@ -613,7 +613,7 @@ internal class ZakenApiClientTest {
                 URI(mockApi.url("/").toString()),
                 URI("https://example.com"),
                 1,
-                RolType.INITIATOR
+                RolTypeGeneriekeBeschrijving.INITIATOR
             )
         }
 

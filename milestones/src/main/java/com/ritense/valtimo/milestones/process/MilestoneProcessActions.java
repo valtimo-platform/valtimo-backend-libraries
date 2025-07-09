@@ -20,7 +20,7 @@ import com.ritense.valtimo.milestones.domain.MilestoneSet;
 import com.ritense.valtimo.milestones.repository.MilestoneSetRepository;
 import com.ritense.valtimo.milestones.service.MilestoneInstanceService;
 import java.time.LocalDate;
-import org.camunda.bpm.engine.delegate.DelegateExecution;
+import org.operaton.bpm.engine.delegate.DelegateExecution;
 
 public class MilestoneProcessActions {
     private final MilestoneSetRepository milestoneSetRepository;

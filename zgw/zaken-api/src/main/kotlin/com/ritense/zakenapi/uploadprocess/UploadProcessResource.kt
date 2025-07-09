@@ -16,8 +16,10 @@
 
 package com.ritense.zakenapi.uploadprocess
 
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.logging.LoggableResource
-import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
+import com.ritense.processdocument.service.CaseDefinitionProcessLinkService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.zakenapi.uploadprocess.UploadProcessService.Companion.DOCUMENT_UPLOAD
@@ -31,7 +33,8 @@ import org.springframework.web.bind.annotation.RestController
 @SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class UploadProcessResource(
-    private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
+    private val activeCaseDefinitionService: ActiveCaseDefinitionService,
+    private val caseDefinitionProcessLinkService: CaseDefinitionProcessLinkService,
 ) {
 
     @Deprecated("Marked for removal since 9.22.0")
@@ -39,7 +42,9 @@ class UploadProcessResource(
     fun checkCaseProcessLink(
         @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String
     ): ResponseEntity<CheckLinkResponse> {
-        val link = documentDefinitionProcessLinkService.getDocumentDefinitionProcessLink(caseDefinitionName, DOCUMENT_UPLOAD)
-        return ResponseEntity.ok(CheckLinkResponse(link.isPresent))
+        val caseDefinition =
+            runWithoutAuthorization { activeCaseDefinitionService.getActiveCaseDefinition(caseDefinitionName) }
+        val link = caseDefinitionProcessLinkService.getDocumentDefinitionProcessLink(caseDefinition.id, DOCUMENT_UPLOAD)
+        return ResponseEntity.ok(CheckLinkResponse(link != null))
     }
 }

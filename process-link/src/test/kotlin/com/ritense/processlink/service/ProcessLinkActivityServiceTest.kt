@@ -20,10 +20,10 @@ import com.ritense.authorization.AuthorizationService
 import com.ritense.document.service.DocumentService
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
-import com.ritense.valtimo.camunda.domain.CamundaTask
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
-import com.ritense.valtimo.service.CamundaProcessService
-import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.operaton.domain.OperatonTask
+import com.ritense.valtimo.operaton.service.OperatonRepositoryService
+import com.ritense.valtimo.service.OperatonProcessService
+import com.ritense.valtimo.service.OperatonTaskService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mock
@@ -38,7 +38,7 @@ import java.util.UUID
 class ProcessLinkActivityServiceTest {
 
     @Mock
-    lateinit var taskService: CamundaTaskService
+    lateinit var taskService: OperatonTaskService
 
     @Mock
     lateinit var processLinkService: ProcessLinkService
@@ -52,16 +52,16 @@ class ProcessLinkActivityServiceTest {
     lateinit var authorizationService: AuthorizationService
 
     @Mock
-    lateinit var camundaRepositoryService: CamundaRepositoryService
+    lateinit var operatonRepositoryService: OperatonRepositoryService
 
     @Mock
     lateinit var documentService: DocumentService
 
     @Mock
-    lateinit var camundaTaskService: CamundaTaskService
+    lateinit var operatonTaskService: OperatonTaskService
 
     @Mock
-    lateinit var camundaProcessService: CamundaProcessService
+    lateinit var operatonProcessService: OperatonProcessService
 
     @BeforeEach
     fun init() {
@@ -71,17 +71,17 @@ class ProcessLinkActivityServiceTest {
             taskService,
             listOf(processLinkActivityHandler),
             authorizationService,
-            camundaRepositoryService,
+            operatonRepositoryService,
             documentService,
-            camundaTaskService,
-            camundaProcessService,
+            operatonTaskService,
+            operatonProcessService,
         )
     }
 
     @Test
     fun `should use task provider to open task`() {
         val taskId = UUID.randomUUID()
-        val task: CamundaTask = mock()
+        val task: OperatonTask = mock()
         whenever(task.id).thenReturn(taskId.toString())
         whenever(task.getProcessDefinitionId()).thenReturn("some-process:1")
         whenever(task.taskDefinitionKey).thenReturn("some-activity")

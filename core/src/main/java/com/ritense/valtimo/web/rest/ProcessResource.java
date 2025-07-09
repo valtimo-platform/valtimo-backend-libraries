@@ -17,38 +17,39 @@
 package com.ritense.valtimo.web.rest;
 
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
-import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.VERSION;
-import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
-import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byActive;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byProcessInstanceId;
+import static com.ritense.valtimo.operaton.repository.OperatonProcessDefinitionSpecificationHelper.VERSION;
+import static com.ritense.valtimo.operaton.repository.OperatonProcessDefinitionSpecificationHelper.byKey;
+import static com.ritense.valtimo.operaton.repository.OperatonProcessDefinitionSpecificationHelper.byLatestVersion;
+import static com.ritense.valtimo.operaton.repository.OperatonTaskSpecificationHelper.byActive;
+import static com.ritense.valtimo.operaton.repository.OperatonTaskSpecificationHelper.byProcessInstanceId;
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static java.time.ZoneId.systemDefault;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 import com.ritense.logging.LoggableResource;
-import com.ritense.valtimo.camunda.domain.CamundaExecution;
-import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
-import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
-import com.ritense.valtimo.camunda.domain.CamundaTask;
-import com.ritense.valtimo.camunda.dto.CamundaHistoricProcessInstanceDto;
-import com.ritense.valtimo.camunda.dto.CamundaProcessDefinitionDto;
-import com.ritense.valtimo.camunda.dto.CamundaTaskDto;
-import com.ritense.valtimo.camunda.service.CamundaHistoryService;
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
+import com.ritense.valtimo.operaton.domain.OperatonExecution;
+import com.ritense.valtimo.operaton.domain.OperatonHistoricProcessInstance;
+import com.ritense.valtimo.operaton.domain.OperatonProcessDefinition;
+import com.ritense.valtimo.operaton.domain.OperatonTask;
+import com.ritense.valtimo.operaton.dto.OperatonHistoricProcessInstanceDto;
+import com.ritense.valtimo.operaton.dto.OperatonProcessDefinitionDto;
+import com.ritense.valtimo.operaton.dto.OperatonTaskDto;
+import com.ritense.valtimo.operaton.service.OperatonHistoryService;
+import com.ritense.valtimo.operaton.service.OperatonRepositoryService;
 import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import com.ritense.valtimo.contract.exception.DocumentParserException;
 import com.ritense.valtimo.contract.exception.ProcessNotFoundException;
 import com.ritense.valtimo.exception.BpmnParseException;
-import com.ritense.valtimo.repository.CamundaSearchProcessInstanceRepository;
-import com.ritense.valtimo.repository.camunda.dto.ProcessInstance;
-import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
-import com.ritense.valtimo.service.CamundaProcessService;
-import com.ritense.valtimo.service.CamundaTaskService;
+import com.ritense.valtimo.repository.OperatonSearchProcessInstanceRepository;
+import com.ritense.valtimo.repository.operaton.dto.ProcessInstance;
+import com.ritense.valtimo.repository.operaton.dto.TaskInstanceWithIdentityLink;
+import com.ritense.valtimo.service.OperatonProcessService;
+import com.ritense.valtimo.service.OperatonTaskService;
 import com.ritense.valtimo.service.ProcessPropertyService;
 import com.ritense.valtimo.service.ProcessShortTimerService;
 import com.ritense.valtimo.web.rest.dto.CommentDto;
+import com.ritense.valtimo.web.rest.dto.DefinitionDeploymentResponseDto;
 import com.ritense.valtimo.web.rest.dto.FlowNodeMigrationDTO;
 import com.ritense.valtimo.web.rest.dto.HeatmapTaskAverageDurationDTO;
 import com.ritense.valtimo.web.rest.dto.HeatmapTaskCountDTO;
@@ -70,25 +71,27 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
-import org.camunda.bpm.engine.HistoryService;
-import org.camunda.bpm.engine.ParseException;
-import org.camunda.bpm.engine.ProcessEngines;
-import org.camunda.bpm.engine.RepositoryService;
-import org.camunda.bpm.engine.RuntimeService;
-import org.camunda.bpm.engine.batch.Batch;
-import org.camunda.bpm.engine.history.HistoricActivityInstance;
-import org.camunda.bpm.engine.history.HistoricActivityInstanceQuery;
-import org.camunda.bpm.engine.history.UserOperationLogEntry;
-import org.camunda.bpm.engine.migration.MigrationPlan;
-import org.camunda.bpm.engine.migration.MigrationPlanBuilder;
-import org.camunda.bpm.engine.rest.dto.batch.BatchDto;
-import org.camunda.bpm.engine.rest.dto.history.HistoricActivityInstanceDto;
-import org.camunda.bpm.engine.rest.dto.history.UserOperationLogEntryDto;
-import org.camunda.bpm.engine.rest.dto.repository.ProcessDefinitionDiagramDto;
-import org.camunda.bpm.engine.rest.dto.runtime.ActivityInstanceDto;
-import org.camunda.bpm.engine.rest.dto.runtime.ProcessInstanceDto;
-import org.camunda.bpm.engine.runtime.ProcessInstanceQuery;
-import org.camunda.bpm.engine.task.Comment;
+import org.operaton.bpm.engine.HistoryService;
+import org.operaton.bpm.engine.ParseException;
+import org.operaton.bpm.engine.ProcessEngines;
+import org.operaton.bpm.engine.RepositoryService;
+import org.operaton.bpm.engine.RuntimeService;
+import org.operaton.bpm.engine.batch.Batch;
+import org.operaton.bpm.engine.history.HistoricActivityInstance;
+import org.operaton.bpm.engine.history.HistoricActivityInstanceQuery;
+import org.operaton.bpm.engine.history.UserOperationLogEntry;
+import org.operaton.bpm.engine.impl.persistence.entity.DeploymentEntity;
+import org.operaton.bpm.engine.migration.MigrationPlan;
+import org.operaton.bpm.engine.migration.MigrationPlanBuilder;
+import org.operaton.bpm.engine.repository.DeploymentWithDefinitions;
+import org.operaton.bpm.engine.rest.dto.batch.BatchDto;
+import org.operaton.bpm.engine.rest.dto.history.HistoricActivityInstanceDto;
+import org.operaton.bpm.engine.rest.dto.history.UserOperationLogEntryDto;
+import org.operaton.bpm.engine.rest.dto.repository.ProcessDefinitionDiagramDto;
+import org.operaton.bpm.engine.rest.dto.runtime.ActivityInstanceDto;
+import org.operaton.bpm.engine.rest.dto.runtime.ProcessInstanceDto;
+import org.operaton.bpm.engine.runtime.ProcessInstanceQuery;
+import org.operaton.bpm.engine.task.Comment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -117,39 +120,39 @@ public class ProcessResource extends AbstractProcessResource {
 
     private final HistoryService historyService;
     private final RuntimeService runtimeService;
-    private final CamundaRepositoryService repositoryService;
-    private final CamundaTaskService camundaTaskService;
-    private final CamundaProcessService camundaProcessService;
+    private final OperatonRepositoryService repositoryService;
+    private final OperatonTaskService operatonTaskService;
+    private final OperatonProcessService operatonProcessService;
     private final ProcessShortTimerService processShortTimerService;
-    private final CamundaSearchProcessInstanceRepository camundaSearchProcessInstanceRepository;
+    private final OperatonSearchProcessInstanceRepository operatonSearchProcessInstanceRepository;
     private final ProcessPropertyService processPropertyService;
 
     public ProcessResource(
             final HistoryService historyService,
-            final CamundaHistoryService camundaHistoryService,
+            final OperatonHistoryService operatonHistoryService,
             final RuntimeService runtimeService,
             final RepositoryService repositoryService,
-            final CamundaRepositoryService camundaRepositoryService,
-            final CamundaTaskService camundaTaskService,
-            final CamundaProcessService camundaProcessService,
+            final OperatonRepositoryService operatonRepositoryService,
+            final OperatonTaskService operatonTaskService,
+            final OperatonProcessService operatonProcessService,
             final ProcessShortTimerService processShortTimerService,
-            final CamundaSearchProcessInstanceRepository camundaSearchProcessInstanceRepository,
+            final OperatonSearchProcessInstanceRepository operatonSearchProcessInstanceRepository,
             final ProcessPropertyService processPropertyService
     ) {
-        super(camundaHistoryService, repositoryService, camundaRepositoryService, camundaTaskService);
+        super(operatonHistoryService, repositoryService, operatonRepositoryService, operatonTaskService);
         this.historyService = historyService;
         this.runtimeService = runtimeService;
-        this.repositoryService = camundaRepositoryService;
-        this.camundaTaskService = camundaTaskService;
-        this.camundaProcessService = camundaProcessService;
+        this.repositoryService = operatonRepositoryService;
+        this.operatonTaskService = operatonTaskService;
+        this.operatonProcessService = operatonProcessService;
         this.processShortTimerService = processShortTimerService;
-        this.camundaSearchProcessInstanceRepository = camundaSearchProcessInstanceRepository;
+        this.operatonSearchProcessInstanceRepository = operatonSearchProcessInstanceRepository;
         this.processPropertyService = processPropertyService;
     }
 
     @GetMapping("/v1/process/definition")
     public ResponseEntity<List<ProcessDefinitionWithPropertiesDto>> getProcessDefinitions() {
-        final List<ProcessDefinitionWithPropertiesDto> definitions = runWithoutAuthorization(() -> camundaProcessService
+        final List<ProcessDefinitionWithPropertiesDto> definitions = runWithoutAuthorization(() -> operatonProcessService
                 .getDeployedDefinitions()
                 .stream()
                 .map(ProcessDefinitionWithPropertiesDto::fromProcessDefinition)
@@ -161,36 +164,36 @@ public class ProcessResource extends AbstractProcessResource {
     }
 
     @GetMapping("/v1/process/definition/{processDefinitionKey}")
-    public ResponseEntity<CamundaProcessDefinitionDto> getProcessDefinition(
+    public ResponseEntity<OperatonProcessDefinitionDto> getProcessDefinition(
         @LoggableResource(resourceTypeName = "processDefinitionKey") @PathVariable String processDefinitionKey
     ) {
-        CamundaProcessDefinition processDefinition = runWithoutAuthorization(() -> repositoryService.findProcessDefinition(
+        OperatonProcessDefinition processDefinition = runWithoutAuthorization(() -> repositoryService.findProcessDefinition(
                 byKey(processDefinitionKey)
                     .and(byLatestVersion())
             )
         );
         return Optional.ofNullable(processDefinition)
-                .map(process -> ResponseEntity.ok(CamundaProcessDefinitionDto.of(processDefinition)))
+                .map(process -> ResponseEntity.ok(OperatonProcessDefinitionDto.of(processDefinition)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/v1/process/definition/{processDefinitionKey}/versions")
-    public ResponseEntity<List<CamundaProcessDefinitionDto>> getProcessDefinitionVersions(
+    public ResponseEntity<List<OperatonProcessDefinitionDto>> getProcessDefinitionVersions(
         @LoggableResource(resourceTypeName = "processDefinitionKey") @PathVariable String processDefinitionKey
     ) {
-        List<CamundaProcessDefinition> deployedDefinitions = runWithoutAuthorization(() -> repositoryService.findProcessDefinitions(
+        List<OperatonProcessDefinition> deployedDefinitions = runWithoutAuthorization(() -> repositoryService.findProcessDefinitions(
                 byKey(processDefinitionKey),
                 Sort.by(VERSION)
             ));
-        List<CamundaProcessDefinitionDto> result = deployedDefinitions.stream()
-                .map(CamundaProcessDefinitionDto::of)
+        List<OperatonProcessDefinitionDto> result = deployedDefinitions.stream()
+                .map(OperatonProcessDefinitionDto::of)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(result);
     }
 
     @GetMapping("/v1/process/definition/{processDefinitionId}/xml")
     public ResponseEntity<ProcessDefinitionDiagramWithPropertyDto> getProcessDefinitionXml(
-        @LoggableResource(resourceType = CamundaProcessDefinition.class) @PathVariable String processDefinitionId
+        @LoggableResource(resourceType = OperatonProcessDefinition.class) @PathVariable String processDefinitionId
     ) {
         try {
             final var definitionDiagramDto = createProcessDefinitionDiagramDto(processDefinitionId);
@@ -210,7 +213,7 @@ public class ProcessResource extends AbstractProcessResource {
 
     @GetMapping("/v1/process/definition/{sourceProcessDefinitionId}/{targetProcessDefinitionId}/flownodes")
     public ResponseEntity<FlowNodeMigrationDTO> getFlowNodes(
-        @LoggableResource(resourceType = CamundaProcessDefinition.class) @PathVariable String sourceProcessDefinitionId,
+        @LoggableResource(resourceType = OperatonProcessDefinition.class) @PathVariable String sourceProcessDefinitionId,
         @PathVariable String targetProcessDefinitionId
     ) {
         final Map<String, String> sourceFlowNodeMap = findAllTasksEventsAndGatewaysForProcessDefinitionId(
@@ -232,7 +235,7 @@ public class ProcessResource extends AbstractProcessResource {
             @RequestParam(required = false) LocalDate toDate,
             @RequestParam(required = false) Integer duration
     ) {
-        CamundaProcessDefinition processDefinition = getProcessDefinition(processDefinitionKey, version);
+        OperatonProcessDefinition processDefinition = getProcessDefinition(processDefinitionKey, version);
 
         HistoricActivityInstanceQuery historicActivityInstanceQuery = historyService.createHistoricActivityInstanceQuery()
                 .processDefinitionId(processDefinition.getId());
@@ -292,7 +295,7 @@ public class ProcessResource extends AbstractProcessResource {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
             @RequestParam(required = false) Integer duration
     ) {
-        CamundaProcessDefinition processDefinition = getProcessDefinition(processDefinitionKey, version);
+        OperatonProcessDefinition processDefinition = getProcessDefinition(processDefinitionKey, version);
 
         HistoricActivityInstanceQuery historicActivityInstanceQuery = historyService.createHistoricActivityInstanceQuery()
                 .processDefinitionId(processDefinition.getId());
@@ -337,7 +340,7 @@ public class ProcessResource extends AbstractProcessResource {
             }
         }
 
-        List<CamundaTask> taskList = getAllActiveTasks(
+        List<OperatonTask> taskList = getAllActiveTasks(
             processDefinition,
             searchStatus,
             fromDate != null ? fromDate.atStartOfDay() : null,
@@ -345,7 +348,7 @@ public class ProcessResource extends AbstractProcessResource {
             duration
         );
         Map<String, Long> groupedList = taskList.stream()
-                .collect(Collectors.groupingBy(CamundaTask::getTaskDefinitionKey, Collectors.counting()));
+                .collect(Collectors.groupingBy(OperatonTask::getTaskDefinitionKey, Collectors.counting()));
 
         allTasksAverageDuration.forEach((k, v) -> {
             v.setAverageDurationInMilliseconds(v.getAverageDurationInMilliseconds() / v.getTotalCount());
@@ -367,27 +370,27 @@ public class ProcessResource extends AbstractProcessResource {
         @LoggableResource(resourceTypeName = "businessKey") @PathVariable String businessKey,
         @RequestBody Map<String, Object> variables
     ) {
-        final var processInstanceWithDefinition = camundaProcessService
+        final var processInstanceWithDefinition = operatonProcessService
             .startProcess(processDefinitionKey, businessKey, variables);
         return ResponseEntity.ok(processInstanceWithDefinition.getProcessInstanceDto());
     }
 
     @GetMapping("/v1/process/{processInstanceId}")
-    public ResponseEntity<CamundaHistoricProcessInstanceDto> getProcessInstance(
-        @LoggableResource(resourceType = CamundaExecution.class) @PathVariable String processInstanceId
+    public ResponseEntity<OperatonHistoricProcessInstanceDto> getProcessInstance(
+        @LoggableResource(resourceType = OperatonExecution.class) @PathVariable String processInstanceId
     ) {
-        CamundaHistoricProcessInstance historicProcessInstance = runWithoutAuthorization(() ->
+        OperatonHistoricProcessInstance historicProcessInstance = runWithoutAuthorization(() ->
             getHistoricProcessInstance(processInstanceId)
         );
         return Optional.ofNullable(historicProcessInstance)
                 .map(process -> ResponseEntity.ok(
-                    CamundaHistoricProcessInstanceDto.of(historicProcessInstance)))
+                    OperatonHistoricProcessInstanceDto.of(historicProcessInstance)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/v1/process/{processInstanceId}/history")
     public ResponseEntity<List<HistoricActivityInstanceDto>> getProcessInstanceHistory(
-        @LoggableResource(resourceType = CamundaExecution.class) @PathVariable String processInstanceId
+        @LoggableResource(resourceType = OperatonExecution.class) @PathVariable String processInstanceId
     ) {
         List<HistoricActivityInstance> historicActivityInstances = historyService.createHistoricActivityInstanceQuery()
                 .processInstanceId(processInstanceId)
@@ -407,7 +410,7 @@ public class ProcessResource extends AbstractProcessResource {
 
     @GetMapping("/v1/process/{processInstanceId}/log")
     public ResponseEntity<List<UserOperationLogEntryDto>> getProcessInstanceOperationLog(
-        @LoggableResource(resourceType = CamundaExecution.class) @PathVariable String processInstanceId
+        @LoggableResource(resourceType = OperatonExecution.class) @PathVariable String processInstanceId
     ) {
         List<UserOperationLogEntry> userOperationLogEntries = historyService.createUserOperationLogQuery()
                 .processDefinitionId(processInstanceId)
@@ -420,35 +423,35 @@ public class ProcessResource extends AbstractProcessResource {
 
     @GetMapping("/v1/process/{processInstanceId}/tasks")
     public ResponseEntity<List<TaskInstanceWithIdentityLink>> getProcessInstanceTasks(
-        @LoggableResource(resourceType = CamundaExecution.class) @PathVariable String processInstanceId
+        @LoggableResource(resourceType = OperatonExecution.class) @PathVariable String processInstanceId
     ) {
         return runWithoutAuthorization(
-                () -> camundaProcessService.findProcessInstanceById(processInstanceId)
+                () -> operatonProcessService.findProcessInstanceById(processInstanceId)
             )
                 .map(processInstance -> ResponseEntity.ok(
-                        camundaTaskService.getProcessInstanceTasks(processInstance.getId(), processInstance.getBusinessKey())))
+                        operatonTaskService.getProcessInstanceTasks(processInstance.getId(), processInstance.getBusinessKey())))
                 .orElse(ResponseEntity.noContent().build()
             );
     }
 
     @GetMapping("/v1/process/{processInstanceId}/activetask")
-    public ResponseEntity<CamundaTaskDto> getProcessInstanceActiveTask(
-        @LoggableResource(resourceType = CamundaExecution.class) @PathVariable String processInstanceId
+    public ResponseEntity<OperatonTaskDto> getProcessInstanceActiveTask(
+        @LoggableResource(resourceType = OperatonExecution.class) @PathVariable String processInstanceId
     ) {
-        CamundaTask task = camundaTaskService.findTask(
+        OperatonTask task = operatonTaskService.findTask(
             byActive()
                 .and(byProcessInstanceId(processInstanceId))
         );
         return Optional.ofNullable(task)
-                .map(taskResult -> ResponseEntity.ok(CamundaTaskDto.of(taskResult)))
+                .map(taskResult -> ResponseEntity.ok(OperatonTaskDto.of(taskResult)))
                 .orElse(ResponseEntity.noContent().build());
     }
 
     @GetMapping("/v1/process/{processInstanceId}/xml")
     public ResponseEntity<ProcessInstanceDiagramDto> getProcessInstanceXml(
-        @LoggableResource(resourceType = CamundaExecution.class) @PathVariable String processInstanceId
+        @LoggableResource(resourceType = OperatonExecution.class) @PathVariable String processInstanceId
     ) {
-        CamundaHistoricProcessInstance processInstance = runWithoutAuthorization(() ->
+        OperatonHistoricProcessInstance processInstance = runWithoutAuthorization(() ->
             getHistoricProcessInstance(processInstanceId)
         );
         try {
@@ -470,7 +473,7 @@ public class ProcessResource extends AbstractProcessResource {
 
     @GetMapping("/v1/process/{processInstanceId}/activities")
     public ResponseEntity<ActivityInstanceDto> getProcessInstanceActivity(
-        @LoggableResource(resourceType = CamundaExecution.class) @PathVariable String processInstanceId
+        @LoggableResource(resourceType = OperatonExecution.class) @PathVariable String processInstanceId
     ) {
         final var activityInstance = runtimeService.getActivityInstance(processInstanceId);
         return Optional
@@ -486,9 +489,9 @@ public class ProcessResource extends AbstractProcessResource {
     @Deprecated(since = "11.1.0", forRemoval = true)
     @GetMapping("/v1/process/{processInstanceId}/comments")
     public ResponseEntity<List<Comment>> getProcessInstanceComments(
-        @LoggableResource(resourceType = CamundaExecution.class) @PathVariable String processInstanceId
+        @LoggableResource(resourceType = OperatonExecution.class) @PathVariable String processInstanceId
     ) {
-        List<Comment> processInstanceComments = camundaTaskService.getProcessInstanceComments(processInstanceId);
+        List<Comment> processInstanceComments = operatonTaskService.getProcessInstanceComments(processInstanceId);
         processInstanceComments.sort((Comment c1, Comment c2) -> c2.getTime().compareTo(c1.getTime()));
         return ResponseEntity.ok(processInstanceComments);
     }
@@ -505,7 +508,7 @@ public class ProcessResource extends AbstractProcessResource {
         @RequestBody ProcessInstanceSearchDTO processInstanceSearchDTO,
         Pageable pageable
     ) {
-        final Page<ProcessInstance> page = camundaSearchProcessInstanceRepository.searchInstances(
+        final Page<ProcessInstance> page = operatonSearchProcessInstanceRepository.searchInstances(
                 processDefinitionName,
                 processInstanceSearchDTO,
                 pageable
@@ -521,7 +524,7 @@ public class ProcessResource extends AbstractProcessResource {
         @RequestBody ProcessInstanceSearchDTO processInstanceSearchDTO,
         Pageable pageable
     ) {
-        final Page<ProcessInstance> page = camundaSearchProcessInstanceRepository.searchInstances(
+        final Page<ProcessInstance> page = operatonSearchProcessInstanceRepository.searchInstances(
             processDefinitionName,
             processInstanceSearchDTO,
             pageable
@@ -534,7 +537,7 @@ public class ProcessResource extends AbstractProcessResource {
         @LoggableResource(resourceTypeName = "processDefinitionName") @PathVariable String processDefinitionName,
         @RequestBody ProcessInstanceSearchDTO processInstanceSearchDTO
     ) {
-        final Long count = camundaSearchProcessInstanceRepository.searchInstancesCountByDefinitionName(
+        final Long count = operatonSearchProcessInstanceRepository.searchInstancesCountByDefinitionName(
                 processDefinitionName,
                 processInstanceSearchDTO
         );
@@ -543,10 +546,10 @@ public class ProcessResource extends AbstractProcessResource {
 
     @PostMapping("/v1/process/definition/{processDefinitionId}/count")
     public ResponseEntity<ResultCount> getProcessInstanceCountForProcessDefinitionIdV2(
-        @LoggableResource(resourceType = CamundaProcessDefinition.class) @PathVariable String processDefinitionId,
+        @LoggableResource(resourceType = OperatonProcessDefinition.class) @PathVariable String processDefinitionId,
         @RequestBody ProcessInstanceSearchDTO processInstanceSearchDTO
     ) {
-        final Long count = camundaSearchProcessInstanceRepository.searchInstancesCountByDefinitionId(
+        final Long count = operatonSearchProcessInstanceRepository.searchInstancesCountByDefinitionId(
                 processDefinitionId, processInstanceSearchDTO);
         return ResponseEntity.ok(new ResultCount(count));
     }
@@ -555,7 +558,7 @@ public class ProcessResource extends AbstractProcessResource {
     @ResponseBody
     @Transactional
     public ResponseEntity<BatchDto> migrateProcessInstancesByProcessDefinitionIds(
-        @LoggableResource(resourceType = CamundaProcessDefinition.class) @PathVariable String sourceProcessDefinitionId,
+        @LoggableResource(resourceType = OperatonProcessDefinition.class) @PathVariable String sourceProcessDefinitionId,
         @PathVariable String targetProcessDefinitionId,
         @RequestBody(required = false) Map<String, String> instructions
     ) {
@@ -587,20 +590,20 @@ public class ProcessResource extends AbstractProcessResource {
     @Deprecated(since = "11.1.0", forRemoval = true)
     @PostMapping("/v1/process/{processInstanceId}/comment")
     public ResponseEntity<Void> createComment(
-        @LoggableResource(resourceType = CamundaExecution.class) @PathVariable String processInstanceId,
+        @LoggableResource(resourceType = OperatonExecution.class) @PathVariable String processInstanceId,
         @RequestBody CommentDto comment
     ) {
-        camundaTaskService.createComment(null, processInstanceId, comment.getText());
+        operatonTaskService.createComment(null, processInstanceId, comment.getText());
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/v1/process/{processInstanceId}/delete")
     public ResponseEntity<Void> delete(
-        @LoggableResource(resourceType = CamundaExecution.class) @PathVariable String processInstanceId,
+        @LoggableResource(resourceType = OperatonExecution.class) @PathVariable String processInstanceId,
         @RequestBody String reason
     ) {
         runWithoutAuthorization(() -> {
-            camundaProcessService.deleteProcessInstanceById(processInstanceId, reason);
+            operatonProcessService.deleteProcessInstanceById(processInstanceId, reason);
             return null;
         });
         return ResponseEntity.ok().build();
@@ -608,7 +611,7 @@ public class ProcessResource extends AbstractProcessResource {
 
     @PutMapping("/v1/process/definition/{processDefinitionId}/xml/timer")
     public ResponseEntity<Void> modifyProcessDefinitionIntoShortTimerVersionAndDeploy(
-        @LoggableResource(resourceType = CamundaProcessDefinition.class) @PathVariable String processDefinitionId
+        @LoggableResource(resourceType = OperatonProcessDefinition.class) @PathVariable String processDefinitionId
     ) throws ProcessNotFoundException, DocumentParserException {
         if (processPropertyService.isReadOnlyById(processDefinitionId)) {
             return ResponseEntity.status(FORBIDDEN).build();
@@ -619,7 +622,7 @@ public class ProcessResource extends AbstractProcessResource {
 
     @PostMapping(value = "/v1/process/definition/deployment", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Object> deployProcessDefinition(
-            @RequestPart(name = "file") MultipartFile bpmn) {
+        @RequestPart(name = "file") MultipartFile bpmn) {
         boolean correctFileExtension = Objects.requireNonNull(bpmn.getOriginalFilename()).endsWith(".bpmn")
             || Objects.requireNonNull(bpmn.getOriginalFilename()).endsWith(".dmn");
 
@@ -627,14 +630,19 @@ public class ProcessResource extends AbstractProcessResource {
             return ResponseEntity.badRequest().body("Invalid file name. Must have '.bpmn' or '.dmn' suffix.");
         }
         try {
-            runWithoutAuthorization(() -> {
-                camundaProcessService.deploy(bpmn.getOriginalFilename(), new ByteArrayInputStream(bpmn.getBytes()));
-                return null;
-            });
+            return runWithoutAuthorization(
+                () -> {
+                    DeploymentWithDefinitions deployment = operatonProcessService.deploy(
+                        null,
+                        bpmn.getOriginalFilename(),
+                        new ByteArrayInputStream(bpmn.getBytes())
+                    );
+
+                    return ResponseEntity.ok(DefinitionDeploymentResponseDto.Companion.of((DeploymentEntity) deployment));
+                });
         } catch (ParseException e) {
             throw new BpmnParseException(e);
         }
-        return ResponseEntity.ok().build();
     }
 
 }

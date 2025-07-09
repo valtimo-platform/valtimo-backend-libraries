@@ -17,7 +17,7 @@
 package com.ritense.valtimo.security.jwt;
 
 import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationService;
-import org.camunda.bpm.engine.IdentityService;
+import org.operaton.bpm.engine.IdentityService;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;

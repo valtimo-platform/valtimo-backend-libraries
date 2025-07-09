@@ -38,7 +38,7 @@ import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
-import org.camunda.bpm.engine.RepositoryService
+import org.operaton.bpm.engine.RepositoryService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -156,7 +156,12 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         val zakenApiPlugin = pluginService.createInstance<ZakenApiPlugin>(UUID.fromString(ZAKEN_API_PLUGIN_ID))
         val document = runWithoutAuthorization {
             documentService.createDocument(
-                NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
+                NewDocumentRequest(
+                    DOCUMENT_DEFINITION_KEY,
+                    "profile",
+                    "1.0.0",
+                    objectMapper.createObjectNode()
+                )
             ).resultingDocument().get()
         }
 
@@ -175,7 +180,12 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         val zakenApiPlugin = pluginService.createInstance<ZakenApiPlugin>(UUID.fromString(ZAKEN_API_PLUGIN_ID))
         val document = runWithoutAuthorization {
             documentService.createDocument(
-                NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
+                NewDocumentRequest(
+                    DOCUMENT_DEFINITION_KEY,
+                    "profile",
+                    "1.0.0",
+                    objectMapper.createObjectNode()
+                )
             ).resultingDocument().get()
         }
         val description = "omschrijving"
@@ -197,7 +207,12 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
 
     @Test
     fun `should link document to zaak`() {
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(
+            DOCUMENT_DEFINITION_KEY,
+            "profile",
+            "1.0.0",
+            objectMapper.createObjectNode()
+        )
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
 
         // Make a record in the database about a document that is matched to the open zaak
@@ -236,7 +251,12 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
 
     @Test
     fun `should link uploaded document to zaak`() {
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(
+            DOCUMENT_DEFINITION_KEY,
+            "profile",
+            "1.0.0",
+            objectMapper.createObjectNode()
+        )
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
 
         // Make a record in1 the database about a document that is matched to the open zaak

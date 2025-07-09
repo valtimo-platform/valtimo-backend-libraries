@@ -31,15 +31,15 @@ import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.domain.ProcessInstanceId
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.valtimo.camunda.domain.CamundaTask
-import com.ritense.valtimo.service.CamundaProcessService
-import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.operaton.domain.OperatonTask
+import com.ritense.valtimo.service.OperatonProcessService
+import com.ritense.valtimo.service.OperatonTaskService
 import com.ritense.valueresolver.ValueResolverService
-import mu.KotlinLogging
-import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.engine.delegate.VariableScope
+import io.github.oshai.kotlinlogging.KotlinLogging
+import org.operaton.bpm.engine.RuntimeService
+import org.operaton.bpm.engine.delegate.VariableScope
 import org.springframework.context.event.EventListener
 import org.springframework.transaction.annotation.Transactional
 import java.net.MalformedURLException
@@ -50,8 +50,8 @@ open class PortaalTaakEventListener(
     private val objectManagementService: ObjectManagementService,
     private val pluginService: PluginService,
     private val processDocumentService: ProcessDocumentService,
-    private val processService: CamundaProcessService,
-    private val taskService: CamundaTaskService,
+    private val processService: OperatonProcessService,
+    private val taskService: OperatonTaskService,
     private val runtimeService: RuntimeService,
     private val valueResolverService: ValueResolverService,
     private val objectMapper: ObjectMapper
@@ -99,7 +99,7 @@ open class PortaalTaakEventListener(
                     val receiveData = getReceiveDataActionProperty(task, it.id.id) ?: return
 
                     val portaaltaakPlugin = pluginService.createInstance(it) as PortaaltaakPlugin
-                    val processInstanceId = CamundaProcessInstanceId(task.getProcessInstanceId())
+                    val processInstanceId = OperatonProcessInstanceId(task.getProcessInstanceId())
                     val documentId = runWithoutAuthorization {
                         processDocumentService.getDocumentId(processInstanceId, task)
                     }
@@ -121,7 +121,7 @@ open class PortaalTaakEventListener(
             ?: logger.warn { "No portaaltaak plugin configuration found with object management configuration id '${objectManagement.id}'" }
     }
 
-    private fun getReceiveDataActionProperty(task: CamundaTask, pluginConfigurationId: UUID): List<DataBindingConfig>? {
+    private fun getReceiveDataActionProperty(task: OperatonTask, pluginConfigurationId: UUID): List<DataBindingConfig>? {
         logger.debug { "Retrieving receive data action property for task with id '${task.id}'" }
         val processLinks = pluginService.getProcessLinks(task.getProcessDefinitionId(), task.taskDefinitionKey!!)
         val processLink = processLinks.firstOrNull { processLink ->
@@ -139,12 +139,12 @@ open class PortaalTaakEventListener(
 
     internal fun saveDataInDocument(
         taakObject: TaakObject,
-        task: CamundaTask,
+        task: OperatonTask,
         receiveData: List<DataBindingConfig>
     ) {
         logger.debug { "Saving data in document for task with id '${task.id}'" }
         if (taakObject.verzondenData.isNotEmpty()) {
-            val processInstanceId = CamundaProcessInstanceId(task.getProcessInstanceId())
+            val processInstanceId = OperatonProcessInstanceId(task.getProcessInstanceId())
             val taakObjectData = objectMapper.valueToTree<JsonNode>(taakObject.verzondenData)
             val resolvedValues = getResolvedValues(receiveData, taakObjectData)
             handleTaakObjectData(processInstanceId, task, resolvedValues)

@@ -6,16 +6,23 @@ dependencies {
     implementation(project(":document-generation:smartdocuments"))
     implementation(project(":logging"))
     implementation(project(":zgw:portaaltaak"))
+    implementation(project(":outbox:outbox-rabbitmq"))
+    implementation(project(":process-link-url"))
 
-    implementation("io.github.microutils:kotlin-logging")
+    implementation("io.github.oshai:kotlin-logging")
 
-    compileOnly(project(":besluit"))
-    compileOnly(project(":openzaak"))
-    compileOnly(project(":contactmoment"))
-    compileOnly(project(":objects-api"))
+
+    // Spring cloud stream RabbitMQ
+    implementation "org.springframework.cloud:spring-cloud-starter-stream-rabbit:${springCloudStreamVersion}"
+    implementation "com.rabbitmq:amqp-client:$amqpCLientVersion"
+
+    // Spring cloud stream RabbitMQ
+    implementation "org.springframework.cloud:spring-cloud-starter-stream-rabbit:${springCloudStreamVersion}"
+    implementation "com.rabbitmq:amqp-client:$amqpCLientVersion"
 
     // Database
-    implementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion
+    implementation "org.postgresql:postgresql:$postgresqlDriverVersion"
+    implementation "com.mysql:mysql-connector-j:$mysqlDriverVersion"
 
     if (System.getProperty("os.arch") == "aarch64") {
         runtimeOnly("io.netty:netty-resolver-dns-native-macos:4.1.105.Final:osx-aarch_64")
@@ -45,7 +52,7 @@ tasks.register("bootRunWithDocker", tasks.named("bootRun").get().class) {
     group = "application"
     description = "Starts docker containers and then runs this project as a Spring Boot application"
     classpath = sourceSets.main.runtimeClasspath
-    mainClass = "com.ritense.gzac.GzacApplication"
+    mainClass = "com.ritense.gzac.GzacApplicationKt"
 
     dependsOn("composeUpGzac")
     doFirst {

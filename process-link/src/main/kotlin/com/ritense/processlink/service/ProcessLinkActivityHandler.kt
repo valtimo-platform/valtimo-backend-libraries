@@ -17,12 +17,12 @@ package com.ritense.processlink.service
 
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
-import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.operaton.domain.OperatonTask
 import java.util.UUID
 
 interface ProcessLinkActivityHandler<T> {
     fun supports(processLink: ProcessLink): Boolean
-    fun openTask(task: CamundaTask, processLink: ProcessLink): ProcessLinkActivityResult<T>
+    fun openTask(task: OperatonTask, processLink: ProcessLink): ProcessLinkActivityResult<T>
     fun getStartEventObject(
         processDefinitionId: String,
         documentId: UUID?,

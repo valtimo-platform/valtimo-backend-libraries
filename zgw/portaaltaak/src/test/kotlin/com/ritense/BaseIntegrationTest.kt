@@ -16,26 +16,23 @@
 
 package com.ritense
 
-import com.ritense.authorization.specification.impl.NoopAuthorizationSpecificationFactory
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.outbox.OutboxService
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.ResourceService
-import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
-import com.ritense.valtimo.service.CamundaProcessService
+import com.ritense.valtimo.service.OperatonProcessService
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.zakenapi.ResourceProvider
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.boot.test.mock.mockito.SpyBean
+import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest
@@ -43,42 +40,39 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @Tag("integration")
 abstract class BaseIntegrationTest {
 
-    @SpyBean
+    @MockitoSpyBean
     lateinit var pluginService: PluginService
 
-    @SpyBean
+    @MockitoSpyBean
     lateinit var pluginConfigurationRepository: PluginConfigurationRepository
 
-    @SpyBean
+    @MockitoSpyBean
     lateinit var valueResolverService: ValueResolverService
 
-    @SpyBean
-    lateinit var camundaProcessService: CamundaProcessService
+    @MockitoSpyBean
+    lateinit var operatonProcessService: OperatonProcessService
 
-    @SpyBean
+    @MockitoSpyBean
     lateinit var zaakInstanceLinkService: ZaakInstanceLinkService
 
-    @SpyBean
+    @MockitoSpyBean
     lateinit var outboxService: OutboxService
 
-    @MockBean
+    @MockitoBean
     lateinit var resourceService: ResourceService
 
-    @MockBean
+    @MockitoBean
     lateinit var userManagementService: UserManagementService
 
-    @MockBean
+    @MockitoBean
     lateinit var mailSender: MailSender
 
-    @MockBean
+    @MockitoBean
     lateinit var resourceProvider: ResourceProvider
 
-    @MockBean
+    @MockitoBean
     lateinit var zaakUrlProvider: ZaakUrlProvider
 
-    @MockBean
+    @MockitoBean
     lateinit var zaaktypeUrlProvider: ZaaktypeUrlProvider
-
-    @Autowired
-    lateinit var noopAuthorizationSpecificationFactory: NoopAuthorizationSpecificationFactory<CamundaTask>
 }

@@ -34,7 +34,7 @@ import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.zakenapi.ZaakUrlProvider
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -62,18 +62,13 @@ class ObjectenApiAutoConfiguration {
         restClientBuilder: RestClient.Builder,
         outboxService: OutboxService,
         objectMapper: ObjectMapper,
-        authorizationService: AuthorizationService,
-        @Value("\${valtimo.authorization.objectenapi.enabled:true}") authorizationEnabled: Boolean
+        authorizationService: AuthorizationService
     ): ObjectenApiClient {
-        if (!authorizationEnabled) {
-            logger.warn { "Objecten API authorization is disabled. This is a potential security issue. The option to disable this will be removed with Valtimo 13." }
-        }
         return ObjectenApiClient(
             restClientBuilder,
             outboxService,
             objectMapper,
-            authorizationService,
-            authorizationEnabled
+            authorizationService
         )
     }
 
