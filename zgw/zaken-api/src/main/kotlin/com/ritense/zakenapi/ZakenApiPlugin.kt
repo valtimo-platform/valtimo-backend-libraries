@@ -57,7 +57,6 @@ import com.ritense.zakenapi.domain.rol.RolMedewerker
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolOrganisatorischeEenheid
-import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.domain.rol.RolTypeGeneriekeBeschrijving
 import com.ritense.zakenapi.domain.rol.RolVestiging
 import com.ritense.zakenapi.repository.ZaakHersteltermijnRepository
@@ -76,7 +75,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit.DAYS
 import java.util.UUID
-import kotlin.String
 
 @Plugin(
     key = ZakenApiPlugin.PLUGIN_KEY,
