@@ -162,11 +162,6 @@ class DashboardService(
         widgetConfigurationUpdateDtos: List<WidgetConfigurationUpdateRequestDto>
     ): List<WidgetConfiguration> {
         denyAuthorization()
-        widgetConfigurationUpdateDtos.forEach {
-            if (!widgetConfigurationRepository.existsByDashboardKeyAndKey(dashboardKey, it.key)) {
-                throw RuntimeException("Failed to update widget configuration. Widget configuration with key '${it.key}' and dashboard '$dashboardKey' doesn't exist.")
-            }
-        }
 
         val dashboard = getDashboard(dashboardKey)
         val widgetConfigurations = widgetConfigurationUpdateDtos.mapIndexed { index, widgetConfigurationUpdateDto ->
