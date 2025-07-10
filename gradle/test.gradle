@@ -37,6 +37,8 @@ tasks.register("integrationTestingPostgresql", Test) {
         excludeTags "security"
     }
     mustRunAfter check
+    outputs.upToDateWhen { false }
+    outputs.cacheIf { false }
 
     doLast {
         composeDownForced
@@ -51,6 +53,8 @@ tasks.register("integrationTestingMysql", Test) {
         excludeTags "security"
     }
     mustRunAfter check
+    outputs.upToDateWhen { false }
+    outputs.cacheIf { false }
 
     doLast {
         composeDownForced
