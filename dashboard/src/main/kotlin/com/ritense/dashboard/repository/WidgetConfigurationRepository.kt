@@ -34,4 +34,19 @@ interface WidgetConfigurationRepository : JpaRepository<WidgetConfiguration, Str
     fun deleteByDashboardKey(dashboardKey: String)
 
     fun existsByDashboardKeyAndKey(dashboardKey: String, key: String): Boolean
+
+    @Modifying
+    @org.springframework.transaction.annotation.Transactional
+    @org.springframework.data.jpa.repository.Query(
+        value = """
+        DELETE FROM dashboard_widget_configuration
+        WHERE dashboard_key = :dashboardKey
+          AND key NOT IN (:keysToKeep)
+    """,
+        nativeQuery = true
+    )
+    fun deleteByDashboardKeyAndKeyNotIn(
+        dashboardKey: String,
+        keysToKeep: List<String>
+    )
 }

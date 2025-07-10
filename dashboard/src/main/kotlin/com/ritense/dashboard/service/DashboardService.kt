@@ -183,7 +183,7 @@ class DashboardService(
             )
         }
 
-        widgetConfigurationRepository.deleteAll()
+        widgetConfigurationRepository.deleteByDashboardKeyAndKeyNotIn(dashboard.key, widgetConfigurations.map { it.key  })
 
         return widgetConfigurationRepository.saveAll(widgetConfigurations)
     }
