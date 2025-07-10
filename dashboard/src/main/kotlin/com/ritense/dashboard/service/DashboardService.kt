@@ -156,6 +156,7 @@ class DashboardService(
         )
     }
 
+    @Transactional
     fun updateWidgetConfigurations(
         dashboardKey: String,
         widgetConfigurationUpdateDtos: List<WidgetConfigurationUpdateRequestDto>
@@ -181,6 +182,8 @@ class DashboardService(
                 url = widgetConfigurationUpdateDto.url
             )
         }
+
+        widgetConfigurationRepository.deleteAll()
 
         return widgetConfigurationRepository.saveAll(widgetConfigurations)
     }
