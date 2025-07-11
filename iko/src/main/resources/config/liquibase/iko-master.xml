@@ -32,5 +32,6 @@
     <property name="booleanFalseValue" value="false" dbms="postgresql"/>
 
     <include file="changelog/20250623-create-iko-domain.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20250707-add-iko-tab-widget.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

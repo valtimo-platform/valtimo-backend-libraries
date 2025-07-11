@@ -1,0 +1,85 @@
+{
+    "ikoDataAggregateKey": "boom",
+    "ikoTabKey": "general",
+    "ikoWidgets": [
+        {
+            "key": "boom",
+            "type": "fields",
+            "title": "Boom",
+            "width": 4,
+            "highContrast": true,
+            "properties": {
+                "columns": [
+                    [
+                        {
+                            "key": "boombeeld",
+                            "title": "Boombeeld",
+                            "value": "iko:/record/data/boombeeld"
+                        },
+                        {
+                            "key": "boomgroep",
+                            "title": "Boomgroep",
+                            "value": "iko:/record/data/boomgroep"
+                        },
+                        {
+                            "key": "groeifase",
+                            "title": "Groeifase",
+                            "value": "iko:/record/data/groeifase"
+                        }
+                    ],
+                    [
+                        {
+                            "key": "snoeifase",
+                            "title": "Snoeifase",
+                            "value": "iko:/record/data/snoeifase"
+                        },
+                        {
+                            "key": "boomspiegel",
+                            "title": "Boomspiegel",
+                            "value": "iko:/record/data/boomspiegel"
+                        },
+                        {
+                            "key": "takvrijestam",
+                            "title": "Takvrijestam",
+                            "value": "iko:/record/data/takvrijestam"
+                        }
+                    ],
+                    [
+                        {
+                            "key": "beleidsstatus",
+                            "title": "Beleidsstatus",
+                            "value": "iko:/record/data/beleidsstatus"
+                        },
+                        {
+                            "key": "boombeschermer",
+                            "title": "Boombeschermer",
+                            "value": "iko:/record/data/boombeschermer"
+                        },
+                        {
+                            "key": "feestverlichting",
+                            "title": "Feestverlichting",
+                            "value": "iko:/record/data/feestverlichting"
+                        }
+                    ],
+                    [
+                        {
+                            "key": "beoogdeomlooptijd",
+                            "title": "Beoogdeomlooptijd",
+                            "value": "iko:/record/data/beoogdeomlooptijd"
+                        },
+                        {
+                            "key": "boomveiligheidsklasse",
+                            "title": "Boomveiligheidsklasse",
+                            "value": "iko:/record/data/boomveiligheidsklasse"
+                        },
+                        {
+                            "key": "groeiplaatsinrichting",
+                            "title": "Groeiplaatsinrichting",
+                            "value": "iko:/record/data/groeiplaatsinrichting"
+                        }
+                    ]
+                ]
+            }
+        }
+    ]
+}

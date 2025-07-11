@@ -12,7 +12,7 @@
             "sortable": true
         },
         {
-            "key": "bsn",
+            "key": "id",
             "title": "BSN",
             "path": "/burgerservicenummer",
             "displayType": {

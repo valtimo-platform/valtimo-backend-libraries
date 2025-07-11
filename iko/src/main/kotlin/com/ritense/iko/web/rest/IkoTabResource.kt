@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.tab.web.rest
+package com.ritense.iko.web.rest
 
-import com.ritense.tab.importer.TabDto
-import com.ritense.tab.service.TabService
+import com.ritense.iko.service.IkoTabService
+import com.ritense.tab.web.rest.dto.TabDto
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import com.ritense.valtimo.contract.domain.ValtimoMediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
@@ -28,17 +28,18 @@ import org.springframework.web.bind.annotation.RequestMapping
 
 @Controller
 @SkipComponentScan
-@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
-class TabResource(
-    private val tabService: TabService
+@RequestMapping("/api", produces = [ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE])
+class IkoTabResource(
+    private val ikoTabService: IkoTabService
 ) {
 
-    @GetMapping("/v1/tab/{ownerType}/{ownerId}")
-    fun getTabs(
-        @PathVariable ownerType: String,
-        @PathVariable ownerId: String
+    @GetMapping("/v1/iko-data-aggregate/{ikoDataAggregateKey}/tab")
+    fun getIkoTabs(
+        @PathVariable ikoDataAggregateKey: String,
     ): ResponseEntity<List<TabDto>> {
-        return ResponseEntity.ok(tabService.findAllByOwner(ownerType, ownerId).map { TabDto.from(it) })
+        return ResponseEntity.ok(
+            ikoTabService.findAllTabsByIkoDataAggregateKey(ikoDataAggregateKey).map { TabDto.from(it) }
+        )
     }
 
 }

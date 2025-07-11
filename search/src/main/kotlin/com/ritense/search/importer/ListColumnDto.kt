@@ -26,8 +26,8 @@ data class ListColumnDto(
     val key: String,
     val title: String?,
     val path: String,
-    val displayType: DisplayType,
-    val sortable: Boolean,
+    val displayType: DisplayType = DisplayType(),
+    val sortable: Boolean = false,
     val defaultSort: ColumnDefaultSort? = null,
 ) {
     fun toEntity(ownerType: String, ownerId: String, order: Int) = SearchListColumn(

@@ -1,0 +1,101 @@
+{
+    "ikoDataAggregateKey": "klant",
+    "ikoTabKey": "general",
+    "ikoWidgets": [
+        {
+            "key": "persoon",
+            "type": "fields",
+            "title": "Partner",
+            "width": 1,
+            "highContrast": true,
+            "properties": {
+                "columns": [
+                    [
+                        {
+                            "key": "naam",
+                            "title": "Naam",
+                            "value": "iko:/persoon/naam/volledigeNaam"
+                        },
+                        {
+                            "key": "bsn",
+                            "title": "BSN",
+                            "value": "iko:/persoon/burgerservicenummer"
+                        },
+                        {
+                            "key": "geboortedatum",
+                            "title": "Geboortedatum",
+                            "value": "iko:/persoon/geboorte/datum/datum",
+                            "displayProperties": {
+                                "type": "date",
+                                "format": "DD-MM-YYYY"
+                            }
+                        }
+                    ]
+                ]
+            }
+        },
+        {
+            "key": "nationaliteiten",
+            "type": "collection",
+            "title": "Nationaliteiten",
+            "width": 3,
+            "highContrast": false,
+            "properties": {
+                "collection": "iko:/persoon/nationaliteiten",
+                "defaultPageSize": 4,
+                "title": {
+                    "value": "/nationaliteit/omschrijving"
+                },
+                "fields": [
+                    {
+                        "key": "nationaliteit",
+                        "title": "Nationaliteit",
+                        "value": "/nationaliteit/omschrijving"
+                    },
+                    {
+                        "key": "datumIngangGeldigheid",
+                        "title": "Datum Ingang Geldigheid",
+                        "value": "/datumIngangGeldigheid/langFormaat"
+                    }
+                ]
+            }
+        },
+        {
+            "key": "lopendeZaken",
+            "type": "table",
+            "title": "Lopende zaken",
+            "width": 4,
+            "highContrast": false,
+            "properties": {
+                "collection": "iko:/zaken",
+                "defaultPageSize": 4,
+                "columns": [
+                    {
+                        "key": "zaakNummer",
+                        "title": "Zaaknummer",
+                        "value": "/zaakNummer"
+                    },
+                    {
+                        "key": "type",
+                        "title": "Type",
+                        "value": "/type"
+                    },
+                    {
+                        "key": "status",
+                        "title": "Status",
+                        "value": "/status"
+                    },
+                    {
+                        "key": "uiterlijkeEinddatum",
+                        "title": "Uiterlijke einddatum",
+                        "value": "/uiterlijkeEinddatum",
+                        "displayProperties": {
+                            "type": "date",
+                            "format": "DD-MM-YYYY"
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

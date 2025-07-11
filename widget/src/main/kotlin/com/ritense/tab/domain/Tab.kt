@@ -27,13 +27,7 @@ import java.util.UUID
 data class Tab(
     @Id
     @Column(name = "id")
-    val id: UUID = UUID.randomUUID(),
-
-    @Column(name = "owner_id")
-    val ownerId: String,
-
-    @Column(name = "owner_type")
-    val ownerType: String,
+    val id: UUID,
 
     @Column(name = "tab_key")
     val key: String,

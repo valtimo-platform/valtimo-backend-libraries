@@ -51,5 +51,6 @@ class ValtimoImportTypes {
         const val IKO_SEARCH_FIELD = "ikosearchField"
         const val IKO_LIST_COLUMN = "ikosearchlistcolumn"
         const val IKO_TAB = "ikotab"
+        const val IKO_WIDGET = "ikowidget"
     }
 }

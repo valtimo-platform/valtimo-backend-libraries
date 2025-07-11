@@ -14,29 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.tab.importer
+package com.ritense.widget.repository
 
-import com.ritense.tab.domain.Tab
+import com.ritense.widget.domain.Widget
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import java.util.UUID
 
-data class TabDto(
-    val key: String,
-    val title: String?,
-    val type: String,
-) {
-    fun toEntity(ownerType: String, ownerId: String, order: Int) = Tab(
-        ownerType = ownerType,
-        ownerId = ownerId,
-        key = this.key,
-        title = this.title,
-        type = this.type,
-        order = order
-    )
+interface WidgetRepository : JpaRepository<Widget, UUID>, JpaSpecificationExecutor<Widget>
 
-    companion object {
-        fun from(entity: Tab) = TabDto(
-            key = entity.key,
-            title = entity.title,
-            type = entity.type,
-        )
-    }
-}

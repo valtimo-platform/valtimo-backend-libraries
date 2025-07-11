@@ -18,16 +18,17 @@ package com.ritense.iko.importer
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.iko.service.IkoTabService
 import com.ritense.importer.ImportRequest
+import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.IKO_DATA_REQUEST
 import com.ritense.importer.ValtimoImportTypes.Companion.IKO_TAB
-import com.ritense.tab.importer.TabImporter
-import com.ritense.tab.service.TabService
+import java.util.UUID
 
 class IkoTabImporter(
     private val objectMapper: ObjectMapper,
-    tabService: TabService,
-) : TabImporter(tabService, IKO_TAB_OWNER) {
+    private val service: IkoTabService,
+) : Importer {
 
     override fun type(): String = IKO_TAB
 
@@ -36,14 +37,27 @@ class IkoTabImporter(
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
-        val ikoTabs = objectMapper.readValue<IkoTabsDto>(request.content.toString(Charsets.UTF_8))
-        deploy(ikoTabs.ikoDataAggregateKey, ikoTabs.ikoTabs)
+        val ikoTabsDto = objectMapper.readValue<IkoTabsDto>(request.content.toString(Charsets.UTF_8))
+
+        val existingTabs = service.findAllTabsByIkoDataAggregateKey(ikoTabsDto.ikoDataAggregateKey)
+
+        ikoTabsDto.ikoTabs.forEachIndexed { index, tabDto ->
+            val existingTabId = existingTabs.firstOrNull { existingTab -> existingTab.key == tabDto.key }?.id
+            if (existingTabId != null) {
+                service.update(ikoTabsDto.ikoDataAggregateKey, tabDto.toEntity(existingTabId, index))
+            } else {
+                service.create(ikoTabsDto.ikoDataAggregateKey, tabDto.toEntity(UUID.randomUUID(), index))
+            }
+        }
+
+        existingTabs
+            .filter { existingTab -> ikoTabsDto.ikoTabs.none { tabDto -> tabDto.key == existingTab.key } }
+            .forEach { existingTab -> service.deleteByKey(ikoTabsDto.ikoDataAggregateKey, existingTab.key) }
     }
 
     override fun partOfCaseDefinition(): Boolean = false
 
     companion object {
-        const val IKO_TAB_OWNER = "IkoDataAggregate"
         private val FILENAME_REGEX = """/global/iko/(?:.*/)?(.+)\.iko-tab\.json""".toRegex()
     }
 }

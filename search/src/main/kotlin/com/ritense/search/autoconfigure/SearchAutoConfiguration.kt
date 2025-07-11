@@ -20,8 +20,11 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.ritense.search.ObjectMapperConfigurer
 import com.ritense.search.autodeployment.SearchListColumnDefinitionDeploymentService
+import com.ritense.search.domain.BooleanDisplayTypeParameter
 import com.ritense.search.domain.DateFormatDisplayTypeParameter
+import com.ritense.search.domain.EmptyDisplayTypeParameter
 import com.ritense.search.domain.EnumDisplayTypeParameter
+import com.ritense.search.domain.TagsDisplayTypeParameter
 import com.ritense.search.repository.SearchFieldV2Repository
 import com.ritense.search.repository.SearchListColumnRepository
 import com.ritense.search.security.config.SearchHttpSecurityConfigurer
@@ -91,13 +94,39 @@ class SearchAutoConfiguration {
     }
 
     @Bean
-    fun searchEnumDisplayTypeParameterType(): NamedType {
+    @ConditionalOnMissingBean(name = ["hiddenDisplayTypeParameterType"])
+    fun hiddenDisplayTypeParameterType(): NamedType {
+        return NamedType(EmptyDisplayTypeParameter::class.java, "hidden")
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = ["textDisplayTypeParameterType"])
+    fun textDisplayTypeParameterType(): NamedType {
+        return NamedType(EmptyDisplayTypeParameter::class.java, "text")
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = ["enumDisplayTypeParameterType"])
+    fun enumDisplayTypeParameterType(): NamedType {
         return NamedType(EnumDisplayTypeParameter::class.java, "enum")
     }
 
     @Bean
-    fun searchDateFormatDisplayTypeParameterType(): NamedType {
+    @ConditionalOnMissingBean(name = ["dateFormatDisplayTypeParameterType"])
+    fun dateFormatDisplayTypeParameterType(): NamedType {
         return NamedType(DateFormatDisplayTypeParameter::class.java, "date")
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = ["booleanDisplayTypeParameterType"])
+    fun booleanDisplayTypeParameterType(): NamedType {
+        return NamedType(BooleanDisplayTypeParameter::class.java, "boolean")
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = ["tagsDisplayTypeParameterType"])
+    fun tagsDisplayTypeParameterType(): NamedType {
+        return NamedType(TagsDisplayTypeParameter::class.java, "tags")
     }
 
     @Bean

@@ -262,7 +262,7 @@ class CaseAutoConfiguration {
         return CaseHttpSecurityConfigurer()
     }
 
-    @Order(Ordered.HIGHEST_PRECEDENCE + 20)
+    @Order(HIGHEST_PRECEDENCE + 20)
     @ConditionalOnMissingBean(name = ["caseLiquibaseMasterChangeLogLocation"])
     @Bean
     fun caseLiquibaseMasterChangeLogLocation(): LiquibaseMasterChangeLogLocation {
@@ -270,21 +270,25 @@ class CaseAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(name = ["enumDisplayTypeParameterType"])
     fun enumDisplayTypeParameterType(): NamedType {
         return NamedType(EnumDisplayTypeParameter::class.java, "enum")
     }
 
     @Bean
+    @ConditionalOnMissingBean(name = ["dateFormatDisplayTypeParameterType"])
     fun dateFormatDisplayTypeParameterType(): NamedType {
         return NamedType(DateFormatDisplayTypeParameter::class.java, "date")
     }
 
     @Bean
+    @ConditionalOnMissingBean(name = ["booleanDisplayTypeParameterType"])
     fun booleanDisplayTypeParameterType(): NamedType {
         return NamedType(BooleanDisplayTypeParameter::class.java, "boolean")
     }
 
     @Bean
+    @ConditionalOnMissingBean(name = ["tagsDisplayTypeParameterType"])
     fun tagsDisplayTypeParameterType(): NamedType {
         return NamedType(TagsDisplayTypeParameter::class.java, "tags")
     }

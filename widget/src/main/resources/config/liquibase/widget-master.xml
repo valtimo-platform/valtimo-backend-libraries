@@ -26,6 +26,10 @@
     <property name="jsonType" value="JSON" dbms="mysql"/>
     <property name="jsonType" value="JSONB" dbms="postgresql"/>
 
+    <property name="intType" value="int" dbms="mysql"/>
+    <property name="intType" value="integer" dbms="postgresql"/>
+
     <include file="changelog/20250702-add-tab-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20250704-add-widget-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

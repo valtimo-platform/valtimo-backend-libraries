@@ -20,7 +20,9 @@ data class DataFilter(
     val property: String,
     val comparator: Comparator,
     val value: Any?,
-)
+) {
+    constructor(property: String, value: Any?) : this(property, Comparator.EQUAL_TO, value)
+}
 
 enum class Comparator() {
     EQUAL_TO,

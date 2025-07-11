@@ -2,6 +2,14 @@
     "ikoDataAggregateKey": "boom",
     "ikoListColumns": [
         {
+            "key": "id",
+            "path": "/uuid",
+            "displayType": {
+                "type": "hidden",
+                "displayTypeParameters": {}
+            }
+        },
+        {
             "key": "boombeeld",
             "title": "Boombeeld",
             "path": "/record/data/boombeeld",

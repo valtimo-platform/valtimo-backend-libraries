@@ -33,7 +33,8 @@ class IkoHttpSecurityConfigurer : HttpSecurityConfigurer {
             http.authorizeHttpRequests { requests ->
                 requests
                     .requestMatchers(antMatcher(GET, "/api/management/v1/iko-types")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(GET, "/api/management/v1/iko-property-fields/{type}/connector-config")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/iko-property-fields/{type}/connector-config"))
+                    .hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "/api/management/v1/iko")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "/api/management/v1/iko/{key}")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(POST, "/api/management/v1/iko/{key}")).hasAuthority(ADMIN)
@@ -41,21 +42,50 @@ class IkoHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(antMatcher(DELETE, "/api/management/v1/iko/{key}")).hasAuthority(ADMIN)
 
                     .requestMatchers(antMatcher(GET, "/api/v1/iko-data-aggregate")).authenticated()
-                    .requestMatchers(antMatcher(GET, "/api/management/v1/iko-property-fields/{type}/data-aggregate")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/iko-property-fields/{type}/data-aggregate"))
+                    .hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "/api/management/v1/iko-data-aggregate")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "/api/management/v1/iko-data-aggregate/{key}")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(POST, "/api/management/v1/iko-data-aggregate/{key}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/management/v1/iko-data-aggregate/{key}"))
+                    .hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(PUT, "/api/management/v1/iko-data-aggregate/{key}")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(DELETE, "/api/management/v1/iko-data-aggregate/{key}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, "/api/management/v1/iko-data-aggregate/{key}"))
+                    .hasAuthority(ADMIN)
 
                     .requestMatchers(antMatcher(GET, "/api/v1/iko-data-aggregate/{key}/data-request")).authenticated()
-                    .requestMatchers(antMatcher(POST, "/api/v1/iko-data-aggregate/{key}/data-request/{key}/search")).authenticated()
-                    .requestMatchers(antMatcher(GET, "/api/management/v1/iko-property-fields/{type}/data-request")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(GET, "/api/management/v1/iko-data-aggregate/{key}/data-request")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(GET, "/api/management/v1/iko-data-aggregate/{key}/data-request/{key}")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(POST, "/api/management/v1/iko-data-aggregate/{key}/data-request/{key}")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(PUT, "/api/management/v1/iko-data-aggregate/{key}/data-request/{key}")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(DELETE, "/api/management/v1/iko-data-aggregate/{key}/data-request/{key}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/v1/iko-data-aggregate/{key}/data-request/{key}/search"))
+                    .authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/iko-property-fields/{type}/data-request"))
+                    .hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/iko-data-aggregate/{key}/data-request"))
+                    .hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/iko-data-aggregate/{key}/data-request/{key}"))
+                    .hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/management/v1/iko-data-aggregate/{key}/data-request/{key}"))
+                    .hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, "/api/management/v1/iko-data-aggregate/{key}/data-request/{key}"))
+                    .hasAuthority(ADMIN)
+                    .requestMatchers(
+                        antMatcher(
+                            DELETE,
+                            "/api/management/v1/iko-data-aggregate/{key}/data-request/{key}"
+                        )
+                    ).hasAuthority(ADMIN)
+
+                    .requestMatchers(antMatcher(GET, "/api/v1/iko-data-aggregate/{ikoDataAggregateKey}/tab"))
+                    .authenticated()
+                    .requestMatchers(
+                        antMatcher(
+                            GET,
+                            "/api/v1/iko-data-aggregate/{ikoDataAggregateKey}/tab/{tabKey}/widget"
+                        )
+                    ).authenticated()
+                    .requestMatchers(
+                        antMatcher(
+                            GET,
+                            "/api/v1/iko-data-aggregate/{ikoDataAggregateKey}/tab/{tabKey}/widget/{widgetKey}/data"
+                        )
+                    ).authenticated()
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

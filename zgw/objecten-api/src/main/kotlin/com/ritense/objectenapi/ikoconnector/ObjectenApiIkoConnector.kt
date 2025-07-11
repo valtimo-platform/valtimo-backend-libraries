@@ -34,6 +34,7 @@ import org.springframework.web.client.RestClient
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
+import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Mono
 import java.net.URI
 
@@ -79,6 +80,21 @@ class ObjectenApiIkoConnector(
 
         val jsonObjectList = objectMapper.valueToTree<ArrayNode>(objectList.results)
         return PageImpl(jsonObjectList.toList(), pageable, objectList.count.toLong())
+    }
+
+    override fun findById(config: Map<String, Any?>, id: Any): JsonNode {
+        val objectUrl = UriComponentsBuilder.newInstance()
+            .uri(URI(config[BASE_URL].toString()))
+            .pathSegment("objects")
+            .pathSegment(id.toString())
+            .toUriString()
+
+        val objectWrapper = objectenApiClient.getObject(
+            authentication = getAuthentication(config[TOKEN].toString()),
+            objectUrl = URI(objectUrl),
+        )
+
+        return objectMapper.valueToTree(objectWrapper)
     }
 
     protected fun getAuthentication(token: String): ObjectenApiAuthentication {

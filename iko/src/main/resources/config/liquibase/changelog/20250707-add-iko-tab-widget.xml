@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2015-2025 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="1" author="Ritense">
+        <createTable tableName="iko_tab_widget">
+            <column name="tab_id" type="${uuidType}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="widget_id" type="${uuidType}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="Ritense" id="2">
+        <addForeignKeyConstraint baseTableName="iko_tab_widget" baseColumnNames="tab_id"
+                                 constraintName="fk_iko_tab_widget_tab_id_tab_id"
+                                 referencedTableName="tab" referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet author="Ritense" id="3">
+        <addForeignKeyConstraint baseTableName="iko_tab_widget" baseColumnNames="widget_id"
+                                 constraintName="fk_iko_tab_widget_widget_id_widget_id"
+                                 referencedTableName="widget" referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="4" author="Ritense">
+        <createTable tableName="iko_data_aggregate_tab">
+            <column name="iko_data_aggregate_key" type="varchar(255)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="tab_id" type="${uuidType}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="Ritense" id="5">
+        <addForeignKeyConstraint baseTableName="iko_data_aggregate_tab" baseColumnNames="iko_data_aggregate_key"
+                                 constraintName="fk_iko_data_aggregate_tab_data_aggregate_key"
+                                 referencedTableName="iko_data_aggregate" referencedColumnNames="key"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet author="Ritense" id="6">
+        <addForeignKeyConstraint baseTableName="iko_data_aggregate_tab" baseColumnNames="tab_id"
+                                 constraintName="fk_iko_data_aggregate_tab_id"
+                                 referencedTableName="tab" referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>

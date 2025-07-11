@@ -21,10 +21,4 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import java.util.UUID
 
-interface TabRepository : JpaRepository<Tab, UUID>, JpaSpecificationExecutor<Tab> {
-
-    fun findByOwnerTypeAndOwnerIdAndKeyOrderByOrder(ownerType: String, ownerId: String, key: String): Tab?
-    fun findAllByOwnerTypeAndOwnerIdOrderByOrder(ownerType: String, ownerId: String): List<Tab>
-    fun deleteAllByOwnerTypeAndOwnerId(ownerType: String, ownerId: String)
-    fun deleteAllByOwnerTypeAndOwnerIdAndKey(ownerType: String, ownerId: String, key: String)
-}
+interface TabRepository : JpaRepository<Tab, UUID>, JpaSpecificationExecutor<Tab>

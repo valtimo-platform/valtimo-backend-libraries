@@ -16,53 +16,60 @@
 
 package com.ritense.iko
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ArrayNode
+import com.ritense.iko.importer.IkoSearchFieldImporter.Companion.IKO_SEARCH_OWNER
 import com.ritense.iko.service.IkoDataAggregateService
-import com.ritense.valueresolver.ValueResolverFactory
-import io.github.oshai.kotlinlogging.KotlinLogging
-import org.operaton.bpm.engine.delegate.VariableScope
+import com.ritense.iko.service.IkoDataRequestService
+import com.ritense.search.service.SearchFieldV2Service
+import com.ritense.valtimo.contract.iko.DataFilter
+import org.springframework.data.domain.Pageable
 import java.util.function.Function
 
 class IkoValueResolverFactory(
     private val ikoDataAggregateService: IkoDataAggregateService,
-) : ValueResolverFactory {
+    private val ikoDataRequestService: IkoDataRequestService,
+    private val searchFieldService: SearchFieldV2Service,
+    private val objectMapper: ObjectMapper,
+) {
 
-    override fun supportedPrefix(): String {
+    fun supportedPrefix(): String {
         return "iko"
     }
 
-    override fun createResolver(
-        processInstanceId: String,
-        variableScope: VariableScope
-    ): Function<String, Any?> {
-        return createResolver()
-    }
-
-    override fun createResolver(documentId: String): Function<String, Any?> {
-        return createResolver()
-    }
-
-    fun createResolver(): Function<String, Any?> {
-        return Function { requestedValue ->
-            val (dataAggregateKey, jsonPointer) = getDataAggregateKeyAndJsonPointer(requestedValue)
-            ikoDataAggregateService.search(dataAggregateKey, emptyList()).singleOrNull()?.at(jsonPointer)
+    fun createResolver(context: List<Any>, pageable: Pageable): Function<String, Any?> {
+        val pairContext = toContextMap(context)
+        val ikoDataAggregateKey = pairContext["ikoDataAggregateKey"].toString()
+        val id = pairContext["id"]?.toString()
+        if (id != null) {
+            val data = ikoDataAggregateService.getDataById(ikoDataAggregateKey, id)
+            return Function { jsonPointer ->
+                data.at(jsonPointer)
+            }
+        }
+        val (dataRequest, searchFields) = ikoDataRequestService.findAll(ikoDataAggregateKey = ikoDataAggregateKey)
+            .firstNotNullOf { dataRequest ->
+                val searchFields = searchFieldService.findAllByOwner(
+                    IKO_SEARCH_OWNER,
+                    "$ikoDataAggregateKey:${dataRequest.id.key}"
+                )
+                if (searchFields.all { pairContext.keys.contains(it.key) || !it.required }) {
+                    dataRequest to searchFields
+                } else {
+                    return@firstNotNullOf null
+                }
+            }
+        val filters = listOf(DataFilter("type", dataRequest.properties[IkoApiConnector.SEARCH_TYPE])) +
+            searchFields.map { searchField -> DataFilter(searchField.key, pairContext[searchField.key]) }
+        val dataList = ikoDataAggregateService.searchData(ikoDataAggregateKey, filters, pageable).content
+        val data = objectMapper.valueToTree<ArrayNode>(dataList)
+        return Function { jsonPointer ->
+            data.at(jsonPointer)
         }
     }
 
-    override fun handleValues(
-        processInstanceId: String,
-        variableScope: VariableScope?,
-        values: Map<String, Any?>
-    ) {
-        throw NotImplementedError()
-    }
-
-    private fun getDataAggregateKeyAndJsonPointer(requestedValue: String): Pair<String, String> {
-        val parts = requestedValue.split(":")
-        require(parts[0] == "iko")
-        return Pair(parts[1], parts[2])
-    }
-
-    companion object {
-        private val logger = KotlinLogging.logger {}
+    private fun toContextMap(context: List<Any>): Map<String, Any?> {
+        return (context.filter { it is Pair<*, *> && it.first is String } as List<Pair<String, Any?>>)
+            .associate { it.first to it.second }
     }
 }

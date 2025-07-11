@@ -34,4 +34,6 @@ interface IkoConnector {
 
     fun findAll(config: Map<String, Any?>, filters: List<DataFilter>): Page<JsonNode> =
         findAll(config, filters, Pageable.ofSize(10))
+
+    fun findById(config: Map<String, Any?>, id: Any): JsonNode
 }

@@ -65,7 +65,7 @@ class IkoApiConnector(
             data.toList()
         } else {
             val lists = data.filter { it is ArrayNode }
-            if (lists.size == 1 && data.has("type")) {
+            if (lists.size == 1) {
                 lists[0].toList()
             } else {
                 listOf(data)
@@ -75,9 +75,17 @@ class IkoApiConnector(
         return PageImpl(dataList, pageable, dataList.size.toLong())
     }
 
+    override fun findById(config: Map<String, Any?>, id: Any): JsonNode {
+        return ikoApiClient.getById(
+            baseUrl = URI(config[BASE_URL].toString()),
+            searchPath = config[SEARCH_PATH].toString(),
+            id = id.toString()
+        )
+    }
+
     companion object {
         private const val BASE_URL = "baseUrl"
         private const val SEARCH_PATH = "searchPath"
-        private const val SEARCH_TYPE = "searchType"
+        const val SEARCH_TYPE = "searchType"
     }
 }

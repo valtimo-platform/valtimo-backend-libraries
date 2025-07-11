@@ -16,7 +16,7 @@
 
 package com.ritense.iko.importer
 
-import com.ritense.tab.importer.TabDto
+import com.ritense.tab.web.rest.dto.TabDto
 
 data class IkoTabsDto(
     val ikoDataAggregateKey: String,

@@ -20,7 +20,6 @@ import com.ritense.tab.domain.Tab
 import com.ritense.tab.repository.TabRepository
 import com.ritense.tab.security.TabHttpSecurityConfigurer
 import com.ritense.tab.service.TabService
-import com.ritense.tab.web.rest.TabResource
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -53,7 +52,7 @@ class TabAutoConfiguration {
         return TabHttpSecurityConfigurer()
     }
 
-    @Order(HIGHEST_PRECEDENCE + 35)
+    @Order(HIGHEST_PRECEDENCE + 34)
     @Bean
     @ConditionalOnClass(DataSource::class)
     @ConditionalOnMissingBean(name = ["widgetLiquibaseMasterChangeLogLocation"])
@@ -69,16 +68,6 @@ class TabAutoConfiguration {
     ): TabService {
         return TabService(
             tabRepository,
-        )
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(TabResource::class)
-    fun tabResource(
-        tabService: TabService,
-    ): TabResource {
-        return TabResource(
-            tabService,
         )
     }
 

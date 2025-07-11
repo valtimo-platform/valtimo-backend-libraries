@@ -28,24 +28,33 @@ import com.ritense.iko.importer.IkoDataRequestImporter
 import com.ritense.iko.importer.IkoListColumnImporter
 import com.ritense.iko.importer.IkoSearchFieldImporter
 import com.ritense.iko.importer.IkoTabImporter
+import com.ritense.iko.importer.IkoWidgetImporter
 import com.ritense.iko.repository.IkoConnectorConfigRepository
 import com.ritense.iko.repository.IkoDataAggregateRepository
+import com.ritense.iko.repository.IkoDataAggregateTabRepository
 import com.ritense.iko.repository.IkoDataRequestRepository
+import com.ritense.iko.repository.IkoTabWidgetRepository
 import com.ritense.iko.security.config.IkoHttpSecurityConfigurer
 import com.ritense.iko.service.IkoConnectorService
 import com.ritense.iko.service.IkoDataAggregateService
 import com.ritense.iko.service.IkoDataRequestService
+import com.ritense.iko.service.IkoTabService
+import com.ritense.iko.service.IkoWidgetService
+import com.ritense.iko.valueresolver.IkoValueResolverServiceImpl
 import com.ritense.iko.web.rest.IkoConnectorManagementResource
 import com.ritense.iko.web.rest.IkoDataAggregateManagementResource
 import com.ritense.iko.web.rest.IkoDataAggregateResource
 import com.ritense.iko.web.rest.IkoDataRequestManagementResource
 import com.ritense.iko.web.rest.IkoDataRequestResource
+import com.ritense.iko.web.rest.IkoTabResource
+import com.ritense.iko.web.rest.IkoWidgetResource
 import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.search.service.SearchListColumnService
 import com.ritense.tab.service.TabService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.contract.iko.IkoConnector
+import com.ritense.widget.service.WidgetService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -119,7 +128,7 @@ class IkoAutoConfiguration {
         )
     }
 
-    @Order(HIGHEST_PRECEDENCE + 34)
+    @Order(HIGHEST_PRECEDENCE + 35)
     @Bean
     @ConditionalOnMissingBean(name = ["ikoLiquibaseMasterChangeLogLocation"])
     fun ikoLiquibaseMasterChangeLogLocation(): LiquibaseMasterChangeLogLocation {
@@ -181,6 +190,26 @@ class IkoAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(IkoWidgetResource::class)
+    fun ikoWidgetResource(
+        ikoWidgetService: IkoWidgetService,
+    ): IkoWidgetResource {
+        return IkoWidgetResource(
+            ikoWidgetService,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IkoTabResource::class)
+    fun ikoTabResource(
+        ikoTabService: IkoTabService,
+    ): IkoTabResource {
+        return IkoTabResource(
+            ikoTabService,
+        )
+    }
+
+    @Bean
     @ConditionalOnMissingBean(IkoApiClient::class)
     fun ikoApiClient(
         restClientBuilder: RestClient.Builder,
@@ -194,9 +223,15 @@ class IkoAutoConfiguration {
     @ConditionalOnMissingBean(IkoValueResolverFactory::class)
     fun ikoValueResolverFactory(
         ikoDataAggregateService: IkoDataAggregateService,
+        ikoDataRequestService: IkoDataRequestService,
+        searchFieldService: SearchFieldV2Service,
+        objectMapper: ObjectMapper,
     ): IkoValueResolverFactory {
         return IkoValueResolverFactory(
             ikoDataAggregateService,
+            ikoDataRequestService,
+            searchFieldService,
+            objectMapper,
         )
     }
 
@@ -274,11 +309,59 @@ class IkoAutoConfiguration {
     @ConditionalOnMissingBean(IkoTabImporter::class)
     fun ikoTabImporter(
         objectMapper: ObjectMapper,
-        tabService: TabService,
+        ikoTabService: IkoTabService,
     ): IkoTabImporter {
         return IkoTabImporter(
             objectMapper,
+            ikoTabService,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IkoWidgetImporter::class)
+    fun ikoWidgetImporter(
+        objectMapper: ObjectMapper,
+        ikoWidgetService: IkoWidgetService,
+    ): IkoWidgetImporter {
+        return IkoWidgetImporter(
+            objectMapper,
+            ikoWidgetService,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IkoWidgetService::class)
+    fun ikoWidgetService(
+        ikoTabService: IkoTabService,
+        ikoTabWidgetRepository: IkoTabWidgetRepository,
+        widgetService: WidgetService,
+    ): IkoWidgetService {
+        return IkoWidgetService(
+            ikoTabService,
+            ikoTabWidgetRepository,
+            widgetService,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IkoTabService::class)
+    fun ikoTabService(
+        tabService: TabService,
+        ikoDataAggregateTabRepository: IkoDataAggregateTabRepository,
+    ): IkoTabService {
+        return IkoTabService(
             tabService,
+            ikoDataAggregateTabRepository,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IkoValueResolverServiceImpl::class)
+    fun ikoValueResolverService(
+        valueResolverFactories: List<IkoValueResolverFactory>,
+    ): IkoValueResolverServiceImpl {
+        return IkoValueResolverServiceImpl(
+            valueResolverFactories,
         )
     }
 

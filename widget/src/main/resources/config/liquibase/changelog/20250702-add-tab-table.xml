@@ -23,13 +23,7 @@
     <changeSet id="1" author="Ritense">
         <createTable tableName="tab">
             <column name="id" type="${uuidType}">
-                <constraints nullable="false"/>
-            </column>
-            <column name="owner_id" type="varchar(256)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="owner_type" type="varchar(256)">
-                <constraints nullable="false"/>
+                <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="tab_key" type="varchar(256)">
                 <constraints nullable="false"/>
