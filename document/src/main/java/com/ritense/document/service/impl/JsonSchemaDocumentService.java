@@ -356,7 +356,7 @@ public class JsonSchemaDocumentService implements DocumentService {
             );
 
             result.resultingDocument().ifPresent(modifiedDocument -> {
-                documentRepository.save(modifiedDocument);
+                documentRepository.saveAndFlush(modifiedDocument);
                 outboxService.send(() ->
                     new DocumentUpdated(
                         modifiedDocument.id().toString(),
