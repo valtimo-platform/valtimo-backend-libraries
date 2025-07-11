@@ -33,7 +33,7 @@ data class RolNietNatuurlijkPersoon(
 ) : BetrokkeneIdentificatie() {
 
     val innRechtsvorm = innRechtsvormString?.let {
-        InnRechtsvormEnum.entries.find {it.value == innRechtsvormString}
+        InnRechtsvormEnum.entries.find { it.value == innRechtsvormString }
     }?.value
 
     init {
