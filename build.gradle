@@ -39,6 +39,8 @@ plugins {
     id "com.github.jk1.dependency-license-report" version "${dependencyLicenseReportVersion}"
     id "project-report"
     id "org.owasp.dependencycheck" version "8.4.3"
+
+    id("cn.lalaki.central") version "1.2.5"
 }
 
 jacoco {
