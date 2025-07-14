@@ -23,9 +23,9 @@ import java.util.UUID
 
 @Embeddable
 data class IkoDataAggregateTabId(
-    @Column(name = "iko_data_aggregate_key")
+    @Column(name = "iko_data_aggregate_key", updatable = false, nullable = false)
     val ikoDataAggregateKey: String,
 
-    @Column(name = "tab_id")
+    @Column(name = "tab_id", updatable = false, nullable = false)
     val tabId: UUID
 ) : Serializable

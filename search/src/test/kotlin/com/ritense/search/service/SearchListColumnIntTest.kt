@@ -19,7 +19,6 @@ package com.ritense.search.service
 import com.ritense.search.BaseIntegrationTest
 import com.ritense.search.domain.DisplayType
 import com.ritense.search.domain.EmptyDisplayTypeParameter
-import com.ritense.search.domain.LEGACY_OWNER_TYPE
 import com.ritense.search.domain.SearchListColumn
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -44,13 +43,13 @@ internal class SearchListColumnIntTest : BaseIntegrationTest() {
 
         assertThat(dbUpdatedSearchListColumn.title).isEqualTo(updatedSearchListColumn.title)
 
-        val dbLookUpByOwnerId = searchListColumnService.findAllByOwner(LEGACY_OWNER_TYPE, searchListColumn.ownerId)
+        val dbLookUpByOwnerId = searchListColumnService.findByOwnerId(searchListColumn.ownerId)
         assertThat(dbLookUpByOwnerId).isNotNull
         assertThat(dbLookUpByOwnerId?.first()?.path).isEqualTo(searchListColumn.path)
 
-        dbUpdatedSearchListColumn.ownerId.let { searchListColumnService.delete(LEGACY_OWNER_TYPE, it, dbUpdatedSearchListColumn.key) }
+        dbUpdatedSearchListColumn.ownerId.let { searchListColumnService.delete(it, dbUpdatedSearchListColumn.key) }
 
-        val list = searchListColumnService.findAllByOwner(LEGACY_OWNER_TYPE, searchListColumn.ownerId)
+        val list = searchListColumnService.findByOwnerId(searchListColumn.ownerId)
 
         assertThat(list).isEmpty()
     }

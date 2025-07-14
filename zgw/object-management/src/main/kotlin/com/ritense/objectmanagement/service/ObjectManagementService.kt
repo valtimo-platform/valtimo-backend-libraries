@@ -154,7 +154,7 @@ class ObjectManagementService(
         val objectManagement = getById(id)
             ?: throw IllegalStateException("The requested Id is not configured as a object management configuration. The requested id was: $id")
 
-        val searchFieldList = searchFieldV2Service.findAllByOwner(LEGACY_OWNER_TYPE, id.toString())
+        val searchFieldList = searchFieldV2Service.findAllByOwnerTypeAndOwnerId(LEGACY_OWNER_TYPE, id.toString())
 
         val searchDtoList = searchFieldList.flatMap { searchField ->
             searchWithConfigRequest.otherFilters
@@ -195,7 +195,7 @@ class ObjectManagementService(
         objectsList: List<ObjectWrapper>,
         objectManagementId: UUID
     ): List<ObjectsListRowDto> {
-        val listColumns = searchListColumnService.findAllByOwner(LEGACY_OWNER_TYPE, objectManagementId.toString())
+        val listColumns = searchListColumnService.findByOwnerId(objectManagementId.toString())
         return objectsList.map { objectApiObject ->
             val listRowDto = listColumns?.map { listColumn ->
                 if (!listColumn.path.startsWith("object:/") && !listColumn.path.startsWith("/")) {

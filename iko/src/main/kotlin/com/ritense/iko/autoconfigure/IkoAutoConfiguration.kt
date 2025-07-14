@@ -30,14 +30,18 @@ import com.ritense.iko.importer.IkoSearchFieldImporter
 import com.ritense.iko.importer.IkoTabImporter
 import com.ritense.iko.importer.IkoWidgetImporter
 import com.ritense.iko.repository.IkoConnectorConfigRepository
+import com.ritense.iko.repository.IkoDataAggregateListColumnRepository
 import com.ritense.iko.repository.IkoDataAggregateRepository
 import com.ritense.iko.repository.IkoDataAggregateTabRepository
 import com.ritense.iko.repository.IkoDataRequestRepository
+import com.ritense.iko.repository.IkoDataRequestSearchFieldRepository
 import com.ritense.iko.repository.IkoTabWidgetRepository
 import com.ritense.iko.security.config.IkoHttpSecurityConfigurer
 import com.ritense.iko.service.IkoConnectorService
 import com.ritense.iko.service.IkoDataAggregateService
 import com.ritense.iko.service.IkoDataRequestService
+import com.ritense.iko.service.IkoListColumnService
+import com.ritense.iko.service.IkoSearchFieldService
 import com.ritense.iko.service.IkoTabService
 import com.ritense.iko.service.IkoWidgetService
 import com.ritense.iko.valueresolver.IkoValueResolverServiceImpl
@@ -179,8 +183,8 @@ class IkoAutoConfiguration {
     @ConditionalOnMissingBean(IkoDataRequestResource::class)
     fun ikoDataRequestResource(
         dataRequestService: IkoDataRequestService,
-        listColumnService: SearchListColumnService,
-        searchFieldService: SearchFieldV2Service,
+        listColumnService: IkoListColumnService,
+        searchFieldService: IkoSearchFieldService,
     ): IkoDataRequestResource {
         return IkoDataRequestResource(
             dataRequestService,
@@ -224,7 +228,7 @@ class IkoAutoConfiguration {
     fun ikoValueResolverFactory(
         ikoDataAggregateService: IkoDataAggregateService,
         ikoDataRequestService: IkoDataRequestService,
-        searchFieldService: SearchFieldV2Service,
+        searchFieldService: IkoSearchFieldService,
         objectMapper: ObjectMapper,
     ): IkoValueResolverFactory {
         return IkoValueResolverFactory(
@@ -285,7 +289,7 @@ class IkoAutoConfiguration {
     @ConditionalOnMissingBean(IkoSearchFieldImporter::class)
     fun ikoSearchFieldImporter(
         objectMapper: ObjectMapper,
-        searchFieldService: SearchFieldV2Service,
+        searchFieldService: IkoSearchFieldService,
     ): IkoSearchFieldImporter {
         return IkoSearchFieldImporter(
             objectMapper,
@@ -297,7 +301,7 @@ class IkoAutoConfiguration {
     @ConditionalOnMissingBean(IkoListColumnImporter::class)
     fun ikoListColumnImporter(
         objectMapper: ObjectMapper,
-        listColumnService: SearchListColumnService,
+        listColumnService: IkoListColumnService,
     ): IkoListColumnImporter {
         return IkoListColumnImporter(
             objectMapper,
@@ -352,6 +356,30 @@ class IkoAutoConfiguration {
         return IkoTabService(
             tabService,
             ikoDataAggregateTabRepository,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IkoListColumnService::class)
+    fun ikoListColumnService(
+        listColumnService: SearchListColumnService,
+        ikoDataAggregateListColumnRepository: IkoDataAggregateListColumnRepository,
+    ): IkoListColumnService {
+        return IkoListColumnService(
+            listColumnService,
+            ikoDataAggregateListColumnRepository,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IkoSearchFieldService::class)
+    fun ikoSearchFieldService(
+        searchFieldService: SearchFieldV2Service,
+        ikoDataRequestSearchFieldRepository: IkoDataRequestSearchFieldRepository,
+    ): IkoSearchFieldService {
+        return IkoSearchFieldService(
+            searchFieldService,
+            ikoDataRequestSearchFieldRepository,
         )
     }
 

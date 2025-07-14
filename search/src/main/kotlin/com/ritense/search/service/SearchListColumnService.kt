@@ -20,8 +20,8 @@ import com.ritense.search.domain.SearchListColumn
 import com.ritense.search.repository.SearchListColumnRepository
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.springframework.stereotype.Service
+import java.util.Optional
 import java.util.UUID
-import kotlin.jvm.optionals.getOrNull
 
 @Service
 @SkipComponentScan
@@ -30,32 +30,29 @@ class SearchListColumnService(
 ) {
 
     fun create(column: SearchListColumn): SearchListColumn {
-        require(findById(column.id) == null)
-        require(findByOwnerAndKey(column.ownerType, column.ownerId, column.key) == null)
+        require(findById(column.id).isEmpty)
+        require(findByOwnerIdAndKey(column.ownerId, column.key) == null)
         return searchListColumnRepository.save(column)
     }
 
     fun update(column: SearchListColumn): SearchListColumn {
-        val existingColumn = findById(column.id)
-            ?: findByOwnerAndKey(column.ownerType, column.ownerId, column.key)
+        val existingColumn = findById(column.id).orElseThrow()
+            ?: findByOwnerIdAndKey(column.ownerId, column.key)
             ?: throw IllegalStateException("Search list column not found")
         return searchListColumnRepository.save(column.copy(id = existingColumn.id))
     }
 
-    fun findAllByOwner(ownerType: String, ownerId: String) =
-        searchListColumnRepository.findAllByOwnerTypeAndOwnerIdOrderByOrder(ownerType, ownerId)
+    fun findByOwnerId(ownerId: String) = searchListColumnRepository.findAllByOwnerIdOrderByOrder(ownerId)
 
-    fun findById(id: UUID): SearchListColumn? =
-        searchListColumnRepository.findById(id).getOrNull()
+    fun findById(id: UUID): Optional<SearchListColumn> = searchListColumnRepository.findById(id)
 
-    fun findByOwnerAndKey(ownerType: String, ownerId: String, key: String): SearchListColumn? =
-        searchListColumnRepository.findByOwnerTypeAndOwnerIdAndKeyOrderByOrder(ownerType, ownerId, key)
+    private fun findByOwnerIdAndKey(ownerId: String, key: String) =
+        searchListColumnRepository.findByOwnerIdAndKeyOrderByOrder(ownerId, key)
 
-    fun deleteAllByOwner(ownerType: String, ownerId: String) =
-        searchListColumnRepository.deleteAllByOwnerTypeAndOwnerId(ownerType, ownerId)
-
-    fun delete(ownerType: String, ownerId: String, key: String) =
-        searchListColumnRepository.deleteAllByOwnerTypeAndOwnerIdAndKey(ownerType, ownerId, key)
+    fun delete(ownerId: String, key: String) =
+        with(findByOwnerIdAndKey(ownerId, key)) {
+            this?.let { searchListColumnRepository.delete(it) }
+        }
 
     fun updateList(searchListColumn: List<SearchListColumn>) {
         searchListColumnRepository.saveAll(
@@ -64,5 +61,4 @@ class SearchListColumnService(
             }
         )
     }
-
 }

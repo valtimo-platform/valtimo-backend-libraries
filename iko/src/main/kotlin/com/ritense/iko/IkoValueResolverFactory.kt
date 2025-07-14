@@ -18,10 +18,9 @@ package com.ritense.iko
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
-import com.ritense.iko.importer.IkoSearchFieldImporter.Companion.IKO_SEARCH_OWNER
 import com.ritense.iko.service.IkoDataAggregateService
 import com.ritense.iko.service.IkoDataRequestService
-import com.ritense.search.service.SearchFieldV2Service
+import com.ritense.iko.service.IkoSearchFieldService
 import com.ritense.valtimo.contract.iko.DataFilter
 import org.springframework.data.domain.Pageable
 import java.util.function.Function
@@ -29,7 +28,7 @@ import java.util.function.Function
 class IkoValueResolverFactory(
     private val ikoDataAggregateService: IkoDataAggregateService,
     private val ikoDataRequestService: IkoDataRequestService,
-    private val searchFieldService: SearchFieldV2Service,
+    private val searchFieldService: IkoSearchFieldService,
     private val objectMapper: ObjectMapper,
 ) {
 
@@ -49,9 +48,9 @@ class IkoValueResolverFactory(
         }
         val (dataRequest, searchFields) = ikoDataRequestService.findAll(ikoDataAggregateKey = ikoDataAggregateKey)
             .firstNotNullOf { dataRequest ->
-                val searchFields = searchFieldService.findAllByOwner(
-                    IKO_SEARCH_OWNER,
-                    "$ikoDataAggregateKey:${dataRequest.id.key}"
+                val searchFields = searchFieldService.findAllSearchFieldsByIkoDataRequest(
+                    ikoDataAggregateKey = ikoDataAggregateKey,
+                    ikoDataRequestKey = dataRequest.id.key
                 )
                 if (searchFields.all { pairContext.keys.contains(it.key) || !it.required }) {
                     dataRequest to searchFields

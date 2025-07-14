@@ -41,14 +41,14 @@ import com.ritense.processdocument.tasksearch.SearchWithConfigRequest
 import com.ritense.processdocument.web.result.TaskListRowDto
 import com.ritense.search.domain.SearchFieldV2
 import com.ritense.search.service.SearchFieldV2Service
-import com.ritense.valtimo.operaton.authorization.OperatonTaskActionProvider
-import com.ritense.valtimo.operaton.domain.OperatonExecution
-import com.ritense.valtimo.operaton.domain.OperatonTask
-import com.ritense.valtimo.operaton.repository.OperatonTaskSpecificationHelper
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.contract.utils.RequestHelper
+import com.ritense.valtimo.operaton.authorization.OperatonTaskActionProvider
+import com.ritense.valtimo.operaton.domain.OperatonExecution
+import com.ritense.valtimo.operaton.domain.OperatonTask
+import com.ritense.valtimo.operaton.repository.OperatonTaskSpecificationHelper
 import com.ritense.valtimo.service.OperatonTaskService.TaskFilter
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.persistence.EntityManager
@@ -85,7 +85,7 @@ import java.util.function.Consumer
 import java.util.stream.Collectors
 
 
-const val TASK_SEARCH_FIELD_OWNER_TYPE = "TaskListSearchColumns"
+const val SEARCH_FIELD_OWNER_TYPE = "TaskListSearchColumns"
 
 @Service
 @SkipComponentScan
@@ -141,7 +141,7 @@ class CaseTaskListSearchService(
     ): Page<CaseTask> {
         val zoneOffset = RequestHelper.getZoneOffset()
         val searchFieldMap: Map<String, SearchFieldV2> =
-            searchFieldV2Service.findAllByOwner(TASK_SEARCH_FIELD_OWNER_TYPE, caseDefinitionName)
+            searchFieldV2Service.findAllByOwnerTypeAndOwnerId(SEARCH_FIELD_OWNER_TYPE, caseDefinitionName)
                 .associateBy { it.key }
 
         val searchCriteria = searchWithConfigRequest.otherFilters.stream()

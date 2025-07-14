@@ -16,16 +16,24 @@
 
 package com.ritense.iko.domain
 
-import jakarta.persistence.Column
-import jakarta.persistence.Embeddable
-import java.io.Serializable
-import java.util.UUID
+import com.ritense.search.domain.SearchFieldV2
+import jakarta.persistence.EmbeddedId
+import jakarta.persistence.Entity
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.MapsId
+import jakarta.persistence.Table
 
-@Embeddable
-data class IkoTabWidgetId(
-    @Column(name = "tab_id", updatable = false, nullable = false)
-    val tabId: UUID,
+@Entity
+@Table(name = "iko_data_request_search_field")
+data class IkoDataRequestSearchField(
 
-    @Column(name = "widget_id", updatable = false, nullable = false)
-    val widgetId: UUID
-) : Serializable
+    @EmbeddedId
+    val id: IkoDataRequestSearchFieldId,
+
+    @ManyToOne
+    @MapsId("searchFieldId")
+    @JoinColumn(name = "search_field_id")
+    val searchField: SearchFieldV2
+
+)

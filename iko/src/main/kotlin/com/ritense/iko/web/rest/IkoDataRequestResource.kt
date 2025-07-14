@@ -16,17 +16,15 @@
 
 package com.ritense.iko.web.rest
 
-import com.ritense.iko.importer.IkoListColumnImporter.Companion.IKO_LIST_OWNER
-import com.ritense.iko.importer.IkoSearchFieldImporter.Companion.IKO_SEARCH_OWNER
 import com.ritense.iko.service.IkoDataRequestService
+import com.ritense.iko.service.IkoListColumnService
+import com.ritense.iko.service.IkoSearchFieldService
 import com.ritense.iko.web.rest.request.IkoSearchRequest
 import com.ritense.iko.web.rest.response.IkoDataRequestUserListResponse
 import com.ritense.iko.web.rest.response.IkoSearchResponse
 import com.ritense.search.domain.SearchFieldMatchType
 import com.ritense.search.domain.SearchFieldV2
 import com.ritense.search.domain.SearchListColumn
-import com.ritense.search.service.SearchFieldV2Service
-import com.ritense.search.service.SearchListColumnService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.valtimo.contract.iko.Comparator
@@ -47,8 +45,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class IkoDataRequestResource(
     private val dataRequestService: IkoDataRequestService,
-    private val listColumnService: SearchListColumnService,
-    private val searchFieldService: SearchFieldV2Service,
+    private val listColumnService: IkoListColumnService,
+    private val searchFieldService: IkoSearchFieldService,
 ) {
 
     @GetMapping("/v1/iko-data-aggregate/{ikoDataAggregateKey}/data-request")
@@ -58,27 +56,28 @@ class IkoDataRequestResource(
         val ikoDataRequests = dataRequestService.findAll(
             ikoDataAggregateKey = ikoDataAggregateKey,
         )
-        val response = ikoDataRequests.map {
-            val searchFields = searchFieldService.findAllByOwner(IKO_SEARCH_OWNER, "$ikoDataAggregateKey:${it.id.key}")
-            IkoDataRequestUserListResponse.from(it, searchFields)
+        val response = ikoDataRequests.map { ikoDataRequest ->
+            val searchFields =
+                searchFieldService.findAllSearchFieldsByIkoDataRequest(ikoDataAggregateKey, ikoDataRequest.id.key)
+            IkoDataRequestUserListResponse.from(ikoDataRequest, searchFields)
         }
         return ResponseEntity.ok(response)
     }
 
-    @PostMapping("/v1/iko-data-aggregate/{ikoDataAggregateKey}/data-request/{key}/search")
+    @PostMapping("/v1/iko-data-aggregate/{ikoDataAggregateKey}/data-request/{ikoDataRequestKey}/search")
     fun search(
         @PathVariable ikoDataAggregateKey: String,
-        @PathVariable key: String,
+        @PathVariable ikoDataRequestKey: String,
         @RequestBody request: IkoSearchRequest,
         pageable: Pageable,
     ): ResponseEntity<IkoSearchResponse> {
-        val headers = listColumnService.findAllByOwner(IKO_LIST_OWNER, ikoDataAggregateKey)
-        val searchFields = searchFieldService.findAllByOwner(IKO_SEARCH_OWNER, "$ikoDataAggregateKey:$key")
+        val headers = listColumnService.findAllColumnsByIkoDataAggregateKey(ikoDataAggregateKey)
+        val searchFields = searchFieldService.findAllSearchFieldsByIkoDataRequest(ikoDataAggregateKey, ikoDataRequestKey)
         require(searchFields.filter { it.required }.all { request.filters.containsKey(it.key) }) {
-            "Missing required SearchField for DataRequest '$ikoDataAggregateKey:$key'"
+            "Missing required SearchField for DataRequest '$ikoDataAggregateKey:$ikoDataRequestKey'"
         }
         val data = dataRequestService.search(
-            key = key,
+            key = ikoDataRequestKey,
             ikoDataAggregateKey = ikoDataAggregateKey,
             filters = toDataFilers(request.filters, searchFields),
             pageable = toPageableByPath(headers, pageable),

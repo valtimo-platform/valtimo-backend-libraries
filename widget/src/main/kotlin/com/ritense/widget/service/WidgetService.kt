@@ -18,7 +18,6 @@ package com.ritense.widget.service
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import com.ritense.valueresolver.ValueResolverService
 import com.ritense.widget.WidgetDataProvider
 import com.ritense.widget.domain.Widget
 import com.ritense.widget.repository.WidgetRepository
@@ -33,7 +32,6 @@ import kotlin.jvm.optionals.getOrNull
 class WidgetService(
     private val widgetRepository: WidgetRepository,
     private val widgetDataProviders: List<WidgetDataProvider<Widget>>,
-    private val valueResolverService: ValueResolverService,
 ) {
 
     fun create(widget: Widget): Widget {

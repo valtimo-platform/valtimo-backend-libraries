@@ -100,7 +100,7 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
             SearchFieldV2Dto(
                 id = UUID.randomUUID(),
                 ownerId = definition!!.id!!.name(),
-                ownerType = TASK_SEARCH_FIELD_OWNER_TYPE,
+                ownerType = SEARCH_FIELD_OWNER_TYPE,
                 key = "street",
                 title = "Street",
                 path = "doc:street",
@@ -116,7 +116,7 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
             SearchFieldV2Dto(
                 id = UUID.randomUUID(),
                 ownerId = definition!!.id!!.name(),
-                ownerType = TASK_SEARCH_FIELD_OWNER_TYPE,
+                ownerType = SEARCH_FIELD_OWNER_TYPE,
                 key = "number",
                 title = "House number",
                 path = "doc:houseNumber",
@@ -132,7 +132,7 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
             SearchFieldV2Dto(
                 id = UUID.randomUUID(),
                 ownerId = definition!!.id!!.name(),
-                ownerType = TASK_SEARCH_FIELD_OWNER_TYPE,
+                ownerType = SEARCH_FIELD_OWNER_TYPE,
                 key = "caseCreatedBy",
                 title = "Case created by",
                 path = "case:createdBy",
@@ -148,7 +148,7 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
             SearchFieldV2Dto(
                 id = UUID.randomUUID(),
                 ownerId = definition!!.id!!.name(),
-                ownerType = TASK_SEARCH_FIELD_OWNER_TYPE,
+                ownerType = SEARCH_FIELD_OWNER_TYPE,
                 key = "taskName",
                 title = "Task name",
                 path = "task:name",
@@ -326,7 +326,7 @@ class CaseTaskListSearchServiceIntTest : BaseIntegrationTest() {
             SearchFieldV2Dto(
                 id = UUID.randomUUID(),
                 ownerId = museumDefinition.id!!.name(),
-                ownerType = TASK_SEARCH_FIELD_OWNER_TYPE,
+                ownerType = SEARCH_FIELD_OWNER_TYPE,
                 key = "hideInaccessibleTasks",
                 title = "Hide inaccessible tasks",
                 path = "task:hideInaccessibleTasks",

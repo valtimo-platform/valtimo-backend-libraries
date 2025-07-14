@@ -19,7 +19,6 @@ package com.ritense.widget
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valueresolver.IkoValueResolverService
-import com.ritense.valueresolver.ValueResolverService
 import com.ritense.widget.collection.CollectionWidget
 import com.ritense.widget.collection.CollectionWidgetDataProvider
 import com.ritense.widget.custom.CustomWidget
@@ -71,12 +70,10 @@ class WidgetAutoConfiguration {
     fun widgetService(
         widgetRepository: WidgetRepository,
         widgetDataProviders: List<WidgetDataProvider<*>>,
-        valueResolverService: ValueResolverService,
     ): WidgetService {
         return WidgetService(
             widgetRepository,
             widgetDataProviders as List<WidgetDataProvider<Widget>>,
-            valueResolverService,
         )
     }
 

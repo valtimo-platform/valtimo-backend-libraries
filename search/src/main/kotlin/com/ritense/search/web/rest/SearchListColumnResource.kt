@@ -16,7 +16,6 @@
 
 package com.ritense.search.web.rest
 
-import com.ritense.search.domain.LEGACY_OWNER_TYPE
 import com.ritense.search.domain.SearchListColumn
 import com.ritense.search.service.SearchListColumnService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
@@ -39,78 +38,38 @@ class SearchListColumnResource(
     private val searchListColumnService: SearchListColumnService
 ) {
 
-    @Deprecated("Since 13.1.0", replaceWith = ReplaceWith("create(ownerType, ownerId, searchListColumn)"))
     @PostMapping("/{ownerId}")
     fun create(
         @PathVariable ownerId: String,
         @Valid @RequestBody searchListColumn: SearchListColumn
-    ) = ResponseEntity.ok(searchListColumnService.create(searchListColumn))
+    ) =
+        ResponseEntity.ok(searchListColumnService.create(searchListColumn))
 
-    @PostMapping("/{ownerType}/{ownerId}")
-    fun create(
-        @PathVariable ownerType: String,
-        @PathVariable ownerId: String,
-        @Valid @RequestBody searchListColumn: SearchListColumn
-    ) = ResponseEntity.ok(searchListColumnService.create(searchListColumn))
-
-    @Deprecated("Since 13.1.0", replaceWith = ReplaceWith("update(ownerType, ownerId, searchListColumn)"))
     @PutMapping("/{ownerId}/{key}")
     fun update(
         @PathVariable ownerId: String,
         @PathVariable key: String,
         @Valid @RequestBody searchListColumn: SearchListColumn
-    ) = ResponseEntity.ok(searchListColumnService.update(searchListColumn))
+    ) =
+        ResponseEntity.ok(searchListColumnService.update(searchListColumn))
 
-    @PutMapping("/{ownerType}/{ownerId}/{key}")
-    fun update(
-        @PathVariable ownerType: String,
-        @PathVariable ownerId: String,
-        @PathVariable key: String,
-        @Valid @RequestBody searchListColumn: SearchListColumn
-    ) = ResponseEntity.ok(searchListColumnService.update(searchListColumn))
-
-    @Deprecated("Since 13.1.0", replaceWith = ReplaceWith("getByOwner(ownerType, ownerId)"))
     @PutMapping("/{ownerId}/search-list-columns")
     fun updateList(
         @PathVariable ownerId: String,
         @Valid @RequestBody searchListColumn: List<SearchListColumn>
-    ) = ResponseEntity.ok(searchListColumnService.updateList(searchListColumn))
+    ) =
+        ResponseEntity.ok(searchListColumnService.updateList(searchListColumn))
 
-    @PutMapping("/{ownerType}/{ownerId}/search-list-columns")
-    fun updateList(
-        @PathVariable ownerType: String,
-        @PathVariable ownerId: String,
-        @Valid @RequestBody searchListColumn: List<SearchListColumn>
-    ) = ResponseEntity.ok(searchListColumnService.updateList(searchListColumn))
-
-    @Deprecated("Since 13.1.0", replaceWith = ReplaceWith("getByOwner(ownerType, ownerId)"))
     @GetMapping("/{ownerId}")
-    fun getByOwnerId(@PathVariable ownerId: String) =
-        ResponseEntity.ok(searchListColumnService.findAllByOwner(LEGACY_OWNER_TYPE, ownerId))
+    fun getByKey(@PathVariable ownerId: String) =
+        ResponseEntity.ok(searchListColumnService.findByOwnerId(ownerId))
 
-    @GetMapping("/{ownerType}/{ownerId}")
-    fun getByOwner(
-        @PathVariable ownerType: String,
-        @PathVariable ownerId: String,
-    ) = ResponseEntity.ok(searchListColumnService.findAllByOwner(ownerType, ownerId))
-
-    @Deprecated("Since 13.1.0", replaceWith = ReplaceWith("delete(ownerType, ownerId, key)"))
     @DeleteMapping("/{ownerId}/{key}")
     fun delete(
         @PathVariable ownerId: String,
         @PathVariable key: String
     ): ResponseEntity<Any> {
-        searchListColumnService.delete(LEGACY_OWNER_TYPE, ownerId, key)
-        return ResponseEntity.noContent().build()
-    }
-
-    @DeleteMapping("/{ownerType}/{ownerId}/{key}")
-    fun delete(
-        @PathVariable ownerType: String,
-        @PathVariable ownerId: String,
-        @PathVariable key: String
-    ): ResponseEntity<Any> {
-        searchListColumnService.delete(ownerType, ownerId, key)
+        searchListColumnService.delete(ownerId, key)
         return ResponseEntity.noContent().build()
     }
 }

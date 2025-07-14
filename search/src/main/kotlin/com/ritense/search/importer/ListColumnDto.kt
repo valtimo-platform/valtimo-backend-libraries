@@ -26,13 +26,12 @@ data class ListColumnDto(
     val key: String,
     val title: String?,
     val path: String,
-    val displayType: DisplayType = DisplayType(),
-    val sortable: Boolean = false,
+    val displayType: DisplayType,
+    val sortable: Boolean,
     val defaultSort: ColumnDefaultSort? = null,
 ) {
-    fun toEntity(ownerType: String, ownerId: String, order: Int) = SearchListColumn(
+    fun toEntity(ownerId: String, order: Int) = SearchListColumn(
         id = this.id ?: UUID.randomUUID(),
-        ownerType = ownerType,
         ownerId = ownerId,
         key = this.key,
         title = this.title,

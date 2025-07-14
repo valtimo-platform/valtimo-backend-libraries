@@ -62,8 +62,7 @@ class IkoDataAggregateService(
             it.getType() == dataAggregate.ikoConnectorConfig.type
         }
         return ikoConnector.findById(
-            config = dataAggregate.ikoConnectorConfig.properties +
-                dataAggregate.properties,
+            config = dataAggregate.ikoConnectorConfig.properties + dataAggregate.properties,
             id = id
         )
     }

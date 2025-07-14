@@ -17,6 +17,7 @@ package com.ritense.search.autodeployment
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.search.domain.SearchListColumn
 import com.ritense.search.domain.SearchListColumnConfigurationAutoDeploymentFinishedEvent
 import com.ritense.search.service.SearchListColumnService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
@@ -43,22 +44,22 @@ class SearchListColumnDefinitionDeploymentService(
     @EventListener(ApplicationReadyEvent::class)
     @Order(Ordered.LOWEST_PRECEDENCE)
     fun deployAllFromResourceFiles() {
-        logger.info { "Deploying all search list column configurations from $PATH" }
+        logger.info("Deploying all search list column configurations from {}", PATH)
         val resources = loadResources()
 
         val searchListColumnList = resources.map { resource ->
-            requireNotNull(resource)
+            require(resource != null)
             try {
-                val searchListColumn = objectMapper.readValue<SearchListColumnDto>(resource.inputStream)
+                val searchListColumn = objectMapper.readValue<SearchListColumn>(resource.inputStream)
 
                 if (
-                    searchListColumnService.findById(searchListColumn.id) == null
+                    searchListColumnService.findById(searchListColumn.id).isEmpty
                 ) {
-                    searchListColumnService.create(searchListColumn.toEntity())
+                    searchListColumnService.create(searchListColumn)
                 } else {
-                    searchListColumnService.update(searchListColumn.toEntity())
+                    searchListColumnService.update(searchListColumn)
                 }.also {
-                    logger.info { "Deployed search list column configuration ${searchListColumn.id}" }
+                    logger.info("Deployed search list column configuration {}", searchListColumn.id)
                 }
             } catch (e: IOException) {
                 throw RuntimeException("Error while deploying search list column configurations", e)

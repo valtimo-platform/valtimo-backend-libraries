@@ -17,19 +17,19 @@
 package com.ritense.iko.web.rest.response
 
 import com.ritense.iko.domain.IkoDataRequest
+import com.ritense.iko.importer.IkoSearchFieldDto
 import com.ritense.search.domain.SearchFieldV2
-import com.ritense.search.web.rest.dto.SearchFieldV2Dto
 
 data class IkoDataRequestUserListResponse(
     val key: String,
     val title: String,
-    val searchFields: List<SearchFieldV2Dto>,
+    val searchFields: List<IkoSearchFieldDto>,
 ) {
     companion object {
         fun from(entity: IkoDataRequest, searchFields: List<SearchFieldV2>) = IkoDataRequestUserListResponse(
             key = entity.id.key,
             title = entity.title,
-            searchFields = searchFields.map { SearchFieldV2Dto.of(it) }
+            searchFields = searchFields.map { IkoSearchFieldDto.of(it) }
         )
     }
 }

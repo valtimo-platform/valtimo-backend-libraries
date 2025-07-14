@@ -24,5 +24,4 @@ import java.util.UUID
 interface CaseWidgetDataProvider<WIDGET: CaseWidgetTabWidget> {
     fun supportedWidgetType(): Class<WIDGET>
     fun getData(documentId: UUID, widgetTab: CaseWidgetTab, widget: WIDGET, pageable: Pageable): Any?
-    fun getData(queryString: String, widgetTab: CaseWidgetTab, widget: WIDGET, pageable: Pageable): Any? = {}
 }

@@ -77,11 +77,11 @@ class SearchFieldExporterTest {
             name = "my-document-definition-name",
             CaseDefinitionId.of("test", "1.0.0")
         )
-        whenever(searchFieldService.findAllByOwner(testExporter.ownerType(), request.name)).thenReturn(
+        whenever(searchFieldService.findAllByOwnerTypeAndOwnerId(testExporter.ownerTypeKey(), request.name)).thenReturn(
             listOf(
                 SearchFieldV2(
                     ownerId = request.name,
-                    ownerType = testExporter.ownerType(),
+                    ownerType = testExporter.ownerTypeKey(),
                     key = "firstname",
                     title = "Firstname",
                     path = "doc:firstname",
@@ -92,7 +92,7 @@ class SearchFieldExporterTest {
                 ),
                 SearchFieldV2(
                     ownerId = request.name,
-                    ownerType = testExporter.ownerType(),
+                    ownerType = testExporter.ownerTypeKey(),
                     key = "lastname",
                     title = "Lastname",
                     path = "doc:lastname",
@@ -107,7 +107,7 @@ class SearchFieldExporterTest {
         val result = testExporter.export(request)
 
         val path = testExporter.getPath(request)
-        val ownerType = testExporter.ownerType()
+        val ownerTypeKey = testExporter.ownerTypeKey()
         val caseTaskListExport = result.exportFiles.singleOrNull {
             it.path == path
         }
@@ -116,7 +116,7 @@ class SearchFieldExporterTest {
 
         //Check if the changesetId ends with a timestamp
         val changesetIdField = "changesetId"
-        val changesetRegex = """(${request.name}\.$ownerType)\.\d+""".toRegex()
+        val changesetRegex = """(${request.name}\.$ownerTypeKey)\.\d+""".toRegex()
         val matchResult = changesetRegex.matchEntire(exportJson.get(changesetIdField).textValue())
         assertNotNull(matchResult)
 
@@ -159,6 +159,6 @@ class SearchFieldExporterTest {
     ) : SearchFieldExporter(objectMapper, searchFieldService) {
         override fun getPath(request: DocumentDefinitionExportRequest): String = "some/$request/path"
 
-        override fun ownerType(): String = "some-owner-type"
+        override fun ownerTypeKey(): String = "some-owner-type"
     }
 }

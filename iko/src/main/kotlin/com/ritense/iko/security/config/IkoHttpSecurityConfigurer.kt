@@ -86,6 +86,9 @@ class IkoHttpSecurityConfigurer : HttpSecurityConfigurer {
                             "/api/v1/iko-data-aggregate/{ikoDataAggregateKey}/tab/{tabKey}/widget/{widgetKey}/data"
                         )
                     ).authenticated()
+
+                    .requestMatchers(antMatcher(GET, "/api/v1/iko-data-aggregate/{key}/list-field")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/iko-data-aggregate/{key}/data-request/{key}/search-field")).authenticated()
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

@@ -16,7 +16,6 @@
 
 package com.ritense.search.web.rest
 
-import com.ritense.search.domain.LEGACY_OWNER_TYPE
 import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.search.web.rest.dto.SearchFieldV2Dto
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
@@ -59,16 +58,16 @@ class SearchFieldV2Resource(
         @PathVariable ownerId: String,
         @Valid @RequestBody searchFieldV2Dtos: List<SearchFieldV2Dto>
     ) =
-        ResponseEntity.ok(searchFieldV2Service.updateList(searchFieldV2Dtos))
+        ResponseEntity.ok(searchFieldV2Service.updateList(ownerId, searchFieldV2Dtos))
 
     @Deprecated("Since 12.1.0")
     @GetMapping("/{ownerId}")
     fun getAllByOwnerId(@PathVariable ownerId: String) =
-        ResponseEntity.ok(searchFieldV2Service.findAllByOwner(LEGACY_OWNER_TYPE, ownerId))
+        ResponseEntity.ok(searchFieldV2Service.findAllByOwnerId(ownerId))
 
     @GetMapping("/{ownerType}/{ownerId}")
     fun getAllByOwnerTypeAndOwnerId(@PathVariable ownerType: String, @PathVariable ownerId: String) =
-        ResponseEntity.ok(searchFieldV2Service.findAllByOwner(ownerType, ownerId))
+        ResponseEntity.ok(searchFieldV2Service.findAllByOwnerTypeAndOwnerId(ownerType, ownerId))
 
     @Deprecated("Since 12.1.0")
     @DeleteMapping("/{ownerId}/{key}")
@@ -76,7 +75,7 @@ class SearchFieldV2Resource(
         @PathVariable ownerId: String,
         @PathVariable key: String
     ): ResponseEntity<Any> {
-        searchFieldV2Service.delete(LEGACY_OWNER_TYPE, ownerId, key)
+        searchFieldV2Service.delete(ownerId, key)
         return ResponseEntity.noContent().build()
     }
 

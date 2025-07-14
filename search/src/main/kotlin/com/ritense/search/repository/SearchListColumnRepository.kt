@@ -20,10 +20,8 @@ import com.ritense.search.domain.SearchListColumn
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
-interface SearchListColumnRepository : JpaRepository<SearchListColumn, UUID> {
+interface SearchListColumnRepository: JpaRepository<SearchListColumn, UUID> {
 
-    fun findByOwnerTypeAndOwnerIdAndKeyOrderByOrder(ownerType: String, ownerId: String, key: String): SearchListColumn?
-    fun findAllByOwnerTypeAndOwnerIdOrderByOrder(ownerType: String, ownerId: String): List<SearchListColumn>
-    fun deleteAllByOwnerTypeAndOwnerId(ownerType: String, ownerId: String)
-    fun deleteAllByOwnerTypeAndOwnerIdAndKey(ownerType: String, ownerId: String, key: String)
+    fun findByOwnerIdAndKeyOrderByOrder(ownerId: String, key: String): SearchListColumn?
+    fun findAllByOwnerIdOrderByOrder(ownerId: String): List<SearchListColumn>?
 }

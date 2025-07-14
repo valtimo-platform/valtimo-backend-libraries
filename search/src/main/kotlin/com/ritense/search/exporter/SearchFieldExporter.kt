@@ -36,14 +36,14 @@ abstract class SearchFieldExporter(
 
     override fun export(request: DocumentDefinitionExportRequest): ExportResult {
         val documentDefinitionName = request.name
-        val searchFields = searchFieldService.findAllByOwner(ownerType(), documentDefinitionName)
+        val searchFields = searchFieldService.findAllByOwnerTypeAndOwnerId(ownerTypeKey(), documentDefinitionName)
 
         if (searchFields.isEmpty()) {
             return ExportResult()
         }
 
         val caseTaskListChangeset = SearchFieldExportChangeset(
-            "$documentDefinitionName.${ownerType()}.${Instant.now().toEpochMilli()}",
+            "$documentDefinitionName.${ownerTypeKey()}.${Instant.now().toEpochMilli()}",
             listOf(
                 SearchFieldExportCollection(
                     documentDefinitionName,
@@ -61,7 +61,7 @@ abstract class SearchFieldExporter(
         )
     }
 
-    abstract fun ownerType(): String
+    abstract fun ownerTypeKey(): String
 
     abstract fun getPath(request: DocumentDefinitionExportRequest): String
 }

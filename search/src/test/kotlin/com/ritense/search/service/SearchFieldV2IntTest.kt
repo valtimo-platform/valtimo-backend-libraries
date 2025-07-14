@@ -19,7 +19,6 @@ package com.ritense.search.service
 import com.ritense.search.BaseIntegrationTest
 import com.ritense.search.domain.DataType
 import com.ritense.search.domain.FieldType
-import com.ritense.search.domain.LEGACY_OWNER_TYPE
 import com.ritense.search.domain.SearchFieldV2
 import com.ritense.search.web.rest.dto.SearchFieldV2Dto
 import org.assertj.core.api.Assertions.assertThat
@@ -41,7 +40,6 @@ internal class SearchFieldV2IntTest : BaseIntegrationTest() {
         val updatedSearchField = searchField.copy(title = "New Title")
         val updatedSearchFieldDto = SearchFieldV2Dto(
             id = updatedSearchField.id,
-            ownerType = updatedSearchField.ownerType,
             ownerId = updatedSearchField.ownerId,
             key = updatedSearchField.key,
             title = updatedSearchField.title,
@@ -59,13 +57,13 @@ internal class SearchFieldV2IntTest : BaseIntegrationTest() {
 
         assertThat(dbUpdatedSearchField?.title).isEqualTo(updatedSearchField.title)
 
-        val dbLookUpByOwnerId = searchFieldV2Service.findAllByOwner(LEGACY_OWNER_TYPE, searchField.ownerId)
+        val dbLookUpByOwnerId = searchFieldV2Service.findAllByOwnerId(searchField.ownerId)
         assertThat(dbLookUpByOwnerId).isNotNull
-        assertThat(dbLookUpByOwnerId.first().path).isEqualTo(searchField.path)
+        assertThat(dbLookUpByOwnerId?.first()?.path).isEqualTo(searchField.path)
 
-        dbUpdatedSearchField?.ownerId?.let { searchFieldV2Service.delete(LEGACY_OWNER_TYPE, it, dbUpdatedSearchField.key) }
+        dbUpdatedSearchField?.ownerId?.let { searchFieldV2Service.delete(it, dbUpdatedSearchField.key) }
 
-        val list = searchFieldV2Service.findAllByOwner(LEGACY_OWNER_TYPE, searchField.ownerId)
+        val list = searchFieldV2Service.findAllByOwnerId(searchField.ownerId)
 
         assertThat(list).isEmpty()
     }
@@ -75,7 +73,6 @@ internal class SearchFieldV2IntTest : BaseIntegrationTest() {
         searchFieldV2Service.create(
             SearchFieldV2Dto(
                 ownerId = ownerId ?: "I own this",
-                ownerType = LEGACY_OWNER_TYPE,
                 key = "the magic key",
                 title = "Title",
                 path = "everywhere",

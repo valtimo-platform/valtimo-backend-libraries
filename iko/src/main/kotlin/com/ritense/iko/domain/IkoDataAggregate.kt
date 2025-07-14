@@ -31,7 +31,7 @@ import org.hibernate.annotations.Type
 class IkoDataAggregate(
 
     @Id
-    @Column(name = "`key`", updatable = false, nullable = false, unique = true)
+    @Column(name = "key", updatable = false, nullable = false, unique = true)
     val key: String,
 
     @Column(name = "title", nullable = false)

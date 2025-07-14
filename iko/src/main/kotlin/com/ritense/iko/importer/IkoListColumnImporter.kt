@@ -18,33 +18,60 @@ package com.ritense.iko.importer
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.iko.service.IkoListColumnService
 import com.ritense.importer.ImportRequest
-import com.ritense.importer.ValtimoImportTypes.Companion.IKO_DATA_REQUEST
+import com.ritense.importer.Importer
+import com.ritense.importer.ValtimoImportTypes.Companion.IKO_DATA_AGGREGATE
 import com.ritense.importer.ValtimoImportTypes.Companion.IKO_LIST_COLUMN
-import com.ritense.search.importer.ListColumnImporter
-import com.ritense.search.service.SearchListColumnService
+import java.util.UUID
 
 class IkoListColumnImporter(
     private val objectMapper: ObjectMapper,
-    listColumnService: SearchListColumnService,
-) : ListColumnImporter(listColumnService, IKO_LIST_OWNER) {
+    private val service: IkoListColumnService,
+) : Importer {
 
     override fun type(): String = IKO_LIST_COLUMN
 
-    override fun dependsOn(): Set<String> = setOf(IKO_DATA_REQUEST)
+    override fun dependsOn(): Set<String> = setOf(IKO_DATA_AGGREGATE)
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
-        val ikoListColumns = objectMapper.readValue<IkoListColumnsDto>(request.content.toString(Charsets.UTF_8))
-        val ownerId = ikoListColumns.ikoDataAggregateKey
-        deploy(ownerId, ikoListColumns.ikoListColumns)
+        val ikoListColumnsDto = objectMapper.readValue<IkoListColumnsDto>(request.content.toString(Charsets.UTF_8))
+
+        val existingListColumns =
+            service.findAllColumnsByIkoDataAggregateKey(ikoListColumnsDto.ikoDataAggregateKey)
+
+        ikoListColumnsDto.ikoListColumns.forEachIndexed { index, listColumnDto ->
+            val existingListColumnId = existingListColumns
+                .firstOrNull { existingListColumn -> existingListColumn.key == listColumnDto.key }
+                ?.id?.toString()
+            if (existingListColumnId != null) {
+                service.update(
+                    ikoListColumnsDto.ikoDataAggregateKey,
+                    listColumnDto.toEntity(existingListColumnId, index)
+                )
+            } else {
+                service.create(
+                    ikoListColumnsDto.ikoDataAggregateKey,
+                    listColumnDto.toEntity(UUID.randomUUID().toString(), index)
+                )
+            }
+        }
+
+        existingListColumns
+            .filter { existingListColumn -> ikoListColumnsDto.ikoListColumns.none { listColumnDto -> listColumnDto.key == existingListColumn.key } }
+            .forEach { existingListColumn ->
+                service.deleteByKey(
+                    ikoListColumnsDto.ikoDataAggregateKey,
+                    existingListColumn.key
+                )
+            }
     }
 
     override fun partOfCaseDefinition(): Boolean = false
 
     companion object {
-        const val IKO_LIST_OWNER = "IkoDataAggregate"
         private val FILENAME_REGEX = """/global/iko/(?:.*/)?(.+)\.iko-list-column\.json""".toRegex()
     }
 }

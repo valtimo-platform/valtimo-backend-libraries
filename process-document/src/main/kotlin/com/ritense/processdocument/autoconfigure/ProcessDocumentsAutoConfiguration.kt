@@ -52,6 +52,7 @@ import com.ritense.processdocument.tasksearch.TaskSearchFieldImporter
 import com.ritense.processdocument.web.CaseDefinitionProcessManagementResource
 import com.ritense.processdocument.web.ProcessCaseManagementResource
 import com.ritense.processdocument.web.TaskListResource
+import com.ritense.search.repository.SearchFieldV2Repository
 import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.valtimo.contract.annotation.ProcessBean
 import com.ritense.valtimo.contract.authentication.UserManagementService
@@ -278,11 +279,11 @@ class ProcessDocumentsAutoConfiguration {
     @ConditionalOnMissingBean(TaskSearchFieldImporter::class)
     fun taskSearchFieldImporter(
         objectMapper: ObjectMapper,
+        repository: SearchFieldV2Repository,
         searchFieldService: SearchFieldV2Service,
     ): TaskSearchFieldImporter {
         return TaskSearchFieldImporter(
-            objectMapper,
-            searchFieldService,
+            objectMapper, repository, searchFieldService
         )
     }
 

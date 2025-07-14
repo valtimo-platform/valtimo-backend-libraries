@@ -22,10 +22,15 @@ import java.io.Serializable
 import java.util.UUID
 
 @Embeddable
-data class IkoTabWidgetId(
-    @Column(name = "tab_id", updatable = false, nullable = false)
-    val tabId: UUID,
+data class IkoDataRequestSearchFieldId(
 
-    @Column(name = "widget_id", updatable = false, nullable = false)
-    val widgetId: UUID
+    @Column(name = "iko_data_request_key", updatable = false, nullable = false)
+    val ikoDataRequestKey: String,
+
+    @Column(name = "iko_data_aggregate_key", updatable = false, nullable = false)
+    val ikoDataAggregateKey: String,
+
+    @Column(name = "search_field_id", updatable = false, nullable = false)
+    val searchFieldId: UUID
+
 ) : Serializable

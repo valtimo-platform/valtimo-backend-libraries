@@ -19,25 +19,7 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
-    <property name="booleanFalseValue" value="0" dbms="mysql"/>
-    <property name="booleanFalseValue" value="false" dbms="postgresql"/>
-    <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
-    <property name="uuidType" value="uuid" dbms="h2,postgresql"/>
-
     <changeSet author="Ritense" id="1">
-        <addColumn tableName="search_list_column">
-            <column name="owner_type" type="varchar(255)" defaultValue="Legacy">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
-        <dropUniqueConstraint constraintName="unique-owner_id-column_key-constraint-list"
-                              tableName="search_list_column"/>
-        <addUniqueConstraint constraintName="unique-owner_id-owner_type-column_key-constraint-list"
-                             columnNames="owner_type, owner_id, column_key"
-                             tableName="search_list_column"/>
-    </changeSet>
-
-    <changeSet author="Ritense" id="2">
         <addColumn tableName="search_field_v2">
             <column name="required" type="boolean" defaultValueBoolean="${booleanFalseValue}"/>
         </addColumn>

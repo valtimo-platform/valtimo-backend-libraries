@@ -22,10 +22,10 @@ import java.io.Serializable
 import java.util.UUID
 
 @Embeddable
-data class IkoTabWidgetId(
-    @Column(name = "tab_id", updatable = false, nullable = false)
-    val tabId: UUID,
+data class IkoDataAggregateListColumnId(
+    @Column(name = "iko_data_aggregate_key", updatable = false, nullable = false)
+    val ikoDataAggregateKey: String,
 
-    @Column(name = "widget_id", updatable = false, nullable = false)
-    val widgetId: UUID
+    @Column(name = "column_id", updatable = false, nullable = false)
+    val columnId: UUID
 ) : Serializable
