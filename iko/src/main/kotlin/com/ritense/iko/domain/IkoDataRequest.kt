@@ -25,7 +25,7 @@ import org.hibernate.annotations.Type
 
 @Entity
 @Table(name = "iko_data_request")
-class IkoDataRequest(
+data class IkoDataRequest(
 
     @EmbeddedId
     val id: IkoDataRequestId,

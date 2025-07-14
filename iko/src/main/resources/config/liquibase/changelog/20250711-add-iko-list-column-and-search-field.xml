@@ -71,14 +71,12 @@
                              tableName="search_field_v2"/>
     </changeSet>
 
-    <!--
     <changeSet author="Ritense" id="7">
         <addForeignKeyConstraint baseTableName="iko_data_request_search_field" baseColumnNames="iko_data_request_key,iko_data_aggregate_key"
                                  constraintName="fk_iko_data_request_search_field_data_request_key"
                                  referencedTableName="iko_data_request" referencedColumnNames="key,iko_data_aggregate_key"
                                  onDelete="CASCADE"/>
     </changeSet>
-    -->
 
     <changeSet author="Ritense" id="8">
         <addForeignKeyConstraint baseTableName="iko_data_request_search_field" baseColumnNames="search_field_id"

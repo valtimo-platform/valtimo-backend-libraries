@@ -38,6 +38,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction.ASC
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.transaction.annotation.Transactional
+import kotlin.jvm.optionals.getOrNull
 
 @Transactional
 class IkoDataRequestService(
@@ -119,12 +120,16 @@ class IkoDataRequestService(
         )
     }
 
-    fun saveIkoDataRequest(requests: List<IkoDataRequestUpdateRequest>): List<IkoDataRequest> {
+    fun saveIkoDataRequests(requests: List<IkoDataRequestUpdateRequest>): List<IkoDataRequest> {
         ikoDataAggregateService.denyAuthorization()
         val entities = requests.mapIndexed { i, request ->
             val ikoDataAggregate = ikoDataAggregateService.getByKey(request.ikoDataAggregateKey)
             val id = IkoDataRequestId(request.key, ikoDataAggregate)
-            IkoDataRequest(
+            ikoDataRequestRepository.findById(id).getOrNull()?.copy(
+                title = request.title,
+                order = i,
+                properties = request.properties,
+            ) ?: IkoDataRequest(
                 id = id,
                 title = request.title,
                 order = i,

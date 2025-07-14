@@ -40,17 +40,27 @@ class IkoDataRequestImporter(
     override fun import(request: ImportRequest) {
         val fileContent = request.content.toString(Charsets.UTF_8)
         val dataRequests = objectMapper.readValue<IkoDataRequestsDto>(fileContent)
-        val dataRequestUpdates = dataRequests.ikoDataRequests.map {
-            IkoDataRequestUpdateRequest(
-                key = it.key,
-                ikoDataAggregateKey = dataRequests.ikoDataAggregateKey,
-                title = it.title,
-                properties = it.properties ?: emptyMap(),
-            )
-        }
 
-        ikoDataRequestService.delete(ikoDataAggregateKey = dataRequests.ikoDataAggregateKey)
-        ikoDataRequestService.saveIkoDataRequest(dataRequestUpdates)
+        val existing = ikoDataRequestService.findAll(
+            ikoDataAggregateKey = dataRequests.ikoDataAggregateKey
+        )
+
+        val updated = ikoDataRequestService.saveIkoDataRequests(
+            dataRequests.ikoDataRequests.map {
+                IkoDataRequestUpdateRequest(
+                    key = it.key,
+                    ikoDataAggregateKey = dataRequests.ikoDataAggregateKey,
+                    title = it.title,
+                    properties = it.properties ?: emptyMap(),
+                )
+            }
+        )
+
+        existing.forEach { ex ->
+            if (updated.none { up -> up.id.key == ex.id.key }) {
+                ikoDataRequestService.delete(key = ex.id.key)
+            }
+        }
     }
 
     override fun partOfCaseDefinition(): Boolean = false
