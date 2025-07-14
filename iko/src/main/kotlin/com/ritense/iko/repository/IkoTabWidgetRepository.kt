@@ -25,7 +25,7 @@ import java.util.UUID
 
 @Repository
 interface IkoTabWidgetRepository : JpaRepository<IkoTabWidget, IkoTabWidgetId>, JpaSpecificationExecutor<IkoTabWidget> {
-    fun findAllByIdTabId(tabId: UUID): List<IkoTabWidget>
+    fun findAllByIdTabIdOrderByWidgetOrder(tabId: UUID): List<IkoTabWidget>
     fun findByIdTabIdAndWidgetKey(id: UUID, widgetKey: String): IkoTabWidget?
     fun deleteByIdTabIdAndWidgetKey(id: UUID, widgetKey: String)
 }

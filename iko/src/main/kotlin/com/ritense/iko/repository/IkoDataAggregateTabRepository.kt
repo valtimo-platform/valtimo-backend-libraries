@@ -25,7 +25,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface IkoDataAggregateTabRepository : JpaRepository<IkoDataAggregateTab, IkoDataAggregateTabId>,
     JpaSpecificationExecutor<IkoDataAggregateTab> {
-    fun findAllByIdIkoDataAggregateKey(ikoDataAggregateKey: String): List<IkoDataAggregateTab>
+    fun findAllByIdIkoDataAggregateKeyOrderByTabOrder(ikoDataAggregateKey: String): List<IkoDataAggregateTab>
     fun findByIdIkoDataAggregateKeyAndTabKey(ikoDataAggregateKey: String, tabKey: String): IkoDataAggregateTab?
     fun deleteByIdIkoDataAggregateKeyAndTabKey(ikoDataAggregateKey: String, tabKey: String)
 }

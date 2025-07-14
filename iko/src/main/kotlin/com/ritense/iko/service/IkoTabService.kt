@@ -43,7 +43,7 @@ class IkoTabService(
     }
 
     fun findAllTabsByIkoDataAggregateKey(ikoDataAggregateKey: String): List<Tab> {
-        return ikoDataAggregateTabRepository.findAllByIdIkoDataAggregateKey(ikoDataAggregateKey).map { it.tab }
+        return ikoDataAggregateTabRepository.findAllByIdIkoDataAggregateKeyOrderByTabOrder(ikoDataAggregateKey).map { it.tab }
     }
 
     fun deleteByKey(ikoDataAggregateKey: String, tabKey: String) {

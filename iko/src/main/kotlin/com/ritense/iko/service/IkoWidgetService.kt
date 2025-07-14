@@ -47,7 +47,7 @@ class IkoWidgetService(
 
     fun findAllByTabKey(ikoDataAggregateKey: String, tabKey: String): List<Widget> {
         val tab = ikoTabService.getByKey(ikoDataAggregateKey, tabKey)
-        return ikoTabWidgetRepository.findAllByIdTabId(tab.id).map { it.widget }
+        return ikoTabWidgetRepository.findAllByIdTabIdOrderByWidgetOrder(tab.id).map { it.widget }
     }
 
     fun deleteByKey(ikoDataAggregateKey: String, tabKey: String, widgetKey: String) {

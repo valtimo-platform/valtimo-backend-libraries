@@ -54,6 +54,7 @@ class IkoDataRequestService(
         filters: List<DataFilter>,
         pageable: Pageable
     ): Page<JsonNode> {
+        ikoDataAggregateService.requirePermission(ikoDataAggregateKey, VIEW)
         val dataRequest = getByKey(key, ikoDataAggregateKey)
         val dataRepository = ikoConnectors.first {
             it.getType() == dataRequest.id.ikoDataAggregate.ikoConnectorConfig.type

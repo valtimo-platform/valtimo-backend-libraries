@@ -25,7 +25,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface IkoDataAggregateListColumnRepository : JpaRepository<IkoDataAggregateListColumn, IkoDataAggregateListColumnId>,
     JpaSpecificationExecutor<IkoDataAggregateListColumn> {
-    fun findAllByIdIkoDataAggregateKey(ikoDataAggregateKey: String): List<IkoDataAggregateListColumn>
+    fun findAllByIdIkoDataAggregateKeyOrderByColumnOrder(ikoDataAggregateKey: String): List<IkoDataAggregateListColumn>
     fun findByIdIkoDataAggregateKeyAndColumnKey(ikoDataAggregateKey: String, columnKey: String): IkoDataAggregateListColumn?
     fun deleteByIdIkoDataAggregateKeyAndColumnKey(ikoDataAggregateKey: String, columnKey: String)
 }

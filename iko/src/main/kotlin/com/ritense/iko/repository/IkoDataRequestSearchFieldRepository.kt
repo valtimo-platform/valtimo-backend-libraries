@@ -26,7 +26,7 @@ import org.springframework.stereotype.Repository
 interface IkoDataRequestSearchFieldRepository :
     JpaRepository<IkoDataRequestSearchField, IkoDataRequestSearchFieldId>,
     JpaSpecificationExecutor<IkoDataRequestSearchField> {
-    fun findAllByIdIkoDataAggregateKeyAndIdIkoDataRequestKey(
+    fun findAllByIdIkoDataAggregateKeyAndIdIkoDataRequestKeyOrderBySearchFieldOrder(
         ikoDataAggregateKey: String,
         ikoDataRequestKey: String
     ): List<IkoDataRequestSearchField>

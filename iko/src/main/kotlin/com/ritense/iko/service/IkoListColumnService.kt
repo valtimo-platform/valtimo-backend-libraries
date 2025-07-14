@@ -46,7 +46,7 @@ class IkoListColumnService(
     }
 
     fun findAllColumnsByIkoDataAggregateKey(ikoDataAggregateKey: String): List<SearchListColumn> {
-        return ikoDataAggregateListColumnRepository.findAllByIdIkoDataAggregateKey(ikoDataAggregateKey)
+        return ikoDataAggregateListColumnRepository.findAllByIdIkoDataAggregateKeyOrderByColumnOrder(ikoDataAggregateKey)
             .map { it.column }
     }
 

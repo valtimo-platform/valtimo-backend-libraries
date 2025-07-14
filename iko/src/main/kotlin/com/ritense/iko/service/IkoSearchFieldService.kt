@@ -51,7 +51,7 @@ class IkoSearchFieldService(
         ikoDataAggregateKey: String,
         ikoDataRequestKey: String
     ): List<SearchFieldV2> {
-        return ikoDataRequestSearchFieldRepository.findAllByIdIkoDataAggregateKeyAndIdIkoDataRequestKey(
+        return ikoDataRequestSearchFieldRepository.findAllByIdIkoDataAggregateKeyAndIdIkoDataRequestKeyOrderBySearchFieldOrder(
             ikoDataAggregateKey,
             ikoDataRequestKey
         ).map { it.searchField }
