@@ -76,7 +76,7 @@ class IkoDataRequestResource(
         require(searchFields.filter { it.required }.all { request.filters.containsKey(it.key) }) {
             "Missing required SearchField for DataRequest '$ikoDataAggregateKey:$ikoDataRequestKey'"
         }
-        val data = dataRequestService.search(
+        val data = dataRequestService.searchData(
             key = ikoDataRequestKey,
             ikoDataAggregateKey = ikoDataAggregateKey,
             filters = toDataFilers(request.filters, searchFields),

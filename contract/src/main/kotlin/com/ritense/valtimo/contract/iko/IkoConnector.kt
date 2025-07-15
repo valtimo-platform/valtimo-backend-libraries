@@ -24,7 +24,7 @@ interface IkoConnector {
 
     fun getType(): String
 
-    fun getIkoConnectorPropertyFields(): List<PropertyField> = emptyList()
+    fun getIkoConnectorConfigPropertyFields(): List<PropertyField> = emptyList()
 
     fun getDataAggregatePropertyFields(): List<PropertyField> = emptyList()
 
@@ -32,8 +32,8 @@ interface IkoConnector {
 
     fun findAll(config: Map<String, Any?>, filters: List<DataFilter>, pageable: Pageable): Page<JsonNode>
 
-    fun findAll(config: Map<String, Any?>, filters: List<DataFilter>): Page<JsonNode> =
-        findAll(config, filters, Pageable.ofSize(1000000))
-
     fun findById(config: Map<String, Any?>, id: Any): JsonNode
+
+    fun create(config: Map<String, Any?>, data: JsonNode): JsonNode =
+        throw NotImplementedError()
 }

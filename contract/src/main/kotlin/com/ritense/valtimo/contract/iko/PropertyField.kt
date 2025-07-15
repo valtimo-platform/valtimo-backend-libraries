@@ -20,6 +20,7 @@ data class PropertyField(
     val title: String,
     val key: String,
     val type: String,
+    val dropdownList: List<Pair<String, String>>? = null,
 ) {
 
     constructor(
@@ -29,10 +30,12 @@ data class PropertyField(
 
     companion object {
         const val PROPERTY_FIELD_TYPE_TEXT = "text"
+        const val PROPERTY_FIELD_TYPE_INTEGER = "integer"
+        const val PROPERTY_FIELD_TYPE_DROPDOWN = "dropdown"
         const val PROPERTY_FIELD_TYPE_URL = "url"
         const val PROPERTY_FIELD_TYPE_SECRET = "secret"
 
-        private fun toReadableText(input: String): String {
+        fun toReadableText(input: String): String {
             val cleaned = input.replace("[^a-zA-Z0-9]+".toRegex(), " ").trim()
             val spaced = cleaned
                 .replace(Regex("(?<=[a-z])(?=[A-Z])"), " ")

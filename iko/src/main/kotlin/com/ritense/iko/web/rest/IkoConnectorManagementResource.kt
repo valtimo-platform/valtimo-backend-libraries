@@ -55,10 +55,10 @@ class IkoConnectorManagementResource(
 
     @RunWithoutAuthorization
     @GetMapping("/v1/iko-property-fields/{type}/connector-config")
-    fun getIkoConnectorPropertyFields(
+    fun getIkoConnectorConfigPropertyFields(
         @PathVariable type: String,
     ): ResponseEntity<List<PropertyField>> {
-        return ResponseEntity.ok(service.getIkoConnectorPropertyFields(type))
+        return ResponseEntity.ok(service.getIkoConnectorConfigPropertyFields(type))
     }
 
     @RunWithoutAuthorization

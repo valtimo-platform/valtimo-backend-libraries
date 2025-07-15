@@ -37,12 +37,12 @@ class IkoConnectorConfigImporter(
 
     override fun import(request: ImportRequest) {
         val fileContent = request.content.toString(Charsets.UTF_8)
-        val connectorConfig = objectMapper.readValue<IkoConnectorConfigDto>(fileContent)
+        val ikoConnectorConfig = objectMapper.readValue<IkoConnectorConfigDto>(fileContent)
         ikoConnectorService.saveIkoConnectorConfig(
-            key = connectorConfig.key,
-            title = connectorConfig.title,
-            type = connectorConfig.type,
-            properties = connectorConfig.properties ?: emptyMap(),
+            key = ikoConnectorConfig.key,
+            title = ikoConnectorConfig.title,
+            type = ikoConnectorConfig.type,
+            properties = ikoConnectorConfig.properties ?: emptyMap(),
         )
     }
 

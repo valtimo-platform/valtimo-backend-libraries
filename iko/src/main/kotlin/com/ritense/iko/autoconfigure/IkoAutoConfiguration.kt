@@ -18,10 +18,10 @@ package com.ritense.iko.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
-import com.ritense.iko.IkoApiConnector
+import com.ritense.iko.IkoServerConnector
 import com.ritense.iko.IkoValueResolverFactory
 import com.ritense.iko.authorization.IkoDataAggregateSpecificationFactory
-import com.ritense.iko.client.IkoApiClient
+import com.ritense.iko.client.IkoClient
 import com.ritense.iko.importer.IkoConnectorConfigImporter
 import com.ritense.iko.importer.IkoDataAggregateImporter
 import com.ritense.iko.importer.IkoDataRequestImporter
@@ -29,6 +29,7 @@ import com.ritense.iko.importer.IkoListColumnImporter
 import com.ritense.iko.importer.IkoSearchFieldImporter
 import com.ritense.iko.importer.IkoTabImporter
 import com.ritense.iko.importer.IkoWidgetImporter
+import com.ritense.iko.plugin.IkoPluginFactory
 import com.ritense.iko.repository.IkoConnectorConfigRepository
 import com.ritense.iko.repository.IkoDataAggregateListColumnRepository
 import com.ritense.iko.repository.IkoDataAggregateRepository
@@ -52,6 +53,7 @@ import com.ritense.iko.web.rest.IkoDataRequestManagementResource
 import com.ritense.iko.web.rest.IkoDataRequestResource
 import com.ritense.iko.web.rest.IkoTabResource
 import com.ritense.iko.web.rest.IkoWidgetResource
+import com.ritense.plugin.service.PluginService
 import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.search.service.SearchListColumnService
 import com.ritense.tab.service.TabService
@@ -214,11 +216,11 @@ class IkoAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(IkoApiClient::class)
-    fun ikoApiClient(
+    @ConditionalOnMissingBean(IkoClient::class)
+    fun ikoClient(
         restClientBuilder: RestClient.Builder,
-    ): IkoApiClient {
-        return IkoApiClient(
+    ): IkoClient {
+        return IkoClient(
             restClientBuilder,
         )
     }
@@ -240,12 +242,12 @@ class IkoAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(IkoApiConnector::class)
-    fun ikoApiConnector(
-        ikoApiClient: IkoApiClient,
-    ): IkoApiConnector {
-        return IkoApiConnector(
-            ikoApiClient,
+    @ConditionalOnMissingBean(IkoServerConnector::class)
+    fun ikoServerConnector(
+        pluginService: PluginService,
+    ): IkoServerConnector {
+        return IkoServerConnector(
+            pluginService,
         )
     }
 
@@ -390,6 +392,18 @@ class IkoAutoConfiguration {
     ): IkoValueResolverServiceImpl {
         return IkoValueResolverServiceImpl(
             valueResolverFactories,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IkoPluginFactory::class)
+    fun ikoPluginFactory(
+        pluginService: PluginService,
+        ikoClient: IkoClient,
+    ): IkoPluginFactory {
+        return IkoPluginFactory(
+            pluginService,
+            ikoClient,
         )
     }
 

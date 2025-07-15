@@ -150,11 +150,11 @@ class ObjectenApiAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ObjectenApiIkoConnector::class)
     fun objectenApiIkoConnector(
-        objectenApiClient: ObjectenApiClient,
+        pluginService: PluginService,
         objectMapper: ObjectMapper,
     ): ObjectenApiIkoConnector {
         return ObjectenApiIkoConnector(
-            objectenApiClient,
+            pluginService,
             objectMapper,
         )
     }

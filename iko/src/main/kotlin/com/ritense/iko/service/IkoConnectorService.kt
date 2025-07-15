@@ -44,9 +44,9 @@ class IkoConnectorService(
         return ikoConnectors.map { it.getType() }
     }
 
-    fun getIkoConnectorPropertyFields(type: String): List<PropertyField> {
+    fun getIkoConnectorConfigPropertyFields(type: String): List<PropertyField> {
         denyAuthorization()
-        return ikoConnectors.single{ it.getType() == type}.getIkoConnectorPropertyFields()
+        return ikoConnectors.single{ it.getType() == type}.getIkoConnectorConfigPropertyFields()
     }
 
     fun findAll(

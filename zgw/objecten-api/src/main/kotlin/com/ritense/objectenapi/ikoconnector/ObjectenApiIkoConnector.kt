@@ -19,39 +19,47 @@ package com.ritense.objectenapi.ikoconnector
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
-import com.ritense.objectenapi.ObjectenApiAuthentication
-import com.ritense.objectenapi.client.ObjectenApiClient
+import com.ritense.objectenapi.ObjectenApiPlugin
+import com.ritense.objectenapi.client.ObjectRecord
+import com.ritense.objectenapi.client.ObjectRequest
+import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.iko.DataFilter
 import com.ritense.valtimo.contract.iko.IkoConnector
 import com.ritense.valtimo.contract.iko.PropertyField
-import com.ritense.valtimo.contract.iko.PropertyField.Companion.PROPERTY_FIELD_TYPE_SECRET
+import com.ritense.valtimo.contract.iko.PropertyField.Companion.PROPERTY_FIELD_TYPE_DROPDOWN
+import com.ritense.valtimo.contract.iko.PropertyField.Companion.PROPERTY_FIELD_TYPE_INTEGER
 import com.ritense.valtimo.contract.iko.PropertyField.Companion.PROPERTY_FIELD_TYPE_URL
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import org.springframework.http.HttpHeaders
-import org.springframework.web.client.RestClient
-import org.springframework.web.reactive.function.client.ClientRequest
-import org.springframework.web.reactive.function.client.ClientResponse
-import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.util.UriComponentsBuilder
-import reactor.core.publisher.Mono
 import java.net.URI
+import java.time.LocalDate
 
 class ObjectenApiIkoConnector(
-    private val objectenApiClient: ObjectenApiClient,
+    private val pluginService: PluginService,
     private val objectMapper: ObjectMapper,
 ) : IkoConnector {
 
     override fun getType() = "objectenApi"
 
-    override fun getIkoConnectorPropertyFields(): List<PropertyField> = listOf(
-        PropertyField(BASE_URL, PROPERTY_FIELD_TYPE_URL),
-        PropertyField(TOKEN, PROPERTY_FIELD_TYPE_SECRET)
-    )
+    override fun getIkoConnectorConfigPropertyFields(): List<PropertyField> {
+        val dropdownList = pluginService.findPluginConfigurations(ObjectenApiPlugin::class.java)
+            .map { it.id.toString() to it.title }
+
+        return listOf(
+            PropertyField(
+                title = PropertyField.toReadableText(PLUGIN_CONFIGURATION),
+                key = PLUGIN_CONFIGURATION,
+                type = PROPERTY_FIELD_TYPE_DROPDOWN,
+                dropdownList = dropdownList
+            )
+        )
+    }
 
     override fun getDataAggregatePropertyFields(): List<PropertyField> = listOf(
-        PropertyField(VALTIMO_OBJECTTYPEN_API_URL, PROPERTY_FIELD_TYPE_URL)
+        PropertyField(OBJECTTYPEN_API_URL, PROPERTY_FIELD_TYPE_URL),
+        PropertyField(OBJECT_TYPE_VERSION, PROPERTY_FIELD_TYPE_INTEGER),
     )
 
     override fun findAll(
@@ -68,12 +76,12 @@ class ObjectenApiIkoConnector(
                 .single { it.name == filter.comparator.name }
             "${property}__${operator.value}__${filter.value}"
         }
-        val (objecttypesApiUrl, objectypeId) = config[VALTIMO_OBJECTTYPEN_API_URL].toString().split("/objecttypes/")
-        val objectList = objectenApiClient.getObjectsByObjecttypeUrlWithSearchParams(
-            authentication = getAuthentication(config[TOKEN].toString()),
+
+        val (objecttypesApiUrl, objecttypeId) = config[OBJECTTYPEN_API_URL].toString().split("/objecttypes/")
+
+        val objectList = getPlugin(config).getObjectsByObjectTypeIdWithSearchParams(
             objecttypesApiUrl = URI(objecttypesApiUrl),
-            objectsApiUrl = URI(config[BASE_URL].toString()),
-            objectypeId = objectypeId,
+            objecttypeId = objecttypeId,
             searchString = searchString,
             pageable = pageable,
         )
@@ -83,37 +91,46 @@ class ObjectenApiIkoConnector(
     }
 
     override fun findById(config: Map<String, Any?>, id: Any): JsonNode {
+        val plugin = getPlugin(config)
         val objectUrl = UriComponentsBuilder.newInstance()
-            .uri(URI(config[BASE_URL].toString()))
+            .uri(plugin.url)
             .pathSegment("objects")
             .pathSegment(id.toString())
             .toUriString()
 
-        val objectWrapper = objectenApiClient.getObject(
-            authentication = getAuthentication(config[TOKEN].toString()),
+        val objectWrapper = getPlugin(config).getObject(
             objectUrl = URI(objectUrl),
         )
 
         return objectMapper.valueToTree(objectWrapper)
     }
 
-    protected fun getAuthentication(token: String): ObjectenApiAuthentication {
-        return object : ObjectenApiAuthentication {
-            override fun applyAuth(builder: RestClient.Builder): RestClient.Builder {
-                return builder.defaultHeaders { headers ->
-                    headers[HttpHeaders.AUTHORIZATION] = "Token $token"
-                }
-            }
+    override fun create(config: Map<String, Any?>, data: JsonNode): JsonNode {
+        val objecttypenApiUrl = URI(config[OBJECTTYPEN_API_URL].toString())
+        val objectTypeVersion = config[OBJECT_TYPE_VERSION] as Int
 
-            override fun filter(request: ClientRequest, next: ExchangeFunction): Mono<ClientResponse> {
-                return next.exchange(request)
-            }
-        }
+        val objectWrapper = getPlugin(config).createObject(
+            objectRequest = ObjectRequest(
+                null,
+                objecttypenApiUrl,
+                ObjectRecord(
+                    typeVersion = objectTypeVersion,
+                    data = data,
+                    startAt = LocalDate.now()
+                )
+            )
+        )
+
+        return objectMapper.valueToTree(objectWrapper)
+    }
+
+    private fun getPlugin(config: Map<String, Any?>): ObjectenApiPlugin {
+        return pluginService.createInstance(config[PLUGIN_CONFIGURATION].toString())
     }
 
     companion object {
-        private const val BASE_URL = "objectenApiBaseUrl"
-        private const val TOKEN = "token"
-        private const val VALTIMO_OBJECTTYPEN_API_URL = "objecttypenApiUrl"
+        private const val PLUGIN_CONFIGURATION = "pluginConfiguration"
+        private const val OBJECTTYPEN_API_URL = "objecttypenApiUrl"
+        private const val OBJECT_TYPE_VERSION = "objectTypeVersion"
     }
 }

@@ -3,7 +3,6 @@
     "title": "Objecten API",
     "type": "objectenApi",
     "properties": {
-        "objectenApiBaseUrl": "${VALTIMO_OBJECTEN_API_URL}",
-        "token": "${VALTIMO_OBJECTEN_API_TOKEN}"
+        "pluginConfiguration": "b6d83348-97e7-4660-bd35-2e5fcc9629b4"
     }
 }

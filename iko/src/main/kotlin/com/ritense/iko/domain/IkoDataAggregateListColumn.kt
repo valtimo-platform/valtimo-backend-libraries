@@ -32,7 +32,7 @@ class IkoDataAggregateListColumn(
     val id: IkoDataAggregateListColumnId,
 
     @ManyToOne
-    @MapsId("columnId")
+    @MapsId("listColumnId")
     @JoinColumn(name = "column_id")
     val column: SearchListColumn
 

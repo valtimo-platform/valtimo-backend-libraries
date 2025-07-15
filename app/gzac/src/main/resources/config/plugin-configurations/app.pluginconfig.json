@@ -1,5 +1,13 @@
 [
     {
+        "id": "72a13bd5-2625-47db-b181-ffc4055cae43",
+        "title": "IKO API",
+        "pluginDefinitionKey": "iko",
+        "properties": {
+            "url": "${VALTIMO_IKO_API_URL}"
+        }
+    },
+    {
         "id": "b609a0a3-886e-4b3d-ae0d-c01effb311ee",
         "title": "OpenZaak Authentication",
         "pluginDefinitionKey": "openzaak",

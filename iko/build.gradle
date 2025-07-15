@@ -40,6 +40,7 @@ dependencies {
     implementation project(':core')
     implementation project(':exporter')
     implementation project(':importer')
+    implementation project(':plugin')
     implementation project(':process-document')
     implementation project(':search')
     implementation project(':value-resolver')

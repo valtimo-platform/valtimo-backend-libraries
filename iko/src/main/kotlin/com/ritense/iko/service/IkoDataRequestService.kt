@@ -48,7 +48,7 @@ class IkoDataRequestService(
     private val ikoConnectors: List<IkoConnector>,
 ) {
 
-    fun search(
+    fun searchData(
         key: String,
         ikoDataAggregateKey: String,
         filters: List<DataFilter>,
@@ -56,10 +56,10 @@ class IkoDataRequestService(
     ): Page<JsonNode> {
         ikoDataAggregateService.requirePermission(ikoDataAggregateKey, VIEW)
         val dataRequest = getByKey(key, ikoDataAggregateKey)
-        val dataRepository = ikoConnectors.first {
+        val ikoConnector = ikoConnectors.first {
             it.getType() == dataRequest.id.ikoDataAggregate.ikoConnectorConfig.type
         }
-        return dataRepository.findAll(
+        return ikoConnector.findAll(
             dataRequest.id.ikoDataAggregate.ikoConnectorConfig.properties +
                 dataRequest.id.ikoDataAggregate.properties +
                 dataRequest.properties,

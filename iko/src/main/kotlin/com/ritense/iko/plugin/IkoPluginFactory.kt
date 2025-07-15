@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.iko.domain
+package com.ritense.iko.plugin
 
-import jakarta.persistence.Column
-import jakarta.persistence.Embeddable
-import java.io.Serializable
-import java.util.UUID
+import com.ritense.iko.client.IkoClient
+import com.ritense.plugin.PluginFactory
+import com.ritense.plugin.service.PluginService
 
-@Embeddable
-data class IkoDataAggregateListColumnId(
-    @Column(name = "iko_data_aggregate_key", updatable = false, nullable = false)
-    val ikoDataAggregateKey: String,
+class IkoPluginFactory(
+    pluginService: PluginService,
+    private val ikoClient: IkoClient,
+) : PluginFactory<IkoPlugin>(pluginService) {
 
-    @Column(name = "column_id", updatable = false, nullable = false)
-    val listColumnId: UUID
-) : Serializable
+    override fun create(): IkoPlugin {
+        return IkoPlugin(ikoClient)
+    }
+}

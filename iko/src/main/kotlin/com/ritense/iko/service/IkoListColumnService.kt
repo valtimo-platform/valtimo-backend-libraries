@@ -82,7 +82,7 @@ class IkoListColumnService(
             )
         requireNotNull(ikoDataAggregateColumn)
         val updatedColumn =
-            listColumnService.update(column.copy(id = ikoDataAggregateColumn.id.columnId))
+            listColumnService.update(column.copy(id = ikoDataAggregateColumn.id.listColumnId))
         ikoDataAggregateListColumnRepository.save(
             IkoDataAggregateListColumn(
                 id = IkoDataAggregateListColumnId(ikoDataAggregateKey, updatedColumn.id),

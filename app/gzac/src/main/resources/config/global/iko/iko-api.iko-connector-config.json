@@ -3,6 +3,6 @@
     "title": "IKO API",
     "type": "iko",
     "properties": {
-        "baseUrl": "http://localhost:9090/"
+        "pluginConfiguration": "72a13bd5-2625-47db-b181-ffc4055cae43"
     }
 }

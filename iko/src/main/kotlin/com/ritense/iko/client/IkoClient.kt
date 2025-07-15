@@ -23,7 +23,7 @@ import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 import java.net.URI
 
-class IkoApiClient(
+class IkoClient(
     private val restClientBuilder: RestClient.Builder,
 ) {
     fun getById(

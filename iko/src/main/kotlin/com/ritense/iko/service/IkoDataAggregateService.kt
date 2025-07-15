@@ -43,19 +43,6 @@ class IkoDataAggregateService(
     private val ikoConnectors: List<IkoConnector>,
 ) {
 
-    fun searchData(key: String, filters: List<DataFilter>, pageable: Pageable): Page<JsonNode> {
-        val dataAggregate = getByKey(key)
-        val ikoConnector = ikoConnectors.first {
-            it.getType() == dataAggregate.ikoConnectorConfig.type
-        }
-        return ikoConnector.findAll(
-            config = dataAggregate.ikoConnectorConfig.properties +
-                dataAggregate.properties,
-            filters = filters,
-            pageable = pageable,
-        )
-    }
-
     fun getDataById(key: String, id: String): JsonNode {
         val dataAggregate = getByKey(key)
         val ikoConnector = ikoConnectors.first {
@@ -64,6 +51,17 @@ class IkoDataAggregateService(
         return ikoConnector.findById(
             config = dataAggregate.ikoConnectorConfig.properties + dataAggregate.properties,
             id = id
+        )
+    }
+
+    fun createDataById(key: String, data: JsonNode): JsonNode {
+        val dataAggregate = getByKey(key)
+        val ikoConnector = ikoConnectors.first {
+            it.getType() == dataAggregate.ikoConnectorConfig.type
+        }
+        return ikoConnector.create(
+            config = dataAggregate.ikoConnectorConfig.properties + dataAggregate.properties,
+            data = data
         )
     }
 

@@ -18,25 +18,36 @@ package com.ritense.iko
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
-import com.ritense.iko.client.IkoApiClient
+import com.ritense.iko.plugin.IkoPlugin
+import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.iko.Comparator
 import com.ritense.valtimo.contract.iko.DataFilter
 import com.ritense.valtimo.contract.iko.IkoConnector
 import com.ritense.valtimo.contract.iko.PropertyField
-import com.ritense.valtimo.contract.iko.PropertyField.Companion.PROPERTY_FIELD_TYPE_URL
+import com.ritense.valtimo.contract.iko.PropertyField.Companion.PROPERTY_FIELD_TYPE_DROPDOWN
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import java.net.URI
 
-class IkoApiConnector(
-    private val ikoApiClient: IkoApiClient,
+class IkoServerConnector(
+    private val pluginService: PluginService,
 ) : IkoConnector {
 
     override fun getType() = "iko"
 
-    override fun getIkoConnectorPropertyFields(): List<PropertyField> =
-        listOf(PropertyField(BASE_URL, PROPERTY_FIELD_TYPE_URL))
+    override fun getIkoConnectorConfigPropertyFields(): List<PropertyField> {
+        val dropdownList = pluginService.findPluginConfigurations(IkoPlugin::class.java)
+            .map { it.id.toString() to it.title }
+
+        return listOf(
+            PropertyField(
+                title = PropertyField.toReadableText(PLUGIN_CONFIGURATION),
+                key = PLUGIN_CONFIGURATION,
+                type = PROPERTY_FIELD_TYPE_DROPDOWN,
+                dropdownList = dropdownList
+            )
+        )
+    }
 
     override fun getDataAggregatePropertyFields(): List<PropertyField> = listOf(PropertyField(SEARCH_PATH))
 
@@ -54,10 +65,10 @@ class IkoApiConnector(
                 .replace("/", "__")
                 .trim('_') to it.value.toString()
         }
-        val data = ikoApiClient.search(
-            baseUrl = URI(config[BASE_URL].toString()),
+
+        val data = getPlugin(config).search(
             searchPath = config[SEARCH_PATH].toString(),
-            searchType = config[SEARCH_TYPE].toString(),
+            searchType = config[SEARCH_TYPE]?.toString(),
             filters = filterMap,
         )
 
@@ -76,15 +87,18 @@ class IkoApiConnector(
     }
 
     override fun findById(config: Map<String, Any?>, id: Any): JsonNode {
-        return ikoApiClient.getById(
-            baseUrl = URI(config[BASE_URL].toString()),
+        return getPlugin(config).getById(
             searchPath = config[SEARCH_PATH].toString(),
             id = id.toString()
         )
     }
 
+    private fun getPlugin(config: Map<String, Any?>): IkoPlugin {
+        return pluginService.createInstance(config[PLUGIN_CONFIGURATION].toString())
+    }
+
     companion object {
-        private const val BASE_URL = "baseUrl"
+        private const val PLUGIN_CONFIGURATION = "pluginConfiguration"
         private const val SEARCH_PATH = "searchPath"
         const val SEARCH_TYPE = "searchType"
     }

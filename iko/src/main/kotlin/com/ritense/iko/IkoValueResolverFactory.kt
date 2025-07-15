@@ -46,22 +46,20 @@ class IkoValueResolverFactory(
                 data.at(jsonPointer)
             }
         }
+
         val (dataRequest, searchFields) = ikoDataRequestService.findAll(ikoDataAggregateKey = ikoDataAggregateKey)
-            .firstNotNullOf { dataRequest ->
-                val searchFields = searchFieldService.findAllSearchFieldsByIkoDataRequest(
+            .asSequence().map { dataRequest ->
+                dataRequest to searchFieldService.findAllSearchFieldsByIkoDataRequest(
                     ikoDataAggregateKey = ikoDataAggregateKey,
                     ikoDataRequestKey = dataRequest.id.key
                 )
-                if (searchFields.all { pairContext.keys.contains(it.key) || !it.required }) {
-                    dataRequest to searchFields
-                } else {
-                    return@firstNotNullOf null
-                }
+            }.first { (_, searchFields) ->
+                searchFields.all { pairContext.keys.contains(it.key) || !it.required }
             }
-        val filters = listOf(DataFilter("type", dataRequest.properties[IkoApiConnector.SEARCH_TYPE])) +
-            searchFields.map { searchField -> DataFilter(searchField.key, pairContext[searchField.key]) }
-        val dataList = ikoDataAggregateService.searchData(ikoDataAggregateKey, filters, pageable).content
-        val data = objectMapper.valueToTree<ArrayNode>(dataList)
+
+        val filters = searchFields.map { searchField -> DataFilter(searchField.key, pairContext[searchField.key]) }
+        val dataPaged = ikoDataRequestService.searchData(dataRequest.id.key, ikoDataAggregateKey, filters, pageable)
+        val data = objectMapper.valueToTree<ArrayNode>(dataPaged.content)
         return Function { jsonPointer ->
             data.at(jsonPointer)
         }
