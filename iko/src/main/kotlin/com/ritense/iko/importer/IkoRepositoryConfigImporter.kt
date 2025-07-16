@@ -18,37 +18,38 @@ package com.ritense.iko.importer
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.ritense.iko.service.IkoConnectorService
+import com.ritense.iko.service.IkoRepositoryService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
-import com.ritense.importer.ValtimoImportTypes.Companion.IKO_CONNECTOR_CONFIG
+import com.ritense.importer.ValtimoImportTypes.Companion.GLOBAL_FORM
+import com.ritense.importer.ValtimoImportTypes.Companion.IKO_REPOSITORY_CONFIG
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
-class IkoConnectorConfigImporter(
+class IkoRepositoryConfigImporter(
     private val objectMapper: ObjectMapper,
-    private val ikoConnectorService: IkoConnectorService,
+    private val ikoRepositoryService: IkoRepositoryService,
 ) : Importer {
-    override fun type() = IKO_CONNECTOR_CONFIG
+    override fun type() = IKO_REPOSITORY_CONFIG
 
-    override fun dependsOn(): Set<String> = emptySet()
+    override fun dependsOn(): Set<String> = setOf(GLOBAL_FORM)
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
         val fileContent = request.content.toString(Charsets.UTF_8)
-        val ikoConnectorConfig = objectMapper.readValue<IkoConnectorConfigDto>(fileContent)
-        ikoConnectorService.saveIkoConnectorConfig(
-            key = ikoConnectorConfig.key,
-            title = ikoConnectorConfig.title,
-            type = ikoConnectorConfig.type,
-            properties = ikoConnectorConfig.properties ?: emptyMap(),
+        val ikoRepositoryConfig = objectMapper.readValue<IkoRepositoryConfigDto>(fileContent)
+        ikoRepositoryService.saveIkoRepositoryConfig(
+            key = ikoRepositoryConfig.key,
+            title = ikoRepositoryConfig.title,
+            type = ikoRepositoryConfig.type,
+            properties = ikoRepositoryConfig.properties ?: emptyMap(),
         )
     }
 
     override fun partOfCaseDefinition(): Boolean = false
 
     private companion object {
-        private val FILENAME_REGEX = """/global/iko/(?:.*/)?(.+)\.iko-connector-config\.json""".toRegex()
+        private val FILENAME_REGEX = """/global/iko/(?:.*/)?(.+)\.iko-repository-config\.json""".toRegex()
     }
 }

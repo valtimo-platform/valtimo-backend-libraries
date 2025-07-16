@@ -53,6 +53,7 @@ class IkoSearchFieldImporter(
                     searchFieldDto.toEntity(
                         ikoSearchFieldsDto.ikoDataAggregateKey,
                         ikoSearchFieldsDto.ikoDataRequestKey,
+                        index
                     )
                 )
             } else {
@@ -62,6 +63,7 @@ class IkoSearchFieldImporter(
                     searchFieldDto.toEntity(
                         ikoSearchFieldsDto.ikoDataAggregateKey,
                         ikoSearchFieldsDto.ikoDataRequestKey,
+                        index
                     )
                 )
             }

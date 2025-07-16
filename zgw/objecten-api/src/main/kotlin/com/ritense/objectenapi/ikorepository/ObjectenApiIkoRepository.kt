@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.objectenapi.ikoconnector
+package com.ritense.objectenapi.ikorepository
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.ritense.objectenapi.ObjectenApiPlugin
-import com.ritense.objectenapi.client.ObjectRecord
-import com.ritense.objectenapi.client.ObjectRequest
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.iko.DataFilter
-import com.ritense.valtimo.contract.iko.IkoConnector
+import com.ritense.valtimo.contract.iko.IkoRepository
 import com.ritense.valtimo.contract.iko.PropertyField
 import com.ritense.valtimo.contract.iko.PropertyField.Companion.PROPERTY_FIELD_TYPE_DROPDOWN
 import com.ritense.valtimo.contract.iko.PropertyField.Companion.PROPERTY_FIELD_TYPE_INTEGER
@@ -34,16 +32,15 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
-import java.time.LocalDate
 
-class ObjectenApiIkoConnector(
+class ObjectenApiIkoRepository(
     private val pluginService: PluginService,
     private val objectMapper: ObjectMapper,
-) : IkoConnector {
+) : IkoRepository {
 
     override fun getType() = "objectenApi"
 
-    override fun getIkoConnectorConfigPropertyFields(): List<PropertyField> {
+    override fun getIkoRepositoryConfigPropertyFields(): List<PropertyField> {
         val dropdownList = pluginService.findPluginConfigurations(ObjectenApiPlugin::class.java)
             .map { it.id.toString() to it.title }
 
@@ -100,25 +97,6 @@ class ObjectenApiIkoConnector(
 
         val objectWrapper = getPlugin(config).getObject(
             objectUrl = URI(objectUrl),
-        )
-
-        return objectMapper.valueToTree(objectWrapper)
-    }
-
-    override fun create(config: Map<String, Any?>, data: JsonNode): JsonNode {
-        val objecttypenApiUrl = URI(config[OBJECTTYPEN_API_URL].toString())
-        val objectTypeVersion = config[OBJECT_TYPE_VERSION] as Int
-
-        val objectWrapper = getPlugin(config).createObject(
-            objectRequest = ObjectRequest(
-                null,
-                objecttypenApiUrl,
-                ObjectRecord(
-                    typeVersion = objectTypeVersion,
-                    data = data,
-                    startAt = LocalDate.now()
-                )
-            )
         )
 
         return objectMapper.valueToTree(objectWrapper)

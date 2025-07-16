@@ -30,7 +30,7 @@ import com.ritense.iko.repository.IkoDataRequestSpecificationHelper.Companion.by
 import com.ritense.iko.repository.IkoDataRequestSpecificationHelper.Companion.query
 import com.ritense.iko.web.rest.request.IkoDataRequestUpdateRequest
 import com.ritense.valtimo.contract.iko.DataFilter
-import com.ritense.valtimo.contract.iko.IkoConnector
+import com.ritense.valtimo.contract.iko.IkoRepository
 import com.ritense.valtimo.contract.iko.PropertyField
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -45,7 +45,7 @@ class IkoDataRequestService(
     private val ikoDataRequestRepository: IkoDataRequestRepository,
     private val ikoDataAggregateService: IkoDataAggregateService,
     private val authorizationService: AuthorizationService,
-    private val ikoConnectors: List<IkoConnector>,
+    private val ikoRepositories: List<IkoRepository>,
 ) {
 
     fun searchData(
@@ -56,11 +56,11 @@ class IkoDataRequestService(
     ): Page<JsonNode> {
         ikoDataAggregateService.requirePermission(ikoDataAggregateKey, VIEW)
         val dataRequest = getByKey(key, ikoDataAggregateKey)
-        val ikoConnector = ikoConnectors.first {
-            it.getType() == dataRequest.id.ikoDataAggregate.ikoConnectorConfig.type
+        val ikoRepository = ikoRepositories.first {
+            it.getType() == dataRequest.id.ikoDataAggregate.ikoRepositoryConfig.type
         }
-        return ikoConnector.findAll(
-            dataRequest.id.ikoDataAggregate.ikoConnectorConfig.properties +
+        return ikoRepository.findAll(
+            dataRequest.id.ikoDataAggregate.ikoRepositoryConfig.properties +
                 dataRequest.id.ikoDataAggregate.properties +
                 dataRequest.properties,
             filters,
@@ -83,7 +83,7 @@ class IkoDataRequestService(
 
     fun getIkoDataRequestPropertyFields(type: Any): List<PropertyField> {
         ikoDataAggregateService.denyAuthorization()
-        return ikoConnectors.single { it.getType() == type }.getDataRequestPropertyFields()
+        return ikoRepositories.single { it.getType() == type }.getDataRequestPropertyFields()
     }
 
     fun getByKey(key: String, ikoDataAggregateKey: String): IkoDataRequest {
@@ -104,7 +104,7 @@ class IkoDataRequestService(
         key: String,
         ikoDataAggregateKey: String,
         title: String,
-        properties: Map<String, Any?>,
+        properties: Map<String, Any?> = emptyMap(),
     ): IkoDataRequest {
         ikoDataAggregateService.denyAuthorization()
         val ikoDataAggregate = ikoDataAggregateService.getByKey(ikoDataAggregateKey)

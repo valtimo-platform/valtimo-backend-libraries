@@ -5,7 +5,7 @@
         {
             "key": "postcode",
             "title": "Postcode",
-            "path":" /postcode",
+            "path": "/postcode",
             "dataType": "text",
             "fieldType": "single",
             "matchType": "exact",

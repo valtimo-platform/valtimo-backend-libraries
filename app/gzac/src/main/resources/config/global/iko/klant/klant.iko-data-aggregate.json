@@ -1,6 +1,6 @@
 {
     "key": "klant",
-    "ikoConnectorConfigKey": "iko-api",
+    "ikoRepositoryConfigKey": "iko-api",
     "title": "Klant",
     "properties": {
         "searchPath": "personen"

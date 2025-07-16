@@ -88,7 +88,7 @@ class IkoDataAggregateManagementResource(
     ): ResponseEntity<IkoDataAggregateResponse> {
         val ikoDataAggregate = service.createIkoDataAggregate(
             key = key,
-            ikoConnectorConfigKey = request.ikoConnectorConfigKey,
+            ikoRepositoryConfigKey = request.ikoRepositoryConfigKey,
             title = request.title,
             properties = request.properties,
         )
@@ -104,7 +104,7 @@ class IkoDataAggregateManagementResource(
         val ikoDataAggregate = service.saveIkoDataAggregate(
             key = key,
             title = request.title,
-            ikoConnectorConfigKey = request.ikoConnectorConfigKey,
+            ikoRepositoryConfigKey = request.ikoRepositoryConfigKey,
             properties = request.properties,
         )
         return ResponseEntity.ok(IkoDataAggregateResponse.from(ikoDataAggregate))

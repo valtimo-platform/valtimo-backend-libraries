@@ -39,9 +39,9 @@ class IkoDataAggregate(
 
     @Type(value = JsonType::class)
     @Column(name = "properties", nullable = false)
-    val properties: Map<String, Any?>,
+    val properties: Map<String, Any?> = emptyMap(),
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "iko_connector_config_key", referencedColumnName = "key")
-    val ikoConnectorConfig: IkoConnectorConfig,
+    @JoinColumn(name = "iko_repository_config_key", referencedColumnName = "key")
+    val ikoRepositoryConfig: IkoRepositoryConfig,
 )

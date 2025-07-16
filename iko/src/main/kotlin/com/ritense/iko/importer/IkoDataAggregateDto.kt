@@ -18,7 +18,7 @@ package com.ritense.iko.importer
 
 data class IkoDataAggregateDto(
     val key: String,
-    val ikoConnectorConfigKey: String,
+    val ikoRepositoryConfigKey: String,
     val title: String,
-    val properties: Map<String, Any?>?
+    val properties: Map<String, Any?>? = emptyMap(),
 )

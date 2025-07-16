@@ -33,7 +33,7 @@ class IkoHttpSecurityConfigurer : HttpSecurityConfigurer {
             http.authorizeHttpRequests { requests ->
                 requests
                     .requestMatchers(antMatcher(GET, "/api/management/v1/iko-types")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(GET, "/api/management/v1/iko-property-fields/{type}/connector-config"))
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/iko-property-fields/{type}/repository-config"))
                     .hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "/api/management/v1/iko")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "/api/management/v1/iko/{key}")).hasAuthority(ADMIN)

@@ -18,11 +18,11 @@ package com.ritense.iko.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
-import com.ritense.iko.IkoServerConnector
+import com.ritense.iko.IkoServerRepository
 import com.ritense.iko.IkoValueResolverFactory
 import com.ritense.iko.authorization.IkoDataAggregateSpecificationFactory
 import com.ritense.iko.client.IkoClient
-import com.ritense.iko.importer.IkoConnectorConfigImporter
+import com.ritense.iko.importer.IkoRepositoryConfigImporter
 import com.ritense.iko.importer.IkoDataAggregateImporter
 import com.ritense.iko.importer.IkoDataRequestImporter
 import com.ritense.iko.importer.IkoListColumnImporter
@@ -30,7 +30,7 @@ import com.ritense.iko.importer.IkoSearchFieldImporter
 import com.ritense.iko.importer.IkoTabImporter
 import com.ritense.iko.importer.IkoWidgetImporter
 import com.ritense.iko.plugin.IkoPluginFactory
-import com.ritense.iko.repository.IkoConnectorConfigRepository
+import com.ritense.iko.repository.IkoRepositoryConfigRepository
 import com.ritense.iko.repository.IkoDataAggregateListColumnRepository
 import com.ritense.iko.repository.IkoDataAggregateRepository
 import com.ritense.iko.repository.IkoDataAggregateTabRepository
@@ -38,7 +38,7 @@ import com.ritense.iko.repository.IkoDataRequestRepository
 import com.ritense.iko.repository.IkoDataRequestSearchFieldRepository
 import com.ritense.iko.repository.IkoTabWidgetRepository
 import com.ritense.iko.security.config.IkoHttpSecurityConfigurer
-import com.ritense.iko.service.IkoConnectorService
+import com.ritense.iko.service.IkoRepositoryService
 import com.ritense.iko.service.IkoDataAggregateService
 import com.ritense.iko.service.IkoDataRequestService
 import com.ritense.iko.service.IkoListColumnService
@@ -46,7 +46,7 @@ import com.ritense.iko.service.IkoSearchFieldService
 import com.ritense.iko.service.IkoTabService
 import com.ritense.iko.service.IkoWidgetService
 import com.ritense.iko.valueresolver.IkoValueResolverServiceImpl
-import com.ritense.iko.web.rest.IkoConnectorManagementResource
+import com.ritense.iko.web.rest.IkoRepositoryManagementResource
 import com.ritense.iko.web.rest.IkoDataAggregateManagementResource
 import com.ritense.iko.web.rest.IkoDataAggregateResource
 import com.ritense.iko.web.rest.IkoDataRequestManagementResource
@@ -59,7 +59,7 @@ import com.ritense.search.service.SearchListColumnService
 import com.ritense.tab.service.TabService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valtimo.contract.database.QueryDialectHelper
-import com.ritense.valtimo.contract.iko.IkoConnector
+import com.ritense.valtimo.contract.iko.IkoRepository
 import com.ritense.widget.service.WidgetService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -76,29 +76,29 @@ import org.springframework.web.client.RestClient
 class IkoAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(IkoConnectorService::class)
-    fun ikoConnectorService(
-        ikoConnectorConfigRepository: IkoConnectorConfigRepository,
+    @ConditionalOnMissingBean(IkoRepositoryService::class)
+    fun ikoRepositoryService(
+        ikoRepositoryConfigRepository: IkoRepositoryConfigRepository,
         authorizationService: AuthorizationService,
-        ikoConnectors: List<IkoConnector>,
-    ) = IkoConnectorService(
-        ikoConnectorConfigRepository,
+        ikoRepositories: List<IkoRepository>,
+    ) = IkoRepositoryService(
+        ikoRepositoryConfigRepository,
         authorizationService,
-        ikoConnectors,
+        ikoRepositories,
     )
 
     @Bean
     @ConditionalOnMissingBean(IkoDataAggregateService::class)
     fun ikoDataAggregateService(
         ikoDataAggregateRepository: IkoDataAggregateRepository,
-        ikoConnectorService: IkoConnectorService,
+        ikoRepositoryService: IkoRepositoryService,
         authorizationService: AuthorizationService,
-        ikoConnectors: List<IkoConnector>,
+        ikoRepositories: List<IkoRepository>,
     ) = IkoDataAggregateService(
         ikoDataAggregateRepository,
-        ikoConnectorService,
+        ikoRepositoryService,
         authorizationService,
-        ikoConnectors
+        ikoRepositories
     )
 
     @Bean
@@ -107,12 +107,12 @@ class IkoAutoConfiguration {
         ikoDataRequestRepository: IkoDataRequestRepository,
         ikoDataAggregateService: IkoDataAggregateService,
         authorizationService: AuthorizationService,
-        ikoConnectors: List<IkoConnector>,
+        ikoRepositories: List<IkoRepository>,
     ) = IkoDataRequestService(
         ikoDataRequestRepository,
         ikoDataAggregateService,
         authorizationService,
-        ikoConnectors,
+        ikoRepositories,
     )
 
     @Order(300)
@@ -152,11 +152,11 @@ class IkoAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(IkoConnectorManagementResource::class)
-    fun ikoConnectorManagementResource(
-        service: IkoConnectorService,
-    ): IkoConnectorManagementResource {
-        return IkoConnectorManagementResource(
+    @ConditionalOnMissingBean(IkoRepositoryManagementResource::class)
+    fun ikoRepositoryManagementResource(
+        service: IkoRepositoryService,
+    ): IkoRepositoryManagementResource {
+        return IkoRepositoryManagementResource(
             service,
         )
     }
@@ -242,24 +242,24 @@ class IkoAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(IkoServerConnector::class)
-    fun ikoServerConnector(
+    @ConditionalOnMissingBean(IkoServerRepository::class)
+    fun ikoServerRepository(
         pluginService: PluginService,
-    ): IkoServerConnector {
-        return IkoServerConnector(
+    ): IkoServerRepository {
+        return IkoServerRepository(
             pluginService,
         )
     }
 
     @Bean
-    @ConditionalOnMissingBean(IkoConnectorConfigImporter::class)
-    fun ikoConnectorConfigImporter(
+    @ConditionalOnMissingBean(IkoRepositoryConfigImporter::class)
+    fun ikoRepositoryConfigImporter(
         objectMapper: ObjectMapper,
-        ikoConnectorService: IkoConnectorService,
-    ): IkoConnectorConfigImporter {
-        return IkoConnectorConfigImporter(
+        ikoRepositoryService: IkoRepositoryService,
+    ): IkoRepositoryConfigImporter {
+        return IkoRepositoryConfigImporter(
             objectMapper,
-            ikoConnectorService,
+            ikoRepositoryService,
         )
     }
 

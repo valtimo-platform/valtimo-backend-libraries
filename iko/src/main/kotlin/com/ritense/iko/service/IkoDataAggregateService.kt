@@ -24,11 +24,10 @@ import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.iko.authorization.IkoDataAggregateActionProvider
 import com.ritense.iko.domain.IkoDataAggregate
 import com.ritense.iko.repository.IkoDataAggregateRepository
-import com.ritense.iko.repository.IkoDataAggregateSpecificationHelper.Companion.byIkoConnectorConfigKey
+import com.ritense.iko.repository.IkoDataAggregateSpecificationHelper.Companion.byIkoRepositoryConfigKey
 import com.ritense.iko.repository.IkoDataAggregateSpecificationHelper.Companion.byKey
 import com.ritense.iko.repository.IkoDataAggregateSpecificationHelper.Companion.byTitleContains
-import com.ritense.valtimo.contract.iko.DataFilter
-import com.ritense.valtimo.contract.iko.IkoConnector
+import com.ritense.valtimo.contract.iko.IkoRepository
 import com.ritense.valtimo.contract.iko.PropertyField
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -38,36 +37,25 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class IkoDataAggregateService(
     private val ikoDataAggregateRepository: IkoDataAggregateRepository,
-    private val ikoConnectorService: IkoConnectorService,
+    private val ikoRepositoryService: IkoRepositoryService,
     private val authorizationService: AuthorizationService,
-    private val ikoConnectors: List<IkoConnector>,
+    private val ikoRepositories: List<IkoRepository>,
 ) {
 
     fun getDataById(key: String, id: String): JsonNode {
         val dataAggregate = getByKey(key)
-        val ikoConnector = ikoConnectors.first {
-            it.getType() == dataAggregate.ikoConnectorConfig.type
+        val ikoRepository = ikoRepositories.first {
+            it.getType() == dataAggregate.ikoRepositoryConfig.type
         }
-        return ikoConnector.findById(
-            config = dataAggregate.ikoConnectorConfig.properties + dataAggregate.properties,
+        return ikoRepository.findById(
+            config = dataAggregate.ikoRepositoryConfig.properties + dataAggregate.properties,
             id = id
-        )
-    }
-
-    fun createDataById(key: String, data: JsonNode): JsonNode {
-        val dataAggregate = getByKey(key)
-        val ikoConnector = ikoConnectors.first {
-            it.getType() == dataAggregate.ikoConnectorConfig.type
-        }
-        return ikoConnector.create(
-            config = dataAggregate.ikoConnectorConfig.properties + dataAggregate.properties,
-            data = data
         )
     }
 
     fun getIkoDataAggregatePropertyFields(type: Any): List<PropertyField> {
         denyAuthorization()
-        return ikoConnectors.single { it.getType() == type }.getDataAggregatePropertyFields()
+        return ikoRepositories.single { it.getType() == type }.getDataAggregatePropertyFields()
     }
 
     fun findAll(
@@ -96,7 +84,7 @@ class IkoDataAggregateService(
 
     fun createIkoDataAggregate(
         key: String,
-        ikoConnectorConfigKey: String,
+        ikoRepositoryConfigKey: String,
         title: String,
         properties: Map<String, Any?>,
     ): IkoDataAggregate {
@@ -107,16 +95,16 @@ class IkoDataAggregateService(
                 key = key,
                 title = title,
                 properties = properties,
-                ikoConnectorConfig = ikoConnectorService.getByKey(ikoConnectorConfigKey),
+                ikoRepositoryConfig = ikoRepositoryService.getByKey(ikoRepositoryConfigKey),
             )
         )
     }
 
     fun saveIkoDataAggregate(
         key: String,
-        ikoConnectorConfigKey: String,
+        ikoRepositoryConfigKey: String,
         title: String,
-        properties: Map<String, Any?>,
+        properties: Map<String, Any?> = emptyMap(),
     ): IkoDataAggregate {
         denyAuthorization()
         return ikoDataAggregateRepository.save(
@@ -124,7 +112,7 @@ class IkoDataAggregateService(
                 key = key,
                 title = title,
                 properties = properties,
-                ikoConnectorConfig = ikoConnectorService.getByKey(ikoConnectorConfigKey),
+                ikoRepositoryConfig = ikoRepositoryService.getByKey(ikoRepositoryConfigKey),
             )
         )
     }
@@ -155,7 +143,7 @@ class IkoDataAggregateService(
 
     private fun getSpecification(
         key: String? = null,
-        ikoConnectorConfigKey: String? = null,
+        ikoRepositoryConfigKey: String? = null,
         titlePart: String? = null,
     ): Specification<IkoDataAggregate> {
         var spec: Specification<IkoDataAggregate> = authorizationService.getAuthorizationSpecification(
@@ -167,8 +155,8 @@ class IkoDataAggregateService(
         if (key != null) {
             spec = spec.and(byKey(key))
         }
-        if (ikoConnectorConfigKey != null) {
-            spec = spec.and(byIkoConnectorConfigKey(ikoConnectorConfigKey))
+        if (ikoRepositoryConfigKey != null) {
+            spec = spec.and(byIkoRepositoryConfigKey(ikoRepositoryConfigKey))
         }
         if (titlePart != null) {
             spec = spec.and(byTitleContains(titlePart))

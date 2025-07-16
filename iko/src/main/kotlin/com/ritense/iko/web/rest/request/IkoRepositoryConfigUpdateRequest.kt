@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.iko.importer
+package com.ritense.iko.web.rest.request
 
-data class IkoConnectorConfigDto(
-    val key: String,
+data class IkoRepositoryConfigUpdateRequest(
     val title: String,
     val type: String,
-    val properties: Map<String, Any?>?
+    val properties: Map<String, Any?>
 )

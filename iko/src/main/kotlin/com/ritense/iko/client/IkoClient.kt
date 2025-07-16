@@ -43,7 +43,7 @@ class IkoClient(
                         .path(baseUrl.path)
                         .port(baseUrl.port)
                         .pathSegment("searches")
-                        .pathSegment(searchPath)
+                        .path(searchPath)
                         .pathSegment(id)
                         .build()
                 }
@@ -78,7 +78,7 @@ class IkoClient(
                         .path(baseUrl.path)
                         .port(baseUrl.port)
                         .pathSegment("searches")
-                        .pathSegment(searchPath)
+                        .path(searchPath)
                         .queryParam("type", searchType)
                         .queryParams(
                             LinkedMultiValueMap(

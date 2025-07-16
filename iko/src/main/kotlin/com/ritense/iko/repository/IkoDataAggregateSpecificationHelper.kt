@@ -25,7 +25,7 @@ class IkoDataAggregateSpecificationHelper {
 
         const val ID: String = "id"
         const val KEY: String = "key"
-        const val IKO_CONNECTOR_CONFIG: String = "ikoConnectorConfig"
+        const val IKO_REPOSITORY_CONFIG: String = "ikoRepositoryConfig"
         const val TITLE: String = "title"
 
         @JvmStatic
@@ -34,8 +34,8 @@ class IkoDataAggregateSpecificationHelper {
         }
 
         @JvmStatic
-        fun byIkoConnectorConfigKey(ikoConnectorConfigKey: String) = Specification<IkoDataAggregate> { root, _, cb ->
-            cb.equal(root.get<String>(IKO_CONNECTOR_CONFIG).get<String>(KEY), ikoConnectorConfigKey)
+        fun byIkoRepositoryConfigKey(ikoRepositoryConfigKey: String) = Specification<IkoDataAggregate> { root, _, cb ->
+            cb.equal(root.get<String>(IKO_REPOSITORY_CONFIG).get<String>(KEY), ikoRepositoryConfigKey)
         }
 
         @JvmStatic

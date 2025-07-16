@@ -17,11 +17,11 @@
 package com.ritense.iko.web.rest
 
 import com.ritense.authorization.annotation.RunWithoutAuthorization
-import com.ritense.iko.service.IkoConnectorService
-import com.ritense.iko.web.rest.request.IkoConnectorConfigCreateRequest
-import com.ritense.iko.web.rest.request.IkoConnectorConfigUpdateRequest
-import com.ritense.iko.web.rest.response.IkoConnectorConfigListResponse
-import com.ritense.iko.web.rest.response.IkoConnectorConfigResponse
+import com.ritense.iko.service.IkoRepositoryService
+import com.ritense.iko.web.rest.request.IkoRepositoryConfigCreateRequest
+import com.ritense.iko.web.rest.request.IkoRepositoryConfigUpdateRequest
+import com.ritense.iko.web.rest.response.IkoRepositoryConfigListResponse
+import com.ritense.iko.web.rest.response.IkoRepositoryConfigResponse
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.valtimo.contract.iko.PropertyField
@@ -43,84 +43,84 @@ import org.springframework.web.bind.annotation.RequestParam
 @Controller
 @SkipComponentScan
 @RequestMapping("/api/management", produces = [APPLICATION_JSON_UTF8_VALUE])
-class IkoConnectorManagementResource(
-    private val service: IkoConnectorService,
+class IkoRepositoryManagementResource(
+    private val service: IkoRepositoryService,
 ) {
 
     @RunWithoutAuthorization
     @GetMapping("/v1/iko-types")
-    fun getIkoConnectorsTypes(): ResponseEntity<List<String>> {
-        return ResponseEntity.ok(service.getIkoConnectorTypes())
+    fun getIkoRepositoriesTypes(): ResponseEntity<List<String>> {
+        return ResponseEntity.ok(service.getIkoRepositoryTypes())
     }
 
     @RunWithoutAuthorization
-    @GetMapping("/v1/iko-property-fields/{type}/connector-config")
-    fun getIkoConnectorConfigPropertyFields(
+    @GetMapping("/v1/iko-property-fields/{type}/repository-config")
+    fun getIkoRepositoryConfigPropertyFields(
         @PathVariable type: String,
     ): ResponseEntity<List<PropertyField>> {
-        return ResponseEntity.ok(service.getIkoConnectorConfigPropertyFields(type))
+        return ResponseEntity.ok(service.getIkoRepositoryConfigPropertyFields(type))
     }
 
     @RunWithoutAuthorization
     @GetMapping("/v1/iko")
-    fun getIkoConnectorConfigsForManagement(
+    fun getIkoRepositoryConfigsForManagement(
         @RequestParam title: String?,
         @RequestParam type: String?,
         @PageableDefault(sort = ["title"], direction = ASC) pageable: Pageable
-    ): ResponseEntity<Page<IkoConnectorConfigListResponse>> {
-        val ikoConnectorConfigs = service.findAll(
+    ): ResponseEntity<Page<IkoRepositoryConfigListResponse>> {
+        val ikoRepositoryConfigs = service.findAll(
             title = title,
             type = type,
             pageable = pageable
         )
-        return ResponseEntity.ok(ikoConnectorConfigs.map { IkoConnectorConfigListResponse.from(it) })
+        return ResponseEntity.ok(ikoRepositoryConfigs.map { IkoRepositoryConfigListResponse.from(it) })
     }
 
     @RunWithoutAuthorization
     @GetMapping("/v1/iko/{key}")
-    fun getIkoConnectorConfig(
+    fun getIkoRepositoryConfig(
         @PathVariable key: String,
-    ): ResponseEntity<IkoConnectorConfigResponse> {
-        val ikoConnectorConfig = service.getByKey(key)
-        return ResponseEntity.ok(IkoConnectorConfigResponse.from(ikoConnectorConfig))
+    ): ResponseEntity<IkoRepositoryConfigResponse> {
+        val ikoRepositoryConfig = service.getByKey(key)
+        return ResponseEntity.ok(IkoRepositoryConfigResponse.from(ikoRepositoryConfig))
     }
 
     @RunWithoutAuthorization
     @PostMapping("/v1/iko/{key}")
-    fun createIkoConnectorConfig(
+    fun createIkoRepositoryConfig(
         @PathVariable key: String,
-        @RequestBody request: IkoConnectorConfigCreateRequest
-    ): ResponseEntity<IkoConnectorConfigResponse> {
-        val ikoConnectorConfig = service.createIkoConnectorConfig(
+        @RequestBody request: IkoRepositoryConfigCreateRequest
+    ): ResponseEntity<IkoRepositoryConfigResponse> {
+        val ikoRepositoryConfig = service.createIkoRepositoryConfig(
             key = key,
             title = request.title,
             type = request.type,
             properties = request.properties,
         )
-        return ResponseEntity.ok(IkoConnectorConfigResponse.from(ikoConnectorConfig))
+        return ResponseEntity.ok(IkoRepositoryConfigResponse.from(ikoRepositoryConfig))
     }
 
     @RunWithoutAuthorization
     @PutMapping("/v1/iko/{key}")
-    fun updateIkoConnectorConfig(
+    fun updateIkoRepositoryConfig(
         @PathVariable key: String,
-        @RequestBody request: IkoConnectorConfigUpdateRequest
-    ): ResponseEntity<IkoConnectorConfigResponse> {
-        val ikoConnectorConfig = service.saveIkoConnectorConfig(
+        @RequestBody request: IkoRepositoryConfigUpdateRequest
+    ): ResponseEntity<IkoRepositoryConfigResponse> {
+        val ikoRepositoryConfig = service.saveIkoRepositoryConfig(
             key = key,
             title = request.title,
             type = request.type,
             properties = request.properties,
         )
-        return ResponseEntity.ok(IkoConnectorConfigResponse.from(ikoConnectorConfig))
+        return ResponseEntity.ok(IkoRepositoryConfigResponse.from(ikoRepositoryConfig))
     }
 
     @RunWithoutAuthorization
     @DeleteMapping("/v1/iko/{key}")
-    fun deleteIkoConnectorConfig(
+    fun deleteIkoRepositoryConfig(
         @PathVariable key: String,
-    ): ResponseEntity<IkoConnectorConfigResponse> {
-        service.deleteIkoConnectorConfig(key)
+    ): ResponseEntity<IkoRepositoryConfigResponse> {
+        service.deleteIkoRepositoryConfig(key)
         return ResponseEntity.noContent().build()
     }
 }

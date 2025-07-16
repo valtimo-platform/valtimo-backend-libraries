@@ -28,6 +28,7 @@ class ValtimoImportTypes {
         const val DECISION_DEFINITION = "decisiondefinition"
         const val DOCUMENT_DEFINITION = "documentdefinition"
         const val FORM = "form"
+        const val GLOBAL_FORM = "globalform"
         const val FORM_FLOW = "formflow"
         const val INTERNAL_CASE_STATUS = "internalcasestatus"
         const val PROCESS_DEFINITION = "processdefinition"
@@ -45,11 +46,11 @@ class ValtimoImportTypes {
         const val ZGW_ZAAK_TYPE_LINK = "zgwzaaktypelink"
 
         // IKO
-        const val IKO_CONNECTOR_CONFIG = "ikoconnectorconfig"
+        const val IKO_REPOSITORY_CONFIG = "ikorepositoryconfig"
         const val IKO_DATA_AGGREGATE = "ikodataaggregate"
         const val IKO_DATA_REQUEST = "ikodatarequest"
-        const val IKO_SEARCH_FIELD = "ikosearchField"
-        const val IKO_LIST_COLUMN = "ikosearchlistcolumn"
+        const val IKO_SEARCH_FIELD = "ikosearchfield"
+        const val IKO_LIST_COLUMN = "ikolistcolumn"
         const val IKO_TAB = "ikotab"
         const val IKO_WIDGET = "ikowidget"
     }

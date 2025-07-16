@@ -19,14 +19,14 @@ package com.ritense.iko.service
 import com.ritense.authorization.Action.Companion.deny
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
-import com.ritense.iko.domain.IkoConnectorConfig
+import com.ritense.iko.domain.IkoRepositoryConfig
 import com.ritense.iko.domain.IkoDataAggregate
-import com.ritense.iko.repository.IkoConnectorConfigRepository
-import com.ritense.iko.repository.IkoConnectorConfigSpecificationHelper.Companion.byKey
-import com.ritense.iko.repository.IkoConnectorConfigSpecificationHelper.Companion.byTitleContains
-import com.ritense.iko.repository.IkoConnectorConfigSpecificationHelper.Companion.byType
-import com.ritense.iko.repository.IkoConnectorConfigSpecificationHelper.Companion.query
-import com.ritense.valtimo.contract.iko.IkoConnector
+import com.ritense.iko.repository.IkoRepositoryConfigRepository
+import com.ritense.iko.repository.IkoRepositoryConfigSpecificationHelper.Companion.byKey
+import com.ritense.iko.repository.IkoRepositoryConfigSpecificationHelper.Companion.byTitleContains
+import com.ritense.iko.repository.IkoRepositoryConfigSpecificationHelper.Companion.byType
+import com.ritense.iko.repository.IkoRepositoryConfigSpecificationHelper.Companion.query
+import com.ritense.valtimo.contract.iko.IkoRepository
 import com.ritense.valtimo.contract.iko.PropertyField
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -34,19 +34,19 @@ import org.springframework.data.jpa.domain.Specification
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
-class IkoConnectorService(
-    private val ikoConnectorConfigRepository: IkoConnectorConfigRepository,
+class IkoRepositoryService(
+    private val ikoRepositoryConfigRepository: IkoRepositoryConfigRepository,
     private val authorizationService: AuthorizationService,
-    private val ikoConnectors: List<IkoConnector>
+    private val ikoRepositories: List<IkoRepository>
 ) {
-    fun getIkoConnectorTypes(): List<String> {
+    fun getIkoRepositoryTypes(): List<String> {
         denyAuthorization()
-        return ikoConnectors.map { it.getType() }
+        return ikoRepositories.map { it.getType() }
     }
 
-    fun getIkoConnectorConfigPropertyFields(type: String): List<PropertyField> {
+    fun getIkoRepositoryConfigPropertyFields(type: String): List<PropertyField> {
         denyAuthorization()
-        return ikoConnectors.single{ it.getType() == type}.getIkoConnectorConfigPropertyFields()
+        return ikoRepositories.single{ it.getType() == type}.getIkoRepositoryConfigPropertyFields()
     }
 
     fun findAll(
@@ -54,31 +54,31 @@ class IkoConnectorService(
         title: String? = null,
         type: String? = null,
         pageable: Pageable = Pageable.unpaged()
-    ): Page<IkoConnectorConfig> {
+    ): Page<IkoRepositoryConfig> {
         denyAuthorization()
         val spec = getSpecification(
             key = key,
             titlePart = title,
             type = type,
         )
-        return ikoConnectorConfigRepository.findAll(spec, pageable)
+        return ikoRepositoryConfigRepository.findAll(spec, pageable)
     }
 
-    fun getByKey(key: String): IkoConnectorConfig {
+    fun getByKey(key: String): IkoRepositoryConfig {
         denyAuthorization()
-        return ikoConnectorConfigRepository.findById(key).orElseThrow()
+        return ikoRepositoryConfigRepository.findById(key).orElseThrow()
     }
 
-    fun createIkoConnectorConfig(
+    fun createIkoRepositoryConfig(
         key: String,
         title: String,
         type: String,
         properties: Map<String, Any?>
-    ): IkoConnectorConfig {
+    ): IkoRepositoryConfig {
         denyAuthorization()
-        require(!existsByKey(key)) { "IKO connector '$key' already exists" }
-        return ikoConnectorConfigRepository.save(
-            IkoConnectorConfig(
+        require(!existsByKey(key)) { "IKO repository '$key' already exists" }
+        return ikoRepositoryConfigRepository.save(
+            IkoRepositoryConfig(
                 key = key,
                 title = title,
                 type = type,
@@ -87,15 +87,15 @@ class IkoConnectorService(
         )
     }
 
-    fun saveIkoConnectorConfig(
+    fun saveIkoRepositoryConfig(
         key: String,
         title: String,
         type: String,
-        properties: Map<String, Any?>
-    ): IkoConnectorConfig {
+        properties: Map<String, Any?> = emptyMap()
+    ): IkoRepositoryConfig {
         denyAuthorization()
-        return ikoConnectorConfigRepository.save(
-            IkoConnectorConfig(
+        return ikoRepositoryConfigRepository.save(
+            IkoRepositoryConfig(
                 key = key,
                 title = title,
                 type = type,
@@ -104,16 +104,16 @@ class IkoConnectorService(
         )
     }
 
-    fun deleteIkoConnectorConfig(key: String) {
+    fun deleteIkoRepositoryConfig(key: String) {
         denyAuthorization()
-        ikoConnectorConfigRepository.deleteById(key)
+        ikoRepositoryConfigRepository.deleteById(key)
     }
 
     private fun getSpecification(
         key: String? = null,
         titlePart: String? = null,
         type: String? = null,
-    ): Specification<IkoConnectorConfig> {
+    ): Specification<IkoRepositoryConfig> {
         var spec = query()
         if (key != null) {
             spec = spec.and(byKey(key))
@@ -128,7 +128,7 @@ class IkoConnectorService(
     }
 
     private fun existsByKey(key: String): Boolean {
-        return ikoConnectorConfigRepository.existsById(key)
+        return ikoRepositoryConfigRepository.existsById(key)
     }
 
     private fun denyAuthorization() {

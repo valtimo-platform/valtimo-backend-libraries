@@ -20,7 +20,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
     <changeSet author="Ritense" id="1">
-        <createTable tableName="iko_connector_config">
+        <createTable tableName="iko_repository_config">
             <column name="key" type="VARCHAR(256)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
@@ -41,7 +41,7 @@
             <column name="key" type="VARCHAR(256)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="iko_connector_config_key" type="VARCHAR(256)">
+            <column name="iko_repository_config_key" type="VARCHAR(256)">
                 <constraints nullable="false"/>
             </column>
             <column name="title" type="VARCHAR(256)">
@@ -52,10 +52,10 @@
             </column>
         </createTable>
         <addForeignKeyConstraint baseTableName="iko_data_aggregate"
-                                 baseColumnNames="iko_connector_config_key"
-                                 referencedTableName="iko_connector_config"
+                                 baseColumnNames="iko_repository_config_key"
+                                 referencedTableName="iko_repository_config"
                                  referencedColumnNames="key"
-                                 constraintName="fk_iko_data_aggregate_iko_connector_config_key"
+                                 constraintName="fk_iko_data_aggregate_iko_repository_config_key"
                                  onDelete="CASCADE"/>
     </changeSet>
 

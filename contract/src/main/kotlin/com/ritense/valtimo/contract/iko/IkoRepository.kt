@@ -20,20 +20,20 @@ import com.fasterxml.jackson.databind.JsonNode
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
-interface IkoConnector {
+interface IkoRepository {
 
     fun getType(): String
 
-    fun getIkoConnectorConfigPropertyFields(): List<PropertyField> = emptyList()
+    fun getIkoRepositoryConfigPropertyFields(): List<PropertyField> =
+        emptyList()
 
-    fun getDataAggregatePropertyFields(): List<PropertyField> = emptyList()
+    fun getDataAggregatePropertyFields(): List<PropertyField> =
+        emptyList()
 
-    fun getDataRequestPropertyFields(): List<PropertyField> = emptyList()
+    fun getDataRequestPropertyFields(): List<PropertyField> =
+        emptyList()
 
     fun findAll(config: Map<String, Any?>, filters: List<DataFilter>, pageable: Pageable): Page<JsonNode>
 
     fun findById(config: Map<String, Any?>, id: Any): JsonNode
-
-    fun create(config: Map<String, Any?>, data: JsonNode): JsonNode =
-        throw NotImplementedError()
 }

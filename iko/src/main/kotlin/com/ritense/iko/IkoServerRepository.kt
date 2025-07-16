@@ -22,20 +22,20 @@ import com.ritense.iko.plugin.IkoPlugin
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.iko.Comparator
 import com.ritense.valtimo.contract.iko.DataFilter
-import com.ritense.valtimo.contract.iko.IkoConnector
+import com.ritense.valtimo.contract.iko.IkoRepository
 import com.ritense.valtimo.contract.iko.PropertyField
 import com.ritense.valtimo.contract.iko.PropertyField.Companion.PROPERTY_FIELD_TYPE_DROPDOWN
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 
-class IkoServerConnector(
+class IkoServerRepository(
     private val pluginService: PluginService,
-) : IkoConnector {
+) : IkoRepository {
 
     override fun getType() = "iko"
 
-    override fun getIkoConnectorConfigPropertyFields(): List<PropertyField> {
+    override fun getIkoRepositoryConfigPropertyFields(): List<PropertyField> {
         val dropdownList = pluginService.findPluginConfigurations(IkoPlugin::class.java)
             .map { it.id.toString() to it.title }
 

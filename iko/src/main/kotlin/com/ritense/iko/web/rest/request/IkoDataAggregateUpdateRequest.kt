@@ -17,7 +17,7 @@
 package com.ritense.iko.web.rest.request
 
 data class IkoDataAggregateUpdateRequest(
-    val ikoConnectorConfigKey: String,
+    val ikoRepositoryConfigKey: String,
     val title: String,
     val properties: Map<String, Any?>,
 )

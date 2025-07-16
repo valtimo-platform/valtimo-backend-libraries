@@ -1,8 +1,9 @@
 {
     "key": "boom",
-    "ikoConnectorConfigKey": "objecten-api",
+    "ikoRepositoryConfigKey": "objecten-api",
     "title": "Boom",
     "properties": {
-        "objecttypenApiUrl": "${VALTIMO_OBJECTTYPEN_API_URL}objecttypes/feeaa795-d212-4fa2-bb38-2c34996e5702"
+        "objecttypenApiUrl": "${VALTIMO_OBJECTTYPEN_API_URL}objecttypes/feeaa795-d212-4fa2-bb38-2c34996e5702",
+        "objectTypeVersion": 1
     }
 }

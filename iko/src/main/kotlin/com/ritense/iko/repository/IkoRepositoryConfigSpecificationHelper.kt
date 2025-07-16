@@ -16,10 +16,10 @@
 
 package com.ritense.iko.repository
 
-import com.ritense.iko.domain.IkoConnectorConfig
+import com.ritense.iko.domain.IkoRepositoryConfig
 import org.springframework.data.jpa.domain.Specification
 
-class IkoConnectorConfigSpecificationHelper {
+class IkoRepositoryConfigSpecificationHelper {
 
     companion object {
 
@@ -28,22 +28,22 @@ class IkoConnectorConfigSpecificationHelper {
         const val TYPE: String = "type"
 
         @JvmStatic
-        fun query() = Specification<IkoConnectorConfig> { _, _, cb ->
+        fun query() = Specification<IkoRepositoryConfig> { _, _, cb ->
             cb.conjunction()
         }
 
         @JvmStatic
-        fun byKey(key: String) = Specification<IkoConnectorConfig> { root, _, cb ->
+        fun byKey(key: String) = Specification<IkoRepositoryConfig> { root, _, cb ->
             cb.equal(root.get<String>(KEY), key)
         }
 
         @JvmStatic
-        fun byTitleContains(titlePart: String) = Specification<IkoConnectorConfig> { root, _, cb ->
+        fun byTitleContains(titlePart: String) = Specification<IkoRepositoryConfig> { root, _, cb ->
             cb.like(root[TITLE], "%$titlePart%")
         }
 
         @JvmStatic
-        fun byType(type: String) = Specification<IkoConnectorConfig> { root, _, cb ->
+        fun byType(type: String) = Specification<IkoRepositoryConfig> { root, _, cb ->
             cb.equal(root.get<String>(TYPE), type)
         }
     }

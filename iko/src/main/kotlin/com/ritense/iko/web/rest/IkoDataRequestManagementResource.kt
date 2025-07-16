@@ -44,7 +44,7 @@ class IkoDataRequestManagementResource(
 
     @RunWithoutAuthorization
     @GetMapping("/v1/iko-property-fields/{type}/data-request")
-    fun getIkoConnectorConfigPropertyFields(
+    fun getIkoRepositoryConfigPropertyFields(
         @PathVariable type: String,
     ): ResponseEntity<List<PropertyField>> {
         return ResponseEntity.ok(service.getIkoDataRequestPropertyFields(type))

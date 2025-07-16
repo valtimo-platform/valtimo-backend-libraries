@@ -16,15 +16,15 @@
 
 package com.ritense.iko.web.rest.response
 
-import com.ritense.iko.domain.IkoConnectorConfig
+import com.ritense.iko.domain.IkoRepositoryConfig
 
-data class IkoConnectorConfigListResponse(
+data class IkoRepositoryConfigListResponse(
     val key: String,
     val title: String,
     val type: String,
 ) {
     companion object {
-        fun from(entity: IkoConnectorConfig) = IkoConnectorConfigListResponse(
+        fun from(entity: IkoRepositoryConfig) = IkoRepositoryConfigListResponse(
             key = entity.key,
             title = entity.title,
             type = entity.type,

@@ -14,30 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.iko.domain
+package com.ritense.iko.importer
 
-import io.hypersistence.utils.hibernate.type.json.JsonType
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.Table
-import org.hibernate.annotations.Type
-
-@Entity
-@Table(name = "iko_connector_config")
-class IkoConnectorConfig(
-
-    @Id
-    @Column(name = "key", updatable = false, nullable = false, unique = true)
+data class IkoRepositoryConfigDto(
     val key: String,
-
-    @Column(name = "title", nullable = false)
     val title: String,
-
-    @Column(name = "`type`", nullable = false)
     val type: String,
-
-    @Type(value = JsonType::class)
-    @Column(name = "properties", nullable = false)
-    val properties: Map<String, Any?>
+    val properties: Map<String, Any?>? = emptyMap(),
 )

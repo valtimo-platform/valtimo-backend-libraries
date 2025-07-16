@@ -21,7 +21,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.iko.service.IkoDataAggregateService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
-import com.ritense.importer.ValtimoImportTypes.Companion.IKO_CONNECTOR_CONFIG
+import com.ritense.importer.ValtimoImportTypes.Companion.IKO_REPOSITORY_CONFIG
 import com.ritense.importer.ValtimoImportTypes.Companion.IKO_DATA_AGGREGATE
 import org.springframework.transaction.annotation.Transactional
 
@@ -32,7 +32,7 @@ class IkoDataAggregateImporter(
 ) : Importer {
     override fun type() = IKO_DATA_AGGREGATE
 
-    override fun dependsOn(): Set<String> = setOf(IKO_CONNECTOR_CONFIG)
+    override fun dependsOn(): Set<String> = setOf(IKO_REPOSITORY_CONFIG)
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
@@ -41,7 +41,7 @@ class IkoDataAggregateImporter(
         val dataAggregate = objectMapper.readValue<IkoDataAggregateDto>(fileContent)
         ikoDataAggregateService.saveIkoDataAggregate(
             key = dataAggregate.key,
-            ikoConnectorConfigKey = dataAggregate.ikoConnectorConfigKey,
+            ikoRepositoryConfigKey = dataAggregate.ikoRepositoryConfigKey,
             title = dataAggregate.title,
             properties = dataAggregate.properties ?: emptyMap(),
         )

@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.iko.web.rest.request
+package com.ritense.iko.repository
 
-data class IkoConnectorConfigUpdateRequest(
-    val title: String,
-    val type: String,
-    val properties: Map<String, Any?>
-)
+import com.ritense.iko.domain.IkoRepositoryConfig
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import org.springframework.stereotype.Repository
+
+@Repository
+interface IkoRepositoryConfigRepository : JpaRepository<IkoRepositoryConfig, String>,
+    JpaSpecificationExecutor<IkoRepositoryConfig>

@@ -73,6 +73,9 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.springframework.security:spring-security-test"
+    testImplementation "com.squareup.okhttp3:mockwebserver:${okhttpVersion}"
+    testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
+    testImplementation "com.jayway.jsonpath:json-path-assert:${jaywayJsonpathVersion}"
     testImplementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
 

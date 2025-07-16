@@ -38,5 +38,5 @@ data class IkoDataRequest(
 
     @Type(value = JsonType::class)
     @Column(name = "properties", nullable = false)
-    val properties: Map<String, Any?>,
+    val properties: Map<String, Any?> = emptyMap(),
 )

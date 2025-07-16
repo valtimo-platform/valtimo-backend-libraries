@@ -14,22 +14,30 @@
  * limitations under the License.
  */
 
-package com.ritense.iko.web.rest.response
+package com.ritense.iko.domain
 
-import com.ritense.iko.domain.IkoConnectorConfig
+import io.hypersistence.utils.hibernate.type.json.JsonType
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.Table
+import org.hibernate.annotations.Type
 
-data class IkoConnectorConfigResponse(
+@Entity
+@Table(name = "iko_repository_config")
+class IkoRepositoryConfig(
+
+    @Id
+    @Column(name = "key", updatable = false, nullable = false, unique = true)
     val key: String,
+
+    @Column(name = "title", nullable = false)
     val title: String,
+
+    @Column(name = "type", nullable = false)
     val type: String,
-    val properties: Map<String, Any?>
-) {
-    companion object {
-        fun from(entity: IkoConnectorConfig) = IkoConnectorConfigResponse(
-            key = entity.key,
-            title = entity.title,
-            type = entity.type,
-            properties = entity.properties,
-        )
-    }
-}
+
+    @Type(value = JsonType::class)
+    @Column(name = "properties", nullable = false)
+    val properties: Map<String, Any?> = emptyMap(),
+)
