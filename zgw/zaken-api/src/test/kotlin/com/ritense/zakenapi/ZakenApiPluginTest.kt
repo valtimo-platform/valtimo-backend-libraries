@@ -17,6 +17,7 @@
 package com.ritense.zakenapi
 
 import com.ritense.document.service.DocumentService
+import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.resource.service.TemporaryResourceStorageService
@@ -32,6 +33,7 @@ import com.ritense.zakenapi.domain.CreateZaakeigenschapRequest
 import com.ritense.zakenapi.domain.PatchZaakRequest
 import com.ritense.zakenapi.domain.UpdateZaakeigenschapRequest
 import com.ritense.zakenapi.domain.ZaakHersteltermijn
+import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakObject
 import com.ritense.zakenapi.domain.ZaakObjectRequest
 import com.ritense.zakenapi.domain.ZaakResponse
@@ -413,6 +415,73 @@ internal class ZakenApiPluginTest {
         assertEquals(plannedEndDate, request.einddatumGepland)
     }
 
+    @Test
+    fun `should patch zaak`() {
+        val zakenApiClient: ZakenApiClient = mock()
+        val zaakInstanceLinkRepository: ZaakInstanceLinkRepository = mock()
+        val executionMock = mock<DelegateExecution>()
+        val authenticationMock = mock<ZakenApiAuthentication>()
+
+        val documentId = UUID.fromString("dff80fb1-e24e-4287-b168-7bb199be5d58")
+        val zaakId = "f18146df-4b26-4a32-8e52-122cfa4475bd"
+        val zaakUrl = URI("https://example.com/zaak/$zaakId")
+
+        whenever(executionMock.businessKey)
+            .thenReturn(documentId.toString())
+
+        val zaakInstanceLink: ZaakInstanceLink = mock()
+        whenever(zaakInstanceLink.zaakInstanceUrl)
+            .thenReturn(zaakUrl)
+
+        whenever(zaakInstanceLinkRepository.findByDocumentId(eq(documentId)))
+            .thenReturn(zaakInstanceLink)
+
+        val zaakResponse: ZaakResponse = mock()
+        whenever(zaakResponse.url)
+            .thenReturn(zaakUrl)
+
+        whenever(zakenApiClient.patchZaak(
+            authentication = eq(authenticationMock),
+            baseUrl = eq(URI("https://zaken.plugin.url")),
+            zaakUrl = eq(zaakUrl),
+            request = any<PatchZaakRequest>()
+        ))
+            .thenReturn(zaakResponse)
+
+        val plugin = zakenApiPlugin(
+            zakenApiClient = zakenApiClient,
+            authenticationMock = authenticationMock
+        )
+
+        plugin.patchZaak(
+            executionMock,
+            description = null,
+            explanation = null,
+            plannedEndDate = null,
+            finalDeliveryDate = null,
+            publicationDate = null,
+            communicationChannel = null,
+            communicationChannelName = null,
+            paymentIndication = null,
+            lastPaymentDate = null,
+            caseGeometryType = null,
+            caseGeometryCoordinates = null,
+            mainCase = null,
+            archiveActionDate = null,
+            startDateRetentionPeriod  = null
+        )
+
+        val captor = argumentCaptor<PatchZaakRequest>()
+        verify(zakenApiClient).patchZaak(
+            authentication = any(),
+            baseUrl = any(),
+            zaakUrl = any(),
+            request = captor.capture()
+        )
+
+        val request = captor.firstValue
+        assertThat(request.bronorganisatie).isEqualTo(null)
+    }
 
     @Test
     fun `should create zaak status`() {
@@ -445,7 +514,6 @@ internal class ZakenApiPluginTest {
         assertNotNull(request.datumStatusGezet)
         assertEquals("Status description", request.statustoelichting)
     }
-
 
     @Test
     fun `should create zaak resultaat`() {
@@ -885,7 +953,7 @@ internal class ZakenApiPluginTest {
     }
 
     private fun zakenApiPlugin(
-        url: String = "https://zaken.plugin.url",
+        url: String = zakenApiPluginBaseUrl(),
         zaakUrlProvider: ZaakUrlProvider = mock(),
         zakenApiClient: ZakenApiClient = mock(),
         storageService: TemporaryResourceStorageService = mock(),
@@ -912,4 +980,6 @@ internal class ZakenApiPluginTest {
             this.authenticationPluginConfiguration = authenticationMock
         }
     }
+
+    private fun zakenApiPluginBaseUrl() = "https://zaken.plugin.url"
 }
