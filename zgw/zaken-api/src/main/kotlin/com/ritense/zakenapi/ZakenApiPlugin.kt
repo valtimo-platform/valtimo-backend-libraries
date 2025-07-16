@@ -32,6 +32,7 @@ import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
+import com.ritense.zakenapi.domain.AardRelatie
 import com.ritense.zakenapi.domain.CreateZaakRequest
 import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
 import com.ritense.zakenapi.domain.CreateZaakStatusRequest
@@ -628,7 +629,7 @@ class ZakenApiPlugin(
         val currentRelevanteAndereZaken = currentZaak.relevanteAndereZaken?.toMutableList() ?: mutableListOf()
 
         if (currentRelevanteAndereZaken.none { relevanteZaak -> relevanteZaak.url == currentZaak.url }) {
-            currentRelevanteAndereZaken.add(RelevanteZaak(teRelaterenZaakUri, aardRelatie))
+            currentRelevanteAndereZaken.add(RelevanteZaak(teRelaterenZaakUri, AardRelatie.entries.find { it.key == aardRelatie }!!))
 
             logger.trace { "Sending patch request add the zaak with URL '$teRelaterenZaakUri' to the relevanteAndereZaken of zaak with URL '$zaakUrl'" }
             client.patchZaak(

@@ -24,6 +24,7 @@ import com.ritense.zakenapi.ZakenApiPlugin.Companion.DOCUMENT_URL_PROCESS_VAR
 import com.ritense.zakenapi.ZakenApiPlugin.Companion.RESOURCE_ID_PROCESS_VAR
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
+import com.ritense.zakenapi.domain.AardRelatie
 import com.ritense.zakenapi.domain.CreateZaakRequest
 import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
 import com.ritense.zakenapi.domain.CreateZaakStatusRequest
@@ -854,7 +855,7 @@ internal class ZakenApiPluginTest {
         val relevanteAndereZaken = captor.firstValue.relevanteAndereZaken
         assertThat(relevanteAndereZaken).hasSize(1)
         assertThat(relevanteAndereZaken!![0].url).isEqualTo(teRelaterenZaakUri)
-        assertThat(relevanteAndereZaken[0].aardRelatie).isEqualTo(aardRelatie)
+        assertThat(relevanteAndereZaken[0].aardRelatie).isEqualTo(AardRelatie.VERVOLG)
     }
 
     @Test
