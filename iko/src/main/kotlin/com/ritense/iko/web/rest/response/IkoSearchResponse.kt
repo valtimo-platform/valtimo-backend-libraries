@@ -21,12 +21,12 @@ import com.ritense.search.domain.SearchListColumn
 import org.springframework.data.domain.Page
 
 data class IkoSearchResponse(
-    val headers: List<IkoSearchListColumnResponse>,
+    val headers: List<IkoListColumnResponse>,
     val rows: Page<IkoRowDto>,
 ) {
     companion object {
         fun from(headers: List<SearchListColumn>, rows: Page<JsonNode>) = IkoSearchResponse(
-            headers = headers.map { IkoSearchListColumnResponse.from(it) },
+            headers = headers.map { IkoListColumnResponse.from(it) },
             rows = rows.map { rowData -> IkoRowDto(headers.map { header -> IkoItemDto.from(header, rowData) }) },
         )
     }

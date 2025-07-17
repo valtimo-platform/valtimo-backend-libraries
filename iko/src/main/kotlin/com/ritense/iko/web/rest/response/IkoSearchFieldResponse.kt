@@ -16,24 +16,33 @@
 
 package com.ritense.iko.web.rest.response
 
-import com.ritense.search.domain.ColumnDefaultSort
-import com.ritense.search.domain.DisplayType
-import com.ritense.search.domain.SearchListColumn
+import com.ritense.search.domain.DataType
+import com.ritense.search.domain.FieldType
+import com.ritense.search.domain.SearchFieldMatchType
+import com.ritense.search.domain.SearchFieldV2
 
-data class IkoSearchListColumnResponse(
+data class IkoSearchFieldResponse(
     val key: String,
     val title: String?,
-    val displayType: DisplayType,
-    val sortable: Boolean,
-    val defaultSort: ColumnDefaultSort? = null,
+    val path: String,
+    val order: Int,
+    val dataType: DataType,
+    val fieldType: FieldType,
+    val matchType: SearchFieldMatchType?,
+    val dropdownDataProvider: String?,
+    val required: Boolean,
 ) {
     companion object {
-        fun from(entity: SearchListColumn) = IkoSearchListColumnResponse(
+        fun from(entity: SearchFieldV2) = IkoSearchFieldResponse(
             key = entity.key,
             title = entity.title,
-            displayType = entity.displayType,
-            sortable = entity.sortable,
-            defaultSort = entity.defaultSort,
+            path = entity.path,
+            order = entity.order,
+            dataType = entity.dataType,
+            fieldType = entity.fieldType,
+            matchType = entity.matchType,
+            dropdownDataProvider = entity.dropdownDataProvider,
+            required = entity.required,
         )
     }
 }

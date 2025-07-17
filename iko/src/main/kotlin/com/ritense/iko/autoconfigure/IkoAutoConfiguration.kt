@@ -52,6 +52,7 @@ import com.ritense.iko.web.rest.IkoDataAggregateResource
 import com.ritense.iko.web.rest.IkoDataRequestManagementResource
 import com.ritense.iko.web.rest.IkoDataRequestResource
 import com.ritense.iko.web.rest.IkoListColumnManagementResource
+import com.ritense.iko.web.rest.IkoSearchFieldManagementResource
 import com.ritense.iko.web.rest.IkoTabManagementResource
 import com.ritense.iko.web.rest.IkoTabResource
 import com.ritense.iko.web.rest.IkoWidgetManagementResource
@@ -245,6 +246,16 @@ class IkoAutoConfiguration {
     ): IkoListColumnManagementResource {
         return IkoListColumnManagementResource(
             ikoListColumnService,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IkoSearchFieldManagementResource::class)
+    fun ikoSearchFieldManagementResource(
+        ikoSearchFieldService: IkoSearchFieldService,
+    ): IkoSearchFieldManagementResource {
+        return IkoSearchFieldManagementResource(
+            ikoSearchFieldService,
         )
     }
 
