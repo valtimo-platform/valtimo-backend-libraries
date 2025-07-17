@@ -545,26 +545,26 @@ public class OperatonProcessService {
 
             if (caseDefinitionId != null) {
                 setDecisionsVersionTag(dmnModel, caseDefinitionId);
-            }
 
-            String decisionDefinitionKey = dmnModel.getDefinitions()
-                .getChildElementsByType(Decision.class)
-                .stream()
-                .map(Decision::getId)
-                .findFirst()
-                .orElseThrow();
+                String decisionDefinitionKey = dmnModel.getDefinitions()
+                    .getChildElementsByType(Decision.class)
+                    .stream()
+                    .map(Decision::getId)
+                    .findFirst()
+                    .orElseThrow();
 
-            DecisionDefinitionQuery decisionDefinitionQuery = repositoryService.createDecisionDefinitionQuery()
-                .decisionDefinitionKey(decisionDefinitionKey);
+                DecisionDefinitionQuery decisionDefinitionQuery = repositoryService.createDecisionDefinitionQuery()
+                    .decisionDefinitionKey(decisionDefinitionKey);
 
-            if (caseDefinitionId != null) {
-                decisionDefinitionQuery.versionTag(OPERATON_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId);
-            }
+                if (caseDefinitionId != null) {
+                    decisionDefinitionQuery.versionTag(OPERATON_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId);
+                }
 
-            DecisionDefinition decisionDefinition = decisionDefinitionQuery.singleResult();
+                DecisionDefinition decisionDefinition = decisionDefinitionQuery.singleResult();
 
-            if (decisionDefinition != null) {
-                repositoryService.deleteDeployment(decisionDefinition.getDeploymentId());
+                if (decisionDefinition != null) {
+                    repositoryService.deleteDeployment(decisionDefinition.getDeploymentId());
+                }
             }
 
             return repositoryService.createDeployment().addModelInstance(fileName, dmnModel).deployWithResult();

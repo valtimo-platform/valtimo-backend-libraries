@@ -20,17 +20,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.valtimo.BaseIntegrationTest;
-import com.ritense.valtimo.operaton.domain.OperatonProcessDefinition;
 import com.ritense.valtimo.contract.case_.CaseDefinitionId;
 import com.ritense.valtimo.exception.FileExtensionNotSupportedException;
 import com.ritense.valtimo.exception.NoFileExtensionFoundException;
 import com.ritense.valtimo.exception.ProcessNotDeployableException;
+import com.ritense.valtimo.operaton.domain.OperatonProcessDefinition;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.operaton.bpm.engine.RepositoryService;
 import org.operaton.bpm.engine.repository.DecisionDefinition;
 import org.operaton.bpm.engine.repository.ProcessDefinition;
@@ -38,9 +41,6 @@ import org.operaton.bpm.model.bpmn.Bpmn;
 import org.operaton.bpm.model.bpmn.BpmnModelInstance;
 import org.operaton.bpm.model.bpmn.instance.Process;
 import org.operaton.bpm.model.bpmn.instance.ServiceTask;
-import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -288,6 +288,35 @@ class OperatonProcessServiceIntTest extends BaseIntegrationTest {
             );
             return null;
         });
+    }
+
+    @Test
+    void shouldDeployGlobalDecisionsWithoutDeletingOldVersions() throws IOException {
+        List<Resource> processes = List.of(dmn);
+        AuthorizationContext.runWithoutAuthorization(() -> {
+            operatonProcessService.deploy(
+                null,
+                "decision.dmn",
+                getFileStream("sampleDecisionTable-part1.xml", processes)
+            );
+            operatonProcessService.deploy(
+                null,
+                "decision.dmn",
+                getFileStream("sampleDecisionTable-part2.xml", processes)
+            );
+            operatonProcessService.deploy(
+                null,
+                "decision.dmn",
+                getFileStream("sampleDecisionTable-part3.xml", processes)
+            );
+            return null;
+        });
+
+        List<DecisionDefinition> decisionDefinitions = repositoryService.createDecisionDefinitionQuery()
+            .decisionDefinitionKey("decisionTable_in_parts")
+            .list();
+
+        Assertions.assertEquals(3, decisionDefinitions.size());
     }
 
     private ByteArrayInputStream getFileStream(String filename, List<Resource> source) throws IOException {
