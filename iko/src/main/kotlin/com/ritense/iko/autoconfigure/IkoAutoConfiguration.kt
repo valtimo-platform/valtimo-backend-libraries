@@ -53,6 +53,7 @@ import com.ritense.iko.web.rest.IkoDataRequestManagementResource
 import com.ritense.iko.web.rest.IkoDataRequestResource
 import com.ritense.iko.web.rest.IkoTabManagementResource
 import com.ritense.iko.web.rest.IkoTabResource
+import com.ritense.iko.web.rest.IkoWidgetManagementResource
 import com.ritense.iko.web.rest.IkoWidgetResource
 import com.ritense.plugin.service.PluginService
 import com.ritense.search.service.SearchFieldV2Service
@@ -223,6 +224,16 @@ class IkoAutoConfiguration {
     ): IkoTabManagementResource {
         return IkoTabManagementResource(
             ikoTabService,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IkoWidgetManagementResource::class)
+    fun ikoWidgetManagementResource(
+        ikoWidgetService: IkoWidgetService,
+    ): IkoWidgetManagementResource {
+        return IkoWidgetManagementResource(
+            ikoWidgetService,
         )
     }
 

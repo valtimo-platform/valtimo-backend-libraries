@@ -3,7 +3,7 @@
     "ikoTabKey": "general",
     "ikoWidgets": [
         {
-            "key": "persoon",
+            "key": "partner",
             "type": "fields",
             "title": "Partner",
             "width": 1,
