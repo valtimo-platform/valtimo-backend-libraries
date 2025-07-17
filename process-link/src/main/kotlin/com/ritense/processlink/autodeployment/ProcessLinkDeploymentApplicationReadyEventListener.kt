@@ -110,7 +110,7 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
 
     companion object {
         private val logger = KotlinLogging.logger {}
-        const val PATH = "classpath*:**/*.process-link.json"
-        private const val CONFIG_FOLDER_STRUCTURE = "/config"
+        const val PATH = "classpath*:/config/global/process-link/**/*.process-link.json"
+        private const val CONFIG_FOLDER_STRUCTURE = "/config/global"
     }
 }
