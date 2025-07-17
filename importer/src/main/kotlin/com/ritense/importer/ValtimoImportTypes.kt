@@ -28,7 +28,6 @@ class ValtimoImportTypes {
         const val DECISION_DEFINITION = "decisiondefinition"
         const val DOCUMENT_DEFINITION = "documentdefinition"
         const val FORM = "form"
-        const val GLOBAL_FORM = "globalform"
         const val FORM_FLOW = "formflow"
         const val INTERNAL_CASE_STATUS = "internalcasestatus"
         const val PROCESS_DEFINITION = "processdefinition"

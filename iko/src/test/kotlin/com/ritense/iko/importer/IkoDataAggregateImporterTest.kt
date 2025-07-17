@@ -44,7 +44,7 @@ class IkoDataAggregateImporterTest(
     }
 
     @Test
-    fun `should depend on 'ikorepositoryconfig' and 'form' type`() {
+    fun `should depend on 'ikorepositoryconfig' type`() {
         assertThat(importer.dependsOn()).isEqualTo(setOf(IKO_REPOSITORY_CONFIG))
     }
 

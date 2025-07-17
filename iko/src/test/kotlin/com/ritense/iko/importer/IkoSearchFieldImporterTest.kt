@@ -44,7 +44,7 @@ class IkoSearchFieldImporterTest(
     }
 
     @Test
-    fun `should depend on 'ikodatarequest' and 'form' type`() {
+    fun `should depend on 'ikodatarequest' type`() {
         assertThat(importer.dependsOn()).isEqualTo(setOf(IKO_DATA_REQUEST))
     }
 

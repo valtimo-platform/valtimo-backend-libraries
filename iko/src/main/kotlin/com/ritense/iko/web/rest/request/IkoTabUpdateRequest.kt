@@ -14,36 +14,21 @@
  * limitations under the License.
  */
 
-package com.ritense.tab.domain
+package com.ritense.iko.web.rest.request
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import com.ritense.tab.domain.Tab
 import java.util.UUID
 
-@Entity
-@Table(name = "tab")
-data class Tab(
-    @Id
-    @Column(name = "id")
-    val id: UUID = UUID.randomUUID(),
-
-    @Column(name = "tab_key")
+data class IkoTabUpdateRequest(
     val key: String,
-
-    @Column(name = "title")
-    val title: String?,
-
-    @Column(name = "tab_order")
-    val order: Int,
-
-    @Column(name = "type")
+    val title: String,
     val type: String,
 ) {
-
-    init {
-        require(title == null || title.isNotBlank()) { "title was blank!" }
-        require(order >= 0) { "order was < 0" }
-    }
+    fun toEntity(id: UUID, order: Int) = Tab(
+        id = id,
+        key = this.key,
+        title = this.title,
+        type = this.type,
+        order = order
+    )
 }

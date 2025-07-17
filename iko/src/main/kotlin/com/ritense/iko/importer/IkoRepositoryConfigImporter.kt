@@ -21,7 +21,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.iko.service.IkoRepositoryService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
-import com.ritense.importer.ValtimoImportTypes.Companion.GLOBAL_FORM
 import com.ritense.importer.ValtimoImportTypes.Companion.IKO_REPOSITORY_CONFIG
 import org.springframework.transaction.annotation.Transactional
 
@@ -32,7 +31,7 @@ class IkoRepositoryConfigImporter(
 ) : Importer {
     override fun type() = IKO_REPOSITORY_CONFIG
 
-    override fun dependsOn(): Set<String> = setOf(GLOBAL_FORM)
+    override fun dependsOn(): Set<String> = emptySet()
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 

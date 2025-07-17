@@ -43,7 +43,8 @@ class IkoTabService(
     }
 
     fun findAllTabsByIkoDataAggregateKey(ikoDataAggregateKey: String): List<Tab> {
-        return ikoDataAggregateTabRepository.findAllByIdIkoDataAggregateKeyOrderByTabOrder(ikoDataAggregateKey).map { it.tab }
+        return ikoDataAggregateTabRepository.findAllByIdIkoDataAggregateKeyOrderByTabOrder(ikoDataAggregateKey)
+            .map { it.tab }
     }
 
     fun deleteByKey(ikoDataAggregateKey: String, tabKey: String) {
@@ -51,13 +52,9 @@ class IkoTabService(
     }
 
     fun create(ikoDataAggregateKey: String, tab: Tab): Tab {
-        require(
-            ikoDataAggregateTabRepository.findByIdIkoDataAggregateKeyAndTabKey(
-                ikoDataAggregateKey,
-                tab.key
-            ) == null
-        )
-        val createdTab = tabService.create(tab)
+        val tabs = findAllTabsByIkoDataAggregateKey(ikoDataAggregateKey)
+        require(tabs.none { it.key == tab.key })
+        val createdTab = tabService.create(tab.copy(order = tabs.size))
         ikoDataAggregateTabRepository.save(
             IkoDataAggregateTab(
                 id = IkoDataAggregateTabId(ikoDataAggregateKey, tab.id),

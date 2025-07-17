@@ -56,7 +56,6 @@ class IkoDataRequestManagementResource(
         @PathVariable ikoDataAggregateKey: String,
     ): ResponseEntity<List<IkoDataRequestListResponse>> {
         val ikoDataRequests = service.findAll(
-
             ikoDataAggregateKey = ikoDataAggregateKey,
         )
         return ResponseEntity.ok(ikoDataRequests.map { IkoDataRequestListResponse.from(it) })
@@ -89,10 +88,9 @@ class IkoDataRequestManagementResource(
     }
 
     @RunWithoutAuthorization
-    @PutMapping("/v1/iko-data-aggregate/{ikoDataAggregateKey}/data-request/{key}")
+    @PutMapping("/v1/iko-data-aggregate/{ikoDataAggregateKey}/data-request")
     fun updateIkoDataRequest(
         @PathVariable ikoDataAggregateKey: String,
-        @PathVariable key: String,
         @RequestBody request: List<IkoDataRequestUpdateRequest>,
     ): ResponseEntity<List<IkoDataRequestResponse>> {
         val ikoDataRequests = service.saveIkoDataRequests(request)

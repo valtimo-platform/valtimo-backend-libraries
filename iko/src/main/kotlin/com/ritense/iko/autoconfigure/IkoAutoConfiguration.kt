@@ -51,6 +51,7 @@ import com.ritense.iko.web.rest.IkoDataAggregateManagementResource
 import com.ritense.iko.web.rest.IkoDataAggregateResource
 import com.ritense.iko.web.rest.IkoDataRequestManagementResource
 import com.ritense.iko.web.rest.IkoDataRequestResource
+import com.ritense.iko.web.rest.IkoTabManagementResource
 import com.ritense.iko.web.rest.IkoTabResource
 import com.ritense.iko.web.rest.IkoWidgetResource
 import com.ritense.plugin.service.PluginService
@@ -211,6 +212,16 @@ class IkoAutoConfiguration {
         ikoTabService: IkoTabService,
     ): IkoTabResource {
         return IkoTabResource(
+            ikoTabService,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IkoTabManagementResource::class)
+    fun ikoTabManagementResource(
+        ikoTabService: IkoTabService,
+    ): IkoTabManagementResource {
+        return IkoTabManagementResource(
             ikoTabService,
         )
     }

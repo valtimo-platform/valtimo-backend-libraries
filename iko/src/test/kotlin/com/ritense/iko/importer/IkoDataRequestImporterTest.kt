@@ -44,7 +44,7 @@ class IkoDataRequestImporterTest(
     }
 
     @Test
-    fun `should depend on 'ikodataaggregate' and 'form' type`() {
+    fun `should depend on 'ikodataaggregate' type`() {
         assertThat(importer.dependsOn()).isEqualTo(setOf(IKO_DATA_AGGREGATE))
     }
 

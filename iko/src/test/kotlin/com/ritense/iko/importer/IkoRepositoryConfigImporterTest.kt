@@ -18,7 +18,6 @@ package com.ritense.iko.importer
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.iko.service.IkoRepositoryService
-import com.ritense.importer.ValtimoImportTypes.Companion.GLOBAL_FORM
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -44,8 +43,8 @@ class IkoRepositoryConfigImporterTest(
     }
 
     @Test
-    fun `should depend on 'globalform' and 'form' type`() {
-        assertThat(importer.dependsOn()).isEqualTo(setOf(GLOBAL_FORM))
+    fun `should not depend on type`() {
+        assertThat(importer.dependsOn()).isEqualTo(emptySet<String>())
     }
 
     @Test
