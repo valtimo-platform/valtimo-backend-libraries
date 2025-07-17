@@ -57,32 +57,32 @@ class IkoListColumnService(
         )
     }
 
-    fun create(ikoDataAggregateKey: String, column: SearchListColumn): SearchListColumn {
+    fun create(ikoDataAggregateKey: String, listColumn: SearchListColumn): SearchListColumn {
         require(
             ikoDataAggregateListColumnRepository.findByIdIkoDataAggregateKeyAndColumnKey(
                 ikoDataAggregateKey,
-                column.key
+                listColumn.key
             ) == null
         )
-        val createdColumn = listColumnService.create(column)
+        val createdColumn = listColumnService.create(listColumn)
         ikoDataAggregateListColumnRepository.save(
             IkoDataAggregateListColumn(
-                id = IkoDataAggregateListColumnId(ikoDataAggregateKey, column.id),
+                id = IkoDataAggregateListColumnId(ikoDataAggregateKey, listColumn.id),
                 column = createdColumn,
             )
         )
         return createdColumn
     }
 
-    fun update(ikoDataAggregateKey: String, column: SearchListColumn): SearchListColumn {
+    fun update(ikoDataAggregateKey: String, listColumn: SearchListColumn): SearchListColumn {
         val ikoDataAggregateColumn =
             ikoDataAggregateListColumnRepository.findByIdIkoDataAggregateKeyAndColumnKey(
                 ikoDataAggregateKey,
-                column.key
+                listColumn.key
             )
         requireNotNull(ikoDataAggregateColumn)
         val updatedColumn =
-            listColumnService.update(column.copy(id = ikoDataAggregateColumn.id.listColumnId))
+            listColumnService.update(listColumn.copy(id = ikoDataAggregateColumn.id.listColumnId))
         ikoDataAggregateListColumnRepository.save(
             IkoDataAggregateListColumn(
                 id = IkoDataAggregateListColumnId(ikoDataAggregateKey, updatedColumn.id),

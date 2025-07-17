@@ -18,6 +18,8 @@ package com.ritense.iko.client
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.valtimo.contract.utils.SecurityUtils
+import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
@@ -47,6 +49,7 @@ class IkoClient(
                         .pathSegment(id)
                         .build()
                 }
+                .header(AUTHORIZATION, SecurityUtils.getCurrentJwtTokenValue())
                 .retrieve()
                 .body<JsonNode>()!!
 
@@ -88,6 +91,7 @@ class IkoClient(
                         )
                         .build()
                 }
+                .header(AUTHORIZATION, SecurityUtils.getCurrentJwtTokenValue())
                 .retrieve()
                 .body<JsonNode>()!!
 

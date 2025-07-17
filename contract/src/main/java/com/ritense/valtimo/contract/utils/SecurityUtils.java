@@ -25,6 +25,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 public final class SecurityUtils {
 
@@ -70,6 +72,16 @@ public final class SecurityUtils {
                 .collect(Collectors.toList());
         }
         return roles;
+    }
+
+    public static String getCurrentJwtTokenValue() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        if (authentication instanceof JwtAuthenticationToken jwtAuthenticationToken) {
+            return jwtAuthenticationToken.getToken().getTokenValue();
+        } else {
+            return null;
+        }
     }
 
     /**
