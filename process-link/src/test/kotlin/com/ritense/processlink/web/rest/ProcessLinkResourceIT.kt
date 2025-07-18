@@ -157,8 +157,6 @@ internal class ProcessLinkResourceIT @Autowired constructor(
 
     @Test
     fun `should export process-links`() {
-        listener.deployProcessLinks()
-
         mockMvc.perform(
             get("/api/v1/process-link/export")
                 .param("processDefinitionKey", "auto-deploy-process-link-with-long-key")
