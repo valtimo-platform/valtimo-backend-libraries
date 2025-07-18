@@ -64,7 +64,6 @@ class IkoDataAggregateManagementResource(
     ): ResponseEntity<Page<IkoDataAggregateListResponse>> {
         val ikoDataAggregates = service.findAll(
             key = key,
-
             title = title,
             pageable = pageable
         )

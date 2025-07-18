@@ -21,7 +21,7 @@ import java.util.UUID
 
 data class IkoTabUpdateRequest(
     val key: String,
-    val title: String,
+    val title: String?,
     val type: String,
 ) {
     fun toEntity(id: UUID, order: Int) = Tab(

@@ -3,9 +3,9 @@
     "ikoTabKey": "general",
     "ikoWidgets": [
         {
-            "key": "partner",
+            "key": "klant",
             "type": "fields",
-            "title": "Partner",
+            "title": "Klant",
             "width": 1,
             "highContrast": true,
             "properties": {

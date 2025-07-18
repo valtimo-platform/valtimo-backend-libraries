@@ -99,7 +99,7 @@ class IkoServerRepository(
 
     companion object {
         const val PLUGIN_CONFIGURATION = "pluginConfiguration"
-        private const val SEARCH_PATH = "searchPath"
+        const val SEARCH_PATH = "searchPath"
         const val SEARCH_TYPE = "searchType"
     }
 }

@@ -149,15 +149,13 @@ internal class IkoRepositoryManagementResourceTest {
             type = "iko",
             properties = mapOf("pluginConfiguration" to "b6d83348-97e7-4660-bd35-2e5fcc9629b4")
         )
-        val request = objectMapper.writeValueAsString(
-            IkoRepositoryConfigCreateRequest(config.title, config.type, config.properties)
-        )
+        val request = IkoRepositoryConfigCreateRequest(config.title, config.type, config.properties)
         whenever(service.createIkoRepositoryConfig(config.key, config.title, config.type, config.properties))
             .thenReturn(config)
 
         mockMvc.perform(
             post("/api/management/v1/iko/{repositoryConfigKey}", "iko-api")
-                .content(request)
+                .content(objectMapper.writeValueAsString(request))
                 .contentType(APPLICATION_JSON_VALUE)
         )
             .andDo(print())
@@ -176,15 +174,13 @@ internal class IkoRepositoryManagementResourceTest {
             type = "iko",
             properties = mapOf("pluginConfiguration" to "b6d83348-97e7-4660-bd35-2e5fcc9629b4")
         )
-        val request = objectMapper.writeValueAsString(
-            IkoRepositoryConfigUpdateRequest(config.title, config.type, config.properties)
-        )
+        val request = IkoRepositoryConfigUpdateRequest(config.title, config.type, config.properties)
         whenever(service.saveIkoRepositoryConfig(config.key, config.title, config.type, config.properties))
             .thenReturn(config)
 
         mockMvc.perform(
             put("/api/management/v1/iko/{repositoryConfigKey}", "iko-api")
-                .content(request)
+                .content(objectMapper.writeValueAsString(request))
                 .contentType(APPLICATION_JSON_VALUE)
         )
             .andDo(print())

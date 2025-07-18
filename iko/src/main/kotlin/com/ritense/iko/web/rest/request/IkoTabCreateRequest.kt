@@ -17,6 +17,6 @@
 package com.ritense.iko.web.rest.request
 
 data class IkoTabCreateRequest(
-    val title: String,
+    val title: String?,
     val type: String,
 )
