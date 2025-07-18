@@ -41,8 +41,6 @@ class ProcessLinkDeploymentApplicationReadyEventListenerIntTest @Autowired const
 
     @Test
     fun `should find 1 deployed process link on user task`() {
-        listener.deployProcessLinks()
-
         val processDefinition = getLatestProcessDefinition()
         val processLinks =
             processLinkRepository.findByProcessDefinitionIdAndActivityId(processDefinition.id, "do-something")
