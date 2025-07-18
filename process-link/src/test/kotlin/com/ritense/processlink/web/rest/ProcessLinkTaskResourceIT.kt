@@ -57,7 +57,7 @@ internal class ProcessLinkTaskResourceIT @Autowired constructor(
         val processInstanceWithDefinition =
             runWithoutAuthorization {
                 operatonProcessService.startProcess(
-                    PROCESS_DEF_ID,
+                    PROCESS_DEF_KEY,
                     UUID.randomUUID().toString(),
                     emptyMap()
                 )
@@ -81,6 +81,6 @@ internal class ProcessLinkTaskResourceIT @Autowired constructor(
 
 
     companion object {
-        const val PROCESS_DEF_ID = "test-process"
+        const val PROCESS_DEF_KEY = "test-process-link-task"
     }
 }
