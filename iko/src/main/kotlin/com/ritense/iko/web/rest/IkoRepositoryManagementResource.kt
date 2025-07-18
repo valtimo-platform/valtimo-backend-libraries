@@ -49,7 +49,7 @@ class IkoRepositoryManagementResource(
 
     @RunWithoutAuthorization
     @GetMapping("/v1/iko-types")
-    fun getIkoRepositoriesTypes(): ResponseEntity<List<String>> {
+    fun getIkoRepositoriesTypes(): ResponseEntity<Map<String, String>> {
         return ResponseEntity.ok(service.getIkoRepositoryTypes())
     }
 

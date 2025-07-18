@@ -40,18 +40,23 @@ class IkoServerRepository(
             .map { it.id.toString() to it.title }
 
         return listOf(
-            PropertyField(
-                title = PropertyField.toReadableText(PLUGIN_CONFIGURATION),
-                key = PLUGIN_CONFIGURATION,
-                type = PROPERTY_FIELD_TYPE_DROPDOWN,
-                dropdownList = dropdownList
-            )
+            PropertyField(PLUGIN_CONFIGURATION, PROPERTY_FIELD_TYPE_DROPDOWN, dropdownList = dropdownList)
         )
     }
 
-    override fun getDataAggregatePropertyFields(): List<PropertyField> = listOf(PropertyField(SEARCH_PATH))
+    override fun getDataAggregatePropertyFields(): List<PropertyField> = listOf(
+        PropertyField(
+            SEARCH_PATH,
+            tooltip = "The last few path segments of the IKO API URL. i.e. 'bag/adressen'"
+        )
+    )
 
-    override fun getDataRequestPropertyFields(): List<PropertyField> = listOf(PropertyField(SEARCH_TYPE))
+    override fun getDataRequestPropertyFields(): List<PropertyField> = listOf(
+        PropertyField(
+            SEARCH_TYPE,
+            tooltip = "The 'type' query parameter of the IKO API URL. i.e. 'ZoekMetGeslachtsnaamEnGeboortedatum'"
+        )
+    )
 
     override fun findAll(
         config: Map<String, Any?>,

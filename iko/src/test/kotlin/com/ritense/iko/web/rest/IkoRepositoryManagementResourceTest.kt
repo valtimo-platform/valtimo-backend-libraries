@@ -69,13 +69,13 @@ internal class IkoRepositoryManagementResourceTest {
 
     @Test
     fun `should get iko repository types`() {
-        whenever(service.getIkoRepositoryTypes()).thenReturn(listOf("iko", "objectenApi"))
+        whenever(service.getIkoRepositoryTypes()).thenReturn(mapOf("iko" to "Iko Server Repository", "objectenApi" to "Objecten Api Iko Repository"))
 
         mockMvc.perform(get("/api/management/v1/iko-types"))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0]").value("iko"))
-            .andExpect(jsonPath("$[1]").value("objectenApi"))
+            .andExpect(jsonPath("$.iko").value("Iko Server Repository"))
+            .andExpect(jsonPath("$.objectenApi").value("Objecten Api Iko Repository"))
     }
 
     @Test

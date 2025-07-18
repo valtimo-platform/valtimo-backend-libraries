@@ -39,9 +39,14 @@ class IkoRepositoryService(
     private val authorizationService: AuthorizationService,
     private val ikoRepositories: List<IkoRepository>
 ) {
-    fun getIkoRepositoryTypes(): List<String> {
+    fun getIkoRepositoryTypes(): Map<String, String> {
         denyAuthorization()
-        return ikoRepositories.map { it.getType() }
+        return ikoRepositories.associate {
+            it.getType() to it::class.java.simpleName.replace(
+                Regex("([a-z])([A-Z])"),
+                "$1 $2"
+            )
+        }
     }
 
     fun getIkoRepositoryConfigPropertyFields(type: String): List<PropertyField> {

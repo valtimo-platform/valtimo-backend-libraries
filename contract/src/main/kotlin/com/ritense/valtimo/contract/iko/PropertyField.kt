@@ -17,16 +17,12 @@
 package com.ritense.valtimo.contract.iko
 
 data class PropertyField(
-    val title: String,
     val key: String,
-    val type: String,
+    val type: String = PROPERTY_FIELD_TYPE_TEXT,
+    val tooltip: String? = null,
+    val title: String = toReadableText(key),
     val dropdownList: List<Pair<String, String>>? = null,
 ) {
-
-    constructor(
-        key: String,
-        type: String = PROPERTY_FIELD_TYPE_TEXT
-    ) : this(toReadableText(key), key, type)
 
     companion object {
         const val PROPERTY_FIELD_TYPE_TEXT = "text"
