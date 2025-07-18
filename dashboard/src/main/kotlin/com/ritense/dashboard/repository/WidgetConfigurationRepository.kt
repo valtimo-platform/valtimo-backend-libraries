@@ -19,6 +19,7 @@ package com.ritense.dashboard.repository
 import com.ritense.dashboard.domain.WidgetConfiguration
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
+import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -37,16 +38,13 @@ interface WidgetConfigurationRepository : JpaRepository<WidgetConfiguration, Str
 
     @Modifying
     @org.springframework.transaction.annotation.Transactional
-    @org.springframework.data.jpa.repository.Query(
-        value = """
-        DELETE FROM dashboard_widget_configuration
-        WHERE dashboard_key = :dashboardKey
-          AND key NOT IN (:keysToKeep)
-    """,
-        nativeQuery = true
-    )
+    @org.springframework.data.jpa.repository.Query("""
+    DELETE FROM WidgetConfiguration dwc
+    WHERE dwc.dashboard.key = :dashboardKey
+      AND dwc.key NOT IN :keysToKeep
+""")
     fun deleteByDashboardKeyAndKeyNotIn(
-        dashboardKey: String,
-        keysToKeep: List<String>
+        @Param("dashboardKey") dashboardKey: String,
+        @Param("keysToKeep") keysToKeep: List<String>
     )
 }

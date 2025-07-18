@@ -128,7 +128,7 @@ public class SearchFieldService {
             .toList();
 
         searchFieldRepository.saveAll(searchFields);
-        searchFieldRepository.deleteNotInKeys(documentDefinitionName, incomingKeys);
+        searchFieldRepository.deleteByCaseDefinitionKeyAndKeyNotIn(documentDefinitionName, incomingKeys);
     }
 
     public void createSearchConfiguration(List<SearchField> searchFields, CaseDefinitionId caseDefinitionId) {

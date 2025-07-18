@@ -40,15 +40,12 @@ public interface SearchFieldRepository extends JpaRepository<SearchField, Search
 
     @Modifying
     @Transactional
-    @Query(
-        value = """
-        DELETE FROM search_field
-        WHERE case_definition_key = :caseDefinitionKey
-          AND search_field_key NOT IN (:keys)
-        """,
-        nativeQuery = true
-    )
-    void deleteNotInKeys(
+    @Query("""
+    DELETE FROM SearchField sf
+    WHERE sf.id.caseDefinitionKey = :caseDefinitionKey
+      AND sf.key NOT IN :keys
+    """)
+    void deleteByCaseDefinitionKeyAndKeyNotIn(
         @Param("caseDefinitionKey") String caseDefinitionKey,
         @Param("keys") List<String> keys
     );
