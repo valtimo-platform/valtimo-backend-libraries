@@ -38,23 +38,21 @@ class ProcessLinkDeploymentApplicationReadyEventListenerIntTest @Autowired const
 ) : BaseIntegrationTest() {
 
     @Test
-    fun `should find 1 deployed process link on service task`() {
-        listener.deployProcessLinks()
-
+    fun `should find 1 deployed process link on user task`() {
         val processDefinition = getLatestProcessDefinition()
         val processLinks =
-            processLinkRepository.findByProcessDefinitionIdAndActivityId(processDefinition.id, "my-service-task")
+            processLinkRepository.findByProcessDefinitionIdAndActivityId(processDefinition.id, "test-user-task")
 
         assertThat(processLinks, hasSize(1))
         val processLink = processLinks.first()
         assertThat(processLink, Matchers.isA(TestProcessLink::class.java))
         processLink as TestProcessLink
-        assertThat(processLink.someValue, Matchers.equalTo("changed"))
+        assertThat(processLink.someValue, Matchers.equalTo("test"))
     }
 
     private fun getLatestProcessDefinition(): OperatonProcessDefinition {
         return AuthorizationContext.runWithoutAuthorization {
-            repositoryService.findLatestProcessDefinition("auto-deploy-process-link-with-long-key")!!
+            repositoryService.findLatestProcessDefinition("test-system-process")!!
         }
     }
 }
