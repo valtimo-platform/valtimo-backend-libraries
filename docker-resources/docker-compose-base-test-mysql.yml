@@ -65,5 +65,7 @@ services:
 #   url: jdbc:mysql://localhost:3356/process-link-url-test
 #   url: jdbc:mysql://localhost:3357/exporter-test
 #   url: jdbc:mysql://localhost:3358/iko-test
+#   url: jdbc:mysql://localhost:3359/widget-test
+#   url: jdbc:mysql://localhost:3360/openklant-api-authentication-test
 #   url: localhost:55672 <--outbox rabbitmq
 #   url: localhost:55673 <--inbox rabbitmq

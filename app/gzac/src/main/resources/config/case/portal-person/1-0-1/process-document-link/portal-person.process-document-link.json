@@ -1,0 +1,7 @@
+[
+    {
+        "processDefinitionKey": "CreateKlantProcess",
+        "canInitializeDocument": true,
+        "startableByUser": true
+    }
+]

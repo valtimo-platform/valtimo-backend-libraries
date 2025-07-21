@@ -1,0 +1,19 @@
+[
+    {
+        "activityId": "StartEvent_1",
+        "activityType": "bpmn:StartEvent:start",
+        "processLinkType": "form",
+        "formDefinitionName": "start-form"
+    },
+    {
+        "activityId": "Activity_1dt7mk4",
+        "activityType": "bpmn:ServiceTask:start",
+        "processLinkType": "plugin",
+        "pluginConfigurationId": "0c53dffc-1f8a-4d1e-a320-cdb2aa4f0b7a",
+        "pluginActionDefinitionKey": "create-persoon",
+        "actionProperties": {
+            "voornaam": "doc:voornaam",
+            "achternaam": "doc:achternaam"
+        }
+    }
+]

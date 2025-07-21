@@ -109,6 +109,23 @@
         }
     },
     {
+        "id": "da119c58-b350-42fe-b07a-b235c56b0d8f",
+        "title": "OpenKlant Authentication",
+        "pluginDefinitionKey": "openklanttokenauthentication",
+        "properties": {
+            "token": "${VALTIMO_OPEN_KLANT_TOKEN}"
+        }
+    },
+    {
+        "id": "0c53dffc-1f8a-4d1e-a320-cdb2aa4f0b7a",
+        "title": "Klantinteracties API",
+        "pluginDefinitionKey": "klantinteractiesapi",
+        "properties": {
+            "url": "${VALTIMO_KLANTINTERACTIES_API_URL}",
+            "authenticationPluginConfiguration": "da119c58-b350-42fe-b07a-b235c56b0d8f"
+        }
+    },
+    {
         "id": "b3bfac2b-06bf-4933-8527-af8015335a3d",
         "title": "SmartDocuments",
         "pluginDefinitionKey": "smartdocuments",

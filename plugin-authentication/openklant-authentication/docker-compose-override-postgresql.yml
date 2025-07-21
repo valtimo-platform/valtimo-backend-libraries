@@ -1,0 +1,6 @@
+services:
+    db:
+        ports:
+            - "3360:5432"
+        environment:
+            - POSTGRES_DB=openklant-authentication-test

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:operaton="http://operaton.org/schema/1.0/bpmn"
+                  expressionLanguage="http://www.w3.org/1999/XPath" id="Definitions_1"
+                  targetNamespace="http://bpmn.io/schema/bpmn" typeLanguage="http://www.w3.org/2001/XMLSchema">
+
+    <bpmn:process id="CreateKlantProcess" isClosed="false" isExecutable="true" name="Create Klant"
+                  operaton:versionTag="CD:portal-person:1.0.1" processType="None">
+
+        <bpmn:startEvent id="StartEvent_1" isInterrupting="true" parallelMultiple="false">
+
+            <bpmn:outgoing>Flow_0xngrdo</bpmn:outgoing>
+
+        </bpmn:startEvent>
+
+        <bpmn:sequenceFlow id="Flow_0xngrdo" sourceRef="StartEvent_1" targetRef="Activity_1dt7mk4"/>
+
+        <bpmn:endEvent id="Event_1pvcnrt">
+
+            <bpmn:incoming>Flow_1ff7f8w</bpmn:incoming>
+
+        </bpmn:endEvent>
+
+        <bpmn:sequenceFlow id="Flow_1ff7f8w" sourceRef="Activity_1dt7mk4" targetRef="Event_1pvcnrt"/>
+
+        <bpmn:serviceTask completionQuantity="1" id="Activity_1dt7mk4" implementation="##WebService"
+                          isForCompensation="false" name="Create Klant" operaton:asyncAfter="true"
+                          operaton:expression="${null}" startQuantity="1">
+
+            <bpmn:incoming>Flow_0xngrdo</bpmn:incoming>
+
+            <bpmn:outgoing>Flow_1ff7f8w</bpmn:outgoing>
+
+        </bpmn:serviceTask>
+
+    </bpmn:process>
+
+    <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+
+        <bpmndi:BPMNPlane bpmnElement="CreateKlantProcess" id="BPMNPlane_1">
+
+            <bpmndi:BPMNShape bpmnElement="StartEvent_1" id="_BPMNShape_StartEvent_2">
+
+                <dc:Bounds height="36" width="36" x="173" y="102"/>
+
+            </bpmndi:BPMNShape>
+
+            <bpmndi:BPMNShape bpmnElement="Event_1pvcnrt" id="Event_1pvcnrt_di">
+
+                <dc:Bounds height="36" width="36" x="412" y="102"/>
+
+            </bpmndi:BPMNShape>
+
+            <bpmndi:BPMNShape bpmnElement="Activity_1dt7mk4" id="Activity_1hksrs5_di">
+
+                <dc:Bounds height="80" width="100" x="260" y="80"/>
+
+            </bpmndi:BPMNShape>
+
+            <bpmndi:BPMNEdge bpmnElement="Flow_0xngrdo" id="Flow_0xngrdo_di">
+
+                <di:waypoint x="209" y="120"/>
+
+                <di:waypoint x="260" y="120"/>
+
+            </bpmndi:BPMNEdge>
+
+            <bpmndi:BPMNEdge bpmnElement="Flow_1ff7f8w" id="Flow_1ff7f8w_di">
+
+                <di:waypoint x="360" y="120"/>
+
+                <di:waypoint x="412" y="120"/>
+
+            </bpmndi:BPMNEdge>
+
+        </bpmndi:BPMNPlane>
+
+    </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

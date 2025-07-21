@@ -1,0 +1,6 @@
+services:
+    db:
+        ports:
+            - "3342:5432"
+        environment:
+            - POSTGRES_DB=klantinteracties-api-test

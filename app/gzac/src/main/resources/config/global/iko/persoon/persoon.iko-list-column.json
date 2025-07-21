@@ -1,0 +1,43 @@
+{
+    "ikoDataAggregateKey": "persoon",
+    "ikoListColumns": [
+        {
+            "key": "id",
+            "path": "/uuid",
+            "displayType": {
+                "type": "hidden",
+                "displayTypeParameters": {}
+            }
+        },
+        {
+            "key": "bsn",
+            "title": "BSN",
+            "path": "/partijIdentificatoren/0/partijIdentificator/objectId",
+            "displayType": {
+                "type": "text",
+                "displayTypeParameters": {}
+            },
+            "sortable": true
+        },
+        {
+            "key": "voornaam",
+            "title": "Voornaam",
+            "path": "/partijIdentificatie/contactnaam/voornaam",
+            "displayType": {
+                "type": "text",
+                "displayTypeParameters": {}
+            },
+            "sortable": true
+        },
+        {
+            "key": "achternaam",
+            "title": "Acternaam",
+            "path": "/partijIdentificatie/contactnaam/achternaam",
+            "displayType": {
+                "type": "text",
+                "displayTypeParameters": {}
+            },
+            "sortable": true
+        }
+    ]
+}

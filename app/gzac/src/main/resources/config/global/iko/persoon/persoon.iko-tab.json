@@ -1,0 +1,10 @@
+{
+    "ikoDataAggregateKey": "persoon",
+    "ikoTabs": [
+        {
+            "title": "Algemeen",
+            "key": "general",
+            "type": "widgets"
+        }
+    ]
+}

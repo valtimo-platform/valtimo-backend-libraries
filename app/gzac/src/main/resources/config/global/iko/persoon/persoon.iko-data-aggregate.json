@@ -1,0 +1,8 @@
+{
+    "key": "persoon",
+    "ikoRepositoryConfigKey": "klantinteracties-api",
+    "title": "Persoon",
+    "properties": {
+        "soortPartij": "persoon"
+    }
+}

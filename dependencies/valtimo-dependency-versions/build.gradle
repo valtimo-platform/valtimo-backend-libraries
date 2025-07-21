@@ -72,6 +72,7 @@ dependencies {
         //GZAC
         api(project(":plugin-authentication:notificaties-api-authentication"))
         api(project(":plugin-authentication:objecten-api-authentication"))
+        api(project(":plugin-authentication:openklant-authentication"))
         api(project(":plugin-authentication:openzaak-plugin-authentication"))
 
         api(project(":zgw"))
@@ -79,6 +80,7 @@ dependencies {
         api(project(":zgw:besluiten-api"))
         api(project(":zgw:catalogi-api"))
         api(project(":zgw:documenten-api"))
+        api(project(":zgw:klantinteracties-api"))
         api(project(":zgw:notificaties-api"))
         api(project(":zgw:object-management"))
         api(project(":zgw:objecten-api"))

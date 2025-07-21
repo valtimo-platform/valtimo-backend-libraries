@@ -1,0 +1,8 @@
+{
+    "key": "klantinteracties-api",
+    "title": "Klantinteracties API",
+    "type": "klantinteractiesApi",
+    "properties": {
+        "pluginConfiguration": "0c53dffc-1f8a-4d1e-a320-cdb2aa4f0b7a"
+    }
+}
