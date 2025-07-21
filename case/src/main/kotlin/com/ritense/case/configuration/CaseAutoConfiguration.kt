@@ -19,6 +19,7 @@ package com.ritense.case.configuration
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.ritense.authorization.AuthorizationService
+import com.ritense.case.deployment.CaseTabDeploymentService
 import com.ritense.case.domain.BooleanDisplayTypeParameter
 import com.ritense.case.domain.DateFormatDisplayTypeParameter
 import com.ritense.case.domain.EnumDisplayTypeParameter
@@ -402,6 +403,16 @@ class CaseAutoConfiguration {
         return CaseDefinitionSpecificationFactory(
             caseDefinitionService,
             queryDialectHelper
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CaseTabDeploymentService::class)
+    fun caseTabDeploymentService(
+        caseTabService: CaseTabService
+    ): CaseTabDeploymentService {
+        return CaseTabDeploymentService(
+            caseTabService
         )
     }
 }
