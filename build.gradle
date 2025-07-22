@@ -66,6 +66,53 @@ htmlDependencyReport {
     projects = project.allprojects
 }
 
+//Sonarqube
+tasks.named("sonar") {
+    dependsOn tasks.named("build")
+    dependsOn tasks.named("jacocoTestReport")
+    //make sure the sources were build before collecting the source sets for sonar
+    dependsOn subprojects.collectMany { subproject ->
+        def deps = []
+        if (subproject.hasProperty("sourceSets") &&
+            subproject.sourceSets.findByName("main") != null) {
+            if (subproject.tasks.findByName("classes") != null) {
+                deps << subproject.tasks.named("classes")
+            }
+        }
+        return deps
+    }
+    doFirst {
+        def binaryDirs = subprojects.collectMany { subproject ->
+            def outputDirs = []
+
+            if (subproject.hasProperty("sourceSets")) {
+                if (subproject.sourceSets.findByName("main") != null) {
+                    def dirs = subproject.sourceSets.main.output.classesDirs.files
+                    dirs.each { dir ->
+                        if (dir.exists()) {
+                            outputDirs << dir
+                        }
+                    }
+                }
+            }
+
+            return outputDirs
+        }
+
+        println "DEBUG: sonar.java.binaries will include the following directories (${binaryDirs.size()} total):"
+        binaryDirs.each { println "  -> ${it}" }
+
+        project.extensions.extraProperties.set("sonar.java.binaries", files(binaryDirs).asPath)
+    }
+}
+
+sonar {
+    properties {
+        property "sonar.scm.provider", "git"
+        property "sonar.coverage.jacoco.xmlReportPaths", allTestCoverageFile
+    }
+}
+
 dockerCompose {
     useDockerComposeV2 = true
     removeOrphans = true
@@ -199,52 +246,6 @@ subprojects { subproject ->
                 )
             }
         }
-    }
-}
-
-tasks.named("sonar") {
-    dependsOn tasks.named("build")
-    dependsOn tasks.named("jacocoTestReport")
-    dependsOn subprojects.collectMany { subproject ->
-        def deps = []
-        if (subproject.hasProperty("sourceSets") &&
-            subproject.sourceSets.findByName("main") != null) {
-            if (subproject.tasks.findByName("classes") != null) {
-                deps << subproject.tasks.named("classes")
-            }
-        }
-        return deps
-    }
-    doFirst {
-        def binaryDirs = subprojects.collectMany { subproject ->
-            def outputDirs = []
-
-            if (subproject.hasProperty("sourceSets")) {
-                if (subproject.sourceSets.findByName("main") != null) {
-                    def dirs = subproject.sourceSets.main.output.classesDirs.files
-                    dirs.each { dir ->
-                        if (dir.exists()) {
-                            outputDirs << dir
-                        }
-                    }
-                }
-            }
-
-            return outputDirs
-        }
-
-        println "DEBUG: sonar.java.binaries will include the following directories (${binaryDirs.size()} total):"
-        binaryDirs.each { println "  -> ${it}" }
-
-        project.extensions.extraProperties.set("sonar.java.binaries", files(binaryDirs).asPath)
-    }
-}
-
-//Sonarqube
-sonar {
-    properties {
-        property "sonar.scm.provider", "git"
-        property "sonar.coverage.jacoco.xmlReportPaths", allTestCoverageFile
     }
 }
 
