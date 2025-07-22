@@ -49,7 +49,10 @@ jacoco {
 def allTestCoverageFile = "${rootDir}/build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml"
 dependencies {
     subprojects { subproject ->
-        if (!project.name.endsWith("-dependencies")) {
+        if (
+            !subproject.name.endsWith("-dependencies") &&
+            !subproject.name.endsWith("-dependency-versions")
+        ) {
             jacocoAggregation(subproject)
         }
     }
@@ -69,7 +72,7 @@ htmlDependencyReport {
 //Sonarqube
 tasks.named("sonar") {
     dependsOn tasks.named("build")
-    dependsOn tasks.named("jacocoTestReport")
+    dependsOn tasks.named("testCodeCoverageReport")
     //make sure the sources were build before collecting the source sets for sonar
     dependsOn subprojects.collectMany { subproject ->
         def deps = []
@@ -100,9 +103,6 @@ tasks.named("sonar") {
 
             return outputDirs
         }
-
-        println "DEBUG: sonar.java.binaries will include the following directories (${binaryDirs.size()} total):"
-        binaryDirs.each { println "  -> ${it}" }
 
         project.extensions.extraProperties.set("sonar.java.binaries", files(binaryDirs).asPath)
     }
@@ -230,12 +230,6 @@ subprojects { subproject ->
         tasks.withType(Checkstyle).configureEach {
             reports {
                 html.destination rootProject.file("build/reports/${subproject.project.name}-checkstyle.html")
-            }
-        }
-
-        sonar {
-            properties {
-                property "sonar.coverage.jacoco.xmlReportPaths", allTestCoverageFile
             }
         }
 
