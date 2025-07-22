@@ -77,6 +77,7 @@ tasks.named("sonar") {
             subproject.sourceSets.findByName("main") != null) {
             if (subproject.tasks.findByName("classes") != null) {
                 deps << subproject.tasks.named("classes")
+                deps << subproject.tasks.named("testClasses")
             }
         }
         return deps
@@ -87,7 +88,8 @@ tasks.named("sonar") {
 
             if (subproject.hasProperty("sourceSets")) {
                 if (subproject.sourceSets.findByName("main") != null) {
-                    def dirs = subproject.sourceSets.main.output.classesDirs.files
+                    def dirs = subproject.sourceSets.main.output.classesDirs.files +
+                        subproject.sourceSets.test.output.classesDirs.files
                     dirs.each { dir ->
                         if (dir.exists()) {
                             outputDirs << dir
