@@ -204,13 +204,21 @@ subprojects { subproject ->
 
 tasks.named("sonar").configure {
     doFirst {
-        def binaryDirs = subprojects.findAll { subproject ->
-            subproject.plugins.hasPlugin("java") ||
-                subproject.plugins.hasPlugin("java-library") ||
-                subproject.plugins.hasPlugin("kotlin")
-        }.collectMany { subproject ->
-            def dirs = subproject.sourceSets.main.output.classesDirs.files
-            dirs.findAll { it.exists() }
+        def binaryDirs = subprojects.collectMany { subproject ->
+            def outputDirs = []
+
+            if (subproject.hasProperty("sourceSets")) {
+                if (subproject.sourceSets.findByName("main") != null) {
+                    def dirs = subproject.sourceSets.main.output.classesDirs.files
+                    dirs.each { dir ->
+                        if (dir.exists()) {
+                            outputDirs << dir
+                        }
+                    }
+                }
+            }
+
+            return outputDirs
         }
 
         println "DEBUG: sonar.java.binaries will include the following directories (${binaryDirs.size()} total):"
