@@ -47,7 +47,7 @@ composeUp {
 dockerCompose {
     projectName = "gzac-docker-compose"
     useComposeFiles.addAll(buildDir.absolutePath + "/docker/extract/gzac-docker-compose-main/docker-compose.yaml")
-    composeAdditionalArgs = ["--profile", "zgw"]
+    composeAdditionalArgs = ["--profile", "zgw", "--profile", "openklant"]
     stopContainers = false
     removeContainers = false
     removeVolumes = false

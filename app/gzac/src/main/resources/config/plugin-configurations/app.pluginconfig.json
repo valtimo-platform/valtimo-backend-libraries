@@ -109,6 +109,14 @@
         }
     },
     {
+        "id": "da119c58-b350-42fe-b07a-b235c56b0d8f",
+        "title": "OpenKlant Authentication",
+        "pluginDefinitionKey": "openklanttokenauthentication",
+        "properties": {
+            "token": "${VALTIMO_OPEN_KLANT_TOKEN}"
+        }
+    },
+    {
         "id": "b3bfac2b-06bf-4933-8527-af8015335a3d",
         "title": "SmartDocuments",
         "pluginDefinitionKey": "smartdocuments",

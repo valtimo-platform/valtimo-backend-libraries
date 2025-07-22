@@ -37,7 +37,7 @@ class TableWidgetDataProvider(
 
     override fun supportedWidgetType() = TableWidget::class.java
 
-    override fun getData(widget: TableWidget, context: List<Any>, pageable: Pageable): Page<Map<String, Any?>> {
+    override fun getData(widget: TableWidget, context: Map<String, Any?>, pageable: Pageable): Page<Map<String, Any?>> {
         val resolvedCollection =
             valueResolverService.resolveValues(
                 context,

@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.widget
+package com.ritense.openklantauthentication
 
-import com.ritense.widget.domain.Widget
-import org.springframework.data.domain.Pageable
+import com.ritense.plugin.PluginFactory
+import com.ritense.plugin.service.PluginService
 
-interface WidgetDataProvider<T : Widget> {
-    fun supportedWidgetType(): Class<T>
-    fun getData(widget: T, context: Map<String, Any?>, pageable: Pageable): Any?
+class OpenKlantTokenAuthenticationPluginFactory(
+    pluginService: PluginService
+) : PluginFactory<OpenKlantTokenAuthenticationPlugin>(pluginService) {
+
+    override fun create(): OpenKlantTokenAuthenticationPlugin {
+        return OpenKlantTokenAuthenticationPlugin()
+    }
 }

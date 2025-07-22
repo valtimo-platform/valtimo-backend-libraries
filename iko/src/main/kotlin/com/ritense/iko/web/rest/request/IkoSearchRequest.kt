@@ -17,5 +17,5 @@
 package com.ritense.iko.web.rest.request
 
 data class IkoSearchRequest(
-    val filters: Map<String, Any?>
+    val filters: Map<String, Any?> = emptyMap(),
 )

@@ -56,7 +56,7 @@ class WidgetService(
         findById(id) ?: error("Widget $id not found")
 
     @Transactional
-    fun getWidgetData(widget: Widget, context: List<Any>, pageable: Pageable): Any? {
+    fun getWidgetData(widget: Widget, context: Map<String, Any?>, pageable: Pageable): Any? {
         return runWithoutAuthorization {
             widgetDataProviders
                 .first { provider -> provider.supportedWidgetType().isAssignableFrom(widget::class.java) }

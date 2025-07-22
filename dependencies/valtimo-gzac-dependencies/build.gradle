@@ -18,6 +18,7 @@ dependencies {
     api(project(":dependencies:valtimo-dependencies"))
     api(project(":plugin-authentication:notificaties-api-authentication"))
     api(project(":plugin-authentication:objecten-api-authentication"))
+    api(project(":plugin-authentication:openklant-authentication"))
     api(project(":plugin-authentication:openzaak-plugin-authentication"))
     api(project(":zgw"))
     api(project(":zgw:besluiten-api"))
