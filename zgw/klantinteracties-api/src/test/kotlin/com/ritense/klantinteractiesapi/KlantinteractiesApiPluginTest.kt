@@ -30,6 +30,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.operaton.bpm.engine.delegate.DelegateExecution
 import java.net.URI
+import java.util.UUID
 
 class KlantinteractiesApiPluginTest {
 
@@ -59,6 +60,7 @@ class KlantinteractiesApiPluginTest {
         val uriCaptor = argumentCaptor<URI>()
         val requestCaptor = argumentCaptor<CreatePartijRequest>()
         val partij = Partij(
+            uuid = UUID.randomUUID(),
             url = URI("http://openklant.api/partij/000001"),
             partijIdentificatoren = emptyList(),
             soortPartij = PartijSoort.PERSOON,

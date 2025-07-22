@@ -16,9 +16,11 @@
 
 package com.ritense.klantinteractiesapi.client.dto
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.ritense.klantinteractiesapi.domain.PartijIdentificator
 import java.util.UUID
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class CreatePartijIdentificatorLink(
     val uuid: UUID? = null,
     val partijIdentificator: PartijIdentificator? = null,

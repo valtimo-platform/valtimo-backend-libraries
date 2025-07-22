@@ -36,7 +36,6 @@ internal class KlantinteractiesApiPluginFactoryTest {
     fun `should create KlantinteractiesApiPlugin`() {
         val pluginService: PluginService = mock()
         val klantinteractiesApiClient: KlantinteractiesApiClient = mock()
-        mock()
         val authentication: KlantinteractiesApiAuthentication = mock()
         whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(authentication)
         whenever(pluginService.getObjectMapper()).thenReturn(MapperSingleton.get())
