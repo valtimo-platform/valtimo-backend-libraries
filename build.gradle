@@ -75,6 +75,9 @@ def binaryDirs = subprojects.findAll { subproject ->
     dirs.findAll { it.exists() }
 }
 
+println "DEBUG: sonar.java.binaries will include the following directories:"
+binaryDirs.each { println "  -> ${it}" }
+
 //Sonarqube
 sonar {
     properties {
@@ -228,4 +231,5 @@ tasks.withType(PublishToMavenLocal) {
 }
 tasks.named("sonar") {
     dependsOn tasks.named("build")
+    dependsOn tasks.named("jacocoTestReport")
 }
