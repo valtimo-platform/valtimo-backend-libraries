@@ -19,13 +19,19 @@ package com.ritense.iko.valueresolver
 import com.ritense.iko.IkoValueResolverFactory
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valueresolver.IkoValueResolverService
+import com.ritense.valueresolver.ValueResolverContextKey.Companion.JSON_SCHEMA_DOCUMENT_ID
+import com.ritense.valueresolver.ValueResolverContextKey.Companion.PROCESS_INSTANCE_ID
+import com.ritense.valueresolver.ValueResolverContextKey.Companion.VARIABLE_SCOPE
+import com.ritense.valueresolver.ValueResolverService
+import org.operaton.bpm.engine.delegate.VariableScope
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 
 @Service
 @SkipComponentScan
 class IkoValueResolverServiceImpl(
-    valueResolverFactories: List<IkoValueResolverFactory>
+    private val valueResolverService: ValueResolverService,
+    valueResolverFactories: List<IkoValueResolverFactory>,
 ) : IkoValueResolverService {
 
     private val resolverFactoryMap: Map<String, IkoValueResolverFactory> by lazy {
@@ -60,10 +66,28 @@ class IkoValueResolverServiceImpl(
      * @return A map where the key is the requestedValue, and the value the resolved value.
      */
     override fun resolveValues(
-        context: List<Any>,
+        context: Map<String, Any?>,
         requestedValues: Collection<String>,
         pageable: Pageable,
     ): Map<String, Any?> {
+        val processInstanceId = context[PROCESS_INSTANCE_ID]
+        val variableScope = context[VARIABLE_SCOPE]
+        if (processInstanceId != null && variableScope != null) {
+            return valueResolverService.resolveValues(
+                processInstanceId as String,
+                variableScope as VariableScope,
+                requestedValues
+            )
+        }
+
+        val documentId = context[JSON_SCHEMA_DOCUMENT_ID]
+        if (documentId != null ) {
+            return valueResolverService.resolveValues(
+                documentId as String,
+                requestedValues
+            )
+        }
+
         return toResolverFactoryMap(requestedValues).map { (resolverFactory, requestedValues) ->
             val resolver = resolverFactory.createResolver(context, pageable)
             //Create a list of resolved Map entries

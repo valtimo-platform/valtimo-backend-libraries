@@ -26,14 +26,12 @@ class FieldsWidgetDataProvider(
 
     override fun supportedWidgetType() = FieldsWidget::class.java
 
-    override fun getData(widget: FieldsWidget, context: List<Any>, pageable: Pageable): Any {
-        val valueKeyMap = widget.properties.columns.flatMap { column ->
-            column.map { field ->
-                field.value to field.key
-            }
-        }.toMap()
+    override fun getData(widget: FieldsWidget, context: Map<String, Any?>, pageable: Pageable): Any {
+        val valueSet = widget.properties.columns.flatMap { column ->
+            column.map { field -> field.value }
+        }.toSet()
 
-        val resolvedValues = valueResolverService.resolveValues(context, valueKeyMap.keys, pageable)
+        val resolvedValues = valueResolverService.resolveValues(context, valueSet, pageable)
 
         return widget.properties.columns.flatMap { column ->
             column.map { field ->

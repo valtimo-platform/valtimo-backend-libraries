@@ -64,6 +64,7 @@ import com.ritense.tab.service.TabService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.contract.iko.IkoRepository
+import com.ritense.valueresolver.ValueResolverService
 import com.ritense.widget.service.WidgetService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -432,9 +433,11 @@ class IkoAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(IkoValueResolverServiceImpl::class)
     fun ikoValueResolverService(
+        valueResolverService: ValueResolverService,
         valueResolverFactories: List<IkoValueResolverFactory>,
     ): IkoValueResolverServiceImpl {
         return IkoValueResolverServiceImpl(
+            valueResolverService,
             valueResolverFactories,
         )
     }

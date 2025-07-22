@@ -18,12 +18,14 @@ package com.ritense.openklantauthentication
 
 import com.ritense.plugin.service.PluginService
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 
 @AutoConfiguration
 class OpenKlantTokenAuthenticationPluginAutoConfiguration {
 
     @Bean
+    @ConditionalOnMissingBean(OpenKlantTokenAuthenticationPluginFactory::class)
     fun openKlantApiAuthenticationPluginFactory(
         pluginService: PluginService
     ): OpenKlantTokenAuthenticationPluginFactory {

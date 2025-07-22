@@ -33,7 +33,7 @@ interface IkoValueResolverService {
      * @return A map where the key is the requestedValue, and the value the resolved value.
      */
     fun resolveValues(
-        context: List<Any>,
+        context: Map<String, Any?>,
         requestedValues: Collection<String>,
         pageable: Pageable,
     ): Map<String, Any?>

@@ -21,5 +21,5 @@ import org.springframework.data.domain.Pageable
 
 interface WidgetDataProvider<T : Widget> {
     fun supportedWidgetType(): Class<T>
-    fun getData(widget: T, context: List<Any>, pageable: Pageable): Any?
+    fun getData(widget: T, context: Map<String, Any?>, pageable: Pageable): Any?
 }

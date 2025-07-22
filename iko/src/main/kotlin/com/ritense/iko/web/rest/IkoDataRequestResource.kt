@@ -44,21 +44,21 @@ import org.springframework.web.bind.annotation.RequestMapping
 @SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class IkoDataRequestResource(
-    private val dataRequestService: IkoDataRequestService,
-    private val listColumnService: IkoListColumnService,
-    private val searchFieldService: IkoSearchFieldService,
+    private val ikoDataRequestService: IkoDataRequestService,
+    private val ikoListColumnService: IkoListColumnService,
+    private val ikoSearchFieldService: IkoSearchFieldService,
 ) {
 
     @GetMapping("/v1/iko-data-aggregate/{ikoDataAggregateKey}/data-request")
     fun getIkoDataRequests(
         @PathVariable ikoDataAggregateKey: String,
     ): ResponseEntity<List<IkoDataRequestUserListResponse>> {
-        val ikoDataRequests = dataRequestService.findAll(
+        val ikoDataRequests = ikoDataRequestService.findAll(
             ikoDataAggregateKey = ikoDataAggregateKey,
         )
         val response = ikoDataRequests.map { ikoDataRequest ->
             val searchFields =
-                searchFieldService.findAllSearchFieldsByIkoDataRequest(ikoDataAggregateKey, ikoDataRequest.id.key)
+                ikoSearchFieldService.findAllSearchFieldsByIkoDataRequest(ikoDataAggregateKey, ikoDataRequest.id.key)
             IkoDataRequestUserListResponse.from(ikoDataRequest, searchFields)
         }
         return ResponseEntity.ok(response)
@@ -71,12 +71,13 @@ class IkoDataRequestResource(
         @RequestBody request: IkoSearchRequest,
         pageable: Pageable,
     ): ResponseEntity<IkoSearchResponse> {
-        val headers = listColumnService.findAllColumnsByIkoDataAggregateKey(ikoDataAggregateKey)
-        val searchFields = searchFieldService.findAllSearchFieldsByIkoDataRequest(ikoDataAggregateKey, ikoDataRequestKey)
+        val headers = ikoListColumnService.findAllColumnsByIkoDataAggregateKey(ikoDataAggregateKey)
+        val searchFields =
+            ikoSearchFieldService.findAllSearchFieldsByIkoDataRequest(ikoDataAggregateKey, ikoDataRequestKey)
         require(searchFields.filter { it.required }.all { request.filters.containsKey(it.key) }) {
             "Missing required SearchField for DataRequest '$ikoDataAggregateKey:$ikoDataRequestKey'"
         }
-        val data = dataRequestService.searchData(
+        val data = ikoDataRequestService.searchData(
             key = ikoDataRequestKey,
             ikoDataAggregateKey = ikoDataAggregateKey,
             filters = toDataFilers(request.filters, searchFields),
@@ -88,7 +89,7 @@ class IkoDataRequestResource(
     private fun toDataFilers(filters: Map<String, Any?>, searchFields: List<SearchFieldV2>): List<DataFilter> {
         return filters.map { filter ->
             val searchField = searchFields.single { it.key == filter.key }
-            DataFilter(searchField.path, searchField.matchType!!.toComparator(), filter.value)
+            DataFilter(searchField.path, searchField.matchType?.toComparator() ?: Comparator.EQUAL_TO, filter.value)
         }
     }
 

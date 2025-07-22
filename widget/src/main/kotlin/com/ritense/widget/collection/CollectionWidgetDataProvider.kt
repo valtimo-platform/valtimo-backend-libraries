@@ -39,7 +39,7 @@ class CollectionWidgetDataProvider(
 
     override fun getData(
         widget: CollectionWidget,
-        context: List<Any>,
+        context: Map<String, Any?>,
         pageable: Pageable
     ): Page<CollectionWidgetDataResult> {
         val resolvedCollection =
