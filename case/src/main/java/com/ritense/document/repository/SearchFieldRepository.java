@@ -23,6 +23,10 @@ import java.util.Optional;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface SearchFieldRepository extends JpaRepository<SearchField, SearchFieldId>, JpaSpecificationExecutor<SearchField> {
 
@@ -33,6 +37,18 @@ public interface SearchFieldRepository extends JpaRepository<SearchField, Search
     boolean existsByIdCaseDefinitionKey(String caseDefinitionKey);
 
     void deleteAllByIdCaseDefinitionKey(String caseDefinitionKey);
+
+    @Modifying
+    @Transactional
+    @Query("""
+    DELETE FROM SearchField sf
+    WHERE sf.id.caseDefinitionKey = :caseDefinitionKey
+      AND sf.key NOT IN :keys
+    """)
+    void deleteByCaseDefinitionKeyAndKeyNotIn(
+        @Param("caseDefinitionKey") String caseDefinitionKey,
+        @Param("keys") List<String> keys
+    );
 
     static Specification<SearchField> byIdCaseDefinitionKey(String caseDefinitionKey) {
         return (root, query, criteriaBuilder) ->

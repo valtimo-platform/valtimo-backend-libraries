@@ -122,7 +122,13 @@ public class SearchFieldService {
         var searchFields = IntStream.range(0, searchFieldDtos.size())
             .mapToObj(index -> toOrderedSearchField(documentDefinitionName, searchFieldDtos.get(index), index))
             .toList();
+
+        List<String> incomingKeys = searchFieldDtos.stream()
+            .map(SearchFieldDto::getKey)
+            .toList();
+
         searchFieldRepository.saveAll(searchFields);
+        searchFieldRepository.deleteByCaseDefinitionKeyAndKeyNotIn(documentDefinitionName, incomingKeys);
     }
 
     public void createSearchConfiguration(List<SearchField> searchFields, CaseDefinitionId caseDefinitionId) {
