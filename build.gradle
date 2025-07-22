@@ -195,8 +195,12 @@ subprojects { subproject ->
         sonar {
             properties {
                 property "sonar.coverage.jacoco.xmlReportPaths", allTestCoverageFile
-                property "sonar.java.binaries", "${buildDir}/classes/java"
+                property "sonar.java.binaries", "${buildDir}/classes"
             }
+        }
+
+        tasks.named("sonar") {
+            dependsOn tasks.named("classes")
         }
 
         jar {
