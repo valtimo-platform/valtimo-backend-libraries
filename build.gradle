@@ -64,6 +64,11 @@ reporting {
         }
     }
 }
+tasks.named("testCodeCoverageReport") {
+    dependsOn subprojects.collectMany { subproject ->
+        subproject.tasks.matching { it.name == "test" }
+    }
+}
 
 htmlDependencyReport {
     projects = project.allprojects
@@ -105,6 +110,13 @@ tasks.named("sonar") {
         }
 
         project.extensions.extraProperties.set("sonar.java.binaries", files(binaryDirs).asPath)
+    }
+}
+
+tasks.named("testCodeCoverageReport") {
+    doLast {
+        def reportFile = file("${rootDir}/build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml")
+        println "DEBUG: testCodeCoverageReport executed, file exists: ${reportFile.exists()} at ${reportFile.absolutePath}"
     }
 }
 
@@ -231,6 +243,11 @@ subprojects { subproject ->
             reports {
                 html.destination rootProject.file("build/reports/${subproject.project.name}-checkstyle.html")
             }
+        }
+
+        // prevent report per module because we're aggregating one on the root project
+        tasks.withType(JacocoReport).configureEach {
+            enabled = false
         }
 
         jar {
