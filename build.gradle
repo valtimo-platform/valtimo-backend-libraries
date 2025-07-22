@@ -141,6 +141,7 @@ subprojects { subproject ->
         apply plugin: "org.jetbrains.dokka-javadoc"
         apply plugin: "maven-publish"
         apply plugin: "org.owasp.dependencycheck"
+        apply plugin: "org.sonarqube"
 
         tasks.register("allDeps", DependencyReportTask) {}
         tasks.register("allDepInsight", DependencyInsightReportTask) {
