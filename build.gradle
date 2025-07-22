@@ -202,7 +202,19 @@ subprojects { subproject ->
     }
 }
 
-tasks.named("sonar").configure {
+tasks.named("sonar") {
+    dependsOn tasks.named("build")
+    dependsOn tasks.named("jacocoTestReport")
+    dependsOn subprojects.collectMany { subproject ->
+        def deps = []
+        if (subproject.hasProperty("sourceSets") &&
+            subproject.sourceSets.findByName("main") != null) {
+            if (subproject.tasks.findByName("classes") != null) {
+                deps << subproject.tasks.named("classes")
+            }
+        }
+        return deps
+    }
     doFirst {
         def binaryDirs = subprojects.collectMany { subproject ->
             def outputDirs = []
@@ -241,8 +253,4 @@ tasks.withType(PublishToMavenRepository) {
 }
 tasks.withType(PublishToMavenLocal) {
     enabled = false
-}
-tasks.named("sonar") {
-    dependsOn tasks.named("build")
-    dependsOn tasks.named("jacocoTestReport")
 }
