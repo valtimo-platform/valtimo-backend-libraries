@@ -222,3 +222,6 @@ tasks.withType(PublishToMavenRepository) {
 tasks.withType(PublishToMavenLocal) {
     enabled = false
 }
+tasks.named("sonar") {
+    dependsOn tasks.named("build")
+}
