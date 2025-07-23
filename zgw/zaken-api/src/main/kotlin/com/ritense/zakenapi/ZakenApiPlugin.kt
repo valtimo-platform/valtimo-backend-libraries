@@ -39,6 +39,7 @@ import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
 import com.ritense.zakenapi.domain.CreateZaakStatusRequest
 import com.ritense.zakenapi.domain.CreateZaakeigenschapRequest
 import com.ritense.zakenapi.domain.Geometry
+import com.ritense.zakenapi.domain.GeometryType
 import com.ritense.zakenapi.domain.Opschorting
 import com.ritense.zakenapi.domain.PatchZaakRequest
 import com.ritense.zakenapi.domain.RelevanteZaak
@@ -130,9 +131,7 @@ class ZakenApiPlugin(
                 titel,
                 beschrijving
             )
-
             client.linkDocument(authenticationPluginConfiguration, url, request)
-
             logger.info { "Document with URL '$documentUrl' linked successfully to zaak with URL '$zaakUrl'" }
         }
     }
@@ -271,9 +270,8 @@ class ZakenApiPlugin(
         @PluginActionProperty paymentIndication: String? = null,
         @PluginActionProperty lastPaymentDate: String? = null,
         @PluginActionProperty caseGeometryType: String? = null,
-        @PluginActionProperty caseGeometryCoordinates: List<Int>? = null,
+        @PluginActionProperty caseGeometryCoordinates: List<Float>? = null,
         @PluginActionProperty mainCase: String? = null,
-        // @PluginActionProperty relevantOtherCases: String? = null,
         @PluginActionProperty archiveActionDate: String? = null,
         @PluginActionProperty startDateRetentionPeriod: String? = null
     ) {
@@ -284,7 +282,7 @@ class ZakenApiPlugin(
         ) {
             val caseGeometry: Geometry? = if (caseGeometryType != null && caseGeometryCoordinates != null) {
                 Geometry(
-                    type = caseGeometryType,
+                    type = GeometryType.entries.find { it.key == caseGeometryType }!!,
                     coordinates = caseGeometryCoordinates
                 )
             } else {
@@ -304,7 +302,6 @@ class ZakenApiPlugin(
                 lastPaymentDate = lastPaymentDate?.let { LocalDate.parse(it) },
                 caseGeometry = caseGeometry,
                 mainCase = mainCase?.let { URI.create(it) },
-                // relevantOtherCases = relevantOtherCases?.let { null },
                 archiveActionDate = archiveActionDate?.let { LocalDate.parse(it) },
                 startDateRetentionPeriod = startDateRetentionPeriod?.let { LocalDate.parse(it) }
             )
