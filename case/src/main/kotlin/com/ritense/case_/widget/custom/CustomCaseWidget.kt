@@ -20,6 +20,7 @@ import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 import com.ritense.case_.domain.tab.CaseWidgetTabWidgetId
 import com.ritense.case_.rest.dto.CaseWidgetAction
 import com.ritense.valtimo.contract.annotation.AllOpen
+import com.ritense.widget.domain.WidgetTopRightCorner
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorValue
@@ -36,12 +37,13 @@ class CustomCaseWidget(
     width: Int,
     highContrast: Boolean,
     actions: List<CaseWidgetAction>,
+    topRightCorner: WidgetTopRightCorner? = null,
 
     @Type(value = JsonType::class)
     @Column(name = "properties", nullable = false)
     val properties: CustomWidgetProperties
 ) : CaseWidgetTabWidget(
-    id, title, order, width, highContrast, actions
+    id, title, order, width, highContrast, actions, topRightCorner
 ) {
     override fun copy(id: CaseWidgetTabWidgetId) = CustomCaseWidget(
         id = id,
@@ -50,6 +52,7 @@ class CustomCaseWidget(
         width = width,
         highContrast = highContrast,
         actions = actions,
+        topRightCorner = topRightCorner,
         properties = properties
     )
 }

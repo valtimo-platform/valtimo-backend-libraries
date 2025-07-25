@@ -17,9 +17,8 @@
 package com.ritense.widget
 
 import com.ritense.widget.domain.Widget
-import org.springframework.data.domain.Pageable
 
 interface WidgetDataProvider<T : Widget> {
     fun supportedWidgetType(): Class<T>
-    fun getData(widget: T, context: Map<String, Any?>, pageable: Pageable): Any?
+    fun getData(widget: T, properties: Map<String, Any>): Any?
 }

@@ -191,7 +191,13 @@ class CollectionCaseWidgetDataProviderTest(
     }
 
     private fun testWidget() = CollectionCaseWidget(
-        CaseWidgetTabWidgetId("test"), "Test", 0, 1, true, emptyList(), CollectionWidgetProperties(
+        id = CaseWidgetTabWidgetId("test"),
+        title = "Test",
+        order = 0,
+        width = 1,
+        highContrast = true,
+        actions = emptyList(),
+        properties = CollectionWidgetProperties(
             collection = "test:someCollection",
             defaultPageSize = 2,
             title = CollectionWidgetProperties.TitleField("$.firstName"),

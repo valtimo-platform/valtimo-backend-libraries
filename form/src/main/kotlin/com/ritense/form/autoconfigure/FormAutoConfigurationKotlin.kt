@@ -42,6 +42,7 @@ import com.ritense.form.validation.FormDefinitionExistsValidator
 import com.ritense.form.web.rest.FormOptionResource
 import com.ritense.form.web.rest.FormResource
 import com.ritense.form.web.rest.IntermediateSubmissionResource
+import com.ritense.form.widget.FormIoWidgetDataProvider
 import com.ritense.processdocument.service.ProcessDefinitionCaseDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.service.ProcessLinkService
@@ -146,6 +147,14 @@ class FormAutoConfigurationKotlin {
         formDefinitionService: FormDefinitionService,
         formService: PrefillFormService
     ) = FormIoCaseWidgetDataProvider(formDefinitionService, formService)
+
+    @ConditionalOnMissingBean(FormIoWidgetDataProvider::class)
+    @Bean
+    fun formIoWidgetDataProvider(
+        formDefinitionService: FormDefinitionService,
+        formService: PrefillFormService,
+        documentService: DocumentService,
+    ) = FormIoWidgetDataProvider(formDefinitionService, formService, documentService)
 
     @ConditionalOnMissingBean(FormDefinitionExistsValidator::class)
     @Bean

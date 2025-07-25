@@ -16,10 +16,10 @@
 
 package com.ritense.valueresolver
 
-class ValueResolverContextKey {
+class ValueResolverPropertyKey {
     companion object {
         // CORE
-        const val JSON_SCHEMA_DOCUMENT_ID = "jsonSchemaDocumentId"
+        const val DOCUMENT_ID = "documentId"
         const val PROCESS_INSTANCE_ID = "processInstanceId"
         const val VARIABLE_SCOPE = "variableScope"
 
@@ -29,6 +29,7 @@ class ValueResolverContextKey {
 
         // Other
         const val ID = "id"
+        const val PAGEABLE = "pageable"
         const val TAB_KEY = "tabKey"
         const val WIDGET_KEY = "widgetKey"
 

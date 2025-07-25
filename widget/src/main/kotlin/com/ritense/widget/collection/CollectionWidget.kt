@@ -17,8 +17,9 @@
 package com.ritense.widget.collection
 
 import com.ritense.valtimo.contract.annotation.AllOpen
+import com.ritense.widget.domain.DeprecatedStartProcessWidgetAction
 import com.ritense.widget.domain.Widget
-import com.ritense.widget.domain.WidgetAction
+import com.ritense.widget.domain.WidgetTopRightCorner
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorValue
@@ -36,13 +37,14 @@ class CollectionWidget(
     order: Int,
     width: Int,
     highContrast: Boolean,
-    actions: List<WidgetAction> = emptyList(),
+    actions: List<DeprecatedStartProcessWidgetAction> = emptyList(),
+    topRightCorner: WidgetTopRightCorner? = null,
 
     @Type(value = JsonType::class)
     @Column(name = "properties", nullable = false)
     val properties: CollectionWidgetProperties
 ) : Widget(
-    id, key, title, order, width, highContrast, actions
+    id, key, title, order, width, highContrast, actions, topRightCorner
 ) {
     override fun copy(
         id: UUID,
@@ -51,7 +53,8 @@ class CollectionWidget(
         order: Int,
         width: Int,
         highContrast: Boolean,
-        actions: List<WidgetAction>
+        actions: List<DeprecatedStartProcessWidgetAction>,
+        topRightCorner: WidgetTopRightCorner?,
     ) = CollectionWidget(
         id = id,
         key = key,
@@ -60,6 +63,7 @@ class CollectionWidget(
         width = width,
         highContrast = highContrast,
         actions = actions,
+        topRightCorner = topRightCorner,
         properties = properties,
     )
 
@@ -69,6 +73,7 @@ class CollectionWidget(
         width = this.width,
         highContrast = this.highContrast,
         actions = this.actions,
+        topRightCorner = this.topRightCorner,
         properties = this.properties,
     )
 }

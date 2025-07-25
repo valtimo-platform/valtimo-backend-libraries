@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.case_.rest.dto.CaseWidgetAction
 import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
 import com.ritense.case_.widget.TestCaseWidgetProperties
+import com.ritense.widget.domain.WidgetTopRightCorner
 import jakarta.validation.Valid
 
 @JsonTypeName("test")
@@ -28,6 +29,7 @@ data class TestCaseWidgetTabWidgetDto(
     override val title: String,
     override val width: Int,
     override val highContrast: Boolean,
+    override val topRightCorner: WidgetTopRightCorner? = null,
     @field:Valid val properties: TestCaseWidgetProperties = TestCaseWidgetProperties(),
     override val actions: List<CaseWidgetAction>? = emptyList(),
 ) : CaseWidgetTabWidgetDto

@@ -17,8 +17,9 @@
 package com.ritense.widget.table
 
 import com.fasterxml.jackson.annotation.JsonTypeName
+import com.ritense.widget.domain.DeprecatedStartProcessWidgetAction
 import com.ritense.widget.domain.Widget
-import com.ritense.widget.domain.WidgetAction
+import com.ritense.widget.domain.WidgetTopRightCorner
 import com.ritense.widget.web.rest.dto.WidgetDto
 import jakarta.validation.Valid
 import java.util.UUID
@@ -29,7 +30,8 @@ data class TableWidgetDto(
     override val title: String,
     override val width: Int,
     override val highContrast: Boolean,
-    override val actions: List<WidgetAction> = emptyList(),
+    override val actions: List<DeprecatedStartProcessWidgetAction> = emptyList(),
+    override val topRightCorner: WidgetTopRightCorner? = null,
     @field:Valid val properties: TableWidgetProperties
 ) : WidgetDto {
     override fun toEntity(id: UUID, order: Int): Widget = TableWidget(
@@ -40,6 +42,7 @@ data class TableWidgetDto(
         order = order,
         highContrast = highContrast,
         actions = actions,
+        topRightCorner = topRightCorner,
         properties = properties,
     )
 }

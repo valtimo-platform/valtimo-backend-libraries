@@ -20,7 +20,6 @@ import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.iko.service.IkoRepositoryService
 import com.ritense.iko.web.rest.request.IkoRepositoryConfigCreateRequest
 import com.ritense.iko.web.rest.request.IkoRepositoryConfigUpdateRequest
-import com.ritense.iko.web.rest.response.IkoRepositoryConfigListResponse
 import com.ritense.iko.web.rest.response.IkoRepositoryConfigResponse
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
@@ -67,13 +66,13 @@ class IkoRepositoryManagementResource(
         @RequestParam title: String?,
         @RequestParam type: String?,
         @PageableDefault(sort = ["title"], direction = ASC) pageable: Pageable
-    ): ResponseEntity<Page<IkoRepositoryConfigListResponse>> {
+    ): ResponseEntity<Page<IkoRepositoryConfigResponse>> {
         val ikoRepositoryConfigs = service.findAll(
             title = title,
             type = type,
             pageable = pageable
         )
-        return ResponseEntity.ok(ikoRepositoryConfigs.map { IkoRepositoryConfigListResponse.from(it) })
+        return ResponseEntity.ok(ikoRepositoryConfigs.map { IkoRepositoryConfigResponse.from(it) })
     }
 
     @RunWithoutAuthorization

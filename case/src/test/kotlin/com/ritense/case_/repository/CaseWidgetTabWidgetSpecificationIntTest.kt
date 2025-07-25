@@ -58,8 +58,20 @@ class CaseWidgetTabWidgetSpecificationIntTest @Autowired constructor(
                     caseDefinitionId.versionTag.version,
                     tabKey,
                     widgets = listOf(
-                        TestCaseWidgetTabWidgetDto("test", "Widget 1", 1, false, TestCaseWidgetProperties("test123")),
-                        TestCaseWidgetTabWidgetDto("other-widget", "Widget 2", 2, true, TestCaseWidgetProperties("test123")),
+                        TestCaseWidgetTabWidgetDto(
+                            key = "test",
+                            title = "Widget 1",
+                            width = 1,
+                            highContrast = false,
+                            properties = TestCaseWidgetProperties("test123")
+                        ),
+                        TestCaseWidgetTabWidgetDto(
+                            key = "other-widget",
+                            title = "Widget 2",
+                            width = 2,
+                            highContrast = true,
+                            properties = TestCaseWidgetProperties("test123")
+                        ),
                     )
                 )
             )

@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.iko.web.rest.response
+package com.ritense.form.widget
 
-import com.ritense.iko.domain.IkoDataAggregate
+import jakarta.validation.constraints.NotBlank
 
-data class IkoDataAggregateListResponse(
-    val key: String,
-    val title: String,
-) {
-    companion object {
-        fun from(entity: IkoDataAggregate) = IkoDataAggregateListResponse(
-            key = entity.key,
-            title = entity.title,
-        )
-    }
-}
+data class FormIoWidgetProperties (
+    @field:NotBlank
+    val formDefinitionName: String,
+)

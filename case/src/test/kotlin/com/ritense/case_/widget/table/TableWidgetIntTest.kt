@@ -160,7 +160,12 @@ class TableWidgetIntTest @Autowired constructor(
                 key = tabKey,
                 widgets = listOf(
                     TableCaseWidgetDto(
-                        widgetKey, "My widget", 1, true, null, TableWidgetProperties(
+                        key = widgetKey,
+                        title = "My widget",
+                        width = 1,
+                        highContrast = true,
+                        actions = null,
+                        properties = TableWidgetProperties(
                             collection = "test:myCollection",
                             defaultPageSize = 5,
                             columns = listOf(

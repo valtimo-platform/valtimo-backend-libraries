@@ -16,9 +16,7 @@
 
 package com.ritense.widget.domain
 
-import com.ritense.valtimo.contract.annotation.AllOpen
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 
-@AllOpen
-data class WidgetAction(
-    val type: String,
-)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+interface WidgetAction

@@ -14,20 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.iko.web.rest.response
+package com.ritense.widget.domain
 
-import com.ritense.iko.domain.IkoRepositoryConfig
+import com.fasterxml.jackson.annotation.JsonTypeName
 
-data class IkoRepositoryConfigListResponse(
-    val key: String,
-    val title: String,
-    val type: String,
-) {
-    companion object {
-        fun from(entity: IkoRepositoryConfig) = IkoRepositoryConfigListResponse(
-            key = entity.key,
-            title = entity.title,
-            type = entity.type,
-        )
-    }
-}
+@JsonTypeName("selectAndStartCase")
+data class SelectAndStartCaseWidgetAction (
+    val caseDefinitionKeys: List<String>,
+) : WidgetAction

@@ -20,13 +20,13 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import java.io.IOException;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
 
-public class PageSerializer extends JsonSerializer<PageImpl<?>> {
+public class PageSerializer extends JsonSerializer<Page<?>> {
 
     @Override
-    public void serialize(PageImpl page, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+    public void serialize(Page<?> page, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws
+        IOException {
         jsonGenerator.writeStartObject();
         jsonGenerator.writeFieldName("content");
         serializerProvider.defaultSerializeValue(page.getContent(), jsonGenerator);
@@ -40,20 +40,9 @@ public class PageSerializer extends JsonSerializer<PageImpl<?>> {
         jsonGenerator.writeNumberField("size", page.getSize());
         jsonGenerator.writeNumberField("number", page.getNumber());
 
-        Sort sort = page.getSort();
+        jsonGenerator.writeFieldName("sort");
+        serializerProvider.defaultSerializeValue(page.getSort(), jsonGenerator);
 
-        jsonGenerator.writeArrayFieldStart("sort");
-
-        for (Sort.Order order : sort) {
-            jsonGenerator.writeStartObject();
-            jsonGenerator.writeStringField("property", order.getProperty());
-            jsonGenerator.writeStringField("direction", order.getDirection().name());
-            jsonGenerator.writeBooleanField("ignoreCase", order.isIgnoreCase());
-            jsonGenerator.writeStringField("nullHandling", order.getNullHandling().name());
-            jsonGenerator.writeEndObject();
-        }
-
-        jsonGenerator.writeEndArray();
         jsonGenerator.writeEndObject();
     }
 

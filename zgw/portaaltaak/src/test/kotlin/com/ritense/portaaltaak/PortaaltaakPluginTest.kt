@@ -37,8 +37,6 @@ import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.link.ZaakInstanceLinkNotFoundException
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
-import org.operaton.bpm.engine.delegate.DelegateTask
-import org.operaton.bpm.engine.delegate.VariableScope
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -47,6 +45,8 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.operaton.bpm.engine.delegate.DelegateTask
+import org.operaton.bpm.engine.delegate.VariableScope
 import java.net.URI
 import java.time.LocalDateTime
 import java.util.UUID
@@ -124,7 +124,7 @@ internal class PortaaltaakPluginTest {
         whenever(delegateTask.name).thenReturn("delegateTaskName")
         whenever(delegateTask.id).thenReturn("delegateTaskId")
         whenever(jsonSchemaDocumentId.toString()).thenReturn("documentId")
-        whenever(valueResolverService.resolveValues(any(), any())).thenReturn(emptyMap())
+        whenever(valueResolverService.resolveValues(any<String>(), any())).thenReturn(emptyMap())
 
         portaaltaakPlugin.createPortaalTaak(
             delegateTask,
@@ -194,7 +194,7 @@ internal class PortaaltaakPluginTest {
         whenever(delegateTask.name).thenReturn("delegateTaskName")
         whenever(delegateTask.id).thenReturn("delegateTaskId")
         whenever(jsonSchemaDocumentId.toString()).thenReturn("documentId")
-        whenever(valueResolverService.resolveValues(any(), any())).thenReturn(emptyMap())
+        whenever(valueResolverService.resolveValues(any<String>(), any())).thenReturn(emptyMap())
         whenever(pluginService.getObjectMapper()).thenReturn(objectMapper)
 
         portaaltaakPlugin.createPortaalTaak(
@@ -268,7 +268,7 @@ internal class PortaaltaakPluginTest {
         whenever(delegateTask.name).thenReturn("delegateTaskName")
         whenever(delegateTask.id).thenReturn("delegateTaskId")
         whenever(jsonSchemaDocumentId.toString()).thenReturn("documentId")
-        whenever(valueResolverService.resolveValues(any(), any())).thenReturn(emptyMap())
+        whenever(valueResolverService.resolveValues(any<String>(), any())).thenReturn(emptyMap())
         whenever(pluginService.getObjectMapper()).thenReturn(objectMapper)
 
         portaaltaakPlugin.createPortaalTaak(

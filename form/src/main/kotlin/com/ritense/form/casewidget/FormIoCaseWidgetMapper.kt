@@ -30,6 +30,7 @@ class FormIoCaseWidgetMapper : CaseWidgetMapper<FormIoCaseWidget, FormIoCaseWidg
         width = entity.width,
         highContrast = entity.highContrast,
         actions = entity.actions,
+        topRightCorner = entity.topRightCorner,
         properties = entity.properties
     )
 

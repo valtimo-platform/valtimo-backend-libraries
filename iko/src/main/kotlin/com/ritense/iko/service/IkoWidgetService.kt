@@ -20,12 +20,8 @@ import com.ritense.iko.domain.IkoTabWidget
 import com.ritense.iko.domain.IkoTabWidgetId
 import com.ritense.iko.repository.IkoTabWidgetRepository
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import com.ritense.valueresolver.ValueResolverContextKey.Companion.IKO_DATA_AGGREGATE_KEY
-import com.ritense.valueresolver.ValueResolverContextKey.Companion.TAB_KEY
-import com.ritense.valueresolver.ValueResolverContextKey.Companion.WIDGET_KEY
 import com.ritense.widget.domain.Widget
 import com.ritense.widget.service.WidgetService
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -88,16 +84,10 @@ class IkoWidgetService(
         ikoDataAggregateKey: String,
         tabKey: String,
         widgetKey: String,
-        context: Map<String, String>,
-        pageable: Pageable
+        properties: Map<String, Any>,
     ): Any? {
         val widget = getByKey(ikoDataAggregateKey, tabKey, widgetKey)
-        val contextMap = context + mapOf(
-            IKO_DATA_AGGREGATE_KEY to ikoDataAggregateKey,
-            TAB_KEY to tabKey,
-            WIDGET_KEY to widgetKey,
-        )
-        return widgetService.getWidgetData(widget, contextMap, pageable)
+        return widgetService.getWidgetData(widget, properties)
     }
 
 }

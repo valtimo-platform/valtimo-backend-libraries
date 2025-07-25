@@ -1,9 +1,0 @@
-{
-    "ikoDataAggregateKey": "persoon",
-    "ikoDataRequests": [
-        {
-            "key": "persoon",
-            "title": "Zoek persoon"
-        }
-    ]
-}

@@ -174,18 +174,18 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
                     tabKey,
                     widgets = listOf(
                         TestCaseWidgetTabWidgetDto(
-                            "widget-2",
-                            "Widget 2",
-                            2,
-                            true,
-                            TestCaseWidgetProperties("test123")
+                            key = "widget-2",
+                            title = "Widget 2",
+                            width = 2,
+                            highContrast = true,
+                            properties = TestCaseWidgetProperties("test123")
                         ),
                         TestCaseWidgetTabWidgetDto(
-                            "widget-1",
-                            "Widget 1",
-                            1,
-                            false,
-                            TestCaseWidgetProperties("test123")
+                            key = "widget-1",
+                            title = "Widget 1",
+                            width = 1,
+                            highContrast = false,
+                            properties = TestCaseWidgetProperties("test123")
                         )
                     )
                 )

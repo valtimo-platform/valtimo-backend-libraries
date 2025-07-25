@@ -16,28 +16,34 @@
 
 package com.ritense.widget.fields
 
-import com.ritense.valueresolver.IkoValueResolverService
+import com.ritense.valueresolver.ValueResolverService
 import com.ritense.widget.WidgetDataProvider
-import org.springframework.data.domain.Pageable
+import com.ritense.widget.domain.RedirectWidgetAction
 
 class FieldsWidgetDataProvider(
-    private val valueResolverService: IkoValueResolverService,
+    private val valueResolverService: ValueResolverService,
 ) : WidgetDataProvider<FieldsWidget> {
 
     override fun supportedWidgetType() = FieldsWidget::class.java
 
-    override fun getData(widget: FieldsWidget, context: Map<String, Any?>, pageable: Pageable): Any {
-        val valueSet = widget.properties.columns.flatMap { column ->
+    override fun getData(widget: FieldsWidget, properties: Map<String, Any>): Any {
+        val unresolvedColumnValues = widget.properties.columns.flatMap { column ->
             column.map { field -> field.value }
-        }.toSet()
+        }
 
-        val resolvedValues = valueResolverService.resolveValues(context, valueSet, pageable)
+        val unresolvedValues = unresolvedColumnValues.toSet() + widget.getUnresolvedActionValues()
+        val resolvedValues = valueResolverService.resolveValues(properties, unresolvedValues)
 
-        return widget.properties.columns.flatMap { column ->
+        val widgetColumnData = widget.properties.columns.flatMap { column ->
             column.map { field ->
                 field.key to resolvedValues[field.value]
             }
         }.toMap()
+
+        val redirectPathData = widget.getWidgetActions<RedirectWidgetAction>()
+            .associate { action -> action.redirectPath to action.getResolvedRedirectPath(resolvedValues) }
+
+        return widgetColumnData + redirectPathData
     }
 
 }

@@ -89,7 +89,7 @@ internal class IkoWidgetResourceTest {
 
     @Test
     fun `should get iko widget data`() {
-        whenever(service.getWidgetData(eq("klant"), eq("general"), eq("general"), any(), any()))
+        whenever(service.getWidgetData(eq("klant"), eq("general"), eq("general"), any()))
             .thenReturn(objectMapper.readTree("""{"bsn":"000000000"}"""))
 
         mockMvc.perform(

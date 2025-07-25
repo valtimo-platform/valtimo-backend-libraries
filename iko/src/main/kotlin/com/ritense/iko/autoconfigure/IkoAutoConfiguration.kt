@@ -22,36 +22,35 @@ import com.ritense.iko.IkoServerRepository
 import com.ritense.iko.IkoValueResolverFactory
 import com.ritense.iko.authorization.IkoDataAggregateSpecificationFactory
 import com.ritense.iko.client.IkoClient
-import com.ritense.iko.importer.IkoRepositoryConfigImporter
 import com.ritense.iko.importer.IkoDataAggregateImporter
 import com.ritense.iko.importer.IkoDataRequestImporter
 import com.ritense.iko.importer.IkoListColumnImporter
+import com.ritense.iko.importer.IkoRepositoryConfigImporter
 import com.ritense.iko.importer.IkoSearchFieldImporter
 import com.ritense.iko.importer.IkoTabImporter
 import com.ritense.iko.importer.IkoWidgetImporter
 import com.ritense.iko.plugin.IkoPluginFactory
-import com.ritense.iko.repository.IkoRepositoryConfigRepository
 import com.ritense.iko.repository.IkoDataAggregateListColumnRepository
 import com.ritense.iko.repository.IkoDataAggregateRepository
 import com.ritense.iko.repository.IkoDataAggregateTabRepository
 import com.ritense.iko.repository.IkoDataRequestRepository
 import com.ritense.iko.repository.IkoDataRequestSearchFieldRepository
+import com.ritense.iko.repository.IkoRepositoryConfigRepository
 import com.ritense.iko.repository.IkoTabWidgetRepository
 import com.ritense.iko.security.config.IkoHttpSecurityConfigurer
-import com.ritense.iko.service.IkoRepositoryService
 import com.ritense.iko.service.IkoDataAggregateService
 import com.ritense.iko.service.IkoDataRequestService
 import com.ritense.iko.service.IkoListColumnService
+import com.ritense.iko.service.IkoRepositoryService
 import com.ritense.iko.service.IkoSearchFieldService
 import com.ritense.iko.service.IkoTabService
 import com.ritense.iko.service.IkoWidgetService
-import com.ritense.iko.valueresolver.IkoValueResolverServiceImpl
-import com.ritense.iko.web.rest.IkoRepositoryManagementResource
 import com.ritense.iko.web.rest.IkoDataAggregateManagementResource
 import com.ritense.iko.web.rest.IkoDataAggregateResource
 import com.ritense.iko.web.rest.IkoDataRequestManagementResource
 import com.ritense.iko.web.rest.IkoDataRequestResource
 import com.ritense.iko.web.rest.IkoListColumnManagementResource
+import com.ritense.iko.web.rest.IkoRepositoryManagementResource
 import com.ritense.iko.web.rest.IkoSearchFieldManagementResource
 import com.ritense.iko.web.rest.IkoTabManagementResource
 import com.ritense.iko.web.rest.IkoTabResource
@@ -64,7 +63,6 @@ import com.ritense.tab.service.TabService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.contract.iko.IkoRepository
-import com.ritense.valueresolver.ValueResolverService
 import com.ritense.widget.service.WidgetService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -427,18 +425,6 @@ class IkoAutoConfiguration {
         return IkoSearchFieldService(
             searchFieldService,
             ikoDataRequestSearchFieldRepository,
-        )
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(IkoValueResolverServiceImpl::class)
-    fun ikoValueResolverService(
-        valueResolverService: ValueResolverService,
-        valueResolverFactories: List<IkoValueResolverFactory>,
-    ): IkoValueResolverServiceImpl {
-        return IkoValueResolverServiceImpl(
-            valueResolverService,
-            valueResolverFactories,
         )
     }
 

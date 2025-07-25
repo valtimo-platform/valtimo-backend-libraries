@@ -19,6 +19,8 @@ package com.ritense.widget
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.valtimo.contract.annotation.AnnotatedClassResolver
 import com.ritense.widget.displayproperties.FieldDisplayProperties
+import com.ritense.widget.domain.WidgetAction
+import com.ritense.widget.domain.WidgetTopRightCorner
 import com.ritense.widget.web.rest.dto.WidgetDto
 import org.springframework.context.ApplicationContext
 
@@ -30,4 +32,12 @@ class WidgetAnnotatedClassResolver(context: ApplicationContext) : AnnotatedClass
     val widgetDisplayPropertiesClasses: List<Class<*>> = findClassesWithAnnotation<JsonTypeName>()
         .keys
         .filter { FieldDisplayProperties::class.java.isAssignableFrom(it) }
+
+    val widgetActionClasses: List<Class<*>> = findClassesWithAnnotation<JsonTypeName>()
+        .keys
+        .filter { WidgetAction::class.java.isAssignableFrom(it) }
+
+    val widgetTopRightCornerClasses: List<Class<*>> = findClassesWithAnnotation<JsonTypeName>()
+        .keys
+        .filter { WidgetTopRightCorner::class.java.isAssignableFrom(it) }
 }

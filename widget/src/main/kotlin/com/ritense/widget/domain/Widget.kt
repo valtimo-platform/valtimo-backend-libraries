@@ -59,9 +59,14 @@ abstract class Widget(
     @Column(name = "high_contrast", nullable = false)
     val highContrast: Boolean,
 
+    @Deprecated("13.1.0", ReplaceWith("topRightCorner"))
     @Type(value = JsonType::class)
     @Column(name = "actions", nullable = false)
-    val actions: List<WidgetAction> = emptyList(),
+    val actions: List<DeprecatedStartProcessWidgetAction> = emptyList(),
+
+    @Type(value = JsonType::class)
+    @Column(name = "top_right_corner", nullable = true)
+    val topRightCorner: WidgetTopRightCorner? = null,
 ) {
 
     init {
@@ -76,10 +81,21 @@ abstract class Widget(
         order: Int = this.order,
         width: Int = this.width,
         highContrast: Boolean = this.highContrast,
-        actions: List<WidgetAction> = this.actions,
+        actions: List<DeprecatedStartProcessWidgetAction> = this.actions,
+        topRightCorner: WidgetTopRightCorner? = this.topRightCorner,
     ): Widget
 
     abstract fun toDto(): WidgetDto
+
+    final inline fun <reified T : WidgetAction> getWidgetActions(): List<T> {
+        return topRightCorner?.let { if (it is WidgetButton && it.action is T) listOf(it.action as T) else null }
+            ?: emptyList()
+    }
+
+    fun getUnresolvedActionValues(): List<String> {
+        return getWidgetActions<RedirectWidgetAction>()
+            .flatMap { action -> action.getUnresolvedValues() }
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -92,6 +108,7 @@ abstract class Widget(
         if (width != other.width) return false
         if (highContrast != other.highContrast) return false
         if (actions != other.actions) return false
+        if (topRightCorner != other.topRightCorner) return false
 
         return true
     }
@@ -105,6 +122,7 @@ abstract class Widget(
             width,
             highContrast,
             actions,
+            topRightCorner,
         )
     }
 

@@ -20,7 +20,6 @@ import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.iko.service.IkoDataAggregateService
 import com.ritense.iko.web.rest.request.IkoDataAggregateCreateRequest
 import com.ritense.iko.web.rest.request.IkoDataAggregateUpdateRequest
-import com.ritense.iko.web.rest.response.IkoDataAggregateListResponse
 import com.ritense.iko.web.rest.response.IkoDataAggregateResponse
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
@@ -61,13 +60,13 @@ class IkoDataAggregateManagementResource(
         @RequestParam key: String?,
         @RequestParam title: String?,
         @PageableDefault(sort = ["title"], direction = ASC) pageable: Pageable
-    ): ResponseEntity<Page<IkoDataAggregateListResponse>> {
+    ): ResponseEntity<Page<IkoDataAggregateResponse>> {
         val ikoDataAggregates = service.findAll(
             key = key,
             title = title,
             pageable = pageable
         )
-        return ResponseEntity.ok(ikoDataAggregates.map { IkoDataAggregateListResponse.from(it) })
+        return ResponseEntity.ok(ikoDataAggregates.map { IkoDataAggregateResponse.from(it) })
     }
 
     @RunWithoutAuthorization

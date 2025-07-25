@@ -196,11 +196,11 @@ class CaseWidgetTabResourceIntTest @Autowired constructor(
                 tabKey,
                 widgets = listOf(
                     TestCaseWidgetTabWidgetDto(
-                        widgetKey,
-                        "My widget",
-                        1,
-                        true,
-                        TestCaseWidgetProperties(
+                        key = widgetKey,
+                        title = "My widget",
+                        width = 1,
+                        highContrast = true,
+                        properties = TestCaseWidgetProperties(
                             displayProperties = CurrencyFieldDisplayProperties(
                                 currencyCode = "EUR"
                             )

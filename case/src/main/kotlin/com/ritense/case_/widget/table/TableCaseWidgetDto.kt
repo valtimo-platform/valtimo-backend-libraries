@@ -19,6 +19,7 @@ package com.ritense.case_.widget.table
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.case_.rest.dto.CaseWidgetAction
 import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
+import com.ritense.widget.domain.WidgetTopRightCorner
 import jakarta.validation.Valid
 
 @JsonTypeName("table")
@@ -28,5 +29,6 @@ data class TableCaseWidgetDto(
     override val width: Int,
     override val highContrast: Boolean,
     override val actions: List<CaseWidgetAction>? = emptyList(),
+    override val topRightCorner: WidgetTopRightCorner? = null,
     @field:Valid val properties: TableWidgetProperties
 ) : CaseWidgetTabWidgetDto

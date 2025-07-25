@@ -73,6 +73,23 @@ interface ValueResolverService {
     ): Map<String, Any?>
 
     /**
+     * This method provides a way of resolving requestedValues into values using defined resolvers.
+     * requestedValues are typically prefixed, like 'pv:propertyName'.
+     * If not, a resolver should be configured to handle 'pv' prefixes.
+     *
+     * A requestedValue can only be resolved when a resolver for that prefix is configured.
+     * An unresolved requestedValue will not be included in the returned map.
+     *
+     * @param properties A map containing additional details about the value that needs to be resolved.
+     * @param requestedValues The requestedValues that should be resolved into values.
+     * @return A map where the key is the requestedValue, and the value the resolved value.
+     */
+    fun resolveValues(
+        properties: Map<String, Any>,
+        requestedValues: Collection<String>
+    ): Map<String, Any?> = throw NotImplementedError()
+
+    /**
      * Handle values. Usually by storing them somewhere.
      *
      * @param processInstanceId The Operaton processInstanceId these values belong to

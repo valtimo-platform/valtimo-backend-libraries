@@ -1,0 +1,72 @@
+[
+    {
+        "caseDefinitionKey": "bijstand",
+        "caseDefinitionVersionTag": "1.0.0",
+        "key": "summary",
+        "widgets": [
+            {
+                "type": "fields",
+                "key": "aanvrager",
+                "title": "Aanvrager",
+                "width": 1,
+                "highContrast": true,
+                "properties": {
+                    "columns": [
+                        [
+                            {
+                                "key": "naam",
+                                "title": "Naam",
+                                "value": "iko:/persoon/naam/volledigeNaam?ikoDataAggregateKey=klant&id=doc:bsn",
+                                "displayProperties": {
+                                    "type": "text",
+                                    "hideWhenEmpty": false
+                                }
+                            },
+                            {
+                                "key": "geboortedatum",
+                                "title": "Geboortedatum",
+                                "value": "iko:/persoon/geboorte/datum/datum?ikoDataAggregateKey=klant&id=doc:bsn",
+                                "displayProperties": {
+                                    "type": "date",
+                                    "format": "DD-MM-YYYY",
+                                    "hideWhenEmpty": false
+                                }
+                            },
+                            {
+                                "key": "burgerservicenummer",
+                                "title": "Burgerservicenummer",
+                                "value": "doc:bsn",
+                                "displayProperties": {
+                                    "type": "text",
+                                    "hideWhenEmpty": false
+                                }
+                            }
+                        ]
+                    ]
+                }
+            },
+            {
+                "type": "fields",
+                "key": "vraag",
+                "title": "Vraag",
+                "width": 1,
+                "highContrast": false,
+                "properties": {
+                    "columns": [
+                        [
+                            {
+                                "key": "vraag",
+                                "title": "Vraag",
+                                "value": "doc:vraag",
+                                "displayProperties": {
+                                    "type": "text",
+                                    "hideWhenEmpty": false
+                                }
+                            }
+                        ]
+                    ]
+                }
+            }
+        ]
+    }
+]

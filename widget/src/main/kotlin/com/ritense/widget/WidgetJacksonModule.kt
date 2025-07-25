@@ -26,7 +26,10 @@ class WidgetJacksonModule(
         super.setupModule(context)
 
         context.registerSubtypes(
-            *(annotatedClassResolver.widgetDtoClasses + annotatedClassResolver.widgetDisplayPropertiesClasses)
+            *(annotatedClassResolver.widgetDtoClasses +
+                annotatedClassResolver.widgetDisplayPropertiesClasses +
+                annotatedClassResolver.widgetActionClasses +
+                annotatedClassResolver.widgetTopRightCornerClasses)
                 .map { NamedType(it) }
                 .toTypedArray()
         )

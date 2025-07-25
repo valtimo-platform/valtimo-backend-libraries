@@ -20,7 +20,6 @@ import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.iko.service.IkoDataRequestService
 import com.ritense.iko.web.rest.request.IkoDataRequestCreateRequest
 import com.ritense.iko.web.rest.request.IkoDataRequestUpdateRequest
-import com.ritense.iko.web.rest.response.IkoDataRequestListResponse
 import com.ritense.iko.web.rest.response.IkoDataRequestResponse
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
@@ -54,11 +53,11 @@ class IkoDataRequestManagementResource(
     @GetMapping("/v1/iko-data-aggregate/{ikoDataAggregateKey}/data-request")
     fun getIkoDataRequestsForManagement(
         @PathVariable ikoDataAggregateKey: String,
-    ): ResponseEntity<List<IkoDataRequestListResponse>> {
+    ): ResponseEntity<List<IkoDataRequestResponse>> {
         val ikoDataRequests = service.findAll(
             ikoDataAggregateKey = ikoDataAggregateKey,
         )
-        return ResponseEntity.ok(ikoDataRequests.map { IkoDataRequestListResponse.from(it) })
+        return ResponseEntity.ok(ikoDataRequests.map { IkoDataRequestResponse.from(it) })
     }
 
     @RunWithoutAuthorization

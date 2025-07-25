@@ -49,4 +49,5 @@
     <include file="changelog/20250214-case-major13-upgrade.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20250326-draft-system.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20250405-case-definition-draft.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20250725-add-columns-to-widget.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

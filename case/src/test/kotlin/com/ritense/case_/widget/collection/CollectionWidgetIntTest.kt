@@ -162,7 +162,12 @@ class CollectionWidgetIntTest @Autowired constructor(
                 key = tabKey,
                 widgets = listOf(
                     CollectionCaseWidgetDto(
-                        widgetKey, "My widget", 1, false, null, CollectionWidgetProperties(
+                        key = widgetKey,
+                        title = "My widget",
+                        width = 1,
+                        highContrast = false,
+                        actions = null,
+                        properties = CollectionWidgetProperties(
                             collection = "test:myCollection",
                             defaultPageSize = 5,
                             title = CollectionWidgetProperties.TitleField(

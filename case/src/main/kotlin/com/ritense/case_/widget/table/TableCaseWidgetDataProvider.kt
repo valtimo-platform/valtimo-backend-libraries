@@ -27,7 +27,8 @@ import com.ritense.case_.widget.CaseWidgetDataProvider
 import com.ritense.case_.widget.exception.InvalidCollectionException
 import com.ritense.case_.widget.exception.InvalidCollectionNodeTypeException
 import com.ritense.valueresolver.ValueResolverService
-import org.springframework.data.domain.Page
+import com.ritense.widget.PageWithData
+import com.ritense.widget.domain.RedirectWidgetAction
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.util.UUID
@@ -39,13 +40,19 @@ class TableCaseWidgetDataProvider(
 
     override fun supportedWidgetType() = TableCaseWidget::class.java
 
-    override fun getData(documentId: UUID, widgetTab: CaseWidgetTab, widget: TableCaseWidget, pageable: Pageable): Page<Map<String, Any?>> {
-        val resolvedCollection =
-            valueResolverService.resolveValues(documentId.toString(), listOf(widget.properties.collection))[widget.properties.collection]
-        val collectionNode = objectMapper.valueToTree<JsonNode>(resolvedCollection)
+    override fun getData(documentId: UUID, widgetTab: CaseWidgetTab, widget: TableCaseWidget, pageable: Pageable): PageWithData<Map<String, Any?>> {
+        val resolvedValues = valueResolverService.resolveValues(
+            documentId.toString(),
+            widget.getUnresolvedActionValues() + widget.properties.collection
+        )
+
+        val redirectPathData = widget.getWidgetActions<RedirectWidgetAction>()
+            .associate { action -> action.redirectPath to action.getResolvedRedirectPath(resolvedValues) }
+
+        val collectionNode = objectMapper.valueToTree<JsonNode>(resolvedValues[widget.properties.collection])
 
         if(collectionNode.isNull) {
-            return PageImpl(emptyList(), pageable, 0)
+            return PageWithData(PageImpl(emptyList(), pageable, 0), redirectPathData)
         }
 
         if (!collectionNode.isArray) {
@@ -80,7 +87,7 @@ class TableCaseWidgetDataProvider(
                 }
             }
 
-        return PageImpl(result, pageable, collectionNode.size().toLong())
+        return PageWithData(PageImpl(result, pageable, collectionNode.size().toLong()), redirectPathData)
     }
 
 

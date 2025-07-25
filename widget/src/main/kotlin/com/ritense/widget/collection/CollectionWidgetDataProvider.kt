@@ -22,36 +22,38 @@ import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.Option
-import com.ritense.valueresolver.IkoValueResolverService
+import com.ritense.valueresolver.ValueResolverPropertyKey.Companion.PAGEABLE
+import com.ritense.valueresolver.ValueResolverService
+import com.ritense.widget.PageWithData
 import com.ritense.widget.WidgetDataProvider
+import com.ritense.widget.domain.RedirectWidgetAction
 import com.ritense.widget.exception.InvalidCollectionException
 import com.ritense.widget.exception.InvalidCollectionNodeTypeException
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 
 class CollectionWidgetDataProvider(
     private val objectMapper: ObjectMapper,
-    private val valueResolverService: IkoValueResolverService,
+    private val valueResolverService: ValueResolverService,
 ) : WidgetDataProvider<CollectionWidget> {
 
     override fun supportedWidgetType() = CollectionWidget::class.java
 
-    override fun getData(
-        widget: CollectionWidget,
-        context: Map<String, Any?>,
-        pageable: Pageable
-    ): Page<CollectionWidgetDataResult> {
-        val resolvedCollection =
-            valueResolverService.resolveValues(
-                context,
-                listOf(widget.properties.collection),
-                pageable,
-            )[widget.properties.collection]
-        val collectionNode = objectMapper.valueToTree<JsonNode>(resolvedCollection)
+    override fun getData(widget: CollectionWidget, properties: Map<String, Any>): PageWithData<CollectionWidgetDataResult> {
+        val pageable = properties[PAGEABLE] as Pageable? ?: Pageable.ofSize(5)
+
+        val resolvedValues = valueResolverService.resolveValues(
+            properties,
+            widget.getUnresolvedActionValues() + widget.properties.collection
+        )
+
+        val redirectPathData = widget.getWidgetActions<RedirectWidgetAction>()
+            .associate { action -> action.redirectPath to action.getResolvedRedirectPath(resolvedValues) }
+
+        val collectionNode = objectMapper.valueToTree<JsonNode>(resolvedValues[widget.properties.collection])
 
         if (collectionNode.isNull) {
-            return PageImpl(emptyList(), pageable, 0)
+            return PageWithData(PageImpl(emptyList(), pageable, 0), redirectPathData)
         }
 
         if (!collectionNode.isArray) {
@@ -75,7 +77,7 @@ class CollectionWidgetDataProvider(
                     }
                 )
             }
-        return PageImpl(result, pageable, collectionNode.size().toLong())
+        return PageWithData(PageImpl(result, pageable, collectionNode.size().toLong()), redirectPathData)
     }
 
     private fun resolveValueRef(valueRef: String, child: JsonNode): Any? {

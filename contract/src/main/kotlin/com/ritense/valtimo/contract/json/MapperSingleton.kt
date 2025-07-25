@@ -19,8 +19,11 @@ package com.ritense.valtimo.contract.json
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
 import com.ritense.valtimo.contract.json.serializer.PageSerializer
+import com.ritense.valtimo.contract.json.serializer.SortOrderSerializer
+import com.ritense.valtimo.contract.json.serializer.SortSerializer
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.Sort
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import java.time.format.DateTimeFormatter
 
@@ -33,6 +36,8 @@ object MapperSingleton {
         builder.serializers(LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)))
         builder.defaultViewInclusion(false)
         builder.serializerByType(Page::class.java, PageSerializer())
+        builder.serializerByType(Sort::class.java, SortSerializer())
+        builder.serializerByType(Sort.Order::class.java, SortOrderSerializer())
     }
 
     private var mapper: ObjectMapper

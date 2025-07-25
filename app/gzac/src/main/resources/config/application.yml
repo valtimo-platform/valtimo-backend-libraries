@@ -238,6 +238,7 @@ valtimo:
             enabled: true
     import:
         whitelistedPaths: "VALTIMO_.*"
+    includeDocumentContentInResponse: true
 
 spring-actuator:
     username: admin

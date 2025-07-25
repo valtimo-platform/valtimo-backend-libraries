@@ -137,7 +137,12 @@ class FieldsWidgetIntTest @Autowired constructor(
                 key = tabKey,
                 widgets = listOf(
                     FieldsCaseWidgetDto(
-                        widgetKey, "My widget", 1, true, null, FieldsWidgetProperties(
+                        key = widgetKey,
+                        title = "My widget",
+                        width = 1,
+                        highContrast = true,
+                        actions = null,
+                        properties = FieldsWidgetProperties(
                             columns = listOf(
                                 listOf(
                                     FieldsWidgetProperties.Field(

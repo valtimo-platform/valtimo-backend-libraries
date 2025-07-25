@@ -17,6 +17,9 @@
 package com.ritense.valueresolver
 
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.valueresolver.ValueResolverPropertyKey.Companion.DOCUMENT_ID
+import com.ritense.valueresolver.ValueResolverPropertyKey.Companion.PROCESS_INSTANCE_ID
+import com.ritense.valueresolver.ValueResolverPropertyKey.Companion.VARIABLE_SCOPE
 import com.ritense.valueresolver.exception.ValueResolverValidationException
 import org.operaton.bpm.engine.delegate.VariableScope
 import java.util.UUID
@@ -50,7 +53,7 @@ interface ValueResolverFactory {
      * @return a resolver that handles one requestedValue at a time within the same context.
      */
     fun createResolver(processInstanceId: String, variableScope: VariableScope)
-        : Function<String, Any?>
+        : Function<String, Any?> = throw NotImplementedError()
 
     /**
      * This creates a property validator within a certain context.
@@ -84,14 +87,44 @@ interface ValueResolverFactory {
      * @return a resolver that handles one requestedValue at a time within the same context.
      */
     fun createResolver(documentId: String)
-        : Function<String, Any?>
+        : Function<String, Any?> = throw NotImplementedError()
+
+    /**
+     * This creates a requestedValue resolver within a certain context.
+     * The returned resolver can be called multiple times within the same context for different requestedValues.
+     *
+     * We can use this strategy to limit the amount of calls to an external source, which is a performance benefit.
+     *
+     * The requestedValue argument of the returned resolver is already stripped of the prefix:
+     * 'someProperty' will be passed as an argument when the original requestedValue was 'pv:someProperty'
+     *
+     * @param properties A map containing additional details about the value that needs to be resolved.
+     *
+     * @return a resolver that handles one requestedValue at a time within the same context.
+     */
+    fun createResolver(properties: Map<String, Any>): Function<String, Any?> {
+        val documentId = properties[DOCUMENT_ID] as String?
+        if (documentId != null) {
+            return createResolver(documentId)
+        }
+
+        val processInstanceId = properties[PROCESS_INSTANCE_ID] as String?
+        val variableScope = properties[VARIABLE_SCOPE] as VariableScope?
+        if (processInstanceId != null && variableScope != null) {
+            return createResolver(processInstanceId, variableScope)
+        }
+
+        throw NotImplementedError()
+    }
 
     /**
      * @param processInstanceId The Operaton processInstanceId these values belong to
      * @param variableScope An implementation of VariableScope.
      * @param values The values to handle. i.e. mapOf(doc:add:/firstname to John)
      */
-    fun handleValues(processInstanceId: String, variableScope: VariableScope?, values: Map<String, Any?>)
+    fun handleValues(processInstanceId: String, variableScope: VariableScope?, values: Map<String, Any?>) {
+        throw NotImplementedError()
+    }
 
     /**
      * Handle values for a case where a process is not relevant or present in the current context.

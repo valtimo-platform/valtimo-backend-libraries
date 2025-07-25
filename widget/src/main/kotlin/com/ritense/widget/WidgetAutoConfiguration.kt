@@ -18,7 +18,7 @@ package com.ritense.widget
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
-import com.ritense.valueresolver.IkoValueResolverService
+import com.ritense.valueresolver.ValueResolverService
 import com.ritense.widget.collection.CollectionWidget
 import com.ritense.widget.collection.CollectionWidgetDataProvider
 import com.ritense.widget.custom.CustomWidget
@@ -92,21 +92,21 @@ class WidgetAutoConfiguration {
     @ConditionalOnMissingBean(FieldsWidgetDataProvider::class)
     @Bean
     fun fieldsWidgetDataProvider(
-        valueResolverService: IkoValueResolverService,
+        valueResolverService: ValueResolverService,
     ) = FieldsWidgetDataProvider(valueResolverService)
 
     @ConditionalOnMissingBean(TableWidgetDataProvider::class)
     @Bean
     fun tableWidgetDataProvider(
         objectMapper: ObjectMapper,
-        valueResolverService: IkoValueResolverService,
+        valueResolverService: ValueResolverService,
     ) = TableWidgetDataProvider(objectMapper, valueResolverService)
 
     @ConditionalOnMissingBean(CollectionWidgetDataProvider::class)
     @Bean
     fun collectionWidgetDataProvider(
         objectMapper: ObjectMapper,
-        valueResolverService: IkoValueResolverService,
+        valueResolverService: ValueResolverService,
     ) = CollectionWidgetDataProvider(objectMapper, valueResolverService)
 
 }

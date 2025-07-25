@@ -21,7 +21,6 @@ import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.widget.WidgetDataProvider
 import com.ritense.widget.domain.Widget
 import com.ritense.widget.repository.WidgetRepository
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -56,11 +55,11 @@ class WidgetService(
         findById(id) ?: error("Widget $id not found")
 
     @Transactional
-    fun getWidgetData(widget: Widget, context: Map<String, Any?>, pageable: Pageable): Any? {
+    fun getWidgetData(widget: Widget, properties: Map<String, Any>): Any? {
         return runWithoutAuthorization {
             widgetDataProviders
                 .first { provider -> provider.supportedWidgetType().isAssignableFrom(widget::class.java) }
-                .getData(widget, context, pageable)
+                .getData(widget, properties)
         }
     }
 }

@@ -19,6 +19,10 @@ package com.ritense.iko.web.rest
 import com.ritense.iko.service.IkoWidgetService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType
+import com.ritense.valueresolver.ValueResolverPropertyKey.Companion.IKO_DATA_AGGREGATE_KEY
+import com.ritense.valueresolver.ValueResolverPropertyKey.Companion.PAGEABLE
+import com.ritense.valueresolver.ValueResolverPropertyKey.Companion.TAB_KEY
+import com.ritense.valueresolver.ValueResolverPropertyKey.Companion.WIDGET_KEY
 import com.ritense.widget.web.rest.dto.WidgetDto
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
@@ -49,17 +53,17 @@ class IkoWidgetResource(
         @PathVariable ikoDataAggregateKey: String,
         @PathVariable tabKey: String,
         @PathVariable widgetKey: String,
-        @RequestParam context: Map<String, String>,
+        @RequestParam properties: Map<String, String>,
         @PageableDefault(size = 5) pageable: Pageable,
     ): ResponseEntity<Any?> {
+        val allProperties = properties + mapOf(
+            IKO_DATA_AGGREGATE_KEY to ikoDataAggregateKey,
+            TAB_KEY to tabKey,
+            WIDGET_KEY to widgetKey,
+            PAGEABLE to pageable,
+        )
         return ResponseEntity.ok(
-            ikoWidgetService.getWidgetData(
-                ikoDataAggregateKey,
-                tabKey,
-                widgetKey,
-                context,
-                pageable
-            )
+            ikoWidgetService.getWidgetData(ikoDataAggregateKey, tabKey, widgetKey, allProperties)
         )
     }
 

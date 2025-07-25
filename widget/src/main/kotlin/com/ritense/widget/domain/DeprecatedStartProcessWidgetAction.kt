@@ -14,18 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.iko.web.rest.response
+package com.ritense.widget.domain
 
-import com.ritense.iko.domain.IkoDataRequest
-
-data class IkoDataRequestListResponse(
-    val key: String,
-    val title: String,
-) {
-    companion object {
-        fun from(entity: IkoDataRequest) = IkoDataRequestListResponse(
-            key = entity.id.key,
-            title = entity.title,
-        )
-    }
-}
+data class DeprecatedStartProcessWidgetAction (
+    val name: String,
+    val processDefinitionKey: String,
+)

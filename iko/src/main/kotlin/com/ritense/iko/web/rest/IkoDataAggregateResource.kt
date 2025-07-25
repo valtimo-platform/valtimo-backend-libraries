@@ -17,7 +17,7 @@
 package com.ritense.iko.web.rest
 
 import com.ritense.iko.service.IkoDataAggregateService
-import com.ritense.iko.web.rest.response.IkoDataAggregateListResponse
+import com.ritense.iko.web.rest.response.IkoDataAggregateUserListResponse
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.data.domain.Page
@@ -42,12 +42,12 @@ class IkoDataAggregateResource(
         @RequestParam key: String?,
         @RequestParam title: String?,
         @PageableDefault(size = 10000, sort = ["title"], direction = ASC) pageable: Pageable
-    ): ResponseEntity<Page<IkoDataAggregateListResponse>> {
+    ): ResponseEntity<Page<IkoDataAggregateUserListResponse>> {
         val ikoDataAggregates = dataAggregateService.findAll(
             key = key,
             title = title,
             pageable = pageable,
         )
-        return ResponseEntity.ok(ikoDataAggregates.map { IkoDataAggregateListResponse.from(it) })
+        return ResponseEntity.ok(ikoDataAggregates.map { IkoDataAggregateUserListResponse.from(it) })
     }
 }

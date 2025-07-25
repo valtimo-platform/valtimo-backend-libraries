@@ -8,6 +8,14 @@
             "title": "Klant",
             "width": 1,
             "highContrast": true,
+            "topRightCorner": {
+                "type": "button",
+                "title": "IKO >",
+                "action": {
+                    "type": "redirect",
+                    "redirectPath": "/iko/klant/bsn/details/${iko:/persoon/burgerservicenummer}"
+                }
+            },
             "properties": {
                 "columns": [
                     [
@@ -17,11 +25,6 @@
                             "value": "iko:/persoon/naam/volledigeNaam"
                         },
                         {
-                            "key": "bsn",
-                            "title": "BSN",
-                            "value": "iko:/persoon/burgerservicenummer"
-                        },
-                        {
                             "key": "geboortedatum",
                             "title": "Geboortedatum",
                             "value": "iko:/persoon/geboorte/datum/datum",
@@ -29,6 +32,11 @@
                                 "type": "date",
                                 "format": "DD-MM-YYYY"
                             }
+                        },
+                        {
+                            "key": "bsn",
+                            "title": "BSN",
+                            "value": "iko:/persoon/burgerservicenummer"
                         }
                     ]
                 ]

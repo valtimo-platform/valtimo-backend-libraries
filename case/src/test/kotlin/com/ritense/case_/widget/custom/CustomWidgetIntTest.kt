@@ -101,9 +101,12 @@ class CustomWidgetIntTest @Autowired constructor(
                 key = tabKey,
                 widgets = listOf(
                     CustomCaseWidgetDto(
-                        widgetKey, "Custom test", 2, false, null, CustomWidgetProperties(
-                            "test-component-key"
-                        )
+                        key = widgetKey,
+                        title = "Custom test",
+                        width = 2,
+                        highContrast = false,
+                        actions = null,
+                        properties = CustomWidgetProperties("test-component-key")
                     )
                 )
             )
