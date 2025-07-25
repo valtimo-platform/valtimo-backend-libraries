@@ -40,12 +40,6 @@ class ProcessLinkExporterIntTest @Autowired constructor(
     private val listener: ProcessLinkDeploymentApplicationReadyEventListener
 ) : BaseIntegrationTest() {
 
-
-    @BeforeEach
-    fun before() {
-        listener.deployProcessLinks()
-    }
-
     @Test
     fun `should export process links`(): Unit = runWithoutAuthorization {
         val processDefinitionKey = "auto-deploy-process-link-with-long-key"

@@ -156,16 +156,12 @@ class DashboardService(
         )
     }
 
+    @Transactional
     fun updateWidgetConfigurations(
         dashboardKey: String,
         widgetConfigurationUpdateDtos: List<WidgetConfigurationUpdateRequestDto>
     ): List<WidgetConfiguration> {
         denyAuthorization()
-        widgetConfigurationUpdateDtos.forEach {
-            if (!widgetConfigurationRepository.existsByDashboardKeyAndKey(dashboardKey, it.key)) {
-                throw RuntimeException("Failed to update widget configuration. Widget configuration with key '${it.key}' and dashboard '$dashboardKey' doesn't exist.")
-            }
-        }
 
         val dashboard = getDashboard(dashboardKey)
         val widgetConfigurations = widgetConfigurationUpdateDtos.mapIndexed { index, widgetConfigurationUpdateDto ->
@@ -181,6 +177,8 @@ class DashboardService(
                 url = widgetConfigurationUpdateDto.url
             )
         }
+
+        widgetConfigurationRepository.deleteByDashboardKeyAndKeyNotIn(dashboard.key, widgetConfigurations.map { it.key  })
 
         return widgetConfigurationRepository.saveAll(widgetConfigurations)
     }

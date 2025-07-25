@@ -271,6 +271,7 @@ class CaseDefinitionService(
             .save(CaseListColumnMapper.toEntity(caseDefinitionKey, caseListColumnDto))
     }
 
+    @Transactional
     fun updateListColumns(
         caseDefinitionName: String,
         caseListColumnDtoList: List<CaseListColumnDto>
@@ -280,12 +281,18 @@ class CaseDefinitionService(
         runWithoutAuthorization {
             validators[Operation.UPDATE]!!.validate(caseDefinitionName, caseListColumnDtoList)
         }
-        var order = 0
-        caseListColumnDtoList.forEach { caseListColumnDto ->
-            caseListColumnDto.order = order++
+
+        caseListColumnDtoList.forEachIndexed { index, dto ->
+            dto.order = index
         }
-        caseDefinitionListColumnRepository
-            .saveAll(CaseListColumnMapper.toEntityList(caseDefinitionName, caseListColumnDtoList))
+
+        val entities = CaseListColumnMapper.toEntityList(caseDefinitionName, caseListColumnDtoList)
+
+        val incomingKeys = entities.map { it.id.key }
+
+        caseDefinitionListColumnRepository.deleteByIdCaseDefinitionKey(caseDefinitionName)
+
+        caseDefinitionListColumnRepository.saveAll(entities)
     }
 
 
