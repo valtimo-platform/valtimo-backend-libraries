@@ -178,9 +178,11 @@ class IkoAutoConfiguration {
     @ConditionalOnMissingBean(IkoDataRequestManagementResource::class)
     fun ikoDataRequestManagementResource(
         service: IkoDataRequestService,
+        ikoDataAggregateService: IkoDataAggregateService,
     ): IkoDataRequestManagementResource {
         return IkoDataRequestManagementResource(
             service,
+            ikoDataAggregateService,
         )
     }
 
@@ -323,10 +325,12 @@ class IkoAutoConfiguration {
     fun ikoDataRequestImporter(
         objectMapper: ObjectMapper,
         ikoDataRequestService: IkoDataRequestService,
+        ikoDataAggregateService: IkoDataAggregateService,
     ): IkoDataRequestImporter {
         return IkoDataRequestImporter(
             objectMapper,
             ikoDataRequestService,
+            ikoDataAggregateService,
         )
     }
 

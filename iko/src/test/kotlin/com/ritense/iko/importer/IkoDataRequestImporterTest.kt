@@ -17,6 +17,7 @@
 package com.ritense.iko.importer
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.iko.service.IkoDataAggregateService
 import com.ritense.iko.service.IkoDataRequestService
 import com.ritense.importer.ValtimoImportTypes.Companion.IKO_DATA_AGGREGATE
 import org.assertj.core.api.Assertions.assertThat
@@ -30,12 +31,13 @@ import org.mockito.junit.jupiter.MockitoExtension
 class IkoDataRequestImporterTest(
     @Mock private val objectMapper: ObjectMapper,
     @Mock private val ikoDataRequestService: IkoDataRequestService,
+    @Mock private val ikoDataAggregateService: IkoDataAggregateService,
 ) {
     private lateinit var importer: IkoDataRequestImporter
 
     @BeforeEach
     fun before() {
-        importer = IkoDataRequestImporter(objectMapper, ikoDataRequestService)
+        importer = IkoDataRequestImporter(objectMapper, ikoDataRequestService, ikoDataAggregateService)
     }
 
     @Test

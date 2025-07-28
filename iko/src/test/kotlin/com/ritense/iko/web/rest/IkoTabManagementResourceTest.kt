@@ -68,27 +68,27 @@ internal class IkoTabManagementResourceTest {
         mockMvc.perform(get("/api/management/v1/iko-data-aggregate/{dataAggregateKey}/tab", "klant"))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].key").value("naam"))
-            .andExpect(jsonPath("$[0].title").value("Naam"))
+            .andExpect(jsonPath("$[0].key").value("overview"))
+            .andExpect(jsonPath("$[0].title").value("Overview"))
             .andExpect(jsonPath("$[0].type").value("widgets"))
     }
 
     @Test
     fun `should get tab by key`() {
-        whenever(service.getByKey("klant", "naam"))
+        whenever(service.getByKey("klant", "overview"))
             .thenReturn(tab())
 
         mockMvc.perform(
             get(
                 "/api/management/v1/iko-data-aggregate/{dataAggregateKey}/tab/{tabKey}",
                 "klant",
-                "naam"
+                "overview"
             )
         )
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.key").value("naam"))
-            .andExpect(jsonPath("$.title").value("Naam"))
+            .andExpect(jsonPath("$.key").value("overview"))
+            .andExpect(jsonPath("$.title").value("Overview"))
             .andExpect(jsonPath("$.type").value("widgets"))
     }
 
@@ -105,20 +105,47 @@ internal class IkoTabManagementResourceTest {
             post(
                 "/api/management/v1/iko-data-aggregate/{dataAggregateKey}/tab/{tabKey}",
                 "klant",
-                "naam"
+                "overview"
             )
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(APPLICATION_JSON_VALUE)
         )
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.key").value("naam"))
-            .andExpect(jsonPath("$.title").value("Naam"))
+            .andExpect(jsonPath("$.key").value("overview"))
+            .andExpect(jsonPath("$.title").value("Overview"))
             .andExpect(jsonPath("$.type").value("widgets"))
     }
 
     @Test
     fun `should update tab`() {
+        val tab = tab()
+        val request = IkoTabUpdateRequest(
+                tab.key,
+                tab.title,
+                tab.type,
+        )
+        whenever(service.findByKey("klant", "overview"))
+            .thenReturn(tab)
+        whenever(service.update(eq("klant"), any())).thenReturn(tab)
+        mockMvc.perform(
+            put(
+                "/api/management/v1/iko-data-aggregate/{dataAggregateKey}/tab/{key}",
+                "klant",
+                "overview"
+            )
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(APPLICATION_JSON_VALUE)
+        )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.key").value("overview"))
+            .andExpect(jsonPath("$.title").value("Overview"))
+            .andExpect(jsonPath("$.type").value("widgets"))
+    }
+
+    @Test
+    fun `should update tab order`() {
         val tab = tab()
         val request = listOf(
             IkoTabUpdateRequest(
@@ -128,21 +155,20 @@ internal class IkoTabManagementResourceTest {
             )
         )
         whenever(service.findAllTabsByIkoDataAggregateKey("klant"))
-            .thenReturn(listOf(tab()))
+            .thenReturn(listOf(tab))
         whenever(service.update(eq("klant"), any())).thenReturn(tab)
         mockMvc.perform(
             put(
                 "/api/management/v1/iko-data-aggregate/{dataAggregateKey}/tab",
-                "klant",
-                "naam"
+                "klant"
             )
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(APPLICATION_JSON_VALUE)
         )
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].key").value("naam"))
-            .andExpect(jsonPath("$[0].title").value("Naam"))
+            .andExpect(jsonPath("$[0].key").value("overview"))
+            .andExpect(jsonPath("$[0].title").value("Overview"))
             .andExpect(jsonPath("$[0].type").value("widgets"))
     }
 
@@ -152,7 +178,7 @@ internal class IkoTabManagementResourceTest {
             delete(
                 "/api/management/v1/iko-data-aggregate/{dataAggregateKey}/tab/{tabKey}",
                 "klant",
-                "naam"
+                "overview"
             )
         )
             .andDo(print())
@@ -160,8 +186,8 @@ internal class IkoTabManagementResourceTest {
     }
 
     private fun tab() = Tab(
-        key = "naam",
-        title = "Naam",
+        key = "overview",
+        title = "Overview",
         type = "widgets",
         order = 0,
     )

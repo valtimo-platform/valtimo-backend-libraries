@@ -65,8 +65,10 @@ class IkoTabService(
     }
 
     fun update(ikoDataAggregateKey: String, tab: Tab): Tab {
-        val ikoDataAggregateTab =
-            ikoDataAggregateTabRepository.findByIdIkoDataAggregateKeyAndTabKey(ikoDataAggregateKey, tab.key)
+        val ikoDataAggregateTab = ikoDataAggregateTabRepository.findByIdIkoDataAggregateKeyAndTabKey(
+            ikoDataAggregateKey,
+            tab.key
+        )
         requireNotNull(ikoDataAggregateTab)
         val updatedTab = tabService.update(tab.copy(id = ikoDataAggregateTab.id.tabId))
         ikoDataAggregateTabRepository.save(

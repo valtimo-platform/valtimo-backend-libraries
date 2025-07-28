@@ -82,8 +82,26 @@ class IkoTabManagementResource(
     }
 
     @RunWithoutAuthorization
-    @PutMapping("/v1/iko-data-aggregate/{ikoDataAggregateKey}/tab")
+    @PutMapping("/v1/iko-data-aggregate/{ikoDataAggregateKey}/tab/{key}")
     fun updateIkoTab(
+        @PathVariable ikoDataAggregateKey: String,
+        @PathVariable key: String,
+        @RequestBody request: IkoTabUpdateRequest,
+    ): ResponseEntity<TabDto> {
+        require(request.key == key)
+        val existingIkoTab = service.findByKey(
+            ikoDataAggregateKey = ikoDataAggregateKey,
+            tabKey = key
+        )
+        requireNotNull(existingIkoTab)
+        val updatedIkoTab = request.toEntity(id = existingIkoTab.id, order = existingIkoTab.order)
+        val ikoTab = service.update(ikoDataAggregateKey, updatedIkoTab)
+        return ResponseEntity.ok(TabDto.from(ikoTab))
+    }
+
+    @RunWithoutAuthorization
+    @PutMapping("/v1/iko-data-aggregate/{ikoDataAggregateKey}/tab")
+    fun updateIkoTabOrder(
         @PathVariable ikoDataAggregateKey: String,
         @RequestBody request: List<IkoTabUpdateRequest>,
     ): ResponseEntity<List<TabDto>> {
@@ -93,14 +111,7 @@ class IkoTabManagementResource(
         require(request.map { it.key }.toSet() == existingIkoTabs.map { it.key }.toSet())
         val ikoTabs = request.mapIndexed { index, updatedTab ->
             val existingTab = existingIkoTabs.first { it.key == updatedTab.key }
-            service.update(
-                ikoDataAggregateKey,
-                existingTab.copy(
-                    title = updatedTab.title,
-                    type = updatedTab.type,
-                    order = index,
-                )
-            )
+            service.update(ikoDataAggregateKey, existingTab.copy(order = index))
         }
         return ResponseEntity.ok(ikoTabs.map { TabDto.from(it) })
     }

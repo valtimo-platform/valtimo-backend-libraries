@@ -17,10 +17,6 @@
 package com.ritense.iko.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.jsontype.NamedType
-import com.ritense.authorization.permission.condition.ContainerPermissionCondition
-import com.ritense.authorization.permission.condition.ExpressionPermissionCondition
-import com.ritense.authorization.permission.condition.FieldPermissionCondition
 import com.ritense.iko.service.IkoWidgetService
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.valtimo.contract.json.MapperSingleton
@@ -154,8 +150,39 @@ internal class IkoWidgetManagementResourceTest {
     fun `should update iko widget`() {
         val widget = widget()
         val request = widget.toDto()
+        whenever(service.findByKey("klant", "general", "partner"))
+            .thenReturn(widget)
+        whenever(service.update(eq("klant"), eq("general"), any()))
+            .thenReturn(widget)
+        mockMvc.perform(
+            put(
+                "/api/management/v1/iko-data-aggregate/{dataAggregateKey}/tab/{tabKey}/widget/{key}",
+                "klant",
+                "general",
+                "partner"
+            )
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(APPLICATION_JSON_UTF8_VALUE)
+        )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.type").value("fields"))
+            .andExpect(jsonPath("$.key").value("partner"))
+            .andExpect(jsonPath("$.title").value("Partner"))
+            .andExpect(jsonPath("$.width").value(3))
+            .andExpect(jsonPath("$.highContrast").value(false))
+            .andExpect(jsonPath("$.actions").isEmpty)
+            .andExpect(jsonPath("$.properties.columns[0][0].key").value("naam"))
+            .andExpect(jsonPath("$.properties.columns[0][0].title").value("Naam"))
+            .andExpect(jsonPath("$.properties.columns[0][0].value").value("iko:/persoon/naam/volledigeNaam"))
+    }
+
+    @Test
+    fun `should update iko widgets order`() {
+        val widget = widget()
+        val request = widget.toDto()
         whenever(service.findAllByTabKey("klant", "general")).thenReturn(
-            listOf(widget())
+            listOf(widget)
         )
         whenever(service.update(eq("klant"), eq("general"), any()))
             .thenReturn(widget)

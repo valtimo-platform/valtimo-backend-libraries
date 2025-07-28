@@ -28,7 +28,6 @@ import com.ritense.iko.repository.IkoDataRequestSpecificationHelper.Companion.by
 import com.ritense.iko.repository.IkoDataRequestSpecificationHelper.Companion.byKey
 import com.ritense.iko.repository.IkoDataRequestSpecificationHelper.Companion.byTitleContains
 import com.ritense.iko.repository.IkoDataRequestSpecificationHelper.Companion.query
-import com.ritense.iko.web.rest.request.IkoDataRequestUpdateRequest
 import com.ritense.valtimo.contract.iko.DataFilter
 import com.ritense.valtimo.contract.iko.IkoRepository
 import com.ritense.valtimo.contract.iko.PropertyField
@@ -38,7 +37,6 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction.ASC
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.transaction.annotation.Transactional
-import kotlin.jvm.optionals.getOrNull
 
 @Transactional
 class IkoDataRequestService(
@@ -100,44 +98,14 @@ class IkoDataRequestService(
         return ikoDataRequest
     }
 
-    fun createIkoDataRequest(
-        key: String,
-        ikoDataAggregateKey: String,
-        title: String,
-        properties: Map<String, Any?> = emptyMap(),
-    ): IkoDataRequest {
-        ikoDataAggregateService.denyAuthorization()
-        val ikoDataAggregate = ikoDataAggregateService.getByKey(ikoDataAggregateKey)
-        val id = IkoDataRequestId(key, ikoDataAggregate)
-        require(!existsByKey(key, ikoDataAggregateKey)) { "IKO data request '$id' already exists" }
-        val order = findAll(ikoDataAggregateKey = ikoDataAggregate.key).size
-        return ikoDataRequestRepository.save(
-            IkoDataRequest(
-                id = id,
-                title = title,
-                order = order,
-                properties = properties,
-            ),
-        )
+    fun create(ikoDataRequest: IkoDataRequest): IkoDataRequest {
+        require(!existsByKey(key = ikoDataRequest.id.key, ikoDataAggregateKey = ikoDataRequest.id.ikoDataAggregate.key))
+        return ikoDataRequestRepository.save(ikoDataRequest)
     }
 
-    fun saveIkoDataRequests(requests: List<IkoDataRequestUpdateRequest>): List<IkoDataRequest> {
-        ikoDataAggregateService.denyAuthorization()
-        val entities = requests.mapIndexed { i, request ->
-            val ikoDataAggregate = ikoDataAggregateService.getByKey(request.ikoDataAggregateKey)
-            val id = IkoDataRequestId(request.key, ikoDataAggregate)
-            ikoDataRequestRepository.findById(id).getOrNull()?.copy(
-                title = request.title,
-                order = i,
-                properties = request.properties,
-            ) ?: IkoDataRequest(
-                id = id,
-                title = request.title,
-                order = i,
-                properties = request.properties,
-            )
-        }
-        return ikoDataRequestRepository.saveAll(entities)
+    fun update(ikoDataRequest: IkoDataRequest): IkoDataRequest {
+        require(existsByKey(key = ikoDataRequest.id.key, ikoDataAggregateKey = ikoDataRequest.id.ikoDataAggregate.key))
+        return ikoDataRequestRepository.save(ikoDataRequest)
     }
 
     fun delete(

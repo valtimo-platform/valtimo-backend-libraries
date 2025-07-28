@@ -79,8 +79,25 @@ class IkoListColumnManagementResource(
     }
 
     @RunWithoutAuthorization
-    @PutMapping("/v1/iko-data-aggregate/{ikoDataAggregateKey}/column")
+    @PutMapping("/v1/iko-data-aggregate/{ikoDataAggregateKey}/column/{key}")
     fun updateIkoListColumn(
+        @PathVariable ikoDataAggregateKey: String,
+        @PathVariable key: String,
+        @RequestBody request: IkoListColumnUpdateRequest,
+    ): ResponseEntity<ListColumnDto> {
+        require(request.key == key)
+        val existingIkoListColumn = service.findByKey(ikoDataAggregateKey, key)
+        requireNotNull(existingIkoListColumn)
+        val ikoListColumn = service.update(
+            ikoDataAggregateKey = ikoDataAggregateKey,
+            listColumn = request.toEntity(existingIkoListColumn.id, ikoDataAggregateKey, existingIkoListColumn.order),
+        )
+        return ResponseEntity.ok(ListColumnDto.from(ikoListColumn))
+    }
+
+    @RunWithoutAuthorization
+    @PutMapping("/v1/iko-data-aggregate/{ikoDataAggregateKey}/column")
+    fun updateIkoListColumnsOrder(
         @PathVariable ikoDataAggregateKey: String,
         @RequestBody request: List<IkoListColumnUpdateRequest>,
     ): ResponseEntity<List<ListColumnDto>> {
@@ -92,7 +109,7 @@ class IkoListColumnManagementResource(
             val existingListColumn = existingIkoListColumns.first { it.key == updatedListColumn.key }
             service.update(
                 ikoDataAggregateKey = ikoDataAggregateKey,
-                listColumn = updatedListColumn.toEntity(existingListColumn.id, ikoDataAggregateKey, index),
+                listColumn = existingListColumn.copy(order = index),
             )
         }
         return ResponseEntity.ok(ikoListColumns.map { ListColumnDto.from(it) })

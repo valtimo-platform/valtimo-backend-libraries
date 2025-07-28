@@ -17,6 +17,7 @@
 package com.ritense.iko.web.rest
 
 import com.ritense.authorization.annotation.RunWithoutAuthorization
+import com.ritense.iko.service.IkoDataAggregateService
 import com.ritense.iko.service.IkoDataRequestService
 import com.ritense.iko.web.rest.request.IkoDataRequestCreateRequest
 import com.ritense.iko.web.rest.request.IkoDataRequestUpdateRequest
@@ -39,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 @RequestMapping("/api/management", produces = [APPLICATION_JSON_UTF8_VALUE])
 class IkoDataRequestManagementResource(
     private val service: IkoDataRequestService,
+    private val ikoDataAggregateService: IkoDataAggregateService,
 ) {
 
     @RunWithoutAuthorization
@@ -70,6 +72,7 @@ class IkoDataRequestManagementResource(
         return ResponseEntity.ok(IkoDataRequestResponse.from(ikoDataRequest))
     }
 
+
     @RunWithoutAuthorization
     @PostMapping("/v1/iko-data-aggregate/{ikoDataAggregateKey}/data-request/{key}")
     fun createIkoDataRequest(
@@ -77,22 +80,50 @@ class IkoDataRequestManagementResource(
         @PathVariable key: String,
         @RequestBody request: IkoDataRequestCreateRequest
     ): ResponseEntity<IkoDataRequestResponse> {
-        val ikoDataRequest = service.createIkoDataRequest(
-            key = key,
+        val ikoDataAggregate = ikoDataAggregateService.getByKey(ikoDataAggregateKey)
+        val existingIkoDataRequests = service.findAll(
             ikoDataAggregateKey = ikoDataAggregateKey,
-            title = request.title,
-            properties = request.properties,
+        )
+        val ikoDataRequest = service.create(
+            ikoDataRequest = request.toEntity(key, ikoDataAggregate, existingIkoDataRequests.size)
+        )
+        return ResponseEntity.ok(IkoDataRequestResponse.from(ikoDataRequest))
+    }
+
+    @RunWithoutAuthorization
+    @PutMapping("/v1/iko-data-aggregate/{ikoDataAggregateKey}/data-request/{key}")
+    fun updateIkoDataRequest(
+        @PathVariable ikoDataAggregateKey: String,
+        @PathVariable key: String,
+        @RequestBody request: IkoDataRequestUpdateRequest,
+    ): ResponseEntity<IkoDataRequestResponse> {
+        require(request.key == key)
+        val existingIkoDataRequest = service.getByKey(ikoDataAggregateKey = ikoDataAggregateKey, key = key)
+        val ikoDataRequest = service.update(
+            ikoDataRequest = request.toEntity(
+                existingIkoDataRequest.id.ikoDataAggregate,
+                existingIkoDataRequest.order,
+            ),
         )
         return ResponseEntity.ok(IkoDataRequestResponse.from(ikoDataRequest))
     }
 
     @RunWithoutAuthorization
     @PutMapping("/v1/iko-data-aggregate/{ikoDataAggregateKey}/data-request")
-    fun updateIkoDataRequest(
+    fun updateIkoDataRequestsOrder(
         @PathVariable ikoDataAggregateKey: String,
         @RequestBody request: List<IkoDataRequestUpdateRequest>,
     ): ResponseEntity<List<IkoDataRequestResponse>> {
-        val ikoDataRequests = service.saveIkoDataRequests(request)
+        val existingIkoDataRequests = service.findAll(
+            ikoDataAggregateKey = ikoDataAggregateKey,
+        )
+        require(request.map { it.key }.toSet() == existingIkoDataRequests.map { it.id.key }.toSet())
+        val ikoDataRequests = request.mapIndexed { index, updatedDataRequest ->
+            val existingDataRequest = existingIkoDataRequests.first { it.id.key == updatedDataRequest.key }
+            service.update(
+                ikoDataRequest = existingDataRequest.copy(order = index),
+            )
+        }
         return ResponseEntity.ok(ikoDataRequests.map { IkoDataRequestResponse.from(it) })
     }
 

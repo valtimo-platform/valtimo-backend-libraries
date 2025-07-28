@@ -20,6 +20,7 @@ import com.ritense.iko.IkoServerRepository.Companion.SEARCH_TYPE
 import com.ritense.iko.domain.IkoDataAggregate
 import com.ritense.iko.domain.IkoDataRequest
 import com.ritense.iko.domain.IkoDataRequestId
+import com.ritense.iko.service.IkoDataAggregateService
 import com.ritense.iko.service.IkoDataRequestService
 import com.ritense.iko.web.rest.request.IkoDataRequestCreateRequest
 import com.ritense.iko.web.rest.request.IkoDataRequestUpdateRequest
@@ -54,13 +55,15 @@ internal class IkoDataRequestManagementResourceTest {
     private lateinit var mockMvc: MockMvc
     private lateinit var resource: IkoDataRequestManagementResource
     private lateinit var service: IkoDataRequestService
+    private lateinit var ikoDataAggregateService: IkoDataAggregateService
 
     private val objectMapper = MapperSingleton.get()
 
     @BeforeEach
     fun init() {
         service = mock()
-        resource = IkoDataRequestManagementResource(service)
+        ikoDataAggregateService = mock()
+        resource = IkoDataRequestManagementResource(service, ikoDataAggregateService)
         mockMvc = MockMvcBuilders.standaloneSetup(resource)
             .setCustomArgumentResolvers(PageableHandlerMethodArgumentResolver())
             .setMessageConverters(MappingJackson2HttpMessageConverter(MapperSingleton.get()))
@@ -134,8 +137,9 @@ internal class IkoDataRequestManagementResourceTest {
 
     @Test
     fun `should create iko dataRequest`() {
+        val ikoDataAggregate = IkoDataAggregate("klant", "Klant", emptyMap(), mock())
         val ikoDataRequest = IkoDataRequest(
-            id = IkoDataRequestId("bsn", IkoDataAggregate("klant", "Klant", emptyMap(), mock())),
+            id = IkoDataRequestId("bsn", ikoDataAggregate),
             title = "BSN",
             order = 0,
             properties = mapOf("searchType" to "RaadpleegMetBurgerservicenummer"),
@@ -144,15 +148,8 @@ internal class IkoDataRequestManagementResourceTest {
             ikoDataRequest.title,
             ikoDataRequest.properties
         )
-        whenever(
-            service.createIkoDataRequest(
-                ikoDataRequest.id.key,
-                ikoDataRequest.id.ikoDataAggregate.key,
-                ikoDataRequest.title,
-                ikoDataRequest.properties
-            )
-        )
-            .thenReturn(ikoDataRequest)
+        whenever(ikoDataAggregateService.getByKey("klant")).thenReturn(ikoDataAggregate)
+        whenever(service.create(any())).thenReturn(ikoDataRequest)
 
         mockMvc.perform(
             post(
@@ -178,6 +175,39 @@ internal class IkoDataRequestManagementResourceTest {
             order = 0,
             properties = mapOf("searchType" to "RaadpleegMetBurgerservicenummer"),
         )
+        val request = IkoDataRequestUpdateRequest(
+            ikoDataRequest.id.key,
+            ikoDataRequest.id.ikoDataAggregate.key,
+            ikoDataRequest.title,
+            ikoDataRequest.properties
+        )
+        whenever(service.getByKey("bsn", "klant")).thenReturn(ikoDataRequest)
+        whenever(service.update(any())).thenReturn(ikoDataRequest)
+        mockMvc.perform(
+            put(
+                "/api/management/v1/iko-data-aggregate/{dataAggregateKey}/data-request/{key}",
+                "klant",
+                "bsn",
+            )
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(APPLICATION_JSON_VALUE)
+        )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.key").value("bsn"))
+            .andExpect(jsonPath("$.ikoDataAggregateKey").value("klant"))
+            .andExpect(jsonPath("$.title").value("BSN"))
+            .andExpect(jsonPath("$.properties.searchType").value("RaadpleegMetBurgerservicenummer"))
+    }
+
+    @Test
+    fun `should update iko dataRequests`() {
+        val ikoDataRequest = IkoDataRequest(
+            id = IkoDataRequestId("bsn", IkoDataAggregate("klant", "Klant", emptyMap(), mock())),
+            title = "BSN",
+            order = 0,
+            properties = mapOf("searchType" to "RaadpleegMetBurgerservicenummer"),
+        )
         val request = listOf(
             IkoDataRequestUpdateRequest(
                 ikoDataRequest.id.key,
@@ -186,12 +216,12 @@ internal class IkoDataRequestManagementResourceTest {
                 ikoDataRequest.properties
             )
         )
-        whenever(service.saveIkoDataRequests(request)).thenReturn(listOf(ikoDataRequest))
+        whenever(service.findAll(ikoDataAggregateKey = "klant")).thenReturn(listOf(ikoDataRequest))
+        whenever(service.update(any())).thenReturn(ikoDataRequest)
         mockMvc.perform(
             put(
                 "/api/management/v1/iko-data-aggregate/{dataAggregateKey}/data-request",
-                "klant",
-                "bsn"
+                "klant"
             )
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(APPLICATION_JSON_VALUE)

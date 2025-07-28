@@ -18,8 +18,8 @@ package com.ritense.iko.importer
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.iko.service.IkoDataAggregateService
 import com.ritense.iko.service.IkoDataRequestService
-import com.ritense.iko.web.rest.request.IkoDataRequestUpdateRequest
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.IKO_DATA_AGGREGATE
@@ -29,7 +29,8 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class IkoDataRequestImporter(
     private val objectMapper: ObjectMapper,
-    private val ikoDataRequestService: IkoDataRequestService,
+    private val service: IkoDataRequestService,
+    private val ikoDataAggregateService: IkoDataAggregateService,
 ) : Importer {
     override fun type() = IKO_DATA_REQUEST
 
@@ -39,28 +40,30 @@ class IkoDataRequestImporter(
 
     override fun import(request: ImportRequest) {
         val fileContent = request.content.toString(Charsets.UTF_8)
-        val dataRequests = objectMapper.readValue<IkoDataRequestsDto>(fileContent)
+        val ikoDataRequestsDto = objectMapper.readValue<IkoDataRequestsDto>(fileContent)
 
-        val existing = ikoDataRequestService.findAll(
-            ikoDataAggregateKey = dataRequests.ikoDataAggregateKey
-        )
+        val ikoDataAggregate = ikoDataAggregateService.getByKey(ikoDataRequestsDto.ikoDataAggregateKey)
+        val existingDataRequests = service.findAll(ikoDataRequestsDto.ikoDataAggregateKey)
 
-        val updated = ikoDataRequestService.saveIkoDataRequests(
-            dataRequests.ikoDataRequests.map {
-                IkoDataRequestUpdateRequest(
-                    key = it.key,
-                    ikoDataAggregateKey = dataRequests.ikoDataAggregateKey,
-                    title = it.title,
-                    properties = it.properties ?: emptyMap(),
-                )
-            }
-        )
-
-        existing.forEach { ex ->
-            if (updated.none { up -> up.id.key == ex.id.key }) {
-                ikoDataRequestService.delete(key = ex.id.key)
+        ikoDataRequestsDto.ikoDataRequests.forEachIndexed { index, ikoDataRequestDto ->
+            val ikoDataRequestExists = existingDataRequests
+                .any { existingIkoDataRequest -> existingIkoDataRequest.id.key == ikoDataRequestDto.key }
+            val ikoDataRequest = ikoDataRequestDto.toEntity(ikoDataAggregate, index)
+            if (ikoDataRequestExists) {
+                service.update(ikoDataRequest)
+            } else {
+                service.create(ikoDataRequest)
             }
         }
+
+        existingDataRequests
+            .filter { existingIkoDataRequest -> ikoDataRequestsDto.ikoDataRequests.none { ikoDataRequestDto -> ikoDataRequestDto.key == existingIkoDataRequest.id.key } }
+            .forEach { existingIkoDataRequest ->
+                service.delete(
+                    ikoDataAggregateKey = ikoDataRequestsDto.ikoDataAggregateKey,
+                    key = existingIkoDataRequest.id.key
+                )
+            }
     }
 
     override fun partOfCaseDefinition(): Boolean = false

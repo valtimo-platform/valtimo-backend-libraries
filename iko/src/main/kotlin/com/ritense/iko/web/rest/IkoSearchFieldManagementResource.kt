@@ -85,8 +85,32 @@ class IkoSearchFieldManagementResource(
     }
 
     @RunWithoutAuthorization
-    @PutMapping("/v1/iko-data-aggregate/{ikoDataAggregateKey}/data-request/{ikoDataRequestKey}/search-field")
+    @PutMapping("/v1/iko-data-aggregate/{ikoDataAggregateKey}/data-request/{ikoDataRequestKey}/search-field/{key}")
     fun updateIkoSearchField(
+        @PathVariable ikoDataAggregateKey: String,
+        @PathVariable ikoDataRequestKey: String,
+        @PathVariable key: String,
+        @RequestBody request: IkoSearchFieldUpdateRequest,
+    ): ResponseEntity<IkoSearchFieldResponse> {
+        require(request.key == key)
+        val existingIkoSearchField = service.findByKey(ikoDataAggregateKey, ikoDataRequestKey, key)
+        requireNotNull(existingIkoSearchField)
+        val ikoSearchField = service.update(
+            ikoDataAggregateKey = ikoDataAggregateKey,
+            ikoDataRequestKey = ikoDataRequestKey,
+            searchField = request.toEntity(
+                existingIkoSearchField.id,
+                ikoDataAggregateKey,
+                ikoDataRequestKey,
+                existingIkoSearchField.order
+            )
+        )
+        return ResponseEntity.ok(IkoSearchFieldResponse.from(ikoSearchField))
+    }
+
+    @RunWithoutAuthorization
+    @PutMapping("/v1/iko-data-aggregate/{ikoDataAggregateKey}/data-request/{ikoDataRequestKey}/search-field")
+    fun updateIkoSearchFieldsOrder(
         @PathVariable ikoDataAggregateKey: String,
         @PathVariable ikoDataRequestKey: String,
         @RequestBody request: List<IkoSearchFieldUpdateRequest>,
@@ -101,12 +125,7 @@ class IkoSearchFieldManagementResource(
             service.update(
                 ikoDataAggregateKey = ikoDataAggregateKey,
                 ikoDataRequestKey = ikoDataRequestKey,
-                searchField = updatedSearchField.toEntity(
-                    existingSearchField.id,
-                    ikoDataAggregateKey,
-                    ikoDataRequestKey,
-                    index
-                ),
+                searchField = existingSearchField.copy(order = index)
             )
         }
         return ResponseEntity.ok(ikoSearchFields.map { IkoSearchFieldResponse.from(it) })

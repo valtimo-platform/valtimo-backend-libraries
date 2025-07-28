@@ -132,6 +132,39 @@ internal class IkoListColumnManagementResourceTest {
     @Test
     fun `should update listColumn`() {
         val listColumn = listColumn()
+        val request = IkoListColumnUpdateRequest(
+            listColumn.key,
+            listColumn.title,
+            listColumn.path,
+            listColumn.order,
+            listColumn.displayType,
+            listColumn.sortable,
+            listColumn.defaultSort,
+        )
+        whenever(service.findByKey("klant", "naam"))
+            .thenReturn(listColumn)
+        whenever(service.update(eq("klant"), any())).thenReturn(listColumn)
+        mockMvc.perform(
+            put(
+                "/api/management/v1/iko-data-aggregate/{dataAggregateKey}/column/{key}",
+                "klant",
+                "naam"
+            )
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(APPLICATION_JSON_VALUE)
+        )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.key").value("naam"))
+            .andExpect(jsonPath("$.title").value("Naam"))
+            .andExpect(jsonPath("$.path").value("/naam/volledigeNaam"))
+            .andExpect(jsonPath("$.displayType.type").value("text"))
+            .andExpect(jsonPath("$.sortable").value("false"))
+    }
+
+    @Test
+    fun `should update listColumns order`() {
+        val listColumn = listColumn()
         val request = listOf(
             IkoListColumnUpdateRequest(
                 listColumn.key,
@@ -144,7 +177,7 @@ internal class IkoListColumnManagementResourceTest {
             )
         )
         whenever(service.findAllColumnsByIkoDataAggregateKey("klant"))
-            .thenReturn(listOf(listColumn()))
+            .thenReturn(listOf(listColumn))
         whenever(service.update(eq("klant"), any())).thenReturn(listColumn)
         mockMvc.perform(
             put(

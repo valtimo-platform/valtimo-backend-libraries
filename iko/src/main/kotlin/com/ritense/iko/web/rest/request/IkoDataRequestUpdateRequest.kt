@@ -16,9 +16,23 @@
 
 package com.ritense.iko.web.rest.request
 
+import com.ritense.iko.domain.IkoDataAggregate
+import com.ritense.iko.domain.IkoDataRequest
+import com.ritense.iko.domain.IkoDataRequestId
+
 data class IkoDataRequestUpdateRequest(
     val key: String,
     val ikoDataAggregateKey: String,
     val title: String,
     val properties: Map<String, Any?>,
-)
+) {
+    fun toEntity(ikoDataAggregate: IkoDataAggregate, order: Int): IkoDataRequest {
+        require(ikoDataAggregateKey == ikoDataAggregate.key)
+        return IkoDataRequest(
+            id = IkoDataRequestId(key, ikoDataAggregate),
+            title = title,
+            order = order,
+            properties = properties,
+        )
+    }
+}

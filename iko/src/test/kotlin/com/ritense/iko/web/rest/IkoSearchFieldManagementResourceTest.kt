@@ -153,6 +153,45 @@ internal class IkoSearchFieldManagementResourceTest {
     @Test
     fun `should update iko searchField`() {
         val searchField = searchField()
+        val request = IkoSearchFieldUpdateRequest(
+            key = searchField.key,
+            title = searchField.title,
+            path = searchField.path,
+            dataType = searchField.dataType,
+            fieldType = searchField.fieldType,
+            matchType = searchField.matchType,
+            dropdownDataProvider = searchField.dropdownDataProvider,
+            required = searchField.required,
+        )
+        whenever(service.findByKey("klant", "bsn", "bsn"))
+            .thenReturn(searchField)
+        whenever(service.update(eq("klant"), eq("bsn"), any()))
+            .thenReturn(searchField)
+        mockMvc.perform(
+            put(
+                "/api/management/v1/iko-data-aggregate/{dataAggregateKey}/data-request/{dataRequestKey}/search-field/{key}",
+                "klant",
+                "bsn",
+                "bsn"
+            )
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(APPLICATION_JSON_VALUE)
+        )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.key").value("bsn"))
+            .andExpect(jsonPath("$.title").value("BSN"))
+            .andExpect(jsonPath("$.path").value("/bsn"))
+            .andExpect(jsonPath("$.order").value(0))
+            .andExpect(jsonPath("$.dataType").value("text"))
+            .andExpect(jsonPath("$.fieldType").value("single"))
+            .andExpect(jsonPath("$.matchType").value("exact"))
+            .andExpect(jsonPath("$.required").value(true))
+    }
+
+    @Test
+    fun `should update iko searchFields order`() {
+        val searchField = searchField()
         val request = listOf(
             IkoSearchFieldUpdateRequest(
                 key = searchField.key,
@@ -166,7 +205,7 @@ internal class IkoSearchFieldManagementResourceTest {
             )
         )
         whenever(service.findAllSearchFieldsByIkoDataRequest("klant", "bsn")).thenReturn(
-            listOf(searchField())
+            listOf(searchField)
         )
         whenever(service.update(eq("klant"), eq("bsn"), any()))
             .thenReturn(searchField)

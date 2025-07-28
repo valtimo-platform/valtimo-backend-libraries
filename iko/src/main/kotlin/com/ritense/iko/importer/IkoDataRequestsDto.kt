@@ -16,6 +16,10 @@
 
 package com.ritense.iko.importer
 
+import com.ritense.iko.domain.IkoDataAggregate
+import com.ritense.iko.domain.IkoDataRequest
+import com.ritense.iko.domain.IkoDataRequestId
+
 data class IkoDataRequestsDto(
     val ikoDataAggregateKey: String,
     val ikoDataRequests: List<IkoDataRequestDto>,
@@ -25,4 +29,13 @@ data class IkoDataRequestDto(
     val key: String,
     val title: String,
     val properties: Map<String, Any?>?
-)
+) {
+    fun toEntity(ikoDataAggregate: IkoDataAggregate, order: Int): IkoDataRequest {
+        return IkoDataRequest(
+            id = IkoDataRequestId(key, ikoDataAggregate),
+            title = title,
+            order = order,
+            properties = properties ?: emptyMap(),
+        )
+    }
+}

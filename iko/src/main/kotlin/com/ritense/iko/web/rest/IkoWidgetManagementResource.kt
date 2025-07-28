@@ -81,6 +81,25 @@ class IkoWidgetManagementResource(
     }
 
     @RunWithoutAuthorization
+    @PutMapping("/v1/iko-data-aggregate/{ikoDataAggregateKey}/tab/{tabKey}/widget/{key}")
+    fun updateIkoWidget(
+        @PathVariable ikoDataAggregateKey: String,
+        @PathVariable tabKey: String,
+        @PathVariable key: String,
+        @RequestBody request: WidgetDto,
+    ): ResponseEntity<WidgetDto> {
+        require(request.key == key)
+        val existingWidget = service.findByKey(ikoDataAggregateKey, tabKey, key)
+        requireNotNull(existingWidget)
+        val ikoWidget = service.update(
+            ikoDataAggregateKey,
+            tabKey = tabKey,
+            widget = request.toEntity(existingWidget.id, existingWidget.order)
+        )
+        return ResponseEntity.ok(ikoWidget.toDto())
+    }
+
+    @RunWithoutAuthorization
     @PutMapping("/v1/iko-data-aggregate/{ikoDataAggregateKey}/tab/{tabKey}/widget")
     fun updateIkoWidget(
         @PathVariable ikoDataAggregateKey: String,
@@ -94,7 +113,7 @@ class IkoWidgetManagementResource(
             service.update(
                 ikoDataAggregateKey,
                 tabKey = tabKey,
-                widget = updatedWidget.toEntity(existingWidget.id, index)
+                widget = existingWidget.copy(order = index)
             )
         }
         return ResponseEntity.ok(ikoWidgets.map { it.toDto() })
