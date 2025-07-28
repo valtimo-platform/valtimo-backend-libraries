@@ -31,9 +31,9 @@ data class IkoSearchFieldDto(
     val dropdownDataProvider: String? = null,
     val required: Boolean = false,
 ) {
-    fun toEntity(ikoDataAggregate: String, ikoDataRequestKey: String, order: Int) = SearchFieldV2(
-        ownerId = "$ikoDataAggregate:$ikoDataRequestKey",
+    fun toEntity(ikoDataAggregateKey: String, ikoDataRequestKey: String, order: Int) = SearchFieldV2(
         ownerType = IKO_SEARCH_FIELD_OWNER_TYPE,
+        ownerId = "$ikoDataAggregateKey:$ikoDataRequestKey",
         key = this.key,
         title = this.title,
         path = this.path,

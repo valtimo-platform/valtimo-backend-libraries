@@ -59,9 +59,9 @@ class IkoSearchFieldService(
 
     fun deleteByKey(ikoDataAggregateKey: String, ikoDataRequestKey: String, searchFieldKey: String) {
         ikoDataRequestSearchFieldRepository.deleteByIdIkoDataAggregateKeyAndIdIkoDataRequestKeyAndSearchFieldKey(
-            ikoDataAggregateKey,
-            ikoDataRequestKey,
-            searchFieldKey
+            ikoDataAggregateKey = ikoDataAggregateKey,
+            ikoDataRequestKey = ikoDataRequestKey,
+            searchFieldKey = searchFieldKey
         )
     }
 

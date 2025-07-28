@@ -16,6 +16,7 @@
 
 package com.ritense.iko.web.rest.request
 
+import com.ritense.iko.importer.IkoSearchFieldDto.Companion.IKO_SEARCH_FIELD_OWNER_TYPE
 import com.ritense.search.domain.DataType
 import com.ritense.search.domain.FieldType
 import com.ritense.search.domain.SearchFieldMatchType
@@ -34,7 +35,7 @@ data class IkoSearchFieldCreateRequest(
 ) {
     fun toEntity(ikoDataAggregateKey: String, ikoDataRequestKey: String, order: Int) = SearchFieldV2(
         id = UUID.randomUUID(),
-        ownerType = "ikoDataRequestKey",
+        ownerType = IKO_SEARCH_FIELD_OWNER_TYPE,
         ownerId = "$ikoDataAggregateKey:$ikoDataRequestKey",
         key = key,
         title = title,
