@@ -394,6 +394,7 @@
     </changeSet>
 
     <changeSet id="22" author="Ritense">
+        <validCheckSum>9:c1ac5d86013c9859ae5e3e9ac6d9f462</validCheckSum>
         <preConditions onFail="MARK_RAN">
             <tableExists tableName="form_io_form_definition"/>
             <dbms type="postgresql"/>
@@ -421,11 +422,11 @@
                     on fd.name = ffs.type->'properties'->>'definition'
                 where ffs.type->>'name' = 'form'
                 and not exists (
-                    select *
+                    select 1
                     from form_io_form_definition fd2
                     where fd.name = fd2.name
-                    and fd.case_definition_key = fd2.case_definition_key
-                    and fd.case_definition_version_tag = fd2.case_definition_version_tag
+                    and ffs.case_definition_key = fd2.case_definition_key
+                    and ffs.case_definition_version_tag = fd2.case_definition_version_tag
                 )
             ) as forms
         </sql>
