@@ -17,7 +17,6 @@
 package com.ritense.widget.domain
 
 import com.fasterxml.jackson.annotation.JsonTypeName
-import io.github.oshai.kotlinlogging.KotlinLogging
 
 @JsonTypeName("redirect")
 data class RedirectWidgetAction(
@@ -26,14 +25,14 @@ data class RedirectWidgetAction(
 
     fun getUnresolvedValues(): List<String> = getPlaceholders().map { it.second }
 
-    fun getResolvedRedirectPath(resolvedValues: Map<String, Any?>): String {
+    fun getResolvedRedirectPath(resolvedValues: Map<String, Any?>): String? {
         var resolvedRedirectPath = redirectPath
         getPlaceholders().forEach { (placeholder, placeholderValue) ->
             val resolvedPlaceholder = resolvedValues[placeholderValue]?.toString()
             if (resolvedPlaceholder == null) {
-                logger.error { "Failed to resolve $placeholder for redirectPath $redirectPath" }
+                return null
             }
-            resolvedRedirectPath = resolvedRedirectPath.replace(placeholder, resolvedPlaceholder ?: "")
+            resolvedRedirectPath = resolvedRedirectPath.replace(placeholder, resolvedPlaceholder)
         }
         return resolvedRedirectPath
     }
@@ -42,9 +41,5 @@ data class RedirectWidgetAction(
         return Regex("\\$\\{([^\\}]+)\\}").findAll(redirectPath)
             .map { it.groupValues[0] to it.groupValues[1] }
             .toList()
-    }
-
-    companion object {
-        private val logger = KotlinLogging.logger {}
     }
 }

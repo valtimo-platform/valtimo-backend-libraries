@@ -3,239 +3,51 @@
         "key": "widgets",
         "widgets": [
             {
-                "key": "partner",
                 "type": "fields",
-                "title": "Partner",
-                "width": 4,
-                "highContrast": true,
-                "properties": {
-                    "columns": [
-                        [
-                            {
-                                "key": "bsn",
-                                "title": "BSN",
-                                "value": "doc:partner.bsn"
-                            },
-                            {
-                                "key": "alive",
-                                "title": "Alive",
-                                "value": "doc:partner.alive",
-                                "displayProperties": {
-                                    "type": "boolean"
-                                }
-                            },
-                            {
-                                "key": "length",
-                                "title": "Length",
-                                "value": "doc:partner.length",
-                                "displayProperties": {
-                                    "type": "number",
-                                    "digitsInfo": "1.0-0"
-                                }
-                            }
-                        ],
-                        [
-                            {
-                                "key": "phoneNumber",
-                                "title": "Phone number",
-                                "value": "doc:partner.phoneNumber"
-                            },
-                            {
-                                "key": "dateOfBirth",
-                                "title": "Date of birth",
-                                "value": "doc:partner.dateOfBirth",
-                                "displayProperties": {
-                                    "type": "date",
-                                    "format": "DD-MM-YYYY"
-                                }
-                            },
-                            {
-                                "key": "gender",
-                                "title": "Gender",
-                                "value": "doc:partner.gender",
-                                "displayProperties": {
-                                    "type": "enum",
-                                    "values": {
-                                        "m": "Male",
-                                        "f": "Female",
-                                        "x": "Other"
-                                    }
-                                }
-                            }
-                        ]
-                    ]
-                }
-            },
-            {
-                "key": "partner2",
-                "type": "fields",
-                "title": "Partner2",
-                "width": 2,
-                "highContrast": true,
-                "properties": {
-                    "columns": [
-                        [
-                            {
-                                "key": "bsn",
-                                "title": "BSN",
-                                "value": "doc:partner.bsn"
-                            },
-                            {
-                                "key": "alive",
-                                "title": "Alive",
-                                "value": "doc:partner.alive",
-                                "displayProperties": {
-                                    "type": "boolean"
-                                }
-                            },
-                            {
-                                "key": "length",
-                                "title": "Length",
-                                "value": "doc:partner.length",
-                                "displayProperties": {
-                                    "type": "number",
-                                    "digitsInfo": "1.0-0"
-                                }
-                            }
-                        ],
-                        [
-                            {
-                                "key": "phoneNumber",
-                                "title": "Phone number",
-                                "value": "doc:partner.phoneNumber"
-                            },
-                            {
-                                "key": "dateOfBirth",
-                                "title": "Date of birth",
-                                "value": "doc:partner.dateOfBirth",
-                                "displayProperties": {
-                                    "type": "date",
-                                    "format": "DD-MM-YYYY"
-                                }
-                            },
-                            {
-                                "key": "gender",
-                                "title": "Gender",
-                                "value": "doc:partner.gender",
-                                "displayProperties": {
-                                    "type": "enum",
-                                    "values": {
-                                        "m": "Male",
-                                        "f": "Female",
-                                        "x": "Other"
-                                    }
-                                }
-                            }
-                        ]
-                    ]
-                }
-            },
-            {
-                "key": "partner3",
-                "type": "fields",
-                "title": "Partner3",
+                "key": "aanvrager",
+                "title": "Aanvrager",
                 "width": 1,
                 "highContrast": true,
+                "topRightCorner": {
+                    "type": "button",
+                    "title": "IKO >",
+                    "action": {
+                        "type": "redirect",
+                        "redirectPath": "/iko/klant/bsn/details/${doc:bsn}"
+                    }
+                },
                 "properties": {
                     "columns": [
                         [
                             {
-                                "key": "bsn",
-                                "title": "BSN",
-                                "value": "doc:partner.bsn"
-                            },
-                            {
-                                "key": "alive",
-                                "title": "Alive",
-                                "value": "doc:partner.alive",
+                                "key": "naam",
+                                "title": "Naam",
+                                "value": "iko:/persoon/naam/volledigeNaam?ikoDataAggregateKey=klant&id=doc:bsn",
                                 "displayProperties": {
-                                    "type": "boolean"
+                                    "type": "text",
+                                    "hideWhenEmpty": false
                                 }
                             },
                             {
-                                "key": "length",
-                                "title": "Length",
-                                "value": "doc:partner.length",
+                                "key": "geboortedatum",
+                                "title": "Geboortedatum",
+                                "value": "iko:/persoon/geboorte/datum/datum?ikoDataAggregateKey=klant&id=doc:bsn",
                                 "displayProperties": {
-                                    "type": "number",
-                                    "digitsInfo": "1.0-0"
+                                    "type": "date",
+                                    "format": "DD-MM-YYYY",
+                                    "hideWhenEmpty": false
+                                }
+                            },
+                            {
+                                "key": "burgerservicenummer",
+                                "title": "Burgerservicenummer",
+                                "value": "doc:bsn",
+                                "displayProperties": {
+                                    "type": "text",
+                                    "hideWhenEmpty": false
                                 }
                             }
                         ]
-                    ]
-                }
-            },
-            {
-                "key": "partner4",
-                "type": "fields",
-                "title": "Partner4",
-                "width": 1,
-                "highContrast": true,
-                "properties": {
-                    "columns": [
-                        [
-                            {
-                                "key": "bsn",
-                                "title": "BSN",
-                                "value": "doc:partner.bsn"
-                            }
-                        ]
-                    ]
-                }
-            },
-            {
-                "key": "werkgevers1",
-                "type": "table",
-                "title": "Werkgevers1",
-                "width": 4,
-                "highContrast": false,
-                "properties": {
-                    "collection": "doc:werkgevers",
-                    "defaultPageSize": 5,
-                    "columns": [
-                        {
-                            "key": "naam",
-                            "title": "Naam",
-                            "value": "naam"
-                        },
-                        {
-                            "key": "nettobedrag",
-                            "title": "Netto bedrag",
-                            "value": "nettoBedrag",
-                            "displayProperties": {
-                                "type": "currency"
-                            }
-                        },
-                        {
-                            "key": "periode",
-                            "title": "Periode",
-                            "value": "periode"
-                        }
-                    ]
-                }
-            },
-            {
-                "key": "children1",
-                "type": "collection",
-                "title": "Children1",
-                "width": 4,
-                "highContrast": false,
-                "properties": {
-                    "collection": "doc:children",
-                    "defaultPageSize": 5,
-                    "title": {
-                        "value": "name"
-                    },
-                    "fields": [
-                        {
-                            "key": "dateOfBirth",
-                            "title": "Netto bedrag",
-                            "value": "nettoBedrag",
-                            "displayProperties": {
-                                "type": "date",
-                                "format": "DD-MM-YYYY"
-                            }
-                        }
                     ]
                 }
             }

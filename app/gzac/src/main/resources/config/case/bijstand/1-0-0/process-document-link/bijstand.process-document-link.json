@@ -1,7 +1,0 @@
-[
-  {
-    "processDefinitionKey" : "CheckBijstandProcess",
-    "canInitializeDocument" : true,
-    "startableByUser" : true
-  }
-]

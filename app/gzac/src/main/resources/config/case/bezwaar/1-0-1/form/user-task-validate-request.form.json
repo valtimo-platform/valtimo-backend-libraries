@@ -19,7 +19,7 @@
         {
             "label": "Burgerservicenummer",
             "tableView": true,
-            "defaultValue": "234567861",
+            "defaultValue": "999993653",
             "key": "bsn",
             "type": "textfield",
             "input": true

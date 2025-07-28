@@ -76,10 +76,7 @@ class IkoValueResolverFactory(
         }
             .filter { (_, searchFields) -> searchFields.all { properties.keys.contains(it.key) || !it.required } }
             .maxByOrNull { (_, searchFields) -> searchFields.count { it.required } }
-            ?: return Function { jsonPointer ->
-                val unresolvedValue = "${supportedPrefix()}:$jsonPointer"
-                error("Missing ValueResolver context. For value resolver '$unresolvedValue'. Try '$unresolvedValue?$IKO_DATA_AGGREGATE_KEY=example&$ID=example'")
-            }
+            ?: return Function { null }
 
         val filters = searchFields.map { searchField -> DataFilter(searchField.key, properties[searchField.key]) }
         val pageable = properties[PAGEABLE] as Pageable? ?: Pageable.unpaged()

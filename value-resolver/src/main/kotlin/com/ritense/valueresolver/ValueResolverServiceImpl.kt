@@ -166,9 +166,13 @@ class ValueResolverServiceImpl(
         val resolvedValues = mutableMapOf<String, Any?>()
         toResolverFactoryGroups(allRequestedValues)
             .forEach { (resolverFactory, queryParamProperties, requestedValues) ->
-                val resolvedProperties = (properties + queryParamProperties).entries.associate { (key, value) ->
-                    key to (resolvedValues[value] ?: value)
-                }
+                val resolvedProperties = (properties + queryParamProperties).entries.mapNotNull { (key, value) ->
+                    if (isRequestedValue(value)) {
+                        resolvedValues[value]?.let { key to it }
+                    } else {
+                        key to value
+                    }
+                }.toMap()
                 val resolver = resolverFactory.createResolver(resolvedProperties)
                 //Create a list of resolved Map entries
                 requestedValues.forEach { requestedValue ->
@@ -273,10 +277,11 @@ class ValueResolverServiceImpl(
         }
     }
 
-    private fun extractAdditionalRequestedValuesFromQueryParameters(requestedValue: String): List<String> {
-        return getQueryParameters(requestedValue).values
-            .filter { value -> value.contains(':') && resolverFactoryMap.keys.contains(getPrefix(value)) }
-    }
+    private fun extractAdditionalRequestedValuesFromQueryParameters(requestedValue: String): List<String> =
+        getQueryParameters(requestedValue).values.filter { isRequestedValue(it) }
+
+    private fun isRequestedValue(value: Any?): Boolean =
+        value is String && value.contains(DELIMITER) && resolverFactoryMap.keys.contains(getPrefix(value))
 
     private fun getQueryParameters(requestedValue: String): Map<String, String> {
         return Regex("[?&]([a-zA-Z0-9]+)=([^&]+)(?=&|$)")
