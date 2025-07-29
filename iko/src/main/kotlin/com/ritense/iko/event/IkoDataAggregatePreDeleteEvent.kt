@@ -14,27 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.iko.domain
+package com.ritense.iko.event
 
-import com.ritense.tab.domain.Tab
-import jakarta.persistence.CascadeType.ALL
-import jakarta.persistence.EmbeddedId
-import jakarta.persistence.Entity
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.MapsId
-import jakarta.persistence.OneToOne
-import jakarta.persistence.Table
-
-@Entity
-@Table(name = "iko_data_aggregate_tab")
-class IkoDataAggregateTab(
-
-    @EmbeddedId
-    val id: IkoDataAggregateTabId,
-
-    @OneToOne(cascade = [ALL])
-    @MapsId("tabId")
-    @JoinColumn(name = "tab_id")
-    val tab: Tab
-
+data class IkoDataAggregatePreDeleteEvent(
+    val ikoDataAggregateKey: String,
 )

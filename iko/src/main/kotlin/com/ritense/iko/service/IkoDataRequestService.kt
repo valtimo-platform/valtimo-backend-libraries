@@ -23,6 +23,7 @@ import com.ritense.iko.authorization.IkoDataAggregateActionProvider.Companion.VI
 import com.ritense.iko.domain.IkoDataAggregate
 import com.ritense.iko.domain.IkoDataRequest
 import com.ritense.iko.domain.IkoDataRequestId
+import com.ritense.iko.event.IkoDataRequestPreDeleteEvent
 import com.ritense.iko.repository.IkoDataRequestRepository
 import com.ritense.iko.repository.IkoDataRequestSpecificationHelper.Companion.byIkoDataAggregateKey
 import com.ritense.iko.repository.IkoDataRequestSpecificationHelper.Companion.byKey
@@ -31,6 +32,7 @@ import com.ritense.iko.repository.IkoDataRequestSpecificationHelper.Companion.qu
 import com.ritense.valtimo.contract.iko.DataFilter
 import com.ritense.valtimo.contract.iko.IkoRepository
 import com.ritense.valtimo.contract.iko.PropertyField
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -44,6 +46,7 @@ class IkoDataRequestService(
     private val ikoDataAggregateService: IkoDataAggregateService,
     private val authorizationService: AuthorizationService,
     private val ikoRepositories: List<IkoRepository>,
+    private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
 
     fun searchData(
@@ -109,10 +112,13 @@ class IkoDataRequestService(
     }
 
     fun delete(
-        key: String? = null,
-        ikoDataAggregateKey: String? = null,
+        key: String,
+        ikoDataAggregateKey: String,
     ) {
         ikoDataAggregateService.denyAuthorization()
+        applicationEventPublisher.publishEvent(
+            IkoDataRequestPreDeleteEvent(ikoDataAggregateKey, key)
+        )
         ikoDataRequestRepository.delete(
             getSpecification(
                 key = key,

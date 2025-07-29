@@ -17,11 +17,12 @@
 package com.ritense.iko.domain
 
 import com.ritense.search.domain.SearchListColumn
+import jakarta.persistence.CascadeType.ALL
 import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
 import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToOne
 import jakarta.persistence.MapsId
+import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 
 @Entity
@@ -31,7 +32,7 @@ class IkoDataAggregateListColumn(
     @EmbeddedId
     val id: IkoDataAggregateListColumnId,
 
-    @ManyToOne
+    @OneToOne(cascade = [ALL])
     @MapsId("listColumnId")
     @JoinColumn(name = "column_id")
     val column: SearchListColumn

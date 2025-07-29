@@ -51,11 +51,11 @@ class IkoListColumnService(
     }
 
     fun deleteByKey(ikoDataAggregateKey: String, columnKey: String) {
-        listColumnService.delete("ikoDataAggregate:$ikoDataAggregateKey", columnKey)
         ikoDataAggregateListColumnRepository.deleteByIdIkoDataAggregateKeyAndColumnKey(
             ikoDataAggregateKey,
             columnKey
         )
+        ikoDataAggregateListColumnRepository.flush()
     }
 
     fun create(ikoDataAggregateKey: String, listColumn: SearchListColumn): SearchListColumn {

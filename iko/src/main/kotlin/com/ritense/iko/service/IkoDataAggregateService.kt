@@ -23,12 +23,15 @@ import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.iko.authorization.IkoDataAggregateActionProvider
 import com.ritense.iko.domain.IkoDataAggregate
+import com.ritense.iko.event.IkoDataAggregatePreDeleteEvent
 import com.ritense.iko.repository.IkoDataAggregateRepository
 import com.ritense.iko.repository.IkoDataAggregateSpecificationHelper.Companion.byIkoRepositoryConfigKey
 import com.ritense.iko.repository.IkoDataAggregateSpecificationHelper.Companion.byKey
 import com.ritense.iko.repository.IkoDataAggregateSpecificationHelper.Companion.byTitleContains
+import com.ritense.valtimo.contract.event.CaseDefinitionPreDeleteEvent
 import com.ritense.valtimo.contract.iko.IkoRepository
 import com.ritense.valtimo.contract.iko.PropertyField
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.domain.Specification
@@ -40,6 +43,7 @@ class IkoDataAggregateService(
     private val ikoRepositoryService: IkoRepositoryService,
     private val authorizationService: AuthorizationService,
     private val ikoRepositories: List<IkoRepository>,
+    private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
 
     fun getDataById(key: String, id: String): JsonNode {
@@ -119,6 +123,9 @@ class IkoDataAggregateService(
 
     fun deleteIkoDataAggregate(key: String) {
         denyAuthorization()
+        applicationEventPublisher.publishEvent(
+            IkoDataAggregatePreDeleteEvent(key)
+        )
         ikoDataAggregateRepository.deleteById(key)
     }
 

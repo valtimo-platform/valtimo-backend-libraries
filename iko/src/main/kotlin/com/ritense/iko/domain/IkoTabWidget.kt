@@ -17,11 +17,12 @@
 package com.ritense.iko.domain
 
 import com.ritense.widget.domain.Widget
+import jakarta.persistence.CascadeType.ALL
 import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
 import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToOne
 import jakarta.persistence.MapsId
+import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 
 @Entity
@@ -31,7 +32,7 @@ class IkoTabWidget(
     @EmbeddedId
     val id: IkoTabWidgetId,
 
-    @ManyToOne
+    @OneToOne(cascade = [ALL])
     @MapsId("widgetId")
     @JoinColumn(name = "widget_id")
     val widget: Widget

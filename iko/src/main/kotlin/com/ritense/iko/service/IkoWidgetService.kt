@@ -52,6 +52,7 @@ class IkoWidgetService(
     fun deleteByKey(ikoDataAggregateKey: String, tabKey: String, widgetKey: String) {
         val tab = ikoTabService.getByKey(ikoDataAggregateKey, tabKey)
         ikoTabWidgetRepository.deleteByIdTabIdAndWidgetKey(tab.id, widgetKey)
+        ikoTabWidgetRepository.flush()
     }
 
     fun create(ikoDataAggregateKey: String, tabKey: String, widget: Widget): Widget {

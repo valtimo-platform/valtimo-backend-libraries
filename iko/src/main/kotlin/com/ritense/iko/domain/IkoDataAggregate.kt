@@ -19,7 +19,7 @@ package com.ritense.iko.domain
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
-import jakarta.persistence.FetchType
+import jakarta.persistence.FetchType.EAGER
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
@@ -41,7 +41,7 @@ class IkoDataAggregate(
     @Column(name = "properties", nullable = false)
     val properties: Map<String, Any?> = emptyMap(),
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = EAGER)
     @JoinColumn(name = "iko_repository_config_key", referencedColumnName = "key")
     val ikoRepositoryConfig: IkoRepositoryConfig,
 )

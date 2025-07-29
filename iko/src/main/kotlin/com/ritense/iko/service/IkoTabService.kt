@@ -49,6 +49,7 @@ class IkoTabService(
 
     fun deleteByKey(ikoDataAggregateKey: String, tabKey: String) {
         ikoDataAggregateTabRepository.deleteByIdIkoDataAggregateKeyAndTabKey(ikoDataAggregateKey, tabKey)
+        ikoDataAggregateTabRepository.flush()
     }
 
     fun create(ikoDataAggregateKey: String, tab: Tab): Tab {

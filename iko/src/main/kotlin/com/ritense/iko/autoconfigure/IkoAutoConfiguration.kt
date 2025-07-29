@@ -22,6 +22,8 @@ import com.ritense.iko.IkoServerRepository
 import com.ritense.iko.IkoValueResolverFactory
 import com.ritense.iko.authorization.IkoDataAggregateSpecificationFactory
 import com.ritense.iko.client.IkoClient
+import com.ritense.iko.event.IkoDataAggregateEventListener
+import com.ritense.iko.event.IkoDataRequestEventListener
 import com.ritense.iko.importer.IkoDataAggregateImporter
 import com.ritense.iko.importer.IkoDataRequestImporter
 import com.ritense.iko.importer.IkoListColumnImporter
@@ -67,6 +69,7 @@ import com.ritense.widget.service.WidgetService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.annotation.Order
@@ -97,11 +100,13 @@ class IkoAutoConfiguration {
         ikoRepositoryService: IkoRepositoryService,
         authorizationService: AuthorizationService,
         ikoRepositories: List<IkoRepository>,
+        applicationEventPublisher: ApplicationEventPublisher,
     ) = IkoDataAggregateService(
         ikoDataAggregateRepository,
         ikoRepositoryService,
         authorizationService,
-        ikoRepositories
+        ikoRepositories,
+        applicationEventPublisher,
     )
 
     @Bean
@@ -111,11 +116,13 @@ class IkoAutoConfiguration {
         ikoDataAggregateService: IkoDataAggregateService,
         authorizationService: AuthorizationService,
         ikoRepositories: List<IkoRepository>,
+        applicationEventPublisher: ApplicationEventPublisher,
     ) = IkoDataRequestService(
         ikoDataRequestRepository,
         ikoDataAggregateService,
         authorizationService,
         ikoRepositories,
+        applicationEventPublisher,
     )
 
     @Order(300)
@@ -441,6 +448,30 @@ class IkoAutoConfiguration {
         return IkoPluginFactory(
             pluginService,
             ikoClient,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IkoDataAggregateEventListener::class)
+    fun ikoDataAggregateEventListener(
+        ikoDataRequestService: IkoDataRequestService,
+        ikoListColumnService: IkoListColumnService,
+        ikoTabService: IkoTabService,
+    ): IkoDataAggregateEventListener {
+        return IkoDataAggregateEventListener(
+            ikoDataRequestService,
+            ikoListColumnService,
+            ikoTabService,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IkoDataRequestEventListener::class)
+    fun ikoDataRequestEventListener(
+        ikoSearchFieldService: IkoSearchFieldService,
+    ): IkoDataRequestEventListener {
+        return IkoDataRequestEventListener(
+            ikoSearchFieldService,
         )
     }
 
