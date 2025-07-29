@@ -26,13 +26,13 @@ spring:
         oauth2:
             resourceserver:
                 jwt:
-                    jwk-set-uri: https://ritense.com/auth/realms/valtimo/protocol/openid-connect/certs
+                    jwk-set-uri: http://localhost:49152/auth/realms/valtimo/protocol/openid-connect/certs
             client:
                 provider:
                     keycloakjwt:
-                        issuer-uri: https://ritense.com/auth/realms/valtimo
+                        issuer-uri: http://localhost:49152/auth/realms/valtimo
                     keycloakapi:
-                        issuer-uri: https://ritense.com/auth/realms/valtimo
+                        issuer-uri: http://localhost:49152/auth/realms/valtimo
                 registration:
                     keycloakjwt:
                         client-id: valtimo-console

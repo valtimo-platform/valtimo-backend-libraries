@@ -62,7 +62,6 @@ dependencies {
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
     testImplementation project(':test-utils-common')
-    testImplementation project(":keycloak-iam")
     testImplementation project(":mail:local-mail")
     testImplementation project(":contract")
     testImplementation project(":core")
