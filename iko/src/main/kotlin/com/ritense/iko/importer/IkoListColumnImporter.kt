@@ -23,7 +23,6 @@ import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.IKO_DATA_AGGREGATE
 import com.ritense.importer.ValtimoImportTypes.Companion.IKO_LIST_COLUMN
-import java.util.UUID
 
 class IkoListColumnImporter(
     private val objectMapper: ObjectMapper,
@@ -49,12 +48,12 @@ class IkoListColumnImporter(
             if (existingListColumnId != null) {
                 service.update(
                     ikoListColumnsDto.ikoDataAggregateKey,
-                    listColumnDto.toEntity(existingListColumnId, index)
+                    listColumnDto.toEntity("ikoDataAggregate:${ikoListColumnsDto.ikoDataAggregateKey}", index)
                 )
             } else {
                 service.create(
                     ikoListColumnsDto.ikoDataAggregateKey,
-                    listColumnDto.toEntity(UUID.randomUUID().toString(), index)
+                    listColumnDto.toEntity("ikoDataAggregate:${ikoListColumnsDto.ikoDataAggregateKey}", index)
                 )
             }
         }

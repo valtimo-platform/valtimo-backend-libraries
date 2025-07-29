@@ -18,7 +18,6 @@ package com.ritense.case_.widget
 
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
-import com.ritense.case_.widget.displayproperties.FieldDisplayProperties
 import com.ritense.valtimo.contract.annotation.AnnotatedClassResolver
 import org.springframework.context.ApplicationContext
 
@@ -26,8 +25,4 @@ class CaseWidgetAnnotatedClassResolver(context: ApplicationContext) : AnnotatedC
     val widgetDtoClasses: List<Class<*>> = findClassesWithAnnotation<JsonTypeName>()
         .keys
         .filter { CaseWidgetTabWidgetDto::class.java.isAssignableFrom(it) }
-
-    val widgetDisplayPropertiesClasses: List<Class<*>> = findClassesWithAnnotation<JsonTypeName>()
-        .keys
-        .filter { FieldDisplayProperties::class.java.isAssignableFrom(it) }
 }

@@ -23,6 +23,16 @@ test {
     useJUnitPlatform {
         excludeTags "security", "integration"
     }
+
+    jvmArgs("--add-opens=java.base/java.lang=ALL-UNNAMED")
+
+    systemProperties = Map.of(
+        "junit.jupiter.execution.parallel.enabled", "true",
+        "junit.jupiter.execution.parallel.mode.default", "concurrent",
+        "junit.jupiter.execution.parallel.mode.classes.default", "concurrent",
+        "junit.jupiter.execution.parallel.config.strategy", "fixed",
+        "junit.jupiter.execution.parallel.config.fixed.parallelism", "10"
+    )
 }
 
 tasks.register("integrationTesting") {
@@ -36,6 +46,17 @@ tasks.register("integrationTestingPostgresql", Test) {
         includeTags "integration"
         excludeTags "security"
     }
+
+    jvmArgs("--add-opens=java.base/java.lang=ALL-UNNAMED")
+
+    systemProperties = Map.of(
+        "junit.jupiter.execution.parallel.enabled", "true",
+        "junit.jupiter.execution.parallel.mode.default", "concurrent",
+        "junit.jupiter.execution.parallel.mode.classes.default", "concurrent",
+        "junit.jupiter.execution.parallel.config.strategy", "fixed",
+        "junit.jupiter.execution.parallel.config.fixed.parallelism", "10"
+    )
+
     mustRunAfter check
     outputs.upToDateWhen { false }
     outputs.cacheIf { false }
@@ -52,6 +73,17 @@ tasks.register("integrationTestingMysql", Test) {
         includeTags "integration"
         excludeTags "security"
     }
+
+    jvmArgs("--add-opens=java.base/java.lang=ALL-UNNAMED")
+
+    systemProperties = Map.of(
+        "junit.jupiter.execution.parallel.enabled", "true",
+        "junit.jupiter.execution.parallel.mode.default", "concurrent",
+        "junit.jupiter.execution.parallel.mode.classes.default", "concurrent",
+        "junit.jupiter.execution.parallel.config.strategy", "fixed",
+        "junit.jupiter.execution.parallel.config.fixed.parallelism", "10"
+    )
+
     mustRunAfter check
     outputs.upToDateWhen { false }
     outputs.cacheIf { false }
@@ -68,6 +100,17 @@ tasks.register("securityTesting", Test) {
         includeTags "security"
         excludeTags "integration"
     }
+
+    jvmArgs("--add-opens=java.base/java.lang=ALL-UNNAMED")
+
+    systemProperties = Map.of(
+        "junit.jupiter.execution.parallel.enabled", "true",
+        "junit.jupiter.execution.parallel.mode.default", "concurrent",
+        "junit.jupiter.execution.parallel.mode.classes.default", "concurrent",
+        "junit.jupiter.execution.parallel.config.strategy", "fixed",
+        "junit.jupiter.execution.parallel.config.fixed.parallelism", "10"
+    )
+
     mustRunAfter check
 
     doLast {

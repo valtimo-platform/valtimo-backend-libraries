@@ -18,7 +18,7 @@ package com.ritense.case_.widget.fields
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include
-import com.ritense.case_.widget.displayproperties.FieldDisplayProperties
+import com.ritense.widget.displayproperties.FieldDisplayProperties
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotEmpty

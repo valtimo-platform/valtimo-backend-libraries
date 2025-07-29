@@ -21,8 +21,8 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.iko.service.IkoDataAggregateService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
-import com.ritense.importer.ValtimoImportTypes.Companion.IKO_REPOSITORY_CONFIG
 import com.ritense.importer.ValtimoImportTypes.Companion.IKO_DATA_AGGREGATE
+import com.ritense.importer.ValtimoImportTypes.Companion.IKO_REPOSITORY_CONFIG
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional

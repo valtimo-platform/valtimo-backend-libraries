@@ -19,12 +19,12 @@ package com.ritense.search.domain
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
 data class DisplayType(
-    val type: String = "text",
+    val type: String,
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXTERNAL_PROPERTY,
         property = "type",
         defaultImpl = EmptyDisplayTypeParameter::class
     )
-    val displayTypeParameters: DisplayTypeParameter = EmptyDisplayTypeParameter()
+    val displayTypeParameters: DisplayTypeParameter
 )

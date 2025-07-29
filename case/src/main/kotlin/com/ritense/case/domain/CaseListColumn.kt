@@ -16,6 +16,7 @@
 
 package com.ritense.case.domain
 
+import com.ritense.search.domain.DisplayType
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.Column
 import jakarta.persistence.EmbeddedId

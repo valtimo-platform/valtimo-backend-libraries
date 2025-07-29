@@ -26,7 +26,7 @@ data class IkoListColumnCreateRequest(
     val title: String?,
     val path: String,
     val order: Int,
-    val displayType: DisplayType = DisplayType(),
+    val displayType: DisplayType,
     val sortable: Boolean = false,
     val defaultSort: ColumnDefaultSort? = null,
 ) {

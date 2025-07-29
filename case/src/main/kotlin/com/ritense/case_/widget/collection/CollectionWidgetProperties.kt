@@ -19,7 +19,7 @@ package com.ritense.case_.widget.collection
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.annotation.JsonValue
-import com.ritense.case_.widget.displayproperties.FieldDisplayProperties
+import com.ritense.widget.displayproperties.FieldDisplayProperties
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank

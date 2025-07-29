@@ -22,8 +22,6 @@ import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.case.domain.ColumnDefaultSort
-import com.ritense.case.domain.DisplayType
-import com.ritense.case.domain.EmptyDisplayTypeParameter
 import com.ritense.case.domain.TaskListColumn
 import com.ritense.case.domain.TaskListColumnId
 import com.ritense.case.repository.TaskListColumnRepository
@@ -39,6 +37,8 @@ import com.ritense.processdocument.tasksearch.AdvancedSearchRequest
 import com.ritense.processdocument.tasksearch.SearchRequestMapper
 import com.ritense.processdocument.tasksearch.SearchWithConfigRequest
 import com.ritense.processdocument.web.result.TaskListRowDto
+import com.ritense.search.domain.DisplayType
+import com.ritense.search.domain.EmptyDisplayTypeParameter
 import com.ritense.search.domain.SearchFieldV2
 import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.valtimo.contract.annotation.SkipComponentScan

@@ -18,6 +18,7 @@ package com.ritense.iko.service
 
 import com.ritense.iko.domain.IkoDataRequestSearchField
 import com.ritense.iko.domain.IkoDataRequestSearchFieldId
+import com.ritense.iko.importer.IkoSearchFieldDto.Companion.IKO_SEARCH_FIELD_OWNER_TYPE
 import com.ritense.iko.repository.IkoDataRequestSearchFieldRepository
 import com.ritense.search.domain.SearchFieldV2
 import com.ritense.search.service.SearchFieldV2Service
@@ -58,6 +59,11 @@ class IkoSearchFieldService(
     }
 
     fun deleteByKey(ikoDataAggregateKey: String, ikoDataRequestKey: String, searchFieldKey: String) {
+        searchFieldService.delete(
+            IKO_SEARCH_FIELD_OWNER_TYPE,
+            "$ikoDataAggregateKey:$ikoDataRequestKey",
+            searchFieldKey
+        )
         ikoDataRequestSearchFieldRepository.deleteByIdIkoDataAggregateKeyAndIdIkoDataRequestKeyAndSearchFieldKey(
             ikoDataAggregateKey = ikoDataAggregateKey,
             ikoDataRequestKey = ikoDataRequestKey,

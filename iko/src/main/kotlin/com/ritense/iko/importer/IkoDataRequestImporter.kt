@@ -43,7 +43,7 @@ class IkoDataRequestImporter(
         val ikoDataRequestsDto = objectMapper.readValue<IkoDataRequestsDto>(fileContent)
 
         val ikoDataAggregate = ikoDataAggregateService.getByKey(ikoDataRequestsDto.ikoDataAggregateKey)
-        val existingDataRequests = service.findAll(ikoDataRequestsDto.ikoDataAggregateKey)
+        val existingDataRequests = service.findAll(ikoDataAggregateKey = ikoDataRequestsDto.ikoDataAggregateKey)
 
         ikoDataRequestsDto.ikoDataRequests.forEachIndexed { index, ikoDataRequestDto ->
             val ikoDataRequestExists = existingDataRequests

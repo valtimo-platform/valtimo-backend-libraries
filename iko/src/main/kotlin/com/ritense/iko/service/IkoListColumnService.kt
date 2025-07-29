@@ -51,6 +51,7 @@ class IkoListColumnService(
     }
 
     fun deleteByKey(ikoDataAggregateKey: String, columnKey: String) {
+        listColumnService.delete("ikoDataAggregate:$ikoDataAggregateKey", columnKey)
         ikoDataAggregateListColumnRepository.deleteByIdIkoDataAggregateKeyAndColumnKey(
             ikoDataAggregateKey,
             columnKey
@@ -64,6 +65,9 @@ class IkoListColumnService(
                 listColumn.key
             ) == null
         )
+        if (listColumn.defaultSort != null) {
+            unsetDefaultSort(ikoDataAggregateKey)
+        }
         val createdColumn = listColumnService.create(listColumn)
         ikoDataAggregateListColumnRepository.save(
             IkoDataAggregateListColumn(
@@ -81,6 +85,9 @@ class IkoListColumnService(
                 listColumn.key
             )
         requireNotNull(ikoDataAggregateColumn)
+        if (listColumn.defaultSort != null && ikoDataAggregateColumn.column.defaultSort == null) {
+            unsetDefaultSort(ikoDataAggregateKey)
+        }
         val updatedColumn =
             listColumnService.update(listColumn.copy(id = ikoDataAggregateColumn.id.listColumnId))
         ikoDataAggregateListColumnRepository.save(
@@ -90,6 +97,12 @@ class IkoListColumnService(
             )
         )
         return updatedColumn
+    }
+
+    private fun unsetDefaultSort(ikoDataAggregateKey: String) {
+        findAllColumnsByIkoDataAggregateKey(ikoDataAggregateKey)
+            .filter { listColumn -> listColumn.defaultSort != null }
+            .forEach { listColumn -> listColumnService.update(listColumn.copy(defaultSort = null)) }
     }
 
 }

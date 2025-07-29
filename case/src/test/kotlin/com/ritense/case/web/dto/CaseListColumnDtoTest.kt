@@ -18,9 +18,9 @@ package com.ritense.case.web.dto
 
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.ritense.case.domain.DateFormatDisplayTypeParameter
-import com.ritense.case.domain.DisplayType
 import com.ritense.case.web.rest.dto.CaseListColumnDto
+import com.ritense.search.domain.DateFormatDisplayTypeParameter
+import com.ritense.search.domain.DisplayType
 import com.ritense.valtimo.contract.json.MapperSingleton
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test

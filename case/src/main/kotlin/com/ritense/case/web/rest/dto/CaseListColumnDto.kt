@@ -19,8 +19,8 @@ package com.ritense.case.web.rest.dto
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.ritense.case.domain.ColumnDefaultSort
-import com.ritense.case.domain.DisplayType
 import com.ritense.case.exception.InvalidListColumnException
+import com.ritense.search.domain.DisplayType
 import org.zalando.problem.Status
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
