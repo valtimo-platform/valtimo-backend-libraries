@@ -20,6 +20,7 @@ import com.ritense.document.service.DocumentService
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zakenapi.ZakenApiPlugin.Companion.DOCUMENT_URL_PROCESS_VAR
 import com.ritense.zakenapi.ZakenApiPlugin.Companion.RESOURCE_ID_PROCESS_VAR
 import com.ritense.zakenapi.client.LinkDocumentRequest
@@ -422,8 +423,12 @@ internal class ZakenApiPluginTest {
     fun `should patch zaak`() {
         val zakenApiClient: ZakenApiClient = mock()
         val zaakInstanceLinkRepository: ZaakInstanceLinkRepository = mock()
-        val executionMock = mock<DelegateExecution>()
-        val authenticationMock = mock<ZakenApiAuthentication>()
+        val executionMock: DelegateExecution = mock()
+        val authenticationMock: ZakenApiAuthentication = mock()
+        val pluginService: PluginService = mock()
+
+        whenever(pluginService.getObjectMapper())
+            .thenReturn(MapperSingleton.get())
 
         val documentId = UUID.fromString("dff80fb1-e24e-4287-b168-7bb199be5d58")
         val zaakId = "f18146df-4b26-4a32-8e52-122cfa4475bd"
@@ -445,7 +450,7 @@ internal class ZakenApiPluginTest {
         val startDateRetentionPeriod = nowDate.plusYears(5).toString()
         val mainCase = zaakUrl("3a941618-b0f1-4a0e-a9d9-c9b25ef50eaf")
         val caseGeometryType = GeometryType.POINT.key
-        val caseGeometryCoordinates = listOf(0.0F, 0.5F)
+        val caseGeometryCoordinates = "[0.0, 1.0]"
 
         whenever(executionMock.businessKey)
             .thenReturn(documentId.toString())
@@ -470,11 +475,12 @@ internal class ZakenApiPluginTest {
         val plugin = zakenApiPlugin(
             zakenApiClient = zakenApiClient,
             zaakInstanceLinkRepository = zaakInstanceLinkRepository,
-            authenticationMock = authenticationMock
+            authenticationMock = authenticationMock,
+            pluginService = pluginService
         )
 
         plugin.patchZaak(
-            executionMock,
+            execution = executionMock,
             description = description,
             explanation = explantation,
             plannedEndDate = plannedEndDate,
@@ -509,7 +515,7 @@ internal class ZakenApiPluginTest {
         assertThat(request.communicatiekanaalNaam).isEqualTo(communicationChannelName)
         assertThat(request.betalingsindicatie).isEqualTo(Betalingsindicatie.GEDEELTELIJK)
         assertThat(request.laatsteBetaaldatum).isEqualTo(lastPaymentDate)
-        assertThat(request.zaakgeometrie).isEqualTo(Geometry(GeometryType.POINT, caseGeometryCoordinates))
+        assertThat(request.zaakgeometrie).isEqualTo(Geometry(GeometryType.POINT, listOf(0.0F, 1.0F)))
         assertThat(request.hoofdzaak).isEqualTo(URI.create(mainCase))
         assertThat(request.archiefactiedatum).isEqualTo(archiveActionDate)
         assertThat(request.startdatumBewaartermijn).isEqualTo(startDateRetentionPeriod)

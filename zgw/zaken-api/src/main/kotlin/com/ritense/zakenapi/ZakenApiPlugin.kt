@@ -17,6 +17,7 @@
 package com.ritense.zakenapi
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.catalogiapi.CatalogiApiPlugin
 import com.ritense.document.service.DocumentService
 import com.ritense.logging.withLoggingContext
@@ -270,44 +271,37 @@ class ZakenApiPlugin(
         @PluginActionProperty paymentIndication: String? = null,
         @PluginActionProperty lastPaymentDate: String? = null,
         @PluginActionProperty caseGeometryType: String? = null,
-        @PluginActionProperty caseGeometryCoordinates: List<Float>? = null,
+        @PluginActionProperty caseGeometryCoordinates: String? = null,
         @PluginActionProperty mainCase: String? = null,
         @PluginActionProperty archiveActionDate: String? = null,
         @PluginActionProperty startDateRetentionPeriod: String? = null
     ) {
         val documentId = UUID.fromString(execution.businessKey)
-
-        withLoggingContext(
-            "com.ritense.document.domain.impl.JsonSchemaDocument" to documentId.toString()
-        ) {
-            val caseGeometry: Geometry? = if (caseGeometryType != null && caseGeometryCoordinates != null) {
-                Geometry(
-                    type = GeometryType.entries.find { it.key == caseGeometryType }!!,
-                    coordinates = caseGeometryCoordinates
-                )
-            } else {
-                null
-            }
-
-            patchZaak(
-                documentId = documentId,
-                description = description,
-                explanation = explanation,
-                plannedEndDate = plannedEndDate?.let { LocalDate.parse(it) },
-                finalDeliveryDate = finalDeliveryDate?.let { LocalDate.parse(it) },
-                publicationDate = publicationDate?.let { LocalDate.parse(it) },
-                communicationChannel = communicationChannel?.let { URI.create(it) },
-                communicationChannelName = communicationChannelName,
-                paymentIndication = paymentIndication?.let { Betalingsindicatie.create(it) },
-                lastPaymentDate = lastPaymentDate?.let { LocalDate.parse(it) },
-                caseGeometry = caseGeometry,
-                mainCase = mainCase?.let { URI.create(it) },
-                archiveActionDate = archiveActionDate?.let { LocalDate.parse(it) },
-                startDateRetentionPeriod = startDateRetentionPeriod?.let { LocalDate.parse(it) }
+        val caseGeometry: Geometry? = if (caseGeometryType != null && caseGeometryCoordinates != null) {
+            Geometry(
+                type = GeometryType.entries.find { it.key == caseGeometryType }!!,
+                coordinates = pluginService.getObjectMapper().readValue(caseGeometryCoordinates)
             )
-
-            logger.info { "Zaak patched for document with id '$documentId'" }
+        } else {
+            null
         }
+
+        patchZaak(
+            documentId = documentId,
+            description = description,
+            explanation = explanation,
+            plannedEndDate = plannedEndDate?.let { LocalDate.parse(it) },
+            finalDeliveryDate = finalDeliveryDate?.let { LocalDate.parse(it) },
+            publicationDate = publicationDate?.let { LocalDate.parse(it) },
+            communicationChannel = communicationChannel?.let { URI.create(it) },
+            communicationChannelName = communicationChannelName,
+            paymentIndication = paymentIndication?.let { Betalingsindicatie.create(it) },
+            lastPaymentDate = lastPaymentDate?.let { LocalDate.parse(it) },
+            caseGeometry = caseGeometry,
+            mainCase = mainCase?.let { URI.create(it) },
+            archiveActionDate = archiveActionDate?.let { LocalDate.parse(it) },
+            startDateRetentionPeriod = startDateRetentionPeriod?.let { LocalDate.parse(it) }
+        )
     }
 
     fun patchZaak(
