@@ -279,7 +279,7 @@ class ZakenApiPlugin(
         val documentId = UUID.fromString(execution.businessKey)
         val caseGeometry: Geometry? = if (caseGeometryType != null && caseGeometryCoordinates != null) {
             Geometry(
-                type = GeometryType.entries.find { it.key == caseGeometryType }!!,
+                type = GeometryType.entries.find { it.key.uppercase() == caseGeometryType.uppercase() }!!,
                 coordinates = pluginService.getObjectMapper().readValue(caseGeometryCoordinates)
             )
         } else {
