@@ -85,7 +85,7 @@ class IkoDataRequestManagementResource(
             ikoDataAggregateKey = ikoDataAggregateKey,
         )
         val ikoDataRequest = service.create(
-            ikoDataRequest = request.toEntity(key, ikoDataAggregate, existingIkoDataRequests.size)
+            ikoDataRequest = request.toEntity(key, ikoDataAggregate, existingIkoDataRequests.maxOf { it.order + 1 })
         )
         return ResponseEntity.ok(IkoDataRequestResponse.from(ikoDataRequest))
     }

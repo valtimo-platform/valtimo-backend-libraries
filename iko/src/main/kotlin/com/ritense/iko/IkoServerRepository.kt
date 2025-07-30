@@ -66,7 +66,7 @@ class IkoServerRepository(
         require(filters.all { it.comparator == Comparator.EQUAL_TO })
         val filterMap = filters.associate {
             it.property
-                .substringAfterLast(':')
+                .substringAfter(':')
                 .replace("/", "__")
                 .trim('_') to it.value.toString()
         }

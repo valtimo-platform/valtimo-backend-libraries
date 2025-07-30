@@ -16,6 +16,7 @@
 
 package com.ritense.widget.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonTypeName
 
 @JsonTypeName("redirect")
@@ -23,6 +24,7 @@ data class RedirectWidgetAction(
     val redirectPath: String,
 ) : WidgetAction {
 
+    @JsonIgnore
     fun getUnresolvedValues(): List<String> = getPlaceholders().map { it.second }
 
     fun getResolvedRedirectPath(resolvedValues: Map<String, Any?>): String? {

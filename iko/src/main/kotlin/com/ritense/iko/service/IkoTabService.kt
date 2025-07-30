@@ -55,7 +55,7 @@ class IkoTabService(
     fun create(ikoDataAggregateKey: String, tab: Tab): Tab {
         val tabs = findAllTabsByIkoDataAggregateKey(ikoDataAggregateKey)
         require(tabs.none { it.key == tab.key })
-        val createdTab = tabService.create(tab.copy(order = tabs.size))
+        val createdTab = tabService.create(tab.copy(order = tabs.maxOf { it.order + 1 }))
         ikoDataAggregateTabRepository.save(
             IkoDataAggregateTab(
                 id = IkoDataAggregateTabId(ikoDataAggregateKey, tab.id),

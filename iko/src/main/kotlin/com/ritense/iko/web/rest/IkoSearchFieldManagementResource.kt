@@ -79,7 +79,7 @@ class IkoSearchFieldManagementResource(
         val ikoSearchField = service.create(
             ikoDataAggregateKey,
             ikoDataRequestKey,
-            request.toEntity(ikoDataAggregateKey, ikoDataRequestKey, existingIkoSearchFields.size)
+            request.toEntity(ikoDataAggregateKey, ikoDataRequestKey, existingIkoSearchFields.maxOf { it.order + 1 })
         )
         return ResponseEntity.ok(IkoSearchFieldResponse.from(ikoSearchField))
     }
