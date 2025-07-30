@@ -19,16 +19,38 @@ package com.ritense.valtimo.dashboard
 import com.ritense.valtimo.operaton.repository.OperatonTaskRepository
 import com.ritense.valtimo.operaton.repository.OperatonTaskSpecificationHelper.Companion.all
 import com.ritense.valtimo.contract.dashboard.WidgetDataSource
+import com.ritense.valtimo.contract.repository.ExpressionOperator
+import com.ritense.valtimo.operaton.domain.OperatonTask
+import com.ritense.valtimo.service.OperatonTaskService
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Expression
 import jakarta.persistence.criteria.Path
 import jakarta.persistence.criteria.Root
 
 class TaskWidgetDataSource(
-    private val taskRepository: OperatonTaskRepository
+    private val taskRepository: OperatonTaskRepository,
+    private val operatonTaskService: OperatonTaskService,
 ) {
     @WidgetDataSource("task-count", "Task count")
     fun getTaskCount(taskCountDataSourceProperties: TaskCountDataSourceProperties): TaskCountDataResult {
+
+        val specification = taskCountDataSourceProperties.queryConditions?.first { con ->
+            con.queryPath == "task:assignee" && con.queryOperator == ExpressionOperator.EQUAL_TO
+        }?.let {
+            when (it.queryValue) {
+                "\${currentUserIdentifier}" -> {
+                    operatonTaskService.getSpecification(OperatonTaskService.TaskFilter.MINE)
+                }
+                "\${null}" -> {
+                    operatonTaskService.getSpecification(OperatonTaskService.TaskFilter.OPEN)
+                }
+                else -> {
+                    operatonTaskService.getSpecification(OperatonTaskService.TaskFilter.ALL)
+                }
+            }
+        } ?: operatonTaskService.getSpecification(OperatonTaskService.TaskFilter.ALL)
+//        val count = operatonTaskService.countTasksFiltered(specification)
+
         val taskSpec = all()
         val spec = taskSpec.and { root, _, criteriaBuilder ->
             criteriaBuilder.and(
@@ -38,8 +60,16 @@ class TaskWidgetDataSource(
             )
         }
 
+
+//        val all = taskRepository.findAll(spec)
+
+//        val filtered = operatonTaskService.filterTaskFilterSpecification(spec, OperatonTaskService.TaskFilter.MINE)
+//        val count = taskRepository.count(filtered)
+//        val total = taskRepository.count(filtered)
+
         val count = taskRepository.count(spec)
         val total = taskRepository.count(taskSpec)
+
         return TaskCountDataResult(count, total)
     }
 
@@ -47,7 +77,7 @@ class TaskWidgetDataSource(
         valueClass: Class<T>,
         path: String,
         root: Root<*>,
-        criteriaBuilder: CriteriaBuilder
+        criteriaBuilder: CriteriaBuilder,
     ): Expression<T> {
         var expr = root as Path<*>
         path.substringAfter(TASK_PREFIX).split('.').forEach {

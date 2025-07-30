@@ -18,6 +18,7 @@ package com.ritense.valtimo.autoconfiguration
 
 import com.ritense.valtimo.operaton.repository.OperatonTaskRepository
 import com.ritense.valtimo.dashboard.TaskWidgetDataSource
+import com.ritense.valtimo.service.OperatonTaskService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -27,6 +28,7 @@ class TaskWidgetAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(TaskWidgetDataSource::class)
     fun taskWidgetDataSource(
-        taskRepository: OperatonTaskRepository
-    ) = TaskWidgetDataSource(taskRepository)
+        taskRepository: OperatonTaskRepository,
+        operationTaskService: OperatonTaskService
+    ) = TaskWidgetDataSource(taskRepository,operationTaskService)
 }

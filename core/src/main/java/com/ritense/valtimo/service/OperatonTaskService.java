@@ -53,6 +53,7 @@ import com.ritense.authorization.role.Role;
 import com.ritense.authorization.specification.AuthorizationSpecification;
 import com.ritense.outbox.OutboxService;
 import com.ritense.resource.service.ResourceService;
+import com.ritense.valtimo.dashboard.TaskCountDataSourceProperties;
 import com.ritense.valtimo.operaton.domain.OperatonIdentityLink;
 import com.ritense.valtimo.operaton.domain.OperatonTask;
 import com.ritense.valtimo.operaton.dto.OperatonIdentityLinkDto;
@@ -395,6 +396,13 @@ public class OperatonTaskService {
     }
 
     @Transactional(readOnly = true)
+    public Specification<OperatonTask> getSpecification(OperatonTaskService.TaskFilter taskFilter){
+        var spec = getAuthorizationSpecification(VIEW_LIST);
+
+        return spec.and(buildTaskFilterSpecification(taskFilter));
+    }
+
+    @Transactional(readOnly = true)
     public Page<TaskExtended> findTasksFiltered(
         TaskFilter taskFilter, Pageable pageable
     ) {
@@ -428,6 +436,7 @@ public class OperatonTaskService {
         }
 
         var assigneeMap = new java.util.HashMap<String, ValtimoUser>();
+        var bla = typedQuery.getResultList();
         var tasks = typedQuery.getResultList().stream()
             .map(tuple -> {
                 var task = tuple.get(0, OperatonTask.class);
@@ -470,7 +479,7 @@ public class OperatonTaskService {
         return new PageImpl<>(tasks, pageable, countTasksFiltered(specification));
     }
 
-    private long countTasksFiltered(Specification<OperatonTask> specification) {
+    public long countTasksFiltered(Specification<OperatonTask> specification) {
         var cb = entityManager.getCriteriaBuilder();
         var countQuery = cb.createQuery(Long.class);
         var taskCountRoot = countQuery.from(OperatonTask.class);
@@ -643,6 +652,19 @@ public class OperatonTaskService {
         );
     }
 
+    public Specification<OperatonTask> filterTaskFilterSpecification(Specification<OperatonTask> filterSpec, TaskFilter taskFilter) {
+
+        if (taskFilter == TaskFilter.MINE) {
+            String currentUsername = userManagementService.getCurrentUser().getUsername();
+            return filterSpec.and(byAssignee(currentUsername));
+        } else if (taskFilter == TaskFilter.ALL) {
+            return filterSpec;
+        } else if (taskFilter == TaskFilter.OPEN) {
+            return filterSpec.and(byUnassigned());
+        }
+
+        return filterSpec;
+    }
 
     private Specification<OperatonTask> buildTaskFilterSpecification(TaskFilter taskFilter) {
         var filterSpec = all();
