@@ -40,7 +40,6 @@ class TestCaseWidgetMapper : CaseWidgetMapper<TestCaseWidgetTabWidget, TestCaseW
             title = entity.title,
             width = entity.width,
             highContrast = entity.highContrast,
-            topRightCorner = entity.topRightCorner,
             properties = entity.properties,
             actions = entity.actions,
         )

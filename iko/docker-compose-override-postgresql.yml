@@ -1,6 +1,6 @@
 services:
     db:
         ports:
-            - "3358:5432"
+            - "3362:5432"
         environment:
             - POSTGRES_DB=iko-test

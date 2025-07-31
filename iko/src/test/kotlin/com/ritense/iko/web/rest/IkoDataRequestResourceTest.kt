@@ -25,6 +25,7 @@ import com.ritense.iko.service.IkoSearchFieldService
 import com.ritense.iko.web.rest.request.IkoSearchRequest
 import com.ritense.search.domain.DataType
 import com.ritense.search.domain.DisplayType
+import com.ritense.search.domain.EmptyDisplayTypeParameter
 import com.ritense.search.domain.FieldType
 import com.ritense.search.domain.SearchFieldV2
 import com.ritense.search.domain.SearchListColumn
@@ -125,7 +126,7 @@ internal class IkoDataRequestResourceTest {
                     title = "BSN",
                     path = "/burgerservicenummer",
                     order = 1,
-                    displayType = DisplayType(),
+                    displayType = DisplayType("text", EmptyDisplayTypeParameter()),
                     sortable = true,
                 )
             )

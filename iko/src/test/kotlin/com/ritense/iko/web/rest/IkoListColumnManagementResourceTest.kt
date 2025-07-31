@@ -20,6 +20,7 @@ import com.ritense.iko.service.IkoListColumnService
 import com.ritense.iko.web.rest.request.IkoListColumnCreateRequest
 import com.ritense.iko.web.rest.request.IkoListColumnUpdateRequest
 import com.ritense.search.domain.DisplayType
+import com.ritense.search.domain.EmptyDisplayTypeParameter
 import com.ritense.search.domain.SearchListColumn
 import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.BeforeEach
@@ -216,7 +217,7 @@ internal class IkoListColumnManagementResourceTest {
         title = "Naam",
         path = "/naam/volledigeNaam",
         order = 0,
-        displayType = DisplayType(),
+        displayType = DisplayType("text", EmptyDisplayTypeParameter()),
         sortable = false,
     )
 }

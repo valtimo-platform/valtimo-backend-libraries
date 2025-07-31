@@ -134,7 +134,7 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     ) {
         return withLoggingContext("formDefinitionName", request.getName(), () -> {
             caseDefinitionChecker.assertCanUpdateGlobalConfiguration();
-            if (formDefinitionRepository.findByNameAndCaseDefinitionIdIsNull(request.getName())
+            if (formDefinitionRepository.findByNameAndCaseDefinitionId(request.getName(), null)
                 .isPresent()) {
                 throw new IllegalArgumentException("Duplicate name for new form: " + request.getName());
             }

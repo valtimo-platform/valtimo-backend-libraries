@@ -17,9 +17,8 @@
 package com.ritense.form.widget
 
 import com.ritense.valtimo.contract.annotation.AllOpen
-import com.ritense.widget.domain.DeprecatedStartProcessWidgetAction
+import com.ritense.widget.domain.WidgetAction
 import com.ritense.widget.domain.Widget
-import com.ritense.widget.domain.WidgetTopRightCorner
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorValue
@@ -37,14 +36,13 @@ class FormIoWidget(
     order: Int,
     width: Int,
     highContrast: Boolean,
-    actions: List<DeprecatedStartProcessWidgetAction> = emptyList(),
-    topRightCorner: WidgetTopRightCorner? = null,
+    actions: List<WidgetAction> = emptyList(),
 
     @Type(value = JsonType::class)
     @Column(name = "properties", nullable = false)
     val properties: FormIoWidgetProperties
 ) : Widget(
-    id, key, title, order, width, highContrast, actions, topRightCorner
+    id, key, title, order, width, highContrast, actions
 ) {
     override fun copy(
         id: UUID,
@@ -53,8 +51,7 @@ class FormIoWidget(
         order: Int,
         width: Int,
         highContrast: Boolean,
-        actions: List<DeprecatedStartProcessWidgetAction>,
-        topRightCorner: WidgetTopRightCorner?,
+        actions: List<WidgetAction>,
     ) = FormIoWidget(
         id = id,
         key = key,
@@ -63,7 +60,6 @@ class FormIoWidget(
         width = width,
         highContrast = highContrast,
         actions = actions,
-        topRightCorner = topRightCorner,
         properties = properties,
     )
 
@@ -73,7 +69,6 @@ class FormIoWidget(
         width = this.width,
         highContrast = this.highContrast,
         actions = this.actions,
-        topRightCorner = this.topRightCorner,
         properties = this.properties,
     )
 }

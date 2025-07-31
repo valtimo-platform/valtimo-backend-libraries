@@ -74,9 +74,9 @@ class IkoValueResolverFactory(
                 ikoDataRequestKey = dataRequest.id.key
             )
         }
-            .filter { (_, searchFields) -> searchFields.all { properties.keys.contains(it.key) || !it.required } }
-            .maxByOrNull { (_, searchFields) -> searchFields.count { it.required } }
-            ?: return Function { null }
+            .filter { (_, searchFields) -> searchFields.all { properties.contains(it.key) || !it.required } }
+            .map { (dataRequest, searchFields) -> dataRequest to searchFields.filter { properties.contains(it.key) } }
+            .firstOrNull() ?: return Function { null }
 
         val filters = searchFields.map { searchField -> DataFilter(searchField.path, properties[searchField.key]) }
         val pageable = properties[PAGEABLE] as Pageable? ?: Pageable.unpaged()

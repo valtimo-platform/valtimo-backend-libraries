@@ -19,8 +19,6 @@ package com.ritense.processdocument.web
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.case.domain.ColumnDefaultSort
-import com.ritense.case.domain.EmptyDisplayTypeParameter
-import com.ritense.case.domain.EnumDisplayTypeParameter
 import com.ritense.case.domain.TaskListColumn
 import com.ritense.case.domain.TaskListColumnId
 import com.ritense.case.repository.TaskListColumnRepository
@@ -32,6 +30,8 @@ import com.ritense.processdocument.tasksearch.SearchWithConfigRequest
 import com.ritense.processdocument.web.request.TaskListSearchDto
 import com.ritense.search.domain.DataType
 import com.ritense.search.domain.DisplayType
+import com.ritense.search.domain.EmptyDisplayTypeParameter
+import com.ritense.search.domain.EnumDisplayTypeParameter
 import com.ritense.search.domain.FieldType
 import com.ritense.search.domain.SearchFieldMatchType
 import com.ritense.search.service.SearchFieldV2Service

@@ -23,6 +23,19 @@ test {
     useJUnitPlatform {
         excludeTags "security", "integration"
     }
+}
+
+tasks.register("testParallel") {
+    description = "Run tests in parallel (beta)"
+    group = 'verification'
+    dependsOn cleanTest
+
+    testLogging {
+        events("passed", "skipped", "failed", "standardError")
+    }
+    useJUnitPlatform {
+        excludeTags "security", "integration"
+    }
 
     jvmArgs("--add-opens=java.base/java.lang=ALL-UNNAMED")
 
@@ -30,16 +43,37 @@ test {
         "junit.jupiter.execution.parallel.enabled", "true",
         "junit.jupiter.execution.parallel.mode.default", "concurrent",
         "junit.jupiter.execution.parallel.mode.classes.default", "concurrent",
-        "junit.jupiter.execution.parallel.config.strategy", "fixed",
-        "junit.jupiter.execution.parallel.config.fixed.parallelism", "10"
+        "junit.jupiter.execution.parallel.config.strategy", "dynamic"
     )
+
+    outputs.upToDateWhen { false }
+    outputs.cacheIf { false }
 }
 
 tasks.register("integrationTesting") {
+    group = 'verification'
     dependsOn("integrationTestingPostgresql")
 }
 
 tasks.register("integrationTestingPostgresql", Test) {
+    group = 'verification'
+    systemProperty("spring.profiles.include", "inttest,postgresql")
+    useJUnitPlatform {
+        includeTags "integration"
+        excludeTags "security"
+    }
+
+    mustRunAfter check
+    outputs.upToDateWhen { false }
+    outputs.cacheIf { false }
+
+    doLast {
+        composeDownForced
+    }
+}
+
+tasks.register("integrationTestingPostgresqlParallel", Test) {
+    description = "Run Postgresql integration tests in parallel (beta)"
     group = 'verification'
     systemProperty("spring.profiles.include", "inttest,postgresql")
     useJUnitPlatform {
@@ -52,9 +86,8 @@ tasks.register("integrationTestingPostgresql", Test) {
     systemProperties = Map.of(
         "junit.jupiter.execution.parallel.enabled", "true",
         "junit.jupiter.execution.parallel.mode.default", "concurrent",
-        "junit.jupiter.execution.parallel.mode.classes.default", "concurrent",
-        "junit.jupiter.execution.parallel.config.strategy", "fixed",
-        "junit.jupiter.execution.parallel.config.fixed.parallelism", "10"
+        "junit.jupiter.execution.parallel.mode.classes.default", "same_thread",
+        "junit.jupiter.execution.parallel.config.strategy", "dynamic"
     )
 
     mustRunAfter check
@@ -73,15 +106,31 @@ tasks.register("integrationTestingMysql", Test) {
         includeTags "integration"
         excludeTags "security"
     }
+    mustRunAfter check
+    outputs.upToDateWhen { false }
+    outputs.cacheIf { false }
+
+    doLast {
+        composeDownForced
+    }
+}
+
+tasks.register("integrationTestingMysqlParallel", Test) {
+    description = "Run MySql integration tests in parallel (beta)"
+    group = 'verification'
+    systemProperty("spring.profiles.include", "inttest,mysql")
+    useJUnitPlatform {
+        includeTags "integration"
+        excludeTags "security"
+    }
 
     jvmArgs("--add-opens=java.base/java.lang=ALL-UNNAMED")
 
     systemProperties = Map.of(
         "junit.jupiter.execution.parallel.enabled", "true",
         "junit.jupiter.execution.parallel.mode.default", "concurrent",
-        "junit.jupiter.execution.parallel.mode.classes.default", "concurrent",
-        "junit.jupiter.execution.parallel.config.strategy", "fixed",
-        "junit.jupiter.execution.parallel.config.fixed.parallelism", "10"
+        "junit.jupiter.execution.parallel.mode.classes.default", "same_thread",
+        "junit.jupiter.execution.parallel.config.strategy", "dynamic"
     )
 
     mustRunAfter check
@@ -100,17 +149,6 @@ tasks.register("securityTesting", Test) {
         includeTags "security"
         excludeTags "integration"
     }
-
-    jvmArgs("--add-opens=java.base/java.lang=ALL-UNNAMED")
-
-    systemProperties = Map.of(
-        "junit.jupiter.execution.parallel.enabled", "true",
-        "junit.jupiter.execution.parallel.mode.default", "concurrent",
-        "junit.jupiter.execution.parallel.mode.classes.default", "concurrent",
-        "junit.jupiter.execution.parallel.config.strategy", "fixed",
-        "junit.jupiter.execution.parallel.config.fixed.parallelism", "10"
-    )
-
     mustRunAfter check
 
     doLast {

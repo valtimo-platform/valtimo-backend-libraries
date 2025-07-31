@@ -49,9 +49,6 @@
             <column name="actions" type="${jsonType}" defaultValue="[]">
                 <constraints nullable="true"/>
             </column>
-            <column name="top_right_corner" type="${jsonType}" defaultValue="{}">
-                <constraints nullable="true"/>
-            </column>
         </createTable>
     </changeSet>
 

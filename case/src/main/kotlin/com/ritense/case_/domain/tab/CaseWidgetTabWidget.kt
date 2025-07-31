@@ -20,10 +20,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.google.common.base.Objects
 import com.ritense.case_.rest.dto.CaseWidgetAction
 import com.ritense.valtimo.contract.annotation.AllOpen
-import com.ritense.widget.domain.RedirectWidgetAction
-import com.ritense.widget.domain.WidgetAction
-import com.ritense.widget.domain.WidgetButton
-import com.ritense.widget.domain.WidgetTopRightCorner
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorColumn
@@ -64,22 +60,8 @@ abstract class CaseWidgetTabWidget(
     @Type(value = JsonType::class)
     @Column(name = "actions", nullable = false)
     val actions: List<CaseWidgetAction> = emptyList(),
-
-    @Type(value = JsonType::class)
-    @Column(name = "top_right_corner", nullable = true)
-    val topRightCorner: WidgetTopRightCorner? = null,
 ) {
     abstract fun copy(id: CaseWidgetTabWidgetId = this.id): CaseWidgetTabWidget
-
-    final inline fun <reified T : WidgetAction> getWidgetActions(): List<T> {
-        return topRightCorner?.let { if (it is WidgetButton && it.action is T) listOf(it.action as T) else null }
-            ?: emptyList()
-    }
-
-    fun getUnresolvedActionValues(): List<String> {
-        return getWidgetActions<RedirectWidgetAction>()
-            .flatMap { action -> action.getUnresolvedValues() }
-    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -91,7 +73,6 @@ abstract class CaseWidgetTabWidget(
         if (width != other.width) return false
         if (highContrast != other.highContrast) return false
         if (actions != other.actions) return false
-        if (topRightCorner != other.topRightCorner) return false
 
         return true
     }
@@ -103,7 +84,6 @@ abstract class CaseWidgetTabWidget(
             width,
             highContrast,
             actions,
-            topRightCorner,
         )
     }
 

@@ -8,14 +8,6 @@
             "title": "Klant",
             "width": 1,
             "highContrast": true,
-            "topRightCorner": {
-                "type": "button",
-                "title": "IKO >",
-                "action": {
-                    "type": "redirect",
-                    "redirectPath": "/iko/klant/bsn/details/${iko:/persoon/burgerservicenummer}"
-                }
-            },
             "properties": {
                 "columns": [
                     [

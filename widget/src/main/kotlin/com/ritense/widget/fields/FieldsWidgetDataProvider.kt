@@ -18,7 +18,6 @@ package com.ritense.widget.fields
 
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.widget.WidgetDataProvider
-import com.ritense.widget.domain.RedirectWidgetAction
 
 class FieldsWidgetDataProvider(
     private val valueResolverService: ValueResolverService,
@@ -31,19 +30,14 @@ class FieldsWidgetDataProvider(
             column.map { field -> field.value }
         }
 
-        val unresolvedValues = unresolvedColumnValues.toSet() + widget.getUnresolvedActionValues()
+        val unresolvedValues = unresolvedColumnValues.toSet()
         val resolvedValues = valueResolverService.resolveValues(properties, unresolvedValues)
 
-        val widgetColumnData = widget.properties.columns.flatMap { column ->
+        return widget.properties.columns.flatMap { column ->
             column.map { field ->
                 field.key to resolvedValues[field.value]
             }
         }.toMap()
-
-        val redirectPathData = widget.getWidgetActions<RedirectWidgetAction>()
-            .associate { action -> action.redirectPath to action.getResolvedRedirectPath(resolvedValues) }
-
-        return widgetColumnData + redirectPathData
     }
 
 }

@@ -28,8 +28,7 @@ class WidgetJacksonModule(
         context.registerSubtypes(
             *(annotatedClassResolver.widgetDtoClasses +
                 annotatedClassResolver.widgetDisplayPropertiesClasses +
-                annotatedClassResolver.widgetActionClasses +
-                annotatedClassResolver.widgetTopRightCornerClasses)
+                annotatedClassResolver.widgetActionClasses)
                 .map { NamedType(it) }
                 .toTypedArray()
         )

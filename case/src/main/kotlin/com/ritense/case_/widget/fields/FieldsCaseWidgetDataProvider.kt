@@ -21,7 +21,6 @@ import com.ritense.case_.widget.CaseWidgetDataProvider
 import com.ritense.valueresolver.ValueResolverPropertyKey.Companion.DOCUMENT_ID
 import com.ritense.valueresolver.ValueResolverPropertyKey.Companion.PAGEABLE
 import com.ritense.valueresolver.ValueResolverService
-import com.ritense.widget.domain.RedirectWidgetAction
 import org.springframework.data.domain.Pageable
 import java.util.UUID
 
@@ -37,27 +36,22 @@ class FieldsCaseWidgetDataProvider(
         widget: FieldsCaseWidget,
         pageable: Pageable
     ): Any {
-        val unresolvedColumnValues = widget.properties.columns.flatMap { column ->
-            column.map { field -> field.value }
-        }
-
-        val unresolvedValues = unresolvedColumnValues.toSet() + widget.getUnresolvedActionValues()
-        val resolvedValues = valueResolverService.resolveValues(
-            mapOf(DOCUMENT_ID to documentId.toString(), PAGEABLE to pageable),
-             unresolvedValues
-        )
-
-        val widgetColumnData = widget.properties.columns.flatMap { column ->
+        val valueKeyMap = widget.properties.columns.flatMap { column ->
             column.map { field ->
-                field.key to resolvedValues[field.value]
+                field.value to field.key
             }
         }.toMap()
 
-        val redirectPathData = widget.getWidgetActions<RedirectWidgetAction>().associate { action ->
-            action.redirectPath to action.getResolvedRedirectPath(resolvedValues)
-        }
+        val resolvedValues = valueResolverService.resolveValues(
+            mapOf(DOCUMENT_ID to documentId.toString(), PAGEABLE to pageable),
+            valueKeyMap.keys
+        )
 
-        return widgetColumnData + redirectPathData
+        return widget.properties.columns.flatMap { column ->
+            column.map { field ->
+                field.key to (resolvedValues[field.value] ?: null)
+            }
+        }.toMap()
     }
 
 }

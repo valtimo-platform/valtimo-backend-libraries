@@ -27,7 +27,6 @@ class FieldsCaseWidgetMapper : CaseWidgetMapper<FieldsCaseWidget, FieldsCaseWidg
         width = entity.width,
         highContrast = entity.highContrast,
         actions = entity.actions,
-        topRightCorner = entity.topRightCorner,
         properties = entity.properties
     )
 
@@ -37,7 +36,6 @@ class FieldsCaseWidgetMapper : CaseWidgetMapper<FieldsCaseWidget, FieldsCaseWidg
         width = dto.width,
         highContrast = dto.highContrast,
         actions = dto.actions ?: emptyList(),
-        topRightCorner = dto.topRightCorner,
         properties = dto.properties,
         order = index
     )

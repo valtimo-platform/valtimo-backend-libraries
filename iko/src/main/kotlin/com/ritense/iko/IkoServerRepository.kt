@@ -65,10 +65,7 @@ class IkoServerRepository(
     ): Page<JsonNode> {
         require(filters.all { it.comparator == Comparator.EQUAL_TO })
         val filterMap = filters.associate {
-            it.property
-                .substringAfter(':')
-                .replace("/", "__")
-                .trim('_') to it.value.toString()
+            it.property.substringAfter(':') to it.value.toString()
         }
 
         val data = getPlugin(config).search(

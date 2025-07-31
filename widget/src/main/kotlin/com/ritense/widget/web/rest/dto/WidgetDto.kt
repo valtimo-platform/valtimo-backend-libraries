@@ -17,9 +17,8 @@
 package com.ritense.widget.web.rest.dto
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.ritense.widget.domain.DeprecatedStartProcessWidgetAction
+import com.ritense.widget.domain.WidgetAction
 import com.ritense.widget.domain.Widget
-import com.ritense.widget.domain.WidgetTopRightCorner
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
@@ -35,9 +34,7 @@ interface WidgetDto {
     @get:Max(4)
     val width: Int
     val highContrast: Boolean
-    @Deprecated("13.1.0", ReplaceWith("topRightCorner"))
-    val actions: List<DeprecatedStartProcessWidgetAction>
-    val topRightCorner: WidgetTopRightCorner?
+    val actions: List<WidgetAction>
 
     fun toEntity(id: UUID, order: Int): Widget
 }

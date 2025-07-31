@@ -24,11 +24,10 @@ import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.Option
 import com.ritense.valueresolver.ValueResolverPropertyKey.Companion.PAGEABLE
 import com.ritense.valueresolver.ValueResolverService
-import com.ritense.widget.PageWithData
 import com.ritense.widget.WidgetDataProvider
-import com.ritense.widget.domain.RedirectWidgetAction
 import com.ritense.widget.exception.InvalidCollectionException
 import com.ritense.widget.exception.InvalidCollectionNodeTypeException
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 
@@ -39,21 +38,18 @@ class CollectionWidgetDataProvider(
 
     override fun supportedWidgetType() = CollectionWidget::class.java
 
-    override fun getData(widget: CollectionWidget, properties: Map<String, Any>): PageWithData<CollectionWidgetDataResult> {
+    override fun getData(widget: CollectionWidget, properties: Map<String, Any>): Page<CollectionWidgetDataResult> {
         val pageable = properties[PAGEABLE] as Pageable? ?: Pageable.ofSize(5)
 
         val resolvedValues = valueResolverService.resolveValues(
             properties,
-            widget.getUnresolvedActionValues() + widget.properties.collection
+            listOf(widget.properties.collection)
         )
-
-        val redirectPathData = widget.getWidgetActions<RedirectWidgetAction>()
-            .associate { action -> action.redirectPath to action.getResolvedRedirectPath(resolvedValues) }
 
         val collectionNode = objectMapper.valueToTree<JsonNode>(resolvedValues[widget.properties.collection])
 
         if (collectionNode.isNull) {
-            return PageWithData(PageImpl(emptyList(), pageable, 0), redirectPathData)
+            return PageImpl(emptyList(), pageable, 0)
         }
 
         if (!collectionNode.isArray) {
@@ -77,7 +73,7 @@ class CollectionWidgetDataProvider(
                     }
                 )
             }
-        return PageWithData(PageImpl(result, pageable, collectionNode.size().toLong()), redirectPathData)
+        return PageImpl(result, pageable, collectionNode.size().toLong())
     }
 
     private fun resolveValueRef(valueRef: String, child: JsonNode): Any? {

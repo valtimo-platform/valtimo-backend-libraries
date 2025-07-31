@@ -8,14 +8,6 @@
                 "title": "Aanvrager",
                 "width": 1,
                 "highContrast": true,
-                "topRightCorner": {
-                    "type": "button",
-                    "title": "IKO >",
-                    "action": {
-                        "type": "redirect",
-                        "redirectPath": "/iko/klant/bsn/details/${doc:bsn}"
-                    }
-                },
                 "properties": {
                     "columns": [
                         [

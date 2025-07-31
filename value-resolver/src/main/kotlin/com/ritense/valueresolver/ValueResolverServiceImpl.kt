@@ -284,13 +284,22 @@ class ValueResolverServiceImpl(
         value is String && value.contains(DELIMITER) && resolverFactoryMap.keys.contains(getPrefix(value))
 
     private fun getQueryParameters(requestedValue: String): Map<String, String> {
-        return Regex("[?&]([a-zA-Z0-9]+)=([^&]+)(?=&|$)")
-            .findAll(requestedValue)
-            .associate { it.groupValues[1] to it.groupValues[2] }
+        return if (isRequestedValue(requestedValue)) {
+            Regex("[?&]([a-zA-Z0-9]+)=([^&]+)(?=&|$)")
+                .findAll(requestedValue)
+                .associate { it.groupValues[1] to it.groupValues[2] }
+        } else {
+            emptyMap()
+        }
     }
 
-    private fun trimQueryParameters(requestedValue: String): String =
-        Regex("([^?]+)").find(requestedValue)!!.groupValues[1]
+    private fun trimQueryParameters(requestedValue: String): String {
+        return if (isRequestedValue(requestedValue)) {
+            Regex("([^?]+)").find(requestedValue)!!.groupValues[1]
+        } else {
+            requestedValue
+        }
+    }
 
     companion object {
         const val DELIMITER = ":"

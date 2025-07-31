@@ -56,42 +56,6 @@ public class FormDefinitionDeploymentService {
     public Optional<FormDefinition> deploy(
         @LoggableResource("formDefinitionName") String name,
         String formDefinitionAsString,
-        boolean readOnly
-    ) throws JsonProcessingException {
-        var rawFormDefinition = getJson(formDefinitionAsString);
-        var optionalFormDefinition = formDefinitionRepository.findByNameAndCaseDefinitionIdIsNull(name);
-        if (optionalFormDefinition.isPresent()) {
-            var existingFormDefinition = optionalFormDefinition.get();
-            if (!rawFormDefinition.equals(existingFormDefinition.getFormDefinition())) {
-                var formDefinition = formDefinitionService.modifyFormDefinition(
-                    existingFormDefinition.getId(),
-                    name,
-                    rawFormDefinition.toString(),
-                    readOnly
-                );
-                logger.info(
-                    "Modified existing global form definition {}", name
-                );
-                return Optional.of(formDefinition);
-            }
-        } else {
-            var formDefinition = formDefinitionService.createFormDefinition(
-                new CreateFormDefinitionRequest(
-                    name,
-                    rawFormDefinition.toString(),
-                    readOnly
-                )
-            );
-            logger.info("Deployed global form definition {}", name);
-            return Optional.of(formDefinition);
-        }
-
-        return Optional.empty();
-    }
-
-    public Optional<FormDefinition> deploy(
-        @LoggableResource("formDefinitionName") String name,
-        String formDefinitionAsString,
         CaseDefinitionId caseDefinitionId,
         boolean readOnly
     ) throws JsonProcessingException {

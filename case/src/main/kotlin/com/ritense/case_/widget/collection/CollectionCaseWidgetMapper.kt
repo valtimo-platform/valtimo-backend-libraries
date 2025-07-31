@@ -30,7 +30,6 @@ class CollectionCaseWidgetMapper:CaseWidgetMapper<CollectionCaseWidget, Collecti
         width = entity.width,
         actions = entity.actions,
         highContrast = entity.highContrast,
-        topRightCorner = entity.topRightCorner,
         properties = entity.properties
     )
 
@@ -40,7 +39,6 @@ class CollectionCaseWidgetMapper:CaseWidgetMapper<CollectionCaseWidget, Collecti
         width = dto.width,
         highContrast = dto.highContrast,
         actions = dto.actions ?: emptyList(),
-        topRightCorner = dto.topRightCorner,
         properties = dto.properties,
         order = index
     )
