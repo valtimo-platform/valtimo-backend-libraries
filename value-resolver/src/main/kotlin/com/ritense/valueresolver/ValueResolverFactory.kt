@@ -103,7 +103,7 @@ interface ValueResolverFactory {
      * @return a resolver that handles one requestedValue at a time within the same context.
      */
     fun createResolver(properties: Map<String, Any>): Function<String, Any?> {
-        val documentId = properties[DOCUMENT_ID] as String?
+        val documentId = properties[DOCUMENT_ID]?.toString()
         if (documentId != null) {
             return createResolver(documentId)
         }

@@ -32,6 +32,8 @@ import com.ritense.widget.domain.RedirectWidgetAction
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.util.UUID
+import com.ritense.valueresolver.ValueResolverPropertyKey.Companion.DOCUMENT_ID
+import com.ritense.valueresolver.ValueResolverPropertyKey.Companion.PAGEABLE
 
 class TableCaseWidgetDataProvider(
     private val objectMapper: ObjectMapper,
@@ -42,7 +44,7 @@ class TableCaseWidgetDataProvider(
 
     override fun getData(documentId: UUID, widgetTab: CaseWidgetTab, widget: TableCaseWidget, pageable: Pageable): PageWithData<Map<String, Any?>> {
         val resolvedValues = valueResolverService.resolveValues(
-            documentId.toString(),
+            mapOf(DOCUMENT_ID to documentId.toString(), PAGEABLE to pageable),
             widget.getUnresolvedActionValues() + widget.properties.collection
         )
 

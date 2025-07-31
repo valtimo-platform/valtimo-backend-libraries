@@ -18,6 +18,8 @@ package com.ritense.case_.widget.fields
 
 import com.ritense.case_.domain.tab.CaseWidgetTab
 import com.ritense.case_.widget.CaseWidgetDataProvider
+import com.ritense.valueresolver.ValueResolverPropertyKey.Companion.DOCUMENT_ID
+import com.ritense.valueresolver.ValueResolverPropertyKey.Companion.PAGEABLE
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.widget.domain.RedirectWidgetAction
 import org.springframework.data.domain.Pageable
@@ -40,7 +42,10 @@ class FieldsCaseWidgetDataProvider(
         }
 
         val unresolvedValues = unresolvedColumnValues.toSet() + widget.getUnresolvedActionValues()
-        val resolvedValues = valueResolverService.resolveValues(documentId.toString(), unresolvedValues)
+        val resolvedValues = valueResolverService.resolveValues(
+            mapOf(DOCUMENT_ID to documentId.toString(), PAGEABLE to pageable),
+             unresolvedValues
+        )
 
         val widgetColumnData = widget.properties.columns.flatMap { column ->
             column.map { field ->

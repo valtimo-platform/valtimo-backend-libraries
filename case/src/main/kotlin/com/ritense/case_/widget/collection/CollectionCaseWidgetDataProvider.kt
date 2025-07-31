@@ -26,6 +26,8 @@ import com.ritense.case_.domain.tab.CaseWidgetTab
 import com.ritense.case_.widget.CaseWidgetDataProvider
 import com.ritense.case_.widget.exception.InvalidCollectionException
 import com.ritense.case_.widget.exception.InvalidCollectionNodeTypeException
+import com.ritense.valueresolver.ValueResolverPropertyKey.Companion.DOCUMENT_ID
+import com.ritense.valueresolver.ValueResolverPropertyKey.Companion.PAGEABLE
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.widget.PageWithData
 import com.ritense.widget.domain.RedirectWidgetAction
@@ -42,7 +44,7 @@ class CollectionCaseWidgetDataProvider(
 
     override fun getData(documentId: UUID, widgetTab: CaseWidgetTab, widget: CollectionCaseWidget, pageable: Pageable): PageWithData<CollectionCaseWidgetDataResult> {
         val resolvedValues = valueResolverService.resolveValues(
-            documentId.toString(),
+            mapOf(DOCUMENT_ID to documentId.toString(), PAGEABLE to pageable),
             widget.getUnresolvedActionValues() + widget.properties.collection
         )
 

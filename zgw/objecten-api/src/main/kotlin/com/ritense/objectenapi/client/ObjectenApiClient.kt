@@ -138,12 +138,15 @@ class ObjectenApiClient(
         val result = buildRestClient(authentication, objectsApiUrl.toASCIIString())
             .get()
             .uri { builder ->
-                builder.path("objects")
+                var builder = builder.path("objects")
                     .queryParam("type", objectTypeUrl)
-                    .queryParam("pageSize", pageable.pageSize)
-                    .queryParam("page", pageable.pageNumber + 1) //objects api pagination starts at 1 instead of 0
                     .queryParam("ordering", ordering2)
-                    .build()
+                if (!pageable.isUnpaged) {
+                    builder = builder
+                        .queryParam("pageSize", pageable.pageSize)
+                        .queryParam("page", pageable.pageNumber + 1) //objects api pagination starts at 1 instead of 0
+                }
+                builder.build()
             }
             .header(ACCEPT_CRS, EPSG_4326)
             .retrieve()
@@ -200,13 +203,16 @@ class ObjectenApiClient(
         val result = buildRestClient(authentication, objectsApiUrl.toASCIIString())
             .get()
             .uri { builder ->
-                builder.path("objects")
+                var builder = builder.path("objects")
                     .queryParam("type", objectTypeUrl)
-                    .queryParam("pageSize", pageable.pageSize)
-                    .queryParam("page", pageable.pageNumber + 1) //objects api pagination starts at 1 instead of 0
                     .queryParam("data_attrs", searchString)
                     .queryParam("ordering", ordering2)
-                    .build()
+                if (!pageable.isUnpaged) {
+                    builder = builder
+                        .queryParam("pageSize", pageable.pageSize)
+                        .queryParam("page", pageable.pageNumber + 1) //objects api pagination starts at 1 instead of 0
+                }
+                builder.build()
             }
             .header(ACCEPT_CRS, EPSG_4326)
             .retrieve()

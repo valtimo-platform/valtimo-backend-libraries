@@ -34,7 +34,7 @@ class FormIoWidgetDataProvider(
     override fun supportedWidgetType() = FormIoWidget::class.java
 
     override fun getData(widget: FormIoWidget, properties: Map<String, Any>): JsonNode? {
-        val documentId = properties[DOCUMENT_ID] as String?
+        val documentId = properties[DOCUMENT_ID]?.toString()
         require(documentId != null) { "Missing documentId" }
 
         val caseDefinitionId = documentService[documentId].definitionId().caseDefinitionId()

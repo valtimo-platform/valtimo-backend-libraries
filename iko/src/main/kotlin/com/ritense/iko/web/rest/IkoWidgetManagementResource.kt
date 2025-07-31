@@ -75,7 +75,7 @@ class IkoWidgetManagementResource(
         val ikoWidget = service.create(
             ikoDataAggregateKey = ikoDataAggregateKey,
             tabKey = tabKey,
-            widget = request.toEntity(UUID.randomUUID(), existingWidgets.maxOf { it.order + 1 })
+            widget = request.toEntity(UUID.randomUUID(), existingWidgets.maxOfOrNull { it.order + 1 } ?: 0)
         )
         return ResponseEntity.ok(ikoWidget.toDto())
     }

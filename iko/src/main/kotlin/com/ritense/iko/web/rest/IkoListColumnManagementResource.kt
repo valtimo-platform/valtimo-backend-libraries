@@ -73,7 +73,7 @@ class IkoListColumnManagementResource(
         )
         val ikoListColumn = service.create(
             ikoDataAggregateKey = ikoDataAggregateKey,
-            listColumn = request.toEntity(ikoDataAggregateKey, existingIkoListColumns.maxOf { it.order + 1 })
+            listColumn = request.toEntity(ikoDataAggregateKey, existingIkoListColumns.maxOfOrNull { it.order + 1 } ?: 0)
         )
         return ResponseEntity.ok(ListColumnDto.from(ikoListColumn))
     }
