@@ -17,6 +17,7 @@
 package com.ritense.valtimo.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.valtimo.BaseIntegrationTest;
@@ -188,22 +189,24 @@ class OperatonProcessServiceIntTest extends BaseIntegrationTest {
 
     @Test
     void shouldDeploySameFileForDifferentCasedefinitions() throws IOException {
-        List<Resource> processes = List.of(bpmn);
-        AuthorizationContext.runWithoutAuthorization(() -> {
-            operatonProcessService.deploy(
-                CaseDefinitionId.of("some-case-definition-1", "1.0.0"),
-                "aProcessName.bpmn",
-                getFileStream("shouldDeploy.xml", processes)
-            );
-            return null;
-        });
-        AuthorizationContext.runWithoutAuthorization(() -> {
-            operatonProcessService.deploy(
-                CaseDefinitionId.of("some-case-definition-2", "1.0.0"),
-                "aProcessName.bpmn",
-                getFileStream("shouldDeploy.xml", processes)
-            );
-            return null;
+        assertDoesNotThrow(() -> {
+            List<Resource> processes = List.of(bpmn);
+            AuthorizationContext.runWithoutAuthorization(() -> {
+                operatonProcessService.deploy(
+                    CaseDefinitionId.of("some-case-definition-1", "1.0.0"),
+                    "aProcessName.bpmn",
+                    getFileStream("shouldDeploy.xml", processes)
+                );
+                return null;
+            });
+            AuthorizationContext.runWithoutAuthorization(() -> {
+                operatonProcessService.deploy(
+                    CaseDefinitionId.of("some-case-definition-2", "1.0.0"),
+                    "aProcessName.bpmn",
+                    getFileStream("shouldDeploy.xml", processes)
+                );
+                return null;
+            });
         });
     }
 
@@ -237,56 +240,62 @@ class OperatonProcessServiceIntTest extends BaseIntegrationTest {
 
     @Test
     void shouldDeploySameFileForCasedefinitionAndUnlinked() throws IOException {
-        List<Resource> processes = List.of(bpmn);
-        AuthorizationContext.runWithoutAuthorization(() -> {
-            operatonProcessService.deploy(
-                CaseDefinitionId.of("some-case-definition-1", "1.0.0"),
-                "aProcessName.bpmn",
-                getFileStream("shouldDeploy.xml", processes)
-            );
-            return null;
-        });
-        AuthorizationContext.runWithoutAuthorization(() -> {
-            operatonProcessService.deploy(
-                null,
-                "aProcessName.bpmn",
-                getFileStream("shouldDeploy.xml", processes)
-            );
-            return null;
+        assertDoesNotThrow(() ->{
+            List<Resource> processes = List.of(bpmn);
+            AuthorizationContext.runWithoutAuthorization(() -> {
+                operatonProcessService.deploy(
+                    CaseDefinitionId.of("some-case-definition-1", "1.0.0"),
+                    "aProcessName.bpmn",
+                    getFileStream("shouldDeploy.xml", processes)
+                );
+                return null;
+            });
+            AuthorizationContext.runWithoutAuthorization(() -> {
+                operatonProcessService.deploy(
+                    null,
+                    "aProcessName.bpmn",
+                    getFileStream("shouldDeploy.xml", processes)
+                );
+                return null;
+            });
         });
     }
 
     @Test
     void shouldDeployFileWithMultipleProcessDefinitions() throws IOException {
-        List<Resource> processes = List.of(bpmn);
-        AuthorizationContext.runWithoutAuthorization(() -> {
-            operatonProcessService.deploy(
-                CaseDefinitionId.of("some-case-definition-1", "1.0.0"),
-                "aProcessName.bpmn",
-                getFileStream("double.xml", processes)
-            );
-            return null;
+        assertDoesNotThrow(() ->{
+            List<Resource> processes = List.of(bpmn);
+            AuthorizationContext.runWithoutAuthorization(() -> {
+                operatonProcessService.deploy(
+                    CaseDefinitionId.of("some-case-definition-1", "1.0.0"),
+                    "aProcessName.bpmn",
+                    getFileStream("double.xml", processes)
+                );
+                return null;
+            });
         });
     }
 
     @Test
     void shouldDeployDifferentProcessesWithSameFilenameForSameCasedefinitions() throws IOException {
-        List<Resource> processes = List.of(bpmn);
-        AuthorizationContext.runWithoutAuthorization(() -> {
-            operatonProcessService.deploy(
-                CaseDefinitionId.of("some-case-definition-1", "1.0.0"),
-                "aProcessName.bpmn",
-                getFileStream("shouldDeploy.xml", processes)
-            );
-            return null;
-        });
-        AuthorizationContext.runWithoutAuthorization(() -> {
-            operatonProcessService.deploy(
-                CaseDefinitionId.of("some-case-definition-1", "1.0.0"),
-                "aProcessName.bpmn",
-                getFileStream("uniqueProcess.xml", processes)
-            );
-            return null;
+        assertDoesNotThrow(() ->{
+            List<Resource> processes = List.of(bpmn);
+            AuthorizationContext.runWithoutAuthorization(() -> {
+                operatonProcessService.deploy(
+                    CaseDefinitionId.of("some-case-definition-1", "1.0.0"),
+                    "aProcessName.bpmn",
+                    getFileStream("shouldDeploy.xml", processes)
+                );
+                return null;
+            });
+            AuthorizationContext.runWithoutAuthorization(() -> {
+                operatonProcessService.deploy(
+                    CaseDefinitionId.of("some-case-definition-1", "1.0.0"),
+                    "aProcessName.bpmn",
+                    getFileStream("uniqueProcess.xml", processes)
+                );
+                return null;
+            });
         });
     }
 
