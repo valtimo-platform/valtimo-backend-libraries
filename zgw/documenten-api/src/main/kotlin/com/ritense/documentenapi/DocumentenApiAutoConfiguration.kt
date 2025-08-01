@@ -88,6 +88,7 @@ class DocumentenApiAutoConfiguration {
     )
 
     @Bean
+    @ConditionalOnMissingBean(DocumentenApiPluginFactory::class)
     fun documentenApiPluginFactory(
         pluginService: PluginService,
         client: DocumentenApiClient,
