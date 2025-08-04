@@ -16,6 +16,7 @@
 
 package com.ritense.document.domain.impl;
 
+@SuppressWarnings({"squid:S1206", "java:S1206"})
 public class DocumentContentFilter {
     private static boolean includeDocumentContent = false;
 
