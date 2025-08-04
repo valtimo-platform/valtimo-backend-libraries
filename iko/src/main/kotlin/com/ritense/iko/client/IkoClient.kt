@@ -44,7 +44,7 @@ class IkoClient(
                         .host(baseUrl.host)
                         .path(baseUrl.path)
                         .port(baseUrl.port)
-                        .pathSegment("searches")
+                        .pathSegment("endpoints")
                         .path(searchPath)
                         .pathSegment(id)
                         .build()
@@ -80,7 +80,7 @@ class IkoClient(
                         .host(baseUrl.host)
                         .path(baseUrl.path)
                         .port(baseUrl.port)
-                        .pathSegment("searches")
+                        .pathSegment("endpoints")
                         .path(searchPath)
                         .queryParam("type", searchType)
                         .queryParams(
