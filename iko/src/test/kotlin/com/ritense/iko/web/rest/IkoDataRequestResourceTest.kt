@@ -79,7 +79,7 @@ internal class IkoDataRequestResourceTest {
             id = IkoDataRequestId("bsn", IkoDataAggregate("klant", "Klant", emptyMap(), mock())),
             title = "BSN",
             order = 0,
-            properties = mapOf("searchType" to "RaadpleegMetBurgerservicenummer"),
+            properties = mapOf("endpointType" to "RaadpleegMetBurgerservicenummer"),
         )
         whenever(ikoDataRequestService.findAll(isNull(), eq("klant"), isNull()))
             .thenReturn(listOf(ikoDataRequest))
@@ -115,7 +115,7 @@ internal class IkoDataRequestResourceTest {
             id = IkoDataRequestId("bsn", ikoDataAggregate),
             title = "BSN",
             order = 0,
-            properties = mapOf("searchType" to "RaadpleegMetBurgerservicenummer"),
+            properties = mapOf("endpointType" to "RaadpleegMetBurgerservicenummer"),
         )
         val request = IkoSearchRequest(filters = mapOf("bsn" to "000000000"))
         whenever(ikoListColumnService.findAllColumnsByIkoDataAggregateKey(ikoDataAggregate.key)).thenReturn(

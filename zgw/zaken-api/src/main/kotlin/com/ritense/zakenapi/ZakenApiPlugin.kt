@@ -39,6 +39,7 @@ import com.ritense.zakenapi.domain.CreateZaakeigenschapRequest
 import com.ritense.zakenapi.domain.Opschorting
 import com.ritense.zakenapi.domain.PatchZaakRequest
 import com.ritense.zakenapi.domain.RelevanteZaak
+import com.ritense.zakenapi.domain.SearchParameter
 import com.ritense.zakenapi.domain.UpdateZaakeigenschapRequest
 import com.ritense.zakenapi.domain.Verlenging
 import com.ritense.zakenapi.domain.ZaakHersteltermijn
@@ -65,6 +66,7 @@ import com.ritense.zgw.Page
 import com.ritense.zgw.Rsin
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.operaton.bpm.engine.delegate.DelegateExecution
+import org.springframework.data.domain.Pageable
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
 import java.net.URI
@@ -778,6 +780,11 @@ class ZakenApiPlugin(
     fun getZaak(zaakUrl: URI): ZaakResponse {
         logger.debug { "Fetching zaak for zaak URL '$zaakUrl'" }
         return client.getZaak(authenticationPluginConfiguration, zaakUrl)
+    }
+
+    fun searchZaken(searchParameters: List<SearchParameter>, pageable: Pageable): Page<ZaakResponse> {
+        logger.debug { "Searching zaken with query '$searchParameters'" }
+        return client.searchZaken(authenticationPluginConfiguration, url, searchParameters, pageable)
     }
 
     fun deleteZaak(zaakUrl: URI) {

@@ -46,14 +46,14 @@ class IkoServerRepository(
 
     override fun getDataAggregatePropertyFields(): List<PropertyField> = listOf(
         PropertyField(
-            SEARCH_PATH,
+            ENDPOINT_PATH,
             tooltip = "The last few path segments of the IKO API URL. i.e. 'bag/adressen'"
         )
     )
 
     override fun getDataRequestPropertyFields(): List<PropertyField> = listOf(
         PropertyField(
-            SEARCH_TYPE,
+            ENDPOINT_TYPE,
             tooltip = "The 'type' query parameter of the IKO API URL. i.e. 'ZoekMetGeslachtsnaamEnGeboortedatum'"
         )
     )
@@ -69,8 +69,8 @@ class IkoServerRepository(
         }
 
         val data = getPlugin(config).search(
-            searchPath = config[SEARCH_PATH].toString(),
-            searchType = config[SEARCH_TYPE]?.toString(),
+            endpointPath = config[ENDPOINT_PATH].toString(),
+            endpointType = config[ENDPOINT_TYPE]?.toString(),
             filters = filterMap,
         )
 
@@ -90,7 +90,7 @@ class IkoServerRepository(
 
     override fun findById(config: Map<String, Any?>, id: Any): JsonNode {
         return getPlugin(config).getById(
-            searchPath = config[SEARCH_PATH].toString(),
+            endpointPath = config[ENDPOINT_PATH].toString(),
             id = id.toString()
         )
     }
@@ -101,7 +101,7 @@ class IkoServerRepository(
 
     companion object {
         const val PLUGIN_CONFIGURATION = "pluginConfiguration"
-        const val SEARCH_PATH = "searchPath"
-        const val SEARCH_TYPE = "searchType"
+        const val ENDPOINT_PATH = "endpointPath"
+        const val ENDPOINT_TYPE = "endpointType"
     }
 }

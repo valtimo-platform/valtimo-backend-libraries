@@ -3,6 +3,6 @@
     "ikoRepositoryConfigKey": "iko-api",
     "title": "Klant",
     "properties": {
-        "searchPath": "personen"
+        "endpointPath": "personen"
     }
 }

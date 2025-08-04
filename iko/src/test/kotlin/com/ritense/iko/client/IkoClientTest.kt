@@ -95,7 +95,7 @@ class IkoClientTest {
 
         val person = client.getById(
             baseUrl = URI(mockApi.url("/").toString()),
-            searchPath = "personen",
+            endpointPath = "personen",
             id = "999993653",
         )
 
@@ -139,8 +139,8 @@ class IkoClientTest {
 
         val response = client.search(
             baseUrl = URI(mockApi.url("/").toString()),
-            searchPath = "personen",
-            searchType = "ZoekMetGeslachtsnaamEnGeboortedatum",
+            endpointPath = "personen",
+            endpointType = "ZoekMetGeslachtsnaamEnGeboortedatum",
             filters = mapOf(
                 "geslachtsnaam" to "Moulin",
                 "geboortedatum" to "1985-12-01",

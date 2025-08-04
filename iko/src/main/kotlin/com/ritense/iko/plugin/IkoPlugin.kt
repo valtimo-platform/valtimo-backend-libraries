@@ -36,25 +36,25 @@ class IkoPlugin(
     lateinit var url: URI
 
     fun getById(
-        searchPath: String,
+        endpointPath: String,
         id: String,
     ): JsonNode {
         return ikoClient.getById(
             baseUrl = url,
-            searchPath = searchPath,
+            endpointPath = endpointPath,
             id = id,
         )
     }
 
     fun search(
-        searchPath: String,
-        searchType: String? = null,
+        endpointPath: String,
+        endpointType: String? = null,
         filters: Map<String, String>,
     ): JsonNode {
         return ikoClient.search(
             baseUrl = url,
-            searchPath = searchPath,
-            searchType = searchType,
+            endpointPath = endpointPath,
+            endpointType = endpointType,
             filters = filters,
         )
     }

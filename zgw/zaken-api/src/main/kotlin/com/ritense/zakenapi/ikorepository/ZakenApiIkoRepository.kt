@@ -14,35 +14,35 @@
  * limitations under the License.
  */
 
-package com.ritense.objectenapi.ikorepository
+package com.ritense.zakenapi.ikorepository
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
-import com.ritense.objectenapi.ObjectenApiPlugin
-import com.ritense.objectenapi.client.Comparator
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.iko.DataFilter
 import com.ritense.valtimo.contract.iko.IkoRepository
 import com.ritense.valtimo.contract.iko.PropertyField
 import com.ritense.valtimo.contract.iko.PropertyField.Companion.PROPERTY_FIELD_TYPE_DROPDOWN
-import com.ritense.valtimo.contract.iko.PropertyField.Companion.PROPERTY_FIELD_TYPE_INTEGER
 import com.ritense.valtimo.contract.iko.PropertyField.Companion.PROPERTY_FIELD_TYPE_URL
+import com.ritense.zakenapi.ZakenApiPlugin
+import com.ritense.zakenapi.domain.Comparator
+import com.ritense.zakenapi.domain.SearchParameter
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
-class ObjectenApiIkoRepository(
+class ZakenApiIkoRepository(
     private val pluginService: PluginService,
     private val objectMapper: ObjectMapper,
 ) : IkoRepository {
 
-    override fun getType() = "objectenApi"
+    override fun getType() = "zakenApi"
 
     override fun getIkoRepositoryConfigPropertyFields(): List<PropertyField> {
-        val dropdownList = pluginService.findPluginConfigurations(ObjectenApiPlugin::class.java)
+        val dropdownList = pluginService.findPluginConfigurations(ZakenApiPlugin::class.java)
             .map { it.id.toString() to it.title }
 
         return listOf(
@@ -56,8 +56,7 @@ class ObjectenApiIkoRepository(
     }
 
     override fun getDataAggregatePropertyFields(): List<PropertyField> = listOf(
-        PropertyField(OBJECTTYPEN_API_URL, PROPERTY_FIELD_TYPE_URL),
-        PropertyField(OBJECT_TYPE_VERSION, PROPERTY_FIELD_TYPE_INTEGER),
+        PropertyField(ZAAKTYPE_URL, PROPERTY_FIELD_TYPE_URL),
     )
 
     override fun findAll(
@@ -65,49 +64,41 @@ class ObjectenApiIkoRepository(
         filters: List<DataFilter>,
         pageable: Pageable
     ): Page<JsonNode> {
-        val searchString = filters.joinToString(",") { filter ->
-            var property = filter.property.substringAfter(':')
-            require(property.startsWith("/record/data/"))
-            property = property.substringAfter("/record/data/").replace("/", "__")
+        val searchParameters = filters.map { filter ->
+            val property = filter.property.substringAfter(':')
             val operator = Comparator.entries.single { it.name == filter.comparator.name }
-            "${property}__${operator.value}__${filter.value}"
-        }
+            SearchParameter(property, operator, filter.value?.toString())
+        } + SearchParameter("zaaktype", Comparator.EQUAL_TO, config[ZAAKTYPE_URL].toString())
 
-        val (objecttypesApiUrl, objecttypeId) = config[OBJECTTYPEN_API_URL].toString().split("/objecttypes/")
-
-        val objectList = getPlugin(config).getObjectsByObjectTypeIdWithSearchParams(
-            objecttypesApiUrl = URI(objecttypesApiUrl),
-            objecttypeId = objecttypeId,
-            searchString = searchString,
+        val zaakList = getPlugin(config).searchZaken(
+            searchParameters = searchParameters,
             pageable = pageable,
         )
 
-        val jsonObjectList = objectMapper.valueToTree<ArrayNode>(objectList.results)
-        return PageImpl(jsonObjectList.toList(), pageable, objectList.count.toLong())
+        val jsonZaakList = objectMapper.valueToTree<ArrayNode>(zaakList.results)
+        return PageImpl(jsonZaakList.toList(), pageable, zaakList.count.toLong())
     }
 
     override fun findById(config: Map<String, Any?>, id: Any): JsonNode {
         val plugin = getPlugin(config)
-        val objectUrl = UriComponentsBuilder.newInstance()
-            .uri(plugin.url)
-            .pathSegment("objects")
+        val zaakUrl = UriComponentsBuilder.fromUri(plugin.url)
+            .pathSegment("zaken")
             .pathSegment(id.toString())
             .toUriString()
 
-        val objectWrapper = getPlugin(config).getObject(
-            objectUrl = URI(objectUrl),
+        val zaakWrapper = getPlugin(config).getZaak(
+            zaakUrl = URI(zaakUrl),
         )
 
-        return objectMapper.valueToTree(objectWrapper)
+        return objectMapper.valueToTree(zaakWrapper)
     }
 
-    private fun getPlugin(config: Map<String, Any?>): ObjectenApiPlugin {
+    private fun getPlugin(config: Map<String, Any?>): ZakenApiPlugin {
         return pluginService.createInstance(config[PLUGIN_CONFIGURATION].toString())
     }
 
     companion object {
         private const val PLUGIN_CONFIGURATION = "pluginConfiguration"
-        private const val OBJECTTYPEN_API_URL = "objecttypenApiUrl"
-        private const val OBJECT_TYPE_VERSION = "objectTypeVersion"
+        private const val ZAAKTYPE_URL = "zaaktypeUrl"
     }
 }

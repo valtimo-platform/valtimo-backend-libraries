@@ -30,7 +30,7 @@ class IkoClient(
 ) {
     fun getById(
         baseUrl: URI,
-        searchPath: String,
+        endpointPath: String,
         id: String,
     ): JsonNode {
         try {
@@ -45,7 +45,7 @@ class IkoClient(
                         .path(baseUrl.path)
                         .port(baseUrl.port)
                         .pathSegment("endpoints")
-                        .path(searchPath)
+                        .path(endpointPath)
                         .pathSegment(id)
                         .build()
                 }
@@ -65,8 +65,8 @@ class IkoClient(
 
     fun search(
         baseUrl: URI,
-        searchPath: String,
-        searchType: String? = null,
+        endpointPath: String,
+        endpointType: String? = null,
         filters: Map<String, String>,
     ): JsonNode {
         try {
@@ -81,8 +81,8 @@ class IkoClient(
                         .path(baseUrl.path)
                         .port(baseUrl.port)
                         .pathSegment("endpoints")
-                        .path(searchPath)
-                        .queryParam("type", searchType)
+                        .path(endpointPath)
+                        .queryParam("type", endpointType)
                         .queryParams(
                             LinkedMultiValueMap(
                                 filters

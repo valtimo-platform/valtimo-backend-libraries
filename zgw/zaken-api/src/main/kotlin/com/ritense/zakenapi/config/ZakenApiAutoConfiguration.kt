@@ -39,6 +39,7 @@ import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPluginFactory
 import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.exporter.ZaakTypeLinkExporter
+import com.ritense.zakenapi.ikorepository.ZakenApiIkoRepository
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import com.ritense.zakenapi.provider.BsnProvider
 import com.ritense.zakenapi.provider.DefaultZaakUrlProvider
@@ -329,6 +330,18 @@ class ZakenApiAutoConfiguration {
     ): ZaakTypeLinkCaseEventListener {
         return ZaakTypeLinkCaseEventListener(
             zaakTypeLinkService,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ZakenApiIkoRepository::class)
+    fun zakenApiIkoRepository(
+        pluginService: PluginService,
+        objectMapper: ObjectMapper,
+    ): ZakenApiIkoRepository {
+        return ZakenApiIkoRepository(
+            pluginService,
+            objectMapper,
         )
     }
 }

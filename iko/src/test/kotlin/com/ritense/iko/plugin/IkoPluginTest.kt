@@ -63,8 +63,8 @@ internal class IkoPluginTest {
             )
 
         val result = plugin.search(
-            searchPath = "personen",
-            searchType = "ZoekMetGeslachtsnaamEnGeboortedatum",
+            endpointPath = "personen",
+            endpointType = "ZoekMetGeslachtsnaamEnGeboortedatum",
             filters = mapOf(
                 "geslachtsnaam" to "Moulin",
                 "geboortedatum" to "1985-12-01",

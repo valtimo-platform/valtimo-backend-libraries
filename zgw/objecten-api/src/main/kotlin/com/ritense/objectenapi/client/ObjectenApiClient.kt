@@ -122,7 +122,7 @@ class ObjectenApiClient(
         val ordering2 = if (ordering.isNullOrEmpty()) {
             pageable.sort.joinToString(",") { sort ->
                 val sortProperty = sort.property
-                    .substringAfterLast(':')
+                    .substringAfter(':')
                     .replace("/", "__")
                     .trim('_')
                 if (sort.isAscending) {
@@ -187,7 +187,7 @@ class ObjectenApiClient(
         val ordering2 = if (ordering.isNullOrEmpty()) {
             pageable.sort.joinToString(",") { sort ->
                 val sortProperty = sort.property
-                    .substringAfterLast(':')
+                    .substringAfter(':')
                     .replace("/", "__")
                     .trim('_')
                 if (sort.isAscending) {

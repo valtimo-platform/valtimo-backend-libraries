@@ -16,7 +16,7 @@
 
 package com.ritense.iko.web.rest
 
-import com.ritense.iko.IkoServerRepository.Companion.SEARCH_PATH
+import com.ritense.iko.IkoServerRepository.Companion.ENDPOINT_PATH
 import com.ritense.iko.domain.IkoDataAggregate
 import com.ritense.iko.domain.IkoRepositoryConfig
 import com.ritense.iko.service.IkoDataAggregateService
@@ -72,7 +72,7 @@ internal class IkoDataAggregateManagementResourceTest {
         whenever(service.getIkoDataAggregatePropertyFields("iko")).thenReturn(
             listOf(
                 PropertyField(
-                    key = SEARCH_PATH,
+                    key = ENDPOINT_PATH,
                     type = PROPERTY_FIELD_TYPE_TEXT
                 )
             )
@@ -83,7 +83,7 @@ internal class IkoDataAggregateManagementResourceTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.*", hasSize<Int>(1)))
             .andExpect(jsonPath("$[0].title").value("Search Path"))
-            .andExpect(jsonPath("$[0].key").value("searchPath"))
+            .andExpect(jsonPath("$[0].key").value("endpointPath"))
             .andExpect(jsonPath("$[0].type").value("text"))
     }
 
@@ -111,7 +111,7 @@ internal class IkoDataAggregateManagementResourceTest {
             IkoDataAggregate(
                 key = "klant",
                 title = "Klant",
-                properties = mapOf("searchPath" to "personen"),
+                properties = mapOf("endpointPath" to "personen"),
                 ikoRepositoryConfig = mock()
             )
         )
@@ -121,7 +121,7 @@ internal class IkoDataAggregateManagementResourceTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.key").value("klant"))
             .andExpect(jsonPath("$.title").value("Klant"))
-            .andExpect(jsonPath("$.properties.searchPath").value("personen"))
+            .andExpect(jsonPath("$.properties.endpointPath").value("personen"))
     }
 
     @Test
@@ -129,7 +129,7 @@ internal class IkoDataAggregateManagementResourceTest {
         val ikoDataAggregate = IkoDataAggregate(
             key = "klant",
             title = "Klant",
-            properties = mapOf("searchPath" to "personen"),
+            properties = mapOf("endpointPath" to "personen"),
             ikoRepositoryConfig = IkoRepositoryConfig("iko-api", "IKO API", "iko")
         )
         val request = IkoDataAggregateCreateRequest(
@@ -156,7 +156,7 @@ internal class IkoDataAggregateManagementResourceTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.key").value("klant"))
             .andExpect(jsonPath("$.title").value("Klant"))
-            .andExpect(jsonPath("$.properties.searchPath").value("personen"))
+            .andExpect(jsonPath("$.properties.endpointPath").value("personen"))
     }
 
     @Test
@@ -164,7 +164,7 @@ internal class IkoDataAggregateManagementResourceTest {
         val ikoDataAggregate = IkoDataAggregate(
             key = "klant",
             title = "Klant",
-            properties = mapOf("searchPath" to "personen"),
+            properties = mapOf("endpointPath" to "personen"),
             ikoRepositoryConfig = IkoRepositoryConfig("iko-api", "IKO API", "iko")
         )
         val request = IkoDataAggregateUpdateRequest(
@@ -190,7 +190,7 @@ internal class IkoDataAggregateManagementResourceTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.key").value("klant"))
             .andExpect(jsonPath("$.title").value("Klant"))
-            .andExpect(jsonPath("$.properties.searchPath").value("personen"))
+            .andExpect(jsonPath("$.properties.endpointPath").value("personen"))
     }
 
     @Test

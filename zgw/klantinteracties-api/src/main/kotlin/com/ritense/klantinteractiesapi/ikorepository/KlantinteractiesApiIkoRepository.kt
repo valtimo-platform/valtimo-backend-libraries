@@ -68,7 +68,7 @@ class KlantinteractiesApiIkoRepository(
     ): Page<JsonNode> {
         val filters = filters.associate { filter ->
             require(filter.comparator == Comparator.EQUAL_TO)
-            val property = filter.property.substringAfterLast(':')
+            val property = filter.property.substringAfter(':')
                 .replace("/", "__")
             property to filter.value.toString()
         }
