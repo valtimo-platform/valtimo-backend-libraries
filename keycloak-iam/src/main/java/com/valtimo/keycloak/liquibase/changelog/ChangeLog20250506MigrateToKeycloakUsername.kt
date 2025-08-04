@@ -47,12 +47,14 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
         logger.info("Starting ${this::class.simpleName}")
 
         val connection = database.connection as JdbcConnection
+        pingKeycloak()
         migrateJsonSchemaDocument(database, connection)
         migrateActRuTask(connection)
-        migrateNote(connection)
+        migrateNote(database, connection)
         migrateActHiTask(connection)
         migrateUserSettings(connection)
-        migrateIntermediateSubmission(connection)
+        migrateIntermediateSubmission(database, connection)
+        pingKeycloak()
 
         logger.info("Finished ${this::class.simpleName}")
     }
@@ -105,7 +107,7 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
                         documentId
                     )
                 } catch (ex: Exception) {
-                    logger.error(ex) { "Failed to migrate json_schema_document '$documentId' for assignee: '$assignee'. Aborting json_schema_document update." }
+                    logger.error(ex) { "Failed to migrate json_schema_document '$documentId' for assignee: '$assignee'. Skipping json_schema_document update." }
                 }
             }
         }
@@ -135,20 +137,20 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
                     }
                     executeUpdate(connection, "UPDATE act_ru_task SET assignee_ = ? WHERE id_ = ?", null, taskId)
                 } catch (ex: Exception) {
-                    logger.error(ex) { "Failed to migrate act_ru_task '$taskId' for assignee: '$assignee'. Aborting act_ru_task update." }
+                    logger.error(ex) { "Failed to migrate act_ru_task '$taskId' for assignee: '$assignee'. Skipping act_ru_task update." }
                 }
             }
         }
     }
 
-    private fun migrateNote(connection: JdbcConnection) {
+    private fun migrateNote(database: Database, connection: JdbcConnection) {
         if (!checkTableExists(connection, "note")) {
             return
         }
         val result = connection.prepareStatement("SELECT id,created_by_user_id FROM note").executeQuery()
 
         while (result.next()) {
-            val noteId = result.getString("id")
+            val noteId = getIdFromResultSet(database, result, "id")
             val creator = result.getString("created_by_user_id")
             if (creator != null) {
                 try {
@@ -160,12 +162,9 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
                         )
                     }
                 } catch (_: KeycloakUserNotFoundException) {
-                    logger.error {
-                        "Failed to migrate note '$noteId'. Unknown creator: '$creator'. Removing creator from note."
-                    }
-                    executeUpdate(connection, "UPDATE note SET created_by_user_id = ? WHERE id = ?", null, noteId)
+                    logger.error { "Failed to migrate note '$noteId'. Unknown creator: '$creator'. Skipping note update." }
                 } catch (ex: Exception) {
-                    logger.error(ex) { "Failed to migrate note '$noteId' for assignee: '$creator'. Aborting note update." }
+                    logger.error(ex) { "Failed to migrate note '$noteId' for assignee: '$creator'. Skipping note update." }
                 }
             }
         }
@@ -190,9 +189,9 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
                         )
                     }
                 } catch (_: KeycloakUserNotFoundException) {
-                    logger.error { "Failed to migrate act_hi_taskinst '$taskId'. Unknown assignee: '$assignee'. Aborting act_hi_taskinst update." }
+                    logger.error { "Failed to migrate act_hi_taskinst '$taskId'. Unknown assignee: '$assignee'. Skipping act_hi_taskinst update." }
                 } catch (ex: Exception) {
-                    logger.error(ex) { "Failed to migrate act_hi_taskinst '$taskId' for assignee: '$assignee'. Aborting act_hi_taskinst update." }
+                    logger.error(ex) { "Failed to migrate act_hi_taskinst '$taskId' for assignee: '$assignee'. Skipping act_hi_taskinst update." }
                 }
             }
         }
@@ -214,14 +213,14 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
                     executeUpdate(connection, "DELETE FROM user_settings WHERE user_id = ?", userId)
                 }
             } catch (_: KeycloakUserNotFoundException) {
-                logger.error { "Failed to migrate user_settings. Unknown user: '$userId'. Aborting user_settings update." }
+                logger.error { "Failed to migrate user_settings. Unknown user: '$userId'. Skipping user_settings update." }
             } catch (ex: Exception) {
-                logger.error(ex) { "Failed to migrate user_settings for user '$userId'. Aborting user_settings update." }
+                logger.error(ex) { "Failed to migrate user_settings for user '$userId'. Skipping user_settings update." }
             }
         }
     }
 
-    private fun migrateIntermediateSubmission(connection: JdbcConnection) {
+    private fun migrateIntermediateSubmission(database: Database, connection: JdbcConnection) {
         if (!checkTableExists(connection, "intermediate_submission")) {
             return
         }
@@ -229,19 +228,21 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
             .executeQuery()
 
         while (result.next()) {
-            val id = result.getObject("id")
+            val id = getIdFromResultSet(database, result, "id")
             val creator = result.getString("created_by")
             val editor = result.getString("edited_by")
             try {
                 val creatorUsername = try {
                     getKeycloakUsername(creator)
                 } catch (_: KeycloakUserNotFoundException) {
-                    logger.error { "Failed to migrate intermediate_submission '$id'. Unknown creator: '$creator'. Aborting intermediate_submission update." }
+                    logger.error { "Failed to migrate intermediate_submission '$id'. Unknown creator: '$creator'. Skipping intermediate_submission.created_by update." }
+                    creator
                 }
                 val editorUsername = try {
                     getKeycloakUsername(editor)
                 } catch (_: KeycloakUserNotFoundException) {
-                    logger.error { "Failed to migrate intermediate_submission '$id'. Unknown editor: '$editor'. Aborting intermediate_submission update." }
+                    logger.error { "Failed to migrate intermediate_submission '$id'. Unknown editor: '$editor'. Skipping intermediate_submission.edited_by update." }
+                    editor
                 }
                 if (creator != creatorUsername || editor != editorUsername) {
                     executeUpdate(
@@ -250,7 +251,7 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
                     )
                 }
             } catch (ex: Exception) {
-                logger.error(ex) { "Failed to migrate intermediate_submission '$id' for creator '$creator' and editor '$editor'. Aborting intermediate_submission update." }
+                logger.error(ex) { "Failed to migrate intermediate_submission '$id' for creator '$creator' and editor '$editor'. Skipping intermediate_submission update." }
             }
         }
     }
@@ -324,6 +325,10 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
                     throw KeycloakUserNotFoundException()
                 }
         }
+    }
+
+    private fun pingKeycloak() {
+        keycloak().serverInfo().info
     }
 
     /** Logic was copied from `KeycloakService.keycloak()` */
