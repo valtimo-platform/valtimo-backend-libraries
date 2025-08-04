@@ -42,8 +42,9 @@ class HostDockerInternalRestClientCustomizerTest {
         environment = mock()
         whenever(environment.activeProfiles).thenReturn(arrayOf("dev"))
         hostDockerInternalRestClientCustomizer = HostDockerInternalRestClientCustomizer(
-            dockerPorts = listOf("8001", "8002", "8010", "8011"),
+            dockerPorts = listOf(8001, 8002, 8010, 8011),
             rewriteRequestHost = false,
+            webServerPort = 8080,
         )
     }
 
@@ -218,6 +219,72 @@ class HostDockerInternalRestClientCustomizerTest {
                      "url":"http://localhost:8010/api/v2/objects/f710ad49-8c90-4b4d-bf94-83555212dd5c",
                      "uuid":"f710ad49-8c90-4b4d-bf94-83555212dd5c",
                      "type":"http://localhost:8011/api/v1/objecttypes/feeaa795-d212-4fa2-bb38-2c34996e5702",
+                     "record":{
+                        "data":{
+                           "boomgroep":"Boomweide"
+                        }
+                     }
+                  }
+               ]
+            }
+            """.trimIndent(),
+            result.body.readAllBytes().decodeToString()
+        )
+    }
+
+    @Test
+    fun `should replace localhost with 'host-docker-internal' in request and response when inside docker container`() {
+        hostDockerInternalRestClientCustomizer = HostDockerInternalRestClientCustomizer(
+            dockerPorts = listOf(8080, 8001, 8002, 8010, 8011),
+            rewriteRequestHost = false,
+            webServerPort = 8080,
+        )
+
+        val request = MockClientHttpRequest()
+        request.headers.contentType = APPLICATION_JSON
+        request.uri =
+            URI("http://localhost:8010/api/v2/objects?type=http://localhost:8011/api/v1/objecttypes/feeaa795-d212-4fa2-bb38-2c34996e5702&pageSize=10&page=1")
+        val requestBody = ByteArray(0)
+        val execution = mock<ClientHttpRequestExecution>()
+        val responseBody = """
+            {
+               "count":1,
+               "results":[
+                  {
+                     "url":"http://localhost:8010/api/v2/objects/f710ad49-8c90-4b4d-bf94-83555212dd5c",
+                     "uuid":"f710ad49-8c90-4b4d-bf94-83555212dd5c",
+                     "type":"http://host.docker.internal:8011/api/v1/objecttypes/feeaa795-d212-4fa2-bb38-2c34996e5702",
+                     "record":{
+                        "data":{
+                           "boomgroep":"Boomweide"
+                        }
+                     }
+                  }
+               ]
+            }
+        """.trimIndent()
+        val response = MockClientHttpResponse(responseBody.toByteArray(), 200)
+        response.headers.contentType = APPLICATION_JSON
+        response.body
+        whenever(execution.execute(any(), any())).thenReturn(response)
+
+        val result = hostDockerInternalRestClientCustomizer.intercept(request, requestBody, execution)
+
+        val captor = argumentCaptor<HttpRequest>()
+        verify(execution).execute(captor.capture(), any())
+        assertEquals(
+            "http://host.docker.internal:8010/api/v2/objects?type=http://host.docker.internal:8011/api/v1/objecttypes/feeaa795-d212-4fa2-bb38-2c34996e5702&pageSize=10&page=1",
+            captor.firstValue.uri.toString()
+        )
+        assertEquals(
+            """
+            {
+               "count":1,
+               "results":[
+                  {
+                     "url":"http://host.docker.internal:8010/api/v2/objects/f710ad49-8c90-4b4d-bf94-83555212dd5c",
+                     "uuid":"f710ad49-8c90-4b4d-bf94-83555212dd5c",
+                     "type":"http://host.docker.internal:8011/api/v1/objecttypes/feeaa795-d212-4fa2-bb38-2c34996e5702",
                      "record":{
                         "data":{
                            "boomgroep":"Boomweide"

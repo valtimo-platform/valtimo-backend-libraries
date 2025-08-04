@@ -72,7 +72,7 @@ internal class ObjectManagementFacadeTest {
         val objecttypenApiPlugin = mock<ObjecttypenApiPlugin>()
         prepareAccessObject(objectName, objectenApiPlugin, objecttypenApiPlugin)
 
-        whenever(objectenApiPlugin.url).thenReturn(URI.create("www.ritense.com/"))
+        whenever(objectenApiPlugin.url).thenReturn(URI.create("www.ritense.com"))
         val expectedUrl = URI.create("www.ritense.com/objects/$objectUuid")
         val expectedResult = createObjectWrapper(url = expectedUrl, uuid = objectUuid)
         whenever(objectenApiPlugin.getObject(expectedUrl)).thenReturn(expectedResult)
@@ -99,7 +99,7 @@ internal class ObjectManagementFacadeTest {
         val objecttypenApiPlugin = mock<ObjecttypenApiPlugin>()
         prepareAccessObject(objectName, objectenApiPlugin, objecttypenApiPlugin)
 
-        whenever(objectenApiPlugin.url).thenReturn(URI.create("www.ritense.com/"))
+        whenever(objectenApiPlugin.url).thenReturn(URI.create("www.ritense.com"))
         val objectUrl = URI.create("www.ritense.com/objects/$objectUuid")
         val expectedResult = createObjectRecord(objectUrl, objectUuid)
         whenever(objectenApiPlugin.getObjectRecord(objectUrl, objectIndex)).thenReturn(expectedResult)
@@ -126,7 +126,7 @@ internal class ObjectManagementFacadeTest {
         val objecttypenApiPlugin = mock<ObjecttypenApiPlugin>()
         prepareAccessObject(objectName, objectenApiPlugin, objecttypenApiPlugin)
 
-        whenever(objectenApiPlugin.url).thenReturn(URI.create("www.ritense.com/"))
+        whenever(objectenApiPlugin.url).thenReturn(URI.create("www.ritense.com"))
         val expectedUrl1 = URI.create("www.ritense.com/objects/$objectUuid1")
         val expectedUrl2 = URI.create("www.ritense.com/objects/$objectUuid2")
         val expectedResult1 = createObjectWrapper(url = expectedUrl1, uuid = objectUuid1)
