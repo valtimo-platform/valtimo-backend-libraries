@@ -21,7 +21,7 @@ class RefreshAccessTokenEndpoint(
             part("refresh_token", refreshToken)
         }
         return client.post()
-            .uri("/api/oauth2/token")
+            .uri { it.pathSegment("api", "oauth2", "token").build() }
             .body(builder.build())
     }
 
