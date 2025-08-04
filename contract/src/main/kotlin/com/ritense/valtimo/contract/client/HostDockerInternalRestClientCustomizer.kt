@@ -30,13 +30,16 @@ import org.springframework.http.client.support.HttpRequestWrapper
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestTemplate
+import java.io.InputStream
 import java.net.URI
+import kotlin.text.Charsets.UTF_8
 
 @Component
 @SkipComponentScan
 class HostDockerInternalRestClientCustomizer(
-    private val dockerPorts: List<String>,
+    private val dockerPorts: List<Int>,
     private val rewriteRequestHost: Boolean,
+    private val webServerPort: Int,
 ) : RestClientCustomizer, RestTemplateCustomizer, ClientHttpRequestInterceptor {
 
     override fun customize(restClientBuilder: RestClient.Builder) {
@@ -52,7 +55,7 @@ class HostDockerInternalRestClientCustomizer(
     override fun intercept(
         request: HttpRequest,
         requestBody: ByteArray,
-        execution: ClientHttpRequestExecution
+        execution: ClientHttpRequestExecution,
     ): ClientHttpResponse {
         val newBody = if (request.headers.contentType == APPLICATION_JSON) {
             modifyRequestBody(request, requestBody)
@@ -65,7 +68,7 @@ class HostDockerInternalRestClientCustomizer(
         val response = execution.execute(newRequest, newBody)
 
         return if (response.headers.contentType == APPLICATION_JSON) {
-            modifyResponse(response)
+            modifyResponse(request, response)
         } else {
             response
         }
@@ -73,29 +76,39 @@ class HostDockerInternalRestClientCustomizer(
 
     private fun modifyRequestBody(
         request: HttpRequest,
-        requestBody: ByteArray
+        requestBody: ByteArray,
     ): ByteArray {
-        return replaceLocalhost(requestBody.decodeToString(), request.uri.port.toString()).toByteArray()
+        return replaceLocalhost(requestBody.decodeToString(), request.uri.port).toByteArray()
     }
 
     private fun modifyRequest(
         request: HttpRequest,
-        newBody: ByteArray
+        newBody: ByteArray,
     ): HttpRequest {
         return object : HttpRequestWrapper(request) {
             override fun getURI(): URI {
                 val oldUri = super.getURI()
-                val newHostUri = if (oldUri.host == HOST_DOCKER_INTERNAL) {
-                    oldUri.toString().replaceFirst(HOST_DOCKER_INTERNAL, LOCALHOST)
-                } else {
-                    oldUri.toString()
-                }
-                val newUri = if (oldUri.rawQuery != null) {
-                    val newRawQuery = replaceLocalhost(oldUri.rawQuery, request.uri.port.toString())
-                    newHostUri.replaceFirst(oldUri.rawQuery, newRawQuery)
-                } else {
-                    newHostUri
-                }
+                val newHostUri =
+                    if (dockerPorts.contains(webServerPort) && oldUri.port != webServerPort) {
+                        if (oldUri.host == LOCALHOST) {
+                            oldUri.toString().replaceFirst(LOCALHOST, HOST_DOCKER_INTERNAL)
+                        } else {
+                            oldUri.toString()
+                        }
+                    } else {
+                        if (oldUri.host == HOST_DOCKER_INTERNAL) {
+                            oldUri.toString().replaceFirst(HOST_DOCKER_INTERNAL, LOCALHOST)
+                        } else {
+                            oldUri.toString()
+                        }
+                    }
+                val newUri =
+                    if (oldUri.rawQuery != null) {
+                        val newRawQuery = replaceLocalhost(oldUri.rawQuery, request.uri.port)
+                        newHostUri.replaceFirst(oldUri.rawQuery, newRawQuery)
+                    } else {
+                        newHostUri
+                    }
                 return URI(newUri)
             }
 
@@ -110,21 +123,37 @@ class HostDockerInternalRestClientCustomizer(
         }
     }
 
-    private fun modifyResponse(response: ClientHttpResponse): ClientHttpResponseWrapper {
+    private fun modifyResponse(
+        request: HttpRequest,
+        response: ClientHttpResponse,
+    ): ClientHttpResponseWrapper {
         return object : ClientHttpResponseWrapper(response) {
-            override fun getBody() = FindReplaceInputStream(
-                inputStream = super.getBody(),
-                oldValue = HTTP_HOST_DOCKER_INTERNAL,
-                newValue = HTTP_LOCALHOST
-            )
+            override fun getBody(): InputStream {
+                return if (dockerPorts.contains(webServerPort) && request.uri.port != webServerPort) {
+                    FindReplaceInputStream(
+                        inputStream = super.getBody(),
+                        oldValue = HTTP_LOCALHOST,
+                        newValue = HTTP_HOST_DOCKER_INTERNAL,
+                    )
+                } else {
+                    FindReplaceInputStream(
+                        inputStream = super.getBody(),
+                        oldValue = HTTP_HOST_DOCKER_INTERNAL,
+                        newValue = HTTP_LOCALHOST,
+                    )
+                }
+            }
         }
     }
 
-    private fun replaceLocalhost(stringContainingLocalhost: String, requestPort: String): String {
+    private fun replaceLocalhost(
+        stringContainingLocalhost: String,
+        requestPort: Int,
+    ): String {
         return stringContainingLocalhost.replace(Regex("""http://localhost:([0-9]{4,5})""")) { match ->
-            val port = match.groupValues[1]
-            if ((rewriteRequestHost || port != requestPort)
-                && (dockerPorts.contains(port) || dockerPorts.contains(requestPort))
+            val port = match.groupValues[1].toInt()
+            if ((rewriteRequestHost || port != requestPort) &&
+                (dockerPorts.contains(port) || dockerPorts.contains(requestPort))
             ) {
                 "$HTTP_HOST_DOCKER_INTERNAL:$port"
             } else {
