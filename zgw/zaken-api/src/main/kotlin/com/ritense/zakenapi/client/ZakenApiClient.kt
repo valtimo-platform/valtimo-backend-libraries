@@ -262,8 +262,8 @@ class ZakenApiClient(
             .put()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
-                    .path("rollen/${rolUuid}")
-                    .build()
+                    .pathSegment("rollen", "{rolUuid}")
+                    .build(rolUuid)
             }
             .body(rol)
             .retrieve()
