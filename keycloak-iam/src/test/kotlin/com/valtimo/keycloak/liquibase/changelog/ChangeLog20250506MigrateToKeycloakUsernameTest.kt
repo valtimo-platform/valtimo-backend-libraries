@@ -158,6 +158,7 @@ internal class ChangeLog20250506MigrateToKeycloakUsernameTest {
                     "POST /realms/example-realm/protocol/openid-connect/token HTTP/1.1" -> handleTokenRequest()
                     "GET /admin/realms/example-realm/users?email=user%40ritense.com&exact=true HTTP/1.1" -> handleUserSearchRequest()
                     "GET /admin/realms/example-realm/users?email=notfound%40ritense.com&exact=true HTTP/1.1" -> handleUserSearchRequestEmpty()
+                    "GET /admin/serverinfo HTTP/1.1" -> mockResponse(readFileAsString("/data/get-server-info.json"))
                     else -> MockResponse().setResponseCode(404)
                 }
                 return response
@@ -202,5 +203,6 @@ internal class ChangeLog20250506MigrateToKeycloakUsernameTest {
             .addHeader("Content-Type", "application/json")
             .setBody(body)
     }
+    fun readFileAsString(fileName: String): String = this::class.java.getResource(fileName).readText(Charsets.UTF_8)
 
 }
