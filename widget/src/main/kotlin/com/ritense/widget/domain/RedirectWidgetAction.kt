@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 
 @JsonTypeName("redirect")
 data class RedirectWidgetAction(
+    val name: String,
     val redirectPath: String,
 ) : WidgetAction {
 

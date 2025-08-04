@@ -16,7 +16,7 @@
 
 package com.ritense.case_.domain.tab
 
-import com.ritense.case_.rest.dto.CaseWidgetAction
+import com.ritense.widget.domain.WidgetAction
 import com.ritense.case_.widget.TestCaseWidgetProperties
 import com.ritense.valtimo.contract.annotation.AllOpen
 import io.hypersistence.utils.hibernate.type.json.JsonType
@@ -34,7 +34,7 @@ class TestCaseWidgetTabWidget(
     order: Int,
     width: Int,
     highContrast: Boolean,
-    actions: List<CaseWidgetAction>,
+    actions: List<WidgetAction>,
 
     @Type(value = JsonType::class)
     @Column(name = "properties", nullable = false)

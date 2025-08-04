@@ -6,7 +6,6 @@ dependencies {
     implementation(project(":document-generation:smartdocuments"))
     implementation(project(":logging"))
     implementation(project(":zgw:portaaltaak"))
-    implementation(project(":iko"))
     implementation(project(":outbox:outbox-rabbitmq"))
     implementation(project(":process-link-url"))
 

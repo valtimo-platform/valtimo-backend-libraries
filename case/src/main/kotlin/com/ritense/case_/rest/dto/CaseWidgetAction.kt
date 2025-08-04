@@ -16,7 +16,7 @@
 
 package com.ritense.case_.rest.dto
 
-data class CaseWidgetAction (
+data class WidgetAction (
     val name: String,
     val processDefinitionKey: String,
 )

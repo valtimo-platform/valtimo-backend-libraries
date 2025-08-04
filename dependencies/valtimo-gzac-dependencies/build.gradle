@@ -16,6 +16,7 @@
 
 dependencies {
     api(project(":dependencies:valtimo-dependencies"))
+    api(project(":iko"))
     api(project(":plugin-authentication:notificaties-api-authentication"))
     api(project(":plugin-authentication:objecten-api-authentication"))
     api(project(":plugin-authentication:openklant-authentication"))

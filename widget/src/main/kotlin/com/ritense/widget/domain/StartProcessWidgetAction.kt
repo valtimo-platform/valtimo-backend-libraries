@@ -20,5 +20,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 
 @JsonTypeName("startProcess")
 data class StartProcessWidgetAction (
+    val name: String,
     val processDefinitionKey: String,
 ) : WidgetAction
