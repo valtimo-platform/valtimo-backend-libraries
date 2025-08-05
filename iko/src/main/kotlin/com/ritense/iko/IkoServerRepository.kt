@@ -18,6 +18,8 @@ package com.ritense.iko
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.ContainerNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.iko.plugin.IkoPlugin
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.iko.Comparator
@@ -29,6 +31,7 @@ import com.ritense.valtimo.contract.iko.PropertyField.Companion.PROPERTY_FIELD_T
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import java.util.concurrent.Callable
 
 class IkoServerRepository(
     private val pluginService: PluginService,
@@ -81,18 +84,9 @@ class IkoServerRepository(
             filters = filterMap,
         )
 
-        val dataList: List<JsonNode> = if (data is ArrayNode) {
-            data.toList()
-        } else {
-            val lists = data.filter { it is ArrayNode }
-            if (lists.size == 1) {
-                lists[0].toList()
-            } else {
-                listOf(data)
-            }
-        }
-
-        return PageImpl(dataList, pageable, dataList.size.toLong())
+        val arrayData = breathFirstSearch(data) { it is ArrayNode } as ArrayNode?
+        requireNotNull(arrayData)
+        return PageImpl(arrayData.toList(), pageable, arrayData.size().toLong())
     }
 
     override fun findById(config: Map<String, Any?>, id: Any): JsonNode {
@@ -104,6 +98,26 @@ class IkoServerRepository(
 
     private fun getPlugin(config: Map<String, Any?>): IkoPlugin {
         return pluginService.createInstance(config[PLUGIN_CONFIGURATION].toString())
+    }
+
+    private fun breathFirstSearch(node: JsonNode, exitCondition: (JsonNode) -> Boolean): JsonNode? {
+        val queue: ArrayDeque<JsonNode> = ArrayDeque()
+        queue.add(node)
+
+        while (queue.isNotEmpty()) {
+            val current = queue.removeFirst()
+            if (exitCondition(current)) {
+                return current
+            }
+
+            if (current is ContainerNode<*>) {
+                current.forEach { child ->
+                    queue.add(child)
+                }
+            }
+        }
+
+        return null
     }
 
     companion object {
