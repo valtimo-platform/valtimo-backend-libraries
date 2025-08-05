@@ -5,21 +5,27 @@
             "key": "bsn",
             "title": "Zoek met BSN",
             "properties": {
-                "endpointType": "RaadpleegMetBurgerservicenummer"
+                "endpointQueryParameters": {
+                    "type":  "RaadpleegMetBurgerservicenummer"
+                }
             }
         },
         {
             "key": "achternaam-geboortedatum",
             "title": "Zoek met achternaam en geboortedatum",
             "properties": {
-                "endpointType": "ZoekMetGeslachtsnaamEnGeboortedatum"
+                "endpointQueryParameters": {
+                    "type":  "ZoekMetGeslachtsnaamEnGeboortedatum"
+                }
             }
         },
         {
             "key": "adres",
             "title": "Zoek met adres",
             "properties": {
-                "endpointType": "ZoekMetAdres"
+                "endpointQueryParameters": {
+                    "type":  "ZoekMetAdres"
+                }
             }
         }
     ]

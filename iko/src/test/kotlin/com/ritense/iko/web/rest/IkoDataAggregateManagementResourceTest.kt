@@ -82,7 +82,7 @@ internal class IkoDataAggregateManagementResourceTest {
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.*", hasSize<Int>(1)))
-            .andExpect(jsonPath("$[0].title").value("Search Path"))
+            .andExpect(jsonPath("$[0].title").value("Endpoint Path"))
             .andExpect(jsonPath("$[0].key").value("endpointPath"))
             .andExpect(jsonPath("$[0].type").value("text"))
     }

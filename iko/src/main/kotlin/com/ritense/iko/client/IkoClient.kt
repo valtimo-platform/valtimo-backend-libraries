@@ -50,7 +50,7 @@ class IkoClient(
                         .pathSegment(id)
                         .build()
                 }
-                .header(AUTHORIZATION, SecurityUtils.getCurrentJwtTokenValue())
+                .header(AUTHORIZATION, "Bearer ${SecurityUtils.getCurrentJwtTokenValue()}")
                 .retrieve()
                 .body<JsonNode>()!!
 
@@ -67,7 +67,6 @@ class IkoClient(
     fun search(
         baseUrl: URI,
         endpointPath: String,
-        endpointType: String? = null,
         filters: Map<String, String>,
     ): JsonNode {
         try {
@@ -83,7 +82,6 @@ class IkoClient(
                         .port(baseUrl.port)
                         .pathSegment("endpoints")
                         .path(endpointPath)
-                        .queryParam("type", endpointType)
                         .queryParams(
                             LinkedMultiValueMap(
                                 filters
@@ -92,7 +90,7 @@ class IkoClient(
                         )
                         .build()
                 }
-                .header(AUTHORIZATION, SecurityUtils.getCurrentJwtTokenValue())
+                .header(AUTHORIZATION, "Bearer ${SecurityUtils.getCurrentJwtTokenValue()}")
                 .retrieve()
                 .body<JsonNode>()!!
 

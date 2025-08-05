@@ -5,7 +5,7 @@
         {
             "key": "bsn",
             "title": "BSN",
-            "path": "/bsn",
+            "path": "bsn",
             "dataType": "text",
             "fieldType": "single",
             "matchType": "exact",

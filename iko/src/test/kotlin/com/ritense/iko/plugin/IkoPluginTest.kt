@@ -36,7 +36,7 @@ internal class IkoPluginTest {
             ikoClient,
         )
         plugin.url = URI("https://zaken.plugin.url")
-        whenever(ikoClient.search(any(), any(), any(), any()))
+        whenever(ikoClient.search(any(), any(), any()))
             .thenReturn(
                 MapperSingleton.get().readTree(
                     """
@@ -64,7 +64,6 @@ internal class IkoPluginTest {
 
         val result = plugin.search(
             endpointPath = "personen",
-            endpointType = "ZoekMetGeslachtsnaamEnGeboortedatum",
             filters = mapOf(
                 "geslachtsnaam" to "Moulin",
                 "geboortedatum" to "1985-12-01",
@@ -74,7 +73,6 @@ internal class IkoPluginTest {
         verify(ikoClient).search(
             any(),
             eq("personen"),
-            eq("ZoekMetGeslachtsnaamEnGeboortedatum"),
             eq(mapOf("geslachtsnaam" to "Moulin", "geboortedatum" to "1985-12-01"))
         )
         assertEquals("ZoekMetGeslachtsnaamEnGeboortedatum", result["type"].asText())

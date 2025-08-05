@@ -100,7 +100,7 @@ class IkoClientTest {
         )
 
         //validate request
-        assertEquals("GET /searches/personen/999993653 HTTP/1.1", mockApi.takeRequest().requestLine)
+        assertEquals("GET /endpoints/personen/999993653 HTTP/1.1", mockApi.takeRequest().requestLine)
 
         //validate response
         assertEquals("999993653", person["burgerservicenummer"].asText())
@@ -140,7 +140,6 @@ class IkoClientTest {
         val response = client.search(
             baseUrl = URI(mockApi.url("/").toString()),
             endpointPath = "personen",
-            endpointType = "ZoekMetGeslachtsnaamEnGeboortedatum",
             filters = mapOf(
                 "geslachtsnaam" to "Moulin",
                 "geboortedatum" to "1985-12-01",
@@ -149,7 +148,7 @@ class IkoClientTest {
 
         //validate request
         assertEquals(
-            "GET /searches/personen?type=ZoekMetGeslachtsnaamEnGeboortedatum&geslachtsnaam=Moulin&geboortedatum=1985-12-01 HTTP/1.1",
+            "GET /endpoints/personen?geslachtsnaam=Moulin&geboortedatum=1985-12-01 HTTP/1.1",
             mockApi.takeRequest().requestLine
         )
 

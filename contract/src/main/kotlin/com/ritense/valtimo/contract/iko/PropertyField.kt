@@ -30,6 +30,7 @@ data class PropertyField(
         const val PROPERTY_FIELD_TYPE_DROPDOWN = "dropdown"
         const val PROPERTY_FIELD_TYPE_URL = "url"
         const val PROPERTY_FIELD_TYPE_SECRET = "secret"
+        const val PROPERTY_FIELD_TYPE_KEY_VALUE_LIST = "keyValueList"
 
         fun toReadableText(input: String): String {
             val cleaned = input.replace("[^a-zA-Z0-9]+".toRegex(), " ").trim()

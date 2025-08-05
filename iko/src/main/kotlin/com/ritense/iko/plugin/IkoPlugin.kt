@@ -48,13 +48,11 @@ class IkoPlugin(
 
     fun search(
         endpointPath: String,
-        endpointType: String? = null,
         filters: Map<String, String>,
     ): JsonNode {
         return ikoClient.search(
             baseUrl = url,
             endpointPath = endpointPath,
-            endpointType = endpointType,
             filters = filters,
         )
     }

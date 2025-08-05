@@ -16,7 +16,7 @@
 
 package com.ritense.iko.web.rest
 
-import com.ritense.iko.IkoServerRepository.Companion.ENDPOINT_TYPE
+import com.ritense.iko.IkoServerRepository.Companion.ENDPOINT_QUERY_PARAMETERS
 import com.ritense.iko.domain.IkoDataAggregate
 import com.ritense.iko.domain.IkoDataRequest
 import com.ritense.iko.domain.IkoDataRequestId
@@ -75,7 +75,7 @@ internal class IkoDataRequestManagementResourceTest {
         whenever(service.getIkoDataRequestPropertyFields("iko")).thenReturn(
             listOf(
                 PropertyField(
-                    key = ENDPOINT_TYPE,
+                    key = ENDPOINT_QUERY_PARAMETERS,
                     type = PROPERTY_FIELD_TYPE_TEXT
                 )
             )
@@ -85,8 +85,8 @@ internal class IkoDataRequestManagementResourceTest {
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.*", hasSize<Int>(1)))
-            .andExpect(jsonPath("$[0].title").value("Search Type"))
-            .andExpect(jsonPath("$[0].key").value("endpointType"))
+            .andExpect(jsonPath("$[0].title").value("Endpoint Query Parameters"))
+            .andExpect(jsonPath("$[0].key").value("endpointQueryParameters"))
             .andExpect(jsonPath("$[0].type").value("text"))
     }
 
@@ -98,7 +98,7 @@ internal class IkoDataRequestManagementResourceTest {
                     id = IkoDataRequestId("bsn", IkoDataAggregate("klant", "Klant", emptyMap(), mock())),
                     title = "BSN",
                     order = 0,
-                    properties = mapOf("endpointType" to "RaadpleegMetBurgerservicenummer"),
+                    properties = mapOf("endpointQueryParameters" to mapOf("type" to "RaadpleegMetBurgerservicenummer")),
                 )
             ),
         )
@@ -117,7 +117,7 @@ internal class IkoDataRequestManagementResourceTest {
                 id = IkoDataRequestId("bsn", IkoDataAggregate("klant", "Klant", emptyMap(), mock())),
                 title = "BSN",
                 order = 0,
-                properties = mapOf("endpointType" to "RaadpleegMetBurgerservicenummer")
+                properties = mapOf("endpointQueryParameters" to mapOf("type" to "RaadpleegMetBurgerservicenummer"))
             )
         )
 
@@ -132,7 +132,7 @@ internal class IkoDataRequestManagementResourceTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.key").value("bsn"))
             .andExpect(jsonPath("$.title").value("BSN"))
-            .andExpect(jsonPath("$.properties.endpointType").value("RaadpleegMetBurgerservicenummer"))
+            .andExpect(jsonPath("$.properties.endpointQueryParameters.type").value("RaadpleegMetBurgerservicenummer"))
     }
 
     @Test
@@ -142,7 +142,7 @@ internal class IkoDataRequestManagementResourceTest {
             id = IkoDataRequestId("bsn", ikoDataAggregate),
             title = "BSN",
             order = 0,
-            properties = mapOf("endpointType" to "RaadpleegMetBurgerservicenummer"),
+            properties = mapOf("endpointQueryParameters" to mapOf("type" to "RaadpleegMetBurgerservicenummer")),
         )
         val request = IkoDataRequestCreateRequest(
             ikoDataRequest.title,
@@ -164,7 +164,7 @@ internal class IkoDataRequestManagementResourceTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.key").value("bsn"))
             .andExpect(jsonPath("$.title").value("BSN"))
-            .andExpect(jsonPath("$.properties.endpointType").value("RaadpleegMetBurgerservicenummer"))
+            .andExpect(jsonPath("$.properties.endpointQueryParameters.type").value("RaadpleegMetBurgerservicenummer"))
     }
 
     @Test
@@ -173,7 +173,7 @@ internal class IkoDataRequestManagementResourceTest {
             id = IkoDataRequestId("bsn", IkoDataAggregate("klant", "Klant", emptyMap(), mock())),
             title = "BSN",
             order = 0,
-            properties = mapOf("endpointType" to "RaadpleegMetBurgerservicenummer"),
+            properties = mapOf("endpointQueryParameters" to mapOf("type" to "RaadpleegMetBurgerservicenummer")),
         )
         val request = IkoDataRequestUpdateRequest(
             ikoDataRequest.id.key,
@@ -197,7 +197,7 @@ internal class IkoDataRequestManagementResourceTest {
             .andExpect(jsonPath("$.key").value("bsn"))
             .andExpect(jsonPath("$.ikoDataAggregateKey").value("klant"))
             .andExpect(jsonPath("$.title").value("BSN"))
-            .andExpect(jsonPath("$.properties.endpointType").value("RaadpleegMetBurgerservicenummer"))
+            .andExpect(jsonPath("$.properties.endpointQueryParameters.type").value("RaadpleegMetBurgerservicenummer"))
     }
 
     @Test
@@ -206,7 +206,7 @@ internal class IkoDataRequestManagementResourceTest {
             id = IkoDataRequestId("bsn", IkoDataAggregate("klant", "Klant", emptyMap(), mock())),
             title = "BSN",
             order = 0,
-            properties = mapOf("endpointType" to "RaadpleegMetBurgerservicenummer"),
+            properties = mapOf("endpointQueryParameters" to mapOf("type" to "RaadpleegMetBurgerservicenummer")),
         )
         val request = listOf(
             IkoDataRequestUpdateRequest(
@@ -231,7 +231,7 @@ internal class IkoDataRequestManagementResourceTest {
             .andExpect(jsonPath("$[0].key").value("bsn"))
             .andExpect(jsonPath("$[0].ikoDataAggregateKey").value("klant"))
             .andExpect(jsonPath("$[0].title").value("BSN"))
-            .andExpect(jsonPath("$[0].properties.endpointType").value("RaadpleegMetBurgerservicenummer"))
+            .andExpect(jsonPath("$[0].properties.endpointQueryParameters.type").value("RaadpleegMetBurgerservicenummer"))
     }
 
     @Test

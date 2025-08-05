@@ -25,6 +25,7 @@ import com.ritense.valtimo.contract.iko.DataFilter
 import com.ritense.valtimo.contract.iko.IkoRepository
 import com.ritense.valtimo.contract.iko.PropertyField
 import com.ritense.valtimo.contract.iko.PropertyField.Companion.PROPERTY_FIELD_TYPE_DROPDOWN
+import com.ritense.valtimo.contract.iko.PropertyField.Companion.PROPERTY_FIELD_TYPE_KEY_VALUE_LIST
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -48,14 +49,20 @@ class IkoServerRepository(
         PropertyField(
             ENDPOINT_PATH,
             tooltip = "The last few path segments of the IKO API URL. i.e. 'bag/adressen'"
-        )
+        ),
+        PropertyField(
+            ENDPOINT_QUERY_PARAMETERS,
+            PROPERTY_FIELD_TYPE_KEY_VALUE_LIST,
+            tooltip = "Additional query parameters for the IKO API URL. i.e. 'type=ZoekMetGeslachtsnaamEnGeboortedatum'"
+        ),
     )
 
     override fun getDataRequestPropertyFields(): List<PropertyField> = listOf(
         PropertyField(
-            ENDPOINT_TYPE,
-            tooltip = "The 'type' query parameter of the IKO API URL. i.e. 'ZoekMetGeslachtsnaamEnGeboortedatum'"
-        )
+            ENDPOINT_QUERY_PARAMETERS,
+            PROPERTY_FIELD_TYPE_KEY_VALUE_LIST,
+            tooltip = "Additional query parameters for the IKO API URL. i.e. 'type=ZoekMetGeslachtsnaamEnGeboortedatum'"
+        ),
     )
 
     override fun findAll(
@@ -64,13 +71,13 @@ class IkoServerRepository(
         pageable: Pageable
     ): Page<JsonNode> {
         require(filters.all { it.comparator == Comparator.EQUAL_TO })
-        val filterMap = filters.associate {
+        val configuredFilterMap = (config[ENDPOINT_QUERY_PARAMETERS] as Map<String, String>?) ?: emptyMap()
+        val filterMap = configuredFilterMap + filters.associate {
             it.property.substringAfter(':') to it.value.toString()
         }
 
         val data = getPlugin(config).search(
             endpointPath = config[ENDPOINT_PATH].toString(),
-            endpointType = config[ENDPOINT_TYPE]?.toString(),
             filters = filterMap,
         )
 
@@ -102,6 +109,6 @@ class IkoServerRepository(
     companion object {
         const val PLUGIN_CONFIGURATION = "pluginConfiguration"
         const val ENDPOINT_PATH = "endpointPath"
-        const val ENDPOINT_TYPE = "endpointType"
+        const val ENDPOINT_QUERY_PARAMETERS = "endpointQueryParameters"
     }
 }
