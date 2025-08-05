@@ -49,10 +49,7 @@ jacoco {
 def allTestCoverageFile = "${rootDir}/build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml"
 dependencies {
     subprojects { subproject ->
-        if (
-            !subproject.name.endsWith("-dependencies") &&
-            !subproject.name.endsWith("-dependency-versions")
-        ) {
+        if (!project.name.endsWith("-dependencies")) {
             jacocoAggregation(subproject)
         }
     }
@@ -70,44 +67,6 @@ htmlDependencyReport {
 }
 
 //Sonarqube
-tasks.named("sonar") {
-    dependsOn tasks.named("build")
-    dependsOn tasks.named("testCodeCoverageReport")
-    //make sure the sources were build before collecting the source sets for sonar
-    dependsOn subprojects.collectMany { subproject ->
-        def deps = []
-        if (subproject.hasProperty("sourceSets") &&
-            subproject.sourceSets.findByName("main") != null) {
-            if (subproject.tasks.findByName("classes") != null) {
-                deps << subproject.tasks.named("classes")
-                deps << subproject.tasks.named("testClasses")
-            }
-        }
-        return deps
-    }
-    doFirst {
-        def binaryDirs = subprojects.collectMany { subproject ->
-            def outputDirs = []
-
-            if (subproject.hasProperty("sourceSets")) {
-                if (subproject.sourceSets.findByName("main") != null) {
-                    def dirs = subproject.sourceSets.main.output.classesDirs.files +
-                        subproject.sourceSets.test.output.classesDirs.files
-                    dirs.each { dir ->
-                        if (dir.exists()) {
-                            outputDirs << dir
-                        }
-                    }
-                }
-            }
-
-            return outputDirs
-        }
-
-        project.extensions.extraProperties.set("sonar.java.binaries", files(binaryDirs).asPath)
-    }
-}
-
 sonar {
     properties {
         property "sonar.scm.provider", "git"
@@ -230,6 +189,12 @@ subprojects { subproject ->
         tasks.withType(Checkstyle).configureEach {
             reports {
                 html.destination rootProject.file("build/reports/${subproject.project.name}-checkstyle.html")
+            }
+        }
+
+        sonar {
+            properties {
+                property "sonar.coverage.jacoco.xmlReportPaths", allTestCoverageFile
             }
         }
 
