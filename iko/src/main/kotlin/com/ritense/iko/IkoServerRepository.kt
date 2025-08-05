@@ -85,8 +85,8 @@ class IkoServerRepository(
         )
 
         val arrayData = breathFirstSearch(data) { it is ArrayNode } as ArrayNode?
-        requireNotNull(arrayData)
-        return PageImpl(arrayData.toList(), pageable, arrayData.size().toLong())
+        val dataList = arrayData?.toList() ?: listOf(data)
+        return PageImpl(dataList, pageable, dataList.size.toLong())
     }
 
     override fun findById(config: Map<String, Any?>, id: Any): JsonNode {

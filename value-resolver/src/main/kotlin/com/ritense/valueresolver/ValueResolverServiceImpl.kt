@@ -170,7 +170,7 @@ class ValueResolverServiceImpl(
                     if (isRequestedValue(value)) {
                         resolvedValues[value]?.let { key to it }
                     } else {
-                        key to value
+                        value?.let { key to value }
                     }
                 }.toMap()
                 val resolver = resolverFactory.createResolver(resolvedProperties)
@@ -246,7 +246,7 @@ class ValueResolverServiceImpl(
             }.toMap()
     }
 
-    fun toResolverFactoryGroups(requestedValues: Collection<String>): List<Triple<ValueResolverFactory, Map<String, Any>, List<String>>> {
+    fun toResolverFactoryGroups(requestedValues: Collection<String>): List<Triple<ValueResolverFactory, Map<String, Any?>, List<String>>> {
         // Group by prefix
         return requestedValues.groupBy(::getPrefix)
             .flatMap { (prefix, requestedValues) ->
@@ -278,16 +278,16 @@ class ValueResolverServiceImpl(
     }
 
     private fun extractAdditionalRequestedValuesFromQueryParameters(requestedValue: String): List<String> =
-        getQueryParameters(requestedValue).values.filter { isRequestedValue(it) }
+        getQueryParameters(requestedValue).values.filterNotNull().filter { isRequestedValue(it) }
 
     private fun isRequestedValue(value: Any?): Boolean =
         value is String && value.contains(DELIMITER) && resolverFactoryMap.keys.contains(getPrefix(value))
 
-    private fun getQueryParameters(requestedValue: String): Map<String, String> {
+    private fun getQueryParameters(requestedValue: String): Map<String, String?> {
         return if (isRequestedValue(requestedValue)) {
-            Regex("[?&]([a-zA-Z0-9]+)=([^&]+)(?=&|$)")
+            Regex("[?&]([a-zA-Z0-9]+)=([^&]*)(?=&|$)")
                 .findAll(requestedValue)
-                .associate { it.groupValues[1] to it.groupValues[2] }
+                .associate { it.groupValues[1] to it.groupValues[2].ifEmpty { null } }
         } else {
             emptyMap()
         }
