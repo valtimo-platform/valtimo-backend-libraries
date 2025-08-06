@@ -17,7 +17,9 @@
 package com.ritense.iko.client
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.valtimo.contract.utils.SecurityUtils
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestClient
@@ -32,26 +34,31 @@ class IkoClient(
         endpointPath: String,
         id: String,
     ): JsonNode {
-        val result = restClientBuilder
-            .clone()
-            .build()
-            .get()
-            .uri { uriBuilder ->
-                uriBuilder
-                    .scheme(baseUrl.scheme)
-                    .host(baseUrl.host)
-                    .path(baseUrl.path)
-                    .port(baseUrl.port)
-                    .pathSegment("endpoints")
-                    .path(endpointPath)
-                    .pathSegment(id)
-                    .build()
-            }
-            .header(AUTHORIZATION, "Bearer ${SecurityUtils.getCurrentJwtTokenValue()}")
-            .retrieve()
-            .body<JsonNode>()!!
+        try {
+            val result = restClientBuilder
+                .clone()
+                .build()
+                .get()
+                .uri { uriBuilder ->
+                    uriBuilder
+                        .scheme(baseUrl.scheme)
+                        .host(baseUrl.host)
+                        .path(baseUrl.path)
+                        .port(baseUrl.port)
+                        .pathSegment("endpoints")
+                        .path(endpointPath)
+                        .pathSegment(id)
+                        .build()
+                }
+                .header(AUTHORIZATION, "Bearer ${SecurityUtils.getCurrentJwtTokenValue()}")
+                .retrieve()
+                .body<JsonNode>()!!
 
-        return result
+            return result
+        } catch (e: Exception) {
+            logger.error { e }
+            return jacksonObjectMapper().createObjectNode()
+        }
     }
 
     fun search(
@@ -59,30 +66,39 @@ class IkoClient(
         endpointPath: String,
         filters: Map<String, String>,
     ): JsonNode {
-        val result = restClientBuilder
-            .clone()
-            .build()
-            .get()
-            .uri { uriBuilder ->
-                uriBuilder
-                    .scheme(baseUrl.scheme)
-                    .host(baseUrl.host)
-                    .path(baseUrl.path)
-                    .port(baseUrl.port)
-                    .pathSegment("endpoints")
-                    .path(endpointPath)
-                    .queryParams(
-                        LinkedMultiValueMap(
-                            filters
-                                .map { (key, value) -> key to listOf(value) }
-                                .associate { it })
-                    )
-                    .build()
-            }
-            .header(AUTHORIZATION, "Bearer ${SecurityUtils.getCurrentJwtTokenValue()}")
-            .retrieve()
-            .body<JsonNode>()!!
+        try {
+            val result = restClientBuilder
+                .clone()
+                .build()
+                .get()
+                .uri { uriBuilder ->
+                    uriBuilder
+                        .scheme(baseUrl.scheme)
+                        .host(baseUrl.host)
+                        .path(baseUrl.path)
+                        .port(baseUrl.port)
+                        .pathSegment("endpoints")
+                        .path(endpointPath)
+                        .queryParams(
+                            LinkedMultiValueMap(
+                                filters
+                                    .map { (key, value) -> key to listOf(value) }
+                                    .associate { it })
+                        )
+                        .build()
+                }
+                .header(AUTHORIZATION, "Bearer ${SecurityUtils.getCurrentJwtTokenValue()}")
+                .retrieve()
+                .body<JsonNode>()!!
 
-        return result
+            return result
+        } catch (e: Exception) {
+            logger.error { e }
+            return jacksonObjectMapper().createArrayNode()
+        }
+    }
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
     }
 }
