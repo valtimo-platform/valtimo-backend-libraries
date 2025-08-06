@@ -19,7 +19,6 @@ package com.ritense.iko
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ContainerNode
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.iko.plugin.IkoPlugin
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.iko.Comparator
@@ -31,7 +30,6 @@ import com.ritense.valtimo.contract.iko.PropertyField.Companion.PROPERTY_FIELD_T
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import java.util.concurrent.Callable
 
 class IkoServerRepository(
     private val pluginService: PluginService,
@@ -52,6 +50,10 @@ class IkoServerRepository(
         PropertyField(
             ENDPOINT_PATH,
             tooltip = "The last few path segments of the IKO API URL. i.e. 'bag/adressen'"
+        ),
+        PropertyField(
+            AGGREGATED_DATA_PROFILE_NAME,
+            tooltip = "The name of the aggregated data profile. i.e. 'personen'"
         ),
         PropertyField(
             ENDPOINT_QUERY_PARAMETERS,
@@ -92,10 +94,19 @@ class IkoServerRepository(
     }
 
     override fun findById(config: Map<String, Any?>, id: Any): JsonNode {
-        return getPlugin(config).getById(
-            endpointPath = config[ENDPOINT_PATH].toString(),
-            id = id.toString()
-        )
+        val aggregatedDataProfileName = config[AGGREGATED_DATA_PROFILE_NAME] as String?
+
+        return if (!aggregatedDataProfileName.isNullOrBlank()) {
+            getPlugin(config).getByAggregatedDataProfileId(
+                aggregatedDataProfileName = aggregatedDataProfileName,
+                id = id.toString()
+            )
+        } else {
+            getPlugin(config).getByEndpointId(
+                endpointPath = config[ENDPOINT_PATH].toString(),
+                id = id.toString()
+            )
+        }
     }
 
     private fun getPlugin(config: Map<String, Any?>): IkoPlugin {
@@ -125,6 +136,7 @@ class IkoServerRepository(
     companion object {
         const val PLUGIN_CONFIGURATION = "pluginConfiguration"
         const val ENDPOINT_PATH = "endpointPath"
+        const val AGGREGATED_DATA_PROFILE_NAME = "aggregatedDataProfileName"
         const val ENDPOINT_QUERY_PARAMETERS = "endpointQueryParameters"
     }
 }

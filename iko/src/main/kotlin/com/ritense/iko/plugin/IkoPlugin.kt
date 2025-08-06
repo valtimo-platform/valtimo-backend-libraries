@@ -35,13 +35,24 @@ class IkoPlugin(
     @PluginProperty(key = "url", secret = false)
     lateinit var url: URI
 
-    fun getById(
+    fun getByEndpointId(
         endpointPath: String,
         id: String,
     ): JsonNode {
-        return ikoClient.getById(
+        return ikoClient.getByEndpointId(
             baseUrl = url,
             endpointPath = endpointPath,
+            id = id,
+        )
+    }
+
+    fun getByAggregatedDataProfileId(
+        aggregatedDataProfileName: String,
+        id: String,
+    ): JsonNode {
+        return ikoClient.getByAggregatedDataProfileId(
+            baseUrl = url,
+            aggregatedDataProfileName = aggregatedDataProfileName,
             id = id,
         )
     }

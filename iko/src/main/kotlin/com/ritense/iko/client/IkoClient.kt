@@ -29,7 +29,7 @@ import java.net.URI
 class IkoClient(
     private val restClientBuilder: RestClient.Builder,
 ) {
-    fun getById(
+    fun getByEndpointId(
         baseUrl: URI,
         endpointPath: String,
         id: String,
@@ -95,6 +95,38 @@ class IkoClient(
         } catch (e: Exception) {
             logger.error { e }
             return jacksonObjectMapper().createArrayNode()
+        }
+    }
+
+    fun getByAggregatedDataProfileId(
+        baseUrl: URI,
+        aggregatedDataProfileName: String,
+        id: String,
+    ): JsonNode {
+        try {
+            val result = restClientBuilder
+                .clone()
+                .build()
+                .get()
+                .uri { uriBuilder ->
+                    uriBuilder
+                        .scheme(baseUrl.scheme)
+                        .host(baseUrl.host)
+                        .path(baseUrl.path)
+                        .port(baseUrl.port)
+                        .pathSegment("aggregated-data-profiles")
+                        .path(aggregatedDataProfileName)
+                        .pathSegment(id)
+                        .build()
+                }
+                .header(AUTHORIZATION, "Bearer ${SecurityUtils.getCurrentJwtTokenValue()}")
+                .retrieve()
+                .body<JsonNode>()!!
+
+            return result
+        } catch (e: Exception) {
+            logger.error { e }
+            return jacksonObjectMapper().createObjectNode()
         }
     }
 

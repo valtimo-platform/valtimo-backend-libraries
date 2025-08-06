@@ -93,7 +93,7 @@ class IkoClientTest {
 
         mockApi.enqueue(mockResponse(responseBody))
 
-        val person = client.getById(
+        val person = client.getByEndpointId(
             baseUrl = URI(mockApi.url("/").toString()),
             endpointPath = "personen",
             id = "999993653",
