@@ -76,7 +76,9 @@ class IkoServerRepository(
         require(filters.all { it.comparator == Comparator.EQUAL_TO })
         val configuredFilterMap = (config[ENDPOINT_QUERY_PARAMETERS] as Map<String, String>?) ?: emptyMap()
         val filterMap = configuredFilterMap + filters.associate {
-            it.property.substringAfter(':') to it.value.toString()
+            val filterKey = it.property.substringAfter(':').substringBefore('=')
+            val filterValue = it.property.substringAfter('=', "") + it.value.toString()
+            filterKey to filterValue
         }
 
         val data = getPlugin(config).search(
