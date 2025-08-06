@@ -59,11 +59,13 @@ class IkoDataAggregateManagementResource(
     fun getIkoDataAggregatesForManagement(
         @RequestParam key: String?,
         @RequestParam title: String?,
+        @RequestParam ikoRepositoryConfigKey: String?,
         @PageableDefault(sort = ["title"], direction = ASC) pageable: Pageable
     ): ResponseEntity<Page<IkoDataAggregateResponse>> {
         val ikoDataAggregates = service.findAll(
             key = key,
             title = title,
+            ikoRepositoryConfigKey = ikoRepositoryConfigKey,
             pageable = pageable
         )
         return ResponseEntity.ok(ikoDataAggregates.map { IkoDataAggregateResponse.from(it) })

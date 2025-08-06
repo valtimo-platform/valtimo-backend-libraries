@@ -1,7 +1,7 @@
 [
     {
         "id": "72a13bd5-2625-47db-b181-ffc4055cae43",
-        "title": "IKO API",
+        "title": "IKO Server",
         "pluginDefinitionKey": "iko",
         "properties": {
             "url": "${VALTIMO_IKO_API_URL}"

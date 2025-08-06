@@ -65,11 +65,13 @@ class IkoDataAggregateService(
     fun findAll(
         key: String? = null,
         title: String? = null,
+        ikoRepositoryConfigKey: String? = null,
         pageable: Pageable = Pageable.unpaged()
     ): Page<IkoDataAggregate> {
         val spec = getSpecification(
             key = key,
             titlePart = title,
+            ikoRepositoryConfigKey = ikoRepositoryConfigKey,
         )
         return ikoDataAggregateRepository.findAll(spec, pageable)
     }

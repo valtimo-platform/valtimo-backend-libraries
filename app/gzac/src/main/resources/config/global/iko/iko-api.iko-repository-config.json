@@ -1,6 +1,6 @@
 {
-    "key": "iko-api",
-    "title": "IKO API",
+    "key": "iko-server",
+    "title": "IKO Server",
     "type": "iko",
     "properties": {
         "pluginConfiguration": "72a13bd5-2625-47db-b181-ffc4055cae43"

@@ -1,6 +1,6 @@
 {
     "key": "klant",
-    "ikoRepositoryConfigKey": "iko-api",
+    "ikoRepositoryConfigKey": "iko-server",
     "title": "Klant",
     "properties": {
         "endpointPath": "personen"
