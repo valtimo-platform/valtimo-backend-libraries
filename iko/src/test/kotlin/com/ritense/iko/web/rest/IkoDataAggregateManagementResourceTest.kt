@@ -30,6 +30,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.springframework.data.domain.PageImpl
@@ -90,7 +91,7 @@ internal class IkoDataAggregateManagementResourceTest {
     @Test
     fun `should get iko dataAggregates`() {
         val pageable = PageRequest.of(0, 10)
-        whenever(service.findAll(eq("klant"), eq("Klant"), any())).thenReturn(
+        whenever(service.findAll(eq("klant"), eq("Klant"), isNull(), any())).thenReturn(
             PageImpl(
                 listOf(IkoDataAggregate(key = "klant", title = "Klant", ikoRepositoryConfig = mock())),
                 pageable,
