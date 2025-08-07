@@ -36,8 +36,8 @@ import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
-import org.camunda.bpm.engine.RepositoryService
-import org.camunda.bpm.engine.RuntimeService
+import org.operaton.bpm.engine.RepositoryService
+import org.operaton.bpm.engine.RuntimeService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -134,7 +134,12 @@ internal class DocumentenApiPluginIT @Autowired constructor(
             "test".byteInputStream(), mutableMapOf(MetadataType.FILE_SIZE.key to 4L)
         )
 
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(
+            DOCUMENT_DEFINITION_KEY,
+            "profile",
+            "1.0.0",
+            objectMapper.createObjectNode()
+        )
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("localDocumentVariableName" to documentId))
 
@@ -195,7 +200,12 @@ internal class DocumentenApiPluginIT @Autowired constructor(
             mapOf(MetadataType.FILE_NAME.key to "my-document.pdf")
         )
 
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(
+            DOCUMENT_DEFINITION_KEY,
+            "profile",
+            "1.0.0",
+            objectMapper.createObjectNode()
+        )
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("localDocumentVariableName" to documentId))
 
@@ -214,7 +224,12 @@ internal class DocumentenApiPluginIT @Autowired constructor(
         saveProcessLink("download-document", "{}")
         val documentUrl = "${server.url("/")}enkelvoudiginformatieobjecten/$DOCUMENT_ID"
 
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(
+            DOCUMENT_DEFINITION_KEY,
+            "profile",
+            "1.0.0",
+            objectMapper.createObjectNode()
+        )
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("documentUrl" to documentUrl))
 
@@ -244,7 +259,12 @@ internal class DocumentenApiPluginIT @Autowired constructor(
         )
         val documentUrl = "${server.url("/")}enkelvoudiginformatieobjecten/$DOCUMENT_ID"
 
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(
+            DOCUMENT_DEFINITION_KEY,
+            "profile",
+            "1.0.0",
+            objectMapper.createObjectNode()
+        )
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("documentUrl" to documentUrl))
 

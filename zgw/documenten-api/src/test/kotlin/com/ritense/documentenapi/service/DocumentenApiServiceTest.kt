@@ -32,6 +32,7 @@ import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.service.PluginService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.zgw.Rsin
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -62,6 +63,8 @@ class DocumentenApiServiceTest {
     private lateinit var documentDefinitionService: JsonSchemaDocumentDefinitionService
     private lateinit var documentenApiVersionService: DocumentenApiVersionService
     private lateinit var valueResolverService: ValueResolverService
+
+    private val caseDefinitionId = CaseDefinitionId("test", "1.0.0")
 
     @BeforeEach
     fun before() {
@@ -94,7 +97,7 @@ class DocumentenApiServiceTest {
         val documentSearchRequest = DocumentSearchRequest()
         val pageable = Pageable.unpaged()
 
-        val documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId("some-document-name", 3)
+        val documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId("some-document-name", caseDefinitionId)
         val document = mock<Document>()
         whenever(valtimoDocumentService.get(documentId.toString())).thenReturn(document)
         whenever(document.definitionId()).thenReturn(documentDefinitionId)

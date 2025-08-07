@@ -16,7 +16,7 @@
 
 package com.ritense.valtimo.web.rest.dto;
 
-import org.camunda.bpm.engine.rest.dto.repository.ProcessDefinitionDiagramDto;
+import org.operaton.bpm.engine.rest.dto.repository.ProcessDefinitionDiagramDto;
 
 public class ProcessDefinitionDiagramWithPropertyDto {
 

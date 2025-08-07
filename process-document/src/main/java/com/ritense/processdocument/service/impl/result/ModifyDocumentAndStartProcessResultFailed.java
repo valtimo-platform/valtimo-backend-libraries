@@ -20,7 +20,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 
 import com.ritense.document.domain.impl.JsonSchemaDocument;
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
+import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId;
 import com.ritense.processdocument.service.result.ModifyDocumentAndStartProcessResult;
 import com.ritense.processdocument.service.result.TransactionalResult;
 import com.ritense.valtimo.contract.result.OperationError;
@@ -56,7 +56,7 @@ public class ModifyDocumentAndStartProcessResultFailed implements ModifyDocument
     }
 
     @Override
-    public Optional<CamundaProcessInstanceId> resultingProcessInstanceId() {
+    public Optional<OperatonProcessInstanceId> resultingProcessInstanceId() {
         return Optional.empty();
     }
 }

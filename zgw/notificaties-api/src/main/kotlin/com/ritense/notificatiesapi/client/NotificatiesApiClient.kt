@@ -19,11 +19,15 @@ package com.ritense.notificatiesapi.client
 import com.ritense.notificatiesapi.NotificatiesApiAuthentication
 import com.ritense.notificatiesapi.domain.Abonnement
 import com.ritense.notificatiesapi.domain.Kanaal
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import org.springframework.http.MediaType
+import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 import java.net.URI
 
+@SkipComponentScan
+@Component
 class NotificatiesApiClient(
     private val restClientBuilder: RestClient.Builder
 ) {
@@ -35,7 +39,7 @@ class NotificatiesApiClient(
     ): Abonnement {
         return buildNotificatiesRestClient(authentication, baseUrl)
             .get()
-            .uri("abonnement/$abonnementId")
+            .uri { it.pathSegment("abonnement", "{abonnementId}").build(abonnementId) }
             .retrieve()
             .body<Abonnement>()!!
     }
@@ -48,7 +52,7 @@ class NotificatiesApiClient(
     ): Abonnement {
         return buildNotificatiesRestClient(authentication, baseUrl)
             .put()
-            .uri("abonnement/$abonnementId")
+            .uri { it.pathSegment("abonnement", "{abonnementId}").build(abonnementId) }
             .contentType(MediaType.APPLICATION_JSON)
             .body(abonnement)
             .retrieve()
@@ -62,7 +66,7 @@ class NotificatiesApiClient(
     ): Abonnement {
         return buildNotificatiesRestClient(authentication, baseUrl)
             .post()
-            .uri("abonnement")
+            .uri { it.pathSegment("abonnement").build() }
             .contentType(MediaType.APPLICATION_JSON)
             .body(abonnement)
             .retrieve()
@@ -76,7 +80,7 @@ class NotificatiesApiClient(
     ) {
         buildNotificatiesRestClient(authentication, baseUrl)
             .delete()
-            .uri("abonnement/$abonnementId")
+            .uri { it.pathSegment("abonnement", "{abonnementId}").build(abonnementId) }
             .retrieve()
             .toBodilessEntity()
     }
@@ -88,7 +92,7 @@ class NotificatiesApiClient(
     ): Kanaal {
         return buildNotificatiesRestClient(authentication, baseUrl)
             .post()
-            .uri("kanaal")
+            .uri { it.pathSegment("kanaal").build() }
             .body(kanaal)
             .contentType(MediaType.APPLICATION_JSON)
             .retrieve()
@@ -101,7 +105,7 @@ class NotificatiesApiClient(
     ): List<Kanaal> {
         return buildNotificatiesRestClient(authentication, baseUrl)
             .get()
-            .uri("kanaal")
+            .uri { it.pathSegment("kanaal").build() }
             .retrieve()
             .body<List<Kanaal>>()!!
     }

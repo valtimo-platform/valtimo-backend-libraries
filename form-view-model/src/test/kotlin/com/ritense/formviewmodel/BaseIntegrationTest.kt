@@ -17,11 +17,11 @@
 package com.ritense.formviewmodel
 
 import com.ritense.formviewmodel.validation.OnStartUpViewModelValidator
-import com.valtimo.keycloak.service.KeycloakService
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest
@@ -30,13 +30,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 class BaseIntegrationTest : BaseTest() {
 
     // Mock the validator to prevent it from validating
-    @MockBean
+    @MockitoBean
     lateinit var validator: OnStartUpViewModelValidator
 
-//    @MockBean
-//    lateinit var camundaTaskService: CamundaTaskService
+//    @MockitoBean
+//    lateinit var operatonTaskService: OperatonTaskService
 
-    @MockBean
-    lateinit var keycloakService: KeycloakService
+    @MockitoBean
+    lateinit var userManagementService: UserManagementService
 
 }

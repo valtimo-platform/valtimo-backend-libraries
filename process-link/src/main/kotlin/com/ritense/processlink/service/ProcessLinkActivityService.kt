@@ -30,19 +30,19 @@ import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.exception.ProcessLinkNotFoundException
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResultWithTask
-import com.ritense.valtimo.camunda.authorization.CamundaExecutionActionProvider
-import com.ritense.valtimo.camunda.domain.CamundaExecution
-import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
-import com.ritense.valtimo.camunda.domain.CamundaTask
-import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byActive
-import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byId
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.operaton.authorization.OperatonExecutionActionProvider
+import com.ritense.valtimo.operaton.domain.OperatonExecution
+import com.ritense.valtimo.operaton.domain.OperatonProcessDefinition
+import com.ritense.valtimo.operaton.domain.OperatonTask
+import com.ritense.valtimo.operaton.repository.OperatonTaskSpecificationHelper.Companion.byActive
+import com.ritense.valtimo.operaton.repository.OperatonTaskSpecificationHelper.Companion.byId
+import com.ritense.valtimo.operaton.service.OperatonRepositoryService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.exception.ProcessDefinitionNotFoundException
-import com.ritense.valtimo.service.CamundaProcessService
-import com.ritense.valtimo.service.CamundaTaskService
-import mu.KotlinLogging
-import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState
+import com.ritense.valtimo.service.OperatonProcessService
+import com.ritense.valtimo.service.OperatonTaskService
+import io.github.oshai.kotlinlogging.KotlinLogging
+import org.operaton.bpm.engine.impl.persistence.entity.SuspensionState
 import org.springframework.stereotype.Service
 import java.util.UUID
 
@@ -50,16 +50,16 @@ import java.util.UUID
 @SkipComponentScan
 class ProcessLinkActivityService(
     private val processLinkService: ProcessLinkService,
-    private val taskService: CamundaTaskService,
+    private val taskService: OperatonTaskService,
     private val processLinkActivityHandlers: List<ProcessLinkActivityHandler<*>>,
     private val authorizationService: AuthorizationService,
-    private val camundaRepositoryService: CamundaRepositoryService,
+    private val operatonRepositoryService: OperatonRepositoryService,
     private val documentService: DocumentService,
-    private val camundaTaskService: CamundaTaskService,
-    private val camundaProcessService: CamundaProcessService,
+    private val operatonTaskService: OperatonTaskService,
+    private val operatonProcessService: OperatonProcessService,
 ) {
     fun openTask(
-        @LoggableResource(resourceType = CamundaTask::class) taskId: UUID
+        @LoggableResource(resourceType = OperatonTask::class) taskId: UUID
     ): ProcessLinkActivityResult<*> {
         val task = try {
             taskService.findTaskOrThrow(
@@ -81,7 +81,7 @@ class ProcessLinkActivityService(
     }
 
     fun getStartEventObject(
-        @LoggableResource(resourceType = CamundaProcessDefinition::class) processDefinitionId: String,
+        @LoggableResource(resourceType = OperatonProcessDefinition::class) processDefinitionId: String,
         @LoggableResource("com.ritense.document.domain.impl.JsonSchemaDocument") documentId: UUID?,
         @LoggableResource("documentDefinitionName") documentDefinitionName: String?
     ): ProcessLinkActivityResult<*>? {
@@ -91,16 +91,16 @@ class ProcessLinkActivityService(
         ) ?: return null
 
         val processDefinition = runWithoutAuthorization {
-            camundaRepositoryService.findProcessDefinitionById(processLink.processDefinitionId)
+            operatonRepositoryService.findProcessDefinitionById(processLink.processDefinitionId)
                 ?: throw ProcessDefinitionNotFoundException(
                     "For process definition with id ${processLink.processDefinitionId}"
                 )
         }
 
         var entityAuthorizationRequest = EntityAuthorizationRequest(
-            CamundaExecution::class.java,
-            CamundaExecutionActionProvider.CREATE,
-            createDummyCamundaExecution(
+            OperatonExecution::class.java,
+            OperatonExecutionActionProvider.CREATE,
+            createDummyOperatonExecution(
                 processDefinition
             )
         )
@@ -124,10 +124,10 @@ class ProcessLinkActivityService(
 
     fun getTasksWithProcessLinks(processInstanceId: String): List<ProcessLinkActivityResultWithTask> {
         val tasks = runWithoutAuthorization {
-            camundaProcessService.findProcessInstanceById(processInstanceId)
+            operatonProcessService.findProcessInstanceById(processInstanceId)
         }.let { processInstance ->
             processInstance.orElse(null)?.let {
-                camundaTaskService.getProcessInstanceTasks(it.id, it.businessKey)
+                operatonTaskService.getProcessInstanceTasks(it.id, it.businessKey)
             } ?: emptyList()
         }
 
@@ -144,11 +144,11 @@ class ProcessLinkActivityService(
     companion object {
         val logger = KotlinLogging.logger {}
 
-        fun createDummyCamundaExecution(
-            processDefinition: CamundaProcessDefinition,
+        fun createDummyOperatonExecution(
+            processDefinition: OperatonProcessDefinition,
             businessKey: String? = null
-        ): CamundaExecution {
-            val execution = CamundaExecution(
+        ): OperatonExecution {
+            val execution = OperatonExecution(
                 UUID.randomUUID().toString(),
                 1,
                 null,

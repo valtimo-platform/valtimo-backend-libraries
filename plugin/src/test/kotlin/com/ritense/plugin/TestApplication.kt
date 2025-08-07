@@ -20,8 +20,6 @@ import com.ritense.plugin.autodeployment.AutoDeploymentTestPlugin
 import com.ritense.plugin.autodeployment.TestAutoDeploymentPluginFactory
 import com.ritense.plugin.service.PluginService
 import com.ritense.processlink.configuration.ProcessLinkAutoConfiguration
-import org.camunda.bpm.engine.RuntimeService
-import org.camunda.community.mockito.service.RuntimeServiceFluentMock
 import org.mockito.kotlin.spy
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -50,11 +48,6 @@ class TestApplication {
         @Bean
         fun testCategoryPlugin(pluginService: PluginService): PluginFactory<TestCategoryPlugin> {
             return spy(TestCategoryPluginFactory(pluginService))
-        }
-
-        @Bean
-        fun runtimeService():RuntimeService {
-            return RuntimeServiceFluentMock().runtimeService
         }
     }
 }

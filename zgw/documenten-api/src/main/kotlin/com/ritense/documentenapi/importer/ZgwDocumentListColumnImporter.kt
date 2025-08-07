@@ -16,17 +16,25 @@
 
 package com.ritense.documentenapi.importer
 
-import com.ritense.documentenapi.deployment.ZgwDocumentListColumnDeploymentService
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.documentenapi.deployment.ZgwDocumentListColumn
+import com.ritense.documentenapi.domain.DocumentenApiColumn
+import com.ritense.documentenapi.domain.DocumentenApiColumnId
+import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
+import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
 import com.ritense.importer.ValtimoImportTypes.Companion.ZGW_DOCUMENT_LIST_COLUMN
-import com.ritense.valtimo.changelog.service.ChangelogDeployer
-import mu.KotlinLogging
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 class ZgwDocumentListColumnImporter(
-    private val deployer: ZgwDocumentListColumnDeploymentService,
-    private val changelogDeployer: ChangelogDeployer,
+    private val objectMapper: ObjectMapper,
+    private val documentenApiColumnRepository: DocumentenApiColumnRepository,
+    private val documentenApiService: DocumentenApiService,
 ) : Importer {
     override fun type(): String = ZGW_DOCUMENT_LIST_COLUMN
 
@@ -38,12 +46,35 @@ class ZgwDocumentListColumnImporter(
 
     override fun import(request: ImportRequest) {
         logger.info { "Importing ZGW document list columns for file ${request.fileName}" }
-        changelogDeployer.deploy(deployer, request.fileName, request.content.toString(Charsets.UTF_8))
+        deploy(request.caseDefinitionId!!, request.content.toString(Charsets.UTF_8))
+    }
+
+    private fun deploy(caseDefinitionId: CaseDefinitionId, content: String) {
+        runWithoutAuthorization {
+            val columns = getJson(content)
+            documentenApiColumnRepository.deleteAll(
+                documentenApiColumnRepository.findAllByIdCaseDefinitionNameOrderByOrder(
+                    caseDefinitionId.key
+                )
+            )
+            columns.forEach { column ->
+                documentenApiService.createOrUpdateColumn(
+                    DocumentenApiColumn(
+                        id = DocumentenApiColumnId(caseDefinitionId.key, column.key),
+                        defaultSort = column.defaultSort
+                    )
+                )
+            }
+        }
+    }
+
+    private fun getJson(rawJson: String): List<ZgwDocumentListColumn> {
+        return objectMapper.readValue<List<ZgwDocumentListColumn>>(rawJson)
     }
 
     private companion object {
         private val logger = KotlinLogging.logger {}
-        val FILENAME_REGEX = """config/case/zgw-document-list-columns/([^/]+)\.zgw-document-list-column\.json"""
+        val FILENAME_REGEX = """/zgw/document-list-column/([^/]+)\.zgw-document-list-column\.json"""
             .toRegex()
     }
 }

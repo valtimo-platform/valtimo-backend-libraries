@@ -31,11 +31,7 @@ import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.exception.PluginEventInvocationException
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
-import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.processlink.domain.ActivityTypeWithEventName
-import org.camunda.bpm.engine.delegate.DelegateExecution
-import org.camunda.community.mockito.delegate.DelegateExecutionFake
-import org.camunda.community.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -50,9 +46,9 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.operaton.bpm.engine.delegate.DelegateExecution
+import org.operaton.bpm.engine.delegate.DelegateTask
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.transaction.annotation.Transactional
 import java.lang.reflect.InvocationTargetException
 import java.net.URI
@@ -62,11 +58,6 @@ import kotlin.test.assertNotEquals
 
 
 internal class PluginServiceIT : BaseIntegrationTest() {
-    @SpyBean
-    lateinit var pluginService: PluginService
-
-    @MockBean
-    lateinit var pluginProcessLinkRepository: PluginProcessLinkRepository
 
     @Autowired
     lateinit var pluginDefinitionRepository: PluginDefinitionRepository
@@ -180,8 +171,8 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             activityType = ActivityTypeWithEventName.SERVICE_TASK_START
         )
 
-        val execution = DelegateExecutionFake.of()
-            .withProcessInstanceId(UUID.randomUUID().toString())
+        val execution = mock<DelegateExecution>()
+        whenever(execution.processInstanceId).thenReturn(UUID.randomUUID().toString())
 
         pluginService.invoke(execution, processLink)
     }
@@ -199,10 +190,12 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             activityType = ActivityTypeWithEventName.USER_TASK_CREATE
         )
 
-        val execution = DelegateExecutionFake.of()
-            .withProcessInstanceId(UUID.randomUUID().toString())
+        val execution = mock<DelegateExecution>()
+        whenever(execution.processInstanceId).thenReturn(UUID.randomUUID().toString())
 
-        val task = DelegateTaskFake().withProcessInstanceId(execution.processInstanceId).withExecution(execution)
+        val task = mock<DelegateTask>()
+        whenever(task.processInstanceId).thenReturn(UUID.randomUUID().toString())
+        whenever(task.execution).thenReturn(execution)
 
         pluginService.invoke(task, processLink)
     }
@@ -220,8 +213,8 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             activityType = ActivityTypeWithEventName.SERVICE_TASK_START
         )
 
-        val execution = DelegateExecutionFake.of()
-            .withProcessInstanceId(UUID.randomUUID().toString())
+        val execution = mock<DelegateExecution>()
+        whenever(execution.processInstanceId).thenReturn(UUID.randomUUID().toString())
 
         val result = pluginService.invoke(execution, processLink)
 
@@ -244,9 +237,9 @@ internal class PluginServiceIT : BaseIntegrationTest() {
         val testPlugin = spy(TestPlugin("someString"))
         doReturn(testPlugin).whenever(pluginFactory).create(pluginConfiguration)
 
-        val execution = DelegateExecutionFake.of()
-            .withProcessInstanceId(UUID.randomUUID().toString())
-            .withVariable("placeholder", "1234")
+        val execution = mock<DelegateExecution>()
+        whenever(execution.processInstanceId).thenReturn(UUID.randomUUID().toString())
+        whenever(execution.getVariable("placeholder")).thenReturn("1234")
 
         pluginService.invoke(execution, processLink)
 
@@ -272,8 +265,8 @@ internal class PluginServiceIT : BaseIntegrationTest() {
         val testPlugin = spy(TestPlugin("someString"))
         doReturn(testPlugin).whenever(pluginFactory).create(pluginConfiguration)
 
-        val execution = DelegateExecutionFake.of()
-            .withProcessInstanceId(UUID.randomUUID().toString())
+        val execution = mock<DelegateExecution>()
+        whenever(execution.processInstanceId).thenReturn(UUID.randomUUID().toString())
 
         pluginService.invoke(execution, processLink)
 
@@ -315,9 +308,9 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             activityType = ActivityTypeWithEventName.SERVICE_TASK_START
         )
 
-        val execution = DelegateExecutionFake.of()
-            .withProcessInstanceId(UUID.randomUUID().toString())
-            .withVariable("exampleUrl", "www.example.com")
+        val execution = mock<DelegateExecution>()
+        whenever(execution.processInstanceId).thenReturn(UUID.randomUUID().toString())
+        whenever(execution.getVariable("exampleUrl")).thenReturn("www.example.com")
 
         val result = pluginService.invoke(execution, processLink)
 

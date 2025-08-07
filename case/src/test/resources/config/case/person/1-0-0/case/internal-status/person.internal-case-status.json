@@ -1,0 +1,14 @@
+[
+    {
+        "key": "closed",
+        "title": "Closed",
+        "visibleInCaseListByDefault": false,
+        "color": "GRAY"
+    },
+    {
+        "key": "started",
+        "title": "Started",
+        "visibleInCaseListByDefault": true,
+        "color": "GRAY"
+    }
+]

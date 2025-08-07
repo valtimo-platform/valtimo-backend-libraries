@@ -18,14 +18,14 @@ package com.ritense.zakenapi.provider
 
 import com.ritense.logging.withLoggingContext
 import com.ritense.plugin.service.PluginService
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.operaton.domain.OperatonTask
 import com.ritense.zakenapi.ZakenApiPlugin
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
-import com.ritense.zakenapi.domain.rol.RolType
+import com.ritense.zakenapi.domain.rol.RolTypeGeneriekeBeschrijving
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
-import org.camunda.bpm.engine.delegate.DelegateTask
+import org.operaton.bpm.engine.delegate.DelegateTask
 import kotlin.contracts.ExperimentalContracts
 
 @OptIn(ExperimentalContracts::class)
@@ -36,16 +36,16 @@ class ZaakBsnProvider(
 ) : BsnProvider {
 
     override fun getBurgerServiceNummer(task: DelegateTask): String? {
-        return withLoggingContext(CamundaTask::class, task.id) {
+        return withLoggingContext(OperatonTask::class, task.id) {
             val documentId =
-                processDocumentService.getDocumentId(CamundaProcessInstanceId(task.processInstanceId), task)
+                processDocumentService.getDocumentId(OperatonProcessInstanceId(task.processInstanceId), task)
             val zaakUrl = zaakInstanceLinkService.getByDocumentId(documentId.id).zaakInstanceUrl
 
             val zakenPlugin = checkNotNull(
                 pluginService.createInstance(ZakenApiPlugin::class.java, ZakenApiPlugin.findConfigurationByUrl(zaakUrl))
             ) { "No plugin configuration was found for zaak with URL $zaakUrl" }
 
-            zakenPlugin.getZaakRollen(zaakUrl, RolType.INITIATOR).firstNotNullOfOrNull {
+            zakenPlugin.getZaakRollen(zaakUrl, RolTypeGeneriekeBeschrijving.INITIATOR).firstNotNullOfOrNull {
                 when (it.betrokkeneIdentificatie) {
                     is RolNatuurlijkPersoon -> it.betrokkeneIdentificatie.inpBsn
                     else -> null

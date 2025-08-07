@@ -15,9 +15,9 @@
  */
 
 
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
 plugins {
     id "idea"
@@ -29,7 +29,7 @@ plugins {
     id "org.jetbrains.kotlin.plugin.spring" version "${kotlinVersion}"
     id "org.jetbrains.kotlin.plugin.jpa" version "${kotlinVersion}"
     id "org.jetbrains.kotlin.plugin.allopen" version "${kotlinVersion}"
-    id "org.jetbrains.dokka" version "${dokkaPluginVersion}"
+    id "org.jetbrains.dokka-javadoc" version "${dokkaPluginVersion}"
     id "com.github.ben-manes.versions" version "${versionsPluginVersion}"
     id "org.sonarqube" version "${sonarqubePluginVersion}"
     id "checkstyle"
@@ -38,7 +38,8 @@ plugins {
     id "com.avast.gradle.docker-compose" version "${dockerComposePluginVersion}"
     id "com.github.jk1.dependency-license-report" version "${dependencyLicenseReportVersion}"
     id "project-report"
-    id "org.owasp.dependencycheck" version "8.4.3"
+    id "org.owasp.dependencycheck" version "12.1.3"
+    id "cn.lalaki.central" version "${centralPortalPluginVersion}"
 }
 
 jacoco {
@@ -48,7 +49,10 @@ jacoco {
 def allTestCoverageFile = "${rootDir}/build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml"
 dependencies {
     subprojects { subproject ->
-        if (!project.name.endsWith("-dependencies")) {
+        if (
+            !subproject.name.endsWith("-dependencies") &&
+            !subproject.name.endsWith("-dependency-versions")
+        ) {
             jacocoAggregation(subproject)
         }
     }
@@ -56,7 +60,7 @@ dependencies {
 reporting {
     reports {
         testCodeCoverageReport(JacocoCoverageReport) {
-            testType = TestSuiteType.UNIT_TEST
+            testSuiteName = "test"
         }
     }
 }
@@ -66,6 +70,44 @@ htmlDependencyReport {
 }
 
 //Sonarqube
+tasks.named("sonar") {
+    dependsOn tasks.named("build")
+    dependsOn tasks.named("testCodeCoverageReport")
+    //make sure the sources were build before collecting the source sets for sonar
+    dependsOn subprojects.collectMany { subproject ->
+        def deps = []
+        if (subproject.hasProperty("sourceSets") &&
+            subproject.sourceSets.findByName("main") != null) {
+            if (subproject.tasks.findByName("classes") != null) {
+                deps << subproject.tasks.named("classes")
+                deps << subproject.tasks.named("testClasses")
+            }
+        }
+        return deps
+    }
+    doFirst {
+        def binaryDirs = subprojects.collectMany { subproject ->
+            def outputDirs = []
+
+            if (subproject.hasProperty("sourceSets")) {
+                if (subproject.sourceSets.findByName("main") != null) {
+                    def dirs = subproject.sourceSets.main.output.classesDirs.files +
+                        subproject.sourceSets.test.output.classesDirs.files
+                    dirs.each { dir ->
+                        if (dir.exists()) {
+                            outputDirs << dir
+                        }
+                    }
+                }
+            }
+
+            return outputDirs
+        }
+
+        project.extensions.extraProperties.set("sonar.java.binaries", files(binaryDirs).asPath)
+    }
+}
+
 sonar {
     properties {
         property "sonar.scm.provider", "git"
@@ -99,8 +141,6 @@ allprojects {
             }
             dependencies {
                 dependency "org.hibernate.orm:hibernate-core:${hibernateCoreVersion}"
-                dependency "org.yaml:snakeyaml:${snakeYamlVersionOverride}"
-                dependency "io.netty:netty-codec:${nettyCodecVersionOverride}"
                 dependency "org.liquibase:liquibase-core:${liquibaseVersion}"
                 dependency "com.rabbitmq:amqp-client:${amqpCLientVersion}"
             }
@@ -109,8 +149,8 @@ allprojects {
         bootJar.enabled = false
     }
 
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 
     group = projectGroup
     version = projectVersion
@@ -139,7 +179,7 @@ subprojects { subproject ->
         apply plugin: "kotlin-jpa"
         apply from: "$rootProject.projectDir/gradle/test.gradle"
         apply plugin: "com.avast.gradle.docker-compose"
-        apply plugin: "org.jetbrains.dokka"
+        apply plugin: "org.jetbrains.dokka-javadoc"
         apply plugin: "maven-publish"
         apply plugin: "org.owasp.dependencycheck"
 
@@ -161,7 +201,7 @@ subprojects { subproject ->
         ext.kotlinSubProjectPath = subproject.projectDir.getAbsolutePath() + "/src/main/kotlin"
         if (new File(ext.kotlinSubProjectPath).exists() && !new File(ext.javaSubProjectPath).exists()) {
             tasks.getByName('javadocJar') {
-                from dokkaJavadoc
+                from dokkaGenerate
             }
         }
 
@@ -175,7 +215,7 @@ subprojects { subproject ->
 
         tasks.withType(KotlinCompile).configureEach {
             compilerOptions {
-                jvmTarget = JvmTarget.JVM_17
+                jvmTarget = JvmTarget.JVM_21
                 freeCompilerArgs.add("-Xemit-jvm-type-annotations")
             }
         }
@@ -190,12 +230,6 @@ subprojects { subproject ->
         tasks.withType(Checkstyle).configureEach {
             reports {
                 html.destination rootProject.file("build/reports/${subproject.project.name}-checkstyle.html")
-            }
-        }
-
-        sonar {
-            properties {
-                property "sonar.coverage.jacoco.xmlReportPaths", allTestCoverageFile
             }
         }
 

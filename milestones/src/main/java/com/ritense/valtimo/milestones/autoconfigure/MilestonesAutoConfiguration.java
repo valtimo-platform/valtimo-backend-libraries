@@ -29,7 +29,7 @@ import com.ritense.valtimo.milestones.service.mapper.MilestoneMapper;
 import com.ritense.valtimo.milestones.web.rest.MilestoneInstanceResource;
 import com.ritense.valtimo.milestones.web.rest.MilestoneResource;
 import com.ritense.valtimo.milestones.web.rest.MilestoneSetResource;
-import org.camunda.bpm.engine.RepositoryService;
+import org.operaton.bpm.engine.RepositoryService;
 import org.mapstruct.factory.Mappers;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

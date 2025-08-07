@@ -38,4 +38,49 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="2" author="Ritense">
+        <addColumn tableName="document_objecten_api_sync">
+            <column name="case_definition_key" type="VARCHAR(256)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="case_definition_version_tag" type="VARCHAR(200)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="3" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <sql>
+            update document_objecten_api_sync
+            set case_definition_key = document_definition_name,
+                case_definition_version_tag = '000000.' || LPAD(document_definition_version::text, 6, '0') || '.000000-migrated'
+            where case_definition_version_tag is null
+        </sql>
+    </changeSet>
+
+    <changeSet id="4" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <sql>
+            update document_objecten_api_sync
+            set case_definition_key = document_definition_name,
+                case_definition_version_tag = CONCAT('000000.', LPAD(document_definition_version, 6, '0'), '.000000-migrated')
+            where case_definition_version_tag is null
+        </sql>
+    </changeSet>
+
+    <changeSet id="5" author="Ritense">
+        <dropColumn tableName="document_objecten_api_sync" columnName="document_definition_name"/>
+        <dropColumn tableName="document_objecten_api_sync" columnName="document_definition_version"/>
+    </changeSet>
+
+    <changeSet id="6" author="Ritense">
+        <addNotNullConstraint tableName="document_objecten_api_sync" columnName="case_definition_key" columnDataType="varchar(256)"/>
+        <addNotNullConstraint tableName="document_objecten_api_sync" columnName="case_definition_version_tag" columnDataType="varchar(200)"/>
+    </changeSet>
+
 </databaseChangeLog>

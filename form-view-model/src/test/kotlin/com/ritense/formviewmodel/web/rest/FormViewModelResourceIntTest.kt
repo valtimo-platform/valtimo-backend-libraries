@@ -11,10 +11,10 @@ import com.ritense.formviewmodel.viewmodel.TestViewModel
 import com.ritense.formviewmodel.web.rest.FormViewModelResourceTest.Companion.BASE_URL
 import com.ritense.formviewmodel.web.rest.FormViewModelResourceTest.Companion.START_FORM
 import com.ritense.formviewmodel.web.rest.FormViewModelResourceTest.Companion.USER_TASK
-import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition
+import com.ritense.valtimo.operaton.domain.ProcessInstanceWithDefinition
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
-import com.ritense.valtimo.service.CamundaProcessService
-import org.camunda.bpm.engine.TaskService
+import com.ritense.valtimo.service.OperatonProcessService
+import org.operaton.bpm.engine.TaskService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -37,7 +37,7 @@ import java.util.UUID
 class FormViewModelResourceIntTest @Autowired constructor(
     private val formViewModelResource: FormViewModelResource,
     private val objectMapper: ObjectMapper,
-    private val processService: CamundaProcessService,
+    private val processService: OperatonProcessService,
     private val taskService: TaskService,
     private val testUserTaskSubmissionHandler: TestUserTaskSubmissionHandler,
     private val testUserTaskUIComponentSubmissionHandler: TestUserTaskUIComponentSubmissionHandler,

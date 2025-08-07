@@ -16,8 +16,8 @@
 
 package com.ritense.valtimo.dashboard
 
-import com.ritense.valtimo.camunda.repository.CamundaTaskRepository
-import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.all
+import com.ritense.valtimo.operaton.repository.OperatonTaskRepository
+import com.ritense.valtimo.operaton.repository.OperatonTaskSpecificationHelper.Companion.all
 import com.ritense.valtimo.contract.dashboard.WidgetDataSource
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Expression
@@ -25,7 +25,7 @@ import jakarta.persistence.criteria.Path
 import jakarta.persistence.criteria.Root
 
 class TaskWidgetDataSource(
-    private val taskRepository: CamundaTaskRepository
+    private val taskRepository: OperatonTaskRepository
 ) {
     @WidgetDataSource("task-count", "Task count")
     fun getTaskCount(taskCountDataSourceProperties: TaskCountDataSourceProperties): TaskCountDataResult {

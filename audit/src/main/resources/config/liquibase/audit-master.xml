@@ -31,4 +31,5 @@
     <include file="changelog/20210708-update-document-id-audit-event.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20220104-rename-indexes.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20240926-rename-anonymous-to-system.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20250613-major-13-migration.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

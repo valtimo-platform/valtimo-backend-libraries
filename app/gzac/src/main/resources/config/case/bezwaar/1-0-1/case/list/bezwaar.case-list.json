@@ -1,0 +1,57 @@
+[
+  {
+    "key": "createdBy",
+    "path": "case:createdBy",
+    "displayType": {
+      "type": "text",
+      "displayTypeParameters": {}
+    },
+    "sortable": true,
+    "order": 0
+  },
+  {
+    "key": "createdOn",
+    "path": "case:createdOn",
+    "displayType": {
+      "type": "date",
+      "displayTypeParameters": {
+        "dateFormat": null
+      }
+    },
+    "sortable": true,
+    "defaultSort": "DESC",
+    "order": 1
+  },
+  {
+    "key": "modifiedOn",
+    "path": "case:modifiedOn",
+    "displayType": {
+      "type": "date",
+      "displayTypeParameters": {
+        "dateFormat": null
+      }
+    },
+    "sortable": true,
+    "order": 2
+  },
+  {
+    "key": "assigneeFullName",
+    "path": "case:assigneeFullName",
+    "displayType": {
+      "type": "text",
+      "displayTypeParameters": {}
+    },
+    "sortable": true,
+    "order": 3
+  },
+  {
+    "key": "status",
+    "path": "case:internalStatus",
+    "displayType": {
+      "type": "tags",
+      "displayTypeParameters": {}
+    },
+    "sortable": true,
+    "order": 4
+  }
+]

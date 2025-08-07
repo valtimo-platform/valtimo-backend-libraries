@@ -21,7 +21,7 @@ import com.ritense.outbox.domain.BaseEvent
 
 class TaskCompleted(taskId: String, task: ObjectNode) : BaseEvent(
     type = "com.ritense.valtimo.task.completed",
-    resultType = "com.ritense.valtimo.camunda.domain.CamundaTask",
+    resultType = "com.ritense.valtimo.operaton.domain.OperatonTask",
     resultId = taskId,
     result = task
 )

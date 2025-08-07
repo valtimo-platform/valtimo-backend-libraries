@@ -21,6 +21,7 @@ import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.json.MapperSingleton
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 
 abstract class BaseTest {
     fun readFileAsString(fileName: String): String = this::class.java.getResource(fileName)!!.readText(Charsets.UTF_8)
@@ -29,6 +30,6 @@ abstract class BaseTest {
         val mapper = MapperSingleton.get().copy()
         mapper.registerSubtypes(NamedType(FormStepTypeProperties::class.java, "form"))
         val config = mapper.readValue(formFlowJson, com.ritense.formflow.domain.definition.configuration.FormFlowDefinition::class.java)
-        return config.toDefinition(FormFlowDefinitionId.newId(formFlowKey))
+        return config.toDefinition(FormFlowDefinitionId.newId(formFlowKey, CaseDefinitionId("profile", "1.0.0")))
     }
 }

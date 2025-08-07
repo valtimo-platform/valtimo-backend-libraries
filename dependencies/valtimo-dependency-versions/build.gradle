@@ -28,22 +28,19 @@ dependencies {
         api(project(":authorization"))
         api(project(":case"))
         api(project(":changelog"))
-        api(project(":connector"))
         api(project(":contract"))
         api(project(":core"))
         api(project(":dashboard"))
         api(project(":data-provider"))
-        api(project(":document"))
         api(project(":document-generation"))
-        api(project(":external-event"))
         api(project(":exporter"))
         api(project(":mail:flowmailer"))
         api(project(":form"))
         api(project(":form-flow"))
-        api(project(":form-flow-valtimo"))
         api(project(":form-view-model"))
         api(project(":command-handling"))
         api(project(":importer"))
+        api(project(":inbox"))
         api(project(":keycloak-iam"))
         api(project(":document-generation:local-document-generation"))
         api(project(":mail:local-mail"))
@@ -71,16 +68,9 @@ dependencies {
         api(project(":mail:wordpress-mail"))
 
         //GZAC
-        api(project(":besluit"))
-        api(project(":contactmoment"))
-        api(project(":haalcentraal:haalcentraal-brp"))
-        api(project(":klant"))
         api(project(":plugin-authentication:notificaties-api-authentication"))
         api(project(":plugin-authentication:objecten-api-authentication"))
         api(project(":plugin-authentication:openzaak-plugin-authentication"))
-        api(project(":objects-api"))
-        api(project(":openzaak"))
-        api(project(":resource:openzaak-resource"))
 
         api(project(":zgw"))
         api(project(":zgw:portaaltaak"))
@@ -109,12 +99,9 @@ dependencies {
 
         api("de.codecentric:spring-boot-admin-starter-client:${springBootAdminStarterClientVersion}")
         api "org.json:json:${orgJsonJsonVersion}"
-        api("org.yaml:snakeyaml:${snakeYamlVersionOverride}")
-        api("io.netty:netty-codec:${nettyCodecVersionOverride}")
 
         api("com.rabbitmq:amqp-client:${amqpCLientVersion}")
-        api("jakarta.inject:jakarta.inject-api:${jakartaInjectVersion}")
-        api("io.github.microutils:kotlin-logging:${kotlinLoggingVersion}")
+        api("io.github.oshai:kotlin-logging:${kotlinLoggingVersion}")
     }
 }
 

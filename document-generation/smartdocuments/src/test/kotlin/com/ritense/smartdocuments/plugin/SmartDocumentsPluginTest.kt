@@ -26,8 +26,7 @@ import com.ritense.smartdocuments.domain.TemplateGroup
 import com.ritense.smartdocuments.domain.TemplatesStructure
 import com.ritense.valueresolver.ValueResolverService
 import org.assertj.core.api.Assertions.assertThat
-import org.camunda.bpm.engine.delegate.DelegateExecution
-import org.camunda.bpm.extension.mockito.delegate.DelegateExecutionFake
+import org.operaton.bpm.engine.delegate.DelegateExecution
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -35,6 +34,7 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.springframework.context.ApplicationEventPublisher
 
@@ -93,7 +93,9 @@ internal class SmartDocumentsPluginTest {
         assertThat(result.size).isEqualTo(3)
         assertThat(result.first()).isEqualTo(TEMPLATE_NAME)
 
-    }@Test
+    }
+
+    @Test
     fun `list should be empty`() {
         // given
         whenever(smartDocumentsClient.getSmartDocumentsTemplateData(any())).thenReturn(smartDocumentsTemplateData())
@@ -157,8 +159,14 @@ internal class SmartDocumentsPluginTest {
     )
 
     private fun delegateExecution(): DelegateExecution {
-        return DelegateExecutionFake()
-            .withBusinessKey("business_key")
-            .withProcessInstanceId("process_instance_id")
+        val variables = mutableMapOf<String, Any?>()
+        val execution = mock<DelegateExecution>()
+        whenever(execution.setVariable(any(), any())).thenAnswer { invocation ->
+            variables[invocation.arguments[0] as String] = invocation.arguments[1]
+        }
+        whenever (execution.getVariable(any())).thenAnswer { invocation ->
+            variables[invocation.arguments[0] as String]
+        }
+        return execution
     }
 }

@@ -21,8 +21,7 @@ import com.ritense.valtimo.contract.mail.MailFilter
 import com.ritense.valtimo.contract.mail.model.HasRecipients
 import com.ritense.valtimo.contract.mail.model.RawMailMessage
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
-import mu.KLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.util.Optional
 
 /**
@@ -71,7 +70,7 @@ class RedirectToFilter(
     }
 
     companion object {
-        private val logger: KLogger = KotlinLogging.logger {}
+        private val logger = KotlinLogging.logger {}
     }
 
 }

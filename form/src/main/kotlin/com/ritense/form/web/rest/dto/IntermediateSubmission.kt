@@ -36,9 +36,9 @@ fun IntermediateSubmissionDomain.toResponse(): IntermediateSubmission {
     return IntermediateSubmission(
         submission = this.content,
         taskInstanceId = this.taskInstanceId,
-        createdBy = this.createdBy.let { userManagementService.findByUserIdentifier(it).fullName },
+        createdBy = this.createdBy.let { userManagementService.findByUsername(it).fullName },
         createdOn = this.createdOn,
-        editedBy = this.editedBy?.let { userManagementService.findByUserIdentifier(it).fullName },
+        editedBy = this.editedBy?.let { userManagementService.findByUsername(it).fullName },
         editedOn = this.editedOn
     )
 }

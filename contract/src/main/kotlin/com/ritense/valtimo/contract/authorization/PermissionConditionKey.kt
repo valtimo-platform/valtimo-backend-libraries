@@ -18,6 +18,8 @@ enum class PermissionConditionKey(val key: String) {
     CURRENT_USER_ID("\${currentUserId}"),
     CURRENT_USER_EMAIL("\${currentUserEmail}"),
     CURRENT_USER_ROLES("\${currentUserRoles}"),
+    CURRENT_USER_NAME("\${currentUsername}"),
+    @Deprecated("Use 'CURRENT_USER_NAME' instead")
     CURRENT_USER_IDENTIFIER("\${currentUserIdentifier}");
 
     companion object {

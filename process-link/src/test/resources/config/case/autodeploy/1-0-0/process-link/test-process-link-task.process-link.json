@@ -1,0 +1,8 @@
+[
+    {
+        "activityId": "test-user-task",
+        "activityType": "bpmn:UserTask:start",
+        "processLinkType": "test",
+        "someValue": "test"
+    }
+]

@@ -33,7 +33,6 @@ import static org.mockito.Mockito.when;
 import com.ritense.valtimo.contract.OauthConfigHolder;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCriteria;
-import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.contract.config.ValtimoProperties.Oauth;
 import jakarta.ws.rs.NotFoundException;
 import java.util.List;
@@ -189,26 +188,21 @@ class KeycloakUserManagementServiceTest {
     }
 
     @Test
-    void findByUserIdentifierShouldReturnUserWhenSearchingOnUserId() {
-        OauthConfigHolder.getCurrentInstance().setIdentifierField(ValtimoProperties.IdentifierField.USERID);
-
+    void shouldNotfindByUsernameShouldReturnUserWhenSearchingOnUserId() {
         when(keycloakService.usersResource(any()).get(eq(johnDoe.getId())).toRepresentation())
             .thenReturn(johnDoe);
 
-        var user = userManagementService.findByUserIdentifier(johnDoe.getId());
+        var user = userManagementService.findByUsername(johnDoe.getId());
 
-        verify(keycloakService.usersResource(any()).get(eq(johnDoe.getId()))).toRepresentation();
-        assertThat(user).isNotNull();
+        assertThat(user).isNull();
     }
 
     @Test
-    void findByUserIdentifierShouldReturnUserWhenSearchingOnUsername() {
-        OauthConfigHolder.getCurrentInstance().setIdentifierField(ValtimoProperties.IdentifierField.USERNAME);
-
+    void findByUsernameShouldReturnUserWhenSearchingOnUsername() {
         when(keycloakService.usersResource(any()).searchByUsername(eq(johnDoe.getUsername()), eq(true)))
             .thenReturn(List.of(johnDoe));
 
-        var user = userManagementService.findByUserIdentifier(johnDoe.getUsername());
+        var user = userManagementService.findByUsername(johnDoe.getUsername());
 
         verify(keycloakService.usersResource(any())).searchByUsername(eq(johnDoe.getUsername()), eq(true));
         assertThat(user).isNotNull();
@@ -226,13 +220,11 @@ class KeycloakUserManagementServiceTest {
     }
 
     @Test
-    void findByUserIdentifierShouldNotThrowAnExceptionWhenSearchingOnUsernameAndNoUserIsNotFound() {
-        OauthConfigHolder.getCurrentInstance().setIdentifierField(ValtimoProperties.IdentifierField.USERNAME);
-
+    void findByUsernameShouldNotThrowAnExceptionWhenSearchingOnUsernameAndNoUserIsNotFound() {
         when(keycloakService.usersResource(any()).searchByUsername(eq(johnDoe.getUsername()), eq(true)))
             .thenReturn(List.of());
 
-        var user = userManagementService.findByUserIdentifier(johnDoe.getUsername());
+        var user = userManagementService.findByUsername(johnDoe.getUsername());
 
         verify(keycloakService.usersResource(any())).searchByUsername(eq(johnDoe.getUsername()), eq(true));
         assertThat(user).isNull();

@@ -19,45 +19,47 @@ package com.ritense.smartdocuments.client
 import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.ritense.resource.service.TemporaryResourceStorageService
-import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
+import com.ritense.smartdocuments.config.SmartDocumentsAuthentication
 import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.FileStreamResponse
 import com.ritense.smartdocuments.domain.FilesResponse
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import com.ritense.smartdocuments.domain.SmartDocumentsTemplateData
-import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
 import com.ritense.smartdocuments.io.SubInputStream
 import com.ritense.smartdocuments.io.UnicodeUnescapeInputStream
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8
 import org.apache.commons.io.FilenameUtils
 import org.springframework.core.io.Resource
 import org.springframework.http.converter.ResourceHttpMessageConverter
+import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 import java.io.InputStream
 import java.util.Base64
 import java.util.UUID
 
+@SkipComponentScan
+@Component
 class SmartDocumentsClient(
-    private var smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties,
     private val smartDocumentsRestClientBuilder: RestClient.Builder,
     private val maxFileSizeMb: Int,
     private val temporaryResourceStorageService: TemporaryResourceStorageService,
 ) {
 
-    fun getSmartDocumentsTemplateData(smartDocumentsPropertiesDto: SmartDocumentsPropertiesDto): SmartDocumentsTemplateData? {
-        val response = pluginRestClient(smartDocumentsPropertiesDto)
+    fun getSmartDocumentsTemplateData(authentication: SmartDocumentsAuthentication): SmartDocumentsTemplateData? {
+        val response = restClient(authentication)
             .get()
-            .uri(STRUCTURE_PATH)
+            .uri { it.pathSegment("sdapi", "structure").build() }
             .retrieve()
             .body<String>()!!
         return xmlMapper.readValue(response, SmartDocumentsTemplateData::class.java)
     }
 
-    fun generateDocument(smartDocumentsRequest: SmartDocumentsRequest): FilesResponse {
-        return restClient()
+    fun generateDocument(authentication: SmartDocumentsAuthentication, smartDocumentsRequest: SmartDocumentsRequest): FilesResponse {
+        return restClient(authentication)
             .post()
-            .uri("/wsxmldeposit/deposit/unattended")
+            .uri { it.pathSegment("wsxmldeposit", "deposit", "unattended").build() }
             .contentType(APPLICATION_JSON_UTF8)
             .body(fixRequest(smartDocumentsRequest))
             .retrieve()
@@ -65,13 +67,14 @@ class SmartDocumentsClient(
     }
 
     fun generateDocumentStream(
+        authentication: SmartDocumentsAuthentication,
         smartDocumentsRequest: SmartDocumentsRequest,
         outputFormat: DocumentFormatOption,
     ): FileStreamResponse {
         // Stream complete response (json) to a Resource
-        val result = restClient()
+        val result = restClient(authentication)
             .post()
-            .uri("/wsxmldeposit/deposit/unattended")
+            .uri { it.pathSegment("wsxmldeposit", "deposit", "unattended").build() }
             .contentType(APPLICATION_JSON_UTF8)
             .body(fixRequest(smartDocumentsRequest))
             .retrieve()
@@ -103,31 +106,14 @@ class SmartDocumentsClient(
         )
     }
 
-    fun setProperties(smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties) {
-        this.smartDocumentsConnectorProperties = smartDocumentsConnectorProperties
-    }
-
-    private fun pluginRestClient(pluginProperties: SmartDocumentsPropertiesDto): RestClient {
+    private fun restClient(authentication: SmartDocumentsAuthentication): RestClient {
         return smartDocumentsRestClientBuilder
             .clone()
-            .baseUrl(pluginProperties.url)
+            .baseUrl(authentication.url)
             .defaultHeaders { headers ->
                 headers.setBasicAuth(
-                    pluginProperties.username,
-                    pluginProperties.password
-                )
-            }
-            .build()
-    }
-
-    private fun restClient(): RestClient {
-        return smartDocumentsRestClientBuilder
-            .clone()
-            .baseUrl(smartDocumentsConnectorProperties.url!!)
-            .defaultHeaders { headers ->
-                headers.setBasicAuth(
-                    smartDocumentsConnectorProperties.username!!,
-                    smartDocumentsConnectorProperties.password!!
+                    authentication.username,
+                    authentication.password
                 )
             }
             .messageConverters {
@@ -190,8 +176,6 @@ class SmartDocumentsClient(
 
     companion object {
         private val xmlMapper = XmlMapper()
-
-        private const val STRUCTURE_PATH = "/sdapi/structure"
     }
 
 }

@@ -18,7 +18,6 @@ package com.ritense.documentenapi.client
 
 import BestandsdelenResult
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.documentenapi.DocumentenApiAuthentication
@@ -34,15 +33,17 @@ import com.ritense.documentenapi.web.rest.dto.DocumentSearchRequest
 import com.ritense.outbox.OutboxService
 import com.ritense.resource.authorization.ResourcePermission
 import com.ritense.resource.authorization.ResourcePermissionActionProvider
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.ClientTools.Companion.optionalQueryParam
 import com.ritense.zgw.Page
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.core.io.Resource
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
 import org.springframework.http.converter.ResourceHttpMessageConverter
+import org.springframework.stereotype.Component
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.client.RestClient
@@ -53,28 +54,28 @@ import java.io.InputStream
 import java.net.URI
 import kotlin.math.min
 
+@SkipComponentScan
+@Component
 class DocumentenApiClient(
     private val restClientBuilder: RestClient.Builder,
     private val outboxService: OutboxService,
     private val objectMapper: ObjectMapper,
     private val platformTransactionManager: PlatformTransactionManager,
     private val authorizationService: AuthorizationService,
-    private val authorizationEnabled: Boolean = false,
 ) {
     fun storeDocument(
         authentication: DocumentenApiAuthentication,
         baseUrl: URI,
         request: CreateDocumentRequest
     ): CreateDocumentResult {
-        if (authorizationEnabled) {
-            authorizationService.requirePermission(
-                EntityAuthorizationRequest(
-                    ResourcePermission::class.java,
-                    ResourcePermissionActionProvider.CREATE,
-                    ResourcePermission()
-                )
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                ResourcePermission::class.java,
+                ResourcePermissionActionProvider.CREATE,
+                ResourcePermission()
             )
-        }
+        )
+
         val result = restClient(authentication)
             .post()
             .uri {
@@ -112,8 +113,8 @@ class DocumentenApiClient(
                 .put()
                 .uri {
                     ClientTools.baseUrlToBuilder(it, baseUrl)
-                        .path("bestandsdelen/{uuid}")
-                        .build(bestandsdeel.url.substring(bestandsdeel.url.lastIndexOf("/") + 1))
+                        .pathSegment("bestandsdelen", "{uuid}")
+                        .build(bestandsdeel.url.substringAfterLast('/'))
                 }
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(body)
@@ -144,15 +145,13 @@ class DocumentenApiClient(
             .retrieve()
             .body<DocumentInformatieObject>()!!
 
-        if (authorizationEnabled) {
-            authorizationService.requirePermission(
-                EntityAuthorizationRequest(
-                    ResourcePermission::class.java,
-                    ResourcePermissionActionProvider.VIEW_LIST,
-                    ResourcePermission()
-                )
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                ResourcePermission::class.java,
+                ResourcePermissionActionProvider.VIEW_LIST,
+                ResourcePermission()
             )
-        }
+        )
 
         outboxService.send {
             DocumentInformatieObjectViewed(
@@ -175,7 +174,7 @@ class DocumentenApiClient(
         require(ITEMS_PER_PAGE % pageable.pageSize == 0) { "Page size is not supported" }
         requireNotNull(documentSearchRequest.zaakUrl) { "Zaak URL is required" }
 
-        if (authorizationEnabled && !authorizationService.hasPermission(
+        if (!authorizationService.hasPermission(
             EntityAuthorizationRequest(
                 ResourcePermission::class.java,
                 ResourcePermissionActionProvider.VIEW_LIST,
@@ -253,15 +252,13 @@ class DocumentenApiClient(
         authentication: DocumentenApiAuthentication,
         objectUrl: URI
     ): InputStream {
-        if (authorizationEnabled) {
-            authorizationService.requirePermission(
-                EntityAuthorizationRequest(
-                    ResourcePermission::class.java,
-                    ResourcePermissionActionProvider.VIEW,
-                    ResourcePermission()
-                )
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                ResourcePermission::class.java,
+                ResourcePermissionActionProvider.VIEW,
+                ResourcePermission()
             )
-        }
+        )
 
         val result = restClient(authentication)
             .get()
@@ -290,7 +287,11 @@ class DocumentenApiClient(
     ): DocumentLock {
         val result = restClient(authentication)
             .post()
-            .uri("$objectUrl/lock")
+            .uri {
+                ClientTools.baseUrlToBuilder(it, objectUrl)
+                    .pathSegment("lock")
+                    .build()
+            }
             .retrieve()
             .body<DocumentLock>()!!
         return result
@@ -303,7 +304,11 @@ class DocumentenApiClient(
     ) {
         restClient(authentication)
             .post()
-            .uri("$objectUrl/unlock")
+            .uri {
+                ClientTools.baseUrlToBuilder(it, objectUrl)
+                    .pathSegment("unlock")
+                    .build()
+            }
             .contentType(MediaType.APPLICATION_JSON)
             .body(documentLock)
             .retrieve()
@@ -311,15 +316,13 @@ class DocumentenApiClient(
     }
 
     fun deleteInformatieObject(authentication: DocumentenApiAuthentication, url: URI) {
-        if (authorizationEnabled) {
-            authorizationService.requirePermission(
-                EntityAuthorizationRequest(
-                    ResourcePermission::class.java,
-                    ResourcePermissionActionProvider.DELETE,
-                    ResourcePermission()
-                )
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                ResourcePermission::class.java,
+                ResourcePermissionActionProvider.DELETE,
+                ResourcePermission()
             )
-        }
+        )
 
         restClient(authentication)
             .delete()
@@ -336,15 +339,13 @@ class DocumentenApiClient(
         patchDocumentRequest: PatchDocumentRequest
     ): DocumentInformatieObject {
 
-        if (authorizationEnabled) {
-            authorizationService.requirePermission(
-                EntityAuthorizationRequest(
-                    ResourcePermission::class.java,
-                    ResourcePermissionActionProvider.MODIFY,
-                    ResourcePermission()
-                )
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                ResourcePermission::class.java,
+                ResourcePermissionActionProvider.MODIFY,
+                ResourcePermission()
             )
-        }
+        )
 
         val result = restClient(authentication)
             .patch()
@@ -362,9 +363,8 @@ class DocumentenApiClient(
     private fun toObjectUrl(baseUrl: URI, objectId: String): URI {
         return UriComponentsBuilder
             .fromUri(baseUrl)
-            .pathSegment("enkelvoudiginformatieobjecten", objectId)
-            .build()
-            .toUri()
+            .pathSegment("enkelvoudiginformatieobjecten", "{objectId}")
+            .build(objectId)
     }
 
     private fun restClient(authentication: DocumentenApiAuthentication): RestClient {

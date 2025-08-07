@@ -28,9 +28,9 @@ import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.client.ObjectsList
 import com.ritense.objectenapi.management.ObjectManagementInfo
 import com.ritense.objectenapi.management.ObjectManagementInfoProvider
-import com.ritense.objectsapi.service.ObjectSyncService
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.service.PluginService
+import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.zaakdetails.domain.ZaakdetailsObject
 import com.ritense.zaakdetails.service.ZaakdetailsObjectService
 import com.ritense.zakenapi.ZaakUrlProvider
@@ -48,7 +48,8 @@ import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import java.net.URI
-import java.util.*
+import java.util.Optional
+import java.util.UUID
 
 internal class DocumentObjectenApiSyncServiceTest {
     lateinit var service: DocumentObjectenApiSyncService
@@ -56,7 +57,6 @@ internal class DocumentObjectenApiSyncServiceTest {
     lateinit var objectObjectManagementInfoProvider: ObjectManagementInfoProvider
     lateinit var documentService: DocumentService
     lateinit var pluginService: PluginService
-    lateinit var objectSyncService: ObjectSyncService
     lateinit var zaakUrlProvider: ZaakUrlProvider
     lateinit var zaakdetailsObjectService: ZaakdetailsObjectService
     lateinit var documentObjectenApiSyncManagementService: DocumentObjectenApiSyncManagementService
@@ -75,7 +75,6 @@ internal class DocumentObjectenApiSyncServiceTest {
         objectObjectManagementInfoProvider = mock()
         documentService = mock()
         pluginService = mock()
-        objectSyncService = mock()
         zaakUrlProvider = mock()
         zaakdetailsObjectService = mock()
         documentObjectenApiSyncManagementService = mock()
@@ -106,7 +105,7 @@ internal class DocumentObjectenApiSyncServiceTest {
 
     @Test
     fun `should not sync when sync is not enabled`() {
-        whenever(documentObjectenApiSyncManagementService.getSyncConfiguration(any(), any()))
+        whenever(documentObjectenApiSyncManagementService.getSyncConfiguration(any()))
             .thenReturn(null)
 
         service.handleDocumentCreatedEvent(documentCreatedEvent)
@@ -123,7 +122,7 @@ internal class DocumentObjectenApiSyncServiceTest {
             record = mock<ObjectRecord>()
         )
 
-        whenever(documentObjectenApiSyncManagementService.getSyncConfiguration(any(), any()))
+        whenever(documentObjectenApiSyncManagementService.getSyncConfiguration(any()))
             .thenReturn(documentenApiSync)
 
         whenever(objecttypenApiPlugin.getObjectTypeUrlById(any()))
@@ -168,7 +167,7 @@ internal class DocumentObjectenApiSyncServiceTest {
             record = mock<ObjectRecord>()
         )
 
-        whenever(documentObjectenApiSyncManagementService.getSyncConfiguration(any(), any()))
+        whenever(documentObjectenApiSyncManagementService.getSyncConfiguration(any()))
             .thenReturn(documentenApiSync)
 
         whenever(objecttypenApiPlugin.getObjectTypeUrlById(any()))
@@ -200,7 +199,7 @@ internal class DocumentObjectenApiSyncServiceTest {
             record = mock<ObjectRecord>()
         )
 
-        whenever(documentObjectenApiSyncManagementService.getSyncConfiguration(any(), any()))
+        whenever(documentObjectenApiSyncManagementService.getSyncConfiguration(any()))
             .thenReturn(documentenApiSync)
 
         whenever(objecttypenApiPlugin.getObjectTypeUrlById(any()))
@@ -249,7 +248,7 @@ internal class DocumentObjectenApiSyncServiceTest {
             record = mock<ObjectRecord>()
         )
 
-        whenever(documentObjectenApiSyncManagementService.getSyncConfiguration(any(), any()))
+        whenever(documentObjectenApiSyncManagementService.getSyncConfiguration(any()))
             .thenReturn(documentenApiSync)
 
         whenever(objecttypenApiPlugin.getObjectTypeUrlById(any()))
@@ -288,7 +287,7 @@ internal class DocumentObjectenApiSyncServiceTest {
             record = mock<ObjectRecord>()
         )
 
-        whenever(documentObjectenApiSyncManagementService.getSyncConfiguration(any(), any()))
+        whenever(documentObjectenApiSyncManagementService.getSyncConfiguration(any()))
             .thenReturn(documentenApiSync)
 
         whenever(objecttypenApiPlugin.getObjectTypeUrlById(any()))
@@ -340,7 +339,7 @@ internal class DocumentObjectenApiSyncServiceTest {
             record = mock<ObjectRecord>()
         )
 
-        whenever(documentObjectenApiSyncManagementService.getSyncConfiguration(any(), any()))
+        whenever(documentObjectenApiSyncManagementService.getSyncConfiguration(any()))
             .thenReturn(documentenApiSync)
 
         whenever(objecttypenApiPlugin.getObjectTypeUrlById(any()))
@@ -381,8 +380,10 @@ internal class DocumentObjectenApiSyncServiceTest {
         val documentDefinitionId = mock<DocumentDefinition.Id>()
         val documentId = mock<Document.Id>()
         val documentContent = mock<DocumentContent>()
+        val caseDefinitionId = CaseDefinitionId("profile", "1.0.0")
         whenever(document.definitionId()).thenReturn(documentDefinitionId)
-        whenever(documentDefinitionId.name()).thenReturn("test")
+        whenever(documentDefinitionId.name()).thenReturn("profile")
+        whenever(documentDefinitionId.caseDefinitionId()).thenReturn(caseDefinitionId)
 
         whenever(document.id()).thenReturn(documentId)
         whenever(documentId.id).thenReturn(UUID.randomUUID())
@@ -397,8 +398,7 @@ internal class DocumentObjectenApiSyncServiceTest {
 
     private fun setupDocumentObjectenApiSync(): DocumentObjectenApiSync {
         val documentObjectenApiSync = DocumentObjectenApiSync(
-            documentDefinitionName = "test",
-            documentDefinitionVersion = 1L,
+            caseDefinitionId = CaseDefinitionId("profile", "1.0.0"),
             objectManagementConfigurationId = UUID.randomUUID(),
             enabled = true
         )

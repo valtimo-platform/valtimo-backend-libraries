@@ -16,8 +16,6 @@
 
 package com.ritense.valtimo.contract.authentication;
 
-import com.ritense.valtimo.contract.OauthConfigHolder;
-
 public interface ManageableUser extends AuthorizedUser {
 
     String getId();
@@ -48,11 +46,14 @@ public interface ManageableUser extends AuthorizedUser {
 
     boolean isBlocked();
 
+    /**
+     * Get username
+     *
+     * @deprecated Since 13.0.0.
+     */
+    @Deprecated(since = "Since 13.0.0", forRemoval = true)
     default String getUserIdentifier() {
-        return switch (OauthConfigHolder.getCurrentInstance().getIdentifierField()) {
-            case USERID -> getId();
-            case USERNAME -> getUsername();
-        };
+        return getUsername();
     }
 
 }

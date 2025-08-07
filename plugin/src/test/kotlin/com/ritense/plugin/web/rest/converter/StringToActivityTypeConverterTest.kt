@@ -34,7 +34,7 @@ internal class StringToActivityTypeConverterTest {
     }
 
     @Test
-    fun `should NOT map activity types that can't be listened to by @CamundaSelector`() {
+    fun `should NOT map activity types that can't be listened to by @OperatonSelector`() {
         assertThrows<IllegalStateException> { ActivityTypeWithEventName.fromValue("bpmn:EndEvent:start") }
         assertThrows<IllegalStateException> { ActivityTypeWithEventName.fromValue("bpmn:Lane:start") }
         assertThrows<IllegalStateException> { ActivityTypeWithEventName.fromValue("bpmn:Participant:start") }

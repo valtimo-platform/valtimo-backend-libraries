@@ -1,8 +1,0 @@
-[
-    {
-        "activityId": "test-user-task",
-        "activityType": "bpmn:userTask",
-        "processLinkType": "test",
-        "someValue": "test"
-    }
-]

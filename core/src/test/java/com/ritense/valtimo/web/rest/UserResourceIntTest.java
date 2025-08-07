@@ -65,7 +65,7 @@ class UserResourceIntTest extends BaseIntegrationTest {
 
     private ManageableUser getUser() {
         var user = new ValtimoUser();
-        user.setId(UUID.randomUUID().toString());
+        user.setUsername("example@email.com");
         return user;
     }
 

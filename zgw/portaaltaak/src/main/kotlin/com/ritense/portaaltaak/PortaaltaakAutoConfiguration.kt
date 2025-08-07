@@ -22,11 +22,11 @@ import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
-import com.ritense.valtimo.service.CamundaProcessService
-import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valtimo.service.OperatonProcessService
+import com.ritense.valtimo.service.OperatonTaskService
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
-import org.camunda.bpm.engine.RuntimeService
+import org.operaton.bpm.engine.RuntimeService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -44,7 +44,7 @@ class PortaaltaakAutoConfiguration {
         valueResolverService: ValueResolverService,
         processDocumentService: ProcessDocumentService,
         zaakInstanceLinkService: ZaakInstanceLinkService,
-        taskService: CamundaTaskService
+        taskService: OperatonTaskService
     ): PortaaltaakPluginFactory {
         return PortaaltaakPluginFactory(
             pluginService,
@@ -62,8 +62,8 @@ class PortaaltaakAutoConfiguration {
         pluginService: PluginService,
         objectManagementService: ObjectManagementService,
         processDocumentService: ProcessDocumentService,
-        processService: CamundaProcessService,
-        taskService: CamundaTaskService,
+        processService: OperatonProcessService,
+        taskService: OperatonTaskService,
         documentService: DocumentService,
         runtimeService: RuntimeService,
         valueResolverService: ValueResolverService,

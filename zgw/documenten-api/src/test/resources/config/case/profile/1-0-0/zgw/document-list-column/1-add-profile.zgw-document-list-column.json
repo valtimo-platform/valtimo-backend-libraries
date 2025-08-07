@@ -1,0 +1,21 @@
+[
+    {
+        "key": "AUTEUR",
+        "defaultSort": "ASC"
+    },
+    {
+        "key": "STATUS"
+    },
+    {
+        "key": "FORMAAT"
+    },
+    {
+        "key": "TAAL"
+    },
+    {
+        "key": "VERSIE"
+    },
+    {
+        "key": "BESTANDSNAAM"
+    }
+]

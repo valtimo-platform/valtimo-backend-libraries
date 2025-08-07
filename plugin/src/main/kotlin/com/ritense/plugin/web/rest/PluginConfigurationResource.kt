@@ -29,7 +29,7 @@ import com.ritense.plugin.web.rest.result.PluginConfigurationExportDto
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
-import org.camunda.bpm.engine.repository.ProcessDefinition
+import org.operaton.bpm.engine.repository.ProcessDefinition
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping

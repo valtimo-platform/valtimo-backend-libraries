@@ -36,11 +36,10 @@ import com.ritense.search.domain.FieldType
 import com.ritense.search.domain.SearchFieldMatchType
 import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
-import com.ritense.valtimo.service.CamundaTaskService
-import java.nio.charset.StandardCharsets
+import com.ritense.valtimo.service.OperatonTaskService
 import org.assertj.core.api.Assertions.assertThat
-import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.engine.TaskService
+import org.operaton.bpm.engine.RuntimeService
+import org.operaton.bpm.engine.TaskService
 import org.hamcrest.Matchers.hasItems
 import org.hamcrest.Matchers.hasKey
 import org.hamcrest.Matchers.hasSize
@@ -57,6 +56,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
+import java.nio.charset.StandardCharsets
 
 private const val DOCUMENT_DEFINITION_NAME = "house"
 
@@ -145,7 +145,7 @@ class TaskListResourceIntTest : BaseIntegrationTest() {
 
         mockMvc.perform(
             post("/api/v3/task")
-                .param("filter", CamundaTaskService.TaskFilter.ALL.toString())
+                .param("filter", OperatonTaskService.TaskFilter.ALL.toString())
                 .content(objectMapper.writeValueAsString(TaskListSearchDto(DOCUMENT_DEFINITION_NAME)))
                 .characterEncoding(StandardCharsets.UTF_8)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -196,7 +196,7 @@ class TaskListResourceIntTest : BaseIntegrationTest() {
 
         mockMvc.perform(
             post("/api/v3/task")
-                .param("filter", CamundaTaskService.TaskFilter.ALL.toString())
+                .param("filter", OperatonTaskService.TaskFilter.ALL.toString())
                 .content(objectMapper.writeValueAsString(TaskListSearchDto(null)))
                 .characterEncoding(StandardCharsets.UTF_8)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -259,16 +259,18 @@ class TaskListResourceIntTest : BaseIntegrationTest() {
 
         taskListColumnRepository.saveAllAndFlush(taskListColumns)
 
-        searchFieldV2Service.create(TaskListSearchFieldV2Dto(
-            ownerId = DOCUMENT_DEFINITION_NAME,
-            key = "firstName",
-            title = "First name",
-            path = "doc:first-name",
-            order = 0,
-            dataType = DataType.TEXT,
-            matchType = SearchFieldMatchType.LIKE,
-            fieldType = FieldType.SINGLE
-        ))
+        searchFieldV2Service.create(
+            TaskListSearchFieldV2Dto(
+                ownerId = DOCUMENT_DEFINITION_NAME,
+                key = "firstName",
+                title = "First name",
+                path = "doc:first-name",
+                order = 0,
+                dataType = DataType.TEXT,
+                matchType = SearchFieldMatchType.LIKE,
+                fieldType = FieldType.SINGLE
+            )
+        )
 
         val testUserData = startNewProcessesWithTestData()
 
@@ -325,11 +327,13 @@ class TaskListResourceIntTest : BaseIntegrationTest() {
                 "single-user-task-process",
                 NewDocumentRequest(
                     DOCUMENT_DEFINITION_NAME,
+                    "house",
+                    "1.0.0",
                     objectMapper.readTree("""{ "first-name": $firstName, "last-name": $lastName}""")
                 )
             ).withProcessVars(mapOf("context" to context, "approved" to approved))
             AuthorizationContext.runWithoutAuthorization {
-                camundaProcessJsonSchemaDocumentService.newDocumentAndStartProcess(
+                operatonProcessJsonSchemaDocumentService.newDocumentAndStartProcess(
                     startRequest
                 )
             }
