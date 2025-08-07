@@ -7,11 +7,6 @@
             "type": "widgets"
         },
         {
-            "title": "BAG",
-            "key": "bag",
-            "type": "widgets"
-        },
-        {
             "title": "Lopende Zaken",
             "key": "case-progress",
             "type": "widgets"
