@@ -38,7 +38,7 @@
             "key": "nationaliteiten",
             "type": "collection",
             "title": "Nationaliteiten",
-            "width": 3,
+            "width": 1,
             "highContrast": false,
             "properties": {
                 "collection": "iko:/persoon/nationaliteiten",
@@ -54,8 +54,72 @@
                     },
                     {
                         "key": "datumIngangGeldigheid",
-                        "title": "Datum Ingang Geldigheid",
+                        "title": "Ingangsdatum",
                         "value": "/datumIngangGeldigheid/langFormaat"
+                    }
+                ]
+            }
+        },
+        {
+            "key": "verblijfplaats",
+            "type": "fields",
+            "title": "Verblijfplaats",
+            "width": 1,
+            "highContrast": true,
+            "properties": {
+                "columns": [
+                    [
+                        {
+                            "key": "verblijfadres",
+                            "title": "Verblijfadres",
+                            "value": "iko:/persoon/verblijfplaats/verblijfadres/korteStraatnaam"
+                        },
+                        {
+                            "key": "huisnummer",
+                            "title": "Huisnummer",
+                            "value": "iko:/persoon/verblijfplaats/verblijfadres/huisnummer"
+                        },
+                        {
+                            "key": "postcode",
+                            "title": "Postcode",
+                            "value": "iko:/persoon/verblijfplaats/verblijfadres/postcode"
+                        },
+                        {
+                            "key": "ingangGeldigheid",
+                            "title": "Ingangsdatum",
+                            "value": "iko:/persoon/verblijfplaats/datumIngangGeldigheid/langFormaat",
+                        }
+                    ]
+                ]
+            }
+        },
+        {
+            "key": "partners",
+            "type": "collection",
+            "title": "Partners",
+            "width": 1,
+            "highContrast": false,
+            "properties": {
+                "collection": "iko:/persoon/partners",
+                "defaultPageSize": 4,
+                "title": {
+                    "value": "/burgerservicenummer"
+                },
+                "fields": [
+                    {
+                        "key": "burgerservicenummer",
+                        "title": "Burgerservicenummer",
+                        "value": "/burgerservicenummer"
+                    },
+                    {
+                        "key": "voornamen",
+                        "title": "Voornamen",
+                        "value": "/naam/voornamen"
+                    },
+                    {
+                        "key": "geslachtsnaam",
+                        "title": "Geslachtsnaam",
+                        "value": "/naam/geslachtsnaam"
                     }
                 ]
             }
