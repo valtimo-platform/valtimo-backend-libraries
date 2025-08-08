@@ -87,7 +87,7 @@
                         {
                             "key": "ingangGeldigheid",
                             "title": "Ingangsdatum",
-                            "value": "iko:/persoon/verblijfplaats/datumIngangGeldigheid/langFormaat",
+                            "value": "iko:/persoon/verblijfplaats/datumIngangGeldigheid/langFormaat"
                         }
                     ]
                 ]
