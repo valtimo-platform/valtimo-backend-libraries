@@ -17,6 +17,7 @@
 package com.ritense.notificatiesapi.autoconfigure
 
 import com.ritense.notificatiesapi.NotificatiesApiPluginFactory
+import com.ritense.notificatiesapi.PluginsDeployedEventListener
 import com.ritense.notificatiesapi.client.NotificatiesApiClient
 import com.ritense.notificatiesapi.repository.NotificatiesApiAbonnementLinkRepository
 import com.ritense.notificatiesapi.security.config.NotificatiesApiHttpSecurityConfigurer
@@ -57,6 +58,16 @@ class NotificatiesApiAutoConfiguration {
             client,
             abonnementLinkRepository
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PluginsDeployedEventListener::class)
+    fun pluginsDeployedEventListener(
+        client: NotificatiesApiClient,
+        notificatiesApiAbonnementLinkRepository: NotificatiesApiAbonnementLinkRepository,
+        pluginService: PluginService
+    ): PluginsDeployedEventListener {
+        return PluginsDeployedEventListener(client, notificatiesApiAbonnementLinkRepository, pluginService)
     }
 
     @Bean

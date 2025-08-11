@@ -40,8 +40,14 @@ class VerzoekAutoConfiguration {
         pluginService: PluginService,
         caseDefinitionService: CaseDefinitionService,
         documentDefinitionService: JsonSchemaDocumentDefinitionService,
+        objectManagementService: ObjectManagementService
     ): VerzoekPluginFactory {
-        return VerzoekPluginFactory(pluginService, caseDefinitionService, documentDefinitionService)
+        return VerzoekPluginFactory(
+            pluginService,
+            caseDefinitionService,
+            documentDefinitionService,
+            objectManagementService
+        )
     }
 
     @Bean

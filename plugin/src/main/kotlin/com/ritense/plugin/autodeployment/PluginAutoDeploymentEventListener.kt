@@ -22,8 +22,10 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.ritense.plugin.service.PluginService
+import com.ritense.valtimo.contract.event.PluginsDeployedEvent
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.event.EventListener
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
@@ -37,7 +39,8 @@ import java.io.IOException
 class PluginAutoDeploymentEventListener(
     private val resourceLoader: ResourceLoader,
     private val pluginService: PluginService,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val eventPublisher: ApplicationEventPublisher
 ) {
 
     @Transactional
@@ -54,6 +57,8 @@ class PluginAutoDeploymentEventListener(
                     logger.error(e) { "Error while deploying plugin configuration file: '${resource.filename}'" }
                 }
             }
+
+            eventPublisher.publishEvent(PluginsDeployedEvent())
         } catch (e: Exception) {
             logger.error(e) { "Error while deploying plugin configurations" }
         }
@@ -69,6 +74,7 @@ class PluginAutoDeploymentEventListener(
 
             val deployDto = objectMapper.treeToValue<PluginAutoDeploymentDto>(node)
             pluginService.deployPluginConfigurations(deployDto)
+
         }
     }
 
