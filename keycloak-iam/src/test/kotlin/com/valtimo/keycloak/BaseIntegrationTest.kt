@@ -19,26 +19,17 @@ package com.valtimo.keycloak
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
 import com.ritense.valtimo.service.ProcessDefinitionCaseDefinitionLinker
+import okhttp3.mockwebserver.Dispatcher
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.RecordedRequest
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.HttpMethod.GET
-import org.springframework.http.HttpStatus.OK
-import org.springframework.http.MediaType.APPLICATION_JSON
-import org.springframework.security.oauth2.client.registration.ClientRegistrations
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.web.client.ExpectedCount
-import org.springframework.test.web.client.MockRestServiceServer
-import org.springframework.test.web.client.match.MockRestRequestMatchers.method
-import org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo
-import org.springframework.test.web.client.response.MockRestResponseCreators.withStatus
-import org.springframework.web.client.RestTemplate
-import java.net.URI
-import kotlin.Int.Companion.MAX_VALUE
-import kotlin.reflect.full.staticProperties
-import kotlin.reflect.jvm.isAccessible
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
@@ -56,27 +47,44 @@ abstract class BaseIntegrationTest {
 
     companion object {
 
-        lateinit var mockServer: MockRestServiceServer
-        lateinit var keycloakRestTemplate: RestTemplate
+        lateinit var server: MockWebServer
 
         @JvmStatic
         @BeforeAll
         fun setUp() {
-            val restTemplateField = ClientRegistrations::class.staticProperties.single { it.name == "rest" }
-            restTemplateField.isAccessible = true
-            keycloakRestTemplate = restTemplateField.get() as RestTemplate
-            mockServer = MockRestServiceServer.createServer(keycloakRestTemplate)
-            mockServer.expect(
-                ExpectedCount.between(0, MAX_VALUE),
-                requestTo(URI("https://ritense.com/auth/realms/valtimo/.well-known/openid-configuration"))
-            )
-                .andExpect(method(GET))
-                .andRespond(
-                    withStatus(OK)
-                        .contentType(APPLICATION_JSON)
-                        .body(readFileAsString("/data/get-openid-configuration.json"))
-                )
+            server = MockWebServer()
+            setupMockKeycloakApiServer()
+            server.start(port = 49152)
         }
+
+        @JvmStatic
+        @AfterAll
+        fun tearDown() {
+            server.shutdown()
+        }
+
+        private fun setupMockKeycloakApiServer() {
+            val dispatcher = object : Dispatcher() {
+                override fun dispatch(request: RecordedRequest): MockResponse {
+                    val response = when (request.requestLine) {
+                        "GET /auth/realms/valtimo/.well-known/openid-configuration HTTP/1.1" -> mockResponseFromFile("/data/get-openid-configuration.json")
+                        "GET /auth/admin/serverinfo HTTP/1.1" -> mockResponseFromFile("/data/get-server-info.json")
+                        "POST /auth/realms/valtimo/protocol/openid-connect/token HTTP/1.1" -> mockResponseFromFile("/data/grant-token-response.json")
+                        else -> MockResponse().setResponseCode(404)
+                    }
+                    return response
+                }
+            }
+            server.dispatcher = dispatcher
+        }
+
+        private fun mockResponseFromFile(fileName: String) =
+            mockResponse(readFileAsString(fileName))
+
+        private fun mockResponse(response: String) = MockResponse()
+            .setResponseCode(200)
+            .setHeader("Content-Type", "application/json")
+            .setBody(response)
 
         fun readFileAsString(fileName: String): String = this::class.java.getResource(fileName).readText(Charsets.UTF_8)
     }

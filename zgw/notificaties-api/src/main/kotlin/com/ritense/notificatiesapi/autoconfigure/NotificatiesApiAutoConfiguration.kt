@@ -39,6 +39,7 @@ import org.springframework.web.client.RestClient
 class NotificatiesApiAutoConfiguration {
 
     @Bean
+    @ConditionalOnMissingBean(NotificatiesApiClient::class)
     fun notificatiesApiClient(restClientBuilder: RestClient.Builder): NotificatiesApiClient {
         return NotificatiesApiClient(restClientBuilder)
     }
