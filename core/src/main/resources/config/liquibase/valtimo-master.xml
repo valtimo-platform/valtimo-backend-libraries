@@ -57,6 +57,6 @@
     <include file="camunda/20250428-camunda-upgrade-7-23-0-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20250515-camunda-process-version-tag.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20250424-major-13-drop-deprecated-tables.xml" relativeToChangelogFile="true"/>
-
+    <include file="changelog/20250811-camunda-task-view.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

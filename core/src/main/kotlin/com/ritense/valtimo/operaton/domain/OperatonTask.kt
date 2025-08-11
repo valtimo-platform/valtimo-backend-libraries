@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.operaton.domain
 
+import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -30,11 +31,12 @@ import jakarta.persistence.Transient
 import org.operaton.bpm.engine.impl.persistence.entity.SuspensionState
 import org.operaton.bpm.engine.task.DelegationState
 import org.hibernate.annotations.Immutable
+import org.hibernate.annotations.Type
 import java.time.LocalDateTime
 
 @Immutable
 @Entity
-@Table(name = "ACT_RU_TASK")
+@Table(name = "ACT_RU_TASK_VIEW")
 class OperatonTask(
 
     @Id
@@ -115,10 +117,13 @@ class OperatonTask(
 
     @Immutable
     @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
-    val variableInstances: Set<OperatonVariableInstance>
+    val variableInstances: Set<OperatonVariableInstance>,
+
+    @Type(value = JsonType::class)
+    @Column(name = "subtitles", columnDefinition = "JSON", insertable = false, updatable = false, nullable = true)
+    val subtitles: List<String>? = null
+
 ): OperatonVariableScope() {
-
-
 
     @Transient
     fun isSuspended() = suspensionState == SuspensionState.SUSPENDED.stateCode
