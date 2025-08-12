@@ -28,7 +28,6 @@ import com.ritense.valtimo.contract.event.PluginsDeployedEvent
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
-import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.context.event.EventListener
 import java.net.URI
 import java.security.SecureRandom
@@ -64,14 +63,12 @@ class PluginsDeployedEventListener(
                         configurations
                     )
                     break
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     --nrOfTriesLeftRetrievingAbonnementen
                 }
             }
             if (nrOfTriesLeftRetrievingAbonnementen == 0) {
                 val e = NotificatiesApiAbonnementException()
-                logger.error { e }
-                (context as ConfigurableApplicationContext).close()
                 throw e
             }
         }

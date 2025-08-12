@@ -61,6 +61,7 @@ class PluginAutoDeploymentEventListener(
             eventPublisher.publishEvent(PluginsDeployedEvent())
         } catch (e: Exception) {
             logger.error(e) { "Error while deploying plugin configurations" }
+            throw e
         }
     }
 
