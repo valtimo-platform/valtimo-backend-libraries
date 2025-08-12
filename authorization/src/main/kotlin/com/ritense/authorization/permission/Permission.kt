@@ -17,6 +17,7 @@
 package com.ritense.authorization.permission
 
 import com.ritense.authorization.Action
+import com.ritense.authorization.NoContext
 import com.ritense.authorization.criteriabuilder.AbstractQueryWrapper
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.request.EntityAuthorizationRequest
@@ -182,6 +183,7 @@ data class Permission(
         contextEntity: Any?
     ): Boolean {
         return this.contextResourceType == null
+            || (this.contextResourceType == NoContext::class.java && contextResourceType == null)
             || (contextResourceType == this.contextResourceType
                 && contextConditionContainer?.let { container ->
                     container.conditions
