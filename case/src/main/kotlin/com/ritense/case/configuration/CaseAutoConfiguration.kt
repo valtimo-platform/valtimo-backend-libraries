@@ -155,6 +155,7 @@ class CaseAutoConfiguration {
         authorizationService: AuthorizationService,
         caseDefinitionChecker: CaseDefinitionChecker,
         applicationEventPublisher: ApplicationEventPublisher,
+        userManagementService: UserManagementService
     ): CaseDefinitionService {
         return CaseDefinitionService(
             caseDefinitionListColumnRepository,
@@ -164,6 +165,7 @@ class CaseAutoConfiguration {
             authorizationService,
             applicationEventPublisher,
             caseDefinitionChecker,
+            userManagementService
         )
     }
 

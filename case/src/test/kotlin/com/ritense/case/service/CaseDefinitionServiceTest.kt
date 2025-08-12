@@ -18,7 +18,6 @@ package com.ritense.case.service
 
 import com.ritense.BaseTest
 import com.ritense.authorization.AuthorizationService
-import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DisplayType
@@ -32,6 +31,7 @@ import com.ritense.case.web.rest.mapper.CaseListColumnMapper
 import com.ritense.case_.domain.definition.CaseDefinition
 import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.document.service.DocumentDefinitionService
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.valueresolver.exception.ValueResolverValidationException
@@ -47,7 +47,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import org.springframework.data.jpa.domain.Specification
 import java.util.Optional
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -60,6 +59,7 @@ class CaseDefinitionServiceTest : BaseTest() {
     lateinit var documentDefinitionService: DocumentDefinitionService
     lateinit var valueResolverService: ValueResolverService
     lateinit var authorizationService: AuthorizationService
+    lateinit var userManagementService: UserManagementService
 
     @BeforeEach
     fun setUp() {
@@ -68,6 +68,7 @@ class CaseDefinitionServiceTest : BaseTest() {
         caseDefinitionRepository = mock()
         valueResolverService = mock()
         authorizationService = mock()
+        userManagementService = mock()
         service = CaseDefinitionService(
             caseDefinitionListColumnRepository,
             documentDefinitionService,
@@ -76,6 +77,7 @@ class CaseDefinitionServiceTest : BaseTest() {
             authorizationService,
             mock(),
             mock(),
+            userManagementService
         )
     }
 
@@ -407,7 +409,8 @@ class CaseDefinitionServiceTest : BaseTest() {
             displayType = displayType,
             sortable = true,
             defaultSort = ColumnDefaultSort.ASC,
-            order = 1
+            order = 1,
+            exportable = false
         )
     }
 
@@ -419,7 +422,8 @@ class CaseDefinitionServiceTest : BaseTest() {
             displayType = displayType,
             sortable = true,
             defaultSort = null,
-            order = 2
+            order = 2,
+            exportable = false
         )
     }
 }

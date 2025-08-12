@@ -41,6 +41,8 @@ import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.valtimo.contract.authentication.ManageableUser
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.event.CaseDefinitionCreatedEvent
@@ -69,6 +71,7 @@ class CaseDefinitionService(
     private val authorizationService: AuthorizationService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val caseDefinitionChecker: CaseDefinitionChecker,
+    private val userManagementService: UserManagementService
 ) {
     var validators: Map<Operation, ListColumnValidator<CaseListColumnDto>> = mapOf(
         Operation.CREATE to CreateCaseListColumnValidator(
@@ -267,8 +270,15 @@ class CaseDefinitionService(
             validators[Operation.CREATE]!!.validate(caseDefinitionKey, caseListColumnDto)
         }
         caseListColumnDto.order = caseDefinitionListColumnRepository.countByIdCaseDefinitionKey(caseDefinitionKey)
+
+        if (caseListColumnDto.exportable) {
+            validatePath(caseListColumnDto.path, caseListColumnDto.key)
+        }
+
         caseDefinitionListColumnRepository
             .save(CaseListColumnMapper.toEntity(caseDefinitionKey, caseListColumnDto))
+
+        logger.info { "User '${getCurrentUser().fullName} (${getCurrentUser().email})' created a case list column configuration: '$caseListColumnDto' for case definition: '$caseDefinitionKey'"}
     }
 
     @Transactional
@@ -286,6 +296,12 @@ class CaseDefinitionService(
             dto.order = index
         }
 
+        caseListColumnDtoList
+            .filter { it.exportable }
+            .forEach { dto ->
+                validatePath(dto.path, dto.key)
+            }
+
         val entities = CaseListColumnMapper.toEntityList(caseDefinitionName, caseListColumnDtoList)
 
         val incomingKeys = entities.map { it.id.key }
@@ -293,8 +309,9 @@ class CaseDefinitionService(
         caseDefinitionListColumnRepository.deleteByIdCaseDefinitionKey(caseDefinitionName)
 
         caseDefinitionListColumnRepository.saveAll(entities)
-    }
 
+        logger.info { "User '${getCurrentUser().fullName} (${getCurrentUser().email})' updated case list column configuration: '$entities' for case definition: '$caseDefinitionName'"}
+    }
 
     @Throws(UnknownDocumentDefinitionException::class)
     fun getListColumns(caseDefinitionKey: String): List<CaseListColumnDto> {
@@ -386,7 +403,18 @@ class CaseDefinitionService(
         }
     }
 
+    private fun validatePath(path: String, key: String) {
+        require(PATH_REGEX_EXPORTABLE.containsMatchIn(path)) {
+            "Failed to save the case list column configuration for key '$key'. Only document or case properties can be exported."
+        }
+    }
+
+    private fun getCurrentUser(): ManageableUser {
+        return userManagementService.currentUser
+    }
+
     companion object {
         val logger = KotlinLogging.logger {}
+        val PATH_REGEX_EXPORTABLE = Regex("^(case:|doc:)")
     }
 }
