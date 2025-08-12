@@ -28,6 +28,7 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import jakarta.persistence.Transient
+import org.hibernate.annotations.Formula
 import org.operaton.bpm.engine.impl.persistence.entity.SuspensionState
 import org.operaton.bpm.engine.task.DelegationState
 import org.hibernate.annotations.Immutable
@@ -36,7 +37,7 @@ import java.time.LocalDateTime
 
 @Immutable
 @Entity
-@Table(name = "ACT_RU_TASK_VIEW")
+@Table(name = "ACT_RU_TASK")
 class OperatonTask(
 
     @Id
@@ -119,11 +120,16 @@ class OperatonTask(
     @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
     val variableInstances: Set<OperatonVariableInstance>,
 
-    @Type(value = JsonType::class)
-    @Column(name = "subtitles", columnDefinition = "JSON", insertable = false, updatable = false, nullable = true)
-    val subtitles: List<String>? = null
-
 ): OperatonVariableScope() {
+
+    @Formula("""(
+        SELECT   process_link.subtitles
+        FROM     process_link
+        WHERE    process_link.process_definition_id = proc_def_id_
+        AND      process_link.activity_id = task_def_key_
+    )""")
+    @Type(value = JsonType::class)
+    val subtitles: List<String>? = null
 
     @Transient
     fun isSuspended() = suspensionState == SuspensionState.SUSPENDED.stateCode
@@ -142,7 +148,6 @@ class OperatonTask(
 
     @Transient
     override fun getVariableScopeKey() = "task"
-
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
