@@ -21,7 +21,8 @@
 
     <changeSet author="MvT" id="camunda-task-with-subtitles-view">
         <preConditions onFail="MARK_RAN">
-            <viewExists viewName="act_ru_task_view" />
+            <tableExists tableName="act_ru_task" />
+            <tableExists tableName="process_link" />
         </preConditions>
 
         <createView viewName="act_ru_task_view"
