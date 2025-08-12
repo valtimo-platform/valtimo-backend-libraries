@@ -29,10 +29,10 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import jakarta.persistence.Transient
 import org.hibernate.annotations.Formula
-import org.operaton.bpm.engine.impl.persistence.entity.SuspensionState
-import org.operaton.bpm.engine.task.DelegationState
 import org.hibernate.annotations.Immutable
 import org.hibernate.annotations.Type
+import org.operaton.bpm.engine.impl.persistence.entity.SuspensionState
+import org.operaton.bpm.engine.task.DelegationState
 import java.time.LocalDateTime
 
 @Immutable
