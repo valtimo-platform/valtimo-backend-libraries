@@ -23,6 +23,7 @@ import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
@@ -59,7 +60,7 @@ class PluginsDeployedEventListenerTest {
             emptyList()
         )
 
-        pluginsDeployedEventListener.registerAbonnementenForNotificatiesApiPlugins()
+        assertDoesNotThrow { pluginsDeployedEventListener.registerAbonnementenForNotificatiesApiPlugins() }
     }
 
     @Test

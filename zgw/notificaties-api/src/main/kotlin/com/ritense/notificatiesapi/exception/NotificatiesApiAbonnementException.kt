@@ -16,4 +16,5 @@
 
 package com.ritense.notificatiesapi.exception
 
-class NotificatiesApiAbonnementException : RuntimeException("Unable to register abonnementen in the notificaties API.")
+class NotificatiesApiAbonnementException(override val cause: Throwable?) :
+    RuntimeException("Unable to register abonnementen in the notificaties API.", cause)

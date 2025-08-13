@@ -59,6 +59,7 @@ class PluginsDeployedEventListener(
                 configurations.first().getNotificatiesApiPlugin()
 
             var nrOfTriesLeftRetrievingAbonnementen = 3
+            var abonnementenApiException: Exception? = null
             while (nrOfTriesLeftRetrievingAbonnementen > 0) {
                 try {
                     registerAbonnementenForPluginNotificatiesApiPlugins(
@@ -67,12 +68,13 @@ class PluginsDeployedEventListener(
                         configurations
                     )
                     break
-                } catch (_: Exception) {
+                } catch (e: Exception) {
+                    abonnementenApiException = e
                     --nrOfTriesLeftRetrievingAbonnementen
                 }
             }
             if (nrOfTriesLeftRetrievingAbonnementen == 0) {
-                val e = NotificatiesApiAbonnementException()
+                val e = NotificatiesApiAbonnementException(abonnementenApiException)
                 throw e
             }
         }
