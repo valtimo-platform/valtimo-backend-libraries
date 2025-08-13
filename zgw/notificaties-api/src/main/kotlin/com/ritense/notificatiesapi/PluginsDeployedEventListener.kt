@@ -37,13 +37,16 @@ import java.util.Base64
 class PluginsDeployedEventListener(
     private val client: NotificatiesApiClient,
     private val notificatiesApiAbonnementLinkRepository: NotificatiesApiAbonnementLinkRepository,
-    private val pluginService: PluginService
+    private val pluginService: PluginService,
+    private val registerAbonnementen: Boolean
 ) : ApplicationContextAware {
 
     lateinit var context: ApplicationContext
 
     @EventListener(PluginsDeployedEvent::class, PluginConfigurationDeletedEvent::class)
     fun registerAbonnementenForNotificatiesApiPlugins() {
+        if (!registerAbonnementen) return
+
         val pluginConfigurations = pluginService
             .getPluginConfigurations(PluginConfigurationSearchParameters(category = "notificaties-api-plugin"))
             .map { pluginService.createInstance(it) as NotificatiesApiListener }

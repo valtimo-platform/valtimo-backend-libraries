@@ -44,8 +44,12 @@ class PluginsDeployedEventListenerTest {
         pluginService = mock()
         context = mock()
 
-        pluginsDeployedEventListener =
-            PluginsDeployedEventListener(client, notificatiesApiAbonnementLinkRepository, pluginService)
+        pluginsDeployedEventListener = PluginsDeployedEventListener(
+            client,
+            notificatiesApiAbonnementLinkRepository,
+            pluginService,
+            true
+        )
         pluginsDeployedEventListener.setApplicationContext(context)
     }
 

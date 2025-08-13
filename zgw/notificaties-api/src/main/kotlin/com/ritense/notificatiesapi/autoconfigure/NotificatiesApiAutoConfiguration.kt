@@ -25,6 +25,7 @@ import com.ritense.notificatiesapi.service.NotificatiesApiService
 import com.ritense.notificatiesapi.web.rest.NotificatiesApiResource
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.service.PluginService
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -65,9 +66,15 @@ class NotificatiesApiAutoConfiguration {
     fun pluginsDeployedEventListener(
         client: NotificatiesApiClient,
         notificatiesApiAbonnementLinkRepository: NotificatiesApiAbonnementLinkRepository,
-        pluginService: PluginService
+        pluginService: PluginService,
+        @Value("\${valtimo.zgw.register-abonnementen:true}") registerAbonnementen: Boolean
     ): PluginsDeployedEventListener {
-        return PluginsDeployedEventListener(client, notificatiesApiAbonnementLinkRepository, pluginService)
+        return PluginsDeployedEventListener(
+            client,
+            notificatiesApiAbonnementLinkRepository,
+            pluginService,
+            registerAbonnementen
+        )
     }
 
     @Bean
