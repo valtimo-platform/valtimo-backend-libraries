@@ -113,7 +113,7 @@ class IkoWidgetManagementResource(
             service.update(
                 ikoDataAggregateKey,
                 tabKey = tabKey,
-                widget = existingWidget.copy(order = index)
+                widget = updatedWidget.toEntity(existingWidget.id, index),
             )
         }
         return ResponseEntity.ok(ikoWidgets.map { it.toDto() })
