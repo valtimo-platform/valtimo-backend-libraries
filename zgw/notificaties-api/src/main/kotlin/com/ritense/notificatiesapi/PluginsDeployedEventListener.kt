@@ -22,6 +22,7 @@ import com.ritense.notificatiesapi.domain.Kanaal
 import com.ritense.notificatiesapi.domain.NotificatiesApiAbonnementLink
 import com.ritense.notificatiesapi.exception.NotificatiesApiAbonnementException
 import com.ritense.notificatiesapi.repository.NotificatiesApiAbonnementLinkRepository
+import com.ritense.plugin.events.PluginConfigurationDeletedEvent
 import com.ritense.plugin.service.PluginConfigurationSearchParameters
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.event.PluginsDeployedEvent
@@ -41,7 +42,7 @@ class PluginsDeployedEventListener(
 
     lateinit var context: ApplicationContext
 
-    @EventListener(PluginsDeployedEvent::class)
+    @EventListener(PluginsDeployedEvent::class, PluginConfigurationDeletedEvent::class)
     fun registerAbonnementenForNotificatiesApiPlugins() {
         val pluginConfigurations = pluginService
             .getPluginConfigurations(PluginConfigurationSearchParameters(category = "notificaties-api-plugin"))
