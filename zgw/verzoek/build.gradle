@@ -43,6 +43,7 @@ dependencies {
     implementation project(":zgw:notificaties-api")
     implementation project(":zgw:object-management")
     implementation project(":zgw:objecten-api")
+    implementation project(":zgw:objecttypen-api")
 
     implementation "io.github.oshai:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter"
