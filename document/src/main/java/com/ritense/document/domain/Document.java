@@ -17,8 +17,10 @@
 package com.ritense.document.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.ritense.document.domain.impl.DocumentContentFilter;
 import com.ritense.document.domain.relation.DocumentRelation;
 import com.ritense.document.web.rest.dto.CaseTagResponseDto;
 import java.time.LocalDateTime;
@@ -56,6 +58,7 @@ public interface Document {
     @JsonProperty
     String assigneeFullName();
 
+    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = DocumentContentFilter.class)
     @JsonProperty
     DocumentContent content();
 

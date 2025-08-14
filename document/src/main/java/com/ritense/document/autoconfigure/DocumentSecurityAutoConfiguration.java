@@ -16,10 +16,13 @@
 
 package com.ritense.document.autoconfigure;
 
+import com.ritense.document.domain.impl.DocumentContentFilter;
 import com.ritense.document.security.config.DocumentDefinitionHttpSecurityConfigurer;
 import com.ritense.document.security.config.DocumentHttpSecurityConfigurer;
 import com.ritense.document.security.config.DocumentSearchHttpSecurityConfigurer;
 import com.ritense.document.security.config.DocumentSnapshotHttpSecurityConfigurer;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +30,9 @@ import org.springframework.core.annotation.Order;
 
 @AutoConfiguration
 public class DocumentSecurityAutoConfiguration {
+
+    @Value("${valtimo.includeDocumentContentInResponse:true}")
+    private boolean includeDocumentContentInResponse;
 
     @Order(290)
     @Bean
@@ -54,6 +60,11 @@ public class DocumentSecurityAutoConfiguration {
     @ConditionalOnMissingBean(DocumentSnapshotHttpSecurityConfigurer.class)
     public DocumentSnapshotHttpSecurityConfigurer documentSnapshotHttpSecurityConfigurer() {
         return new DocumentSnapshotHttpSecurityConfigurer();
+    }
+
+    @PostConstruct
+    public void initDocumentFilter(){
+        DocumentContentFilter.setIncludeDocumentContent(includeDocumentContentInResponse);
     }
 
 }
