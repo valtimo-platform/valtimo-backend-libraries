@@ -33,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ritense.document.BaseTest;
+import com.ritense.document.domain.impl.DocumentContentFilter;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
@@ -93,6 +94,43 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
             .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$").isNotEmpty());
     }
+
+    @Test
+    void shouldReturnDocumentWithoutContentWhenDisabled() throws Exception {
+        when(documentService.findBy(any()))
+            .thenReturn(Optional.of(document));
+
+        //enable output of document content
+        DocumentContentFilter.setIncludeDocumentContent(false);
+
+        mockMvc.perform(get("/api/v1/document/{id}", UUID.randomUUID().toString())
+                .accept(APPLICATION_JSON_VALUE)
+                .contentType(APPLICATION_JSON_VALUE)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.content").doesNotExist());
+
+        //reset to default for cleanup
+        DocumentContentFilter.setIncludeDocumentContent(true);
+    }
+
+    @Test
+    void shouldReturnDocumentWithContent() throws Exception {
+        when(documentService.findBy(any()))
+            .thenReturn(Optional.of(document));
+
+        mockMvc.perform(get("/api/v1/document/{id}", UUID.randomUUID().toString())
+                .accept(APPLICATION_JSON_VALUE)
+                .contentType(APPLICATION_JSON_VALUE)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.content").exists());
+    }
+
 
     @Test
     void shouldReturnDocumentWithAssignee() throws Exception {
