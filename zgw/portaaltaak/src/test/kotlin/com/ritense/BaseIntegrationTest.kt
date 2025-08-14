@@ -17,6 +17,7 @@
 package com.ritense
 
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
+import com.ritense.notificatiesapi.PluginsDeployedEventListener
 import com.ritense.outbox.OutboxService
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.service.PluginService
@@ -75,4 +76,7 @@ abstract class BaseIntegrationTest {
 
     @MockitoBean
     lateinit var zaaktypeUrlProvider: ZaaktypeUrlProvider
+
+    @MockitoBean
+    lateinit var pluginsDeployedEventListener: PluginsDeployedEventListener
 }
