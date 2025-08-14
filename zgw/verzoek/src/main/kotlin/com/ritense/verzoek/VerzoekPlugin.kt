@@ -19,11 +19,17 @@ package com.ritense.verzoek
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
+import com.ritense.notificatiesapi.NotificatiesApiListener
 import com.ritense.notificatiesapi.NotificatiesApiPlugin
+import com.ritense.notificatiesapi.domain.Abonnement
+import com.ritense.objectmanagement.service.ObjectManagementService
+import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.EventType
+import com.ritense.plugin.domain.PluginConfigurationId
+import com.ritense.plugin.service.PluginService
 import com.ritense.verzoek.domain.CopyStrategy
 import com.ritense.verzoek.domain.VerzoekProperties
 import com.ritense.zgw.Rsin
@@ -40,7 +46,9 @@ import com.ritense.valueresolver.ProcessVariableValueResolverFactory.Companion.P
 class VerzoekPlugin(
     private val caseDefinitionService: CaseDefinitionService,
     private val documentDefinitionService: JsonSchemaDocumentDefinitionService,
-) {
+    private val objectManagementService: ObjectManagementService,
+    private val pluginService: PluginService,
+) : NotificatiesApiListener {
 
     @PluginProperty(key = "notificatiesApiPluginConfiguration", secret = false)
     lateinit var notificatiesApiPluginConfiguration: NotificatiesApiPlugin
@@ -66,7 +74,7 @@ class VerzoekPlugin(
                     }
 
                     val documentDefinitions = runWithoutAuthorization {
-                         val caseDefinitions = caseDefinitionService.getCaseDefinitions(
+                        val caseDefinitions = caseDefinitionService.getCaseDefinitions(
                             caseDefinitionKey = property.caseDefinitionKey,
                             caseDefinitionVersionTag = property.caseDefinitionVersionTag,
                         )
@@ -93,5 +101,29 @@ class VerzoekPlugin(
                     }
                 }
             }
+    }
+
+    override fun getNotificatiesApiPlugin(): NotificatiesApiPlugin {
+        return notificatiesApiPluginConfiguration
+    }
+
+    override fun getKanaalFilters(): List<Abonnement.Kanaal> {
+        return verzoekProperties.map { verzoekProperty ->
+            val objectManagement = objectManagementService.getById(verzoekProperty.objectManagementId)
+                ?: throw IllegalStateException("Object management not found for portaaltaak")
+
+            val objecttypenApiPlugin = pluginService.createInstance(
+                PluginConfigurationId
+                    .existingId(objectManagement.objecttypenApiPluginConfigurationId)
+            ) as ObjecttypenApiPlugin
+
+            Abonnement.Kanaal(
+                naam = "objecten",
+                filters = mapOf(
+                    "objectType" to "${objecttypenApiPlugin.url}objecttypes/${objectManagement.objecttypeId}",
+                    "actie" to "create"
+                )
+            )
+        }
     }
 }
