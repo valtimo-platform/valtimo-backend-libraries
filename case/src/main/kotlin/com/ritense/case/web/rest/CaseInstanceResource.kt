@@ -16,6 +16,7 @@
 
 package com.ritense.case.web.rest
 
+import com.ritense.case.service.CaseExporter
 import com.ritense.case.service.CaseInstanceService
 import com.ritense.case.web.rest.dto.CaseListRowDto
 import com.ritense.document.domain.search.SearchWithConfigRequest
@@ -35,7 +36,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 @SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class CaseInstanceResource(
-    private val service: CaseInstanceService
+    private val service: CaseInstanceService,
+    private val exporter: CaseExporter
 ) {
 
     @PostMapping("/v1/case/{caseDefinitionName}/search")
@@ -45,6 +47,16 @@ class CaseInstanceResource(
         pageable: Pageable
     ): ResponseEntity<Page<CaseListRowDto>> {
         val result = service.search(caseDefinitionName, searchRequest, pageable)
+        return ResponseEntity.ok(result)
+    }
+
+    @PostMapping("/v1/case/{caseDefinitionName}/export")
+    fun export(
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
+        @RequestBody searchRequest: SearchWithConfigRequest,
+        pageable: Pageable
+    ): ResponseEntity<Page<CaseListRowDto>> {
+        val result = exporter.searchExportable(caseDefinitionName, searchRequest, pageable)
         return ResponseEntity.ok(result)
     }
 }

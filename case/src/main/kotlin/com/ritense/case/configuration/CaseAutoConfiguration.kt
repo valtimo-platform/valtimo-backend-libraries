@@ -35,6 +35,7 @@ import com.ritense.case.service.CaseDefinitionDeploymentService
 import com.ritense.case.service.CaseDefinitionExporter
 import com.ritense.case.service.CaseDefinitionImporter
 import com.ritense.case.service.CaseDefinitionService
+import com.ritense.case.service.CaseExporter
 import com.ritense.case.service.CaseInstanceService
 import com.ritense.case.service.CaseListExporter
 import com.ritense.case.service.CaseListImporter
@@ -113,9 +114,13 @@ class CaseAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = ["caseInstanceResource"]) // because integration tests fail to initialise in portaaltaak
     fun caseInstanceResource(
-        service: CaseInstanceService
+        service: CaseInstanceService,
+        exporter: CaseExporter
     ): CaseInstanceResource {
-        return CaseInstanceResource(service)
+        return CaseInstanceResource(
+            service,
+            exporter
+        )
     }
 
     @Bean
@@ -415,6 +420,22 @@ class CaseAutoConfiguration {
     ): CaseTabDeploymentService {
         return CaseTabDeploymentService(
             caseTabService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CaseExporter::class)
+    fun caseExporter(
+        caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
+        documentSearchService: DocumentSearchService,
+        valueResolverService: ValueResolverService,
+        userManagementService: UserManagementService
+    ): CaseExporter {
+        return CaseExporter(
+            caseDefinitionListColumnRepository,
+            documentSearchService,
+            valueResolverService,
+            userManagementService
         )
     }
 }
