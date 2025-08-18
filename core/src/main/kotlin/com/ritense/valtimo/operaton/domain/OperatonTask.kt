@@ -118,7 +118,7 @@ class OperatonTask(
 
     @Immutable
     @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
-    val variableInstances: Set<OperatonVariableInstance>,
+    val variableInstances: Set<OperatonVariableInstance>
 
 ): OperatonVariableScope() {
 
