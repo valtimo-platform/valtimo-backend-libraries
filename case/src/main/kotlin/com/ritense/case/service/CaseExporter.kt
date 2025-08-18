@@ -16,14 +16,18 @@
 
 package com.ritense.case.service
 
+import com.opencsv.CSVWriter
+import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.case.domain.CaseListColumn
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.web.rest.dto.CaseListRowDto
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.search.SearchWithConfigRequest
 import com.ritense.document.service.DocumentSearchService
+import com.ritense.document.service.JsonSchemaDocumentActionProvider.EXPORT_LIST
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import com.ritense.valtimo.contract.authentication.ManageableUser
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valueresolver.ValueResolverService
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -31,8 +35,13 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.io.StringWriter
+import java.nio.charset.StandardCharsets
 
 @Transactional
 @Service
@@ -41,26 +50,75 @@ class CaseExporter(
     private val caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
     private val documentSearchService: DocumentSearchService,
     private val valueResolverService: ValueResolverService,
-    private val userManagementService: UserManagementService
+    private val userManagementService: UserManagementService,
+    private val authorizationService: AuthorizationService
 ) {
+    fun exportCases(
+        caseDefinitionKey: String,
+        searchRequest: SearchWithConfigRequest,
+        pageable: Pageable
+    ): ResponseEntity<ByteArray> {
+        val exportableCases = searchExportable(caseDefinitionKey, searchRequest, pageable)
+
+        val writer = StringWriter()
+        val csvWriter = CSVWriter(writer)
+
+        val headers = exportableCases
+            .flatMap { row -> row.items.map { it.key } }
+            .distinct()
+
+        csvWriter.writeNext(headers.toTypedArray())
+
+        exportableCases.forEach { row ->
+            val values = headers.map { key ->
+                row.items.firstOrNull { it.key == key }?.value?.toString() ?: ""
+            }
+            csvWriter.writeNext(values.toTypedArray())
+        }
+
+        csvWriter.close()
+
+        val responseHeaders = HttpHeaders().apply {
+            contentType = MediaType("text", "csv")
+            set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${caseDefinitionKey}_cases.csv\"")
+        }
+
+        return ResponseEntity
+            .ok()
+            .headers(responseHeaders)
+            .body(writer.toString().toByteArray(StandardCharsets.UTF_8))
+    }
+
     fun searchExportable(
         caseDefinitionKey: String,
         searchRequest: SearchWithConfigRequest,
         pageable: Pageable
-    ): Page<CaseListRowDto> {
+    ): List<CaseListRowDto> {
         val exportableColumns = getExportableColumns(caseDefinitionKey)
+
+        val newPageable = mutatePageable(exportableColumns, pageable)
 
         val searchResults = documentSearchService.search(
             caseDefinitionKey,
             searchRequest,
-            mutatePageable(exportableColumns, pageable)
+            newPageable
         )
 
         checkResultsFound(searchResults, caseDefinitionKey)
         requireExportLimit(searchResults, caseDefinitionKey)
 
-        val exportableCases = searchResults.map { toCaseListRowDto(it, exportableColumns) }
-        logExport(caseDefinitionKey, exportableColumns, exportableCases.totalElements)
+        val documents = searchResults.content.filterIsInstance<JsonSchemaDocument>()
+
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                JsonSchemaDocument::class.java,
+                EXPORT_LIST,
+                documents
+            )
+        )
+
+        val exportableCases = searchResults.content.map { toCaseListRowDto(it, exportableColumns) }
+        logExport(caseDefinitionKey, exportableColumns, exportableCases.size.toLong())
 
         return exportableCases
     }
@@ -72,7 +130,7 @@ class CaseExporter(
 
         require(exportableColumns.isNotEmpty()) {
             logger.warn {
-                "User '${getCurrentUser().fullName} (${getCurrentUser().email})' " +
+                "User '${currentUserInfo()}' " +
                     "attempted export for case '$caseDefinitionKey' but no exportable columns were found."
             }
             "Export failed: no exportable columns found."
@@ -84,25 +142,21 @@ class CaseExporter(
         caseListColumns: Collection<CaseListColumn>,
         pageable: Pageable
     ): PageRequest {
-        val size = pageable.pageSize.coerceAtMost(MAX_PAGE_SIZE)
-
-        if (pageable.sort.isUnsorted) {
-            return PageRequest.of(pageable.pageNumber, size, pageable.sort)
-        }
-
         val keyToPath = caseListColumns.associate { it.id.key to it.path }
-        val newSortOrders = pageable.sort.map { sortOrder ->
-            val sortProperty = keyToPath[sortOrder.property] ?: sortOrder.property
-            Sort.Order(sortOrder.direction, sortProperty, sortOrder.nullHandling)
+        val orders = pageable.sort.map { sortOrder ->
+            val sortingProperty = keyToPath[sortOrder.property] ?: sortOrder.property
+            Sort.Order(sortOrder.direction, sortingProperty, sortOrder.nullHandling)
         }
-        val newSort = Sort.by(newSortOrders.toMutableList())
-        return PageRequest.of(pageable.pageNumber, pageable.pageSize, newSort)
+
+        val newSort = if (orders.isEmpty) Sort.unsorted() else Sort.by(orders.toMutableList())
+
+        return PageRequest.of(PAGE_FIRST, MAX_EXPORT, newSort)
     }
 
     private fun checkResultsFound(results: Page<*>, caseDefinitionKey: String) {
         check(!results.isEmpty) {
             logger.info {
-                "User '${getCurrentUser().fullName} (${getCurrentUser().email})' " +
+                "User '${currentUserInfo()}' " +
                     "attempted export for case '$caseDefinitionKey' but the search returned no results."
             }
             "Export failed: search returned no results."
@@ -111,7 +165,7 @@ class CaseExporter(
 
     private fun logExport(caseDefinitionKey: String, columns: List<CaseListColumn>, total: Long) {
         logger.info {
-            "User '${getCurrentUser().fullName} (${getCurrentUser().email})' exported $total cases for '$caseDefinitionKey'. " +
+            "User '${currentUserInfo()}' exported $total cases for '$caseDefinitionKey'. " +
                 "Exported columns: [${columns.joinToString(", ") { it.id.key }}]"
         }
     }
@@ -133,13 +187,12 @@ class CaseExporter(
         return CaseListRowDto(document.id().toString(), items)
     }
 
-    private fun getCurrentUser(): ManageableUser {
-        return userManagementService.currentUser
-    }
+    private fun currentUserInfo(): String =
+        userManagementService.currentUser.let { "${it.fullName} (${it.email})" }
 
     companion object {
         private val logger = KotlinLogging.logger {}
         private const val MAX_EXPORT = 10_000
-        private const val MAX_PAGE_SIZE = 50
+        private const val PAGE_FIRST = 0
     }
 }

@@ -1,57 +1,62 @@
 [
-  {
-    "key": "createdBy",
-    "path": "case:createdBy",
-    "displayType": {
-      "type": "text",
-      "displayTypeParameters": {}
+    {
+        "key": "createdBy",
+        "path": "case:createdBy",
+        "displayType": {
+            "type": "text",
+            "displayTypeParameters": {}
+        },
+        "sortable": true,
+        "order": 0,
+        "exportable": true
     },
-    "sortable": true,
-    "order": 0
-  },
-  {
-    "key": "createdOn",
-    "path": "case:createdOn",
-    "displayType": {
-      "type": "date",
-      "displayTypeParameters": {
-        "dateFormat": null
-      }
+    {
+        "key": "createdOn",
+        "path": "case:createdOn",
+        "displayType": {
+            "type": "date",
+            "displayTypeParameters": {
+                "dateFormat": null
+            }
+        },
+        "sortable": true,
+        "defaultSort": "DESC",
+        "order": 1,
+        "exportable": true
     },
-    "sortable": true,
-    "defaultSort": "DESC",
-    "order": 1
-  },
-  {
-    "key": "modifiedOn",
-    "path": "case:modifiedOn",
-    "displayType": {
-      "type": "date",
-      "displayTypeParameters": {
-        "dateFormat": null
-      }
+    {
+        "key": "modifiedOn",
+        "path": "case:modifiedOn",
+        "displayType": {
+            "type": "date",
+            "displayTypeParameters": {
+                "dateFormat": null
+            }
+        },
+        "sortable": true,
+        "order": 2,
+        "exportable": true
     },
-    "sortable": true,
-    "order": 2
-  },
-  {
-    "key": "assigneeFullName",
-    "path": "case:assigneeFullName",
-    "displayType": {
-      "type": "text",
-      "displayTypeParameters": {}
+    {
+        "key": "assigneeFullName",
+        "path": "case:assigneeFullName",
+        "displayType": {
+            "type": "text",
+            "displayTypeParameters": {}
+        },
+        "sortable": true,
+        "order": 3,
+        "exportable": true
     },
-    "sortable": true,
-    "order": 3
-  },
-  {
-    "key": "status",
-    "path": "case:internalStatus",
-    "displayType": {
-      "type": "tags",
-      "displayTypeParameters": {}
-    },
-    "sortable": true,
-    "order": 4
-  }
+    {
+        "key": "status",
+        "path": "case:internalStatus",
+        "displayType": {
+            "type": "tags",
+            "displayTypeParameters": {}
+        },
+        "sortable": true,
+        "order": 4,
+        "exportable": false
+    }
 ]

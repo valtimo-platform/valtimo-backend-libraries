@@ -429,13 +429,15 @@ class CaseAutoConfiguration {
         caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
         documentSearchService: DocumentSearchService,
         valueResolverService: ValueResolverService,
-        userManagementService: UserManagementService
+        userManagementService: UserManagementService,
+        authorizationService: AuthorizationService
     ): CaseExporter {
         return CaseExporter(
             caseDefinitionListColumnRepository,
             documentSearchService,
             valueResolverService,
-            userManagementService
+            userManagementService,
+            authorizationService
         )
     }
 }

@@ -23,6 +23,7 @@ import com.ritense.document.domain.search.SearchWithConfigRequest
 import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.TEXT_CSV_UTF8_VALUE
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
@@ -50,13 +51,17 @@ class CaseInstanceResource(
         return ResponseEntity.ok(result)
     }
 
-    @PostMapping("/v1/case/{caseDefinitionName}/export")
+    @PostMapping(
+        "/v1/case/{caseDefinitionName}/export",
+        consumes = [APPLICATION_JSON_UTF8_VALUE],
+        produces = [TEXT_CSV_UTF8_VALUE]
+    )
     fun export(
-        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName")
+        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
         @RequestBody searchRequest: SearchWithConfigRequest,
         pageable: Pageable
-    ): ResponseEntity<Page<CaseListRowDto>> {
-        val result = exporter.searchExportable(caseDefinitionName, searchRequest, pageable)
-        return ResponseEntity.ok(result)
+    ): ResponseEntity<ByteArray> {
+        return exporter.exportCases(caseDefinitionName, searchRequest, pageable)
     }
 }
