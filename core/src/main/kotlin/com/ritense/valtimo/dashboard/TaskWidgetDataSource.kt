@@ -17,10 +17,8 @@
 package com.ritense.valtimo.dashboard
 
 import com.ritense.valtimo.operaton.repository.OperatonTaskRepository
-import com.ritense.valtimo.operaton.repository.OperatonTaskSpecificationHelper.Companion.all
 import com.ritense.valtimo.contract.dashboard.WidgetDataSource
 import com.ritense.valtimo.contract.repository.ExpressionOperator
-import com.ritense.valtimo.operaton.domain.OperatonTask
 import com.ritense.valtimo.service.OperatonTaskService
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Expression
@@ -33,25 +31,7 @@ class TaskWidgetDataSource(
 ) {
     @WidgetDataSource("task-count", "Task count")
     fun getTaskCount(taskCountDataSourceProperties: TaskCountDataSourceProperties): TaskCountDataResult {
-
-        val specification = taskCountDataSourceProperties.queryConditions?.first { con ->
-            con.queryPath == "task:assignee" && con.queryOperator == ExpressionOperator.EQUAL_TO
-        }?.let {
-            when (it.queryValue) {
-                "\${currentUserIdentifier}" -> {
-                    operatonTaskService.getSpecification(OperatonTaskService.TaskFilter.MINE)
-                }
-                "\${null}" -> {
-                    operatonTaskService.getSpecification(OperatonTaskService.TaskFilter.OPEN)
-                }
-                else -> {
-                    operatonTaskService.getSpecification(OperatonTaskService.TaskFilter.ALL)
-                }
-            }
-        } ?: operatonTaskService.getSpecification(OperatonTaskService.TaskFilter.ALL)
-//        val count = operatonTaskService.countTasksFiltered(specification)
-
-        val taskSpec = all()
+        val taskSpec = getAuthorizationSpecification(taskCountDataSourceProperties)
         val spec = taskSpec.and { root, _, criteriaBuilder ->
             criteriaBuilder.and(
                 *taskCountDataSourceProperties.queryConditions?.map {
@@ -60,18 +40,30 @@ class TaskWidgetDataSource(
             )
         }
 
-
-//        val all = taskRepository.findAll(spec)
-
-//        val filtered = operatonTaskService.filterTaskFilterSpecification(spec, OperatonTaskService.TaskFilter.MINE)
-//        val count = taskRepository.count(filtered)
-//        val total = taskRepository.count(filtered)
-
         val count = taskRepository.count(spec)
         val total = taskRepository.count(taskSpec)
-
         return TaskCountDataResult(count, total)
     }
+
+    private fun getAuthorizationSpecification(taskCountDataSourceProperties: TaskCountDataSourceProperties) =
+
+            taskCountDataSourceProperties.queryConditions?.firstOrNull { con ->
+                con.queryPath == "task:assignee" && con.queryOperator == ExpressionOperator.EQUAL_TO
+            }?.let {
+                return when (it.queryValue) {
+                    "\${currentUserIdentifier}" -> {
+                        operatonTaskService.getSpecification(OperatonTaskService.TaskFilter.MINE)
+                    }
+
+                    "\${null}" -> {
+                        operatonTaskService.getSpecification(OperatonTaskService.TaskFilter.OPEN)
+                    }
+
+                    else -> {
+                        operatonTaskService.getSpecification(OperatonTaskService.TaskFilter.ALL)
+                    }
+                }
+            } ?: operatonTaskService.getSpecification(OperatonTaskService.TaskFilter.ALL)
 
     private fun <T> getPathExpression(
         valueClass: Class<T>,

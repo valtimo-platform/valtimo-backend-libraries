@@ -436,7 +436,6 @@ public class OperatonTaskService {
         }
 
         var assigneeMap = new java.util.HashMap<String, ValtimoUser>();
-        var bla = typedQuery.getResultList();
         var tasks = typedQuery.getResultList().stream()
             .map(tuple -> {
                 var task = tuple.get(0, OperatonTask.class);
