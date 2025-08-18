@@ -22,7 +22,9 @@ import com.fasterxml.jackson.module.kotlin.convertValue
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.logging.withLoggingContext
+import com.ritense.notificatiesapi.NotificatiesApiListener
 import com.ritense.notificatiesapi.NotificatiesApiPlugin
+import com.ritense.notificatiesapi.domain.Abonnement
 import com.ritense.objectenapi.ObjectenApiPlugin
 import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectRequest
@@ -69,7 +71,7 @@ class PortaaltaakPlugin(
     private val processDocumentService: ProcessDocumentService,
     private val zaakInstanceLinkService: ZaakInstanceLinkService,
     private val taskService: OperatonTaskService
-) {
+) : NotificatiesApiListener {
     private val objectMapper = pluginService.getObjectMapper()
 
     @PluginProperty(key = "notificatiesApiPluginConfiguration", secret = false)
@@ -335,6 +337,38 @@ class PortaaltaakPlugin(
                 registrationAt = portaalTaakMetaObject.record.registrationAt,
                 startAt = portaalTaakMetaObject.record.startAt,
                 typeVersion = portaalTaakMetaObject.record.typeVersion
+            )
+        )
+    }
+
+    override fun getNotificatiesApiPlugin(): NotificatiesApiPlugin {
+        return notificatiesApiPluginConfiguration
+    }
+
+    override fun getKanaalFilters(): List<Abonnement.Kanaal> {
+        val objectManagement = objectManagementService.getById(objectManagementConfigurationId)
+            ?: throw IllegalStateException("Object management not found for portaaltaak")
+
+        val objecttypenApiPlugin = pluginService.createInstance(
+            PluginConfigurationId
+                .existingId(objectManagement.objecttypenApiPluginConfigurationId)
+        ) as ObjecttypenApiPlugin
+
+
+        return listOf(
+            Abonnement.Kanaal(
+                naam = "objecten",
+                filters = mapOf(
+                    "objectType" to "${objecttypenApiPlugin.url}objecttypes/${objectManagement.objecttypeId}",
+                    "actie" to "update"
+                )
+            ),
+            Abonnement.Kanaal(
+                naam = "objecten",
+                filters = mapOf(
+                    "objectType" to "${objecttypenApiPlugin.url}objecttypes/${objectManagement.objecttypeId}",
+                    "actie" to "partial_update"
+                )
             )
         )
     }
