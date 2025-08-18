@@ -53,7 +53,6 @@ import com.ritense.authorization.role.Role;
 import com.ritense.authorization.specification.AuthorizationSpecification;
 import com.ritense.outbox.OutboxService;
 import com.ritense.resource.service.ResourceService;
-import com.ritense.valtimo.dashboard.TaskCountDataSourceProperties;
 import com.ritense.valtimo.operaton.domain.OperatonIdentityLink;
 import com.ritense.valtimo.operaton.domain.OperatonTask;
 import com.ritense.valtimo.operaton.dto.OperatonIdentityLinkDto;
