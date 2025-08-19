@@ -107,17 +107,12 @@ class CaseExporter(
         checkResultsFound(searchResults, caseDefinitionKey)
         requireExportLimit(searchResults, caseDefinitionKey)
 
-        val documents = searchResults.content.filterIsInstance<JsonSchemaDocument>()
+        val hasExportPermission = hasExportPermission(searchResults)
 
-        authorizationService.requirePermission(
-            EntityAuthorizationRequest(
-                JsonSchemaDocument::class.java,
-                EXPORT_LIST,
-                documents
-            )
-        )
+        check(hasExportPermission) {"No permission found to export case '$caseDefinitionKey'."}
 
         val exportableCases = searchResults.content.map { toCaseListRowDto(it, exportableColumns) }
+
         logExport(caseDefinitionKey, exportableColumns, exportableCases.size.toLong())
 
         return exportableCases
@@ -185,6 +180,18 @@ class CaseExporter(
         }.toMutableList()
 
         return CaseListRowDto(document.id().toString(), items)
+    }
+
+    private fun hasExportPermission(searchResults: Page<*>): Boolean{
+        val documents = searchResults.content.filterIsInstance<JsonSchemaDocument>()
+
+        return authorizationService.hasPermission(
+            EntityAuthorizationRequest(
+                JsonSchemaDocument::class.java,
+                EXPORT_LIST,
+                documents
+            )
+        )
     }
 
     private fun currentUserInfo(): String =
