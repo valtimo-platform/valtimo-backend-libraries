@@ -490,7 +490,8 @@ public class OperatonTaskService {
                         OperatonTaskDto.of(task),
                         delegateTaskHelper.isTaskPublic(task),
                         task.getProcessDefinition().getKey(),
-                        identityLinks
+                        identityLinks,
+                        task.getSubtitles()
                     );
                 }
             ))
