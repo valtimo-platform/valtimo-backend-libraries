@@ -33,6 +33,6 @@ class TestProcessLinkLiquibaseAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = ["testProcessLinkLiquibaseMasterChangeLogLocation"])
     fun testProcessLinkLiquibaseMasterChangeLogLocation(): LiquibaseMasterChangeLogLocation {
-        return LiquibaseMasterChangeLogLocation("config/liquibase/test-process-link-master.xml")
+        return LiquibaseMasterChangeLogLocation("config/liquibase/process-link-test-only-master.xml")
     }
 }
