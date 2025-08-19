@@ -22,7 +22,9 @@ import com.ritense.documentenapi.service.DocumentDeleteHandler
 import com.ritense.documentenapi.service.DocumentenApiVersionService
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
+import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.valtimo.operaton.service.OperatonRuntimeService
 import org.springframework.context.ApplicationEventPublisher
 
 class DocumentenApiPluginFactory(
@@ -33,6 +35,8 @@ class DocumentenApiPluginFactory(
     private val objectMapper: ObjectMapper,
     private val documentDeleteHandlers: List<DocumentDeleteHandler>,
     private val documentenApiVersionService: DocumentenApiVersionService,
+    private val processDocumentAssociationService: ProcessDocumentAssociationService,
+    private val runtimeService: OperatonRuntimeService,
 ) : PluginFactory<DocumentenApiPlugin>(pluginService) {
 
     override fun create(): DocumentenApiPlugin {
@@ -43,7 +47,9 @@ class DocumentenApiPluginFactory(
             objectMapper,
             documentDeleteHandlers,
             documentenApiVersionService,
-            pluginService
+            pluginService,
+            processDocumentAssociationService,
+            runtimeService,
         )
     }
 }

@@ -20,6 +20,7 @@ enum class StorageMetadataKeys(val key: String) {
     DOCUMENT_ID("documentId"),
     DOCUMENT_URL("documentUrl"),
     DOWNLOAD_URL("downloadUrl"),
+    RELATED_DOCUMENT_ID("relatedDocumentId"),
 }
 
 fun getEnumFromKey(key: String): Result<StorageMetadataKeys> {

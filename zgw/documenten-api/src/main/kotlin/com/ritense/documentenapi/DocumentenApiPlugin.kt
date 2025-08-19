@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.documentenapi.DocumentenApiPlugin.Companion.PLUGIN_KEY
 import com.ritense.documentenapi.client.BestandsdelenRequest
 import com.ritense.documentenapi.client.CreateDocumentRequest
@@ -41,11 +42,13 @@ import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.EventType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginService
+import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.temporaryresource.domain.StorageMetadataKeys
 import com.ritense.valtimo.contract.validation.Url
+import com.ritense.valtimo.operaton.service.OperatonRuntimeService
 import com.ritense.zgw.domain.Vertrouwelijkheid
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.ValidationException
@@ -72,7 +75,9 @@ class DocumentenApiPlugin(
     private val objectMapper: ObjectMapper,
     private val documentDeleteHandlers: List<DocumentDeleteHandler>,
     private val documentenApiVersionService: DocumentenApiVersionService,
-    private val pluginService: PluginService
+    private val pluginService: PluginService,
+    private val processDocumentAssociationService: ProcessDocumentAssociationService,
+    private val runtimeService: OperatonRuntimeService,
 ) {
     @Url
     @PluginProperty(key = URL_PROPERTY, secret = false)
@@ -150,7 +155,7 @@ class DocumentenApiPlugin(
         }
         val contentAsInputStream = storageService.getResourceContentAsInputStream(resourceId)
         val metadata = storageService.getResourceMetadata(resourceId)
-
+        val relatedDocumentId = metadata[StorageMetadataKeys.RELATED_DOCUMENT_ID.key] as? String
         val result = storeDocument(
             execution = execution,
             metadata = metadata,
@@ -158,6 +163,9 @@ class DocumentenApiPlugin(
             informatieobjecttype = null,
             storedDocumentKey = DOCUMENT_URL_PROCESS_VAR,
         )
+
+        if (!relatedDocumentId.isNullOrBlank()) setDocumentUrlProcessVariableForRelatedProcess(relatedDocumentId, result.url)
+
         storageService.saveMetadataValue(resourceId, StorageMetadataKeys.DOCUMENT_URL, result.url)
     }
 
@@ -179,12 +187,15 @@ class DocumentenApiPlugin(
         }
         val contentAsInputStream = storageService.getResourceContentAsInputStream(resourceId)
         val metadata = storageService.getResourceMetadata(resourceId)
-
+        val relatedDocumentId = metadata[StorageMetadataKeys.RELATED_DOCUMENT_ID.key] as? String
         val result = storeDocumentInParts(
             execution = execution,
             metadata = metadata,
             inhoudAsInputStream = contentAsInputStream,
         )
+
+        if (!relatedDocumentId.isNullOrBlank()) setDocumentUrlProcessVariableForRelatedProcess(relatedDocumentId, result.url)
+
         storageService.saveMetadataValue(resourceId, StorageMetadataKeys.DOCUMENT_URL, result.url)
     }
 
@@ -426,6 +437,16 @@ class DocumentenApiPlugin(
         } else {
             null
         }
+    }
+
+    private fun setDocumentUrlProcessVariableForRelatedProcess(
+        relatedDocumentId: String,
+        documentUrl: String
+    ) {
+        val relatedProcessDocument = processDocumentAssociationService.findProcessDocumentInstances(JsonSchemaDocumentId.existingId(relatedDocumentId)).firstOrNull() ?: return;
+        val relatedProcessInstanceId = relatedProcessDocument.processDocumentInstanceId().processInstanceId().toString()
+
+        runtimeService.setVariable(relatedProcessInstanceId, DOCUMENT_URL_PROCESS_VAR, documentUrl)
     }
 
     companion object {

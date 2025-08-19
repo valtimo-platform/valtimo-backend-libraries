@@ -283,6 +283,58 @@ internal class DocumentenApiPluginIT @Autowired constructor(
         assertEquals("My passport", documentMetadata["description"])
     }
 
+    @Test
+    fun `should set documentUrl process variable on related process when relatedDocumentId is present`() {
+        val relatedDocReq = NewDocumentRequest(
+            DOCUMENT_DEFINITION_KEY, "profile", "1.0.0", objectMapper.createObjectNode()
+        )
+        runWithoutAuthorization {
+            processDocumentService.newDocumentAndStartProcess(
+                NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, relatedDocReq)
+            )
+        }
+
+        val relatedPi = runtimeService.createProcessInstanceQuery()
+            .processDefinitionKey(PROCESS_DEFINITION_KEY)
+            .singleResult()
+        val relatedDocumentId = relatedPi?.businessKey
+        assertNotNull(relatedPi, "Expected a related process instance to exist")
+        assertNotNull(relatedDocumentId, "Expected related process to have a business key")
+
+        saveProcessLink("store-uploaded-document", "{}")
+
+        val resourceId = temporaryResourceStorageService.store(
+            "content".byteInputStream(),
+            mutableMapOf(
+                MetadataType.FILE_NAME.key to "upload.pdf",
+                "title" to "t",
+                "status" to "in_bewerking",
+                "language" to "nld",
+                "informatieobjecttype" to "ioType",
+                StorageMetadataKeys.RELATED_DOCUMENT_ID.key to relatedDocumentId!!
+            )
+        )
+
+        val uploadReq = NewDocumentRequest(
+            DOCUMENT_DEFINITION_KEY, "profile", "1.0.0", objectMapper.createObjectNode()
+        )
+        runWithoutAuthorization {
+            processDocumentService.newDocumentAndStartProcess(
+                NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, uploadReq)
+                    .withProcessVars(mapOf("resourceId" to resourceId))
+            )
+        }
+
+        val varInst = runtimeService.createVariableInstanceQuery()
+            .processInstanceIdIn(relatedPi.id)
+            .variableName(DocumentenApiPlugin.DOCUMENT_URL_PROCESS_VAR)
+            .singleResult()
+
+        assertNotNull(varInst, "Expected 'documentUrl' process variable to be set on the related process")
+        val value = varInst.value as String
+        assertTrue(value.startsWith(server.url("/").toString()))
+    }
+
     private fun saveProcessLink(pluginActionDefinitionKey: String, generateDocumentActionProperties: String) {
         pluginProcessLinkRepository.save(
             PluginProcessLink(
