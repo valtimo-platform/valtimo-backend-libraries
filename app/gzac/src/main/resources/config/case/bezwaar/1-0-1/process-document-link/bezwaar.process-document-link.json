@@ -3,5 +3,10 @@
         "processDefinitionKey": "bezwaar",
         "canInitializeDocument": true,
         "startableByUser": true
+    },
+    {
+        "processDefinitionKey": "patch-zaak",
+        "canInitializeDocument": false,
+        "startableByUser": true
     }
 ]

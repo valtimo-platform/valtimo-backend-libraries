@@ -17,6 +17,6 @@
 package com.ritense.zakenapi.domain
 
 data class Geometry(
-    val type: String,
-    val coordinates: List<Int>,
+    val type: GeometryType,
+    val coordinates: List<Float>
 )
