@@ -39,6 +39,9 @@ import com.ritense.catalogiapi.exception.EigenschapNotFoundException
 import com.ritense.catalogiapi.exception.ResultaattypeNotFoundException
 import com.ritense.catalogiapi.exception.StatustypeNotFoundException
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
+import com.ritense.catalogiapi.web.rest.result.ResultaattypeDto
+import com.ritense.catalogiapi.web.rest.result.StatustypeDto
+import com.ritense.document.domain.Document
 import com.ritense.document.service.DocumentService
 import com.ritense.logging.withLoggingContext
 import com.ritense.plugin.annotation.Plugin
@@ -72,6 +75,35 @@ class CatalogiApiPlugin(
     lateinit var authenticationPluginConfiguration: CatalogiApiAuthentication
 
     @PluginAction(
+        key = "get-statustypen",
+        title = "Get Statustypen",
+        description = "Retrieve the statustypen and save them in a process variable",
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START, ActivityTypeWithEventName.CALL_ACTIVITY_START]
+    )
+    fun getStatustypen(
+        execution: DelegateExecution,
+        @PluginActionProperty processVariable: String,
+        @PluginActionProperty zaaktypeUrl: String? = null
+    ) {
+        logger.debug { "Retrieving statustypen and storing these in process variable: $processVariable" }
+        zaaktypeUriFrom(zaaktypeUrl, execution).let { zaaktypeUri ->
+            withLoggingContext(
+                CATALOGI_API.ZAAKTYPE to zaaktypeUri.toString()
+            ) {
+                getStatusTypen(zaaktypeUri).map { statustype ->
+                    StatustypeDto(
+                        url = statustype.url!!,
+                        name = statustype.omschrijving
+                    )
+                }.let { statustypen ->
+                    execution.setVariable(processVariable, statustypen)
+                }
+                logger.info { "Setting process variable $processVariable with (retrieved) statustypen" }
+            }
+        }
+    }
+
+    @PluginAction(
         key = "get-statustype",
         title = "Get Statustype",
         description = "Retrieve the statustype and save it in a process variable",
@@ -90,15 +122,43 @@ class CatalogiApiPlugin(
             val statustypeUrl = if (statustype.matches(HTTPS_REGEX)) {
                 statustype
             } else {
-                val document =
-                    AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
-                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().caseDefinitionId())
+                val zaaktypeUrl = getZaaktypeUrl(execution)
                 getStatustypeByOmschrijving(zaaktypeUrl, statustype).url!!.toASCIIString()
             }
 
             logger.info { "Setting process variable $processVariable with (retrieved) statustype URL: $statustypeUrl" }
 
             execution.setVariable(processVariable, statustypeUrl)
+        }
+    }
+
+    @PluginAction(
+        key = "get-resultaattypen",
+        title = "Get Resultaattypen",
+        description = "Retrieve the resultaattypen and save these in a process variable",
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START, ActivityTypeWithEventName.CALL_ACTIVITY_START]
+    )
+    fun getResultaattypen(
+        execution: DelegateExecution,
+        @PluginActionProperty processVariable: String,
+        @PluginActionProperty zaaktypeUrl: String? = null
+
+    ) {
+        logger.debug { "Retrieving resultaattypen and storing these in process variable: $processVariable" }
+        zaaktypeUriFrom(zaaktypeUrl, execution).let { zaaktypeUri ->
+            withLoggingContext(
+                CATALOGI_API.ZAAKTYPE to zaaktypeUri.toString()
+            ) {
+                getResultaattypen(zaaktypeUri).map { resultaattype ->
+                    ResultaattypeDto(
+                        url = resultaattype.url!!,
+                        name = resultaattype.omschrijving
+                    )
+                }.let { resultaattypen ->
+                    execution.setVariable(processVariable, resultaattypen)
+                }
+                logger.info { "Setting process variable $processVariable with (retrieved) resultaattypen" }
+            }
         }
     }
 
@@ -120,9 +180,7 @@ class CatalogiApiPlugin(
             val resultaattypeUrl = if (resultaattype.matches(HTTPS_REGEX)) {
                 resultaattype
             } else {
-                val document =
-                    AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
-                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().caseDefinitionId())
+                val zaaktypeUrl = getZaaktypeUrl(execution)
                 getResultaattypeByOmschrijving(zaaktypeUrl, resultaattype).url!!.toASCIIString()
             }
 
@@ -150,9 +208,7 @@ class CatalogiApiPlugin(
             val besluittypeUrl = if (besluittype.matches(HTTPS_REGEX)) {
                 besluittype
             } else {
-                val document =
-                    AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
-                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().caseDefinitionId())
+                val zaaktypeUrl = getZaaktypeUrl(execution)
                 getBesluittypeByOmschrijving(zaaktypeUrl, besluittype).url!!.toASCIIString()
             }
 
@@ -179,9 +235,7 @@ class CatalogiApiPlugin(
             val eigenschapUrl = if (eigenschap.matches(HTTPS_REGEX)) {
                 eigenschap
             } else {
-                val document =
-                    AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
-                val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().caseDefinitionId())
+                val zaaktypeUrl = getZaaktypeUrl(execution)
 
                 getEigenschapByName(zaaktypeUrl, eigenschap).url!!.toASCIIString()
             }
@@ -275,7 +329,7 @@ class CatalogiApiPlugin(
         }
     }
 
-    fun getStatustypen(zaakTypeUrl: URI): List<Statustype> {
+    fun getStatusTypen(zaakTypeUrl: URI): List<Statustype> {
         withLoggingContext(CATALOGI_API.STATUSTYPE to zaakTypeUrl.toString()) {
             var currentPage = 1
             var currentResults: Page<Statustype>?
@@ -310,7 +364,7 @@ class CatalogiApiPlugin(
             CATALOGI_API.STATUSTYPE to zaakTypeUrl.toString(),
         ) {
             logger.debug { "Getting Statustype by omschrijving: $omschrijving for zaaktype $zaakTypeUrl" }
-            return getStatustypen(zaakTypeUrl)
+            return getStatusTypen(zaakTypeUrl)
                 .singleOrNull { it.omschrijving.equals(omschrijving, ignoreCase = true) }
                 ?: throw StatustypeNotFoundException("with 'omschrijving': '$omschrijving'")
         }
@@ -440,6 +494,23 @@ class CatalogiApiPlugin(
     fun prefillCache() {
         client.prefillCache(authenticationPluginConfiguration, url)
     }
+
+    private fun zaaktypeUriFrom(zaaktypeUrl: String?, execution: DelegateExecution): URI =
+        if (!zaaktypeUrl.isNullOrBlank()) {
+            URI.create(zaaktypeUrl.trim()).also {
+                logger.debug { "Using zaakTypeUrl from property: $it" }
+            }
+        } else {
+            getZaaktypeUrl(execution).also {
+                logger.debug { "Using zaakTypeUrl from linked Zaak: $it" }
+            }
+        }
+
+    private fun getZaaktypeUrl(execution: DelegateExecution): URI =
+        zaaktypeUrlProvider.getZaaktypeUrl(getDocument(execution).definitionId().caseDefinitionId())
+
+    private fun getDocument(execution: DelegateExecution): Document =
+        AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
 
     companion object {
         val logger = KotlinLogging.logger {}
