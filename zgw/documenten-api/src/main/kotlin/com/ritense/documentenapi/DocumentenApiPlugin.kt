@@ -193,8 +193,7 @@ class DocumentenApiPlugin(
             inhoudAsInputStream = contentAsInputStream,
         )
 
-        if (!processInstanceId.isNullOrBlank()) setDocumentUrlProcessVariableForRelatedProcess(processInstanceId, result.url, documentUrlProcessVariable)
-
+        setDocumentUrlProcessVariableForRelatedProcess(processInstanceId, result.url, documentUrlProcessVariable)
         storageService.saveMetadataValue(resourceId, StorageMetadataKeys.DOCUMENT_URL, result.url)
     }
 
