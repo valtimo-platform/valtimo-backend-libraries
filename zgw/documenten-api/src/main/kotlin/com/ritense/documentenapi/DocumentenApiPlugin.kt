@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.documentenapi.DocumentenApiPlugin.Companion.PLUGIN_KEY
 import com.ritense.documentenapi.client.BestandsdelenRequest
 import com.ritense.documentenapi.client.CreateDocumentRequest
@@ -46,6 +47,7 @@ import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.temporaryresource.domain.StorageMetadataKeys
 import com.ritense.valtimo.contract.validation.Url
+import com.ritense.valtimo.operaton.service.OperatonRuntimeService
 import com.ritense.zgw.domain.Vertrouwelijkheid
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.ValidationException
@@ -72,7 +74,8 @@ class DocumentenApiPlugin(
     private val objectMapper: ObjectMapper,
     private val documentDeleteHandlers: List<DocumentDeleteHandler>,
     private val documentenApiVersionService: DocumentenApiVersionService,
-    private val pluginService: PluginService
+    private val pluginService: PluginService,
+    private val runtimeService: OperatonRuntimeService,
 ) {
     @Url
     @PluginProperty(key = URL_PROPERTY, secret = false)
@@ -150,7 +153,8 @@ class DocumentenApiPlugin(
         }
         val contentAsInputStream = storageService.getResourceContentAsInputStream(resourceId)
         val metadata = storageService.getResourceMetadata(resourceId)
-
+        val processInstanceId = metadata[StorageMetadataKeys.PROCESS_INSTANCE_ID.key] as? String
+        val documentUrlProcessVariable = metadata[StorageMetadataKeys.DOCUMENT_URL_PROCESS_VARIABLE.key] as? String
         val result = storeDocument(
             execution = execution,
             metadata = metadata,
@@ -158,6 +162,8 @@ class DocumentenApiPlugin(
             informatieobjecttype = null,
             storedDocumentKey = DOCUMENT_URL_PROCESS_VAR,
         )
+
+        setDocumentUrlProcessVariableForRelatedProcess(processInstanceId, result.url, documentUrlProcessVariable)
         storageService.saveMetadataValue(resourceId, StorageMetadataKeys.DOCUMENT_URL, result.url)
     }
 
@@ -179,12 +185,15 @@ class DocumentenApiPlugin(
         }
         val contentAsInputStream = storageService.getResourceContentAsInputStream(resourceId)
         val metadata = storageService.getResourceMetadata(resourceId)
-
+        val processInstanceId = metadata[StorageMetadataKeys.PROCESS_INSTANCE_ID.key] as? String
+        val documentUrlProcessVariable = metadata[StorageMetadataKeys.DOCUMENT_URL_PROCESS_VARIABLE.key] as? String
         val result = storeDocumentInParts(
             execution = execution,
             metadata = metadata,
             inhoudAsInputStream = contentAsInputStream,
         )
+
+        setDocumentUrlProcessVariableForRelatedProcess(processInstanceId, result.url, documentUrlProcessVariable)
         storageService.saveMetadataValue(resourceId, StorageMetadataKeys.DOCUMENT_URL, result.url)
     }
 
@@ -426,6 +435,16 @@ class DocumentenApiPlugin(
         } else {
             null
         }
+    }
+
+    private fun setDocumentUrlProcessVariableForRelatedProcess(
+        processInstanceId: String?,
+        documentUrl: String,
+        documentUrlProcessVariable: String?,
+    ) {
+        if (processInstanceId.isNullOrBlank()) return
+        val variableName = documentUrlProcessVariable?.takeIf { it.isNotBlank() } ?: DOCUMENT_URL_PROCESS_VAR
+        runtimeService.setVariable(processInstanceId, variableName, documentUrl)
     }
 
     companion object {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2024 Ritense BV, the Netherlands.
+ * Copyright 2015-2025 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi.domain
+package com.ritense.notificatiesapi
 
-import java.net.URI
+import com.ritense.notificatiesapi.domain.Abonnement
+import com.ritense.plugin.annotation.PluginCategory
 
-data class RelevanteZaak(
-    val url: URI,
-    val aardRelatie: AardRelatie
-)
+@PluginCategory("notificaties-api-plugin")
+interface NotificatiesApiListener {
+    fun getNotificatiesApiPlugin(): NotificatiesApiPlugin
+    fun getKanaalFilters(): List<Abonnement.Kanaal>
+}
