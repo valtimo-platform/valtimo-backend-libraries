@@ -54,11 +54,6 @@ internal class ZakenApiClientIT @Autowired constructor(
 
     @BeforeEach
     internal fun setUp() {
-//        server = MockWebServer()
-//        setupMockZakenApiServer()
-//        server.start(port = 56273)
-//        server.shutdown()
-
         server = MockWebServer()
         setupMockZakenApiServer()
         server.start(port = 56273)
