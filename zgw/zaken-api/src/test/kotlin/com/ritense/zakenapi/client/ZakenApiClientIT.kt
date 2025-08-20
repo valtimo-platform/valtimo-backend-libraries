@@ -74,11 +74,13 @@ internal class ZakenApiClientIT @Autowired constructor(
     fun `should allow zaak-document link`() {
         val permissions = listOf(
             Permission(
-                UUID.randomUUID(),
-                ResourcePermission::class.java,
-                ResourcePermissionActionProvider.CREATE,
-                ConditionContainer(),
-                roleTest
+                id = UUID.randomUUID(),
+                resourceType = ResourcePermission::class.java,
+                action = ResourcePermissionActionProvider.CREATE,
+                conditionContainer = ConditionContainer(),
+                role = roleTest,
+                contextResourceType = null,
+                contextConditionContainer = null
             )
         )
         permissionRepository.saveAllAndFlush(permissions)
@@ -117,11 +119,13 @@ internal class ZakenApiClientIT @Autowired constructor(
     fun `should allow zaak-document list`() {
         val permissions = listOf(
             Permission(
-                UUID.randomUUID(),
-                ResourcePermission::class.java,
-                ResourcePermissionActionProvider.VIEW_LIST,
-                ConditionContainer(),
-                roleTest
+                id = UUID.randomUUID(),
+                resourceType = ResourcePermission::class.java,
+                action = ResourcePermissionActionProvider.VIEW_LIST,
+                conditionContainer = ConditionContainer(),
+                role = roleTest,
+                contextResourceType = null,
+                contextConditionContainer = null
             )
         )
         permissionRepository.saveAllAndFlush(permissions)
