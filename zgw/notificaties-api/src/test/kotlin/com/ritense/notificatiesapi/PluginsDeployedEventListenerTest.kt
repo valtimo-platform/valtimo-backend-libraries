@@ -17,6 +17,9 @@
 package com.ritense.notificatiesapi
 
 import com.ritense.notificatiesapi.client.NotificatiesApiClient
+import com.ritense.notificatiesapi.domain.Abonnement
+import com.ritense.notificatiesapi.domain.NotificatiesApiAbonnementLink
+import com.ritense.notificatiesapi.domain.NotificatiesApiConfigurationId
 import com.ritense.notificatiesapi.exception.NotificatiesApiAbonnementException
 import com.ritense.notificatiesapi.repository.NotificatiesApiAbonnementLinkRepository
 import com.ritense.plugin.domain.PluginConfiguration
@@ -27,9 +30,11 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.context.ApplicationContext
 import java.net.URI
+import java.util.UUID
 
 class PluginsDeployedEventListenerTest {
     lateinit var client: NotificatiesApiClient
@@ -83,6 +88,55 @@ class PluginsDeployedEventListenerTest {
         assertThrows<NotificatiesApiAbonnementException> {
             pluginsDeployedEventListener.registerAbonnementenForNotificatiesApiPlugins()
         }
+    }
+
+
+    @Test
+    fun `should delete old abonnement that API does not have`() {
+        val listenerInstance: NotificatiesApiListener = mock()
+
+        val notificatiesApiPlugin: NotificatiesApiPlugin = mock()
+
+        val configurationId = NotificatiesApiConfigurationId.existingId(
+            UUID.fromString("123e4567-e89b-12d3-a456-426614174000")
+        )
+        val existingAbonnementLink = NotificatiesApiAbonnementLink(
+            configurationId,
+            "http://localhost:9999/nothing/123",
+            "test"
+        )
+
+        whenever(client.getAbonnementen(any(), any()))
+            .thenReturn(emptyList())
+        whenever(notificatiesApiPlugin.url)
+            .thenReturn(URI("http://localhost:9999/nothing"))
+        whenever(notificatiesApiPlugin.notificatiesApiConfigurationId)
+            .thenReturn(configurationId)
+        whenever(listenerInstance.getNotificatiesApiPlugin())
+            .thenReturn(notificatiesApiPlugin)
+        whenever(pluginService.createInstance(any<PluginConfiguration>()))
+            .thenReturn(listenerInstance)
+        whenever(pluginService.getPluginConfigurations(any()))
+            .thenReturn(listOf(mock()))
+        whenever(notificatiesApiAbonnementLinkRepository.findAll())
+            .thenReturn(listOf(existingAbonnementLink))
+        whenever(notificatiesApiPlugin.authenticationPluginConfiguration)
+            .thenReturn(mock())
+        whenever(notificatiesApiPlugin.callbackUrl)
+            .thenReturn(URI("http://localhost:9999/callback"))
+        whenever(client.createAbonnement(any(), any(), any<Abonnement>()))
+            .thenReturn(Abonnement(
+                "http://localhost:9999/nothing/456",
+                "http://localhost:9999/callback",
+                "test",
+                emptyList()
+            ))
+
+        pluginsDeployedEventListener.registerAbonnementenForNotificatiesApiPlugins()
+
+        verify(notificatiesApiAbonnementLinkRepository).delete(any())
+        verify(notificatiesApiAbonnementLinkRepository).save(any())
+        verify(client).createAbonnement(any(), any(), any<Abonnement>())
     }
 
 }
