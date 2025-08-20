@@ -37,6 +37,7 @@ data class PatchZaakRequest(
     val uiterlijkeEinddatumAfdoening: LocalDate? = null,
     val publicatiedatum: LocalDate? = null,
     val communicatiekanaal: URI? = null,
+    val communicatiekanaalNaam: String? = null,
     val productenOfDiensten: List<URI>? = null,
     val vertrouwelijkheidaanduiding: Vertrouwelijkheid? = null,
     val betalingsindicatie: Betalingsindicatie? = null,
@@ -52,4 +53,5 @@ data class PatchZaakRequest(
     val archiefstatus: Archiefstatus? = null,
     val archiefactiedatum: LocalDate? = null,
     val opdrachtgevendeOrganisatie: String? = null,
+    val startdatumBewaartermijn: LocalDate? = null,
 )

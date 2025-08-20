@@ -57,10 +57,6 @@ internal class ZakenApiClientIT @Autowired constructor(
         server = MockWebServer()
         setupMockZakenApiServer()
         server.start(port = 56273)
-        server.shutdown()
-        server = MockWebServer()
-        setupMockZakenApiServer()
-        server.start(port = 56273)
 
         zakenApiPlugin = pluginService.createInstance("3079d6fe-42e3-4f8f-a9db-52ce2507b7ee")
 
@@ -78,11 +74,13 @@ internal class ZakenApiClientIT @Autowired constructor(
     fun `should allow zaak-document link`() {
         val permissions = listOf(
             Permission(
-                UUID.randomUUID(),
-                ResourcePermission::class.java,
-                ResourcePermissionActionProvider.CREATE,
-                ConditionContainer(),
-                roleTest
+                id = UUID.randomUUID(),
+                resourceType = ResourcePermission::class.java,
+                action = ResourcePermissionActionProvider.CREATE,
+                conditionContainer = ConditionContainer(),
+                role = roleTest,
+                contextResourceType = null,
+                contextConditionContainer = null
             )
         )
         permissionRepository.saveAllAndFlush(permissions)
@@ -121,19 +119,21 @@ internal class ZakenApiClientIT @Autowired constructor(
     fun `should allow zaak-document list`() {
         val permissions = listOf(
             Permission(
-                UUID.randomUUID(),
-                ResourcePermission::class.java,
-                ResourcePermissionActionProvider.VIEW_LIST,
-                ConditionContainer(),
-                roleTest
+                id = UUID.randomUUID(),
+                resourceType = ResourcePermission::class.java,
+                action = ResourcePermissionActionProvider.VIEW_LIST,
+                conditionContainer = ConditionContainer(),
+                role = roleTest,
+                contextResourceType = null,
+                contextConditionContainer = null
             )
         )
         permissionRepository.saveAllAndFlush(permissions)
 
         val results = zakenApiClient.getZaakInformatieObjecten(
-            zakenApiPlugin.authenticationPluginConfiguration,
-            zakenApiPlugin.url,
-            zaakUrl = URI("https://localhost:56273/zaken/1234"),
+            authentication = zakenApiPlugin.authenticationPluginConfiguration,
+            baseUrl = zakenApiPlugin.url,
+            zaakUrl = ZAAK_URL
         )
 
         assertEquals(1, results.count())
@@ -143,9 +143,9 @@ internal class ZakenApiClientIT @Autowired constructor(
     @WithMockUser(authorities = ["ROLE_TEST"])
     fun `should respond with empty zaak-document list when missing permission`() {
         val results = zakenApiClient.getZaakInformatieObjecten(
-            zakenApiPlugin.authenticationPluginConfiguration,
-            zakenApiPlugin.url,
-            zaakUrl = URI("https://localhost:56273/zaken/1234"),
+            authentication = zakenApiPlugin.authenticationPluginConfiguration,
+            baseUrl = zakenApiPlugin.url,
+            zaakUrl = ZAAK_URL
         )
 
         assertEquals(0, results.count())
@@ -155,8 +155,8 @@ internal class ZakenApiClientIT @Autowired constructor(
         val dispatcher = object : Dispatcher() {
             override fun dispatch(request: RecordedRequest): MockResponse {
                 return when (request.method + " " + request.path?.substringBefore('?')) {
-                    "POST /zaken/zaakinformatieobjecten" -> handleLinkDocumentRequest()
-                    "GET /zaken/zaakinformatieobjecten" -> handleListDocumentRequest()
+                    "POST $ZAKEN_API_PATH/zaakinformatieobjecten" -> handleLinkDocumentRequest()
+                    "GET $ZAKEN_API_PATH/zaakinformatieobjecten" -> handleListDocumentRequest()
                     else -> MockResponse().setResponseCode(404)
                 }
             }
@@ -196,5 +196,13 @@ internal class ZakenApiClientIT @Autowired constructor(
             ]
         """.trimIndent()
         return mockResponse(body)
+    }
+
+    companion object {
+        private const val ZAAK_ID = "57f66ff6-db7f-43bc-84ef-6847640d3609"
+        private const val ZAKEN_API_PATH = "/zaken/api/v1"
+        private const val ZAKEN_API_URL = "http://localhost:56273$ZAKEN_API_PATH"
+
+        private val ZAAK_URL = URI("${ZAKEN_API_URL}/zaken/$ZAAK_ID")
     }
 }
