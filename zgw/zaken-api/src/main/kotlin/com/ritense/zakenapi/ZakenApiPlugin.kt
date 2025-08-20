@@ -58,9 +58,12 @@ import com.ritense.zakenapi.domain.ZaakStatus
 import com.ritense.zakenapi.domain.ZaakopschortingRequest
 import com.ritense.zakenapi.domain.rol.BetrokkeneType
 import com.ritense.zakenapi.domain.rol.Rol
+import com.ritense.zakenapi.domain.rol.RolMedewerker
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
+import com.ritense.zakenapi.domain.rol.RolOrganisatorischeEenheid
 import com.ritense.zakenapi.domain.rol.RolTypeGeneriekeBeschrijving
+import com.ritense.zakenapi.domain.rol.RolVestiging
 import com.ritense.zakenapi.repository.ZaakHersteltermijnRepository
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zgw.LoggingConstants
@@ -376,7 +379,10 @@ class ZakenApiPlugin(
         withLoggingContext(
             CATALOGI_API.ROLTYPE to roltypeUrl,
         ) {
-            logger.debug { "Creating natuurlijk persoon zaakrol with roltype URL '$roltypeUrl' for document with id '${execution.businessKey}'" }
+            logger.debug {
+                "Creating natuurlijk persoon zaakrol with roltype URL '$roltypeUrl' for " +
+                    "document with id '${execution.businessKey}'"
+            }
 
             val documentId = UUID.fromString(execution.businessKey)
             val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
@@ -399,7 +405,10 @@ class ZakenApiPlugin(
                 )
             )
 
-            logger.info { "Natuurlijk persoon zaakrol with URL '${rol.url}' created for document with id '$documentId' and zaak with URL '$zaakUrl'." }
+            logger.info {
+                "Natuurlijk persoon zaakrol with URL '${rol.url}' created for " +
+                    "document with id '$documentId' and zaak with URL '$zaakUrl'."
+            }
         }
     }
 
@@ -415,13 +424,18 @@ class ZakenApiPlugin(
         @PluginActionProperty rolToelichting: String,
         @PluginActionProperty innNnpId: String?,
         @PluginActionProperty annIdentificatie: String?,
+        @PluginActionProperty kvkNummer: String? = null,
+        @PluginActionProperty vestigingsNummer: String? = null,
         @PluginActionProperty beginGeldigheid: LocalDate? = null,
         @PluginActionProperty eindeGeldigheid: LocalDate? = null,
     ) {
         withLoggingContext(
             CATALOGI_API.ROLTYPE to roltypeUrl,
         ) {
-            logger.debug { "Creating niet-natuurlijk persoon zaakrol with roltype URL '$roltypeUrl' for document with id '${execution.businessKey}'" }
+            logger.debug {
+                "Creating niet-natuurlijk persoon zaakrol with roltype URL '$roltypeUrl' for " +
+                    "document with id '${execution.businessKey}'"
+            }
 
             val documentId = UUID.fromString(execution.businessKey)
             val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
@@ -436,14 +450,185 @@ class ZakenApiPlugin(
                     betrokkeneType = BetrokkeneType.NIET_NATUURLIJK_PERSOON,
                     betrokkeneIdentificatie = RolNietNatuurlijkPersoon(
                         annIdentificatie = annIdentificatie,
-                        innNnpId = innNnpId
+                        innNnpId = innNnpId,
+                        kvkNummer = kvkNummer,
+                        vestigingsNummer = vestigingsNummer
                     ),
                     beginGeldigheid = beginGeldigheid,
                     eindeGeldigheid = eindeGeldigheid
                 )
             )
 
-            logger.info { "Niet-natuurlijk persoon zaakrol with URL '${rol.url}' created for document with id '$documentId' and zaak with URL '$zaakUrl'." }
+            logger.info {
+                "Niet-natuurlijk persoon zaakrol with URL '${rol.url}' created for " +
+                    "document with id '$documentId' and " +
+                    "zaak with URL '$zaakUrl'."
+            }
+        }
+    }
+
+    @PluginAction(
+        key = "create-medewerker-zaak-rol",
+        title = "Create medewerker zaakrol",
+        description = "Adds a zaakrol of type medewerker to the zaak in the Zaken API",
+        activityTypes = [SERVICE_TASK_START]
+    )
+    fun createMedewerkerZaakRol(
+        execution: DelegateExecution,
+        @PluginActionProperty roltypeUrl: String,
+        @PluginActionProperty rolToelichting: String,
+        @PluginActionProperty identificatie: String,
+        @PluginActionProperty achternaam: String,
+        @PluginActionProperty voorletters: String,
+        @PluginActionProperty voorvoegselAchternaam: String,
+        @PluginActionProperty afwijkendeNaamBetrokkene: String? = null,
+        @PluginActionProperty indicatieMachtiging: String? = null,
+        @PluginActionProperty beginGeldigheid: LocalDate? = null,
+        @PluginActionProperty eindeGeldigheid: LocalDate? = null
+    ) {
+        withLoggingContext(
+            CATALOGI_API.ROLTYPE to roltypeUrl,
+        ) {
+            logger.debug {
+                "Creating medewerker zaakrol with roltype URL '$roltypeUrl' for " +
+                    "document with id '${execution.businessKey}'"
+            }
+
+            val documentId = UUID.fromString(execution.businessKey)
+            val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+
+            val rol = client.createZaakRol(
+                authenticationPluginConfiguration,
+                url,
+                Rol(
+                    zaak = zaakUrl,
+                    roltype = URI(roltypeUrl),
+                    roltoelichting = rolToelichting,
+                    betrokkeneType = BetrokkeneType.MEDEWERKER,
+                    betrokkeneIdentificatie = RolMedewerker(
+                        identificatie = identificatie,
+                        achternaam = achternaam,
+                        voorletters = voorletters,
+                        voorvoegselAchternaam = voorvoegselAchternaam
+                    ),
+                    afwijkendeNaamBetrokkene = afwijkendeNaamBetrokkene,
+                    indicatieMachtigingString = indicatieMachtiging,
+                    beginGeldigheid = beginGeldigheid,
+                    eindeGeldigheid = eindeGeldigheid
+                )
+            )
+
+            logger.info {
+                "Medewerker zaakrol with URL '${rol.url}' created for " +
+                    "document with id '$documentId' and " +
+                    "zaak with URL '$zaakUrl'."
+            }
+        }
+    }
+
+    @PluginAction(
+        key = "create-organisatorische-eenheid-zaak-rol",
+        title = "Create organisatorische eenheid zaakrol",
+        description = "Adds a zaakrol of type organisatorische eenheid to the zaak in the Zaken API",
+        activityTypes = [SERVICE_TASK_START]
+    )
+    fun createOrganisatorischeEenheidZaakRol(
+        execution: DelegateExecution,
+        @PluginActionProperty roltypeUrl: String,
+        @PluginActionProperty rolToelichting: String,
+        @PluginActionProperty identificatie: String,
+        @PluginActionProperty naam: String,
+        @PluginActionProperty isGehuisvestIn: String,
+        @PluginActionProperty afwijkendeNaamBetrokkene: String? = null,
+        @PluginActionProperty indicatieMachtiging: String? = null,
+        @PluginActionProperty beginGeldigheid: LocalDate? = null,
+        @PluginActionProperty eindeGeldigheid: LocalDate? = null
+    ) {
+        withLoggingContext(
+            CATALOGI_API.ROLTYPE to roltypeUrl,
+        ) {
+            logger.debug {
+                "Creating organisatorische eenheid zaakrol with roltype URL '$roltypeUrl' for " +
+                    "document with id '${execution.businessKey}'"
+            }
+
+            val documentId = UUID.fromString(execution.businessKey)
+            val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+
+            val rol = client.createZaakRol(
+                authenticationPluginConfiguration,
+                url,
+                Rol(
+                    zaak = zaakUrl,
+                    roltype = URI(roltypeUrl),
+                    roltoelichting = rolToelichting,
+                    betrokkeneType = BetrokkeneType.ORGANISATORISCHE_EENHEID,
+                    betrokkeneIdentificatie = RolOrganisatorischeEenheid(
+                        identificatie = identificatie,
+                        naam = naam,
+                        isGehuisvestIn = isGehuisvestIn
+                    ),
+                    afwijkendeNaamBetrokkene = afwijkendeNaamBetrokkene,
+                    indicatieMachtigingString = indicatieMachtiging,
+                    beginGeldigheid = beginGeldigheid,
+                    eindeGeldigheid = eindeGeldigheid
+                )
+            )
+
+            logger.info {
+                "Organisatorische eenheid zaakrol with URL '${rol.url}' created for " +
+                    "document with id '$documentId' and " +
+                    "zaak with URL '$zaakUrl'."
+            }
+        }
+    }
+
+    @PluginAction(
+        key = "create-vestiging-zaak-rol",
+        title = "Create vestiging zaakrol",
+        description = "Adds a zaakrol of type vestiging to the zaak in the Zaken API",
+        activityTypes = [SERVICE_TASK_START]
+    )
+    fun createVestigingZaakRol(
+        execution: DelegateExecution,
+        @PluginActionProperty roltypeUrl: String,
+        @PluginActionProperty rolToelichting: String,
+        @PluginActionProperty kvkNummer: String,
+        @PluginActionProperty vestigingsNummer: String,
+        @PluginActionProperty beginGeldigheid: LocalDate? = null,
+        @PluginActionProperty eindeGeldigheid: LocalDate? = null
+    ) {
+        withLoggingContext(
+            CATALOGI_API.ROLTYPE to roltypeUrl,
+        ) {
+            logger.debug { "Creating vestiging zaakrol with roltype URL '$roltypeUrl' for " +
+                "document with id '${execution.businessKey}'" }
+
+            val documentId = UUID.fromString(execution.businessKey)
+            val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+
+            val rol = client.createZaakRol(
+                authenticationPluginConfiguration,
+                url,
+                Rol(
+                    zaak = zaakUrl,
+                    roltype = URI(roltypeUrl),
+                    roltoelichting = rolToelichting,
+                    betrokkeneType = BetrokkeneType.VESTIGING,
+                    betrokkeneIdentificatie = RolVestiging(
+                        kvkNummer = kvkNummer,
+                        vestigingsNummer = vestigingsNummer
+                    ),
+                    beginGeldigheid = beginGeldigheid,
+                    eindeGeldigheid = eindeGeldigheid
+                )
+            )
+
+            logger.info {
+                "Vestiging zaakrol with URL '${rol.url}' created for " +
+                    "document with id '$documentId' and " +
+                    "zaak with URL '$zaakUrl'."
+            }
         }
     }
 
