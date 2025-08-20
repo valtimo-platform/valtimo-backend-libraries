@@ -103,7 +103,6 @@ class DocumentenApiAutoConfiguration {
             objectMapper,
             documentDeleteHandlers,
             documentenApiVersionService,
-            processDocumentAssociationService,
             runtimeService
         )
     }

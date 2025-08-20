@@ -65,7 +65,6 @@ internal class DocumentenApiPluginTest {
 
     lateinit var pluginService: PluginService
     lateinit var client: DocumentenApiClient
-    lateinit var processDocumentAssociationService: ProcessDocumentAssociationService
     lateinit var runtimeService: OperatonRuntimeService
 
 
@@ -87,7 +86,6 @@ internal class DocumentenApiPluginTest {
         whenever(pluginService.findPluginConfiguration(any(), any())).thenReturn(pluginConfiguration)
 
         client = mock()
-        processDocumentAssociationService = mock()
         runtimeService = mock()
     }
 
@@ -127,7 +125,6 @@ internal class DocumentenApiPluginTest {
             mutableListOf(),
             documentenApiVersionService,
             pluginService,
-            processDocumentAssociationService,
             runtimeService,
         )
         plugin.url = URI("http://some-url")
@@ -250,7 +247,6 @@ internal class DocumentenApiPluginTest {
             mutableListOf(),
             documentenApiVersionService,
             pluginService,
-            processDocumentAssociationService,
             runtimeService,
         )
         plugin.url = URI("http://some-url")
@@ -325,7 +321,6 @@ internal class DocumentenApiPluginTest {
             listOf(),
             documentenApiVersionService,
             pluginService,
-            processDocumentAssociationService,
             runtimeService,
         )
         plugin.url = URI("http://some-url")
@@ -382,7 +377,6 @@ internal class DocumentenApiPluginTest {
             listOf(),
             documentenApiVersionService,
             pluginService,
-            processDocumentAssociationService,
             runtimeService,
         )
         plugin.url = URI("http://some-url")
@@ -415,7 +409,6 @@ internal class DocumentenApiPluginTest {
             listOf(),
             documentenApiVersionService,
             pluginService,
-            processDocumentAssociationService,
             runtimeService,
         )
         plugin.url = URI("http://some-url")

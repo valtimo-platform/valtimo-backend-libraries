@@ -93,7 +93,6 @@ internal class DocumentenApiPluginFactoryTest {
             objectMapper,
             documentDeleteHandlers,
             documentenApiVersionService,
-            processDocumentAssociationService,
             runtimeService,
         )
 

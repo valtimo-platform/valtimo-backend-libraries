@@ -35,7 +35,6 @@ class DocumentenApiPluginFactory(
     private val objectMapper: ObjectMapper,
     private val documentDeleteHandlers: List<DocumentDeleteHandler>,
     private val documentenApiVersionService: DocumentenApiVersionService,
-    private val processDocumentAssociationService: ProcessDocumentAssociationService,
     private val runtimeService: OperatonRuntimeService,
 ) : PluginFactory<DocumentenApiPlugin>(pluginService) {
 
@@ -48,7 +47,6 @@ class DocumentenApiPluginFactory(
             documentDeleteHandlers,
             documentenApiVersionService,
             pluginService,
-            processDocumentAssociationService,
             runtimeService,
         )
     }

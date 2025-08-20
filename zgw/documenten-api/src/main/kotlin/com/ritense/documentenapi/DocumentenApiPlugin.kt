@@ -42,7 +42,6 @@ import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.EventType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginService
-import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
@@ -76,7 +75,6 @@ class DocumentenApiPlugin(
     private val documentDeleteHandlers: List<DocumentDeleteHandler>,
     private val documentenApiVersionService: DocumentenApiVersionService,
     private val pluginService: PluginService,
-    private val processDocumentAssociationService: ProcessDocumentAssociationService,
     private val runtimeService: OperatonRuntimeService,
 ) {
     @Url
@@ -155,7 +153,8 @@ class DocumentenApiPlugin(
         }
         val contentAsInputStream = storageService.getResourceContentAsInputStream(resourceId)
         val metadata = storageService.getResourceMetadata(resourceId)
-        val relatedDocumentId = metadata[StorageMetadataKeys.RELATED_DOCUMENT_ID.key] as? String
+        val processInstanceId = metadata[StorageMetadataKeys.PROCESS_INSTANCE_ID.key] as? String
+        val documentUrlProcessVariable = metadata[StorageMetadataKeys.DOCUMENT_URL_PROCESS_VARIABLE.key] as? String
         val result = storeDocument(
             execution = execution,
             metadata = metadata,
@@ -164,8 +163,7 @@ class DocumentenApiPlugin(
             storedDocumentKey = DOCUMENT_URL_PROCESS_VAR,
         )
 
-        if (!relatedDocumentId.isNullOrBlank()) setDocumentUrlProcessVariableForRelatedProcess(relatedDocumentId, result.url)
-
+        setDocumentUrlProcessVariableForRelatedProcess(processInstanceId, result.url, documentUrlProcessVariable)
         storageService.saveMetadataValue(resourceId, StorageMetadataKeys.DOCUMENT_URL, result.url)
     }
 
@@ -187,14 +185,15 @@ class DocumentenApiPlugin(
         }
         val contentAsInputStream = storageService.getResourceContentAsInputStream(resourceId)
         val metadata = storageService.getResourceMetadata(resourceId)
-        val relatedDocumentId = metadata[StorageMetadataKeys.RELATED_DOCUMENT_ID.key] as? String
+        val processInstanceId = metadata[StorageMetadataKeys.PROCESS_INSTANCE_ID.key] as? String
+        val documentUrlProcessVariable = metadata[StorageMetadataKeys.DOCUMENT_URL_PROCESS_VARIABLE.key] as? String
         val result = storeDocumentInParts(
             execution = execution,
             metadata = metadata,
             inhoudAsInputStream = contentAsInputStream,
         )
 
-        if (!relatedDocumentId.isNullOrBlank()) setDocumentUrlProcessVariableForRelatedProcess(relatedDocumentId, result.url)
+        if (!processInstanceId.isNullOrBlank()) setDocumentUrlProcessVariableForRelatedProcess(processInstanceId, result.url, documentUrlProcessVariable)
 
         storageService.saveMetadataValue(resourceId, StorageMetadataKeys.DOCUMENT_URL, result.url)
     }
@@ -440,13 +439,13 @@ class DocumentenApiPlugin(
     }
 
     private fun setDocumentUrlProcessVariableForRelatedProcess(
-        relatedDocumentId: String,
-        documentUrl: String
+        processInstanceId: String?,
+        documentUrl: String,
+        documentUrlProcessVariable: String?,
     ) {
-        val relatedProcessDocument = processDocumentAssociationService.findProcessDocumentInstances(JsonSchemaDocumentId.existingId(relatedDocumentId)).firstOrNull() ?: return;
-        val relatedProcessInstanceId = relatedProcessDocument.processDocumentInstanceId().processInstanceId().toString()
-
-        runtimeService.setVariable(relatedProcessInstanceId, DOCUMENT_URL_PROCESS_VAR, documentUrl)
+        if (processInstanceId.isNullOrBlank()) return
+        val variableName = documentUrlProcessVariable?.takeIf { it.isNotBlank() } ?: DOCUMENT_URL_PROCESS_VAR
+        runtimeService.setVariable(processInstanceId, variableName, documentUrl)
     }
 
     companion object {
