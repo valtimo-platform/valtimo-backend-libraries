@@ -22,7 +22,10 @@
 
     <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
     <property name="uuidType" value="uuid" dbms="postgresql"/>
+    <property name="jsonType" value="JSON" dbms="mysql"/>
+    <property name="jsonType" value="JSONB" dbms="postgresql"/>
 
     <include file="changelog/20230417-add-custom-process-link.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20250812-subtitles-to-process-link.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
