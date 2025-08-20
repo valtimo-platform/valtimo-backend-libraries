@@ -1,0 +1,23 @@
+[
+    {
+        "activityId": "start-event",
+        "activityType": "bpmn:StartEvent:start",
+        "processLinkType": "form",
+        "formDefinitionName": "start-form-patch-zaak"
+    },
+    {
+        "activityId": "patch-zaak-action",
+        "activityType": "bpmn:ServiceTask:start",
+        "pluginConfigurationId": "3079d6fe-42e3-4f8f-a9db-52ce2507b7ee",
+        "pluginActionDefinitionKey": "patch-zaak",
+        "actionProperties": {
+            "description": "pv:description",
+            "explanation": "pv:explanation",
+            "plannedEndDate": "pv:plannedEndDate",
+            "paymentIndication": "pv:paymentIndication",
+            "caseGeometryType": "pv:caseGeometryType",
+            "caseGeometryCoordinates": "pv:caseGeometryCoordinates"
+        },
+        "processLinkType": "plugin"
+    }
+]

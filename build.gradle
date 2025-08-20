@@ -177,11 +177,12 @@ subprojects { subproject ->
         apply plugin: "kotlin"
         apply plugin: "kotlin-spring"
         apply plugin: "kotlin-jpa"
-        apply from: "$rootProject.projectDir/gradle/test.gradle"
         apply plugin: "com.avast.gradle.docker-compose"
         apply plugin: "org.jetbrains.dokka-javadoc"
         apply plugin: "maven-publish"
         apply plugin: "org.owasp.dependencycheck"
+
+        apply from: "$rootProject.projectDir/gradle/test.gradle"
 
         tasks.register("allDeps", DependencyReportTask) {}
         tasks.register("allDepInsight", DependencyInsightReportTask) {
