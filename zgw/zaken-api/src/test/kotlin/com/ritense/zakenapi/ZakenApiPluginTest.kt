@@ -43,8 +43,11 @@ import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zakenapi.domain.ZaakeigenschapResponse
 import com.ritense.zakenapi.domain.ZaakopschortingRequest
 import com.ritense.zakenapi.domain.rol.Rol
+import com.ritense.zakenapi.domain.rol.RolMedewerker
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
+import com.ritense.zakenapi.domain.rol.RolOrganisatorischeEenheid
+import com.ritense.zakenapi.domain.rol.RolVestiging
 import com.ritense.zakenapi.repository.ZaakHersteltermijnRepository
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zgw.Page
@@ -329,7 +332,9 @@ internal class ZakenApiPluginTest {
             roltypeUrl = roltypeUrl(),
             rolToelichting = "rolToelichting",
             innNnpId = "innNnpId",
-            annIdentificatie = "annIdentificatie"
+            annIdentificatie = "annIdentificatie",
+            kvkNummer = "kvkNummer",
+            vestigingsNummer = "vestigingsNummer"
         )
 
         val rolCaptor = argumentCaptor<Rol>()
@@ -344,6 +349,116 @@ internal class ZakenApiPluginTest {
         val betrokkeneIdentificatie = rol.betrokkeneIdentificatie as RolNietNatuurlijkPersoon
         assertThat(betrokkeneIdentificatie.annIdentificatie).isEqualTo("annIdentificatie")
         assertThat(betrokkeneIdentificatie.innNnpId).isEqualTo("innNnpId")
+        assertThat(betrokkeneIdentificatie.kvkNummer).isNotNull
+        assertThat(betrokkeneIdentificatie.kvkNummer).isEqualTo("kvkNummer")
+        assertThat(betrokkeneIdentificatie.vestigingsNummer).isNotNull
+        assertThat(betrokkeneIdentificatie.vestigingsNummer).isEqualTo("vestigingsNummer")
+    }
+
+    @Test
+    fun `should create zaakrol for medewerker`() {
+        val zakenApiClient: ZakenApiClient = mock()
+        val executionMock = mock<DelegateExecution>()
+
+        val plugin = zakenApiPluginAndMocksForZaakRol(
+            zakenApiClient = zakenApiClient,
+            executionMock = executionMock
+        )
+
+        plugin.createMedewerkerZaakRol(
+            execution = executionMock,
+            roltypeUrl = roltypeUrl(),
+            rolToelichting = "rolToelichting",
+            identificatie = "identificatie",
+            achternaam = "achternaam",
+            voorletters = "voorletters",
+            voorvoegselAchternaam = "voorvoegselAchternaam",
+            indicatieMachtiging = "gemachtigde"
+        )
+
+        val rolCaptor = argumentCaptor<Rol>()
+        verify(zakenApiClient).createZaakRol(any(), any(), rolCaptor.capture())
+
+        val rol = rolCaptor.firstValue
+
+        assertThat(rol.zaak).isEqualTo(zaakUri())
+        assertThat(rol.roltype).isEqualTo(roltypeUri())
+        assertThat(rol.roltoelichting).isEqualTo("rolToelichting")
+        assertThat(rol.indicatieMachtiging).isNotNull
+        assertThat(rol.indicatieMachtiging!!.key).isEqualTo("gemachtigde")
+
+        val betrokkeneIdentificatie = rol.betrokkeneIdentificatie as RolMedewerker
+        assertThat(betrokkeneIdentificatie.identificatie).isEqualTo("identificatie")
+        assertThat(betrokkeneIdentificatie.achternaam).isEqualTo("achternaam")
+        assertThat(betrokkeneIdentificatie.voorletters).isEqualTo("voorletters")
+        assertThat(betrokkeneIdentificatie.voorvoegselAchternaam).isEqualTo("voorvoegselAchternaam")
+    }
+
+    @Test
+    fun `should create zaakrol for organisatorische eenheid`() {
+        val zakenApiClient: ZakenApiClient = mock()
+        val executionMock = mock<DelegateExecution>()
+
+        val plugin = zakenApiPluginAndMocksForZaakRol(
+            zakenApiClient = zakenApiClient,
+            executionMock = executionMock
+        )
+
+        plugin.createOrganisatorischeEenheidZaakRol(
+            execution = executionMock,
+            roltypeUrl = roltypeUrl(),
+            rolToelichting = "rolToelichting",
+            identificatie = "identificatie",
+            naam = "naam",
+            isGehuisvestIn = "isGehuisvestIn",
+            indicatieMachtiging = "gemachtigde"
+        )
+
+        val rolCaptor = argumentCaptor<Rol>()
+        verify(zakenApiClient).createZaakRol(any(), any(), rolCaptor.capture())
+
+        val rol = rolCaptor.firstValue
+        assertThat(rol.zaak).isEqualTo(zaakUri())
+        assertThat(rol.roltype).isEqualTo(roltypeUri())
+        assertThat(rol.roltoelichting).isEqualTo("rolToelichting")
+        assertThat(rol.indicatieMachtiging).isNotNull
+        assertThat(rol.indicatieMachtiging!!.key).isEqualTo("gemachtigde")
+
+        val betrokkeneIdentificatie = rol.betrokkeneIdentificatie as RolOrganisatorischeEenheid
+        assertThat(betrokkeneIdentificatie.identificatie).isEqualTo("identificatie")
+        assertThat(betrokkeneIdentificatie.naam).isEqualTo("naam")
+        assertThat(betrokkeneIdentificatie.isGehuisvestIn).isEqualTo("isGehuisvestIn")
+    }
+
+    @Test
+    fun `should create zaakrol for vestiging`() {
+        val zakenApiClient: ZakenApiClient = mock()
+        val executionMock = mock<DelegateExecution>()
+
+        val plugin = zakenApiPluginAndMocksForZaakRol(
+            zakenApiClient = zakenApiClient,
+            executionMock = executionMock
+        )
+
+        plugin.createVestigingZaakRol(
+            execution = executionMock,
+            roltypeUrl = roltypeUrl(),
+            rolToelichting = "rolToelichting",
+            kvkNummer = "kvkNummer",
+            vestigingsNummer = "vestigingsNummer",
+        )
+
+        val rolCaptor = argumentCaptor<Rol>()
+        verify(zakenApiClient).createZaakRol(any(), any(), rolCaptor.capture())
+
+        val rol = rolCaptor.firstValue
+        assertThat(rol.zaak).isEqualTo(zaakUri())
+        assertThat(rol.roltype).isEqualTo(roltypeUri())
+        assertThat(rol.roltoelichting).isEqualTo("rolToelichting")
+
+        val betrokkeneIdentificatie = rol.betrokkeneIdentificatie as RolVestiging
+        assertThat(betrokkeneIdentificatie.kvkNummer).isEqualTo("kvkNummer")
+        assertThat(betrokkeneIdentificatie.vestigingsNummer).isEqualTo("vestigingsNummer")
     }
 
     private fun zakenApiPluginAndMocksForZaakRol(
@@ -1043,5 +1158,4 @@ internal class ZakenApiPluginTest {
     private fun objectUri() = URI(objectUrl())
 
     private fun documentUrl() = "https://document.url"
-    private fun documentURI() = URI(documentUrl())
 }
