@@ -1100,9 +1100,8 @@ internal class ZakenApiPluginTest {
         verify(zakenApiClient).createZaakObject(any(), any(), captor.capture())
 
         val request = captor.firstValue
-        assertEquals("https://zaak.url", request.zaakUrl.toString())
-        assertEquals("https://object.url", request.objectUrl.toString()
-        )
+        assertEquals(zaakUrl(), request.zaakUrl.toString())
+        assertEquals(objectUrl(), request.objectUrl.toString())
     }
 
     private fun zakenApiPlugin(
@@ -1129,7 +1128,7 @@ internal class ZakenApiPluginTest {
             documentService,
             processDocumentAssociationService
         ).apply {
-            this.url = URI(url)
+            this.url = url
             this.authenticationPluginConfiguration = authenticationMock
         }
     }
@@ -1159,5 +1158,4 @@ internal class ZakenApiPluginTest {
     private fun objectUri() = URI(objectUrl())
 
     private fun documentUrl() = "https://document.url"
-    private fun documentURI() = URI(documentUrl())
 }
