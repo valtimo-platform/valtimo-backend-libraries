@@ -51,7 +51,7 @@ data class Rol(
     val contactpersoonRol: ContactpersoonRol? = null,
     val statussen: List<URI>? = null,
 ) {
-    val indicatieMachtiging = indicatieMachtigingString?.let {indicatieMachtiging ->
-        IndicatieMachtiging.entries.find {it.key == indicatieMachtiging}
+    val indicatieMachtiging = indicatieMachtigingString?.let { indicatieMachtiging ->
+        IndicatieMachtiging.entries.find { it.key == indicatieMachtiging }
     }
 }

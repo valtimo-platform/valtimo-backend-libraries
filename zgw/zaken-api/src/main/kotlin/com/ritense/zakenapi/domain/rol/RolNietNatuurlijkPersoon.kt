@@ -28,10 +28,12 @@ data class RolNietNatuurlijkPersoon(
     private val innRechtsvormString: String? = null,
     val bezoekadres: String? = null,
     val subVerblijfBuitenland: SubVerblijfBuitenland? = null,
+    val kvkNummer: String? = null,
+    val vestigingsNummer: String? = null,
 ) : BetrokkeneIdentificatie() {
 
     val innRechtsvorm = innRechtsvormString?.let {
-        InnRechtsvormEnum.entries.find {it.value == innRechtsvormString}
+        InnRechtsvormEnum.entries.find { it.value == innRechtsvormString }
     }?.value
 
     init {

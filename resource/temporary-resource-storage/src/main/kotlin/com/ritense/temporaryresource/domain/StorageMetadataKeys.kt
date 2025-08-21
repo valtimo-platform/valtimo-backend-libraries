@@ -20,6 +20,8 @@ enum class StorageMetadataKeys(val key: String) {
     DOCUMENT_ID("documentId"),
     DOCUMENT_URL("documentUrl"),
     DOWNLOAD_URL("downloadUrl"),
+    PROCESS_INSTANCE_ID("processInstanceId"),
+    DOCUMENT_URL_PROCESS_VARIABLE("documentUrlProcessVariable");
 }
 
 fun getEnumFromKey(key: String): Result<StorageMetadataKeys> {

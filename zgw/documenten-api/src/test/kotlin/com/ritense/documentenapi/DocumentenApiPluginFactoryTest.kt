@@ -25,8 +25,10 @@ import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.service.PluginService
+import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.json.MapperSingleton
+import com.ritense.valtimo.operaton.service.OperatonRuntimeService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -47,6 +49,8 @@ internal class DocumentenApiPluginFactoryTest {
         val objectMapper = MapperSingleton.get()
         val documentDeleteHandlers: List<DocumentDeleteHandler> = mock()
         val documentenApiVersionService: DocumentenApiVersionService = mock()
+        val processDocumentAssociationService: ProcessDocumentAssociationService = mock ()
+        val runtimeService: OperatonRuntimeService = mock()
         whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(authentication)
         whenever(pluginService.getObjectMapper()).thenReturn(MapperSingleton.get())
 
@@ -89,6 +93,7 @@ internal class DocumentenApiPluginFactoryTest {
             objectMapper,
             documentDeleteHandlers,
             documentenApiVersionService,
+            runtimeService,
         )
 
         val plugin = factory.create(configuration)
