@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi.domain
+package com.ritense.case_.widget.displayproperties
 
-import java.net.URI
+import com.fasterxml.jackson.annotation.JsonTypeName
 
-data class RelevanteZaak(
-    val url: URI,
-    val aardRelatie: AardRelatie
-)
+@JsonTypeName("link")
+data class LinkFieldDisplayProperties(
+    val linkText: String? = null,
+    override val hideWhenEmpty: Boolean? = false
+) : FieldDisplayProperties
