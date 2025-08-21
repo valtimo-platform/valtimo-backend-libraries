@@ -21,6 +21,7 @@ import org.operaton.bpm.engine.impl.cfg.AbstractProcessEnginePlugin
 import org.operaton.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl
 import org.operaton.bpm.engine.spring.SpringExpressionManager
 import org.springframework.context.ApplicationContext
+import javax.script.ScriptEngineManager
 
 class OperatonWhitelistedBeansPlugin(
     private val processBeans: Map<String, Any>,
@@ -33,6 +34,10 @@ class OperatonWhitelistedBeansPlugin(
         val processBeansAny = processBeans as Map<Any, Any>
         processEngineConfiguration.beans = processBeansAny
         processEngineConfiguration.setExpressionManager(SpringExpressionManager(applicationContext, processBeansAny))
+
+        processEngineConfiguration.setConfigureScriptEngineHostAccess(false)
+        processEngineConfiguration.setEnableScriptEngineLoadExternalResources(false)
+        processEngineConfiguration.setScriptEngineResolver(AllowedClassesScriptEngineResolver(ScriptEngineManager()))
 
         logger.info("Successfully registered process beans.")
     }
