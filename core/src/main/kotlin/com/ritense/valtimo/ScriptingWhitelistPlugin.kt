@@ -21,20 +21,18 @@ import org.operaton.bpm.engine.impl.cfg.AbstractProcessEnginePlugin
 import org.operaton.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl
 import org.operaton.bpm.engine.spring.SpringExpressionManager
 import org.springframework.context.ApplicationContext
+import javax.script.ScriptEngineManager
 
-class OperatonWhitelistedBeansPlugin(
-    private val processBeans: Map<String, Any>,
-    private val applicationContext: ApplicationContext
+class ScriptingWhitelistPlugin(
+    private val allowedScriptingClasses: Set<String> = emptySet()
 ) : AbstractProcessEnginePlugin() {
     override fun preInit(processEngineConfiguration: ProcessEngineConfigurationImpl?) {
-        logger.info("Registering process beans...")
-        requireNotNull(processEngineConfiguration) { "No process engine configuration found. Failed to register process beans." }
+        logger.debug { "Registering allowed classes for scripting..." }
+        requireNotNull(processEngineConfiguration) { "No process engine configuration found. Failed to register allowed scripting classes." }
 
-        val processBeansAny = processBeans as Map<Any, Any>
-        processEngineConfiguration.beans = processBeansAny
-        processEngineConfiguration.setExpressionManager(SpringExpressionManager(applicationContext, processBeansAny))
-
-        logger.info("Successfully registered process beans.")
+        processEngineConfiguration.setConfigureScriptEngineHostAccess(false)
+        processEngineConfiguration.setEnableScriptEngineLoadExternalResources(false)
+        processEngineConfiguration.setScriptEngineResolver(AllowedClassesScriptEngineResolver(ScriptEngineManager(), allowedScriptingClasses))
     }
 
     companion object {

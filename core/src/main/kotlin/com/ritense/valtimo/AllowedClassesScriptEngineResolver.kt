@@ -23,14 +23,16 @@ import org.operaton.bpm.engine.impl.scripting.engine.DefaultScriptEngineResolver
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
 
-
 class AllowedClassesScriptEngineResolver(
-    scriptEngineManager: ScriptEngineManager
+    scriptEngineManager: ScriptEngineManager,
+    otherAllowedClasses: Set<String> = emptySet()
 ) : DefaultScriptEngineResolver(scriptEngineManager) {
+    val ALL_ALLOWED = ALLOWED + otherAllowedClasses
+
     override fun getJavaScriptScriptEngine(language: String?): ScriptEngine {
         val ctx = Context.newBuilder("js")
             .allowHostAccess(HostAccess.ALL)
-            .allowHostClassLookup(ALLOWED::contains)
+            .allowHostClassLookup(ALL_ALLOWED::contains)
 
         return GraalJSScriptEngine.create(null, ctx)
     }
@@ -41,7 +43,23 @@ class AllowedClassesScriptEngineResolver(
             "org.joda.time.DateTime",
             "java.util.Date",
             "java.lang.Math",
-            "org.operaton.spin.Spin"
+            "org.operaton.spin.Spin",
+            //java.time classes
+            "java.time.Clock",
+            "java.time.Duration",
+            "java.time.Instant",
+            "java.time.LocalDate",
+            "java.time.LocalDateTime",
+            "java.time.LocalTime",
+            "java.time.MonthDay",
+            "java.time.OffsetDateTime",
+            "java.time.OffsetTime",
+            "java.time.Period",
+            "java.time.Year",
+            "java.time.YearMonth",
+            "java.time.ZonedDateTime",
+            "java.time.ZoneId",
+            "java.time.ZoneOffset",
         )
     }
 }
