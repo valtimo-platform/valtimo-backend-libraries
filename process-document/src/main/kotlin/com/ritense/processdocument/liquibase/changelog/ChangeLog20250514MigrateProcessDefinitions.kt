@@ -1129,7 +1129,7 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         val id: String,
         val rev: Int,
         val category: String?,
-        val name: String,
+        val name: String?,
         val key: String,
         val version: Int,
         val deploymentId: String,
