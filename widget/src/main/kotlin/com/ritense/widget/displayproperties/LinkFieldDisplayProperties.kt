@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.case_.widget.displayproperties
+package com.ritense.widget.displayproperties
 
 import com.fasterxml.jackson.annotation.JsonTypeName
 
