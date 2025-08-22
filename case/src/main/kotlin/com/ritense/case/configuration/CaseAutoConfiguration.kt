@@ -57,6 +57,7 @@ import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentSearchService
 import com.ritense.document.service.DocumentService
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.exporter.ExportService
 import com.ritense.importer.ImportService
 import com.ritense.importer.ValtimoImportService
@@ -430,14 +431,16 @@ class CaseAutoConfiguration {
         documentSearchService: DocumentSearchService,
         valueResolverService: ValueResolverService,
         userManagementService: UserManagementService,
-        authorizationService: AuthorizationService
+        authorizationService: AuthorizationService,
+        jsonSchemaDocumentDefinitionService: JsonSchemaDocumentDefinitionService,
     ): CaseExporter {
         return CaseExporter(
             caseDefinitionListColumnRepository,
             documentSearchService,
             valueResolverService,
             userManagementService,
-            authorizationService
+            authorizationService,
+            jsonSchemaDocumentDefinitionService
         )
     }
 }

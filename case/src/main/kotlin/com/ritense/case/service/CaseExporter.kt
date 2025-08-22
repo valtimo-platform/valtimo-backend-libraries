@@ -21,12 +21,17 @@ import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.case.domain.CaseListColumn
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
+import com.ritense.case.service.exception.ExportLimitExceedsException
+import com.ritense.case.service.exception.NoExportPermissionException
+import com.ritense.case.service.exception.NoExportableColumnsException
+import com.ritense.case.service.exception.NoSearchResultsException
 import com.ritense.case.web.rest.dto.CaseListRowDto
 import com.ritense.document.domain.Document
-import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.search.SearchWithConfigRequest
 import com.ritense.document.service.DocumentSearchService
-import com.ritense.document.service.JsonSchemaDocumentActionProvider.EXPORT_LIST
+import com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.Companion.EXPORT
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valueresolver.ValueResolverService
@@ -51,7 +56,8 @@ class CaseExporter(
     private val documentSearchService: DocumentSearchService,
     private val valueResolverService: ValueResolverService,
     private val userManagementService: UserManagementService,
-    private val authorizationService: AuthorizationService
+    private val authorizationService: AuthorizationService,
+    private val jsonSchemaDocumentDefinitionService: JsonSchemaDocumentDefinitionService
 ) {
     fun exportCases(
         caseDefinitionKey: String,
@@ -94,7 +100,9 @@ class CaseExporter(
         searchRequest: SearchWithConfigRequest,
         pageable: Pageable
     ): List<CaseListRowDto> {
-        val exportableColumns = getExportableColumns(caseDefinitionKey)
+        val userLabel = currentUserInfo()
+
+        val exportableColumns = getExportableColumns(caseDefinitionKey, userLabel)
 
         val newPageable = mutatePageable(exportableColumns, pageable)
 
@@ -104,32 +112,29 @@ class CaseExporter(
             newPageable
         )
 
-        checkResultsFound(searchResults, caseDefinitionKey)
-        requireExportLimit(searchResults, caseDefinitionKey)
-
-        val hasExportPermission = hasExportPermission(searchResults)
-
-        check(hasExportPermission) {"No permission found to export case '$caseDefinitionKey'."}
+        validateResultsFound(searchResults, caseDefinitionKey, userLabel)
+        validateExportLimit(searchResults, caseDefinitionKey)
+        validateExportPermission(caseDefinitionKey, userLabel)
 
         val exportableCases = searchResults.content.map { toCaseListRowDto(it, exportableColumns) }
 
-        logExport(caseDefinitionKey, exportableColumns, exportableCases.size.toLong())
+        logExport(caseDefinitionKey, exportableColumns, exportableCases.size.toLong(), userLabel)
 
         return exportableCases
     }
 
-    private fun getExportableColumns(caseDefinitionKey: String): List<CaseListColumn> {
+    private fun getExportableColumns(caseDefinitionKey: String, currentUser: String): List<CaseListColumn> {
         val exportableColumns = caseDefinitionListColumnRepository
             .findByIdCaseDefinitionKeyOrderByOrderAsc(caseDefinitionKey)
             .filter { it.exportable }
 
-        require(exportableColumns.isNotEmpty()) {
+        if (exportableColumns.isEmpty()) {
             logger.warn {
-                "User '${currentUserInfo()}' " +
-                    "attempted export for case '$caseDefinitionKey' but no exportable columns were found."
+                "User '$currentUser' attempted export for case '$caseDefinitionKey' but no exportable columns were found."
             }
-            "Export failed: no exportable columns found."
+            throw NoExportableColumnsException()
         }
+
         return exportableColumns
     }
 
@@ -148,26 +153,25 @@ class CaseExporter(
         return PageRequest.of(PAGE_FIRST, MAX_EXPORT, newSort)
     }
 
-    private fun checkResultsFound(results: Page<*>, caseDefinitionKey: String) {
-        check(!results.isEmpty) {
+    private fun validateResultsFound(results: Page<*>, caseDefinitionKey: String, currentUser: String) {
+        if (results.isEmpty) {
             logger.info {
-                "User '${currentUserInfo()}' " +
-                    "attempted export for case '$caseDefinitionKey' but the search returned no results."
+                "User '$currentUser' attempted export for case '$caseDefinitionKey' but the search returned no results."
             }
-            "Export failed: search returned no results."
+            throw NoSearchResultsException()
         }
     }
 
-    private fun logExport(caseDefinitionKey: String, columns: List<CaseListColumn>, total: Long) {
+    private fun logExport(caseDefinitionKey: String, columns: List<CaseListColumn>, total: Long, currentUser: String) {
         logger.info {
-            "User '${currentUserInfo()}' exported $total cases for '$caseDefinitionKey'. " +
+            "User '$currentUser' exported $total cases for '$caseDefinitionKey'. " +
                 "Exported columns: [${columns.joinToString(", ") { it.id.key }}]"
         }
     }
 
-    private fun requireExportLimit(results: Page<*>, caseDefinitionKey: String) {
-        require(results.totalElements <= MAX_EXPORT) {
-            "Export failed for case '$caseDefinitionKey': the number of cases exceeds the maximum limit of 10,000. Please refine your search criteria."
+    private fun validateExportLimit(results: Page<*>, caseDefinitionKey: String) {
+        if (results.totalElements > MAX_EXPORT) {
+            throw ExportLimitExceedsException(caseDefinitionKey)
         }
     }
 
@@ -182,16 +186,22 @@ class CaseExporter(
         return CaseListRowDto(document.id().toString(), items)
     }
 
-    private fun hasExportPermission(searchResults: Page<*>): Boolean{
-        val documents = searchResults.content.filterIsInstance<JsonSchemaDocument>()
+    private fun validateExportPermission(caseDefinitionKey: String, currentUser: String) {
 
-        return authorizationService.hasPermission(
+        val documentDefinition = jsonSchemaDocumentDefinitionService.findActiveByName(caseDefinitionKey)
+
+        val hasExportPermission = authorizationService.hasPermission(
             EntityAuthorizationRequest(
-                JsonSchemaDocument::class.java,
-                EXPORT_LIST,
-                documents
+                JsonSchemaDocumentDefinition::class.java,
+                EXPORT,
+                documentDefinition.get()
             )
         )
+
+        if (!hasExportPermission) {
+            logger.warn { "User '$currentUser' has no permission to  export case '$caseDefinitionKey'." }
+            throw NoExportPermissionException(caseDefinitionKey)
+        }
     }
 
     private fun currentUserInfo(): String =

@@ -3,6 +3,11 @@
     "permissions": [
         {
             "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocumentDefinition",
+            "action": "export",
+            "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocumentDefinition",
             "action": "view",
             "roleKey": "ROLE_USER"
         },

@@ -3,19 +3,6 @@
     "permissions": [
         {
             "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
-            "action": "export_list",
-            "roleKey": "ROLE_USER",
-            "conditions": [
-                {
-                    "type": "field",
-                    "field": "documentDefinitionId.caseDefinitionId.key",
-                    "operator": "==",
-                    "value": "bezwaar"
-                }
-            ]
-        },
-        {
-            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
             "action": "view_list",
             "roleKey": "ROLE_USER",
             "conditions": [
@@ -138,11 +125,6 @@
             "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
             "action": "modify",
             "roleKey": "ROLE_USER"
-        },
-        {
-            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
-            "action": "export_list",
-            "roleKey": "ROLE_ADMIN"
         },
         {
             "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
