@@ -85,11 +85,12 @@ class PluginsDeployedEventListener(
         knownNotificatiesApiAbonnementLinks: List<NotificatiesApiAbonnementLink>,
         configurations: List<NotificatiesApiListener>
     ) {
-        client.getAbonnementen(
+        val abonnementenInApi = client.getAbonnementen(
             notificatiesApiPluginInstance.authenticationPluginConfiguration,
             notificatiesApiPluginInstance.url
         )
-            .filter { abonnement -> abonnement.callbackUrl == notificatiesApiPluginInstance.callbackUrl.toString() }
+
+        abonnementenInApi.filter { abonnement -> abonnement.callbackUrl == notificatiesApiPluginInstance.callbackUrl.toString() }
             .filter { abonnement ->
                 (
                     knownNotificatiesApiAbonnementLinks.firstOrNull {
@@ -114,18 +115,22 @@ class PluginsDeployedEventListener(
 
         val authKey = currentNotificatiesApiAbonnementLink?.auth ?: createRandomKey()
 
-        logger.debug {
-            "Creating new abonnement for Notificaties API plugin configuration with id " +
-                "'${notificatiesApiPluginInstance.notificatiesApiConfigurationId.id}'"
-        }
-
         ensureKanalenExist(
             kanalen.map { it.naam }.toSet(),
             notificatiesApiPluginInstance.authenticationPluginConfiguration,
             notificatiesApiPluginInstance.url
         )
 
-        val abonnement = if (currentNotificatiesApiAbonnementLink == null) {
+        val currentNotificatiesApiAbonnement = abonnementenInApi.firstOrNull {abonnement ->
+            currentNotificatiesApiAbonnementLink != null &&
+            currentNotificatiesApiAbonnementLink.url == abonnement.url
+        }
+
+        val abonnement = if (currentNotificatiesApiAbonnement == null) {
+            logger.debug {
+                "Creating new abonnement for Notificaties API plugin configuration with id " +
+                    "'${notificatiesApiPluginInstance.notificatiesApiConfigurationId.id}'"
+            }
             client.createAbonnement(
                 notificatiesApiPluginInstance.authenticationPluginConfiguration,
                 notificatiesApiPluginInstance.url,
@@ -136,16 +141,29 @@ class PluginsDeployedEventListener(
                 )
             )
         } else {
+            logger.debug {
+                "Updating abonnement for Notificaties API plugin configuration with id " +
+                    "'${notificatiesApiPluginInstance.notificatiesApiConfigurationId.id}'"
+            }
             client.updateAbonnement(
                 notificatiesApiPluginInstance.authenticationPluginConfiguration,
                 notificatiesApiPluginInstance.url,
-                currentNotificatiesApiAbonnementLink.getAbonnementId(),
+                currentNotificatiesApiAbonnementLink!!.getAbonnementId(),
                 Abonnement(
                     callbackUrl = notificatiesApiPluginInstance.callbackUrl.toASCIIString(),
                     auth = authKey,
                     kanalen = kanalen
                 )
             )
+        }
+
+        if (currentNotificatiesApiAbonnement == null && currentNotificatiesApiAbonnementLink != null) {
+            logger.debug {
+                "Removing existing Notificaties API abonnement link with abonnement id '${currentNotificatiesApiAbonnementLink.getAbonnementId()}' " +
+                    "for plugin configuration with id '${notificatiesApiPluginInstance.notificatiesApiConfigurationId.id}' " +
+                    "because it is not known in the API"
+            }
+            notificatiesApiAbonnementLinkRepository.delete(currentNotificatiesApiAbonnementLink)
         }
 
         notificatiesApiAbonnementLinkRepository.save(

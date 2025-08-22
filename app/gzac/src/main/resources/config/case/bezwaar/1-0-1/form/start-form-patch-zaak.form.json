@@ -1,0 +1,82 @@
+{
+    "display": "form",
+    "components": [
+        {
+            "label": "HTML",
+            "content": "Klik start om uw zaak bij te werken.",
+            "refreshOnChange": false,
+            "key": "html",
+            "type": "htmlelement",
+            "input": false,
+            "tableView": false
+        },
+        {
+            "label": "Omschrijving",
+            "key": "pv:description",
+            "type": "textfield",
+            "input": true,
+            "validate": {
+                "required": true
+            },
+            "defaultValue": "De omschrijving"
+        },
+        {
+            "label": "Toelichting",
+            "key": "pv:explanation",
+            "type": "textfield",
+            "input": true,
+            "validate": {
+                "required": true
+            },
+            "defaultValue": "De toelichting"
+        },
+        {
+            "label": "Geplande eind-datum",
+            "key": "pv:plannedEndDate",
+            "type": "textfield",
+            "input": true,
+            "validate": {
+                "required": true
+            },
+            "customDefaultValue": "value = moment().add(1, 'month').format('YYYY-MM-DD')"
+        },
+        {
+            "label": "Betalingsindicatie",
+            "key": "pv:paymentIndication",
+            "type": "textfield",
+            "input": true,
+            "validate": {
+                "required": true
+            },
+            "defaultValue": "gedeeltelijk"
+        },
+        {
+            "label": "Case Geometry type",
+            "key": "pv:caseGeometryType",
+            "type": "textfield",
+            "input": true,
+            "validate": {
+                "required": true
+            },
+            "defaultValue": "Point"
+        },
+        {
+            "label": "Case Geometry Coordinaten",
+            "key": "pv:caseGeometryCoordinates",
+            "type": "textfield",
+            "input": true,
+            "validate": {
+                "required": true
+            },
+            "defaultValue": "[5.2853, 52.3608]"
+        },
+        {
+            "type": "button",
+            "label": "Start",
+            "key": "submit",
+            "disableOnInvalid": true,
+            "input": true,
+            "tableView": false
+        }
+    ]
+}
