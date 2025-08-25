@@ -53,7 +53,8 @@ class IkoServerRepository(
         ),
         PropertyField(
             AGGREGATED_DATA_PROFILE_NAME,
-            tooltip = "The name of the aggregated data profile. i.e. 'personen'"
+            tooltip = "The name of the aggregated data profile. i.e. 'personen'",
+            required = false,
         ),
         PropertyField(
             ENDPOINT_QUERY_PARAMETERS,

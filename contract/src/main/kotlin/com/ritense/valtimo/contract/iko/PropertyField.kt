@@ -16,9 +16,14 @@
 
 package com.ritense.valtimo.contract.iko
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonInclude.Include
+
+@JsonInclude(Include.NON_NULL)
 data class PropertyField(
     val key: String,
     val type: String = PROPERTY_FIELD_TYPE_TEXT,
+    val required: Boolean = true,
     val tooltip: String? = null,
     val title: String = toReadableText(key),
     val dropdownList: List<Pair<String, String>>? = null,
