@@ -25,6 +25,7 @@
             <not>
                 <sqlCheck expectedResult="0">select count(*) from act_id_group where id_ = 'camunda-admin'</sqlCheck>
             </not>
+            <sqlCheck expectedResult="0">select count(*) from act_id_group where id_ = 'operaton-admin'</sqlCheck>
         </preConditions>
         <sql>
             insert into act_id_group (id_, name_, type_, rev_)
