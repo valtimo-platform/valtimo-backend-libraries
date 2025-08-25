@@ -118,7 +118,7 @@ class CaseExporter(
 
         val exportableCases = searchResults.content.map { toCaseListRowDto(it, exportableColumns) }
 
-        logExport(caseDefinitionKey, exportableColumns, exportableCases.size.toLong(), userLabel)
+        logExport(caseDefinitionKey, exportableColumns, exportableCases.size.toLong(), userLabel, searchRequest)
 
         return exportableCases
     }
@@ -162,11 +162,30 @@ class CaseExporter(
         }
     }
 
-    private fun logExport(caseDefinitionKey: String, columns: List<CaseListColumn>, total: Long, currentUser: String) {
-        logger.info {
-            "User '$currentUser' exported $total cases for '$caseDefinitionKey'. " +
-                "Exported columns: [${columns.joinToString(", ") { it.id.key }}]"
+    private fun logExport(
+        caseDefinitionKey: String,
+        columns: List<CaseListColumn>,
+        total: Long,
+        currentUser: String,
+        searchRequest: SearchWithConfigRequest
+    ) {
+        val logs = mutableListOf<String>()
+
+        logs += "User '$currentUser' exported $total case(s) for '$caseDefinitionKey'."
+        logs += "Exported columns: [${columns.joinToString(", ") { it.id.key }}]."
+
+        searchRequest.statusFilter?.takeIf { it.isNotEmpty() }?.let { statuses ->
+            logs += "Status filter: [${statuses.joinToString(", ")}]."
         }
+
+        searchRequest.otherFilters?.takeIf { it.isNotEmpty() }?.let { filters ->
+            val filterStrings = filters.map { f ->
+                "${f.key} = ${f.getValues<Any>().joinToString(",")}"
+            }
+            logs += "Other filters: ${filterStrings.joinToString("; ")}."
+        }
+
+        logger.info { logs.joinToString(" ") }
     }
 
     private fun validateExportLimit(results: Page<*>, caseDefinitionKey: String) {
