@@ -16,9 +16,11 @@
 
 package com.ritense.case.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.opencsv.CSVWriter
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
+import com.ritense.case.domain.CaseExportRequest
 import com.ritense.case.domain.CaseListColumn
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.service.exception.ExportLimitExceedsException
@@ -29,9 +31,11 @@ import com.ritense.case.web.rest.dto.CaseListRowDto
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.search.SearchWithConfigRequest
+import com.ritense.document.event.DocumentsExported
 import com.ritense.document.service.DocumentSearchService
 import com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.Companion.EXPORT
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
+import com.ritense.outbox.OutboxService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valueresolver.ValueResolverService
@@ -47,6 +51,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.StringWriter
 import java.nio.charset.StandardCharsets
+import java.util.function.Supplier
 
 @Transactional
 @Service
@@ -57,7 +62,9 @@ class CaseExporter(
     private val valueResolverService: ValueResolverService,
     private val userManagementService: UserManagementService,
     private val authorizationService: AuthorizationService,
-    private val jsonSchemaDocumentDefinitionService: JsonSchemaDocumentDefinitionService
+    private val jsonSchemaDocumentDefinitionService: JsonSchemaDocumentDefinitionService,
+    private val outboxService: OutboxService,
+    private val mapper: ObjectMapper
 ) {
     fun exportCases(
         caseDefinitionKey: String,
@@ -65,6 +72,14 @@ class CaseExporter(
         pageable: Pageable
     ): ResponseEntity<ByteArray> {
         val exportableCases = searchExportable(caseDefinitionKey, searchRequest, pageable)
+
+        val exportRequest = CaseExportRequest(caseDefinitionKey, searchRequest)
+
+        outboxService.send(Supplier {
+            DocumentsExported(
+                mapper.valueToTree(exportRequest)
+            )
+        })
 
         val writer = StringWriter()
         val csvWriter = CSVWriter(writer)

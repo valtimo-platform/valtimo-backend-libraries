@@ -61,6 +61,7 @@ import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.exporter.ExportService
 import com.ritense.importer.ImportService
 import com.ritense.importer.ValtimoImportService
+import com.ritense.outbox.OutboxService
 import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
@@ -433,6 +434,8 @@ class CaseAutoConfiguration {
         userManagementService: UserManagementService,
         authorizationService: AuthorizationService,
         jsonSchemaDocumentDefinitionService: JsonSchemaDocumentDefinitionService,
+        outboxService: OutboxService,
+        mapper: ObjectMapper,
     ): CaseExporter {
         return CaseExporter(
             caseDefinitionListColumnRepository,
@@ -440,7 +443,9 @@ class CaseAutoConfiguration {
             valueResolverService,
             userManagementService,
             authorizationService,
-            jsonSchemaDocumentDefinitionService
+            jsonSchemaDocumentDefinitionService,
+            outboxService,
+            mapper
         )
     }
 }

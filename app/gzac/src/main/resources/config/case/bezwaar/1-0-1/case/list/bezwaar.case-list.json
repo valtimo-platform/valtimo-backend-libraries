@@ -58,5 +58,29 @@
         "sortable": true,
         "order": 4,
         "exportable": false
+    },
+    {
+        "key": "voornaam",
+        "title": "Voornaam",
+        "path": "doc:voornaam",
+        "displayType": {
+            "type": "text",
+            "displayTypeParameters": {}
+        },
+        "sortable": true,
+        "order": 5,
+        "exportable": true
+    },
+    {
+        "key": "achternaam",
+        "title": "Achternaam",
+        "path": "doc:achternaam",
+        "displayType": {
+            "type": "text",
+            "displayTypeParameters": {}
+        },
+        "sortable": true,
+        "order": 6,
+        "exportable": true
     }
 ]
