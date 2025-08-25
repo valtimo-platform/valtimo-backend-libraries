@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
+import jakarta.persistence.EntityManager
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
@@ -36,6 +37,7 @@ class ChangelogDeployer(
     private val changelogService: ChangelogService,
     private val changesetDeployers: List<ChangesetDeployer>,
     private val environment: Environment,
+    private val entityManager: EntityManager
 ) {
     // Create new objectmapper only used for md5 checksum sanitization to prevent config changes from impacting checksum
     private val objectMapper: ObjectMapper = JsonMapper
@@ -51,6 +53,7 @@ class ChangelogDeployer(
         logger.info { "Running deployer" }
 
         changesetDeployers.asReversed().forEach { it.before() }
+        entityManager.flush()
 
         changesetDeployers.forEach { changesetDeployer ->
             changelogService.loadResources(changesetDeployer.getPath()).forEach { resource ->
