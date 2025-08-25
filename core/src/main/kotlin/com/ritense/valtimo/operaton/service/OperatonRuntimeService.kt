@@ -106,6 +106,14 @@ class OperatonRuntimeService(
         return operatonIdentityLinkRepository.findById(identityLinkId).orElse(null)
     }
 
+    @Transactional
+    fun setVariable(processInstanceId: String, variableName: String, value: Any?) {
+        denyAuthorization()
+        runWithoutAuthorization {
+            runtimeService.setVariable(processInstanceId, variableName, value)
+        }
+    }
+
     private fun getValue(valueNode: JsonNode): Any? {
         return if (valueNode.isMissingNode) {
             null

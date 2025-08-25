@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:operaton="http://operaton.org/schema/1.0/bpmn" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="patch-zaak" name="Patch Zaak" processType="None" isClosed="false" isExecutable="true" operaton:versionTag="CD:bezwaar:1.0.1">
+    <bpmn:startEvent id="start-event">
+      <bpmn:outgoing>Flow_1vqe6mc</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1vqe6mc" sourceRef="start-event" targetRef="patch-zaak-action" />
+    <bpmn:endEvent id="Event_1qv9y6m">
+      <bpmn:incoming>Flow_18o74hf</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_18o74hf" sourceRef="patch-zaak-action" targetRef="Event_1qv9y6m" />
+    <bpmn:serviceTask id="patch-zaak-action" name="Zaak bijwerken" implementation="##WebService" operaton:asyncAfter="true" operaton:expression="${null}">
+      <bpmn:incoming>Flow_1vqe6mc</bpmn:incoming>
+      <bpmn:outgoing>Flow_18o74hf</bpmn:outgoing>
+    </bpmn:serviceTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="patch-zaak">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start-event">
+        <dc:Bounds x="173" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1qv9y6m_di" bpmnElement="Event_1qv9y6m">
+        <dc:Bounds x="412" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0qpz649_di" bpmnElement="patch-zaak-action">
+        <dc:Bounds x="260" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1vqe6mc_di" bpmnElement="Flow_1vqe6mc">
+        <di:waypoint x="209" y="120" />
+        <di:waypoint x="260" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_18o74hf_di" bpmnElement="Flow_18o74hf">
+        <di:waypoint x="360" y="120" />
+        <di:waypoint x="412" y="120" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
