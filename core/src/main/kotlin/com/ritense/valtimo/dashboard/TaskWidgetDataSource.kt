@@ -52,18 +52,18 @@ class TaskWidgetDataSource(
             }?.let {
                 return when (it.queryValue) {
                     "\${currentUserIdentifier}" -> {
-                        operatonTaskService.getSpecification(OperatonTaskService.TaskFilter.MINE)
+                        operatonTaskService.getFilteredViewListSpecification(OperatonTaskService.TaskFilter.MINE)
                     }
 
                     "\${null}" -> {
-                        operatonTaskService.getSpecification(OperatonTaskService.TaskFilter.OPEN)
+                        operatonTaskService.getFilteredViewListSpecification(OperatonTaskService.TaskFilter.OPEN)
                     }
 
                     else -> {
-                        operatonTaskService.getSpecification(OperatonTaskService.TaskFilter.ALL)
+                        operatonTaskService.getFilteredViewListSpecification(OperatonTaskService.TaskFilter.ALL)
                     }
                 }
-            } ?: operatonTaskService.getSpecification(OperatonTaskService.TaskFilter.ALL)
+            } ?: operatonTaskService.getFilteredViewListSpecification(OperatonTaskService.TaskFilter.ALL)
 
     private fun <T> getPathExpression(
         valueClass: Class<T>,

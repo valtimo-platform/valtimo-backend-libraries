@@ -29,6 +29,6 @@ class TaskWidgetAutoConfiguration {
     @ConditionalOnMissingBean(TaskWidgetDataSource::class)
     fun taskWidgetDataSource(
         taskRepository: OperatonTaskRepository,
-        operationTaskService: OperatonTaskService
-    ) = TaskWidgetDataSource(taskRepository,operationTaskService)
+        operatonTaskService: OperatonTaskService
+    ) = TaskWidgetDataSource(taskRepository, operatonTaskService)
 }

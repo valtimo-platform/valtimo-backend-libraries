@@ -395,7 +395,7 @@ public class OperatonTaskService {
     }
 
     @Transactional(readOnly = true)
-    public Specification<OperatonTask> getSpecification(OperatonTaskService.TaskFilter taskFilter){
+    public Specification<OperatonTask> getFilteredViewListSpecification(OperatonTaskService.TaskFilter taskFilter){
         var spec = getAuthorizationSpecification(VIEW_LIST);
 
         return spec.and(buildTaskFilterSpecification(taskFilter));
