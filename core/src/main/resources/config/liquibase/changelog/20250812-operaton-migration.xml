@@ -28,11 +28,6 @@
             insert into act_id_group (id_, name_, type_, rev_)
             values ('operaton-admin', 'operaton BPM Administrators', 'SYSTEM', 1)
         </sql>
-        <sql>
-            update act_id_membership
-            set group_id_ = 'operaton-admin'
-            where group_id_ = 'camunda-admin'
-        </sql>
     </changeSet>
 
     <changeSet id="3" author="Ritense">
@@ -41,6 +36,11 @@
                 <sqlCheck expectedResult="0">select count(*) from act_id_group where id_ = 'camunda-admin'</sqlCheck>
             </not>
         </preConditions>
+        <sql>
+            update act_id_membership
+            set group_id_ = 'operaton-admin'
+            where group_id_ = 'camunda-admin'
+        </sql>
         <sql>
             delete from act_id_group
             where id_ = 'camunda-admin'
