@@ -37,8 +37,19 @@
             </not>
         </preConditions>
         <sql>
-            update act_id_membership
-            set group_id_ = 'operaton-admin'
+            insert into act_id_membership (user_id_, group_id_)
+            select user_id_, 'operaton-admin'
+            from act_id_membership m1
+            where group_id_ = 'camunda-admin'
+            and not exists (
+                select *
+                from act_id_membership m2
+                where group_id_ = 'operaton-admin'
+                and m1.user_id_ = m2.user_id_
+            )
+        </sql>
+        <sql>
+            delete from act_id_membership
             where group_id_ = 'camunda-admin'
         </sql>
         <sql>
