@@ -51,6 +51,10 @@ valtimo:
         reminderTemplate: bpc-task-reminder
     plugin:
         encryption-secret: "abcdefghijklmnop"
+    camunda:
+        scripting:
+            allowedClasses:
+                - java.lang.Math
 
 aws:
     profile: ritense
