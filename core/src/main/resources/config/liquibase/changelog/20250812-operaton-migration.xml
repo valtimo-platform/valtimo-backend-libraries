@@ -20,11 +20,8 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet id="1" author="Ritense">
+    <changeSet id="2" author="Ritense">
         <preConditions onFail="MARK_RAN">
-            <not>
-                <sqlCheck expectedResult="0">select count(*) from act_id_group where id_ = 'camunda-admin'</sqlCheck>
-            </not>
             <sqlCheck expectedResult="0">select count(*) from act_id_group where id_ = 'operaton-admin'</sqlCheck>
         </preConditions>
         <sql>
@@ -36,6 +33,14 @@
             set group_id_ = 'operaton-admin'
             where group_id_ = 'camunda-admin'
         </sql>
+    </changeSet>
+
+    <changeSet id="3" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="0">select count(*) from act_id_group where id_ = 'camunda-admin'</sqlCheck>
+            </not>
+        </preConditions>
         <sql>
             delete from act_id_group
             where id_ = 'camunda-admin'
