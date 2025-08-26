@@ -32,7 +32,7 @@ class TaskWidgetDataSource(
         val taskSpec = all()
         val spec = taskSpec.and { root, _, criteriaBuilder ->
             criteriaBuilder.and(
-                *taskCountDataSourceProperties.queryConditions?.map {
+                *taskCountDataSourceProperties.conditions?.map {
                     it.toPredicate(root, criteriaBuilder, this::getPathExpression)
                 }?.toTypedArray() ?: arrayOf()
             )

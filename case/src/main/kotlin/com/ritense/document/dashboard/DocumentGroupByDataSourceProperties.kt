@@ -16,11 +16,11 @@
 
 package com.ritense.document.dashboard
 
-import com.ritense.valtimo.contract.dashboard.QueryCondition
+import com.ritense.valtimo.contract.conditions.Condition
 
 data class DocumentGroupByDataSourceProperties(
     val documentDefinition: String,
     val path: String,
-    val queryConditions: List<QueryCondition<*>>?,
+    val conditions: List<Condition<*>>?,
     val enum: Map<String, String>?
 )

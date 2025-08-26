@@ -16,11 +16,11 @@
 
 package com.ritense.document.dashboard
 
-import com.ritense.valtimo.contract.dashboard.QueryCondition
+import com.ritense.valtimo.contract.conditions.Condition
 
 data class DocumentCountsQueryItem(
     val label: String,
-    val queryConditions: List<QueryCondition<*>>
+    val conditions: List<Condition<*>>
 )
 
 data class DocumentCountsDataSourceProperties(

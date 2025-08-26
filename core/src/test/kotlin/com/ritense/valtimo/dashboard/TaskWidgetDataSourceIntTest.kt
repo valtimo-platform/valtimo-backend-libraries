@@ -18,7 +18,7 @@ package com.ritense.document.dashboard
 
 import com.ritense.valtimo.BaseIntegrationTest
 import com.ritense.valtimo.contract.authorization.UserManagementServiceHolder
-import com.ritense.valtimo.contract.dashboard.QueryCondition
+import com.ritense.valtimo.contract.conditions.Condition
 import com.ritense.valtimo.contract.repository.ExpressionOperator
 import com.ritense.valtimo.dashboard.TaskCountDataSourceProperties
 import com.ritense.valtimo.dashboard.TaskWidgetDataSource
@@ -77,8 +77,8 @@ class TaskWidgetDataSourceIntTest @Autowired constructor(
         createTask("Test2", "test2@test2.com")
 
         val dataSourceProperties = TaskCountDataSourceProperties(
-            queryConditions = listOf(
-                QueryCondition("task:assignee", ExpressionOperator.EQUAL_TO, defaultAssignee)
+            conditions = listOf(
+                Condition("task:assignee", ExpressionOperator.EQUAL_TO, defaultAssignee)
             )
         )
 
@@ -100,8 +100,8 @@ class TaskWidgetDataSourceIntTest @Autowired constructor(
         createTask(null)
 
         val dataSourceProperties = TaskCountDataSourceProperties(
-            queryConditions = listOf(
-                QueryCondition("task:name", ExpressionOperator.NOT_EQUAL_TO, "\${null}")
+            conditions = listOf(
+                Condition("task:name", ExpressionOperator.NOT_EQUAL_TO, "\${null}")
             )
         )
 
@@ -119,15 +119,15 @@ class TaskWidgetDataSourceIntTest @Autowired constructor(
 
         createTask()
 
-        val queryConditions = listOf(
-            QueryCondition(
+        val conditions = listOf(
+            Condition(
                 "task:createTime",
                 ExpressionOperator.GREATER_THAN,
                 "\${localDateTimeNow.minusSeconds(1)}"
             )
         )
 
-        val properties = TaskCountDataSourceProperties(queryConditions = queryConditions)
+        val properties = TaskCountDataSourceProperties(conditions = conditions)
 
         val result = taskWidgetDataSource.getTaskCount(properties)
 
@@ -142,8 +142,8 @@ class TaskWidgetDataSourceIntTest @Autowired constructor(
         createTask(mockedUsername)
 
         val properties1 = TaskCountDataSourceProperties(
-            queryConditions = listOf(
-                QueryCondition(
+            conditions = listOf(
+                Condition(
                     "task:name",
                     ExpressionOperator.EQUAL_TO,
                     "\${currentUserId}"
@@ -153,8 +153,8 @@ class TaskWidgetDataSourceIntTest @Autowired constructor(
         val result1 = taskWidgetDataSource.getTaskCount(properties1)
 
         val properties2 = TaskCountDataSourceProperties(
-            queryConditions = listOf(
-                QueryCondition(
+            conditions = listOf(
+                Condition(
                     "task:name",
                     ExpressionOperator.EQUAL_TO,
                     "\${currentUsername}"
@@ -164,8 +164,8 @@ class TaskWidgetDataSourceIntTest @Autowired constructor(
         val result2 = taskWidgetDataSource.getTaskCount(properties2)
 
         val properties3 = TaskCountDataSourceProperties(
-            queryConditions = listOf(
-                QueryCondition(
+            conditions = listOf(
+                Condition(
                     "task:name",
                     ExpressionOperator.EQUAL_TO,
                     "\${currentUserEmail}"

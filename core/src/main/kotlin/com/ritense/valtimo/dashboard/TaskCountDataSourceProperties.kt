@@ -16,8 +16,8 @@
 
 package com.ritense.valtimo.dashboard
 
-import com.ritense.valtimo.contract.dashboard.QueryCondition
+import com.ritense.valtimo.contract.conditions.Condition
 
 data class TaskCountDataSourceProperties(
-    val queryConditions: List<QueryCondition<*>>? = listOf()
+    val conditions: List<Condition<*>>? = listOf()
 )

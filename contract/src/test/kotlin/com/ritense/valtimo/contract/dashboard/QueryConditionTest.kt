@@ -31,7 +31,7 @@ class QueryConditionTest {
                 "queryOperator": "==",
                 "queryValue": 69
             }
-        """.trimIndent(), QueryCondition::class.java
+        """.trimIndent(), Condition::class.java
         )
 
         assertThat(value).isNotNull
@@ -48,7 +48,7 @@ class QueryConditionTest {
                 "queryOperator": "==",
                 "queryValue": "69"
             }
-        """.trimIndent(), QueryCondition::class.java
+        """.trimIndent(), Condition::class.java
         )
 
         assertThat(value).isNotNull

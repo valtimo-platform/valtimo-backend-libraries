@@ -16,9 +16,9 @@
 
 package com.ritense.document.dashboard
 
-import com.ritense.valtimo.contract.dashboard.QueryCondition
+import com.ritense.valtimo.contract.conditions.Condition
 
 data class DocumentCountDataSourceProperties(
     val documentDefinition: String,
-    val queryConditions: List<QueryCondition<*>>? = listOf()
+    val conditions: List<Condition<*>>? = listOf()
 )

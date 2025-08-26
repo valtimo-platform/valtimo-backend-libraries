@@ -19,7 +19,7 @@ package com.ritense.document.dashboard
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository
 import com.ritense.document.repository.impl.specification.JsonSchemaDocumentSpecificationHelper.Companion.byDocumentDefinitionIdName
-import com.ritense.valtimo.contract.dashboard.QueryCondition
+import com.ritense.valtimo.contract.conditions.Condition
 import com.ritense.valtimo.contract.dashboard.WidgetDataSource
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.contract.repository.ExpressionOperator
@@ -40,7 +40,7 @@ class DocumentWidgetDataSource(
         val byCaseSpec = byDocumentDefinitionIdName(caseCountDataSourceProperties.documentDefinition)
         val spec = byCaseSpec.and { root, _, criteriaBuilder ->
             criteriaBuilder.and(
-                *caseCountDataSourceProperties.queryConditions?.map {
+                *caseCountDataSourceProperties.conditions?.map {
                     it.toPredicate(root, criteriaBuilder, this::getPathExpression)
                 }?.toTypedArray() ?: arrayOf()
             )
@@ -57,7 +57,7 @@ class DocumentWidgetDataSource(
             val spec = byDocumentDefinitionIdName(caseCountsDataSourceProperties.documentDefinition)
                 .and { root, _, criteriaBuilder ->
                     criteriaBuilder.and(
-                        *queryItem.queryConditions.map {
+                        *queryItem.conditions.map {
                             it.toPredicate(root, criteriaBuilder, this::getPathExpression)
                         }.toTypedArray()
                     )
@@ -81,7 +81,7 @@ class DocumentWidgetDataSource(
             root.get<Any>("documentDefinitionId").get<String>("name"),
             caseGroupByDataSourceProperties.documentDefinition
         )
-        val pathIsNotNullPredicate = QueryCondition(
+        val pathIsNotNullPredicate = Condition(
             caseGroupByDataSourceProperties.path,
             ExpressionOperator.NOT_EQUAL_TO,
             "\${null}"
@@ -90,10 +90,10 @@ class DocumentWidgetDataSource(
         )
         // todo: fix null values through getJsonValueExpression
         val pathIsNotNullStringPredicate =
-            QueryCondition(caseGroupByDataSourceProperties.path, ExpressionOperator.NOT_EQUAL_TO, "null").toPredicate(
+            Condition(caseGroupByDataSourceProperties.path, ExpressionOperator.NOT_EQUAL_TO, "null").toPredicate(
                 root, criteriaBuilder, this::getPathExpression
             )
-        val conditionPredicates = caseGroupByDataSourceProperties.queryConditions?.map {
+        val conditionPredicates = caseGroupByDataSourceProperties.conditions?.map {
             it.toPredicate(root, criteriaBuilder, this::getPathExpression)
         }?.toTypedArray() ?: arrayOf()
         val combinedPredicates =
