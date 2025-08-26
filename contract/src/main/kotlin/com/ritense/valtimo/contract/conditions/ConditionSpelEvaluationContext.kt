@@ -18,6 +18,6 @@ package com.ritense.valtimo.contract.dashboard
 
 import java.time.LocalDateTime
 
-class WidgetDataSourceSpelEvaluationContext {
+class ConditionSpelEvaluationContext {
     public val localDateTimeNow = LocalDateTime.now()
 }

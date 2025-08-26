@@ -19,7 +19,7 @@ package com.ritense.valtimo.contract.conditions
 import PermissionConditionKey
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.ritense.valtimo.contract.authorization.CurrentUserExpressionHandler
-import com.ritense.valtimo.contract.dashboard.WidgetDataSourceSpelEvaluationContext
+import com.ritense.valtimo.contract.dashboard.ConditionSpelEvaluationContext
 import com.ritense.valtimo.contract.repository.ExpressionOperator
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Expression
@@ -95,7 +95,7 @@ data class Condition<T : Comparable<T>>(
         val parser = SpelExpressionParser()
         val expressionWithoutPrefixSuffix = condition.queryValue.substringAfter("\${").substringBefore("}")
 
-        val spelEvaluationContext = WidgetDataSourceSpelEvaluationContext()
+        val spelEvaluationContext = ConditionSpelEvaluationContext()
         val context = StandardEvaluationContext()
 
         context.setRootObject(spelEvaluationContext)
