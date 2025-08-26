@@ -27,10 +27,10 @@ import java.util.UUID
 class ZaakMockUrlProvider : ZaakUrlProvider, ZaaktypeUrlProvider {
 
     override fun getZaakUrl(documentId: UUID): URI {
-        return URI("http://localhost:56273/zaken/57f66ff6-db7f-43bc-84ef-6847640d3609")
+        return URI("http://localhost:56273/zaken/api/v1/zaken/57f66ff6-db7f-43bc-84ef-6847640d3609")
     }
 
     override fun getZaaktypeUrl(caseDefinitionId: CaseDefinitionId): URI {
-        return URI("http://localhost:56273/catalogi/21c0946a-9058-11ee-b9d1-0242ac120002")
+        return URI("http://localhost:56273/catalogi/api/v1/zaaktypen/21c0946a-9058-11ee-b9d1-0242ac120002")
     }
 }

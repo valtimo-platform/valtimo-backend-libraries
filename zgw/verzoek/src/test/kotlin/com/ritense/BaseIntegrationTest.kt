@@ -17,6 +17,7 @@
 package com.ritense
 
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
+import com.ritense.notificatiesapi.PluginsDeployedEventListener
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
@@ -51,4 +52,7 @@ abstract class BaseIntegrationTest {
 
     @MockitoSpyBean
     lateinit var pluginService: PluginService
+
+    @MockitoBean
+    lateinit var pluginsDeployedEventListener: PluginsDeployedEventListener
 }

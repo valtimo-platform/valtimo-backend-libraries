@@ -14,14 +14,25 @@
  * limitations under the License.
  */
 
+dependencies {
+    testImplementation "org.mockito:mockito-core"
+}
+
 test {
     dependsOn cleanTest
-
     testLogging {
         events("passed", "skipped", "failed", "standardError")
     }
     useJUnitPlatform {
         excludeTags "security", "integration"
+    }
+    doFirst {
+        def mockitoAgent = configurations.testRuntimeClasspath.find {
+          it.name.contains('mockito-core')
+        }
+        if (mockitoAgent) {
+          jvmArgs "-javaagent:${mockitoAgent.absolutePath}"
+        }
     }
 }
 
@@ -40,6 +51,14 @@ tasks.register("integrationTestingPostgresql", Test) {
     outputs.upToDateWhen { false }
     outputs.cacheIf { false }
 
+    doFirst {
+        def mockitoAgent = configurations.testRuntimeClasspath.find {
+          it.name.contains('mockito-core')
+        }
+        if (mockitoAgent) {
+          jvmArgs "-javaagent:${mockitoAgent.absolutePath}"
+        }
+    }
     doLast {
         composeDownForced
     }
@@ -56,6 +75,14 @@ tasks.register("integrationTestingMysql", Test) {
     outputs.upToDateWhen { false }
     outputs.cacheIf { false }
 
+    doFirst {
+        def mockitoAgent = configurations.testRuntimeClasspath.find {
+          it.name.contains('mockito-core')
+        }
+        if (mockitoAgent) {
+          jvmArgs "-javaagent:${mockitoAgent.absolutePath}"
+        }
+    }
     doLast {
         composeDownForced
     }
@@ -70,6 +97,14 @@ tasks.register("securityTesting", Test) {
     }
     mustRunAfter check
 
+    doFirst {
+        def mockitoAgent = configurations.testRuntimeClasspath.find {
+          it.name.contains('mockito-core')
+        }
+        if (mockitoAgent) {
+          jvmArgs "-javaagent:${mockitoAgent.absolutePath}"
+        }
+    }
     doLast {
         composeDownForced
     }
