@@ -17,9 +17,12 @@
 package com.ritense.valtimo.autoconfigure;
 
 import com.ritense.valtimo.CamundaWhitelistedBeansPlugin;
+import com.ritense.valtimo.ScriptingWhitelistPlugin;
 import com.ritense.valtimo.contract.annotation.ProcessBean;
 import java.util.Map;
+import java.util.Set;
 import org.camunda.bpm.spring.boot.starter.configuration.Ordering;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
@@ -28,16 +31,24 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
 
 @AutoConfiguration
-@ConditionalOnProperty(prefix = "valtimo.camunda", name = "bean-whitelisting", havingValue = "true", matchIfMissing = true)
 public class CamundaContextConfiguration {
 
     @Bean
     @Order(Ordering.DEFAULT_ORDER - 1)
+    @ConditionalOnProperty(prefix = "valtimo.camunda", name = "bean-whitelisting", havingValue = "true", matchIfMissing = true)
     public CamundaWhitelistedBeansPlugin camundaWhitelistedBeansPlugin(
         @Lazy @ProcessBean Map<String, Object> processBeans,
         ApplicationContext applicationContext
     ) {
         return new CamundaWhitelistedBeansPlugin(processBeans, applicationContext);
+    }
+
+    @Bean
+    @Order(Ordering.DEFAULT_ORDER - 1)
+    public ScriptingWhitelistPlugin scriptingWhitelistPlugin(
+        @Value("valtimo.camunda.scripting.allowedClasses") Set<String> allowedScriptingClasses
+    ) {
+        return new ScriptingWhitelistPlugin(allowedScriptingClasses);
     }
 
 }
