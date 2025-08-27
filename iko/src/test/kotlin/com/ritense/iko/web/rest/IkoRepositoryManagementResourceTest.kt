@@ -83,7 +83,6 @@ internal class IkoRepositoryManagementResourceTest {
         whenever(service.getIkoRepositoryConfigPropertyFields("iko")).thenReturn(
             listOf(
                 PropertyField(
-                    title = PropertyField.toReadableText(PLUGIN_CONFIGURATION),
                     key = PLUGIN_CONFIGURATION,
                     type = PROPERTY_FIELD_TYPE_DROPDOWN,
                     dropdownList = listOf("1234" to "My Plugin")

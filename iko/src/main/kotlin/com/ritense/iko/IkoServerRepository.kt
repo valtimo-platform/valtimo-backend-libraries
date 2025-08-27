@@ -59,7 +59,8 @@ class IkoServerRepository(
         PropertyField(
             ENDPOINT_QUERY_PARAMETERS,
             PROPERTY_FIELD_TYPE_KEY_VALUE_LIST,
-            tooltip = "Additional query parameters for the IKO API URL. i.e. 'type=ZoekMetGeslachtsnaamEnGeboortedatum'"
+            tooltip = "Additional query parameters for the IKO API URL. i.e. 'type=ZoekMetGeslachtsnaamEnGeboortedatum'",
+            required = false,
         ),
     )
 
@@ -67,7 +68,8 @@ class IkoServerRepository(
         PropertyField(
             ENDPOINT_QUERY_PARAMETERS,
             PROPERTY_FIELD_TYPE_KEY_VALUE_LIST,
-            tooltip = "Additional query parameters for the IKO API URL. i.e. 'type=ZoekMetGeslachtsnaamEnGeboortedatum'"
+            tooltip = "Additional query parameters for the IKO API URL. i.e. 'type=ZoekMetGeslachtsnaamEnGeboortedatum'",
+            required = false,
         ),
     )
 

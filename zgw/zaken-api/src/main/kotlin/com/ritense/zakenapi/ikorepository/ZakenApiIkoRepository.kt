@@ -47,7 +47,6 @@ class ZakenApiIkoRepository(
 
         return listOf(
             PropertyField(
-                title = PropertyField.toReadableText(PLUGIN_CONFIGURATION),
                 key = PLUGIN_CONFIGURATION,
                 type = PROPERTY_FIELD_TYPE_DROPDOWN,
                 dropdownList = dropdownList
