@@ -64,7 +64,7 @@ abstract class CaseWidgetTabWidget(
 
     @Type(value = JsonType::class)
     @Column(name = "hide_conditions", nullable = false)
-    val conditions: List<Condition<*>>? = listOf()
+    val conditions: List<Condition<*>> = listOf()
 ) {
     abstract fun copy(id: CaseWidgetTabWidgetId = this.id): CaseWidgetTabWidget
 

@@ -19,6 +19,7 @@ package com.ritense.case_.widget.divider
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.case_.rest.dto.CaseWidgetAction
 import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
+import com.ritense.valtimo.contract.conditions.Condition
 
 @JsonTypeName("divider")
 data class DividerCaseWidgetDto(
@@ -26,6 +27,7 @@ data class DividerCaseWidgetDto(
     override val title: String,
     override val width: Int,
     override val highContrast: Boolean,
+    override val conditions: List<Condition<*>>
 ) : CaseWidgetTabWidgetDto {
     override val actions: List<CaseWidgetAction>
         get() = emptyList()

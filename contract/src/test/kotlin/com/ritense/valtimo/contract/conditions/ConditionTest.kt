@@ -35,8 +35,8 @@ class ConditionTest {
         )
 
         assertThat(value).isNotNull
-        assertThat(value.queryValue).isEqualTo(69)
-        assertThat(value.queryValue).isNotEqualTo("69")
+        assertThat(value.value).isEqualTo(69)
+        assertThat(value.value).isNotEqualTo("69")
     }
 
     @Test
@@ -52,8 +52,8 @@ class ConditionTest {
         )
 
         assertThat(value).isNotNull
-        assertThat(value.queryValue).isEqualTo("69")
-        assertThat(value.queryValue).isNotEqualTo(69)
+        assertThat(value.value).isEqualTo("69")
+        assertThat(value.value).isNotEqualTo(69)
     }
 
 }

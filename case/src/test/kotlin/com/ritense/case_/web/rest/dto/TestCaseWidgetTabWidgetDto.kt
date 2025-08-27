@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.case_.rest.dto.CaseWidgetAction
 import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
 import com.ritense.case_.widget.TestCaseWidgetProperties
+import com.ritense.valtimo.contract.conditions.Condition
 import jakarta.validation.Valid
 
 @JsonTypeName("test")
@@ -30,4 +31,5 @@ data class TestCaseWidgetTabWidgetDto(
     override val highContrast: Boolean,
     @field:Valid val properties: TestCaseWidgetProperties = TestCaseWidgetProperties(),
     override val actions: List<CaseWidgetAction>? = emptyList(),
+    override val conditions: List<Condition<*>>? = emptyList(),
 ) : CaseWidgetTabWidgetDto

@@ -19,6 +19,7 @@ package com.ritense.case_.widget.custom
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.case_.rest.dto.CaseWidgetAction
 import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
+import com.ritense.valtimo.contract.conditions.Condition
 import jakarta.validation.Valid
 
 @JsonTypeName("custom")
@@ -28,5 +29,6 @@ data class CustomCaseWidgetDto(
     override val width: Int,
     override val highContrast: Boolean,
     override val actions: List<CaseWidgetAction>? = emptyList(),
+    override val conditions: List<Condition<*>> = emptyList(),
     @field:Valid val properties: CustomWidgetProperties
 ) : CaseWidgetTabWidgetDto

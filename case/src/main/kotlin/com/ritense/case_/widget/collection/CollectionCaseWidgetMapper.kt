@@ -29,6 +29,7 @@ class CollectionCaseWidgetMapper:CaseWidgetMapper<CollectionCaseWidget, Collecti
         title = entity.title,
         width = entity.width,
         actions = entity.actions,
+        conditions = entity.conditions,
         highContrast = entity.highContrast,
         properties = entity.properties
     )
@@ -39,6 +40,7 @@ class CollectionCaseWidgetMapper:CaseWidgetMapper<CollectionCaseWidget, Collecti
         width = dto.width,
         highContrast = dto.highContrast,
         actions = dto.actions ?: emptyList(),
+        conditions = dto.conditions ?: emptyList(),
         properties = dto.properties,
         order = index
     )

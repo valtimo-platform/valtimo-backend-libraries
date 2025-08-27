@@ -21,6 +21,7 @@ import com.ritense.case_.domain.tab.CaseWidgetTabWidget
 import com.ritense.case_.widget.CaseWidgetMapper
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.valtimo.contract.conditions.Condition
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 
@@ -54,6 +55,7 @@ data class CaseWidgetTabDto(
                             mapper.supportedEntityType().isAssignableFrom(widget::class.java)
                         }.toDto(widget)
                 }
+
             )
         }
 

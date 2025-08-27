@@ -8,6 +8,13 @@
                 "title": "Partner",
                 "width": 4,
                 "highContrast": true,
+                "conditions": [
+                    {
+                        "path": "doc:partner",
+                        "operator": "!=",
+                        "value": "${null}"
+                    }
+                ],
                 "properties": {
                     "columns": [
                         [

@@ -75,6 +75,7 @@ class CaseWidgetAutoConfiguration {
         caseWidgetDataProviders: List<CaseWidgetDataProvider<*>>,
         documentService: DocumentService,
         caseDefinitionChecker: CaseDefinitionChecker,
+        valueResolverService: ValueResolverService
     ) = CaseWidgetTabService(
         documentService,
         caseWidgetTabRepository,
@@ -83,6 +84,7 @@ class CaseWidgetAutoConfiguration {
         caseWidgetMappers as List<CaseWidgetMapper<CaseWidgetTabWidget, CaseWidgetTabWidgetDto>>,
         caseWidgetDataProviders as List<CaseWidgetDataProvider<CaseWidgetTabWidget>>,
         caseDefinitionChecker,
+        valueResolverService
     )
 
     @ConditionalOnMissingBean(CaseWidgetTabWidgetSpecificationFactory::class)

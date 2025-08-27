@@ -17,6 +17,7 @@
 package com.ritense.valtimo.contract.conditions
 
 import PermissionConditionKey
+import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.ritense.valtimo.contract.authorization.CurrentUserExpressionHandler
 import com.ritense.valtimo.contract.dashboard.ConditionSpelEvaluationContext
@@ -36,17 +37,20 @@ import java.time.LocalDateTime
  * needs to be evaluated.
  */
 data class Condition<T : Comparable<T>>(
-    val queryPath: String,
-    val queryOperator: ExpressionOperator,
+    @JsonAlias("queryPath")
+    val path: String,
+    @JsonAlias("queryOperator")
+    val operator: ExpressionOperator,
+    @JsonAlias("queryValue")
     @JsonDeserialize(using = ComparableDeserializer::class)
-    val queryValue: T
+    val value: T
 ) {
 
     fun isValid(
         expressionResolver: (String) -> Any
     ): Boolean {
-        val fieldValue = expressionResolver.invoke(queryPath)
-        return queryOperator.evaluate(fieldValue, queryValue)
+        val fieldValue = expressionResolver.invoke(path)
+        return operator.evaluate(fieldValue, value)
     }
 
     fun toPredicate(
@@ -56,7 +60,7 @@ data class Condition<T : Comparable<T>>(
     ): Predicate {
         pathExpressionFunction as (Class<T>, String, Root<*>, CriteriaBuilder) -> Expression<T>
 
-        if (queryValueIsDateTimeSpelExpression(queryValue)) {
+        if (queryValueIsDateTimeSpelExpression(value)) {
             return getPredicateFromDateTimeSpelExpression(
                 root,
                 criteriaBuilder,
@@ -64,7 +68,7 @@ data class Condition<T : Comparable<T>>(
             )
         }
 
-        if (queryValueIsCurrentUserExpression(queryValue)) {
+        if (queryValueIsCurrentUserExpression(value)) {
             return getPredicateFromCurrentUserExpression(
                 root,
                 criteriaBuilder,
@@ -72,17 +76,17 @@ data class Condition<T : Comparable<T>>(
             )
         }
 
-        val predicateQueryValue: T? = if (queryValueIsNull(queryValue)) {
+        val predicateQueryValue: T? = if (queryValueIsNull(value)) {
             null
         } else {
-            queryValue
+            value
         }
 
-        val valueClass = queryValue::class.java as Class<T>
+        val valueClass = value::class.java as Class<T>
 
-        val expression = pathExpressionFunction(valueClass, queryPath, root, criteriaBuilder)
+        val expression = pathExpressionFunction(valueClass, path, root, criteriaBuilder)
 
-        return queryOperator.toPredicate<T>(
+        return operator.toPredicate<T>(
             criteriaBuilder,
             expression,
             predicateQueryValue
@@ -106,7 +110,7 @@ data class Condition<T : Comparable<T>>(
     ): Predicate {
         val condition = this as Condition<String>;
         val parser = SpelExpressionParser()
-        val expressionWithoutPrefixSuffix = condition.queryValue.substringAfter("\${").substringBefore("}")
+        val expressionWithoutPrefixSuffix = condition.value.substringAfter("\${").substringBefore("}")
 
         val spelEvaluationContext = ConditionSpelEvaluationContext()
         val context = StandardEvaluationContext()
@@ -121,9 +125,9 @@ data class Condition<T : Comparable<T>>(
         val value = spelExpression.getValue(context, valueClass)
 
         val expression =
-            pathExpressionFunction(valueClass as Class<T>, condition.queryPath, root, criteriaBuilder)
+            pathExpressionFunction(valueClass as Class<T>, condition.path, root, criteriaBuilder)
 
-        return condition.queryOperator.toPredicate<T>(
+        return condition.operator.toPredicate<T>(
             criteriaBuilder,
             expression,
             value as T
@@ -146,11 +150,11 @@ data class Condition<T : Comparable<T>>(
     ): Predicate {
         val condition = this as Condition<String>;
         val valueClass = String::class.java
-        val expression = pathExpressionFunction(valueClass as Class<T>, condition.queryPath, root, criteriaBuilder)
-        val permissionConditionKey = PermissionConditionKey.fromKey(condition.queryValue)?.key
+        val expression = pathExpressionFunction(valueClass as Class<T>, condition.path, root, criteriaBuilder)
+        val permissionConditionKey = PermissionConditionKey.fromKey(condition.value)?.key
         val resolvedValue = CurrentUserExpressionHandler.resolveValue(permissionConditionKey) as? String ?: ""
 
-        return condition.queryOperator.toPredicate<T>(
+        return condition.operator.toPredicate<T>(
             criteriaBuilder,
             expression,
             resolvedValue as T
