@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package com.ritense.temporaryresource.domain
+package com.ritense.case_.widget.divider
 
-enum class StorageMetadataKeys(val key: String) {
-    DOCUMENT_ID("documentId"),
-    DOCUMENT_URL("documentUrl"),
-    DOWNLOAD_URL("downloadUrl"),
-    PROCESS_INSTANCE_ID("processInstanceId"),
-    DOCUMENT_URL_PROCESS_VARIABLE("documentUrlProcessVariable");
-}
+import com.fasterxml.jackson.annotation.JsonTypeName
+import com.ritense.case_.rest.dto.CaseWidgetAction
+import com.ritense.case_.rest.dto.CaseWidgetTabWidgetDto
 
-fun getEnumFromKey(key: String): Result<StorageMetadataKeys> {
-    return StorageMetadataKeys.entries.find { it.key == key }
-        ?.let { Result.success(it) }
-        ?: Result.failure(IllegalArgumentException("Unknown storage metadata key: $key"))
+@JsonTypeName("divider")
+data class DividerCaseWidgetDto(
+    override val key: String,
+    override val title: String,
+    override val width: Int,
+    override val highContrast: Boolean,
+) : CaseWidgetTabWidgetDto {
+    override val actions: List<CaseWidgetAction>
+        get() = emptyList()
 }

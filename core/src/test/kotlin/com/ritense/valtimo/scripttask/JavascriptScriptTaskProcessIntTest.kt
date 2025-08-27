@@ -21,6 +21,9 @@ import com.ritense.valtimo.BaseIntegrationTest
 import com.ritense.valtimo.service.OperatonProcessService
 import org.operaton.bpm.engine.HistoryService
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
+import org.operaton.bpm.engine.ScriptEvaluationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -51,5 +54,46 @@ class JavascriptScriptTaskProcessIntTest : BaseIntegrationTest() {
             .singleResult()
             .value
         assertEquals(3, c)
+    }
+
+    @Test
+    fun `whitelisted classes should be allowed in script tasks`() {
+
+        assertDoesNotThrow {
+            runWithoutAuthorization {
+                operatonProcessService.startProcess(
+                    "javascript-script-task-process-allowed",
+                    UUID.randomUUID().toString(),
+                    emptyMap()
+                ).processInstanceDto
+            }
+        }
+    }
+
+    @Test
+    fun `default whitelisted classes should be allowed in script tasks`() {
+
+        assertDoesNotThrow {
+            runWithoutAuthorization {
+                operatonProcessService.startProcess(
+                    "javascript-script-task-process-default-allowed",
+                    UUID.randomUUID().toString(),
+                    emptyMap()
+                ).processInstanceDto
+            }
+        }
+    }
+
+    @Test
+    fun `non-whitelisted classes should not be allowed in script tasks`() {
+        assertThrows<ScriptEvaluationException> {
+            runWithoutAuthorization {
+                operatonProcessService.startProcess(
+                    "javascript-script-task-process-unallowed",
+                    UUID.randomUUID().toString(),
+                    emptyMap()
+                ).processInstanceDto
+            }
+        }
     }
 }

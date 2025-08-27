@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.temporaryresource.domain
+package com.ritense.case_.widget.displayproperties
 
-enum class StorageMetadataKeys(val key: String) {
-    DOCUMENT_ID("documentId"),
-    DOCUMENT_URL("documentUrl"),
-    DOWNLOAD_URL("downloadUrl"),
-    PROCESS_INSTANCE_ID("processInstanceId"),
-    DOCUMENT_URL_PROCESS_VARIABLE("documentUrlProcessVariable");
-}
+import com.fasterxml.jackson.annotation.JsonTypeName
 
-fun getEnumFromKey(key: String): Result<StorageMetadataKeys> {
-    return StorageMetadataKeys.entries.find { it.key == key }
-        ?.let { Result.success(it) }
-        ?: Result.failure(IllegalArgumentException("Unknown storage metadata key: $key"))
-}
+@JsonTypeName("link")
+data class LinkFieldDisplayProperties(
+    val linkText: String? = null,
+    override val hideWhenEmpty: Boolean? = false
+) : FieldDisplayProperties
