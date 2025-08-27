@@ -20,10 +20,13 @@ import com.ritense.BaseTest
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertFailsWith
 
 
-class CaseDefinitionTest: BaseTest() {
+class CaseDefinitionTest : BaseTest() {
+
     @Test
     fun `should set autoAssignTasks to false when canHaveAssignee is set to false`() {
         val exception = assertFailsWith<IllegalArgumentException> {
@@ -36,5 +39,27 @@ class CaseDefinitionTest: BaseTest() {
         }
 
         assertEquals(IllegalArgumentException::class.java, exception::class.java)
+    }
+
+    @Test
+    fun `should allow localhost in externalStartFormUrl`() {
+        assertDoesNotThrow {
+            caseDefinition(
+                CaseDefinitionId("key", "1.0.0"),
+                hasExternalStartForm = true,
+                externalStartFormUrl = "http://localhost:8003/#/dashboard?id=123&sort=asc"
+            )
+        }
+    }
+
+    @Test
+    fun `should throw when ftp externalStartFormUrl`() {
+        assertThrows<IllegalArgumentException> {
+            caseDefinition(
+                CaseDefinitionId("key", "1.0.0"),
+                hasExternalStartForm = true,
+                externalStartFormUrl = "ftp://example.com/resource.txt"
+            )
+        }
     }
 }
