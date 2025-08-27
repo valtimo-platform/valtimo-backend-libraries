@@ -1,0 +1,36 @@
+[
+    {
+        "activityId": "start-event",
+        "activityType": "bpmn:StartEvent:start",
+        "processLinkType": "form",
+        "formDefinitionName": "start-form-catalogi-get-typen"
+    },
+    {
+        "activityId": "get-status-typen",
+        "activityType": "bpmn:ServiceTask:start",
+        "pluginConfigurationId": "22c78b91-0b0f-4008-8d8f-c4a84b8e71ec",
+        "pluginActionDefinitionKey": "get-statustypen",
+        "actionProperties": {
+            "processVariable": "pv:statusTypenPV"
+        },
+        "processLinkType": "plugin"
+    },
+    {
+        "activityId": "get-resultaat-typen",
+        "activityType": "bpmn:ServiceTask:start",
+        "pluginConfigurationId": "22c78b91-0b0f-4008-8d8f-c4a84b8e71ec",
+        "pluginActionDefinitionKey": "get-resultaattypen",
+        "actionProperties": {
+            "processVariable": "pv:resultaatTypenPV"
+        },
+        "processLinkType": "plugin"
+    },
+    {
+        "activityId": "validate-fetched-typen",
+        "activityType": "bpmn:UserTask:create",
+        "formDefinitionName": "user-task-validate-typen",
+        "processLinkType": "form",
+        "formDisplayType": "modal",
+        "formSize": "medium"
+    }
+]

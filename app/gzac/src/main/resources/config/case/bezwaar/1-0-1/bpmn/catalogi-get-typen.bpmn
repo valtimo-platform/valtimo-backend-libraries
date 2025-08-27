@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_17rq342" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.38.1" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.23.0">
+  <bpmn:process id="catalogi-get-typen" name="Catalogi - Get typen" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_17xklrh</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_17xklrh" sourceRef="StartEvent_1" targetRef="get-status-typen" />
+    <bpmn:sequenceFlow id="Flow_0s95ctv" sourceRef="get-status-typen" targetRef="get-resultaat-typen" />
+    <bpmn:endEvent id="Event_1bu80xq">
+      <bpmn:incoming>Flow_189qqft</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0diuqjl" sourceRef="get-resultaat-typen" targetRef="validate-fetched-typen" />
+    <bpmn:serviceTask id="get-status-typen" name="Get Status typen">
+      <bpmn:incoming>Flow_17xklrh</bpmn:incoming>
+      <bpmn:outgoing>Flow_0s95ctv</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="get-resultaat-typen" name="Get Resultaat typen">
+      <bpmn:incoming>Flow_0s95ctv</bpmn:incoming>
+      <bpmn:outgoing>Flow_0diuqjl</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_189qqft" sourceRef="validate-fetched-typen" targetRef="Event_1bu80xq" />
+    <bpmn:userTask id="validate-fetched-typen" name="Valideer opgehaalde typen" camunda:candidateGroups="ROLE_USER">
+      <bpmn:incoming>Flow_0diuqjl</bpmn:incoming>
+      <bpmn:outgoing>Flow_189qqft</bpmn:outgoing>
+    </bpmn:userTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="catalogi-get-typen">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="182" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1bu80xq_di" bpmnElement="Event_1bu80xq">
+        <dc:Bounds x="742" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0e7s3jf_di" bpmnElement="get-status-typen">
+        <dc:Bounds x="270" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0p34kqa_di" bpmnElement="get-resultaat-typen">
+        <dc:Bounds x="430" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1gqkfw6_di" bpmnElement="validate-fetched-typen">
+        <dc:Bounds x="590" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_17xklrh_di" bpmnElement="Flow_17xklrh">
+        <di:waypoint x="218" y="120" />
+        <di:waypoint x="270" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0s95ctv_di" bpmnElement="Flow_0s95ctv">
+        <di:waypoint x="370" y="120" />
+        <di:waypoint x="430" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0diuqjl_di" bpmnElement="Flow_0diuqjl">
+        <di:waypoint x="530" y="120" />
+        <di:waypoint x="590" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_189qqft_di" bpmnElement="Flow_189qqft">
+        <di:waypoint x="690" y="120" />
+        <di:waypoint x="742" y="120" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

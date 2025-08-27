@@ -1,0 +1,44 @@
+{
+    "display": "form",
+    "components": [
+        {
+            "label": "HTML",
+            "content": "Klik start om Status en Resultaat typen op te halen bij de Catalogi API.",
+            "refreshOnChange": false,
+            "key": "html",
+            "type": "htmlelement",
+            "input": false,
+            "tableView": false
+        },
+        {
+            "label": "Proces variabele - Status typen",
+            "key": "pv:statusTypenPV",
+            "type": "textfield",
+            "input": true,
+            "validate": {
+                "required": true
+            },
+            "defaultValue": "statusTypen",
+            "disabled": true
+        },
+        {
+            "label": "Proces variabele - Resultaat typen",
+            "key": "pv:resultaatTypenPV",
+            "type": "textfield",
+            "input": true,
+            "validate": {
+                "required": true
+            },
+            "defaultValue": "resultaatTypen",
+            "disabled": true
+        },
+        {
+            "type": "button",
+            "label": "Start",
+            "key": "submit",
+            "disableOnInvalid": true,
+            "input": true,
+            "tableView": false
+        }
+    ]
+}

@@ -8,5 +8,10 @@
         "processDefinitionKey": "patch-zaak",
         "canInitializeDocument": false,
         "startableByUser": true
+    },
+    {
+        "processDefinitionKey": "catalogi-get-typen",
+        "canInitializeDocument": false,
+        "startableByUser": true
     }
 ]

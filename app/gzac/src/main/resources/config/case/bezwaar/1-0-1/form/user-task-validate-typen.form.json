@@ -1,0 +1,64 @@
+{
+    "display": "form",
+    "components": [
+        {
+            "key": "statusType",
+            "type": "select",
+            "input": true,
+            "label": "Status type",
+            "widget": "choicesjs",
+            "validate": {
+                "required": true
+            },
+            "dataSrc": "custom",
+            "template": "<span>{{ item.name }}</span>",
+            "idPath": "url",
+            "data": {
+                "custom": "values = data['statusTypenContainer'];"
+            }
+        },
+        {
+            "key": "statusTypenContainer",
+            "type": "hidden",
+            "input": true,
+            "label": "Status typen container",
+            "persistent": "client-only",
+            "properties": {
+                "sourceKey": "pv:statusTypen"
+            }
+        },
+        {
+            "key": "resultaatType",
+            "type": "select",
+            "input": true,
+            "label": "Resultaat type",
+            "widget": "choicesjs",
+            "validate": {
+                "required": true
+            },
+            "dataSrc": "custom",
+            "template": "<span>{{ item.name }}</span>",
+            "idPath": "url",
+            "data": {
+                "custom": "values = data['resultaatTypenContainer'];"
+            }
+        },
+        {
+            "key": "resultaatTypenContainer",
+            "type": "hidden",
+            "input": true,
+            "label": "Resultaat typen container",
+            "persistent": "client-only",
+            "properties": {
+                "sourceKey": "pv:resultaatTypen"
+            }
+        },
+        {
+            "type": "button",
+            "key": "submit",
+            "label": "Submit",
+            "disableOnInvalid": true,
+            "input": true
+        }
+    ]
+}
