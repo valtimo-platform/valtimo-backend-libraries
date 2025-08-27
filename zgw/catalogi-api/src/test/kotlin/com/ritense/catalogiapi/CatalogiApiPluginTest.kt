@@ -79,20 +79,6 @@ internal class CatalogiApiPluginTest : BaseTest() {
 
     @Test
     fun `should call client to get informatieobjecttypes`() {
-        val zaakTypeUrl = zaaktypeUrl().toURI()
-        val resultPage = mock<Page<ZaaktypeInformatieobjecttype>>()
-
-        whenever(
-            client.getZaaktypeInformatieobjecttypes(
-                authentication = plugin.authenticationPluginConfiguration,
-                baseUrl = plugin.url,
-                request = ZaaktypeInformatieobjecttypeRequest(
-                    zaaktype = zaakTypeUrl,
-                    page = 1
-                )
-            )
-        ).thenReturn(resultPage)
-
         val informatieobjecttypeUrl1 = informatieObjectTypeUrl("1").toURI()
         val mockZaaktypeInformatieobjecttype1 = mockZaaktypeInformatieObjectType(informatieobjecttypeUrl1)
         val mockInformatieobjecttype1 = mockInformatieObjectType()
@@ -101,29 +87,28 @@ internal class CatalogiApiPluginTest : BaseTest() {
         val mockZaaktypeInformatieobjecttype2 = mockZaaktypeInformatieObjectType(informatieobjecttypeUrl2)
         val mockInformatieobjecttype2 = mockInformatieObjectType()
 
-        whenever(resultPage.results)
-            .thenReturn(
-                listOf(
-                    mockZaaktypeInformatieobjecttype1,
-                    mockZaaktypeInformatieobjecttype2
-                )
+        val zaakTypeUrl = zaaktypeUrl().toURI()
+        val resultPage = mockZaakTypeInformatieObjectTypePage(
+            result = listOf(
+                mockZaaktypeInformatieobjecttype1,
+                mockZaaktypeInformatieobjecttype2
+            )
         )
 
-        whenever(
-            client.getInformatieobjecttype(
-                authentication = plugin.authenticationPluginConfiguration,
-                baseUrl = plugin.url,
-                informatieobjecttypeUrl = informatieobjecttypeUrl1
-            )
-        ).thenReturn(mockInformatieobjecttype1)
+        mockGetZaaktypeInformatieObjectTypes(
+            request = zaakTypeInformatieObjectTypeRequest(zaakTypeUrl, 1),
+            result = resultPage
+        )
 
-        whenever(
-            client.getInformatieobjecttype(
-                authentication = plugin.authenticationPluginConfiguration,
-                baseUrl = plugin.url,
-                informatieobjecttypeUrl = informatieobjecttypeUrl2
-            )
-        ).thenReturn(mockInformatieobjecttype2)
+        mockGetInformatieObjectType(
+            informatieObjectTypeUrl = informatieobjecttypeUrl1,
+            result = mockInformatieobjecttype1
+        )
+
+        mockGetInformatieObjectType(
+            informatieObjectTypeUrl = informatieobjecttypeUrl2,
+            result = mockInformatieobjecttype2
+        )
 
         val informatieobjecttypes = plugin.getInformatieobjecttypes(zaakTypeUrl)
 
@@ -134,35 +119,6 @@ internal class CatalogiApiPluginTest : BaseTest() {
 
     @Test
     fun `should call client to get informatieobjecttypes with multiple pages`() {
-        val zaakTypeUrl = zaaktypeUrl().toURI()
-        val resultPage1 = mock<Page<ZaaktypeInformatieobjecttype>>()
-        val resultPage2 = mock<Page<ZaaktypeInformatieobjecttype>>()
-
-        whenever(resultPage1.next)
-            .thenReturn(zaaktypeUrl("2").toURI())
-
-        whenever(
-            client.getZaaktypeInformatieobjecttypes(
-                authentication = plugin.authenticationPluginConfiguration,
-                baseUrl = plugin.url,
-                request = ZaaktypeInformatieobjecttypeRequest(
-                    zaaktype = zaakTypeUrl,
-                    page = 1
-                )
-            )
-        ).thenReturn(resultPage1)
-
-        whenever(
-            client.getZaaktypeInformatieobjecttypes(
-                authentication = plugin.authenticationPluginConfiguration,
-                baseUrl = plugin.url,
-                request = ZaaktypeInformatieobjecttypeRequest(
-                    zaaktype = zaakTypeUrl,
-                    page = 2
-                )
-            )
-        ).thenReturn(resultPage2)
-
         val informatieobjecttypeUrl1 = informatieObjectTypeUrl("1").toURI()
         val mockZaaktypeInformatieobjecttype1 = mockZaaktypeInformatieObjectType(informatieobjecttypeUrl1)
         val mockInformatieobjecttype1 = mockInformatieObjectType()
@@ -171,27 +127,34 @@ internal class CatalogiApiPluginTest : BaseTest() {
         val mockZaaktypeInformatieobjecttype2 = mockZaaktypeInformatieObjectType(informatieobjecttypeUrl2)
         val mockInformatieobjecttype2 = mockInformatieObjectType()
 
-        whenever(resultPage1.results)
-            .thenReturn(listOf(mockZaaktypeInformatieobjecttype1))
+        val zaakTypeUrl = zaaktypeUrl().toURI()
+        val resultPage1 = mockZaakTypeInformatieObjectTypePage(
+            result = listOf(mockZaaktypeInformatieobjecttype1),
+            next = zaaktypeUrl("2").toURI()
+        )
+        val resultPage2 = mockZaakTypeInformatieObjectTypePage(
+            result = listOf(mockZaaktypeInformatieobjecttype2)
+        )
 
-        whenever(resultPage2.results)
-            .thenReturn(listOf(mockZaaktypeInformatieobjecttype2))
+        mockGetZaaktypeInformatieObjectTypes(
+            request = zaakTypeInformatieObjectTypeRequest(zaakTypeUrl, 1),
+            result = resultPage1
+        )
 
-        whenever(
-            client.getInformatieobjecttype(
-                authentication = plugin.authenticationPluginConfiguration,
-                baseUrl = plugin.url,
-                informatieobjecttypeUrl = informatieobjecttypeUrl1
-            )
-        ).thenReturn(mockInformatieobjecttype1)
+        mockGetZaaktypeInformatieObjectTypes(
+            request = zaakTypeInformatieObjectTypeRequest(zaakTypeUrl, 2),
+            result = resultPage2
+        )
 
-        whenever(
-            client.getInformatieobjecttype(
-                authentication = plugin.authenticationPluginConfiguration,
-                baseUrl = plugin.url,
-                informatieobjecttypeUrl = informatieobjecttypeUrl2
-            )
-        ).thenReturn(mockInformatieobjecttype2)
+        mockGetInformatieObjectType(
+            informatieObjectTypeUrl = informatieobjecttypeUrl1,
+            result = mockInformatieobjecttype1
+        )
+
+        mockGetInformatieObjectType(
+            informatieObjectTypeUrl = informatieobjecttypeUrl2,
+            result = mockInformatieobjecttype2
+        )
 
         val informatieobjecttypes = plugin.getInformatieobjecttypes(zaakTypeUrl)
 
@@ -202,20 +165,6 @@ internal class CatalogiApiPluginTest : BaseTest() {
 
     @Test
     fun `should filter informatieobjecttypes that are still in concept`() {
-        val zaakTypeUrl = zaaktypeUrl().toURI()
-        val resultPage = mock<Page<ZaaktypeInformatieobjecttype>>()
-
-        whenever(
-            client.getZaaktypeInformatieobjecttypes(
-                authentication = plugin.authenticationPluginConfiguration,
-                baseUrl = plugin.url,
-                request = ZaaktypeInformatieobjecttypeRequest(
-                    zaaktype = zaakTypeUrl,
-                    page = 1
-                )
-            )
-        ).thenReturn(resultPage)
-
         val informatieobjecttypeUrl1 = informatieObjectTypeUrl("1").toURI()
         val mockZaaktypeInformatieobjecttype1 = mockZaaktypeInformatieObjectType(informatieobjecttypeUrl1)
         val mockInformatieobjecttype1 = mockInformatieObjectType(concept = true)
@@ -224,28 +173,28 @@ internal class CatalogiApiPluginTest : BaseTest() {
         val mockZaaktypeInformatieobjecttype2 = mockZaaktypeInformatieObjectType(informatieobjecttypeUrl2)
         val mockInformatieobjecttype2 = mockInformatieObjectType()
 
-        whenever(resultPage.results).thenReturn(
-            listOf(
+        val zaakTypeUrl = zaaktypeUrl().toURI()
+        val resultPage = mockZaakTypeInformatieObjectTypePage(
+            result = listOf(
                 mockZaaktypeInformatieobjecttype1,
                 mockZaaktypeInformatieobjecttype2
             )
         )
 
-        whenever(
-            client.getInformatieobjecttype(
-                authentication = plugin.authenticationPluginConfiguration,
-                baseUrl = plugin.url,
-                informatieobjecttypeUrl = informatieobjecttypeUrl1
-            )
-        ).thenReturn(mockInformatieobjecttype1)
+        mockGetZaaktypeInformatieObjectTypes(
+            request = zaakTypeInformatieObjectTypeRequest(zaakTypeUrl, 1),
+            result = resultPage
+        )
 
-        whenever(
-            client.getInformatieobjecttype(
-                authentication = plugin.authenticationPluginConfiguration,
-                baseUrl = plugin.url,
-                informatieobjecttypeUrl = informatieobjecttypeUrl2
-            )
-        ).thenReturn(mockInformatieobjecttype2)
+        mockGetInformatieObjectType(
+            informatieObjectTypeUrl = informatieobjecttypeUrl1,
+            result = mockInformatieobjecttype1
+        )
+
+        mockGetInformatieObjectType(
+            informatieObjectTypeUrl = informatieobjecttypeUrl2,
+            result = mockInformatieobjecttype2
+        )
 
         val informatieobjecttypes = plugin.getInformatieobjecttypes(zaakTypeUrl)
 
@@ -255,20 +204,6 @@ internal class CatalogiApiPluginTest : BaseTest() {
 
     @Test
     fun `should filter informatieobjecttypes that are not valid yet`() {
-        val zaakTypeUrl = zaaktypeUrl().toURI()
-        val resultPage = mock<Page<ZaaktypeInformatieobjecttype>>()
-
-        whenever(
-            client.getZaaktypeInformatieobjecttypes(
-                authentication = plugin.authenticationPluginConfiguration,
-                baseUrl = plugin.url,
-                request = ZaaktypeInformatieobjecttypeRequest(
-                    zaaktype = zaakTypeUrl,
-                    page = 1
-                )
-            )
-        ).thenReturn(resultPage)
-
         val informatieobjecttypeUrl1 = informatieObjectTypeUrl("1").toURI()
         val mockZaaktypeInformatieobjecttype1 = mockZaaktypeInformatieObjectType(informatieobjecttypeUrl1)
         val mockInformatieobjecttype1 = mockInformatieObjectType(
@@ -279,21 +214,27 @@ internal class CatalogiApiPluginTest : BaseTest() {
         val mockZaaktypeInformatieobjecttype2 = mockZaaktypeInformatieObjectType(informatieobjecttypeUrl2)
         val mockInformatieobjecttype2 = mockInformatieObjectType()
 
-        whenever(resultPage.results).thenReturn(
-            listOf(
+        val zaakTypeUrl = zaaktypeUrl().toURI()
+        val resultPage = mockZaakTypeInformatieObjectTypePage(
+            result = listOf(
                 mockZaaktypeInformatieobjecttype1,
                 mockZaaktypeInformatieobjecttype2
             )
         )
 
-        mockGetInformatieobjecttype(
-            informatieObjectTypeUrl = informatieobjecttypeUrl1,
-            informatieObjectType = mockInformatieobjecttype1
+        mockGetZaaktypeInformatieObjectTypes(
+            request = zaakTypeInformatieObjectTypeRequest(zaakTypeUrl, 1),
+            result = resultPage
         )
 
-        mockGetInformatieobjecttype(
+        mockGetInformatieObjectType(
+            informatieObjectTypeUrl = informatieobjecttypeUrl1,
+            result = mockInformatieobjecttype1
+        )
+
+        mockGetInformatieObjectType(
             informatieObjectTypeUrl = informatieobjecttypeUrl2,
-            informatieObjectType = mockInformatieobjecttype2
+            result = mockInformatieobjecttype2
         )
 
         val informatieobjecttypes = plugin.getInformatieobjecttypes(zaakTypeUrl)
@@ -304,20 +245,6 @@ internal class CatalogiApiPluginTest : BaseTest() {
 
     @Test
     fun `should filter informatieojecttypes that are no longer valid`() {
-        val zaakTypeUrl = zaaktypeUrl().toURI()
-        val resultPage = mock<Page<ZaaktypeInformatieobjecttype>>()
-
-        whenever(
-            client.getZaaktypeInformatieobjecttypes(
-                authentication = plugin.authenticationPluginConfiguration,
-                baseUrl = plugin.url,
-                request = ZaaktypeInformatieobjecttypeRequest(
-                    zaaktype = zaakTypeUrl,
-                    page = 1
-                )
-            )
-        ).thenReturn(resultPage)
-
         val informatieobjecttypeUrl1 = informatieObjectTypeUrl("1").toURI()
         val mockZaaktypeInformatieobjecttype1 = mockZaaktypeInformatieObjectType(informatieobjecttypeUrl1)
         val mockInformatieobjecttype1 = mockInformatieObjectType(
@@ -329,28 +256,28 @@ internal class CatalogiApiPluginTest : BaseTest() {
         val mockInformatieobjecttype2 = mockInformatieObjectType()
         val mockZaaktypeInformatieobjecttype2 = mockZaaktypeInformatieObjectType(informatieobjecttypeUrl2)
 
-        whenever(resultPage.results).thenReturn(
-            listOf(
+        val zaakTypeUrl = zaaktypeUrl().toURI()
+        val resultPage = mockZaakTypeInformatieObjectTypePage(
+            result = listOf(
                 mockZaaktypeInformatieobjecttype1,
                 mockZaaktypeInformatieobjecttype2
             )
         )
 
-        whenever(
-            client.getInformatieobjecttype(
-                authentication = plugin.authenticationPluginConfiguration,
-                baseUrl = plugin.url,
-                informatieobjecttypeUrl = informatieobjecttypeUrl1
-            )
-        ).thenReturn(mockInformatieobjecttype1)
+        mockGetZaaktypeInformatieObjectTypes(
+            request = zaakTypeInformatieObjectTypeRequest(zaakTypeUrl, 1),
+            result = resultPage
+        )
 
-        whenever(
-            client.getInformatieobjecttype(
-                authentication = plugin.authenticationPluginConfiguration,
-                baseUrl = plugin.url,
-                informatieobjecttypeUrl = informatieobjecttypeUrl2
-            )
-        ).thenReturn(mockInformatieobjecttype2)
+        mockGetInformatieObjectType(
+            informatieObjectTypeUrl = informatieobjecttypeUrl1,
+            result = mockInformatieobjecttype1
+        )
+
+        mockGetInformatieObjectType(
+            informatieObjectTypeUrl = informatieobjecttypeUrl2,
+            result = mockInformatieobjecttype2
+        )
 
         val informatieobjecttypes = plugin.getInformatieobjecttypes(zaakTypeUrl)
 
@@ -389,7 +316,7 @@ internal class CatalogiApiPluginTest : BaseTest() {
         val execution = mockExecution(documentId)
 
         mockDocumentService(documentId, document)
-        mockZaaktypeUrlProvider(zaaktypeUrl.toURI())
+        mockZaakTypeUrlProvider(zaaktypeUrl.toURI())
         mockStatustypen(zaaktypeUrl.toURI())
 
         // when
@@ -415,7 +342,7 @@ internal class CatalogiApiPluginTest : BaseTest() {
         val execution = mockExecution(documentId)
 
         mockDocumentService(documentId, document)
-        mockZaaktypeUrlProvider(zaaktypeUrl)
+        mockZaakTypeUrlProvider(zaaktypeUrl)
         mockStatustypen(
             zaaktypeUrl = zaaktypeUrl,
             additionalStatustypen = listOf(
@@ -446,7 +373,7 @@ internal class CatalogiApiPluginTest : BaseTest() {
         val execution = mockExecution(documentId)
 
         mockDocumentService(documentId, document)
-        mockZaaktypeUrlProvider(zaaktypeUrl.toURI())
+        mockZaakTypeUrlProvider(zaaktypeUrl.toURI())
         mockStatustypen(
             zaaktypeUrl = zaaktypeUrl.toURI(),
             defaultStatustypen = listOf()
@@ -519,7 +446,7 @@ internal class CatalogiApiPluginTest : BaseTest() {
         val execution = mockExecution(documentId)
 
         mockDocumentService(documentId, document)
-        mockZaaktypeUrlProvider(zaaktypeUrl.toURI())
+        mockZaakTypeUrlProvider(zaaktypeUrl.toURI())
         mockResultaattypen(zaaktypeUrl.toURI())
 
         // when
@@ -545,7 +472,7 @@ internal class CatalogiApiPluginTest : BaseTest() {
         val execution = mockExecution(documentId)
 
         mockDocumentService(documentId, document)
-        mockZaaktypeUrlProvider(zaaktypeUrl)
+        mockZaakTypeUrlProvider(zaaktypeUrl)
         mockResultaattypen(
             zaaktypeUrl = zaaktypeUrl,
             additionalResultaatTypen = listOf(
@@ -629,7 +556,7 @@ internal class CatalogiApiPluginTest : BaseTest() {
         val execution = mockExecution(documentId)
 
         mockDocumentService(documentId, document)
-        mockZaaktypeUrlProvider(zaaktypeUrl.toURI())
+        mockZaakTypeUrlProvider(zaaktypeUrl.toURI())
         whenever(client.getBesluittypen(any(), any(), any())).thenReturn(
             Page(
                 count = 3,
@@ -683,7 +610,7 @@ internal class CatalogiApiPluginTest : BaseTest() {
         val execution = mockExecution(documentId)
 
         mockDocumentService(documentId, document)
-        mockZaaktypeUrlProvider(zaaktypeUrl.toURI())
+        mockZaakTypeUrlProvider(zaaktypeUrl.toURI())
         whenever(client.getBesluittypen(any(), any(), any()))
             .thenReturn(
                 Page(count = 0, results = listOf())
@@ -736,7 +663,7 @@ internal class CatalogiApiPluginTest : BaseTest() {
         val execution = mockExecution(documentId)
 
         mockDocumentService(documentId, document)
-        mockZaaktypeUrlProvider(zaaktypeUrl.toURI())
+        mockZaakTypeUrlProvider(zaaktypeUrl.toURI())
         whenever(client.getEigenschappen(any(), any(), any())).thenReturn(
             Page(
                 count = 3,
@@ -784,7 +711,7 @@ internal class CatalogiApiPluginTest : BaseTest() {
         val execution = mockExecution(documentId)
 
         mockDocumentService(documentId, document)
-        mockZaaktypeUrlProvider(zaaktypeUrl.toURI())
+        mockZaakTypeUrlProvider(zaaktypeUrl.toURI())
         whenever(client.getEigenschappen(any(), any(), any())).thenReturn(
             Page(count = 0, results = listOf())
         )
@@ -819,6 +746,14 @@ internal class CatalogiApiPluginTest : BaseTest() {
         on { this.businessKey } doReturn businessKey
     }
 
+    private fun mockZaakTypeInformatieObjectTypePage(
+        result: List<ZaaktypeInformatieobjecttype> = emptyList(),
+        next: URI? = null
+    ): Page<ZaaktypeInformatieobjecttype> = mock {
+        on { this.results } doReturn result
+        on { this.next } doReturn next
+    }
+
     private fun mockDocumentService(
         documentId: String = documentId(),
         document: JsonSchemaDocument = mockDocument()
@@ -827,14 +762,14 @@ internal class CatalogiApiPluginTest : BaseTest() {
             .thenReturn(document)
     }
 
-    private fun mockZaaktypeUrlProvider(zaaktypeUrl: URI = zaaktypeUrl().toURI()) {
+    private fun mockZaakTypeUrlProvider(zaaktypeUrl: URI = zaaktypeUrl().toURI()) {
         whenever(zaaktypeUrlProvider.getZaaktypeUrl(eq(caseDefinitionId)))
             .thenReturn(zaaktypeUrl)
     }
 
-    private fun mockGetInformatieobjecttype(
+    private fun mockGetInformatieObjectType(
         informatieObjectTypeUrl: URI,
-        informatieObjectType: Informatieobjecttype
+        result: Informatieobjecttype
     ) {
         whenever(
             client.getInformatieobjecttype(
@@ -842,24 +777,26 @@ internal class CatalogiApiPluginTest : BaseTest() {
                 baseUrl = eq(plugin.url),
                 informatieobjecttypeUrl = eq(informatieObjectTypeUrl)
             )
-        ).thenReturn(informatieObjectType)
+        ).thenReturn(result)
     }
 
-    private fun mockGetZaaktypeInformatieobjectTypes(
-        zaakTypeUrl: URI,
-        resultPage: Page<ZaaktypeInformatieobjecttype>
+    private fun mockGetZaaktypeInformatieObjectTypes(
+        request: ZaaktypeInformatieobjecttypeRequest,
+        result: Page<ZaaktypeInformatieobjecttype>
     ) {
         whenever(
             client.getZaaktypeInformatieobjecttypes(
                 authentication = eq(plugin.authenticationPluginConfiguration),
                 baseUrl = eq(plugin.url),
-                request = eq(ZaaktypeInformatieobjecttypeRequest(
-                    zaaktype = zaakTypeUrl,
-                    page = 1
-                ))
+                request = eq(request)
             )
-        ).thenReturn(resultPage)
+        ).thenReturn(result)
     }
+
+    private fun zaakTypeInformatieObjectTypeRequest(zaakTypeUrl: URI, page: Int) = ZaaktypeInformatieobjecttypeRequest(
+        zaaktype = zaakTypeUrl,
+        page = page
+    )
 
     private fun besluitType(
         url: URI,
