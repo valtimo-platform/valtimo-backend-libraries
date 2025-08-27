@@ -8,5 +8,10 @@
         "processDefinitionKey": "patch-zaak",
         "canInitializeDocument": false,
         "startableByUser": true
+    },
+    {
+        "processDefinitionKey": "concurrent_test_process",
+        "canInitializeDocument": false,
+        "startableByUser": true
     }
 ]
