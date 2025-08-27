@@ -91,9 +91,9 @@ class CatalogiApiPlugin(
                 CATALOGI_API.ZAAKTYPE to zaaktypeUri.toString()
             ) {
                 getStatusTypen(zaaktypeUri).map { statustype ->
-                    StatustypeDto(
-                        url = statustype.url!!,
-                        name = statustype.omschrijving
+                    mapOf(
+                        URL_KEY to statustype.url!!.toASCIIString(),
+                        NAME_KEY to statustype.omschrijving
                     )
                 }.let { statustypen ->
                     execution.setVariable(processVariable, statustypen)
@@ -150,9 +150,9 @@ class CatalogiApiPlugin(
                 CATALOGI_API.ZAAKTYPE to zaaktypeUri.toString()
             ) {
                 getResultaattypen(zaaktypeUri).map { resultaattype ->
-                    ResultaattypeDto(
-                        url = resultaattype.url!!,
-                        name = resultaattype.omschrijving
+                    mapOf(
+                        URL_KEY to resultaattype.url!!.toASCIIString(),
+                        NAME_KEY to resultaattype.omschrijving
                     )
                 }.let { resultaattypen ->
                     execution.setVariable(processVariable, resultaattypen)
@@ -513,13 +513,15 @@ class CatalogiApiPlugin(
         AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
 
     companion object {
-        val logger = KotlinLogging.logger {}
-        const val PLUGIN_KEY = "catalogiapi"
-        const val URL_PROPERTY = "url"
+        private val logger = KotlinLogging.logger {}
         private val HTTPS_REGEX = "https?://.+".toRegex()
+        private const val NAME_KEY = "name"
+        private const val URL_KEY = "url"
+
+        const val PLUGIN_KEY = "catalogiapi"
 
         fun findConfigurationByUrl(url: URI) = { properties: JsonNode ->
-            url.toString().startsWith(properties[URL_PROPERTY].textValue())
+            url.toString().startsWith(properties[URL_KEY].textValue())
         }
     }
 }

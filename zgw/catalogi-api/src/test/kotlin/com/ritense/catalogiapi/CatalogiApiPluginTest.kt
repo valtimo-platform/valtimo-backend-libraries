@@ -303,7 +303,7 @@ internal class CatalogiApiPluginTest : BaseTest() {
 
         // then
         verify(execution, times(1))
-            .setVariable(eq(processVariable), any<List<StatustypeDto>>())
+            .setVariable(eq(processVariable), any<List<Map<String, String>>>())
     }
 
     @Test
@@ -433,7 +433,7 @@ internal class CatalogiApiPluginTest : BaseTest() {
 
         // then
         verify(execution, times(1))
-            .setVariable(eq(processVariable), any<List<ResultaattypeDto>>())
+            .setVariable(eq(processVariable), any<List<Map<String, String>>>())
     }
 
     @Test
