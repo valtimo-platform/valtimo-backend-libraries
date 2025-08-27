@@ -22,7 +22,9 @@ import jakarta.persistence.criteria.Expression
 import jakarta.persistence.criteria.Predicate
 import kotlin.reflect.full.isSubclassOf
 
-enum class PermissionConditionOperator(@JsonValue val asText: String) {
+enum class PermissionConditionOperator(
+    @JsonValue val asText: String,
+) {
     NOT_EQUAL_TO("!="),
     EQUAL_TO("=="),
     GREATER_THAN(">"),

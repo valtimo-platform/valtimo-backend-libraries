@@ -20,5 +20,5 @@ import com.ritense.valtimo.contract.conditions.Condition
 
 data class DocumentCountDataSourceProperties(
     val documentDefinition: String,
-    val conditions: List<Condition<*>>? = listOf()
+    val queryConditions: List<Condition<*>>? = listOf()
 )

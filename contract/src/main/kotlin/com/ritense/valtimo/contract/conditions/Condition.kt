@@ -29,12 +29,25 @@ import org.springframework.expression.spel.standard.SpelExpressionParser
 import org.springframework.expression.spel.support.StandardEvaluationContext
 import java.time.LocalDateTime
 
+/**
+ * A condition that can generically be used for different features where user entered conditions are required.
+ * Because the condition can be used in different contexts, the actual value resolution is done outside of this class.
+ * The [expressionResolver] or [pathExpressionFunction] function is used to resolve the actual value of the field that
+ * needs to be evaluated.
+ */
 data class Condition<T : Comparable<T>>(
     val queryPath: String,
     val queryOperator: ExpressionOperator,
     @JsonDeserialize(using = ComparableDeserializer::class)
     val queryValue: T
 ) {
+
+    fun isValid(
+        expressionResolver: (String) -> Any
+    ): Boolean {
+        val fieldValue = expressionResolver.invoke(queryPath)
+        return queryOperator.evaluate(fieldValue, queryValue)
+    }
 
     fun toPredicate(
         root: Root<*>,
@@ -69,7 +82,7 @@ data class Condition<T : Comparable<T>>(
 
         val expression = pathExpressionFunction(valueClass, queryPath, root, criteriaBuilder)
 
-        return queryOperator.toPredicate(
+        return queryOperator.toPredicate<T>(
             criteriaBuilder,
             expression,
             predicateQueryValue
@@ -110,7 +123,7 @@ data class Condition<T : Comparable<T>>(
         val expression =
             pathExpressionFunction(valueClass as Class<T>, condition.queryPath, root, criteriaBuilder)
 
-        return condition.queryOperator.toPredicate(
+        return condition.queryOperator.toPredicate<T>(
             criteriaBuilder,
             expression,
             value as T
@@ -137,7 +150,7 @@ data class Condition<T : Comparable<T>>(
         val permissionConditionKey = PermissionConditionKey.fromKey(condition.queryValue)?.key
         val resolvedValue = CurrentUserExpressionHandler.resolveValue(permissionConditionKey) as? String ?: ""
 
-        return condition.queryOperator.toPredicate(
+        return condition.queryOperator.toPredicate<T>(
             criteriaBuilder,
             expression,
             resolvedValue as T

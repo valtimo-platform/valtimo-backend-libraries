@@ -20,19 +20,38 @@ import com.fasterxml.jackson.annotation.JsonValue
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Expression
 import jakarta.persistence.criteria.Predicate
+import kotlin.reflect.full.isSubclassOf
 
 enum class ExpressionOperator(
     @JsonValue val asText: String,
-    private val notEqualCompareResult:Int = 1
 ) {
     NOT_EQUAL_TO("!="),
     EQUAL_TO("=="),
-    GREATER_THAN(">", -1),
-    GREATER_THAN_OR_EQUAL_TO(">=", -1),
+    GREATER_THAN(">"),
+    GREATER_THAN_OR_EQUAL_TO(">="),
     LESS_THAN("<"),
-    LESS_THAN_OR_EQUAL_TO("<=");
+    LESS_THAN_OR_EQUAL_TO("<="),
+    LIST_CONTAINS("list_contains"),
+    IN("in");
 
-    fun <T : Comparable<T>> toPredicate(criteriaBuilder: CriteriaBuilder, expression: Expression<T>, value: T?): Predicate {
+    fun evaluate(left: Any?, right: Any?): Boolean {
+        return when (this) {
+            NOT_EQUAL_TO -> left != right
+            EQUAL_TO -> left == right
+            GREATER_THAN -> compare(left, right, -1) > 0
+            GREATER_THAN_OR_EQUAL_TO -> compare(left, right, -1) >= 0
+            LESS_THAN -> compare(left, right) < 0
+            LESS_THAN_OR_EQUAL_TO -> compare(left, right) <= 0
+            LIST_CONTAINS -> contains(left, right)
+            IN -> contains(right, left)
+        }
+    }
+
+    fun <T : Comparable<T>> toPredicate(
+        criteriaBuilder: CriteriaBuilder,
+        expression: Expression<*>,
+        value: Any?
+    ): Predicate {
         return when(this) {
             NOT_EQUAL_TO ->
                 // Hibernate does not handle nulls very well in some configurations. This is a workaround
@@ -44,6 +63,7 @@ enum class ExpressionOperator(
                         criteriaBuilder.notEqual(expression, value)
                     )
                 }
+
             EQUAL_TO ->
                 // Hibernate does not handle nulls very well in some configurations. This is a workaround
                 if (value == null) {
@@ -51,34 +71,74 @@ enum class ExpressionOperator(
                 } else {
                     criteriaBuilder.equal(expression, value)
                 }
+
             LESS_THAN ->
                 criteriaBuilder.lessThan(
-                    expression,
-                    value!!
+                    expression as Expression<T>,
+                    value!! as T
                 )
+
             LESS_THAN_OR_EQUAL_TO ->
                 if(value == null) {
-                    EQUAL_TO.toPredicate(criteriaBuilder, expression, null)
+                    EQUAL_TO.toPredicate<T>(criteriaBuilder, expression, null)
                 } else {
                     criteriaBuilder.lessThanOrEqualTo(
-                        expression,
-                        value
+                        expression as Expression<T>,
+                        value as T
                     )
                 }
+
             GREATER_THAN ->
                 criteriaBuilder.greaterThan(
-                    expression,
-                    value!!
+                    expression as Expression<T>,
+                    value!! as T
                 )
+
             GREATER_THAN_OR_EQUAL_TO ->
                 if (value == null) {
-                    EQUAL_TO.toPredicate(criteriaBuilder, expression, null)
+                    EQUAL_TO.toPredicate<T>(criteriaBuilder, expression as Expression<T>, null)
                 } else {
                     criteriaBuilder.greaterThanOrEqualTo(
-                        expression,
-                        value
+                        expression as Expression<T>,
+                        value as T
                     )
                 }
+
+            LIST_CONTAINS ->
+                criteriaBuilder.isMember(
+                    value,
+                    expression as Expression<Collection<T>>
+                )
+
+            IN -> {
+                val inClause = criteriaBuilder.`in`(expression as Expression<T>)
+                (value as Collection<Any?>).forEach {
+                    inClause.value(it!! as T)
+                }
+                inClause
+            }
+        }
+    }
+
+    private fun compare(left: Any?, right: Any?, notEqualResult: Int = 1): Int {
+        return if (left == right) {
+            0
+        } else if (left == null || right == null || (!left::class.isSubclassOf(right::class))) {
+            notEqualResult
+        } else if (left is Comparable<*> && right is Comparable<*>) {
+            (left as Comparable<Any>).compareTo(right as Any)
+        } else {
+            notEqualResult
+        }
+    }
+
+    private fun contains(collection: Any?, value: Any?): Boolean {
+        return if (collection == value) {
+            true
+        } else if (collection != null && collection is Collection<*>) {
+            collection.contains(value)
+        } else {
+            false
         }
     }
 }

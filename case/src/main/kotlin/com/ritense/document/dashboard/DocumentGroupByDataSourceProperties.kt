@@ -21,6 +21,6 @@ import com.ritense.valtimo.contract.conditions.Condition
 data class DocumentGroupByDataSourceProperties(
     val documentDefinition: String,
     val path: String,
-    val conditions: List<Condition<*>>?,
+    val queryConditions: List<Condition<*>>?,
     val enum: Map<String, String>?
 )

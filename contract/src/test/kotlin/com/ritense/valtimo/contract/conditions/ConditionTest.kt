@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.contract.dashboard
+package com.ritense.valtimo.contract.conditions
 
 import com.ritense.valtimo.contract.json.MapperSingleton
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class QueryConditionTest {
+class ConditionTest {
 
     @Test
     fun `should deserialize with number value`() {

@@ -20,7 +20,7 @@ import com.ritense.valtimo.contract.conditions.Condition
 
 data class DocumentCountsQueryItem(
     val label: String,
-    val conditions: List<Condition<*>>
+    val queryConditions: List<Condition<*>>
 )
 
 data class DocumentCountsDataSourceProperties(
