@@ -40,7 +40,7 @@ class DocumentWidgetDataSource(
         val byCaseSpec = byDocumentDefinitionIdName(caseCountDataSourceProperties.documentDefinition)
         val spec = byCaseSpec.and { root, _, criteriaBuilder ->
             criteriaBuilder.and(
-                *caseCountDataSourceProperties.conditions?.map {
+                *caseCountDataSourceProperties.queryConditions?.map {
                     it.toPredicate(root, criteriaBuilder, this::getPathExpression)
                 }?.toTypedArray() ?: arrayOf()
             )
@@ -57,7 +57,7 @@ class DocumentWidgetDataSource(
             val spec = byDocumentDefinitionIdName(caseCountsDataSourceProperties.documentDefinition)
                 .and { root, _, criteriaBuilder ->
                     criteriaBuilder.and(
-                        *queryItem.conditions.map {
+                        *queryItem.queryConditions.map {
                             it.toPredicate(root, criteriaBuilder, this::getPathExpression)
                         }.toTypedArray()
                     )
@@ -93,7 +93,7 @@ class DocumentWidgetDataSource(
             Condition(caseGroupByDataSourceProperties.path, ExpressionOperator.NOT_EQUAL_TO, "null").toPredicate(
                 root, criteriaBuilder, this::getPathExpression
             )
-        val conditionPredicates = caseGroupByDataSourceProperties.conditions?.map {
+        val conditionPredicates = caseGroupByDataSourceProperties.queryConditions?.map {
             it.toPredicate(root, criteriaBuilder, this::getPathExpression)
         }?.toTypedArray() ?: arrayOf()
         val combinedPredicates =

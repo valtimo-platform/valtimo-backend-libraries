@@ -41,14 +41,14 @@ data class CaseWidgetTabDto(
         fun of(
             tab: CaseWidgetTab,
             widgetMappers: List<CaseWidgetMapper<CaseWidgetTabWidget, CaseWidgetTabWidgetDto>>,
-            permissionCheck: (CaseWidgetTabWidget) -> Boolean
+            includeCheck: (CaseWidgetTabWidget) -> Boolean
         ): CaseWidgetTabDto {
             return CaseWidgetTabDto(
                 tab.id.caseDefinitionId.key,
                 tab.id.caseDefinitionId.versionTag.version,
                 tab.id.key,
                 widgets = tab.widgets
-                    .filter { permissionCheck(it) }
+                    .filter { includeCheck(it) }
                     .map { widget ->
                         widgetMappers.first { mapper ->
                             mapper.supportedEntityType().isAssignableFrom(widget::class.java)
@@ -61,7 +61,7 @@ data class CaseWidgetTabDto(
         fun ofWithContext(
             tab: CaseWidgetTab,
             widgetMappers: List<CaseWidgetMapper<CaseWidgetTabWidget, CaseWidgetTabWidgetDto>>,
-            permissionCheck: (CaseWidgetTabWidget, JsonSchemaDocument) -> Boolean,
+            includeCheck: (CaseWidgetTabWidget, JsonSchemaDocument) -> Boolean,
             document: JsonSchemaDocument
         ): CaseWidgetTabDto {
             return CaseWidgetTabDto(
@@ -69,13 +69,20 @@ data class CaseWidgetTabDto(
                 tab.id.caseDefinitionId.versionTag.version,
                 tab.id.key,
                 widgets = tab.widgets
-                    .filter { permissionCheck(it, document) }
+                    .filter { includeCheck(it, document) }
                     .map { widget ->
                         widgetMappers.first { mapper ->
                             mapper.supportedEntityType().isAssignableFrom(widget::class.java)
                         }.toDto(widget)
                     }
             )
+        }
+
+        fun andCheck(
+            first: (CaseWidgetTabWidget, JsonSchemaDocument) -> Boolean,
+            second: (CaseWidgetTabWidget, JsonSchemaDocument) -> Boolean,
+        ): (CaseWidgetTabWidget, JsonSchemaDocument) -> Boolean {
+            return { widget, document -> first(widget, document) && second(widget, document) }
         }
     }
 }
