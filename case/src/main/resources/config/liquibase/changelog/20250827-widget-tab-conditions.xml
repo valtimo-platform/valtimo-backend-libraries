@@ -21,7 +21,8 @@
 
     <changeSet id="1" author="Ritense">
         <addColumn tableName="case_widget_tab_widget">
-            <column name="hide_conditions" type="${jsonType}"/>
+            <column name="use_conditions_to_display" type="boolean"/>
+            <column name="display_conditions" type="${jsonType}"/>
         </addColumn>
     </changeSet>
 

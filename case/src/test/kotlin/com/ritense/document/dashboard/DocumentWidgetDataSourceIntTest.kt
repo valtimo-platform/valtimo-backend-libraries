@@ -431,7 +431,6 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
         assertThat(result2.value).isEqualTo(0)
     }
 
-
     @Test
     fun `should support current user identifier in criteria`() {
         documentRepository.deleteAll()
@@ -471,6 +470,36 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
         assertThat(result2.value).isEqualTo(0)
     }
 
+    @Test
+    fun `should support null check in criteria`() {
+        documentRepository.deleteAll()
+
+        val definition = definition()
+
+        createDocument(definition, "", mockedUserEmail)
+
+        val documentDefinitionName = definition.id().name()
+
+        val properties = DocumentCountDataSourceProperties(
+            documentDefinitionName,
+            listOf(
+                Condition(
+                    "doc:city",
+                    ExpressionOperator.EQUAL_TO,
+                    "\${null}"
+                ),
+                Condition(
+                    "doc:street",
+                    ExpressionOperator.NOT_EQUAL_TO,
+                    "\${null}"
+                ),
+            )
+        )
+
+        val result = documentWidgetDataSource.getCaseCount(properties)
+
+        assertThat(result.value).isEqualTo(1)
+    }
 
     private fun createDocument(
         documentDefinition: JsonSchemaDocumentDefinition,

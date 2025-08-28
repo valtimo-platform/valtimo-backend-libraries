@@ -31,7 +31,8 @@ data class FormIoCaseWidgetDto(
     override val width: Int,
     override val highContrast: Boolean,
     override val actions: List<CaseWidgetAction>? = emptyList(),
-    override val conditions: List<Condition<*>>? = emptyList(),
+    override val useConditionsToDisplay: Boolean = false,
+    override val displayConditions: List<Condition<*>> = emptyList(),
     @field:Valid val properties: FormIoWidgetProperties
 ) : CaseWidgetTabWidgetDto {
     override fun validate(caseDefinitionId: CaseDefinitionId) {

@@ -62,7 +62,11 @@ data class Condition<T : Comparable<T>>(
         pathExpressionFunction as (Class<T>, String, Root<*>, CriteriaBuilder) -> Expression<T>
 
         val resolvedValue = resolveValue(value)
-        val valueClass = resolvedValue::class.java as Class<T>
+        val valueClass = if (resolvedValue != null) {
+            resolvedValue::class.java as Class<T>
+        } else {
+            Any::class.java as Class<T>
+        }
 
         val expression = pathExpressionFunction(valueClass, path, root, criteriaBuilder)
 
@@ -73,7 +77,7 @@ data class Condition<T : Comparable<T>>(
         )
     }
 
-    private fun resolveValue(value: T): Any {
+    private fun resolveValue(value: T): Any? {
         return (value as? String)?.let {
             if (it.isNotEmpty() && it.startsWith("\${") && it.endsWith('}')) {
                 val parser = SpelExpressionParser()
@@ -86,7 +90,8 @@ data class Condition<T : Comparable<T>>(
 
                 val spelExpression = parser.parseExpression(expressionWithoutPrefixSuffix)
 
-                spelExpression.getValue(context)
+                val value = spelExpression.getValue(context)
+                return value
             } else {
                 value
             }

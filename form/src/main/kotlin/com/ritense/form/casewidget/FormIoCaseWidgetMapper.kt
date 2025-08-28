@@ -30,7 +30,8 @@ class FormIoCaseWidgetMapper : CaseWidgetMapper<FormIoCaseWidget, FormIoCaseWidg
         width = entity.width,
         highContrast = entity.highContrast,
         actions = entity.actions,
-        conditions = entity.conditions,
+        useConditionsToDisplay = entity.useConditionsToDisplay,
+        displayConditions = entity.displayConditions,
         properties = entity.properties
     )
 
@@ -40,7 +41,8 @@ class FormIoCaseWidgetMapper : CaseWidgetMapper<FormIoCaseWidget, FormIoCaseWidg
         width = dto.width,
         highContrast = dto.highContrast,
         actions = dto.actions ?: emptyList(),
-        conditions = dto.conditions ?: emptyList(),
+        useConditionsToDisplay = dto.useConditionsToDisplay,
+        displayConditions = dto.displayConditions,
         properties = dto.properties,
         order = index
     )

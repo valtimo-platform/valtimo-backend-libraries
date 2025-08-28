@@ -62,9 +62,12 @@ abstract class CaseWidgetTabWidget(
     @Column(name = "actions", nullable = false)
     val actions: List<CaseWidgetAction> = emptyList(),
 
+    @Column(name = "use_conditions_to_display", nullable = false)
+    val useConditionsToDisplay: Boolean = false,
+
     @Type(value = JsonType::class)
-    @Column(name = "hide_conditions", nullable = false)
-    val conditions: List<Condition<*>> = listOf()
+    @Column(name = "display_conditions", nullable = false)
+    val displayConditions: List<Condition<*>> = listOf()
 ) {
     abstract fun copy(id: CaseWidgetTabWidgetId = this.id): CaseWidgetTabWidget
 
@@ -78,7 +81,8 @@ abstract class CaseWidgetTabWidget(
         if (width != other.width) return false
         if (highContrast != other.highContrast) return false
         if (actions != other.actions) return false
-        if (conditions != other.conditions) return false
+        if (useConditionsToDisplay != other.useConditionsToDisplay) return false
+        if (displayConditions != other.displayConditions) return false
 
         return true
     }
@@ -90,6 +94,8 @@ abstract class CaseWidgetTabWidget(
             width,
             highContrast,
             actions,
+            useConditionsToDisplay,
+            displayConditions
         )
     }
 

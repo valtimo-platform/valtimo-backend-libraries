@@ -31,5 +31,6 @@ data class TestCaseWidgetTabWidgetDto(
     override val highContrast: Boolean,
     @field:Valid val properties: TestCaseWidgetProperties = TestCaseWidgetProperties(),
     override val actions: List<CaseWidgetAction>? = emptyList(),
-    override val conditions: List<Condition<*>>? = emptyList(),
+    override val useConditionsToDisplay: Boolean = false,
+    override val displayConditions: List<Condition<*>> = emptyList()
 ) : CaseWidgetTabWidgetDto
