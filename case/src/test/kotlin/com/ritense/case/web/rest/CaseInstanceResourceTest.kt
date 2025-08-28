@@ -16,6 +16,7 @@
 
 package com.ritense.case.web.rest
 
+import com.ritense.case.service.CaseExporter
 import com.ritense.case.service.CaseInstanceService
 import com.ritense.case.web.rest.dto.CaseListRowDto
 import com.ritense.document.domain.search.SearchWithConfigRequest
@@ -42,11 +43,12 @@ class CaseInstanceResourceTest {
     lateinit var mockMvc: MockMvc
     lateinit var resource: CaseInstanceResource
     lateinit var service: CaseInstanceService
+    lateinit var exporter: CaseExporter
 
     @BeforeEach
     fun setUp() {
         service = mock()
-        resource = CaseInstanceResource(service)
+        resource = CaseInstanceResource(service, exporter)
         MappingJackson2HttpMessageConverter(MapperSingleton.get())
         mockMvc = MockMvcBuilders.standaloneSetup(resource)
             .setCustomArgumentResolvers(PageableHandlerMethodArgumentResolver())
