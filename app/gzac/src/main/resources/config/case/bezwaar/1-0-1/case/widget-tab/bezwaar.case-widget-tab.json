@@ -8,7 +8,7 @@
                 "title": "Partner",
                 "width": 4,
                 "highContrast": true,
-                "conditions": [
+                "displayConditions": [
                     {
                         "path": "doc:partner",
                         "operator": "!=",
