@@ -272,7 +272,7 @@ class CaseDefinitionService(
         caseListColumnDto.order = caseDefinitionListColumnRepository.countByIdCaseDefinitionKey(caseDefinitionKey)
 
         if (caseListColumnDto.exportable) {
-            validatePath(caseListColumnDto.path, caseListColumnDto.key)
+            validateExportPath(caseListColumnDto.path, caseListColumnDto.key)
         }
 
         caseDefinitionListColumnRepository
@@ -299,7 +299,7 @@ class CaseDefinitionService(
         caseListColumnDtoList
             .filter { it.exportable }
             .forEach { dto ->
-                validatePath(dto.path, dto.key)
+                validateExportPath(dto.path, dto.key)
             }
 
         val entities = CaseListColumnMapper.toEntityList(caseDefinitionName, caseListColumnDtoList)
@@ -403,7 +403,7 @@ class CaseDefinitionService(
         }
     }
 
-    private fun validatePath(path: String, key: String) {
+    private fun validateExportPath(path: String, key: String) {
         require(PATH_REGEX_EXPORTABLE.containsMatchIn(path)) {
             "Failed to save the case list column configuration for key '$key'. Only document or case properties can be exported."
         }
