@@ -27,6 +27,7 @@ import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
 import jakarta.persistence.Table
 import org.apache.commons.validator.routines.UrlValidator
+import org.apache.commons.validator.routines.UrlValidator.ALLOW_LOCAL_URLS
 import org.semver4j.Semver
 import org.springframework.data.annotation.CreatedBy
 import org.springframework.data.annotation.CreatedDate
@@ -85,7 +86,7 @@ data class CaseDefinition(
         }
         require(
             when (hasExternalStartForm) {
-                true -> UrlValidator(arrayOf("http", "https")).isValid(externalStartFormUrl)
+                true -> UrlValidator(arrayOf("http", "https"), ALLOW_LOCAL_URLS).isValid(externalStartFormUrl)
                 else -> true
             }
         ) {
