@@ -82,7 +82,7 @@ class CaseInstanceService(
                 userId = currentUserId,
                 title = request.title
             )
-        ) { "Failed to create quick save. A quick save for this user, for this case definition key, " +
+        ) { "Failed to create quick search. A quick search for this user, for this case definition key, " +
             "with this title, already exists."
         }
 
