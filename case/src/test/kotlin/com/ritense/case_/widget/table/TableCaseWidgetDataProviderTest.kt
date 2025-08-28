@@ -180,7 +180,7 @@ class TableCaseWidgetDataProviderTest(
     }
 
     private fun testWidget() = TableCaseWidget(
-        CaseWidgetTabWidgetId("test"), "Test", 0, 1, true, emptyList(), TableWidgetProperties(
+        CaseWidgetTabWidgetId("test"), "Test", 0, 1, true, emptyList(), emptyList(), TableWidgetProperties(
             collection = "test:someCollection",
             defaultPageSize = 2,
             columns = testColumns()

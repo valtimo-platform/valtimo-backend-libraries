@@ -34,4 +34,5 @@ object CurrentUserExpressionHandler {
         return value
     }
 
+    fun currentUser() = UserManagementServiceHolder.currentInstance.currentUser
 }

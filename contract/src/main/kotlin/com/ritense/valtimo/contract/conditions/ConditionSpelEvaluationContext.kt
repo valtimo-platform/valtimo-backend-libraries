@@ -16,8 +16,14 @@
 
 package com.ritense.valtimo.contract.dashboard
 
+import com.ritense.valtimo.contract.authorization.CurrentUserExpressionHandler
 import java.time.LocalDateTime
 
 class ConditionSpelEvaluationContext {
-    public val localDateTimeNow = LocalDateTime.now()
+    val localDateTimeNow = LocalDateTime.now()
+    val currentUserId = CurrentUserExpressionHandler.currentUser().id
+    val currentUserEmail = CurrentUserExpressionHandler.currentUser().email
+    val currentUserRoles = CurrentUserExpressionHandler.currentUser().roles
+    val currentUsername = CurrentUserExpressionHandler.currentUser().username
+    val currentUserIdentifier = CurrentUserExpressionHandler.currentUser().username
 }

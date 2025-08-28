@@ -50,7 +50,8 @@ data class Condition<T : Comparable<T>>(
         expressionResolver: (String) -> Any
     ): Boolean {
         val fieldValue = expressionResolver.invoke(path)
-        return operator.evaluate(fieldValue, value)
+        val resolvedValue = resolveValue(value)
+        return operator.evaluate(fieldValue, resolvedValue)
     }
 
     fun toPredicate(
@@ -60,78 +61,40 @@ data class Condition<T : Comparable<T>>(
     ): Predicate {
         pathExpressionFunction as (Class<T>, String, Root<*>, CriteriaBuilder) -> Expression<T>
 
-        if (queryValueIsDateTimeSpelExpression(value)) {
-            return getPredicateFromDateTimeSpelExpression(
-                root,
-                criteriaBuilder,
-                pathExpressionFunction
-            )
-        }
-
-        if (queryValueIsCurrentUserExpression(value)) {
-            return getPredicateFromCurrentUserExpression(
-                root,
-                criteriaBuilder,
-                pathExpressionFunction
-            )
-        }
-
-        val predicateQueryValue: T? = if (queryValueIsNull(value)) {
-            null
-        } else {
-            value
-        }
-
-        val valueClass = value::class.java as Class<T>
+        val resolvedValue = resolveValue(value)
+        val valueClass = resolvedValue::class.java as Class<T>
 
         val expression = pathExpressionFunction(valueClass, path, root, criteriaBuilder)
 
         return operator.toPredicate<T>(
             criteriaBuilder,
             expression,
-            predicateQueryValue
+            resolvedValue
         )
     }
 
-    private fun <T> queryValueIsNull(target: T): Boolean {
-        return target == "\${null}"
+    private fun resolveValue(value: T): Any {
+        return (value as? String)?.let {
+            if (it.isNotEmpty() && it.startsWith("\${") && it.endsWith('}')) {
+                val parser = SpelExpressionParser()
+                val expressionWithoutPrefixSuffix = it.substringAfter("\${").substringBefore("}")
+
+                val expressionContextRoot = getExpressionContextRoot()
+                val context = StandardEvaluationContext()
+
+                context.setRootObject(expressionContextRoot)
+
+                val spelExpression = parser.parseExpression(expressionWithoutPrefixSuffix)
+
+                spelExpression.getValue(context)
+            } else {
+                value
+            }
+        } ?: value
     }
 
-    private fun queryValueIsDateTimeSpelExpression(target: Any?): Boolean {
-        return (target as? String)?.let {
-            it.isNotEmpty() && it.startsWith("\${") && it.endsWith('}') && "localDateTimeNow" in it
-        } ?: false
-    }
-
-    private fun getPredicateFromDateTimeSpelExpression(
-        root: Root<*>,
-        criteriaBuilder: CriteriaBuilder,
-        pathExpressionFunction: (Class<T>, String, Root<*>, CriteriaBuilder) -> Expression<T>
-    ): Predicate {
-        val condition = this as Condition<String>;
-        val parser = SpelExpressionParser()
-        val expressionWithoutPrefixSuffix = condition.value.substringAfter("\${").substringBefore("}")
-
-        val spelEvaluationContext = ConditionSpelEvaluationContext()
-        val context = StandardEvaluationContext()
-
-        context.setRootObject(spelEvaluationContext)
-
-        val spelExpression: org.springframework.expression.Expression =
-            parser.parseExpression(expressionWithoutPrefixSuffix)
-
-        val valueClass = LocalDateTime::class.java
-
-        val value = spelExpression.getValue(context, valueClass)
-
-        val expression =
-            pathExpressionFunction(valueClass as Class<T>, condition.path, root, criteriaBuilder)
-
-        return condition.operator.toPredicate<T>(
-            criteriaBuilder,
-            expression,
-            value as T
-        )
+    private fun getExpressionContextRoot(): ConditionSpelEvaluationContext {
+        return ConditionSpelEvaluationContext()
     }
 
     private fun <T> queryValueIsCurrentUserExpression(target: T): Boolean {
@@ -141,23 +104,5 @@ data class Condition<T : Comparable<T>>(
                 // roles is a list and is currently not supported
                 PermissionConditionKey.fromKey(it) != PermissionConditionKey.CURRENT_USER_ROLES
         } ?: false
-    }
-
-    private fun getPredicateFromCurrentUserExpression(
-        root: Root<*>,
-        criteriaBuilder: CriteriaBuilder,
-        pathExpressionFunction: (Class<T>, String, Root<*>, CriteriaBuilder) -> Expression<T>
-    ): Predicate {
-        val condition = this as Condition<String>;
-        val valueClass = String::class.java
-        val expression = pathExpressionFunction(valueClass as Class<T>, condition.path, root, criteriaBuilder)
-        val permissionConditionKey = PermissionConditionKey.fromKey(condition.value)?.key
-        val resolvedValue = CurrentUserExpressionHandler.resolveValue(permissionConditionKey) as? String ?: ""
-
-        return condition.operator.toPredicate<T>(
-            criteriaBuilder,
-            expression,
-            resolvedValue as T
-        )
     }
 }
