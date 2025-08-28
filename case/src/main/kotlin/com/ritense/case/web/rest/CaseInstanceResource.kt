@@ -52,32 +52,32 @@ class CaseInstanceResource(
         return ResponseEntity.ok(result)
     }
 
-    @PostMapping("/v1/case/{caseDefinitionName}/stored-quick-search")
+    @PostMapping("/v1/case/{caseDefinitionKey}/stored-quick-search")
     fun saveQuickSearch(
-        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionKey") caseDefinitionKey: String,
         @RequestBody request: CaseDefinitionQuickSearchDto,
     ): ResponseEntity<Any> {
         val currentUserId = UserManagementServiceHolder.currentInstance.currentUserId
-        service.storeQuickSearch(caseDefinitionName, request, currentUserId)
+        service.storeQuickSearch(caseDefinitionKey, request, currentUserId)
         return ResponseEntity.ok().build()
     }
 
-    @DeleteMapping("/v1/case/{caseDefinitionName}/stored-quick-search/{title}")
+    @DeleteMapping("/v1/case/{caseDefinitionKey}/stored-quick-search/{title}")
     fun deleteQuickSearch(
-        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionKey") caseDefinitionKey: String,
         @PathVariable(name = "title") quickSearchTitle: String,
     ): ResponseEntity<Any> {
         val currentUserId = UserManagementServiceHolder.currentInstance.currentUserId
-        service.deleteQuickSearch(caseDefinitionName, currentUserId, quickSearchTitle)
+        service.deleteQuickSearch(caseDefinitionKey, currentUserId, quickSearchTitle)
         return ResponseEntity.noContent().build()
     }
 
-    @GetMapping("/v1/case/{caseDefinitionName}/stored-quick-search")
+    @GetMapping("/v1/case/{caseDefinitionKey}/stored-quick-search")
     fun getQuickSearchList(
-        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionKey") caseDefinitionKey: String
     ): ResponseEntity<List<CaseDefinitionQuickSearchDto>> {
         val currentUserId = UserManagementServiceHolder.currentInstance.currentUserId
-        val result = service.getQuickSearchList(caseDefinitionName, currentUserId)
+        val result = service.getQuickSearchList(caseDefinitionKey, currentUserId)
         return ResponseEntity.ok(
             result.map {
                 CaseDefinitionQuickSearchDto(

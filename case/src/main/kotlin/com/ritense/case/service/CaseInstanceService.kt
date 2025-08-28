@@ -115,7 +115,7 @@ class CaseInstanceService(
                 title = quickSearchTitle
             )
         ) {
-            "Failed to delete quick save. A quick save for this user, for this case definition key, " +
+            "Failed to delete quick search. A quick search for this user, for this case definition key, " +
             "with this title, already exists."
         }
 
