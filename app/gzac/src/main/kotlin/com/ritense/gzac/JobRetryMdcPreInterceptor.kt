@@ -24,7 +24,7 @@ import org.operaton.bpm.engine.impl.persistence.entity.JobEntity
 import org.slf4j.MDC
 
 
-class JobRetryMdcInterceptor : CommandInterceptor() {
+class JobRetryMdcPreInterceptor : CommandInterceptor() {
     override fun <T> execute(command: Command<T?>): T? {
         var mdcSet = false
         if (command is ExecuteJobsCmd) {
@@ -34,12 +34,10 @@ class JobRetryMdcInterceptor : CommandInterceptor() {
                 val job: JobEntity? = context
                     .jobManager
                     .findJobById(jobId)
-
                 if (job != null) {
                     MDC.put("operaton.jobId", jobId)
-                    MDC.put("operaton.jobRetries", job.getRetries().toString()) // current value
+                    MDC.put("operaton.jobRetries", job.getRetries().toString())
                     MDC.put("operaton.jobLastAttempt", (job.getRetries() == 1).toString())
-                    mdcSet = true
                 }
             }
         }

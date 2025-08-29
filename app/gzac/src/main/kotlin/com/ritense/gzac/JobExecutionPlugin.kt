@@ -28,12 +28,22 @@ class JobExecutionPlugin : AbstractProcessEnginePlugin() {
         // Register custom command interceptor to be able to use the beans without authorization
         processEngineConfiguration.customPostCommandInterceptorsTxRequired =
             processEngineConfiguration.customPostCommandInterceptorsTxRequired.plus(
-            listOf(JobRetryMdcInterceptor())
+            listOf(JobRetryMdcPreInterceptor())
         )
 
         processEngineConfiguration.customPostCommandInterceptorsTxRequiresNew =
             processEngineConfiguration.customPostCommandInterceptorsTxRequiresNew.plus(
-                listOf(JobRetryMdcInterceptor())
+                listOf(JobRetryMdcPreInterceptor())
+            )
+
+        processEngineConfiguration.customPreCommandInterceptorsTxRequired =
+            processEngineConfiguration.customPreCommandInterceptorsTxRequired.plus(
+                listOf(JobRetryMdcPostInterceptor())
+            )
+
+        processEngineConfiguration.customPreCommandInterceptorsTxRequiresNew =
+            processEngineConfiguration.customPreCommandInterceptorsTxRequiresNew.plus(
+                listOf(JobRetryMdcPostInterceptor())
             )
     }
 }

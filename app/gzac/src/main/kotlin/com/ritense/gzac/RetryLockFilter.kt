@@ -18,10 +18,13 @@ package com.ritense.gzac
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
+import ch.qos.logback.classic.spi.LoggingEvent
+import ch.qos.logback.classic.spi.ThrowableProxy
 import ch.qos.logback.classic.turbo.TurboFilter
 import ch.qos.logback.core.spi.FilterReply
 import org.slf4j.MDC
 import org.slf4j.Marker
+
 
 class RetryLockFilter(): TurboFilter() {
 
@@ -42,10 +45,26 @@ class RetryLockFilter(): TurboFilter() {
 
         // Optional MDC read (only now)
         val last = MDC.get("operaton.jobLastAttempt")
-        if ("false" == last) return FilterReply.NEUTRAL
+        if ("true" == last) return FilterReply.NEUTRAL
 
         // Match specific exception
         if (lastArgument.cause?.javaClass?.getName() != "org.springframework.orm.ObjectOptimisticLockingFailureException") return FilterReply.NEUTRAL
+
+        // Create a new event (WARN instead of ERROR, with same throwable & args)
+        val e: LoggingEvent = LoggingEvent()
+        e.setLoggerName(logger.getName())
+        e.setLevel(Level.WARN) // change level
+        e.setMessage("This error was removed") // change message
+        e.setArgumentArray(params)
+        if (throwable != null) {
+            e.setThrowableProxy(ThrowableProxy(throwable))
+        }
+        e.setMDCPropertyMap(MDC.getCopyOfContextMap())
+        e.setTimeStamp(System.currentTimeMillis())
+        e.setThreadName(Thread.currentThread().getName())
+
+        // Emit the rewritten event and kill the original
+        logger.callAppenders(e)
 
         // Rewrite or deny here
         return FilterReply.DENY
