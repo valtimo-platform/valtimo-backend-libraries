@@ -49,8 +49,11 @@
         <resetJUL>true</resetJUL>
     </contextListener>
 
+    <turboFilter class="com.ritense.gzac.RetryLockFilter"/>
+
     <root level="#logback.loglevel#">
-        <appender-ref ref="VALTIMODBASYNC"/>
+        <appender-ref ref="CONSOLE"/>
+        <!--<appender-ref ref="VALTIMODBASYNC"/>-->
     </root>
 
 </configuration>
