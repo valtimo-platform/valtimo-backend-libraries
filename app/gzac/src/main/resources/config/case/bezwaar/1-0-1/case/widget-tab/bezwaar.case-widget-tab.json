@@ -8,6 +8,7 @@
                 "title": "Partner",
                 "width": 4,
                 "highContrast": true,
+                "useConditionsToDisplay": true,
                 "displayConditions": [
                     {
                         "path": "doc:partner",

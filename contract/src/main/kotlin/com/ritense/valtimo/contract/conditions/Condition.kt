@@ -47,7 +47,7 @@ data class Condition<T : Comparable<T>>(
 ) {
 
     fun isValid(
-        expressionResolver: (String) -> Any
+        expressionResolver: (String) -> Any?
     ): Boolean {
         val fieldValue = expressionResolver.invoke(path)
         val resolvedValue = resolveValue(value)

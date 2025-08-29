@@ -225,7 +225,7 @@ class CaseWidgetTabService(
                         valueResolverService.resolveValues(
                             document.id().id.toString(),
                             listOf(valuePath)
-                        )
+                        )[valuePath]
                     }
                 }
             )

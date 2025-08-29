@@ -12,9 +12,12 @@ import com.ritense.case_.web.rest.dto.TestCaseWidgetTabWidgetDto
 import com.ritense.case_.widget.TestCaseWidgetProperties
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonDocumentContent
+import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
+import com.ritense.valtimo.contract.conditions.Condition
+import com.ritense.valtimo.contract.repository.ExpressionOperator
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -63,6 +66,68 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
         assertThat(widgetTab).isNotNull
         assertThat(widgetTab!!.widgets).hasSize(2)
         assertThat(widgetTab.widgets.map { it.key }).doesNotContain("deny")
+    }
+
+    @Test
+    @WithMockUser(username = "user@ritense.com", authorities = [USER])
+    fun `should get widget tab with hidden widgets`() {
+        val caseDefinitionId = CaseDefinitionId.of("some-case-type", "1.2.3")
+        val tabKey = "my-tab"
+
+        val widgets = listOf(
+            // this one has conditions that should match and should be returned
+            TestCaseWidgetTabWidgetDto(
+                "widget-1",
+                "Widget 1",
+                1,
+                false,
+                TestCaseWidgetProperties("test123") ,
+                null,
+                true,
+                listOf(
+                    Condition("test:test", ExpressionOperator.EQUAL_TO, "test:test")
+                )
+            ),
+            // this one has conditions that should not match and should not be returned
+            TestCaseWidgetTabWidgetDto(
+                "widget-2",
+                "Widget 2",
+                1,
+                false,
+                TestCaseWidgetProperties("test123") ,
+                null,
+                true,
+                listOf(
+                    Condition("test:test", ExpressionOperator.EQUAL_TO, "not test")
+                )
+            ),
+            // this one has useConditionsToDisplay false so should always be returned
+            TestCaseWidgetTabWidgetDto(
+                "widget-3",
+                "Widget 3",
+                1,
+                false,
+                TestCaseWidgetProperties("test123") ,
+                null,
+                false,
+                listOf(
+                    Condition("test:test", ExpressionOperator.EQUAL_TO, "not test")
+                )
+            ),
+        )
+        createCaseWidgetTab(caseDefinitionId, tabKey, widgets)
+
+        val documentContent = """
+            {
+              "test": true
+            }
+        """.trimIndent()
+        val documentId = createDocument(caseDefinitionId, documentContent).id() as JsonSchemaDocumentId
+
+        val widgetTab = caseWidgetTabService.getWidgetTab(documentId, tabKey)
+        assertThat(widgetTab).isNotNull
+        assertThat(widgetTab!!.widgets).hasSize(2)
+        assertThat(widgetTab.widgets.map { it.key }).containsExactly("widget-1", "widget-3")
     }
 
     @Test
@@ -232,23 +297,29 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
         }
     }
 
-    private fun createCaseWidgetTab(caseDefinitionId: CaseDefinitionId, tabKey: String): CaseWidgetTabDto? {
+    private fun createCaseWidgetTab(caseDefinitionId: CaseDefinitionId, tabKey: String, widgets: List<TestCaseWidgetTabWidgetDto>? = null): CaseWidgetTabDto? {
         return runWithoutAuthorization {
             caseTabService.createCaseTab(
                 caseDefinitionId,
                 CaseTabDto(key = tabKey, type = CaseTabType.WIDGETS, contentKey = "-")
             )
 
+            val widgetsToUse = if (widgets == null) {
+                listOf(
+                    TestCaseWidgetTabWidgetDto("widget-1", "Widget 1", 1, false),
+                    TestCaseWidgetTabWidgetDto("widget-2", "Widget 2", 2, true),
+                    TestCaseWidgetTabWidgetDto("deny", "Deny", 3, false)
+                )
+            } else {
+                widgets
+            }
+
             caseWidgetTabService.updateWidgetTab(
                 CaseWidgetTabDto(
                     caseDefinitionId.key,
                     caseDefinitionId.versionTag.version,
                     tabKey,
-                    widgets = listOf(
-                        TestCaseWidgetTabWidgetDto("widget-1", "Widget 1", 1, false),
-                        TestCaseWidgetTabWidgetDto("widget-2", "Widget 2", 2, true),
-                        TestCaseWidgetTabWidgetDto("deny", "Deny", 3, false)
-                    )
+                    widgets = widgetsToUse
                 )
             )
         }
