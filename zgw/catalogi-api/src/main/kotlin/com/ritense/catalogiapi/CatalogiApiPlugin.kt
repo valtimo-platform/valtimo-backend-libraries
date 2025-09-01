@@ -39,8 +39,6 @@ import com.ritense.catalogiapi.exception.EigenschapNotFoundException
 import com.ritense.catalogiapi.exception.ResultaattypeNotFoundException
 import com.ritense.catalogiapi.exception.StatustypeNotFoundException
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
-import com.ritense.catalogiapi.web.rest.result.ResultaattypeDto
-import com.ritense.catalogiapi.web.rest.result.StatustypeDto
 import com.ritense.document.domain.Document
 import com.ritense.document.service.DocumentService
 import com.ritense.logging.withLoggingContext
@@ -90,7 +88,7 @@ class CatalogiApiPlugin(
             withLoggingContext(
                 CATALOGI_API.ZAAKTYPE to zaaktypeUri.toString()
             ) {
-                getStatusTypen(zaaktypeUri).map { statustype ->
+                getStatustypen(zaaktypeUri).map { statustype ->
                     mapOf(
                         URL_KEY to statustype.url!!.toASCIIString(),
                         NAME_KEY to statustype.omschrijving
@@ -329,7 +327,7 @@ class CatalogiApiPlugin(
         }
     }
 
-    fun getStatusTypen(zaakTypeUrl: URI): List<Statustype> {
+    fun getStatustypen(zaakTypeUrl: URI): List<Statustype> {
         withLoggingContext(CATALOGI_API.STATUSTYPE to zaakTypeUrl.toString()) {
             var currentPage = 1
             var currentResults: Page<Statustype>?
@@ -364,7 +362,7 @@ class CatalogiApiPlugin(
             CATALOGI_API.STATUSTYPE to zaakTypeUrl.toString(),
         ) {
             logger.debug { "Getting Statustype by omschrijving: $omschrijving for zaaktype $zaakTypeUrl" }
-            return getStatusTypen(zaakTypeUrl)
+            return getStatustypen(zaakTypeUrl)
                 .singleOrNull { it.omschrijving.equals(omschrijving, ignoreCase = true) }
                 ?: throw StatustypeNotFoundException("with 'omschrijving': '$omschrijving'")
         }

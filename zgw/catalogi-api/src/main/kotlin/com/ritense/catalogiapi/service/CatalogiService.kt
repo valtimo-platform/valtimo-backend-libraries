@@ -75,7 +75,7 @@ class CatalogiService(
         val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionId(caseDefinitionId) ?: return emptyList()
         val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
 
-        return catalogiApiPluginInstance.getStatusTypen(zaakTypeUrl)
+        return catalogiApiPluginInstance.getStatustypen(zaakTypeUrl)
     }
 
     fun getResultaattypen(
