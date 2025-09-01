@@ -28,7 +28,7 @@ import com.ritense.case.service.exception.NoExportPermissionException
 import com.ritense.case.service.exception.NoExportableColumnsException
 import com.ritense.case.service.exception.NoSearchResultsException
 import com.ritense.case.web.rest.dto.CaseListRowDto
-import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.search.SearchWithConfigRequest
 import com.ritense.document.event.DocumentsExported
@@ -36,9 +36,7 @@ import com.ritense.document.service.DocumentSearchService
 import com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.Companion.EXPORT
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.outbox.OutboxService
-import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import com.ritense.valueresolver.ValueResolverService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -47,31 +45,42 @@ import org.springframework.data.domain.Sort
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.StringWriter
-import java.nio.charset.StandardCharsets
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.function.Supplier
+import kotlin.text.Charsets.UTF_8
 
 @Transactional
-@Service
-@SkipComponentScan
 class CaseExporter(
     private val caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
     private val documentSearchService: DocumentSearchService,
-    private val valueResolverService: ValueResolverService,
     private val userManagementService: UserManagementService,
     private val authorizationService: AuthorizationService,
     private val jsonSchemaDocumentDefinitionService: JsonSchemaDocumentDefinitionService,
     private val outboxService: OutboxService,
-    private val mapper: ObjectMapper
+    private val mapper: ObjectMapper,
+    private val caseListRowMapper: CaseListRowMapper
 ) {
     fun exportCases(
         caseDefinitionKey: String,
         searchRequest: SearchWithConfigRequest,
         pageable: Pageable
     ): ResponseEntity<ByteArray> {
-        val exportableCases = searchExportable(caseDefinitionKey, searchRequest, pageable)
+        val userLabel = currentUserInfo()
+
+        val exportableColumns = getExportableColumns(caseDefinitionKey, userLabel)
+
+        val exportableCases = searchExportable(caseDefinitionKey, exportableColumns, searchRequest, pageable)
+
+        logExport(
+            caseDefinitionKey,
+            exportableColumns,
+            exportableCases.size.toLong(),
+            userLabel,
+            searchRequest
+        )
 
         val exportRequest = CaseExportRequest(caseDefinitionKey, searchRequest)
 
@@ -81,43 +90,50 @@ class CaseExporter(
             )
         })
 
-        val writer = StringWriter()
-        val csvWriter = CSVWriter(writer)
+        return toCsvResponse(caseDefinitionKey, exportableCases, exportableColumns)
+    }
 
-        val headers = exportableCases
-            .flatMap { row -> row.items.map { it.key } }
-            .distinct()
+    private fun toCsvResponse(
+        caseDefinitionKey: String,
+        exportableCases: List<CaseListRowDto>,
+        exportableColumns: List<CaseListColumn>
+    ): ResponseEntity<ByteArray> {
+        val headers: List<String> = exportableColumns.map { it.id.key }.distinct()
 
-        csvWriter.writeNext(headers.toTypedArray())
-
-        exportableCases.forEach { row ->
-            val values = headers.map { key ->
-                row.items.firstOrNull { it.key == key }?.value?.toString() ?: ""
+        val csvText = StringWriter().use { writer ->
+            CSVWriter(writer).use { csv ->
+                csv.writeNext(headers.toTypedArray(), false)
+                exportableCases.forEach { row ->
+                    val map = row.items.associate { it.key to (it.value?.toString() ?: "") }
+                    val values = headers.map { header -> map[header] ?: "" }.toTypedArray()
+                    csv.writeNext(values, false)
+                }
             }
-            csvWriter.writeNext(values.toTypedArray())
+            writer.toString()
         }
 
-        csvWriter.close()
+        val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
         val responseHeaders = HttpHeaders().apply {
             contentType = MediaType("text", "csv")
-            set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${caseDefinitionKey}_cases.csv\"")
+            set(
+                HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\"${caseDefinitionKey}_cases_export_${currentDate}.csv\""
+            )
         }
 
-        return ResponseEntity
-            .ok()
+        return ResponseEntity.ok()
             .headers(responseHeaders)
-            .body(writer.toString().toByteArray(StandardCharsets.UTF_8))
+            .body(csvText.toByteArray(UTF_8))
     }
 
-    fun searchExportable(
+    private fun searchExportable(
         caseDefinitionKey: String,
+        exportableColumns: List<CaseListColumn>,
         searchRequest: SearchWithConfigRequest,
         pageable: Pageable
     ): List<CaseListRowDto> {
         val userLabel = currentUserInfo()
-
-        val exportableColumns = getExportableColumns(caseDefinitionKey, userLabel)
 
         val newPageable = mutatePageable(exportableColumns, pageable)
 
@@ -131,9 +147,9 @@ class CaseExporter(
         validateExportLimit(searchResults, caseDefinitionKey)
         validateExportPermission(caseDefinitionKey, userLabel)
 
-        val exportableCases = searchResults.content.map { toCaseListRowDto(it, exportableColumns) }
-
-        logExport(caseDefinitionKey, exportableColumns, exportableCases.size.toLong(), userLabel, searchRequest)
+        val exportableCases = searchResults
+            .content
+            .map { caseListRowMapper.toCaseListRowDto(it as JsonSchemaDocument, exportableColumns) }
 
         return exportableCases
     }
@@ -194,8 +210,8 @@ class CaseExporter(
         }
 
         searchRequest.otherFilters?.takeIf { it.isNotEmpty() }?.let { filters ->
-            val filterStrings = filters.map { f ->
-                "${f.key} = ${f.getValues<Any>().joinToString(",")}"
+            val filterStrings = filters.map { filter ->
+                "${filter.key} = ${filter.getValues<Any>().joinToString(",")}"
             }
             logs += "Other filters: ${filterStrings.joinToString("; ")}."
         }
@@ -207,17 +223,6 @@ class CaseExporter(
         if (results.totalElements > MAX_EXPORT) {
             throw ExportLimitExceedsException(caseDefinitionKey)
         }
-    }
-
-    private fun toCaseListRowDto(document: Document, caseListColumns: List<CaseListColumn>): CaseListRowDto {
-        val paths = caseListColumns.map { it.path }
-        val resolvedValuesMap = valueResolverService.resolveValues(document.id().id.toString(), paths)
-
-        val items = caseListColumns.map { caseListColumn ->
-            CaseListRowDto.CaseListItemDto(caseListColumn.id.key, resolvedValuesMap[caseListColumn.path])
-        }.toMutableList()
-
-        return CaseListRowDto(document.id().toString(), items)
     }
 
     private fun validateExportPermission(caseDefinitionKey: String, currentUser: String) {

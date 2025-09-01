@@ -44,6 +44,7 @@ import com.ritense.case.service.CaseTabImporter
 import com.ritense.case.service.CaseTabService
 import com.ritense.case.service.CaseTaskListExporter
 import com.ritense.case.service.CaseTaskListImporter
+import com.ritense.case.service.CaseListRowMapper
 import com.ritense.case.service.ObjectMapperConfigurer
 import com.ritense.case.service.TaskColumnService
 import com.ritense.case.web.rest.CaseDefinitionResource
@@ -430,22 +431,27 @@ class CaseAutoConfiguration {
     fun caseExporter(
         caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
         documentSearchService: DocumentSearchService,
-        valueResolverService: ValueResolverService,
         userManagementService: UserManagementService,
         authorizationService: AuthorizationService,
         jsonSchemaDocumentDefinitionService: JsonSchemaDocumentDefinitionService,
         outboxService: OutboxService,
         mapper: ObjectMapper,
+        caseListRowMapper: CaseListRowMapper
     ): CaseExporter {
         return CaseExporter(
             caseDefinitionListColumnRepository,
             documentSearchService,
-            valueResolverService,
             userManagementService,
             authorizationService,
             jsonSchemaDocumentDefinitionService,
             outboxService,
-            mapper
+            mapper,
+            caseListRowMapper
         )
+    }
+
+    @Bean
+    fun caseListRowMapper(): CaseListRowMapper {
+        return CaseListRowMapper()
     }
 }

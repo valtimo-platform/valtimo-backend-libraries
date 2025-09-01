@@ -310,7 +310,12 @@ class CaseDefinitionService(
 
         caseDefinitionListColumnRepository.saveAll(entities)
 
-        logger.info { "User '${getCurrentUser().fullName} (${getCurrentUser().email})' updated case list column configuration: '$entities' for case definition: '$caseDefinitionName'"}
+        val currentUser = getCurrentUser()
+
+        if(currentUser.id != "system") {
+            logger.info { "User '${getCurrentUser().fullName} (${getCurrentUser().email})' " +
+                "updated case list column configuration: '$entities' for case definition: '$caseDefinitionName'"}
+        }
     }
 
     @Throws(UnknownDocumentDefinitionException::class)
