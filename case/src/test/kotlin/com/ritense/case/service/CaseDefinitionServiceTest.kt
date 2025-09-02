@@ -18,8 +18,9 @@ package com.ritense.case.service
 
 import com.ritense.BaseTest
 import com.ritense.authorization.AuthorizationService
-import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
+import com.ritense.case.domain.CaseListColumn
+import com.ritense.case.domain.CaseListColumnId
 import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DisplayType
 import com.ritense.case.domain.EnumDisplayTypeParameter
@@ -28,9 +29,11 @@ import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
+import com.ritense.case.web.rest.dto.HiddenCaseListColumnDto
 import com.ritense.case.web.rest.mapper.CaseListColumnMapper
 import com.ritense.case_.domain.definition.CaseDefinition
 import com.ritense.case_.repository.CaseDefinitionRepository
+import com.ritense.case_.repository.HiddenCaseListColumnRepository
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valueresolver.ValueResolverService
@@ -38,6 +41,7 @@ import com.ritense.valueresolver.exception.ValueResolverValidationException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.ArgumentMatchers.anyList
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doNothing
@@ -47,7 +51,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import org.springframework.data.jpa.domain.Specification
 import java.util.Optional
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -60,6 +63,7 @@ class CaseDefinitionServiceTest : BaseTest() {
     lateinit var documentDefinitionService: DocumentDefinitionService
     lateinit var valueResolverService: ValueResolverService
     lateinit var authorizationService: AuthorizationService
+    lateinit var hiddenCaseListColumnRepository: HiddenCaseListColumnRepository
 
     @BeforeEach
     fun setUp() {
@@ -68,10 +72,12 @@ class CaseDefinitionServiceTest : BaseTest() {
         caseDefinitionRepository = mock()
         valueResolverService = mock()
         authorizationService = mock()
+        hiddenCaseListColumnRepository = mock()
         service = CaseDefinitionService(
             caseDefinitionListColumnRepository,
             documentDefinitionService,
             caseDefinitionRepository,
+            hiddenCaseListColumnRepository,
             valueResolverService,
             authorizationService,
             mock(),
@@ -137,6 +143,67 @@ class CaseDefinitionServiceTest : BaseTest() {
         assertThrows<UnknownCaseDefinitionException> {
             service.updateCaseSettings(caseDefinitionId, caseSettingsDto)
         }
+    }
+
+    @Test
+    fun `should create hiddenCaseListColumn records when columns exist`() {
+        val caseDefinitionKey = "aKey"
+        val userId = "1235"
+        val columnKey = "abba"
+        val hiddenCaseListColumnDto = listOf(HiddenCaseListColumnDto(columnKey))
+        val caseListColumn: CaseListColumn = mock()
+
+        whenever(caseDefinitionListColumnRepository.findById(CaseListColumnId(caseDefinitionKey, columnKey)))
+            .thenReturn(Optional.of(caseListColumn))
+
+        val spec = mock<AuthorizationSpecification<CaseDefinition>>()
+        whenever(authorizationService.getAuthorizationSpecification<CaseDefinition>(any(), eq(null)))
+            .thenReturn(spec)
+        whenever(spec.and(any())).thenReturn(spec)
+
+
+        service.saveHiddenCaseListColumns(
+            caseDefinitionKey,
+            hiddenCaseListColumnDto,
+            userId
+        )
+
+        verify(hiddenCaseListColumnRepository).deleteAllByUserIdAndCaseListColumnIdCaseDefinitionKey(
+            userId,
+            caseDefinitionKey
+        )
+
+        verify(hiddenCaseListColumnRepository).saveAll(anyList())
+    }
+
+    @Test
+    fun `should not create hiddenCaseListColumn records when columns do not exist`() {
+        val caseDefinitionKey = "aKey"
+        val userId = "1235"
+        val columnKey = "abba"
+        val hiddenCaseListColumnDto = listOf(HiddenCaseListColumnDto(columnKey))
+
+        whenever(caseDefinitionListColumnRepository.findById(CaseListColumnId(caseDefinitionKey, columnKey)))
+            .thenReturn(Optional.empty())
+
+        val spec = mock<AuthorizationSpecification<CaseDefinition>>()
+        whenever(authorizationService.getAuthorizationSpecification<CaseDefinition>(any(), eq(null)))
+            .thenReturn(spec)
+        whenever(spec.and(any())).thenReturn(spec)
+
+
+        service.saveHiddenCaseListColumns(
+            caseDefinitionKey,
+            hiddenCaseListColumnDto,
+            userId
+        )
+
+        verify(hiddenCaseListColumnRepository).deleteAllByUserIdAndCaseListColumnIdCaseDefinitionKey(
+            userId,
+            caseDefinitionKey
+        )
+
+        verify(hiddenCaseListColumnRepository).saveAll(emptyList())
     }
 
     @Test
@@ -378,9 +445,12 @@ class CaseDefinitionServiceTest : BaseTest() {
             .thenReturn(spec)
         whenever(spec.and(any())).thenReturn(spec)
 
-        assertEquals("Failed to delete case-definition. Case-definition with id: '$caseDefinitionId' is the global active version.", assertThrows<Exception> {
-            service.deleteCaseDefinition(caseDefinitionId)
-        }.message)
+        assertEquals(
+            "Failed to delete case-definition. Case-definition with id: '$caseDefinitionId' is the global active version.",
+            assertThrows<Exception> {
+                service.deleteCaseDefinition(caseDefinitionId)
+            }.message
+        )
     }
 
     @Test

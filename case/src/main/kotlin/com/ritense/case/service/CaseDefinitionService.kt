@@ -20,6 +20,7 @@ import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
+import com.ritense.case.domain.CaseListColumnId
 import com.ritense.case.exception.InvalidListColumnException
 import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
@@ -34,10 +35,13 @@ import com.ritense.case.service.validations.UpdateCaseListColumnValidator
 import com.ritense.case.web.rest.dto.CaseDefinitionDraftCreateRequest
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
+import com.ritense.case.web.rest.dto.HiddenCaseListColumnDto
 import com.ritense.case.web.rest.mapper.CaseListColumnMapper
 import com.ritense.case_.authorization.CaseDefinitionActionProvider
+import com.ritense.case_.domain.column.HiddenCaseListColumn
 import com.ritense.case_.domain.definition.CaseDefinition
 import com.ritense.case_.repository.CaseDefinitionRepository
+import com.ritense.case_.repository.HiddenCaseListColumnRepository
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
@@ -57,6 +61,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import kotlin.jvm.optionals.getOrNull
 
 @Transactional
 @Service
@@ -65,6 +70,7 @@ class CaseDefinitionService(
     private val caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
     private val documentDefinitionService: DocumentDefinitionService,
     private val caseDefinitionRepository: CaseDefinitionRepository,
+    private val hiddenCaseListColumnRepository: HiddenCaseListColumnRepository,
     valueResolverService: ValueResolverService,
     private val authorizationService: AuthorizationService,
     private val applicationEventPublisher: ApplicationEventPublisher,
@@ -295,6 +301,64 @@ class CaseDefinitionService(
         caseDefinitionListColumnRepository.saveAll(entities)
     }
 
+    fun getHiddenCaseListColumns(caseDefinitionKey: String, userId: String): List<CaseListColumnDto> {
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                CaseDefinition::class.java,
+                CaseDefinitionActionProvider.VIEW,
+                runWithoutAuthorization {
+                    getCaseDefinitions(
+                        caseDefinitionKey = caseDefinitionKey,
+                        active = true
+                    )
+                }
+            )
+        )
+
+        return CaseListColumnMapper.toDtoList(
+            hiddenCaseListColumnRepository.findAllByUserIdAndCaseListColumnIdCaseDefinitionKey(
+                userId,
+                caseDefinitionKey
+            ).map(HiddenCaseListColumn::caseListColumn)
+        )
+    }
+
+    fun saveHiddenCaseListColumns(
+        caseDefinitionKey: String,
+        hiddenCaseListColumnDtoList: List<HiddenCaseListColumnDto>,
+        userId: String
+    ) {
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                CaseDefinition::class.java,
+                CaseDefinitionActionProvider.VIEW,
+                runWithoutAuthorization {
+                    getCaseDefinitions(
+                        caseDefinitionKey = caseDefinitionKey,
+                        active = true
+                    )
+                }
+            )
+        )
+
+        hiddenCaseListColumnRepository.deleteAllByUserIdAndCaseListColumnIdCaseDefinitionKey(
+            userId,
+            caseDefinitionKey
+        )
+
+        val entities = hiddenCaseListColumnDtoList.mapNotNull {
+            caseDefinitionListColumnRepository.findById(
+                CaseListColumnId(caseDefinitionKey,
+                    it.columnKey
+                )
+            ).getOrNull()
+        }
+        hiddenCaseListColumnRepository.saveAll(
+            entities.map {
+                HiddenCaseListColumn(caseListColumn = it, userId = userId)
+            }
+        )
+    }
 
     @Throws(UnknownDocumentDefinitionException::class)
     fun getListColumns(caseDefinitionKey: String): List<CaseListColumnDto> {
@@ -328,6 +392,10 @@ class CaseDefinitionService(
         if (caseDefinitionListColumnRepository
                 .existsByIdCaseDefinitionKeyAndIdKey(caseDefinitionKey, columnKey)
         ) {
+            hiddenCaseListColumnRepository.deleteAllByCaseListColumnIdCaseDefinitionKeyAndCaseListColumnIdKey(
+                caseDefinitionKey,
+                columnKey
+            )
             caseDefinitionListColumnRepository.deleteByIdCaseDefinitionKeyAndIdKey(caseDefinitionKey, columnKey)
         }
     }

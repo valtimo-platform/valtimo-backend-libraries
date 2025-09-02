@@ -27,6 +27,7 @@ import com.ritense.case.web.rest.dto.CaseDefinitionUpdateRequest
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.case.web.rest.dto.CaseVersionDto
+import com.ritense.case.web.rest.dto.HiddenCaseListColumnDto
 import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.exporter.ExportService
@@ -35,6 +36,7 @@ import com.ritense.importer.ImportService
 import com.ritense.importer.exception.ImportServiceException
 import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.valtimo.contract.authorization.UserManagementServiceHolder
 import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
@@ -270,6 +272,30 @@ class CaseDefinitionResource(
         } catch (exception: UnknownCaseDefinitionException) {
             ResponseEntity.notFound().build()
         }
+    }
+
+    @GetMapping("/v1/case/{caseDefinitionName}/hidden-list-column")
+    fun getHiddenCaseListColumnForUser(
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String
+    ): ResponseEntity<List<CaseListColumnDto>> {
+        val currentUserId = UserManagementServiceHolder.currentInstance.currentUserId
+        return ResponseEntity
+            .ok()
+            .body(
+                service.getHiddenCaseListColumns(
+                    caseDefinitionName, currentUserId
+                )
+            )
+    }
+
+    @PostMapping("/v1/case/{caseDefinitionName}/hidden-list-column")
+    fun setHiddenListColumnsForUser(
+        @LoggableResource("documentDefinitionName") @PathVariable caseDefinitionName: String,
+        @RequestBody hiddenCaseListColumnDtoList: List<HiddenCaseListColumnDto>
+    ): ResponseEntity<Any> {
+        val currentUserId = UserManagementServiceHolder.currentInstance.currentUserId
+        service.saveHiddenCaseListColumns(caseDefinitionName, hiddenCaseListColumnDtoList, currentUserId)
+        return ResponseEntity.ok().build()
     }
 
     @GetMapping("/v1/case/{caseDefinitionName}/list-column")
