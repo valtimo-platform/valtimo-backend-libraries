@@ -16,6 +16,17 @@
 
 package com.ritense.case.service.exception
 
-class ExportLimitExceedsException(caseDefinitionKey: String) : RuntimeException(
-    "Export failed for case '$caseDefinitionKey': the number of cases exceeds the maximum limit of 10,000. Please refine your search criteria."
-)
+import com.ritense.case_.domain.definition.CaseDefinition
+import com.ritense.valtimo.web.rest.error.BadRequestAlertException
+
+import org.zalando.problem.Exceptional
+
+class ExportLimitExceedsException(caseDefinitionKey: String) : BadRequestAlertException
+    ("Export failed for case '$caseDefinitionKey': the number of cases exceeds the maximum limit of 10,000. Please refine your search criteria.",
+    CaseDefinition::class.simpleName,
+    "exportLimit"
+) {
+    override fun getCause(): Exceptional? {
+        return null
+    }
+}
