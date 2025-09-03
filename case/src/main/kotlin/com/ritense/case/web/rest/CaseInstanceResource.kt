@@ -18,14 +18,18 @@ package com.ritense.case.web.rest
 
 import com.ritense.case.service.CaseInstanceService
 import com.ritense.case.web.rest.dto.CaseListRowDto
+import com.ritense.case.web.rest.dto.CaseDefinitionQuickSearchDto
 import com.ritense.document.domain.search.SearchWithConfigRequest
 import com.ritense.logging.LoggableResource
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.valtimo.contract.authorization.UserManagementServiceHolder
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -46,5 +50,41 @@ class CaseInstanceResource(
     ): ResponseEntity<Page<CaseListRowDto>> {
         val result = service.search(caseDefinitionName, searchRequest, pageable)
         return ResponseEntity.ok(result)
+    }
+
+    @PostMapping("/v1/case/{caseDefinitionKey}/stored-quick-search")
+    fun saveQuickSearch(
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionKey") caseDefinitionKey: String,
+        @RequestBody request: CaseDefinitionQuickSearchDto,
+    ): ResponseEntity<Any> {
+        val currentUserId = UserManagementServiceHolder.currentInstance.currentUserId
+        service.storeQuickSearch(caseDefinitionKey, request, currentUserId)
+        return ResponseEntity.ok().build()
+    }
+
+    @DeleteMapping("/v1/case/{caseDefinitionKey}/stored-quick-search/{title}")
+    fun deleteQuickSearch(
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionKey") caseDefinitionKey: String,
+        @PathVariable(name = "title") quickSearchTitle: String,
+    ): ResponseEntity<Any> {
+        val currentUserId = UserManagementServiceHolder.currentInstance.currentUserId
+        service.deleteQuickSearch(caseDefinitionKey, currentUserId, quickSearchTitle)
+        return ResponseEntity.noContent().build()
+    }
+
+    @GetMapping("/v1/case/{caseDefinitionKey}/stored-quick-search")
+    fun getQuickSearchList(
+        @LoggableResource("documentDefinitionName") @PathVariable(name = "caseDefinitionKey") caseDefinitionKey: String
+    ): ResponseEntity<List<CaseDefinitionQuickSearchDto>> {
+        val currentUserId = UserManagementServiceHolder.currentInstance.currentUserId
+        val result = service.getQuickSearchList(caseDefinitionKey, currentUserId)
+        return ResponseEntity.ok(
+            result.map {
+                CaseDefinitionQuickSearchDto(
+                    it.queryPath,
+                    it.title,
+                )
+            }
+        )
     }
 }
