@@ -26,4 +26,16 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="2" author="Ritense">
+        <update tableName="case_widget_tab_widget">
+            <column name="use_conditions_to_display" valueBoolean="false"/>
+            <column name="display_conditions" value="[]"/>
+        </update>
+    </changeSet>
+
+    <changeSet id="3" author="Ritense">
+        <addNotNullConstraint tableName="case_widget_tab_widget" columnName="use_conditions_to_display"/>
+        <addNotNullConstraint tableName="case_widget_tab_widget" columnName="display_conditions"/>
+    </changeSet>
+
 </databaseChangeLog>
