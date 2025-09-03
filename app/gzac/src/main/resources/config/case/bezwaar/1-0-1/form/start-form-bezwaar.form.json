@@ -22,6 +22,31 @@
             "input": false,
             "tableView": false
         },
+
+        {
+            "key": "doc:voornaam",
+            "type": "textfield",
+            "input": true,
+            "label": "Voornaam",
+            "disableOnInvalid": true,
+            "tableView": true
+        },
+        {
+            "key": "doc:achternaam",
+            "type": "textfield",
+            "input": true,
+            "label": "Achternaam",
+            "disableOnInvalid": true,
+            "tableView": true
+        },
+        {
+            "key": "doc:postcode",
+            "type": "textfield",
+            "input": true,
+            "label": "Postcode",
+            "disableOnInvalid": true,
+            "tableView": true
+        },
         {
             "type": "button",
             "label": "Start",
