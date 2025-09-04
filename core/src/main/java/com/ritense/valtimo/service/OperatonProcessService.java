@@ -449,6 +449,16 @@ public class OperatonProcessService {
         );
     }
 
+    public List<OperatonProcessDefinition> getGlobalDefinitionsByKey(String processDefinitionKey) {
+        denyAuthorization();
+        return AuthorizationContext.runWithoutAuthorization(() ->
+            operatonRepositoryService.findProcessDefinitions(
+                byKey(processDefinitionKey)
+                    .and(byNotLinkedToCaseDefinition())
+            )
+        );
+    }
+
     @Transactional
     public void deleteAllProcesses(String processDefinitionKey, String reason) {
         denyAuthorization();
