@@ -23,6 +23,7 @@ import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseTabDocumentDefinitionMapper
 import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.repository.CaseTabSpecificationFactory
+import com.ritense.case.repository.QuickSearchRepository
 import com.ritense.case.repository.TaskListColumnRepository
 import com.ritense.case.security.config.CaseHttpSecurityConfigurer
 import com.ritense.case.service.CaseDefinitionCheckerImpl
@@ -200,14 +201,18 @@ class CaseAutoConfiguration {
     fun caseInstanceService(
         caseDefinitionService: CaseDefinitionService,
         caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
+        quickSearchRepository: QuickSearchRepository,
         documentSearchService: DocumentSearchService,
         valueResolverService: ValueResolverService,
+        authorizationService: AuthorizationService
     ): CaseInstanceService {
         return CaseInstanceService(
             caseDefinitionService,
             caseDefinitionListColumnRepository,
+            quickSearchRepository,
             documentSearchService,
             valueResolverService,
+            authorizationService,
         )
     }
 
