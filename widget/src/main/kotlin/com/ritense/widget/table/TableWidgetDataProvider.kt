@@ -22,6 +22,7 @@ import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.Option
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valueresolver.ValueResolverPropertyKey.Companion.PAGEABLE
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.widget.WidgetDataProvider
@@ -30,7 +31,10 @@ import com.ritense.widget.exception.InvalidCollectionNodeTypeException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import org.springframework.stereotype.Component
 
+@Component
+@SkipComponentScan
 class TableWidgetDataProvider(
     private val objectMapper: ObjectMapper,
     private val valueResolverService: ValueResolverService,
@@ -39,11 +43,11 @@ class TableWidgetDataProvider(
     override fun supportedWidgetType() = TableWidget::class.java
 
     override fun getData(widget: TableWidget, properties: Map<String, Any>): Page<Map<String, Any?>> {
-        val pageable = properties[PAGEABLE] as Pageable? ?: Pageable.ofSize(5)
+        val pageable = properties[PAGEABLE] as Pageable? ?: Pageable.ofSize(widget.properties.defaultPageSize)
 
         val resolvedValues = valueResolverService.resolveValues(
             properties,
-            listOf(widget.properties.collection)
+            widget.getUnresolvedValues()
         )
 
         val collectionNode = objectMapper.valueToTree<JsonNode>(resolvedValues[widget.properties.collection])

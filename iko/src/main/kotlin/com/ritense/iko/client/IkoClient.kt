@@ -57,7 +57,10 @@ class IkoClient(
             return result
         } catch (e: Exception) {
             logger.error { e }
-            return jacksonObjectMapper().createObjectNode()
+            // TODO: remove try-catch with mock data
+            return jacksonObjectMapper().readTree(
+                """{"persoon":{"aNummer": "8940402024","burgerservicenummer": "999993653","datumEersteInschrijvingGBA": { "type": "Datum", "datum": "2013-11-02", "langFormaat": "2 november 2013"},"geslacht": { "code": "V", "omschrijving": "vrouw"},"leeftijd": 39,"naam": { "aanduidingNaamgebruik": { "code": "E", "omschrijving": "eigen geslachtsnaam" }, "voornamen": "Suzanne", "geslachtsnaam": "Moulin", "voorletters": "S.", "volledigeNaam": "Suzanne Moulin"},"nationaliteiten": [ { "type": "Nationaliteit", "datumIngangGeldigheid": { "type": "DatumOnbekend", "onbekend": true, "langFormaat": "onbekend" }, "nationaliteit": { "code": "0057", "omschrijving": "Franse" }, "redenOpname": { "code": "301", "omschrijving": "Vaststelling bezit vreemde nationaliteit" } }],"geboorte": { "land": { "code": "5001", "omschrijving": "Canada" }, "plaats": { "omschrijving": "Thann" }, "datum": { "type": "Datum", "datum": "1985-12-01", "langFormaat": "1 december 1985" }}},"zaken":[{"zaakNummer":"ZAAK_2025-065498051","type":"Beoordelen vernieuwing bijstand","status":"In behandeling","uiterlijkeEinddatum":"11-09-2026"},{"zaakNummer":"ZAAK_2025-065716573","type":"Aanvraag SHV","status":"Afgewezen","uiterlijkeEinddatum":"18-04-2025"},{"zaakNummer":"ZAAK_2024-654165472","type":"Aanvraag Ooievaarspas","status":"Toegekend","uiterlijkeEinddatum":"31-12-2025"},{"zaakNummer":"ZAAK_2024-354166545","type":"Uitstel betaling GBLT","status":"Afgerond","uiterlijkeEinddatum":"05-06-2025"}]}"""
+            )
         }
     }
 
@@ -94,7 +97,10 @@ class IkoClient(
             return result
         } catch (e: Exception) {
             logger.error { e }
-            return jacksonObjectMapper().createArrayNode()
+            // TODO: remove try-catch with mock data
+            return jacksonObjectMapper().readTree(
+                """{"type": "ZoekMetGeslachtsnaamEnGeboortedatum","personen": [{"burgerservicenummer": "999993653","naam": {"voornamen": "Suzanne","geslachtsnaam": "Moulin","voorletters": "S.","volledigeNaam": "Suzanne Moulin","aanduidingNaamgebruik": {"code": "E","omschrijving": "eigen geslachtsnaam"}}}]}"""
+            )
         }
     }
 
@@ -126,7 +132,10 @@ class IkoClient(
             return result
         } catch (e: Exception) {
             logger.error { e }
-            return jacksonObjectMapper().createObjectNode()
+            // TODO: remove try-catch with mock data
+            return jacksonObjectMapper().readTree(
+                """{"type": "ZoekMetGeslachtsnaamEnGeboortedatum","personen": [{"burgerservicenummer": "999993653","naam": {"voornamen": "Suzanne","geslachtsnaam": "Moulin","voorletters": "S.","volledigeNaam": "Suzanne Moulin","aanduidingNaamgebruik": {"code": "E","omschrijving": "eigen geslachtsnaam"}}}]}"""
+            )
         }
     }
 

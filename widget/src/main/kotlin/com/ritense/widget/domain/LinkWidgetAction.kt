@@ -17,31 +17,31 @@
 package com.ritense.widget.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonTypeName
 
-@JsonTypeName("redirect")
-data class RedirectWidgetAction(
-    val name: String,
-    val redirectPath: String,
-) : WidgetAction {
+abstract class LinkWidgetAction : WidgetAction {
 
     @JsonIgnore
-    fun getUnresolvedValues(): List<String> = getPlaceholders().map { it.second }
+    abstract fun getLink(): String?
 
-    fun getResolvedRedirectPath(resolvedValues: Map<String, Any?>): String? {
-        var resolvedRedirectPath = redirectPath
+    @JsonIgnore
+    override fun getUnresolvedValues(): List<String> = getPlaceholders().map { it.second }
+
+    override fun getExposedResolvedValues(resolvedValues: Map<String, Any?>): Map<String, Any?> {
+        val link = getLink() ?: return emptyMap()
+        var resolvedLink = link
         getPlaceholders().forEach { (placeholder, placeholderValue) ->
             val resolvedPlaceholder = resolvedValues[placeholderValue]?.toString()
             if (resolvedPlaceholder == null) {
-                return null
+                return emptyMap()
             }
-            resolvedRedirectPath = resolvedRedirectPath.replace(placeholder, resolvedPlaceholder)
+            resolvedLink = resolvedLink.replace(placeholder, resolvedPlaceholder)
         }
-        return resolvedRedirectPath
+        return mapOf(link to resolvedLink)
     }
 
     private fun getPlaceholders(): List<Pair<String, String>> {
-        return Regex("\\$\\{([^\\}]+)\\}").findAll(redirectPath)
+        val link = getLink() ?: return emptyList()
+        return Regex("\\$\\{([^\\}]+)\\}").findAll(link)
             .map { it.groupValues[0] to it.groupValues[1] }
             .toList()
     }

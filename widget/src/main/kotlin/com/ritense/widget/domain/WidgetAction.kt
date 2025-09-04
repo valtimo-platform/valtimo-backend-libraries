@@ -16,7 +16,15 @@
 
 package com.ritense.widget.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
-interface WidgetAction
+interface WidgetAction {
+
+    @JsonIgnore
+    fun getUnresolvedValues(): List<String> = emptyList()
+
+    fun getExposedResolvedValues(resolvedValues: Map<String, Any?>): Map<String, Any?> = emptyMap()
+
+}

@@ -33,11 +33,13 @@ class FieldsWidgetDataProvider(
         val unresolvedValues = unresolvedColumnValues.toSet()
         val resolvedValues = valueResolverService.resolveValues(properties, unresolvedValues)
 
-        return widget.properties.columns.flatMap { column ->
+        val resolvedFields = widget.properties.columns.flatMap { column ->
             column.map { field ->
                 field.key to resolvedValues[field.value]
             }
         }.toMap()
+
+        return resolvedFields + widget.getExposedResolvedValues(resolvedValues)
     }
 
 }

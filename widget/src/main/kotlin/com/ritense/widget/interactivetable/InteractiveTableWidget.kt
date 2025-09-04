@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.widget.table
+package com.ritense.widget.interactivetable
 
 import com.ritense.valtimo.contract.annotation.AllOpen
-import com.ritense.widget.domain.WidgetAction
 import com.ritense.widget.domain.Widget
+import com.ritense.widget.domain.WidgetAction
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorValue
@@ -28,8 +28,8 @@ import java.util.UUID
 
 @AllOpen
 @Entity
-@DiscriminatorValue("table")
-class TableWidget(
+@DiscriminatorValue("interactive-table")
+class InteractiveTableWidget(
     id: UUID,
     key: String,
     title: String,
@@ -40,7 +40,7 @@ class TableWidget(
 
     @Type(value = JsonType::class)
     @Column(name = "properties", nullable = false)
-    val properties: TableWidgetProperties
+    val properties: InteractiveTableWidgetProperties
 ) : Widget(
     id, key, title, order, width, highContrast, actions
 ) {
@@ -52,7 +52,7 @@ class TableWidget(
         width: Int,
         highContrast: Boolean,
         actions: List<WidgetAction>,
-    ) = TableWidget(
+    ) = InteractiveTableWidget(
         id = id,
         key = key,
         title = title,
@@ -63,7 +63,7 @@ class TableWidget(
         properties = properties,
     )
 
-    override fun toDto() = TableWidgetDto(
+    override fun toDto() = InteractiveTableWidgetDto(
         key = this.key,
         title = this.title,
         width = this.width,

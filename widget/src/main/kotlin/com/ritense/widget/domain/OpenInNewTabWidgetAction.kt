@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.widget
+package com.ritense.widget.domain
 
-import org.junit.jupiter.api.Tag
-import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit.jupiter.SpringExtension
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonTypeName
 
-@SpringBootTest
-@ExtendWith(SpringExtension::class)
-@Tag("integration")
-abstract class BaseIntegrationTest {
+@JsonTypeName("open-in-new-tab")
+data class OpenInNewTabWidgetAction(
+    val name: String,
+    val openInNewTab: String,
+) : LinkWidgetAction() {
+
+    @JsonIgnore
+    override fun getLink() = openInNewTab
 
 }

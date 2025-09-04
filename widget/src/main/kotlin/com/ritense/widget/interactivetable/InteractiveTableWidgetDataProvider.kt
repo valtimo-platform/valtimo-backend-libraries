@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.widget.collection
+package com.ritense.widget.interactivetable
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -22,34 +22,39 @@ import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.jayway.jsonpath.Configuration
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.Option
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valueresolver.ValueResolverPropertyKey.Companion.PAGEABLE
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.widget.WidgetDataProvider
 import com.ritense.widget.exception.InvalidCollectionException
 import com.ritense.widget.exception.InvalidCollectionNodeTypeException
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import org.springframework.stereotype.Component
 
-class CollectionWidgetDataProvider(
+@Component
+@SkipComponentScan
+class InteractiveTableWidgetDataProvider(
     private val objectMapper: ObjectMapper,
     private val valueResolverService: ValueResolverService,
-) : WidgetDataProvider<CollectionWidget> {
+) : WidgetDataProvider<InteractiveTableWidget> {
 
-    override fun supportedWidgetType() = CollectionWidget::class.java
+    override fun supportedWidgetType() = InteractiveTableWidget::class.java
 
-    override fun getData(widget: CollectionWidget, properties: Map<String, Any>): Page<CollectionWidgetDataResult> {
+    override fun getData(widget: InteractiveTableWidget, properties: Map<String, Any>): Map<String, Any> {
         val pageable = properties[PAGEABLE] as Pageable? ?: Pageable.ofSize(widget.properties.defaultPageSize)
 
         val resolvedValues = valueResolverService.resolveValues(
             properties,
-            listOf(widget.properties.collection)
+            widget.getUnresolvedValues()
         )
 
         val collectionNode = objectMapper.valueToTree<JsonNode>(resolvedValues[widget.properties.collection])
 
         if (collectionNode.isNull) {
-            return PageImpl(emptyList(), pageable, 0)
+            return mapOf(
+                "data" to PageImpl<Any>(emptyList(), pageable, 0)
+            )
         }
 
         if (!collectionNode.isArray) {
@@ -66,29 +71,30 @@ class CollectionWidgetDataProvider(
                     throw InvalidCollectionNodeTypeException(index)
                 }
             }.map { child ->
-                CollectionWidgetDataResult(
-                    title = resolveValueRef(widget.properties.title.value, child),
-                    fields = widget.properties.fields.associate { column ->
-                        column.key to resolveValueRef(column.value, child)
+                widget.properties.columns.associate { column ->
+                    val value = if (column.value.startsWith("$")) {
+                        JSONPATH_CONTEXT.parse(child.toString()).read<Any>(column.value)
+                    } else {
+                        val pointer = if (column.value.startsWith("/")) column.value else "/${column.value}"
+                        val valueNode = child.at(pointer)
+
+                        if (valueNode.isValueNode && !valueNode.isNull) {
+                            objectMapper.treeToValue<Any?>(valueNode)
+                        } else {
+                            null
+                        }
                     }
-                )
-            }
-        return PageImpl(result, pageable, collectionNode.size().toLong())
-    }
 
-    private fun resolveValueRef(valueRef: String, child: JsonNode): Any? {
-        return if (valueRef.startsWith("$")) {
-            JSONPATH_CONTEXT.parse(child.toString()).read<Any>(valueRef)
-        } else {
-            val pointer = if (valueRef.startsWith("/")) valueRef else "/$valueRef"
-            val valueNode = child.at(pointer)
-
-            if (valueNode.isValueNode && !valueNode.isNull) {
-                objectMapper.treeToValue<Any?>(valueNode)
-            } else {
-                null
+                    column.key to value
+                }
             }
-        }
+
+        widget.getUnresolvedValues()
+
+        return mapOf(
+            "resolved" to widget.getExposedResolvedValues(resolvedValues),
+            "data" to PageImpl(result, pageable, collectionNode.size().toLong())
+        )
     }
 
     private companion object {

@@ -14,35 +14,27 @@
  * limitations under the License.
  */
 
-package com.ritense.widget.table
+package com.ritense.widget.divider
 
 import com.ritense.valtimo.contract.annotation.AllOpen
-import com.ritense.widget.domain.WidgetAction
 import com.ritense.widget.domain.Widget
-import io.hypersistence.utils.hibernate.type.json.JsonType
-import jakarta.persistence.Column
+import com.ritense.widget.domain.WidgetAction
 import jakarta.persistence.DiscriminatorValue
 import jakarta.persistence.Entity
-import org.hibernate.annotations.Type
 import java.util.UUID
 
 @AllOpen
 @Entity
-@DiscriminatorValue("table")
-class TableWidget(
-    id: UUID,
+@DiscriminatorValue("divider")
+class DividerWidget(
+    id: UUID = UUID.randomUUID(),
     key: String,
     title: String,
     order: Int,
     width: Int,
     highContrast: Boolean,
-    actions: List<WidgetAction> = emptyList(),
-
-    @Type(value = JsonType::class)
-    @Column(name = "properties", nullable = false)
-    val properties: TableWidgetProperties
 ) : Widget(
-    id, key, title, order, width, highContrast, actions
+    id, key, title, order, width, highContrast, emptyList()
 ) {
     override fun copy(
         id: UUID,
@@ -52,25 +44,19 @@ class TableWidget(
         width: Int,
         highContrast: Boolean,
         actions: List<WidgetAction>,
-    ) = TableWidget(
+    ) = DividerWidget(
         id = id,
         key = key,
         title = title,
         order = order,
         width = width,
         highContrast = highContrast,
-        actions = actions,
-        properties = properties,
     )
 
-    override fun toDto() = TableWidgetDto(
+    override fun toDto() = DividerWidgetDto(
         key = this.key,
         title = this.title,
         width = this.width,
         highContrast = this.highContrast,
-        actions = this.actions,
-        properties = this.properties,
     )
-
-    override fun getUnresolvedValues(): List<String> = super.getUnresolvedValues() + properties.collection
 }

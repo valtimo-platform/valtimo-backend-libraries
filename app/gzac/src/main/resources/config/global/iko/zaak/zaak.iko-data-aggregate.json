@@ -1,0 +1,8 @@
+{
+    "key": "zaak",
+    "ikoRepositoryConfigKey": "zaken-api",
+    "title": "Zaak",
+    "properties": {
+        "zaaktypeUrl": "http://localhost:8001/catalogi/api/v1/zaaktypen/744ca059-f412-49d4-8963-5800e4afd486"
+    }
+}

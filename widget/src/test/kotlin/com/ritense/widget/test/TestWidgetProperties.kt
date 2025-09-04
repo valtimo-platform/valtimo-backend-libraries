@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.widget
+package com.ritense.widget.test
 
-import org.junit.jupiter.api.Tag
-import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit.jupiter.SpringExtension
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonInclude.Include
+import com.ritense.widget.displayproperties.FieldDisplayProperties
+import jakarta.validation.constraints.NotBlank
 
-@SpringBootTest
-@ExtendWith(SpringExtension::class)
-@Tag("integration")
-abstract class BaseIntegrationTest {
-
-}
+@JsonInclude(Include.NON_NULL)
+data class TestWidgetProperties(
+    @field:NotBlank val stringProperty: String = "test123",
+    val displayProperties: FieldDisplayProperties? = null
+)

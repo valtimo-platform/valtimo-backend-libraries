@@ -8,12 +8,6 @@
                 "title": "Aanvrager",
                 "width": 1,
                 "highContrast": true,
-                "actions": [
-                    {
-                        "name": "More >",
-                        "redirectPath": "/iko/klant/bsn/details/${doc:bsn}"
-                    }
-                ],
                 "properties": {
                     "columns": [
                         [

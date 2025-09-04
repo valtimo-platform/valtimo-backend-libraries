@@ -14,12 +14,12 @@
                         {
                             "key": "naam",
                             "title": "Naam",
-                            "value": "iko:/persoon/naam/volledigeNaam"
+                            "value": "iko:/naam/volledigeNaam"
                         },
                         {
                             "key": "geboortedatum",
                             "title": "Geboortedatum",
-                            "value": "iko:/persoon/geboorte/datum/datum",
+                            "value": "iko:/geboorte/datum/datum",
                             "displayProperties": {
                                 "type": "date",
                                 "format": "DD-MM-YYYY"
@@ -28,7 +28,7 @@
                         {
                             "key": "bsn",
                             "title": "BSN",
-                            "value": "iko:/persoon/burgerservicenummer"
+                            "value": "iko:/burgerservicenummer"
                         }
                     ]
                 ]
@@ -41,7 +41,7 @@
             "width": 1,
             "highContrast": false,
             "properties": {
-                "collection": "iko:/persoon/nationaliteiten",
+                "collection": "iko:/nationaliteiten",
                 "defaultPageSize": 4,
                 "title": {
                     "value": "/nationaliteit/omschrijving"
@@ -72,22 +72,22 @@
                         {
                             "key": "verblijfadres",
                             "title": "Verblijfadres",
-                            "value": "iko:/persoon/verblijfplaats/verblijfadres/korteStraatnaam"
+                            "value": "iko:/verblijfplaats/verblijfadres/korteStraatnaam"
                         },
                         {
                             "key": "huisnummer",
                             "title": "Huisnummer",
-                            "value": "iko:/persoon/verblijfplaats/verblijfadres/huisnummer"
+                            "value": "iko:/verblijfplaats/verblijfadres/huisnummer"
                         },
                         {
                             "key": "postcode",
                             "title": "Postcode",
-                            "value": "iko:/persoon/verblijfplaats/verblijfadres/postcode"
+                            "value": "iko:/verblijfplaats/verblijfadres/postcode"
                         },
                         {
                             "key": "ingangGeldigheid",
                             "title": "Ingangsdatum",
-                            "value": "iko:/persoon/verblijfplaats/datumIngangGeldigheid/langFormaat"
+                            "value": "iko:/verblijfplaats/datumIngangGeldigheid/langFormaat"
                         }
                     ]
                 ]
@@ -100,7 +100,7 @@
             "width": 1,
             "highContrast": false,
             "properties": {
-                "collection": "iko:/persoon/partners",
+                "collection": "iko:/partners",
                 "defaultPageSize": 4,
                 "title": {
                     "value": "/burgerservicenummer"
@@ -130,6 +130,16 @@
             "title": "Lopende zaken",
             "width": 4,
             "highContrast": false,
+            "actions": [
+                {
+                    "name": "Create new Bezwaar",
+                    "navigateTo": "/cases/bezwaar#createNewCase"
+                },
+                {
+                    "name": "Create new Verzoek",
+                    "openInNewTab": "http://localhost:8003/leningaanvragen/startpagina"
+                }
+            ],
             "properties": {
                 "collection": "iko:/zaken",
                 "defaultPageSize": 4,
@@ -159,6 +169,35 @@
                         }
                     }
                 ]
+            }
+        },
+        {
+            "type": "table",
+            "key": "bomen",
+            "title": "Bomen",
+            "width": 4,
+            "highContrast": false,
+            "properties": {
+                "collection": "iko:?ikoDataAggregateKey=boom&boombeeld=Aanvaard boombeeld&id=",
+                "defaultPageSize": 4,
+                "columns": [
+                    {
+                        "key": "boombeeld",
+                        "title": "Boombeeld",
+                        "value": "/record/data/boombeeld"
+                    },
+                    {
+                        "key": "groeifase",
+                        "title": "Groeifase",
+                        "value": "/record/data/groeifase"
+                    },
+                    {
+                        "key": "boomveiligheidsklasse",
+                        "title": "Boomveiligheidsklasse",
+                        "value": "/record/data/boomveiligheidsklasse"
+                    }
+                ],
+                "firstColumnAsTitle": false
             }
         }
     ]

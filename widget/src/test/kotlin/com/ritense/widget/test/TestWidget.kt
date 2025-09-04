@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.widget.table
+package com.ritense.widget.test
 
 import com.ritense.valtimo.contract.annotation.AllOpen
-import com.ritense.widget.domain.WidgetAction
 import com.ritense.widget.domain.Widget
+import com.ritense.widget.domain.WidgetAction
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorValue
@@ -28,19 +28,19 @@ import java.util.UUID
 
 @AllOpen
 @Entity
-@DiscriminatorValue("table")
-class TableWidget(
+@DiscriminatorValue("test")
+class TestWidget(
     id: UUID,
     key: String,
     title: String,
     order: Int,
     width: Int,
     highContrast: Boolean,
-    actions: List<WidgetAction> = emptyList(),
+    actions: List<WidgetAction>,
 
     @Type(value = JsonType::class)
     @Column(name = "properties", nullable = false)
-    val properties: TableWidgetProperties
+    val properties: TestWidgetProperties
 ) : Widget(
     id, key, title, order, width, highContrast, actions
 ) {
@@ -51,8 +51,8 @@ class TableWidget(
         order: Int,
         width: Int,
         highContrast: Boolean,
-        actions: List<WidgetAction>,
-    ) = TableWidget(
+        actions: List<WidgetAction>
+    ): Widget = TestWidget(
         id = id,
         key = key,
         title = title,
@@ -60,10 +60,10 @@ class TableWidget(
         width = width,
         highContrast = highContrast,
         actions = actions,
-        properties = properties,
+        properties = properties
     )
 
-    override fun toDto() = TableWidgetDto(
+    override fun toDto() = TestWidgetDto(
         key = this.key,
         title = this.title,
         width = this.width,
@@ -71,6 +71,4 @@ class TableWidget(
         actions = this.actions,
         properties = this.properties,
     )
-
-    override fun getUnresolvedValues(): List<String> = super.getUnresolvedValues() + properties.collection
 }

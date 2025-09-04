@@ -49,6 +49,7 @@ import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.operaton.service.OperatonRepositoryService
 import com.ritense.valtimo.service.OperatonTaskService
 import com.ritense.valueresolver.ValueResolverService
+import com.ritense.widget.interactivetable.InteractiveTableWidgetDataProvider
 import com.ritense.widget.table.TableWidgetDataProvider
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher
@@ -154,6 +155,13 @@ class FormAutoConfigurationKotlin {
         objectMapper: ObjectMapper,
         valueResolverService: ValueResolverService,
     ) = TableWidgetDataProvider(objectMapper, valueResolverService)
+
+    @ConditionalOnMissingBean(InteractiveTableWidgetDataProvider::class)
+    @Bean
+    fun interactiveTableWidgetDataProvider(
+        objectMapper: ObjectMapper,
+        valueResolverService: ValueResolverService,
+    ) = InteractiveTableWidgetDataProvider(objectMapper, valueResolverService)
 
     @ConditionalOnMissingBean(FormDefinitionExistsValidator::class)
     @Bean

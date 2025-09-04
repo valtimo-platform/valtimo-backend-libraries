@@ -60,7 +60,7 @@ class FormFlowInstance(
     private val additionalProperties: MutableMap<String, Any> = mutableMapOf()
 ) {
     init {
-        navigateToNextStep()
+        navigationNextStep()
     }
 
     /**
@@ -84,7 +84,7 @@ class FormFlowInstance(
 
             formFlowStepInstance.complete(submissionData.toString())
 
-            val nextStep = navigateToNextStep()
+            val nextStep = navigationNextStep()
             check(nextStep != null || formFlowStepInstance.definition.onComplete.isNotEmpty()) {
                 "Form flow end reached but no action was taken because the 'onComplete' is empty. For form flow step: '${formFlowStepInstance.definition.id}'"
             }
@@ -115,7 +115,7 @@ class FormFlowInstance(
      *
      * @return The target step
      */
-    fun navigateToStep(targetId: FormFlowStepInstanceId): FormFlowStepInstance {
+    fun navigationStep(targetId: FormFlowStepInstanceId): FormFlowStepInstance {
         return withLoggingContext(FormFlowStepInstance::class.java.canonicalName to targetId.toString()) {
             val targetStep = history.single { it.id == targetId }
             val currentStep = getCurrentStep()
@@ -204,7 +204,7 @@ class FormFlowInstance(
         }
     }
 
-    private fun navigateToNextStep() : FormFlowStepInstance? {
+    private fun navigationNextStep() : FormFlowStepInstance? {
         val nextStep = determineNextStep()
         if (nextStep == null) {
             this.currentFormFlowStepInstanceId = null

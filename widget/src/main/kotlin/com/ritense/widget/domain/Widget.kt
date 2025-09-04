@@ -16,6 +16,7 @@
 
 package com.ritense.widget.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.ritense.valtimo.contract.annotation.AllOpen
 import com.ritense.widget.web.rest.dto.WidgetDto
 import io.hypersistence.utils.hibernate.type.json.JsonType
@@ -80,6 +81,16 @@ abstract class Widget(
     ): Widget
 
     abstract fun toDto(): WidgetDto
+
+    @JsonIgnore
+    fun getUnresolvedValues(): List<String> {
+        return actions.flatMap { it.getUnresolvedValues() }.distinct()
+    }
+
+    fun getExposedResolvedValues(resolvedValues: Map<String, Any?>): Map<String, Any?> =
+        actions
+            .flatMap { action -> action.getExposedResolvedValues(resolvedValues).map { it.key to it.value } }
+            .toMap()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

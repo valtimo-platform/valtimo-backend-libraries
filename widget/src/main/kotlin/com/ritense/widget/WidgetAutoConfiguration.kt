@@ -25,6 +25,7 @@ import com.ritense.widget.custom.CustomWidget
 import com.ritense.widget.domain.Widget
 import com.ritense.widget.fields.FieldsWidget
 import com.ritense.widget.fields.FieldsWidgetDataProvider
+import com.ritense.widget.interactivetable.InteractiveTableWidget
 import com.ritense.widget.repository.WidgetRepository
 import com.ritense.widget.service.WidgetService
 import com.ritense.widget.table.TableWidget
@@ -51,6 +52,7 @@ import javax.sql.DataSource
         CollectionWidget::class,
         CustomWidget::class,
         FieldsWidget::class,
+        InteractiveTableWidget::class,
         TableWidget::class,
         Widget::class,
     ]

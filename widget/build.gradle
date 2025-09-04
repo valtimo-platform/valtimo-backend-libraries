@@ -52,11 +52,15 @@ dependencies {
     implementation("com.jayway.jsonpath:json-path:${jaywayJsonpathVersion}")
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.springframework.security:spring-security-test"
+    testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "ch.qos.logback:logback-classic"
     testImplementation "ch.qos.logback:logback-core"
     testImplementation "org.postgresql:postgresql:${postgresqlDriverVersion}"
     testImplementation "com.mysql:mysql-connector-j:${mysqlDriverVersion}"
+    testImplementation "org.mockito:mockito-core"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
 
     jar {
         enabled = true
