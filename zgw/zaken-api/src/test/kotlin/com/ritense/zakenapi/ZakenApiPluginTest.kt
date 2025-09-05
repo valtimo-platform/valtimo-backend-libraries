@@ -57,6 +57,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -489,13 +490,21 @@ internal class ZakenApiPluginTest {
         val description = "Omschrijving"
         val plannedEndDate = LocalDate.now().plusDays(10)
         val finalDeliveryDate = null
+        val explanation = "Toelichting"
+        val communicationChannel = communicationChannel()
+        val paymentIndication = Betalingsindicatie.GEDEELTELIJK.key
+        val caseGeometryType = GeometryType.POINT.key
+        val caseGeometryCoordinates = "[52.370216, 4.895168]"
+        val mainCase = zaakUrl("123")
 
-        whenever(executionMock.businessKey).thenReturn(documentId.toString())
+        whenever(executionMock.businessKey)
+            .thenReturn(documentId.toString())
+
         whenever(
             zakenApiClient.createZaak(
-                eq(authenticationMock),
-                eq(zakenApiUri()),
-                any()
+                authentication = eq(authenticationMock),
+                baseUrl = eq(zakenApiUri()),
+                request = any()
             )
         ).thenReturn(
             ZaakResponse(
@@ -510,28 +519,41 @@ internal class ZakenApiPluginTest {
 
         val plugin = zakenApiPlugin(
             zakenApiClient = zakenApiClient,
-            authenticationMock = authenticationMock
+            authenticationMock = authenticationMock,
+            pluginService = pluginServiceMock()
         )
 
         plugin.createZaak(
-            executionMock,
-            rsin,
-            zaaktypeUrl,
-            description,
-            plannedEndDate.toString(),
-            finalDeliveryDate
+            execution = executionMock,
+            rsin = rsin,
+            zaaktypeUrl = zaaktypeUrl,
+            description = description,
+            plannedEndDate = plannedEndDate.toString(),
+            finalDeliveryDate = finalDeliveryDate,
+            explanation = explanation,
+            communicationChannel = communicationChannel,
+            paymentIndication = paymentIndication,
+            caseGeometryType = caseGeometryType,
+            caseGeometryCoordinates = caseGeometryCoordinates,
+            mainCase = mainCase
         )
 
         val captor = argumentCaptor<CreateZaakRequest>()
         verify(zakenApiClient).createZaak(any(), any(), captor.capture())
 
         val request = captor.firstValue
-        assertEquals(rsin, request.bronorganisatie)
-        assertEquals(zaaktypeUrl, request.zaaktype)
-        assertEquals(rsin, request.verantwoordelijkeOrganisatie)
-        assertNotNull(request.startdatum)
-        assertEquals(description, request.omschrijving)
-        assertEquals(plannedEndDate, request.einddatumGepland)
+        assertThat(request.bronorganisatie).isEqualTo(rsin)
+        assertThat(request.zaaktype).isEqualTo(zaaktypeUrl)
+        assertThat(request.verantwoordelijkeOrganisatie).isEqualTo(rsin)
+        assertThat(request.startdatum).isNotNull()
+        assertThat(request.omschrijving).isEqualTo(description)
+        assertThat(request.einddatumGepland).isEqualTo(plannedEndDate)
+        assertThat(request.toelichting).isEqualTo(explanation)
+        assertThat(request.uiterlijkeEinddatumAfdoening).isNull()
+        assertThat(request.communicatiekanaal).isEqualTo(URI.create(communicationChannel))
+        assertThat(request.betalingsindicatie).isEqualTo(Betalingsindicatie.GEDEELTELIJK)
+        assertThat(request.zaakgeometrie).isEqualTo(Geometry(GeometryType.POINT, listOf(52.370216F, 4.895168F)))
+        assertThat(request.hoofdzaak).isEqualTo(URI.create(mainCase))
     }
 
     @Test
@@ -540,10 +562,6 @@ internal class ZakenApiPluginTest {
         val zaakInstanceLinkRepository: ZaakInstanceLinkRepository = mock()
         val executionMock: DelegateExecution = mock()
         val authenticationMock: ZakenApiAuthentication = mock()
-        val pluginService: PluginService = mock()
-
-        whenever(pluginService.getObjectMapper())
-            .thenReturn(MapperSingleton.get())
 
         val documentId = UUID.fromString("dff80fb1-e24e-4287-b168-7bb199be5d58")
         val zaakId = "f18146df-4b26-4a32-8e52-122cfa4475bd"
@@ -553,7 +571,7 @@ internal class ZakenApiPluginTest {
 
         val description = "Omschrijving"
         val explantation = "Toelichting"
-        val communicationChannel = "https://example.com/comminicatiekanaal/example"
+        val communicationChannel = communicationChannel()
         val communicationChannelName = "Communicatiekanaal Naam"
         val nowDate = LocalDate.parse("2025-07-23")
         val plannedEndDate = nowDate.plusMonths(10).toString()
@@ -591,7 +609,7 @@ internal class ZakenApiPluginTest {
             zakenApiClient = zakenApiClient,
             zaakInstanceLinkRepository = zaakInstanceLinkRepository,
             authenticationMock = authenticationMock,
-            pluginService = pluginService
+            pluginService = pluginServiceMock()
         )
 
         plugin.patchZaak(
@@ -1133,6 +1151,10 @@ internal class ZakenApiPluginTest {
         }
     }
 
+    private fun pluginServiceMock(): PluginService = mock {
+        on { this.getObjectMapper()  } doReturn MapperSingleton.get()
+    }
+
     private fun zakenApiUrl() = "https://zaken.plugin.url"
     private fun zakenApiUri() = URI(zakenApiUrl())
 
@@ -1158,4 +1180,6 @@ internal class ZakenApiPluginTest {
     private fun objectUri() = URI(objectUrl())
 
     private fun documentUrl() = "https://document.url"
+
+    private fun communicationChannel() = "https://example.com/comminicatiekanaal/example"
 }
