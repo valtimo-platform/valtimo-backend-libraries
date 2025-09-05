@@ -186,11 +186,11 @@ class ZakenApiPlugin(
         @PluginActionProperty plannedEndDate: String? = null,
         @PluginActionProperty finalDeliveryDate: String? = null,
         @PluginActionProperty explanation: String? = null,
-        @PluginActionProperty communicationChannel: URI? = null,
+        @PluginActionProperty communicationChannel: String? = null,
         @PluginActionProperty paymentIndication: String? = null,
         @PluginActionProperty caseGeometryType: String? = null,
         @PluginActionProperty caseGeometryCoordinates: String? = null,
-        @PluginActionProperty mainCase: URI? = null
+        @PluginActionProperty mainCase: String? = null
     ) {
         withLoggingContext(
             CATALOGI_API.ZAAKTYPE to zaaktypeUrl.toString()
@@ -206,10 +206,10 @@ class ZakenApiPlugin(
                 plannedEndDate = plannedEndDate?.let { LocalDate.parse(it) },
                 finalDeliveryDate = finalDeliveryDate?.let { LocalDate.parse(it) },
                 explanation = explanation,
-                communicationChannel = communicationChannel,
+                communicationChannel = communicationChannel?.let { URI.create(it) },
                 paymentIndication = paymentIndication?.let { Betalingsindicatie.create(it) },
                 caseGeometry = caseGeometry,
-                mainCase = mainCase
+                mainCase = mainCase?.let { URI.create(it) }
             )
 
             logger.info { "Zaak of zaaktype with URL '$zaaktypeUrl' created for document with id '$documentId'" }
@@ -381,7 +381,7 @@ class ZakenApiPlugin(
     ): Geometry? =
         if (geometryType != null && geometryCoordinates != null) {
             Geometry(
-                type = GeometryType.entries.find { it.key.uppercase() == geometryType.uppercase() }!!,
+                type = GeometryType.entries.find { it.key.equals(geometryType, ignoreCase = true) }!!,
                 coordinates = pluginService.getObjectMapper().readValue(geometryCoordinates)
             )
         } else {
@@ -1122,10 +1122,12 @@ class ZakenApiPlugin(
 
     companion object {
         private val logger = KotlinLogging.logger {}
+
         const val PLUGIN_KEY = "zakenapi"
         const val URL_PROPERTY = "url"
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"
         const val DOCUMENT_URL_PROCESS_VAR = "documentUrl"
+
         fun findConfigurationByUrl(url: URI) = { properties: JsonNode ->
             url.toString().startsWith(properties[URL_PROPERTY].textValue())
         }
