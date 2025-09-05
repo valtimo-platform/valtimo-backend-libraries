@@ -1131,8 +1131,6 @@ internal class ZakenApiPluginTest {
         pluginService: PluginService = mock(),
         zaakHersteltermijnRepository: ZaakHersteltermijnRepository = mock(),
         platformTransactionManager: PlatformTransactionManager = mock(),
-        documentService: DocumentService = mock(),
-        processDocumentAssociationService: ProcessDocumentAssociationService = mock(),
         authenticationMock: ZakenApiAuthentication = mock()
     ): ZakenApiPlugin {
         return ZakenApiPlugin(
@@ -1142,9 +1140,7 @@ internal class ZakenApiPluginTest {
             zaakInstanceLinkRepository,
             pluginService,
             zaakHersteltermijnRepository,
-            platformTransactionManager,
-            documentService,
-            processDocumentAssociationService
+            platformTransactionManager
         ).apply {
             this.url = url
             this.authenticationPluginConfiguration = authenticationMock

@@ -16,10 +16,8 @@
 
 package com.ritense.zakenapi
 
-import com.ritense.document.service.DocumentService
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
-import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.repository.ZaakHersteltermijnRepository
@@ -34,8 +32,6 @@ class ZakenApiPluginFactory(
     private val zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
     private val zaakHersteltermijnRepository: ZaakHersteltermijnRepository,
     private val platformTransactionManager: PlatformTransactionManager,
-    private val documentService: DocumentService,
-    private val processDocumentAssociationService: ProcessDocumentAssociationService,
 ) : PluginFactory<ZakenApiPlugin>(pluginService) {
 
     override fun create(): ZakenApiPlugin {
@@ -47,8 +43,6 @@ class ZakenApiPluginFactory(
             pluginService,
             zaakHersteltermijnRepository,
             platformTransactionManager,
-            documentService,
-            processDocumentAssociationService,
         )
     }
 }

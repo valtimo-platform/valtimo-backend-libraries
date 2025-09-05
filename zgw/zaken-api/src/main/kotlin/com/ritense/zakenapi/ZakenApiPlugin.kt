@@ -93,9 +93,7 @@ class ZakenApiPlugin(
     private val zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
     private val pluginService: PluginService,
     private val zaakHersteltermijnRepository: ZaakHersteltermijnRepository,
-    private val platformTransactionManager: PlatformTransactionManager,
-    private val documentService: DocumentService,
-    private val processDocumentAssociationService: ProcessDocumentAssociationService,
+    private val platformTransactionManager: PlatformTransactionManager
 ) {
     @Url
     @PluginProperty(key = URL_PROPERTY, secret = false)

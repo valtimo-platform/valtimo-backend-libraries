@@ -61,72 +61,115 @@ class ZakenApiEventListenerTest {
     fun `should create zaak on DocumentCreatedEvent when zakenApiPluginConfigurationId is set`() {
         val pluginId = PluginConfigurationId.existingId(UUID.randomUUID())
         val zaakTypeLink = ZaakTypeLink(
-            ZaakTypeLinkId.newId(UUID.randomUUID()),
-            caseDefinitionId,
-            URI("http://some-url"),
-            true,
-            pluginId.id,
-            mock()
+            zaakTypeLinkId = ZaakTypeLinkId.newId(UUID.randomUUID()),
+            caseDefinitionId = caseDefinitionId,
+            zaakTypeUrl = URI("http://some-url"),
+            createWithDossier = true,
+            zakenApiPluginConfigurationId = pluginId.id,
+            rsin = mock()
         )
 
         val event = setupDocumentCreatedRequest()
         val zakenApiPlugin = mock<ZakenApiPlugin>()
         val documentId = mock<Document.Id>()
 
-        whenever(zaakTypeLinkService.get(any())).thenReturn(zaakTypeLink)
-        whenever(pluginService.createInstance<ZakenApiPlugin>(any<UUID>())).thenReturn(zakenApiPlugin)
-        whenever(event.documentId()).thenReturn(documentId)
-        whenever(documentId.id).thenReturn(UUID.randomUUID())
+        whenever(zaakTypeLinkService.get(any()))
+            .thenReturn(zaakTypeLink)
+        whenever(pluginService.createInstance<ZakenApiPlugin>(any<UUID>()))
+            .thenReturn(zakenApiPlugin)
+        whenever(event.documentId())
+            .thenReturn(documentId)
+        whenever(documentId.id)
+            .thenReturn(UUID.randomUUID())
 
         zakenApiEventListener.handle(event)
 
-        verify(zakenApiPlugin).createZaak(any<UUID>(), any(), any(), anyOrNull(), anyOrNull(), anyOrNull())
+        verify(zakenApiPlugin).createZaak(
+            documentId = any<UUID>(),
+            rsin = any(),
+            zaaktypeUrl = any(),
+            description = anyOrNull(),
+            plannedEndDate = anyOrNull(),
+            finalDeliveryDate = anyOrNull(),
+            explanation = anyOrNull(),
+            communicationChannel = anyOrNull(),
+            paymentIndication = anyOrNull(),
+            caseGeometry = anyOrNull(),
+            mainCase = anyOrNull()
+        )
     }
 
     @Test
     fun `should not create zaak on DocumentCreatedEvent when zakenApiPluginConfigurationId is null`() {
-        val pluginId = PluginConfigurationId.existingId(UUID.randomUUID())
         val zaakTypeLink = ZaakTypeLink(
-            ZaakTypeLinkId.newId(UUID.randomUUID()),
-            caseDefinitionId,
-            URI("http://some-url"),
-            true,
-            null,
-            mock()
+            zaakTypeLinkId = ZaakTypeLinkId.newId(UUID.randomUUID()),
+            caseDefinitionId = caseDefinitionId,
+            zaakTypeUrl = URI("http://some-url"),
+            createWithDossier = true,
+            zakenApiPluginConfigurationId = null,
+            rsin = mock()
         )
 
         val event = setupDocumentCreatedRequest()
         val zakenApiPlugin = mock<ZakenApiPlugin>()
 
-        whenever(zaakTypeLinkService.get(any())).thenReturn(zaakTypeLink)
-        whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(zakenApiPlugin)
+        whenever(zaakTypeLinkService.get(any()))
+            .thenReturn(zaakTypeLink)
+        whenever(pluginService.createInstance(any<PluginConfigurationId>()))
+            .thenReturn(zakenApiPlugin)
 
         zakenApiEventListener.handle(event)
 
-        verify(zakenApiPlugin, never()).createZaak(any<UUID>(), any(), any(), any(), any(), any())
+        verify(zakenApiPlugin, never()).createZaak(
+            documentId = any<UUID>(),
+            rsin = any(),
+            zaaktypeUrl = any(),
+            description = anyOrNull(),
+            plannedEndDate = anyOrNull(),
+            finalDeliveryDate = anyOrNull(),
+            explanation = anyOrNull(),
+            communicationChannel = anyOrNull(),
+            paymentIndication = anyOrNull(),
+            caseGeometry = anyOrNull(),
+            mainCase = anyOrNull()
+        )
     }
 
     @Test
     fun `should not create zaak on DocumentCreatedEvent when createWithDossier is false`() {
         val pluginId = PluginConfigurationId.existingId(UUID.randomUUID())
         val zaakTypeLink = ZaakTypeLink(
-            ZaakTypeLinkId.newId(UUID.randomUUID()),
-            caseDefinitionId,
-            URI("http://some-url"),
-            false,
-            pluginId.id,
-            mock()
+            zaakTypeLinkId = ZaakTypeLinkId.newId(UUID.randomUUID()),
+            caseDefinitionId = caseDefinitionId,
+            zaakTypeUrl = URI("http://some-url"),
+            createWithDossier = false,
+            zakenApiPluginConfigurationId = pluginId.id,
+            rsin = mock()
         )
 
         val event = setupDocumentCreatedRequest()
         val zakenApiPlugin = mock<ZakenApiPlugin>()
 
-        whenever(zaakTypeLinkService.get(any())).thenReturn(zaakTypeLink)
-        whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(zakenApiPlugin)
+        whenever(zaakTypeLinkService.get(any()))
+            .thenReturn(zaakTypeLink)
+        whenever(pluginService.createInstance(any<PluginConfigurationId>()))
+            .thenReturn(zakenApiPlugin)
 
         zakenApiEventListener.handle(event)
 
-        verify(zakenApiPlugin, never()).createZaak(any<UUID>(), any(), any(), any(), any(), any())
+        verify(zakenApiPlugin, never()).createZaak(
+            documentId = any<UUID>(),
+            rsin = any(),
+            zaaktypeUrl = any(),
+            description = anyOrNull(),
+            plannedEndDate = anyOrNull(),
+            finalDeliveryDate = anyOrNull(),
+            explanation = anyOrNull(),
+            communicationChannel = anyOrNull(),
+            paymentIndication = anyOrNull(),
+            caseGeometry = anyOrNull(),
+            mainCase = anyOrNull()
+        )
     }
 
     @EventListener(DocumentCreatedEvent::class)
@@ -149,15 +192,16 @@ class ZakenApiEventListenerTest {
         val zaakTypeLinkCaptor = argumentCaptor<ZaakTypeLink>()
 
         val zaakTypeLink = ZaakTypeLink(
-            ZaakTypeLinkId.newId(UUID.randomUUID()),
-            caseDefinitionId,
-            URI("http://some-url"),
-            true,
-            pluginId.id,
-            mock()
+            zaakTypeLinkId = ZaakTypeLinkId.newId(UUID.randomUUID()),
+            caseDefinitionId = caseDefinitionId,
+            zaakTypeUrl = URI("http://some-url"),
+            createWithDossier = true,
+            zakenApiPluginConfigurationId = pluginId.id,
+            rsin = mock()
         )
 
-        whenever(zaakTypeLinkService.getByPluginConfigurationId(any())).thenReturn(listOf(zaakTypeLink))
+        whenever(zaakTypeLinkService.getByPluginConfigurationId(any()))
+            .thenReturn(listOf(zaakTypeLink))
 
         zakenApiEventListener.handle(event)
 
@@ -184,7 +228,8 @@ class ZakenApiEventListenerTest {
             mock()
         )
 
-        whenever(zaakTypeLinkService.getByPluginConfigurationId(any())).thenReturn(listOf(zaakTypeLink))
+        whenever(zaakTypeLinkService.getByPluginConfigurationId(any()))
+            .thenReturn(listOf(zaakTypeLink))
 
         zakenApiEventListener.handle(event)
 
@@ -197,10 +242,14 @@ class ZakenApiEventListenerTest {
     private fun setupDocumentCreatedRequest(): DocumentCreatedEvent {
         val event = mock<DocumentCreatedEvent>()
         val idMock = mock<DocumentDefinition.Id>()
-        whenever(event.definitionId()).thenReturn(idMock)
-        whenever(idMock.caseDefinitionId()).thenReturn(caseDefinitionId)
-        whenever(idMock.name()).thenReturn("test")
-        whenever(idMock.caseDefinitionId()).thenReturn(caseDefinitionId)
+        whenever(event.definitionId())
+            .thenReturn(idMock)
+        whenever(idMock.caseDefinitionId())
+            .thenReturn(caseDefinitionId)
+        whenever(idMock.name())
+            .thenReturn("test")
+        whenever(idMock.caseDefinitionId())
+            .thenReturn(caseDefinitionId)
         return event
     }
 }
