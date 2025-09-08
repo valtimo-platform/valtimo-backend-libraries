@@ -36,38 +36,48 @@ class RetryLockFilter(): TurboFilter() {
         params: Array<out Any?>?,
         throwable: Throwable?
     ): FilterReply {
-        if (logger == null || level !== Level.ERROR) return FilterReply.NEUTRAL
+        if (logger == null || (level !== Level.ERROR && level !== Level.WARN)) return FilterReply.NEUTRAL
         val name: String? = logger.getName()
-        if (name == null || !name.startsWith("org.operaton")) return FilterReply.NEUTRAL
 
-        val lastArgument = params?.lastOrNull()
-        if (lastArgument !is Throwable) return FilterReply.NEUTRAL
-
-        // Optional MDC read (only now)
+        // Only log as normal if this is the last retry attempt of a job
         val last = MDC.get("operaton.jobLastAttempt")
         if ("true" == last) return FilterReply.NEUTRAL
 
         // Match specific exception
-        if (lastArgument.cause?.javaClass?.getName() != "org.springframework.orm.ObjectOptimisticLockingFailureException") return FilterReply.NEUTRAL
-
-        // Create a new event (WARN instead of ERROR, with same throwable & args)
-        val e: LoggingEvent = LoggingEvent()
-        e.setLoggerName(logger.getName())
-        e.setLevel(Level.WARN) // change level
-        e.setMessage("This error was removed") // change message
-        e.setArgumentArray(params)
-        if (throwable != null) {
-            e.setThrowableProxy(ThrowableProxy(throwable))
+        val exception = if (throwable != null) {
+            throwable
+        } else {
+            val lastArgument = params?.lastOrNull()
+            if (lastArgument !is Throwable) return FilterReply.NEUTRAL
+            lastArgument
         }
-        e.setMDCPropertyMap(MDC.getCopyOfContextMap())
-        e.setTimeStamp(System.currentTimeMillis())
-        e.setThreadName(Thread.currentThread().getName())
 
-        // Emit the rewritten event and kill the original
-        logger.callAppenders(e)
+        if (!isObjectOptimisticLockingFailureExceptionInChain(exception)) return FilterReply.NEUTRAL
 
-        // Rewrite or deny here
+        logSingleWarning(logger)
         return FilterReply.DENY
+    }
+
+    fun isObjectOptimisticLockingFailureExceptionInChain(throwable: Throwable?): Boolean {
+        var current: Throwable? = throwable
+        while (current != null) {
+            if (current.javaClass.getName() == "org.springframework.orm.ObjectOptimisticLockingFailureException") {
+                return true
+            }
+            current = current.cause
+        }
+        return false
+    }
+
+
+    fun logSingleWarning(logger: Logger) {
+        val loggedBefore = MDC.get("operaton.logged")
+        if (loggedBefore == "true") {
+            return
+        }
+
+        logger.warn("Optimistic locking exception occurred, this is expected during retries of jobs and can be ignored.")
+        MDC.put("operaton.logged", "true")
     }
 
 }
