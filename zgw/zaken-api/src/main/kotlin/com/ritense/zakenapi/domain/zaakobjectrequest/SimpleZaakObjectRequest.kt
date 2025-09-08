@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2024 Ritense BV, the Netherlands.
+ * Copyright 2015-2025 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi.domain
+package com.ritense.zakenapi.domain.zaakobjectrequest
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import java.net.URI
 
-@Deprecated("Use (an implementation of) the com.ritense.zakenapi.domain.zaakobjectrequest.ZaakObjectRequest class instead.")
-data class ZaakObjectRequest (
-    @JsonProperty("zaak")
-    val zaakUrl: URI,
-    @JsonProperty("object")
-    var objectUrl: URI,
-    val objectType: String,
-    val objectTypeOverige: String?
-)
+data class SimpleZaakObjectRequest(
+    override var zaakUrl: URI?,
+    override val objectUrl: URI? = null,
+    override val zaakobjecttype: String? = null,
+    override val objectType: ZaakObjectType,
+    override val relatieomschrijving: String? = null,
+) : ZaakObjectRequest

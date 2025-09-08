@@ -35,12 +35,25 @@ import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valtimo.contract.resource.Resource
 import com.ritense.zakenapi.domain.CreateZaakRequest
 import com.ritense.zakenapi.domain.PatchZaakRequest
+import com.ritense.zakenapi.domain.zaakobjectrequest.SimpleZaakObjectRequest
+import com.ritense.zakenapi.domain.zaakobjectrequest.ZaakObjectOverigeRequest
+import com.ritense.zakenapi.domain.zaakobjectrequest.ZaakObjectRequest
+import com.ritense.zakenapi.domain.zaakobjectrequest.ZaakObjectType
+import com.ritense.zakenapi.domain.zaakobjectrequest.ZaakObjectZakelijkRechtRequest
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import com.ritense.zgw.Rsin
+import java.lang.Thread.sleep
+import java.net.URI
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.util.Optional
+import java.util.UUID
+import kotlin.test.assertEquals
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
-import org.operaton.bpm.engine.RepositoryService
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -52,6 +65,8 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.operaton.bpm.engine.RepositoryService
+import org.operaton.bpm.engine.delegate.DelegateExecution
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpMethod.PATCH
@@ -62,13 +77,6 @@ import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
-import java.lang.Thread.sleep
-import java.net.URI
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.util.Optional
-import java.util.UUID
-import kotlin.test.assertEquals
 
 @Transactional
 class ZakenApiPluginIT : BaseIntegrationTest() {
@@ -84,6 +92,9 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
 
     @Autowired
     lateinit var documentService: DocumentService
+
+    @Autowired
+    lateinit var zaakInstanceLinkService: ZaakInstanceLinkService
 
     @Autowired
     lateinit var objectMapper: ObjectMapper
@@ -286,6 +297,122 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         assertNotNull(runWithoutAuthorization { documentService.get(processDocumentId.toString()) })
     }
 
+    @Test
+    fun `should create zaak object`() {
+        val zakenApiPlugin = pluginService.createInstance<ZakenApiPlugin>(UUID.fromString(ZAKEN_API_PLUGIN_ID))
+
+        val zaakUrl = URI("http://localhost:56273/zaken/41e90cab-7f81-4a45-883d-430b7a6d9900")
+        val objectUrl = URI("")
+        val zaakobjecttype = "http://localhost:56273/catalogi/my-zaaktype-id"
+        val objectType = ZaakObjectType.ADRES
+        val relatieomschrijving = ""
+
+        zakenApiPlugin.createZaakObject(
+            null,
+            SimpleZaakObjectRequest(
+                zaakUrl = zaakUrl,
+                objectUrl = objectUrl,
+                zaakobjecttype = zaakobjecttype,
+                objectType = objectType,
+                relatieomschrijving = relatieomschrijving
+            )
+        )
+
+        val requestBody = getRequestBody(POST, "${ZAKEN_API_PATH}/zaakobjecten", ZaakObjectRequest::class.java)
+        assertThat(requestBody.zaakUrl).isEqualTo(zaakUrl)
+        assertThat(requestBody.objectUrl).isEqualTo(objectUrl)
+        assertThat(requestBody.zaakobjecttype).isEqualTo(zaakobjecttype)
+        assertThat(requestBody.objectType).isEqualTo(objectType)
+        assertThat(requestBody.relatieomschrijving).isEqualTo(relatieomschrijving)
+    }
+
+    @Test
+    fun `should create zaak object via legacy function`() {
+        val zakenApiPlugin = pluginService.createInstance<ZakenApiPlugin>(UUID.fromString(ZAKEN_API_PLUGIN_ID))
+
+        val zaakUrl = URI("http://localhost:56273/zaken/41e90cab-7f81-4a45-883d-430b7a6d9900")
+        val objectUrl = URI("")
+        val objectType = ZaakObjectType.OVERIGE
+        val objectTypeOverige = "zaakdetails"
+
+        zakenApiPlugin.createZaakObject(
+            zaakUrl = zaakUrl,
+            objectUrl = objectUrl,
+            objectTypeOverige = objectTypeOverige,
+            UUID.randomUUID()
+        )
+
+        val requestBody = getRequestBody(POST, "${ZAKEN_API_PATH}/zaakobjecten", ZaakObjectOverigeRequest::class.java)
+        assertThat(requestBody.zaakUrl).isEqualTo(zaakUrl)
+        assertThat(requestBody.objectUrl).isEqualTo(objectUrl)
+        assertThat(requestBody.objectType).isEqualTo(objectType)
+        assertThat(requestBody.objectTypeOverige).isEqualTo(objectTypeOverige)
+    }
+
+    @Test
+    fun `should resolve values when creating zaak object`() {
+        val zakenApiPlugin = pluginService.createInstance<ZakenApiPlugin>(UUID.fromString(ZAKEN_API_PLUGIN_ID))
+
+        val edossierNummer = "E.123.4"
+        val zaakUrl = URI("http://localhost:56273/zaken/123")
+        val relatieomschrijving = "Betrokken erfpachtdossier"
+        val identificatie = "doc:verzoek.metaData.eDossiernummer"
+        val avgAard = "Erfpacht"
+
+        val document = runWithoutAuthorization {
+            documentService.createDocument(
+                NewDocumentRequest(
+                    DOCUMENT_DEFINITION_KEY,
+                    "profile",
+                    "1.0.0",
+                    objectMapper.readTree("""
+                        {
+                            "verzoek": {
+                                "metaData": {
+                                    "eDossiernummer": "${edossierNummer}"
+                                }
+                            }
+                        }
+                    """.trimIndent())
+                )
+            ).resultingDocument().get()
+        }
+
+        zaakInstanceLinkService.createZaakInstanceLink(
+            zaakUrl,
+            UUID.randomUUID(),
+            document.id().id,
+            URI("http://localhost:56273/zaak-type/456")
+        )
+
+        val execution: DelegateExecution = mock()
+        val processInstanceId = UUID.randomUUID().toString()
+
+        doReturn(document.id().id.toString()).whenever(execution).businessKey
+        doReturn(processInstanceId).whenever(execution).processInstanceId
+
+        runWithoutAuthorization {
+            zakenApiPlugin.createZaakObject(
+                execution,
+                ZaakObjectZakelijkRechtRequest(
+                    zaakUrl = null,
+                    relatieomschrijving = relatieomschrijving,
+                    objectIdentificatie = ZaakObjectZakelijkRechtRequest.ZakelijkRechtIdentificatie(
+                        identificatie = identificatie,
+                        avgAard = avgAard
+                    )
+                )
+            )
+        }
+
+        val requestBody = getRequestBody(POST, "${ZAKEN_API_PATH}/zaakobjecten", ZaakObjectZakelijkRechtRequest::class.java)
+        assertThat(requestBody.zaakUrl).isEqualTo(zaakUrl)
+        assertThat(requestBody.objectType).isEqualTo(ZaakObjectType.ZAKELIJK_RECHT)
+        assertThat(requestBody.relatieomschrijving).isEqualTo(relatieomschrijving)
+        assertThat(requestBody.objectIdentificatie?.identificatie).isEqualTo(edossierNummer)
+        assertThat(requestBody.objectIdentificatie?.avgAard).isEqualTo(avgAard)
+    }
+
     private fun setupResourceMock() {
         val resource = mock<Resource>()
         whenever(resource.id())
@@ -339,6 +466,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
                     "GET ${ZAKEN_API_PATH}/zaakinformatieobjecten" -> mockResponse("[]")
                     "POST ${ZAKEN_API_PATH}/zaken" -> zaakResponse()
                     "PATCH ${ZAKEN_API_PATH}/zaken/${ZAAK_ID}" -> zaakResponse()
+                    "POST ${ZAKEN_API_PATH}/zaakobjecten" -> createZaakObjectResponse()
                     else -> MockResponse().setResponseCode(404)
                 }
                 return response
@@ -408,6 +536,39 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
             }
         """.trimIndent()
         return mockResponse(body)
+    }
+
+    private fun createZaakObjectResponse(): MockResponse {
+        val body = """
+            {
+                "url": "http://example.com",
+                "uuid": "ffa06285-d60f-4748-8fcf-15a93c5fb308",
+                "zaak": "http://localhost:56273/zaken/41e90cab-7f81-4a45-883d-430b7a6d9900",
+                "object": "",
+                "zaakobjecttype": "http://localhost:56273/catalogi/my-zaaktype-id",
+                "objectType": "adres",
+                "objectTypeOverige": "a",
+                "objectTypeOverigeDefinitie": {
+                    "url": "http://example.com",
+                    "schema": "string",
+                    "objectData": "string"
+                },
+                "relatieomschrijving": "string",
+                "_expand": {
+                    "zaakobjecttype": {}
+                },
+                "objectIdentificatie": {
+                    "identificatie": "string",
+                    "wplWoonplaatsNaam": "string",
+                    "gorOpenbareRuimteNaam": "string",
+                    "huisnummer": 99999,
+                    "huisletter": "s",
+                    "huisnummertoevoeging": "stri",
+                    "postcode": "string"
+                }
+            }
+        """.trimIndent()
+        return mockResponse(body).setResponseCode(201)
     }
 
     private fun zaaktypeResponse(): MockResponse {

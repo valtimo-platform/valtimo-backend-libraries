@@ -33,7 +33,6 @@ import com.ritense.zakenapi.domain.PatchZaakRequest
 import com.ritense.zakenapi.domain.UpdateZaakeigenschapRequest
 import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakObject
-import com.ritense.zakenapi.domain.ZaakObjectRequest
 import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zakenapi.domain.ZaakResultaat
 import com.ritense.zakenapi.domain.ZaakStatus
@@ -42,6 +41,10 @@ import com.ritense.zakenapi.domain.ZaakopschortingRequest
 import com.ritense.zakenapi.domain.ZaakopschortingResponse
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolTypeGeneriekeBeschrijving
+import com.ritense.zakenapi.domain.zaakobjectrequest.SimpleZaakObjectRequest
+import com.ritense.zakenapi.domain.zaakobjectrequest.ZaakObjectOverigeRequest
+import com.ritense.zakenapi.domain.zaakobjectrequest.ZaakObjectRequest
+import com.ritense.zakenapi.domain.zaakobjectrequest.ZaakObjectType
 import com.ritense.zakenapi.event.DocumentLinkedToZaak
 import com.ritense.zakenapi.event.ZaakCreated
 import com.ritense.zakenapi.event.ZaakInformatieObjectenListed
@@ -65,13 +68,13 @@ import com.ritense.zakenapi.event.ZaakeigenschapUpdated
 import com.ritense.zakenapi.exception.ZaakRolNotUpdatedException
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
+import java.net.URI
+import java.util.UUID
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
-import java.net.URI
-import java.util.UUID
 
 class ZakenApiClient(
     private val restClientBuilder: RestClient.Builder,
@@ -568,12 +571,36 @@ class ZakenApiClient(
             .toBodilessEntity()
     }
 
+    @Deprecated("Use createZaakObject(ZakenApiAuthentication, URI, com.ritense.zakenapi.domain.zaakobjectrequest.ZaakObjectRequest) instead.")
+    fun createZaakObject(
+        authentication: ZakenApiAuthentication,
+        baseUrl: URI,
+        request: com.ritense.zakenapi.domain.ZaakObjectRequest
+    ): ZaakObject {
+        val convertedRequest: ZaakObjectRequest = if (request.objectType == ZaakObjectType.OVERIGE.value) {
+            ZaakObjectOverigeRequest(
+                zaakUrl = request.zaakUrl,
+                objectUrl = request.objectUrl,
+                objectTypeOverige = request.objectTypeOverige
+            )
+        } else {
+            SimpleZaakObjectRequest(
+                zaakUrl = request.zaakUrl,
+                objectUrl = request.objectUrl,
+                objectType = ZaakObjectType.fromValue(request.objectType)
+            )
+        }
+
+        return createZaakObject(authentication, baseUrl, convertedRequest)
+    }
+
     fun createZaakObject(
         authentication: ZakenApiAuthentication,
         baseUrl: URI,
         request: ZaakObjectRequest
     ): ZaakObject {
         validateUrlHost(baseUrl, request.zaakUrl)
+        requireNotNull(request.zaakUrl)
 
         var result = buildRestClient(authentication)
             .post()

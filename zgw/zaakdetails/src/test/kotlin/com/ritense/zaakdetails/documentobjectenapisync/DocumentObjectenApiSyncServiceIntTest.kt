@@ -24,6 +24,7 @@ import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.client.ObjectsList
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.zaakdetails.BaseIntegrationTest
+import com.ritense.zakenapi.domain.zaakobjectrequest.ZaakObjectRequest
 import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zakenapi.service.ZaakTypeLinkService
 import com.ritense.zakenapi.web.rest.request.CreateZaakTypeLinkRequest
@@ -117,7 +118,7 @@ class DocumentObjectenApiSyncServiceIntTest : BaseIntegrationTest() {
         verify(objectenApiClient, times(1)).getObjectsByObjecttypeUrlWithSearchParams(any(), any(), any(), any(), any(), any(), any())
         verify(objectenApiClient, times(1)).createObject(any(), any(), any())
         verifyNoMoreInteractions(objectenApiClient)
-        verify(zakenApiClient, times(1)).createZaakObject(any(), any(), any())
+        verify(zakenApiClient, times(1)).createZaakObject(any(), any(), any<ZaakObjectRequest>())
     }
 
     @Test
@@ -177,7 +178,7 @@ class DocumentObjectenApiSyncServiceIntTest : BaseIntegrationTest() {
         verify(objectenApiClient, times(1)).createObject(any(), any(), any())
         verify(objectenApiClient, times(1)).objectUpdate(any(), any(), any())
         verifyNoMoreInteractions(objectenApiClient)
-        verify(zakenApiClient, times(1)).createZaakObject(any(), any(), any())
+        verify(zakenApiClient, times(1)).createZaakObject(any(), any(), any<ZaakObjectRequest>())
     }
 
     @Test
