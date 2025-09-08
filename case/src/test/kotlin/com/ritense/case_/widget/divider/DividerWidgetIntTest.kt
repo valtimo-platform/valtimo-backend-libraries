@@ -98,7 +98,7 @@ class DividerWidgetIntTest @Autowired constructor(
                 key = tabKey,
                 widgets = listOf(
                     DividerCaseWidgetDto(
-                        widgetKey, "Divider test", 2, false, false, emptyList()
+                        widgetKey, "Divider test", 2, false, emptyList()
                     )
                 )
             )

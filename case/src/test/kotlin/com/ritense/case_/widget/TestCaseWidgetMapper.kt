@@ -30,7 +30,6 @@ class TestCaseWidgetMapper : CaseWidgetMapper<TestCaseWidgetTabWidget, TestCaseW
             dto.width,
             dto.highContrast,
             dto.actions ?: emptyList(),
-            dto.useConditionsToDisplay,
             dto.displayConditions,
             dto.properties
         )

@@ -37,14 +37,13 @@ class FormIoCaseWidget(
     width: Int,
     highContrast: Boolean,
     actions: List<CaseWidgetAction>,
-    useConditionsToDisplay: Boolean,
     displayConditions: List<Condition<*>>,
 
     @Type(value = JsonType::class)
     @Column(name = "properties", nullable = false)
     val properties: FormIoWidgetProperties
 ) : CaseWidgetTabWidget(
-    id, title, order, width, highContrast, actions, useConditionsToDisplay, displayConditions
+    id, title, order, width, highContrast, actions, displayConditions
 ) {
     override fun copy(id: CaseWidgetTabWidgetId) = FormIoCaseWidget(
         id = id,
@@ -53,7 +52,6 @@ class FormIoCaseWidget(
         width = width,
         highContrast = highContrast,
         actions = actions,
-        useConditionsToDisplay = useConditionsToDisplay,
         displayConditions = displayConditions?: emptyList(),
         properties = properties
     )

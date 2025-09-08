@@ -218,17 +218,14 @@ class CaseWidgetTabService(
     }
 
     private fun widgetHiddenCheck(widget: CaseWidgetTabWidget, document: JsonSchemaDocument): Boolean {
-        return !widget.useConditionsToDisplay ||
-            (
-                widget.displayConditions.all {
-                    it.isValid { valuePath: String ->
-                        valueResolverService.resolveValues(
-                            document.id().id.toString(),
-                            listOf(valuePath)
-                        )[valuePath]
-                    }
-                }
-            )
+        return widget.displayConditions.all {
+            it.isValid { valuePath: String ->
+                valueResolverService.resolveValues(
+                    document.id().id.toString(),
+                    listOf(valuePath)
+                )[valuePath]
+            }
+        }
     }
 
     private fun viewPermissionCheckForContext(widget: CaseWidgetTabWidget, document: JsonSchemaDocument): Boolean {

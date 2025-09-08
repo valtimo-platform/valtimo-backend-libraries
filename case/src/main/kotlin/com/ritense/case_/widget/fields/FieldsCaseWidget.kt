@@ -37,14 +37,13 @@ class FieldsCaseWidget(
     width: Int,
     highContrast: Boolean,
     actions: List<CaseWidgetAction>,
-    useConditionsToDisplay: Boolean,
     displayConditions: List<Condition<*>>,
 
     @Type(value = JsonType::class)
     @Column(name = "properties", nullable = false)
     val properties: FieldsWidgetProperties
 ) : CaseWidgetTabWidget(
-    id, title, order, width, highContrast, actions, useConditionsToDisplay, displayConditions
+    id, title, order, width, highContrast, actions, displayConditions
 ) {
     override fun copy(id: CaseWidgetTabWidgetId) = FieldsCaseWidget(
         id = id,
@@ -53,7 +52,6 @@ class FieldsCaseWidget(
         width = width,
         highContrast = highContrast,
         actions = actions,
-        useConditionsToDisplay = useConditionsToDisplay,
         displayConditions = displayConditions,
         properties = properties
     )

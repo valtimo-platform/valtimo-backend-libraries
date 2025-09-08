@@ -25,7 +25,6 @@ class DividerCaseWidgetMapper : CaseWidgetMapper<DividerCaseWidget, DividerCaseW
         title = entity.title,
         width = entity.width,
         highContrast = entity.highContrast,
-        useConditionsToDisplay = entity.useConditionsToDisplay,
         displayConditions = entity.displayConditions,
     )
 
@@ -34,7 +33,6 @@ class DividerCaseWidgetMapper : CaseWidgetMapper<DividerCaseWidget, DividerCaseW
         title = dto.title,
         width = dto.width,
         highContrast = dto.highContrast,
-        useConditionsToDisplay = dto.useConditionsToDisplay,
         displayConditions = dto.displayConditions,
         order = index
     )

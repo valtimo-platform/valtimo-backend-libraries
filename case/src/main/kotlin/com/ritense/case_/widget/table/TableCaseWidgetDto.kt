@@ -29,7 +29,6 @@ data class TableCaseWidgetDto(
     override val width: Int,
     override val highContrast: Boolean,
     override val actions: List<CaseWidgetAction>? = emptyList(),
-    override val useConditionsToDisplay: Boolean,
     override val displayConditions: List<Condition<*>> = emptyList(),
     @field:Valid val properties: TableWidgetProperties
 ) : CaseWidgetTabWidgetDto

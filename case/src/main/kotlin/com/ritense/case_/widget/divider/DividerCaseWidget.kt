@@ -32,10 +32,9 @@ class DividerCaseWidget(
     order: Int,
     width: Int,
     highContrast: Boolean,
-    useConditionsToDisplay: Boolean,
     displayConditions: List<Condition<*>>,
 ) : CaseWidgetTabWidget(
-    id, title, order, width, highContrast, emptyList(), useConditionsToDisplay, displayConditions
+    id, title, order, width, highContrast, emptyList(), displayConditions
 ) {
     override fun copy(id: CaseWidgetTabWidgetId) = DividerCaseWidget(
         id = id,
@@ -43,7 +42,6 @@ class DividerCaseWidget(
         order = order,
         width = width,
         highContrast = highContrast,
-        useConditionsToDisplay = useConditionsToDisplay,
         displayConditions = displayConditions,
     )
 }

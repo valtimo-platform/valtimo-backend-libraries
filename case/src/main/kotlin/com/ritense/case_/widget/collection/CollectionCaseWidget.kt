@@ -37,14 +37,13 @@ class CollectionCaseWidget(
     width: Int,
     highContrast: Boolean,
     actions: List<CaseWidgetAction>,
-    useConditionsToDisplay: Boolean,
     displayConditions: List<Condition<*>>,
 
     @Type(value = JsonType::class)
     @Column(name = "properties", nullable = false)
     val properties: CollectionWidgetProperties
 ) : CaseWidgetTabWidget(
-    id, title, order, width, highContrast, actions, useConditionsToDisplay, displayConditions
+    id, title, order, width, highContrast, actions, displayConditions
 ) {
     override fun copy(id: CaseWidgetTabWidgetId) = CollectionCaseWidget(
         id = id,
@@ -53,7 +52,6 @@ class CollectionCaseWidget(
         width = width,
         highContrast = highContrast,
         actions = actions,
-        useConditionsToDisplay = useConditionsToDisplay,
         displayConditions = displayConditions,
         properties = properties
     )

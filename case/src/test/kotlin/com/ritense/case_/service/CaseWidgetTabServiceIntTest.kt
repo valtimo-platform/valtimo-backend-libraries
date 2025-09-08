@@ -83,7 +83,6 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
                 false,
                 TestCaseWidgetProperties("test123") ,
                 null,
-                true,
                 listOf(
                     Condition("test:test", ExpressionOperator.EQUAL_TO, "test:test")
                 )
@@ -96,24 +95,10 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
                 false,
                 TestCaseWidgetProperties("test123") ,
                 null,
-                true,
                 listOf(
                     Condition("test:test", ExpressionOperator.EQUAL_TO, "not test")
                 )
-            ),
-            // this one has useConditionsToDisplay false so should always be returned
-            TestCaseWidgetTabWidgetDto(
-                "widget-3",
-                "Widget 3",
-                1,
-                false,
-                TestCaseWidgetProperties("test123") ,
-                null,
-                false,
-                listOf(
-                    Condition("test:test", ExpressionOperator.EQUAL_TO, "not test")
-                )
-            ),
+            )
         )
         createCaseWidgetTab(caseDefinitionId, tabKey, widgets)
 
@@ -126,15 +111,14 @@ class CaseWidgetTabServiceIntTest @Autowired constructor(
 
         val widgetTab = caseWidgetTabService.getWidgetTab(documentId, tabKey)
         assertThat(widgetTab).isNotNull
-        assertThat(widgetTab!!.widgets).hasSize(2)
-        assertThat(widgetTab.widgets.map { it.key }).containsExactly("widget-1", "widget-3")
+        assertThat(widgetTab!!.widgets).hasSize(1)
+        assertThat(widgetTab.widgets.map { it.key }).containsExactly("widget-1")
     }
 
     @Test
     fun `should remove widget tab when case tab is removed`() {
         val caseDefinitionId = CaseDefinitionId.of("some-case-type", "1.2.3")
         val tabKey = "my-tab"
-
 
         runWithoutAuthorization {
             caseTabService.createCaseTab(

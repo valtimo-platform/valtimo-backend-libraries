@@ -27,7 +27,6 @@ data class DividerCaseWidgetDto(
     override val title: String,
     override val width: Int,
     override val highContrast: Boolean,
-    override val useConditionsToDisplay: Boolean,
     override val displayConditions: List<Condition<*>> = emptyList(),
 ) : CaseWidgetTabWidgetDto {
     override val actions: List<CaseWidgetAction>

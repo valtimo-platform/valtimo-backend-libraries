@@ -32,7 +32,6 @@ interface CaseWidgetTabWidgetDto {
     val width: Int
     val highContrast: Boolean
     val actions: List<CaseWidgetAction>?
-    val useConditionsToDisplay: Boolean
     val displayConditions: List<Condition<*>>?
 
     /**
