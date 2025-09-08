@@ -53,7 +53,7 @@
 
     <root level="#logback.loglevel#">
         <appender-ref ref="CONSOLE"/>
-        <!--<appender-ref ref="VALTIMODBASYNC"/>-->
+        <appender-ref ref="VALTIMODBASYNC"/>
     </root>
 
 </configuration>

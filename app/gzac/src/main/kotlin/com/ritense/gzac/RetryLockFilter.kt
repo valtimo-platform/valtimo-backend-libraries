@@ -41,7 +41,7 @@ class RetryLockFilter(): TurboFilter() {
 
         // Only log as normal if this is the last retry attempt of a job
         val last = MDC.get("operaton.jobLastAttempt")
-        if ("true" == last) return FilterReply.NEUTRAL
+        if ("false" != last) return FilterReply.NEUTRAL
 
         // Match specific exception
         val exception = if (throwable != null) {

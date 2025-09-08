@@ -35,6 +35,7 @@ class JobRetryMdcPostInterceptor : CommandInterceptor() {
                 MDC.remove("operaton.jobId")
                 MDC.remove("operaton.jobRetries")
                 MDC.remove("operaton.jobLastAttempt")
+                MDC.remove("operaton.logged")
             }
         }
         return result
