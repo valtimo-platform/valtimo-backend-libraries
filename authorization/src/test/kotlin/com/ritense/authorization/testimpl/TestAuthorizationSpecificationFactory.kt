@@ -21,23 +21,24 @@ import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.specification.AuthorizationSpecificationFactory
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import java.util.function.Supplier
 
 class TestAuthorizationSpecificationFactory(
     val queryDialectHelper: QueryDialectHelper
 ) : AuthorizationSpecificationFactory<TestEntity> {
     override fun create(
-            context: AuthorizationRequest<TestEntity>,
-            permissions: List<Permission>,
+        request: AuthorizationRequest<TestEntity>,
+        permissionSupplier: Supplier<List<Permission>>
     ): AuthorizationSpecification<TestEntity> {
         return TestAuthorizationSpecification(
-            context,
-            permissions,
+            request,
+            permissionSupplier,
             queryDialectHelper
         )
     }
 
-    override fun canCreate(context: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
-        return TestEntity::class.java == context.resourceType
+    override fun canCreate(request: AuthorizationRequest<*>, permissionSupplier: Supplier<List<Permission>>): Boolean {
+        return TestEntity::class.java == request.resourceType
     }
 
 }

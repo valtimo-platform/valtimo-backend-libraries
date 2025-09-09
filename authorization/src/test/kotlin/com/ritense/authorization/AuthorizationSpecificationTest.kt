@@ -24,7 +24,6 @@ import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.testimpl.TestAuthorizationSpecification
 import com.ritense.authorization.testimpl.TestEntity
 import com.ritense.authorization.testimpl.TestEntityActionProvider
-import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
@@ -32,6 +31,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import kotlin.test.assertEquals
 
 class AuthorizationSpecificationTest {
 
@@ -41,14 +41,16 @@ class AuthorizationSpecificationTest {
             EntityAuthorizationRequest(
                 TestEntity::class.java, action = TestEntityActionProvider.complete, TestEntity()
             ),
-            listOf(
-                Permission(
-                    resourceType = TestEntity::class.java,
-                    action = TestEntityActionProvider.complete,
-                    conditionContainer = ConditionContainer(listOf()),
-                    role = Role(key = "")
+            {
+                listOf(
+                    Permission(
+                        resourceType = TestEntity::class.java,
+                        action = TestEntityActionProvider.complete,
+                        conditionContainer = ConditionContainer(listOf()),
+                        role = Role(key = "")
+                    )
                 )
-            ),
+            },
             mock()
         )
 
@@ -61,14 +63,16 @@ class AuthorizationSpecificationTest {
             EntityAuthorizationRequest(
                 TestEntity::class.java, action = TestEntityActionProvider.complete, TestEntity()
             ),
-            listOf(
-                Permission(
-                    resourceType = String::class.java,
-                    action = TestEntityActionProvider.complete,
-                    conditionContainer = ConditionContainer(listOf()),
-                    role = Role(key = "")
+            {
+                listOf(
+                    Permission(
+                        resourceType = String::class.java,
+                        action = TestEntityActionProvider.complete,
+                        conditionContainer = ConditionContainer(listOf()),
+                        role = Role(key = "")
+                    )
                 )
-            ),
+            },
             mock()
         ) as AuthorizationSpecification<Any>
 
@@ -81,14 +85,16 @@ class AuthorizationSpecificationTest {
             EntityAuthorizationRequest(
                 TestEntity::class.java, action = TestEntityActionProvider.view, TestEntity()
             ),
-            listOf(
-                Permission(
-                    resourceType = TestEntity::class.java,
-                    action = TestEntityActionProvider.complete,
-                    conditionContainer = ConditionContainer(listOf()),
-                    role = Role(key = "")
+            {
+                listOf(
+                    Permission(
+                        resourceType = TestEntity::class.java,
+                        action = TestEntityActionProvider.complete,
+                        conditionContainer = ConditionContainer(listOf()),
+                        role = Role(key = "")
+                    )
                 )
-            ),
+            },
             mock()
         )
 
@@ -97,19 +103,23 @@ class AuthorizationSpecificationTest {
 
     @Test
     fun `isAuthorized should return false when Permission_appliesTo() returns false`() {
-        val permission: Permission = spy(Permission(
-            resourceType = TestEntity::class.java,
-            action = TestEntityActionProvider.complete,
-            conditionContainer = ConditionContainer(listOf()),
-            role = Role(key = ""))
+        val permission: Permission = spy(
+            Permission(
+                resourceType = TestEntity::class.java,
+                action = TestEntityActionProvider.complete,
+                conditionContainer = ConditionContainer(listOf()),
+                role = Role(key = "")
+            )
         )
         val spec = TestAuthorizationSpecification(
             EntityAuthorizationRequest(
                 TestEntity::class.java, action = TestEntityActionProvider.complete, TestEntity()
             ),
-            listOf(
-                permission
-            ),
+            {
+                listOf(
+                    permission
+                )
+            },
             mock()
         )
 

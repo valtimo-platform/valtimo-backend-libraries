@@ -31,6 +31,7 @@ import mu.KotlinLogging
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import java.lang.reflect.ParameterizedType
+import java.util.function.Supplier
 
 @Service
 @SkipComponentScan
@@ -55,7 +56,7 @@ class ValtimoAuthorizationService(
     override fun <T : Any> getAuthorizedRoles(request: AuthorizationRequest<T>): Set<Role> {
         return getPermissions(request.resourceType, request.action)
             .groupBy { it.role }
-            .filter { getAuthorizationSpecification(request, it.value, enablePermissionLogging = false).isAuthorized() }
+            .filter { getAuthorizationSpecification(request, { it.value }, enablePermissionLogging = false).isAuthorized() }
             .map { it.key }
             .toSet()
     }
@@ -75,7 +76,7 @@ class ValtimoAuthorizationService(
         request: AuthorizationRequest<T>,
         permissions: List<Permission>?
     ): AuthorizationSpecification<T> {
-        val usedPermissions = permissions ?: getPermissions(request)
+        val usedPermissions = Supplier { permissions ?: getPermissions(request) }.lazy()
 
         return getAuthorizationSpecification(request, usedPermissions, enablePermissionLogging = true)
     }
@@ -96,7 +97,7 @@ class ValtimoAuthorizationService(
 
     override fun <T : Any> getAvailableActionsForResource(clazz: Class<T>): List<Action<T>> {
         return actionProviders
-            .filter { (it.javaClass.genericInterfaces[0] as ParameterizedType).actualTypeArguments[0].equals(clazz) }
+            .filter { (it.javaClass.genericInterfaces[0] as ParameterizedType).actualTypeArguments[0] == clazz }
             .map { it as ResourceActionProvider<T> }
             .map { it.getAvailableActions() }
             .flatten()
@@ -104,18 +105,18 @@ class ValtimoAuthorizationService(
 
     private fun <T : Any> getAuthorizationSpecification(
         request: AuthorizationRequest<T>,
-        permissions: List<Permission>,
+        permissionSupplier: Supplier<List<Permission>>,
         enablePermissionLogging: Boolean
     ): AuthorizationSpecification<T> {
         if (enablePermissionLogging) {
-            logPermissions(request, permissions)
+            logPermissions(request, permissionSupplier)
         }
 
         val factory = (authorizationSpecificationFactories.firstOrNull {
-            it.canCreate(request, permissions)
+            it.canCreate(request, permissionSupplier)
         } as AuthorizationSpecificationFactory<T>?)
             ?: throw AccessDeniedException("No specification found for given context.")
-        return factory.create(request, permissions)
+        return factory.create(request, permissionSupplier)
     }
 
     private fun getPermissions(context: AuthorizationRequest<*>): List<Permission> {
@@ -142,7 +143,7 @@ class ValtimoAuthorizationService(
             }
     }
 
-    private fun logPermissions(request: AuthorizationRequest<*>, permissions: List<Permission>) {
+    private fun logPermissions(request: AuthorizationRequest<*>, permissionSupplier: Supplier<List<Permission>>) {
         val forUserLogLine = if (request.user.isNullOrEmpty()) "" else " for user '${request.user}'"
         if (!AuthorizationContext.ignoreAuthorization) {
             if (request.action.key == Action.DENY) {
@@ -151,7 +152,7 @@ class ValtimoAuthorizationService(
                         "access a resource without considering authorization. Please refer to the Valtimo documentation."
                 }
             } else {
-                val permissionsLogLine = permissions.joinToString(", ") { "${it.id}:${it.role.key}" }
+                val permissionsLogLine = permissionSupplier.get().joinToString(", ") { "${it.id}:${it.role.key}" }
                 val logLine =
                     "Requesting permissions '${request.action.key}:${request.resourceType.simpleName}'$forUserLogLine and found matching permissions: [$permissionsLogLine]"
                 logger.debug { logLine }
@@ -163,6 +164,14 @@ class ValtimoAuthorizationService(
                 logger.debug { logLine }
             }
         }
+    }
+
+    private fun <T> Supplier<T>.lazy() = LazySupplier(this)
+
+    private class LazySupplier<T>(delegate: Supplier<T>): Supplier<T> {
+        private val value by lazy { delegate.get() }
+
+        override fun get() = value
     }
 
     companion object {

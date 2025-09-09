@@ -21,18 +21,14 @@ import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.specification.AuthorizationSpecificationFactory
+import java.util.function.Supplier
 
-class NoopAuthorizationSpecificationFactory<T: Any> : AuthorizationSpecificationFactory<T> {
-    override fun create(
-        request: AuthorizationRequest<T>,
-        permissions: List<Permission>
-    ): AuthorizationSpecification<T> {
-        return NoopAuthorizationSpecification(request, permissions)
+class NoopAuthorizationSpecificationFactory<T : Any> : AuthorizationSpecificationFactory<T> {
+    override fun create(request: AuthorizationRequest<T>, permissionSupplier: Supplier<List<Permission>>): AuthorizationSpecification<T> {
+        return NoopAuthorizationSpecification(request, permissionSupplier)
     }
 
-    override fun canCreate(request: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
+    override fun canCreate(request: AuthorizationRequest<*>, permissionSupplier: Supplier<List<Permission>>): Boolean {
         return AuthorizationContext.ignoreAuthorization
     }
-
-
 }

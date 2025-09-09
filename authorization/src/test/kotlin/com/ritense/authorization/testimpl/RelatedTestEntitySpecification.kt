@@ -23,11 +23,12 @@ import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
+import java.util.function.Supplier
 
 class RelatedTestEntitySpecification(
         authContext: AuthorizationRequest<RelatedTestEntity>,
-        permissions: List<Permission>,
-): AuthorizationSpecification<RelatedTestEntity>(authContext, permissions) {
+        permissionSupplier: Supplier<List<Permission>>,
+): AuthorizationSpecification<RelatedTestEntity>(authContext, permissionSupplier) {
     override fun toPredicate(
         root: Root<RelatedTestEntity>,
         query: AbstractQuery<*>,

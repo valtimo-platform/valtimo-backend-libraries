@@ -23,13 +23,14 @@ import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
+import java.util.function.Supplier
 
 class DenyAuthorizationSpecification<T : Any>(
     authRequest: AuthorizationRequest<T>,
-    permissions: List<Permission>
+    permissionSupplier: Supplier<List<Permission>>
 ) : AuthorizationSpecification<T>(
     authRequest,
-    permissions
+    permissionSupplier
 ) {
     override fun isAuthorized(): Boolean {
         return false

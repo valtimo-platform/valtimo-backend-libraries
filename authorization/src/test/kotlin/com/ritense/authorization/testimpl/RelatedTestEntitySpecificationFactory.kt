@@ -20,19 +20,20 @@ import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.specification.AuthorizationSpecificationFactory
+import java.util.function.Supplier
 
 class RelatedTestEntitySpecificationFactory : AuthorizationSpecificationFactory<RelatedTestEntity> {
     override fun create(
-            request: AuthorizationRequest<RelatedTestEntity>,
-            permissions: List<Permission>
+        request: AuthorizationRequest<RelatedTestEntity>,
+        permissionSupplier: Supplier<List<Permission>>
     ): AuthorizationSpecification<RelatedTestEntity> {
         return RelatedTestEntitySpecification(
             request,
-            permissions
+            permissionSupplier
         )
     }
 
-    override fun canCreate(request: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
+    override fun canCreate(request: AuthorizationRequest<*>, permissionSupplier: Supplier<List<Permission>>): Boolean {
         return RelatedTestEntity::class.java == request.resourceType
     }
 
