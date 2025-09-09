@@ -55,6 +55,9 @@ valtimo:
         scripting:
             allowedClasses:
                 - java.lang.Math
+    retry:
+        cycles:
+
 aws:
     profile: ritense
     region: eu-central-1
