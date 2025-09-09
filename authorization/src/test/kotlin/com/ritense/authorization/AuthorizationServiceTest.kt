@@ -42,7 +42,6 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
-import java.util.function.Supplier
 import kotlin.test.assertEquals
 
 class AuthorizationServiceTest {
@@ -113,11 +112,11 @@ class AuthorizationServiceTest {
             )
         )
 
-        whenever(factory2.canCreate(any(), any<Supplier<List<Permission>>>())).thenReturn(true)
+        whenever(factory2.canCreate(any(), any<Function0<List<Permission>>>())).thenReturn(true)
         val entity = ""
         val request = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW), entity)
         val authorizationSpecification = mock<AuthorizationSpecification<String>>()
-        whenever(factory2.create(eq(request), any<Supplier<List<Permission>>>())).thenReturn(authorizationSpecification)
+        whenever(factory2.create(eq(request), any<Function0<List<Permission>>>())).thenReturn(authorizationSpecification)
         whenever(authorizationSpecification.isAuthorized()).thenReturn(true)
 
         authorizationService.requirePermission(request)
@@ -127,7 +126,7 @@ class AuthorizationServiceTest {
 
     @Test
     fun `should bypass permission check`() {
-        whenever(factory2.canCreate(any(), any<Supplier<List<Permission>>>())).thenReturn(true)
+        whenever(factory2.canCreate(any(), any<Function0<List<Permission>>>())).thenReturn(true)
         val entity = ""
         val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW), entity)
         val authorizationSpecification = mock<AuthorizationSpecification<String>>()
@@ -161,11 +160,11 @@ class AuthorizationServiceTest {
             )
         )
 
-        whenever(factory2.canCreate(any(), any<Supplier<List<Permission>>>())).thenReturn(true)
+        whenever(factory2.canCreate(any(), any<Function0<List<Permission>>>())).thenReturn(true)
         val entity = ""
         val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW), entity)
         val authorizationSpecification = mock<AuthorizationSpecification<String>>()
-        whenever(factory2.create(eq(context), any<Supplier<List<Permission>>>())).thenReturn(authorizationSpecification)
+        whenever(factory2.create(eq(context), any<Function0<List<Permission>>>())).thenReturn(authorizationSpecification)
         whenever(authorizationSpecification.isAuthorized()).thenReturn(false)
 
         assertThrows<RuntimeException> {
@@ -177,12 +176,12 @@ class AuthorizationServiceTest {
 
     @Test
     fun `should get correct AuthorizationSpecification`() {
-        whenever(factory2.canCreate(any(), any<Supplier<List<Permission>>>())).thenReturn(true)
-        whenever(factory3.canCreate(any(), any<Supplier<List<Permission>>>())).thenReturn(true)
+        whenever(factory2.canCreate(any(), any<Function0<List<Permission>>>())).thenReturn(true)
+        whenever(factory3.canCreate(any(), any<Function0<List<Permission>>>())).thenReturn(true)
 
         val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW))
         val authorizationSpecification = mock<AuthorizationSpecification<String>>()
-        whenever(factory2.create(eq(context), any<Supplier<List<Permission>>>())).thenReturn(authorizationSpecification)
+        whenever(factory2.create(eq(context), any<Function0<List<Permission>>>())).thenReturn(authorizationSpecification)
         val result = authorizationService.getAuthorizationSpecification(context,
             listOf(
                 Permission(
@@ -195,16 +194,16 @@ class AuthorizationServiceTest {
         )
         assertEquals(authorizationSpecification, result)
 
-        verify(factory1).canCreate(any(), any<Supplier<List<Permission>>>())
-        verify(factory2).canCreate(any(), any<Supplier<List<Permission>>>())
-        verify(factory3, never()).canCreate(any(), any<Supplier<List<Permission>>>())
-        verify(factory2).create(eq(context), any<Supplier<List<Permission>>>())
+        verify(factory1).canCreate(any(), any<Function0<List<Permission>>>())
+        verify(factory2).canCreate(any(), any<Function0<List<Permission>>>())
+        verify(factory3, never()).canCreate(any(), any<Function0<List<Permission>>>())
+        verify(factory2).create(eq(context), any<Function0<List<Permission>>>())
     }
 
     @Test
     fun `should get NoopAuthorizationSpecification`() {
-        whenever(factory1.canCreate(any(), any<Supplier<List<Permission>>>())).thenReturn(true)
-        whenever(factory2.canCreate(any(), any<Supplier<List<Permission>>>())).thenReturn(true)
+        whenever(factory1.canCreate(any(), any<Function0<List<Permission>>>())).thenReturn(true)
+        whenever(factory2.canCreate(any(), any<Function0<List<Permission>>>())).thenReturn(true)
 
         val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW))
         val result = AuthorizationContext.runWithoutAuthorization {
@@ -212,21 +211,21 @@ class AuthorizationServiceTest {
         }
         assertEquals(true, result is NoopAuthorizationSpecification)
 
-        verify(factory1, never()).canCreate(any(), any<Supplier<List<Permission>>>())
-        verify(factory2, never()).canCreate(any(), any<Supplier<List<Permission>>>())
+        verify(factory1, never()).canCreate(any(), any<Function0<List<Permission>>>())
+        verify(factory2, never()).canCreate(any(), any<Function0<List<Permission>>>())
     }
 
     @Test
     fun `should get DenyAuthorizationSpecification on DENY action`() {
-        whenever(factory1.canCreate(any(), any<Supplier<List<Permission>>>())).thenReturn(true)
-        whenever(factory2.canCreate(any(), any<Supplier<List<Permission>>>())).thenReturn(true)
+        whenever(factory1.canCreate(any(), any<Function0<List<Permission>>>())).thenReturn(true)
+        whenever(factory2.canCreate(any(), any<Function0<List<Permission>>>())).thenReturn(true)
 
         val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.DENY))
         val result = authorizationService.getAuthorizationSpecification(context)
         assertEquals(true, result is DenyAuthorizationSpecification)
 
-        verify(factory1, never()).canCreate(any(), any<Supplier<List<Permission>>>())
-        verify(factory2, never()).canCreate(any(), any<Supplier<List<Permission>>>())
+        verify(factory1, never()).canCreate(any(), any<Function0<List<Permission>>>())
+        verify(factory2, never()).canCreate(any(), any<Function0<List<Permission>>>())
     }
 
     @Test
@@ -244,9 +243,9 @@ class AuthorizationServiceTest {
                 )
             )
         }
-        verify(factory1).canCreate(any(), any<Supplier<List<Permission>>>())
-        verify(factory2).canCreate(any(), any<Supplier<List<Permission>>>())
-        verify(factory3).canCreate(any(), any<Supplier<List<Permission>>>())
+        verify(factory1).canCreate(any(), any<Function0<List<Permission>>>())
+        verify(factory2).canCreate(any(), any<Function0<List<Permission>>>())
+        verify(factory3).canCreate(any(), any<Function0<List<Permission>>>())
     }
 
     @Test

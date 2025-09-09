@@ -21,14 +21,13 @@ import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.specification.AuthorizationSpecificationFactory
 import com.ritense.valtimo.contract.database.QueryDialectHelper
-import java.util.function.Supplier
 
 class TestAuthorizationSpecificationFactory(
     val queryDialectHelper: QueryDialectHelper
 ) : AuthorizationSpecificationFactory<TestEntity> {
     override fun create(
         request: AuthorizationRequest<TestEntity>,
-        permissionSupplier: Supplier<List<Permission>>
+        permissionSupplier: () -> List<Permission>
     ): AuthorizationSpecification<TestEntity> {
         return TestAuthorizationSpecification(
             request,
@@ -37,7 +36,7 @@ class TestAuthorizationSpecificationFactory(
         )
     }
 
-    override fun canCreate(request: AuthorizationRequest<*>, permissionSupplier: Supplier<List<Permission>>): Boolean {
+    override fun canCreate(request: AuthorizationRequest<*>, permissionSupplier: () -> List<Permission>): Boolean {
         return TestEntity::class.java == request.resourceType
     }
 

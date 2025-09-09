@@ -18,7 +18,7 @@ package com.ritense.processlink.url.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext
-import com.ritense.authorization.ValtimoAuthorizationService
+import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
@@ -35,8 +35,8 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkService
-import com.ritense.processlink.url.domain.URLVariables
 import com.ritense.processlink.url.domain.URLProcessLink
+import com.ritense.processlink.url.domain.URLVariables
 import com.ritense.processlink.url.web.rest.dto.URLSubmissionResult
 import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
@@ -54,7 +54,7 @@ class URLProcessLinkService(
     private val objectMapper: ObjectMapper,
     private val urlVariables: URLVariables,
     private val camundaTaskService: CamundaTaskService,
-    private val authorizationService: ValtimoAuthorizationService
+    private val authorizationService: AuthorizationService
 ) {
 
     fun submit(

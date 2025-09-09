@@ -33,16 +33,15 @@ import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 import mu.KotlinLogging
 import org.springframework.data.jpa.domain.Specification
-import java.util.function.Supplier
 
 abstract class AuthorizationSpecification<T : Any>(
     protected val authRequest: AuthorizationRequest<T>,
-    protected val permissionSupplier: Supplier<List<Permission>>
+    protected val permissionSupplier: () -> List<Permission>
 ) : Specification<T> {
-    @Deprecated("Use the constructor with permission supplier instead")
-    constructor(authRequest: AuthorizationRequest<T>, permissions: List<Permission>) : this(authRequest, Supplier { permissions })
+    @Deprecated("Since 12.17.0", ReplaceWith("com.ritense.authorization.specification.AuthorizationSpecification(authRequest, permissionSupplier)"))
+    constructor(authRequest: AuthorizationRequest<T>, permissions: List<Permission>) : this(authRequest, { permissions })
 
-    protected val permissions by lazy { permissionSupplier.get() }
+    protected val permissions by lazy { permissionSupplier() }
 
     internal open fun isAuthorized(): Boolean {
         return when (authRequest) {

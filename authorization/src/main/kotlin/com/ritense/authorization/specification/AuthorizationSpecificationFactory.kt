@@ -18,22 +18,21 @@ package com.ritense.authorization.specification
 
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
-import java.util.function.Supplier
 
 interface AuthorizationSpecificationFactory<T : Any> {
 
-    fun create(request: AuthorizationRequest<T>, permissionSupplier: Supplier<List<Permission>>): AuthorizationSpecification<T> = create(request, permissionSupplier.get())
+    fun create(request: AuthorizationRequest<T>, permissionSupplier: () -> List<Permission>): AuthorizationSpecification<T> = create(request, permissionSupplier())
 
     // Change this to something more dynamic in the future
-    fun canCreate(request: AuthorizationRequest<*>, permissionSupplier: Supplier<List<Permission>>): Boolean = canCreate(request, permissionSupplier.get())
+    fun canCreate(request: AuthorizationRequest<*>, permissionSupplier: () -> List<Permission>): Boolean = canCreate(request, permissionSupplier())
 
-    @Deprecated("Use the create method with a permission supplier instead")
+    @Deprecated("Since 12.17.0", ReplaceWith("com.ritense.authorization.specification.AuthorizationSpecificationFactory.create(request, permissionSupplier)"))
     fun create(request: AuthorizationRequest<T>, permissions: List<Permission>): AuthorizationSpecification<T> {
         throw NotImplementedError("This method is not implemented")
     }
 
     // Change this to something more dynamic in the future
-    @Deprecated("Use the canCreate method with a permission supplier instead")
+    @Deprecated("Since 12.17.0", ReplaceWith("com.ritense.authorization.specification.AuthorizationSpecificationFactory.canCreate(request, permissionSupplier)"))
     fun canCreate(request: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
         throw NotImplementedError("This method is not implemented")
     }

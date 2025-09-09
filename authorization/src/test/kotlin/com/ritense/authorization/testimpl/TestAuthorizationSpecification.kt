@@ -24,11 +24,10 @@ import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
-import java.util.function.Supplier
 
 class TestAuthorizationSpecification(
     request: AuthorizationRequest<TestEntity>,
-    permissionSupplier: Supplier<List<Permission>>,
+    permissionSupplier: () -> List<Permission>,
     val queryDialectHelper: QueryDialectHelper
 ): AuthorizationSpecification<TestEntity>(request, permissionSupplier) {
     override fun toPredicate(
