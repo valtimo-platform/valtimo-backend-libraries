@@ -27,6 +27,11 @@ class RetryCycleProvider(val config: RetryConfiguration) {
 
     @PostConstruct
     fun validateRetryCycles() {
+        config.cycles.forEach { cycle ->
+            if (!RETRY_PATTERN.matcher(cycle.value).matches()) {
+                logger.error { "Invalid retry pattern for service ${cycle.key}: ${cycle.value}" }
+            }
+        }
 
     }
 
@@ -72,7 +77,7 @@ class RetryCycleProvider(val config: RetryConfiguration) {
     companion object {
         val logger = KotlinLogging.logger {}
 
-        val RETRY_PATTERN =  Pattern.compile("^R\\d+/(PT\\d+[HMS],?)+$")
+        val RETRY_PATTERN = Pattern.compile("^R\\d+/(PT\\d+[HMS],?)+$")
 
         const val DEFAULT = "default"
         const val QUICK = "quick"
