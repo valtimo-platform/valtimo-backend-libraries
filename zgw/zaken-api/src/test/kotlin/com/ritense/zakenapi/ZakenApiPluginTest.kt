@@ -552,7 +552,7 @@ internal class ZakenApiPluginTest {
         val communicationChannel = communicationChannel()
         val paymentIndication = Betalingsindicatie.GEDEELTELIJK.key
         val caseGeometryType = GeometryType.POINT.key
-        val caseGeometryCoordinates = "[52.370216, 4.895168]"
+        val caseGeometryCoordinates = "[4.932921, 52.370085]"
         val mainCase = zaakUrl("123")
 
         whenever(executionMock.businessKey)
