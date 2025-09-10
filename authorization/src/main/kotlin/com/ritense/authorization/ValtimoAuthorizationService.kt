@@ -31,7 +31,6 @@ import mu.KotlinLogging
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import java.lang.reflect.ParameterizedType
-import java.util.function.Supplier
 
 @Service
 @SkipComponentScan
@@ -143,7 +142,7 @@ class ValtimoAuthorizationService(
             }
     }
 
-    private fun logPermissions(request: AuthorizationRequest<*>, permissionSupplier: Supplier<List<Permission>>) {
+    private fun logPermissions(request: AuthorizationRequest<*>, permissionSupplier: () -> List<Permission>) {
         val forUserLogLine = if (request.user.isNullOrEmpty()) "" else " for user '${request.user}'"
         if (!AuthorizationContext.ignoreAuthorization) {
             if (request.action.key == Action.DENY) {
@@ -152,16 +151,14 @@ class ValtimoAuthorizationService(
                         "access a resource without considering authorization. Please refer to the Valtimo documentation."
                 }
             } else {
-                val permissionsLogLine = permissionSupplier.get().joinToString(", ") { "${it.id}:${it.role.key}" }
-                val logLine =
+                logger.debug {
+                    val permissionsLogLine = permissionSupplier().joinToString(", ") { "${it.id}:${it.role.key}" }
                     "Requesting permissions '${request.action.key}:${request.resourceType.simpleName}'$forUserLogLine and found matching permissions: [$permissionsLogLine]"
-                logger.debug { logLine }
+                }
             }
         } else {
             if (request.action.key != Action.DENY) {
-                val logLine =
-                    "Ignoring authorization request for '${request.action.key}:${request.resourceType.simpleName}'$forUserLogLine. "
-                logger.debug { logLine }
+                logger.debug { "Ignoring authorization request for '${request.action.key}:${request.resourceType.simpleName}'$forUserLogLine. " }
             }
         }
     }
