@@ -355,7 +355,45 @@ internal class ZakenApiPluginTest {
     }
 
     @Test
-    fun `should create zaakrol for medewerker`() {
+    fun `should create zaakrol for medewerker without voorvoegselAchternaam`() {
+        val zakenApiClient: ZakenApiClient = mock()
+        val executionMock = mock<DelegateExecution>()
+
+        val plugin = zakenApiPluginAndMocksForZaakRol(
+            zakenApiClient = zakenApiClient,
+            executionMock = executionMock
+        )
+
+        plugin.createMedewerkerZaakRol(
+            execution = executionMock,
+            roltypeUrl = roltypeUrl(),
+            rolToelichting = "rolToelichting",
+            identificatie = "identificatie",
+            achternaam = "achternaam",
+            voorletters = "voorletters",
+            indicatieMachtiging = "gemachtigde"
+        )
+
+        val rolCaptor = argumentCaptor<Rol>()
+        verify(zakenApiClient).createZaakRol(any(), any(), rolCaptor.capture())
+
+        val rol = rolCaptor.firstValue
+
+        assertThat(rol.zaak).isEqualTo(zaakUri())
+        assertThat(rol.roltype).isEqualTo(roltypeUri())
+        assertThat(rol.roltoelichting).isEqualTo("rolToelichting")
+        assertThat(rol.indicatieMachtiging).isNotNull
+        assertThat(rol.indicatieMachtiging!!.key).isEqualTo("gemachtigde")
+
+        val betrokkeneIdentificatie = rol.betrokkeneIdentificatie as RolMedewerker
+        assertThat(betrokkeneIdentificatie.identificatie).isEqualTo("identificatie")
+        assertThat(betrokkeneIdentificatie.achternaam).isEqualTo("achternaam")
+        assertThat(betrokkeneIdentificatie.voorletters).isEqualTo("voorletters")
+        assertThat(betrokkeneIdentificatie.voorvoegselAchternaam).isEmpty()
+    }
+
+    @Test
+    fun `should create zaakrol for medewerker with voorvoegselAchternaam`() {
         val zakenApiClient: ZakenApiClient = mock()
         val executionMock = mock<DelegateExecution>()
 
@@ -430,7 +468,7 @@ internal class ZakenApiPluginTest {
     }
 
     @Test
-    fun `should create zaakrol for vestiging`() {
+    fun `should create zaakrol for vestiging without handelsnaam`() {
         val zakenApiClient: ZakenApiClient = mock()
         val executionMock = mock<DelegateExecution>()
 
@@ -456,6 +494,41 @@ internal class ZakenApiPluginTest {
         assertThat(rol.roltoelichting).isEqualTo("rolToelichting")
 
         val betrokkeneIdentificatie = rol.betrokkeneIdentificatie as RolVestiging
+        assertThat(betrokkeneIdentificatie.handelsnaam).isNull()
+        assertThat(betrokkeneIdentificatie.kvkNummer).isEqualTo("kvkNummer")
+        assertThat(betrokkeneIdentificatie.vestigingsNummer).isEqualTo("vestigingsNummer")
+    }
+
+    @Test
+    fun `should create zaakrol for vestiging with handelsnaam`() {
+        val zakenApiClient: ZakenApiClient = mock()
+        val executionMock = mock<DelegateExecution>()
+
+        val plugin = zakenApiPluginAndMocksForZaakRol(
+            zakenApiClient = zakenApiClient,
+            executionMock = executionMock
+        )
+
+        plugin.createVestigingZaakRol(
+            execution = executionMock,
+            roltypeUrl = roltypeUrl(),
+            rolToelichting = "rolToelichting",
+            handelsnaam = "handelsnaam",
+            kvkNummer = "kvkNummer",
+            vestigingsNummer = "vestigingsNummer",
+        )
+
+        val rolCaptor = argumentCaptor<Rol>()
+        verify(zakenApiClient).createZaakRol(any(), any(), rolCaptor.capture())
+
+        val rol = rolCaptor.firstValue
+        assertThat(rol.zaak).isEqualTo(zaakUri())
+        assertThat(rol.roltype).isEqualTo(roltypeUri())
+        assertThat(rol.roltoelichting).isEqualTo("rolToelichting")
+
+        val betrokkeneIdentificatie = rol.betrokkeneIdentificatie as RolVestiging
+        assertThat(betrokkeneIdentificatie.handelsnaam).isNotNull
+        assertThat(betrokkeneIdentificatie.handelsnaam!!.first()).isEqualTo("handelsnaam")
         assertThat(betrokkeneIdentificatie.kvkNummer).isEqualTo("kvkNummer")
         assertThat(betrokkeneIdentificatie.vestigingsNummer).isEqualTo("vestigingsNummer")
     }
