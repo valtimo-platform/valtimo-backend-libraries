@@ -27,9 +27,9 @@ import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 
 class CaseWidgetTabWidgetSpecification(
-        authRequest: AuthorizationRequest<CaseWidgetTabWidget>,
-        permissions: List<Permission>,
-        private val queryDialectHelper: QueryDialectHelper
+    authRequest: AuthorizationRequest<CaseWidgetTabWidget>,
+    permissions: List<Permission>,
+    private val queryDialectHelper: QueryDialectHelper
 ) : AuthorizationSpecification<CaseWidgetTabWidget>(authRequest, permissions) {
     override fun toPredicate(
         root: Root<CaseWidgetTabWidget>,
@@ -39,7 +39,7 @@ class CaseWidgetTabWidgetSpecification(
         val predicates = permissions.stream()
             .filter { permission: Permission ->
                 CaseWidgetTabWidget::class.java == permission.resourceType
-                    && authRequest.action == permission.action
+                    && permission.actions.contains(authRequest.action)
             }
             .map { permission: Permission ->
                 permission.toPredicate(
