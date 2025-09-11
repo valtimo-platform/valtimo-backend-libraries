@@ -24,8 +24,9 @@ import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.role.Role
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import io.hypersistence.utils.hibernate.type.json.JsonType
+import jakarta.persistence.CollectionTable
 import jakarta.persistence.Column
-import jakarta.persistence.Embedded
+import jakarta.persistence.ElementCollection
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
 import jakarta.persistence.Id
@@ -49,9 +50,13 @@ data class Permission(
     @Column(name = "resource_type")
     val resourceType: Class<*>,
 
-    @Column(name = "action")
-    @Embedded
-    val action: Action<*>,
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+        name = "permission_actions",
+        joinColumns = [JoinColumn(name = "permission_id")]
+    )
+    @field:jakarta.validation.constraints.Size(min = 1)
+    val actions: MutableList<Action<*>> = mutableListOf(),
 
     @Type(value = JsonType::class)
     @Column(name = "conditions", columnDefinition = "json")
@@ -75,7 +80,7 @@ data class Permission(
         action: Action<*>,
         conditionContainer: ConditionContainer,
         role: Role
-    ) : this(id, resourceType, action, conditionContainer, role, null, null) {
+    ) : this(id, resourceType, mutableListOf(action), conditionContainer, role, null, null) {
 
     }
 
@@ -84,9 +89,9 @@ data class Permission(
             (
                 (contextResourceType != null && contextConditionContainer != null)
                     || (contextResourceType == null
-                        && (contextConditionContainer == null || contextConditionContainer.conditions.isEmpty())
+                    && (contextConditionContainer == null || contextConditionContainer.conditions.isEmpty())
+                    )
                 )
-            )
         )
     }
 
@@ -104,14 +109,14 @@ data class Permission(
     ): Boolean {
         return appliesInContext(contextResourceType, contextEntity)
             && if (this.resourceType == resourceType) {
-                if (entity == null && conditionContainer.conditions.isNotEmpty()) {
-                    return false
-                }
-                conditionContainer.conditions
-                    .all { it.isValid(entity!!) }
-            } else {
-                false
+            if (entity == null && conditionContainer.conditions.isNotEmpty()) {
+                return false
             }
+            conditionContainer.conditions
+                .all { it.isValid(entity!!) }
+        } else {
+            false
+        }
     }
 
     @Deprecated("Since 12.2.0")
@@ -185,9 +190,35 @@ data class Permission(
         return this.contextResourceType == null
             || (this.contextResourceType == NoContext::class.java && contextResourceType == null)
             || (contextResourceType == this.contextResourceType
-                && contextConditionContainer?.let { container ->
-                    container.conditions
-                        .all { it.isValid(contextEntity!!) }
-                    }?: false)
+            && contextConditionContainer?.let { container ->
+            container.conditions
+                .all { it.isValid(contextEntity!!) }
+        } ?: false)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Permission
+
+        if (resourceType != other.resourceType) return false
+        if (actions.toList() != other.actions.toList()) return false
+        if (conditionContainer != other.conditionContainer) return false
+        if (role != other.role) return false
+        if (contextResourceType != other.contextResourceType) return false
+        if (contextConditionContainer != other.contextConditionContainer) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = resourceType.hashCode()
+        result = 31 * result + actions.hashCode()
+        result = 31 * result + conditionContainer.hashCode()
+        result = 31 * result + role.hashCode()
+        result = 31 * result + (contextResourceType?.hashCode() ?: 0)
+        result = 31 * result + (contextConditionContainer?.hashCode() ?: 0)
+        return result
     }
 }
