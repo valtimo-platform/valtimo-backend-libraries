@@ -55,10 +55,12 @@ valtimo:
         scripting:
             allowedClasses:
                 - java.lang.Math
-    retry:
-        cycles:
-            critical: R3/PT1M,PT15M,PT1H
-            default: R4/PT10S,PT1M,PT5M,PT15M
+    process:
+        jobs:
+            retry:
+                cycles:
+                    critical: R3/PT1M,PT15M,PT1H
+                    default: R4/PT10S,PT1M,PT5M,PT15M
 
 aws:
     profile: ritense

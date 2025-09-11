@@ -1,6 +1,5 @@
 package com.ritense.valtimo.job.retries
 
-import com.ritense.valtimo.contract.annotation.ProcessBean
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
 import org.springframework.stereotype.Component
