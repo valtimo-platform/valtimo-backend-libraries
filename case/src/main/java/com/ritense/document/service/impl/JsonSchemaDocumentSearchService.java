@@ -26,11 +26,9 @@ import static java.util.stream.Collectors.toMap;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationService;
-import com.ritense.authorization.request.AuthorizationResourceContext;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.document.domain.CaseTag;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.search.AdvancedSearchRequest;
 import com.ritense.document.domain.search.AssigneeFilter;
@@ -146,8 +144,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                     searchRequest,
                     cb,
                     query,
-                    documentRoot,
-                    buildAuthorizationResourceContext(searchRequest.getDocumentDefinitionName())
+                    documentRoot
                 ),
                 pageable
             )
@@ -281,9 +278,8 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         SearchRequest searchRequest,
         CriteriaBuilder cb,
         CriteriaQuery<?> query,
-        Root<JsonSchemaDocument> documentRoot,
-        AuthorizationResourceContext<JsonSchemaDocumentDefinition> authorizationResourceContext
-        ) {
+        Root<JsonSchemaDocument> documentRoot
+    ) {
         final List<Predicate> predicates = new ArrayList<>();
 
         addNonJsonFieldPredicates(cb, documentRoot, searchRequest, predicates);
@@ -295,7 +291,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                     new EntityAuthorizationRequest<>(
                         JsonSchemaDocument.class,
                         VIEW_LIST
-                    ).withContext(authorizationResourceContext),
+                    ),
                     null
                 ).toPredicate(documentRoot, query, cb));
 
@@ -322,7 +318,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                     new EntityAuthorizationRequest<>(
                         JsonSchemaDocument.class,
                         action
-                    ).withContext(buildAuthorizationResourceContext(documentDefinitionName)),
+                    ),
                     null
                 ).toPredicate(documentRoot, query, cb));
 
@@ -666,18 +662,6 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
             result = result.get(s);
         }
         return (Path<T>) result;
-    }
-
-    private AuthorizationResourceContext<JsonSchemaDocumentDefinition> buildAuthorizationResourceContext(
-        String documentDefinitionName
-    ) {
-        var optionalDocDef = jsonSchemaDocumentDefinitionService.findActiveByName(documentDefinitionName);
-        return optionalDocDef.map(
-            docDef -> new AuthorizationResourceContext<>(
-                JsonSchemaDocumentDefinition.class,
-                docDef
-            )
-        ).orElse(null);
     }
 
     @FunctionalInterface
