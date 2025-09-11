@@ -43,7 +43,7 @@ class CaseTabSpecification(
         val predicates = permissions.stream()
             .filter { permission: Permission ->
                 CaseTab::class.java == permission.resourceType
-                    && authRequest.action == permission.action
+                    && permission.actions.contains(authRequest.action)
             }
             .map { permission: Permission ->
                 permission.toPredicate(

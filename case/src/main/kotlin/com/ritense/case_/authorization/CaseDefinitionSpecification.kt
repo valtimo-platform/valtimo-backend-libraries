@@ -43,7 +43,7 @@ class CaseDefinitionSpecification(
         val predicates = permissions
             .filter { permission ->
                 CaseDefinition::class.java == permission.resourceType
-                    && authRequest.action == permission.action
+                    && permission.actions.contains(authRequest.action)
             }
             .map { permission ->
                 permission.toPredicate(
