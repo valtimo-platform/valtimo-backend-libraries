@@ -2,7 +2,6 @@ package com.ritense.case.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.BaseTest
-import com.ritense.authorization.AuthorizationService
 import com.ritense.case.domain.CaseListColumn
 import com.ritense.case.domain.CaseListColumnId
 import com.ritense.case.domain.ColumnDefaultSort
@@ -18,8 +17,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.search.SearchWithConfigRequest
-import com.ritense.document.service.DocumentSearchService
-import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
+import com.ritense.document.service.impl.JsonSchemaDocumentSearchService
 import com.ritense.outbox.OutboxService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser
@@ -42,7 +40,6 @@ import org.springframework.http.ResponseEntity
 import java.time.LocalDate
 import java.util.Optional
 import java.util.UUID
-import kotlin.collections.filter
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.text.Charsets.UTF_8
@@ -50,10 +47,8 @@ import kotlin.text.Charsets.UTF_8
 
 class CaseExporterTest : BaseTest() {
     private lateinit var caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository
-    private lateinit var documentSearchService: DocumentSearchService
+    private lateinit var documentSearchService: JsonSchemaDocumentSearchService
     private lateinit var userManagementService: UserManagementService
-    private lateinit var authorizationService: AuthorizationService
-    private lateinit var jsonSchemaDocumentDefinitionService: JsonSchemaDocumentDefinitionService
     private lateinit var outboxService: OutboxService
     private lateinit var mapper: ObjectMapper
     private lateinit var caseListRowMapper: CaseListRowMapper
@@ -64,8 +59,6 @@ class CaseExporterTest : BaseTest() {
         caseDefinitionListColumnRepository = mock()
         documentSearchService = mock()
         userManagementService = mock()
-        authorizationService = mock()
-        jsonSchemaDocumentDefinitionService = mock()
         outboxService = mock()
         mapper = ObjectMapper()
         caseListRowMapper = mock()
@@ -73,8 +66,6 @@ class CaseExporterTest : BaseTest() {
             caseDefinitionListColumnRepository,
             documentSearchService,
             userManagementService,
-            authorizationService,
-            jsonSchemaDocumentDefinitionService,
             outboxService,
             mapper,
             caseListRowMapper,
@@ -143,15 +134,10 @@ class CaseExporterTest : BaseTest() {
 
         val documentDefinition = mock<JsonSchemaDocumentDefinition>()
 
-        whenever(jsonSchemaDocumentDefinitionService.findActiveByName(CASE_DEFINITION_NAME))
-            .thenReturn(Optional.of(documentDefinition))
-
-        whenever(authorizationService.hasPermission<Any>(any())).thenReturn(true)
-
         val docs = listOf(DOCUMENT, DOCUMENT2, DOCUMENT3)
 
         whenever(
-            documentSearchService.search(eq(CASE_DEFINITION_NAME), eq(searchRequest), any())
+            documentSearchService.searchForExport(eq(CASE_DEFINITION_NAME), eq(searchRequest), any())
         ).thenReturn(PageImpl(docs))
 
         whenever(caseListRowMapper.toCaseListRowDto(eq(docs[0]), any())).thenReturn(
@@ -211,14 +197,12 @@ class CaseExporterTest : BaseTest() {
         val pageable = PageRequest.of(0, 10000, Sort.by("case:createdOn"))
 
         whenever(
-            documentSearchService.search(
+            documentSearchService.searchForExport(
                 eq(CASE_DEFINITION_NAME),
                 eq(searchRequest),
                 any<Pageable>()
             )
         ).thenReturn(PageImpl(List(10002) { DOCUMENT }))
-
-        whenever(authorizationService.hasPermission<Any>(any())).thenReturn(true)
 
         val exception = assertThrows<ExportLimitExceedsException> {
             exporter.exportCases(CASE_DEFINITION_NAME, searchRequest, pageable)
@@ -228,34 +212,6 @@ class CaseExporterTest : BaseTest() {
             "Export failed for case '$CASE_DEFINITION_NAME': the number of cases exceeds the maximum limit of 10,000. Please refine your search criteria.",
             exception.message
         )
-
-        verify(outboxService, never()).send(any())
-    }
-
-    @Test
-    fun `should throw when no permission found`() {
-        val searchRequest = SearchWithConfigRequest()
-        val pageable = PageRequest.of(0, 10, Sort.by("case:createdOn"))
-
-        whenever(
-            documentSearchService.search(
-                eq(CASE_DEFINITION_NAME),
-                eq(searchRequest),
-                any<Pageable>()
-            )
-        ).thenReturn(PageImpl(listOf(DOCUMENT)))
-
-        val documentDefinition = mock<JsonSchemaDocumentDefinition>()
-        whenever(jsonSchemaDocumentDefinitionService.findActiveByName(CASE_DEFINITION_NAME))
-            .thenReturn(Optional.of(documentDefinition))
-
-        whenever(authorizationService.hasPermission<Any>(any())).thenReturn(false)
-
-        val exception = assertThrows<NoExportPermissionException> {
-            exporter.exportCases(CASE_DEFINITION_NAME, searchRequest, pageable)
-        }
-
-        assertEquals("No permission found to export case '$CASE_DEFINITION_NAME'.", exception.message)
 
         verify(outboxService, never()).send(any())
     }
