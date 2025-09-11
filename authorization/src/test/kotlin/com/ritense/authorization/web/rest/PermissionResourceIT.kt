@@ -81,7 +81,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
             Permission(
                 UUID.randomUUID(),
                 TestEntity::class.java,
-                TestEntityActionProvider.view,
+                mutableListOf(TestEntityActionProvider.view),
                 ConditionContainer(emptyList()),
                 role
             )
@@ -152,7 +152,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
             Permission(
                 UUID.randomUUID(),
                 TestEntity::class.java,
-                TestEntityActionProvider.view,
+                mutableListOf(TestEntityActionProvider.view),
                 ConditionContainer(listOf(
                     FieldPermissionCondition(
                         "name",
@@ -199,7 +199,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
             Permission(
                 UUID.randomUUID(),
                 TestEntity::class.java,
-                TestEntityActionProvider.view,
+                mutableListOf(TestEntityActionProvider.view),
                 ConditionContainer(listOf(
                     FieldPermissionCondition(
                         "name",
@@ -246,7 +246,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
             Permission(
                 UUID.randomUUID(),
                 TestEntity::class.java,
-                TestEntityActionProvider.view,
+                mutableListOf(TestEntityActionProvider.view),
                 ConditionContainer(listOf(
                     ContainerPermissionCondition(
                         RelatedTestEntity::class.java,
@@ -298,7 +298,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
             Permission(
                 UUID.randomUUID(),
                 TestEntity::class.java,
-                TestEntityActionProvider.view,
+                mutableListOf(TestEntityActionProvider.view),
                 ConditionContainer(listOf(
                     ContainerPermissionCondition(
                         RelatedTestEntity::class.java,

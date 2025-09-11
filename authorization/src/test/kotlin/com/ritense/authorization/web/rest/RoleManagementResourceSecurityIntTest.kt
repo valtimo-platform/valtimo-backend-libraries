@@ -178,7 +178,7 @@ class RoleManagementResourceSecurityIntTest : SecuritySpecificEndpointIntegratio
                 listOf(
                         UpdateRolePermissionRequest(
                         basePermission.resourceType,
-                        basePermission.action.key,
+                        basePermission.actions.map { it.key },
                         basePermission.conditionContainer.conditions
                     )
                 )
@@ -204,7 +204,7 @@ class RoleManagementResourceSecurityIntTest : SecuritySpecificEndpointIntegratio
                 listOf(
                     UpdateRolePermissionRequest(
                         basePermission.resourceType,
-                        basePermission.action.key,
+                        basePermission.actions.map { it.key },
                         basePermission.conditionContainer.conditions
                     )
                 )
