@@ -169,105 +169,105 @@ class BaseIntegrationTest: BaseTest() {
             Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocument::class.java,
-                JsonSchemaDocumentActionProvider.VIEW_LIST,
+                mutableListOf(JsonSchemaDocumentActionProvider.VIEW_LIST),
                 ConditionContainer(emptyList()),
                 role!!
             ),
             Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocument::class.java,
-                JsonSchemaDocumentActionProvider.VIEW,
+                mutableListOf(JsonSchemaDocumentActionProvider.VIEW),
                 ConditionContainer(emptyList()),
                 role!!
             ),
             Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocument::class.java,
-                JsonSchemaDocumentActionProvider.MODIFY,
+                mutableListOf(JsonSchemaDocumentActionProvider.MODIFY),
                 ConditionContainer(emptyList()),
                 role!!
             ),
             Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocument::class.java,
-                JsonSchemaDocumentActionProvider.CREATE,
+                mutableListOf(JsonSchemaDocumentActionProvider.CREATE),
                 ConditionContainer(emptyList()),
                 role!!
             ),
             Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocument::class.java,
-                JsonSchemaDocumentActionProvider.CLAIM,
+                mutableListOf(JsonSchemaDocumentActionProvider.CLAIM),
                 ConditionContainer(emptyList()),
                 role!!
             ),
             Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocument::class.java,
-                JsonSchemaDocumentActionProvider.ASSIGN,
+                mutableListOf(JsonSchemaDocumentActionProvider.ASSIGN),
                 ConditionContainer(emptyList()),
                 role!!
             ),
             Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocument::class.java,
-                JsonSchemaDocumentActionProvider.ASSIGNABLE,
+                mutableListOf(JsonSchemaDocumentActionProvider.ASSIGNABLE),
                 ConditionContainer(emptyList()),
                 role!!
             ),
             Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocument::class.java,
-                JsonSchemaDocumentActionProvider.DELETE,
+                mutableListOf(JsonSchemaDocumentActionProvider.DELETE),
                 ConditionContainer(emptyList()),
                 role!!
             ),
             Permission(
                 UUID.randomUUID(),
                 SearchField::class.java,
-                SearchFieldActionProvider.VIEW_LIST,
+                mutableListOf(SearchFieldActionProvider.VIEW_LIST),
                 ConditionContainer(emptyList()),
                 role!!
             ),
             Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocumentDefinition::class.java,
-                JsonSchemaDocumentDefinitionActionProvider.VIEW,
+                mutableListOf(JsonSchemaDocumentDefinitionActionProvider.VIEW),
                 ConditionContainer(emptyList()),
                 role!!
             ),
             Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocumentDefinition::class.java,
-                JsonSchemaDocumentDefinitionActionProvider.VIEW_LIST,
+                mutableListOf(JsonSchemaDocumentDefinitionActionProvider.VIEW_LIST),
                 ConditionContainer(emptyList()),
                 role!!
             ),
             Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocumentDefinition::class.java,
-                JsonSchemaDocumentDefinitionActionProvider.CREATE,
+                mutableListOf(JsonSchemaDocumentDefinitionActionProvider.CREATE),
                 ConditionContainer(emptyList()),
                 role!!
             ),
             Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocumentDefinition::class.java,
-                JsonSchemaDocumentDefinitionActionProvider.MODIFY,
+                mutableListOf(JsonSchemaDocumentDefinitionActionProvider.MODIFY),
                 ConditionContainer(emptyList()),
                 role!!
             ),
             Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocumentDefinition::class.java,
-                JsonSchemaDocumentDefinitionActionProvider.DELETE,
+                mutableListOf(JsonSchemaDocumentDefinitionActionProvider.DELETE),
                 ConditionContainer(emptyList()),
                 role!!
             ),
             Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocumentSnapshot::class.java,
-                JsonSchemaDocumentSnapshotActionProvider.VIEW_LIST,
+                mutableListOf(JsonSchemaDocumentSnapshotActionProvider.VIEW_LIST),
                 ConditionContainer(emptyList()),
                 role!!
             )
