@@ -8,7 +8,6 @@ import java.util.regex.Pattern
 
 
 @Component
-@ProcessBean
 class RetryCycleProvider(val config: RetryConfiguration) {
 
     val standardRetryCycles = mutableMapOf<String, String>()
