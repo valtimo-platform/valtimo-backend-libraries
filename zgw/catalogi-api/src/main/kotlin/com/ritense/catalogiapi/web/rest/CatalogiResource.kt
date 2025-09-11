@@ -84,7 +84,6 @@ class CatalogiResource(
         return ResponseEntity.ok(zaakObjectTypes)
     }
 
-    //TODO: ???
     @GetMapping("/v1/case-definition/{caseDefinitionKey}/zaaktype/roltype")
     fun getZaakRoltypes(
         @LoggableResource("caseDefinitionKey") @PathVariable(name = "caseDefinitionKey") caseDefinitionKey: String,
