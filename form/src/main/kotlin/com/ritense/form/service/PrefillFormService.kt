@@ -165,6 +165,10 @@ class PrefillFormService(
 
     private fun prefillProcessVariables(formDefinition: FormIoFormDefinition, document: Document) {
         val processVarPointers = formDefinition.extractProcessVarJsonPointers()
+        if (processVarPointers.isEmpty()) {
+            // No process variables to pre-fill
+            return
+        }
         val processInstanceVariables = runWithoutAuthorization {
             processDocumentAssociationService.findProcessDocumentInstances(document.id())
                 .map { it.processDocumentInstanceId().processInstanceId().toString() }

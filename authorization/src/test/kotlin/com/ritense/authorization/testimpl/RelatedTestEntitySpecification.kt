@@ -26,8 +26,8 @@ import jakarta.persistence.criteria.Root
 
 class RelatedTestEntitySpecification(
         authContext: AuthorizationRequest<RelatedTestEntity>,
-        permissions: List<Permission>,
-): AuthorizationSpecification<RelatedTestEntity>(authContext, permissions) {
+        permissionSupplier: () -> List<Permission>,
+): AuthorizationSpecification<RelatedTestEntity>(authContext, permissionSupplier) {
     override fun toPredicate(
         root: Root<RelatedTestEntity>,
         query: AbstractQuery<*>,

@@ -27,10 +27,10 @@ import jakarta.persistence.criteria.Root
 
 class NoopAuthorizationSpecification<T : Any>(
     authRequest: AuthorizationRequest<T>,
-    permissions: List<Permission>
+    permissionSupplier: () -> List<Permission>
 ) : AuthorizationSpecification<T>(
     authRequest,
-    permissions
+    permissionSupplier
 ) {
     override fun isAuthorized(): Boolean {
         return AuthorizationContext.ignoreAuthorization

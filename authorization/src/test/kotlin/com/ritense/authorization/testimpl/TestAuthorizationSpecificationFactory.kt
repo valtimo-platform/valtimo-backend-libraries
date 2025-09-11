@@ -26,18 +26,18 @@ class TestAuthorizationSpecificationFactory(
     val queryDialectHelper: QueryDialectHelper
 ) : AuthorizationSpecificationFactory<TestEntity> {
     override fun create(
-            context: AuthorizationRequest<TestEntity>,
-            permissions: List<Permission>,
+        request: AuthorizationRequest<TestEntity>,
+        permissionSupplier: () -> List<Permission>
     ): AuthorizationSpecification<TestEntity> {
         return TestAuthorizationSpecification(
-            context,
-            permissions,
+            request,
+            permissionSupplier,
             queryDialectHelper
         )
     }
 
-    override fun canCreate(context: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
-        return TestEntity::class.java == context.resourceType
+    override fun canCreate(request: AuthorizationRequest<*>, permissionSupplier: () -> List<Permission>): Boolean {
+        return TestEntity::class.java == request.resourceType
     }
 
 }

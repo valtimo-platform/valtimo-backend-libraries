@@ -23,16 +23,16 @@ import com.ritense.authorization.specification.AuthorizationSpecificationFactory
 
 class RelatedTestEntitySpecificationFactory : AuthorizationSpecificationFactory<RelatedTestEntity> {
     override fun create(
-            request: AuthorizationRequest<RelatedTestEntity>,
-            permissions: List<Permission>
+        request: AuthorizationRequest<RelatedTestEntity>,
+        permissionSupplier: () -> List<Permission>
     ): AuthorizationSpecification<RelatedTestEntity> {
         return RelatedTestEntitySpecification(
             request,
-            permissions
+            permissionSupplier
         )
     }
 
-    override fun canCreate(request: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
+    override fun canCreate(request: AuthorizationRequest<*>, permissionSupplier: () -> List<Permission>): Boolean {
         return RelatedTestEntity::class.java == request.resourceType
     }
 

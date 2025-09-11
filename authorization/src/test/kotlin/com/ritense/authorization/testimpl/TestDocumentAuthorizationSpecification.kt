@@ -26,8 +26,8 @@ import jakarta.persistence.criteria.Root
 
 class TestDocumentAuthorizationSpecification(
         authContext: AuthorizationRequest<TestDocument>,
-        permissions: List<Permission>,
-): AuthorizationSpecification<TestDocument>(authContext, permissions) {
+        permissionSupplier: () -> List<Permission>,
+): AuthorizationSpecification<TestDocument>(authContext, permissionSupplier) {
     override fun toPredicate(
         root: Root<TestDocument>,
         query: AbstractQuery<*>,

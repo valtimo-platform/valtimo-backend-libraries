@@ -23,16 +23,16 @@ import com.ritense.authorization.specification.AuthorizationSpecificationFactory
 
 class TestDocumentSpecificationFactory : AuthorizationSpecificationFactory<TestDocument> {
     override fun create(
-            request: AuthorizationRequest<TestDocument>,
-            permissions: List<Permission>
+        request: AuthorizationRequest<TestDocument>,
+        permissionSupplier: () -> List<Permission>
     ): AuthorizationSpecification<TestDocument> {
         return TestDocumentAuthorizationSpecification(
             request,
-            permissions
+            permissionSupplier
         )
     }
 
-    override fun canCreate(request: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
+    override fun canCreate(request: AuthorizationRequest<*>, permissionSupplier: () -> List<Permission>): Boolean {
         return TestDocument::class.java == request.resourceType
     }
 

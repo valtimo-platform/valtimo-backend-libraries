@@ -26,10 +26,10 @@ import jakarta.persistence.criteria.Root
 
 class DenyAuthorizationSpecification<T : Any>(
     authRequest: AuthorizationRequest<T>,
-    permissions: List<Permission>
+    permissionSupplier: () -> List<Permission>
 ) : AuthorizationSpecification<T>(
     authRequest,
-    permissions
+    permissionSupplier
 ) {
     override fun isAuthorized(): Boolean {
         return false

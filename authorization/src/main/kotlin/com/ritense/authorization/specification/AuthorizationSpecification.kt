@@ -36,8 +36,13 @@ import org.springframework.data.jpa.domain.Specification
 
 abstract class AuthorizationSpecification<T : Any>(
     protected val authRequest: AuthorizationRequest<T>,
-    protected val permissions: List<Permission>
+    protected val permissionSupplier: () -> List<Permission>
 ) : Specification<T> {
+    @Deprecated("Since 12.17.0", ReplaceWith("com.ritense.authorization.specification.AuthorizationSpecification(authRequest, permissionSupplier)"))
+    constructor(authRequest: AuthorizationRequest<T>, permissions: List<Permission>) : this(authRequest, { permissions })
+
+    protected val permissions by lazy { permissionSupplier() }
+
     internal open fun isAuthorized(): Boolean {
         return when (authRequest) {
             is EntityAuthorizationRequest<T> -> isAuthorizedForEntity(authRequest)

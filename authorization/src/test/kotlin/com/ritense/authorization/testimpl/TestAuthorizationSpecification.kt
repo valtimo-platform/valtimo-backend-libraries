@@ -26,10 +26,10 @@ import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 
 class TestAuthorizationSpecification(
-        authContext: AuthorizationRequest<TestEntity>,
-        permissions: List<Permission>,
-        val queryDialectHelper: QueryDialectHelper
-): AuthorizationSpecification<TestEntity>(authContext, permissions) {
+    request: AuthorizationRequest<TestEntity>,
+    permissionSupplier: () -> List<Permission>,
+    val queryDialectHelper: QueryDialectHelper
+): AuthorizationSpecification<TestEntity>(request, permissionSupplier) {
     override fun toPredicate(
         root: Root<TestEntity>,
         query: AbstractQuery<*>,
