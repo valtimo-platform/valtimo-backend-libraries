@@ -59,7 +59,7 @@ class PermissionManagementResourceIntTest : BaseIntegrationTest() {
             .andDo(print())
             .andExpect(status().is2xxSuccessful)
             .andExpect(jsonPath("$[0].resourceType", equalTo("com.ritense.authorization.testimpl.TestDocument")))
-            .andExpect(jsonPath("$[0].action", equalTo("view")))
+            .andExpect(jsonPath("$[0].actions[0]", equalTo("view")))
             .andExpect(jsonPath("$[0].conditions[0].type", equalTo("field")))
             .andExpect(jsonPath("$[0].conditions[0].field", equalTo("document.name")))
             .andExpect(jsonPath("$[0].conditions[0].operator", equalTo("in")))
