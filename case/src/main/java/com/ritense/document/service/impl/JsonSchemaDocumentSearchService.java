@@ -16,6 +16,7 @@
 
 package com.ritense.document.service.impl;
 
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.EXPORT;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
 import static com.ritense.logging.LoggingContextKt.withLoggingContext;
 import static com.ritense.valtimo.contract.database.ExpressionHelper.cast;
@@ -23,10 +24,13 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.authorization.request.AuthorizationResourceContext;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.document.domain.CaseTag;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.search.AdvancedSearchRequest;
 import com.ritense.document.domain.search.AssigneeFilter;
@@ -107,6 +111,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
     private final AuthorizationService authorizationService;
     private final OutboxService outboxService;
+    private final JsonSchemaDocumentDefinitionService jsonSchemaDocumentDefinitionService;
 
     private final ObjectMapper objectMapper;
 
@@ -116,6 +121,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         SearchFieldService searchFieldService,
         UserManagementService userManagementService,
         AuthorizationService authorizationService, OutboxService outboxService,
+        JsonSchemaDocumentDefinitionService jsonSchemaDocumentDefinitionService,
         ObjectMapper objectMapper
     ) {
         this.entityManager = entityManager;
@@ -124,6 +130,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         this.userManagementService = userManagementService;
         this.authorizationService = authorizationService;
         this.outboxService = outboxService;
+        this.jsonSchemaDocumentDefinitionService = jsonSchemaDocumentDefinitionService;
         this.objectMapper = objectMapper;
     }
 
@@ -134,7 +141,14 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     ) {
         return withLoggingContext("documentDefinitionName", searchRequest.getDocumentDefinitionName(), () ->
             search(
-                (cb, query, documentRoot) -> buildQueryWhere(searchRequest, cb, query, documentRoot),
+                (cb, query, documentRoot) ->
+                buildQueryWhere(
+                    searchRequest,
+                    cb,
+                    query,
+                    documentRoot,
+                    buildAuthorizationResourceContext(searchRequest.getDocumentDefinitionName())
+                ),
                 pageable
             )
         );
@@ -145,6 +159,50 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         @LoggableResource("documentDefinitionName") String documentDefinitionName,
         SearchWithConfigRequest searchWithConfigRequest,
         Pageable pageable
+    ) {
+        return search(documentDefinitionName, searchWithConfigRequest, pageable, VIEW_LIST);
+    }
+
+    public Page<JsonSchemaDocument> searchForExport(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName,
+        SearchWithConfigRequest searchWithConfigRequest,
+        Pageable pageable
+    ) {
+        return search(documentDefinitionName, searchWithConfigRequest, pageable, EXPORT);
+    }
+
+    @Override
+    public Page<JsonSchemaDocument> search(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName,
+        AdvancedSearchRequest advancedSearchRequest,
+        Pageable pageable
+    ) {
+        return search(documentDefinitionName, advancedSearchRequest, pageable, VIEW_LIST);
+    }
+
+    @Override
+    public Long count(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName,
+        AdvancedSearchRequest advancedSearchRequest
+    ) {
+
+        return count(
+            (cb, query, documentRoot) -> buildQueryWhere(
+                documentDefinitionName,
+                advancedSearchRequest,
+                cb,
+                query,
+                documentRoot,
+                VIEW_LIST
+            )
+        );
+    }
+
+    private Page<JsonSchemaDocument> search(
+        @LoggableResource("documentDefinitionName") String documentDefinitionName,
+        SearchWithConfigRequest searchWithConfigRequest,
+        Pageable pageable,
+        Action<JsonSchemaDocument> action
     ) {
         ZoneOffset zoneOffset = RequestHelper.getZoneOffset();
         var searchFieldMap = searchFieldService.getSearchFields(documentDefinitionName).stream()
@@ -160,29 +218,26 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
         var advancedSearchRequest = SearchRequestMapper.toAdvancedSearchRequest(searchWithConfigRequest, searchCriteria);
 
-        return search(documentDefinitionName, advancedSearchRequest, pageable);
+        return search(documentDefinitionName, advancedSearchRequest, pageable, action);
     }
 
-    @Override
-    public Page<JsonSchemaDocument> search(
+    private Page<JsonSchemaDocument> search(
         @LoggableResource("documentDefinitionName") String documentDefinitionName,
         AdvancedSearchRequest advancedSearchRequest,
-        Pageable pageable
+        Pageable pageable,
+        Action<JsonSchemaDocument> action
     ) {
         SearchRequestValidator.validate(advancedSearchRequest);
         return search(
-            (cb, query, documentRoot) -> buildQueryWhere(documentDefinitionName, advancedSearchRequest, cb, query, documentRoot),
+            (cb, query, documentRoot) -> buildQueryWhere(
+                documentDefinitionName,
+                advancedSearchRequest,
+                cb,
+                query,
+                documentRoot,
+                action
+            ),
             pageable
-        );
-    }
-
-    @Override
-    public Long count(
-        @LoggableResource("documentDefinitionName") String documentDefinitionName,
-        AdvancedSearchRequest advancedSearchRequest
-    ) {
-        return count(
-            (cb, query, documentRoot) -> buildQueryWhere(documentDefinitionName, advancedSearchRequest, cb, query, documentRoot)
         );
     }
 
@@ -222,7 +277,13 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         return entityManager.createQuery(countQuery).getSingleResult();
     }
 
-    private void buildQueryWhere(SearchRequest searchRequest, CriteriaBuilder cb, CriteriaQuery<?> query, Root<JsonSchemaDocument> documentRoot) {
+    private void buildQueryWhere(
+        SearchRequest searchRequest,
+        CriteriaBuilder cb,
+        CriteriaQuery<?> query,
+        Root<JsonSchemaDocument> documentRoot,
+        AuthorizationResourceContext<JsonSchemaDocumentDefinition> authorizationResourceContext
+        ) {
         final List<Predicate> predicates = new ArrayList<>();
 
         addNonJsonFieldPredicates(cb, documentRoot, searchRequest, predicates);
@@ -234,7 +295,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                     new EntityAuthorizationRequest<>(
                         JsonSchemaDocument.class,
                         VIEW_LIST
-                    ),
+                    ).withContext(authorizationResourceContext),
                     null
                 ).toPredicate(documentRoot, query, cb));
 
@@ -246,7 +307,8 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         AdvancedSearchRequest searchRequest,
         CriteriaBuilder cb,
         CriteriaQuery<?> query,
-        Root<JsonSchemaDocument> documentRoot
+        Root<JsonSchemaDocument> documentRoot,
+        Action<JsonSchemaDocument> action
     ) {
         final List<Predicate> predicates = new ArrayList<>();
 
@@ -259,8 +321,8 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                 .getAuthorizationSpecification(
                     new EntityAuthorizationRequest<>(
                         JsonSchemaDocument.class,
-                        VIEW_LIST
-                    ),
+                        action
+                    ).withContext(buildAuthorizationResourceContext(documentDefinitionName)),
                     null
                 ).toPredicate(documentRoot, query, cb));
 
@@ -604,6 +666,18 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
             result = result.get(s);
         }
         return (Path<T>) result;
+    }
+
+    private AuthorizationResourceContext<JsonSchemaDocumentDefinition> buildAuthorizationResourceContext(
+        String documentDefinitionName
+    ) {
+        var optionalDocDef = jsonSchemaDocumentDefinitionService.findActiveByName(documentDefinitionName);
+        return optionalDocDef.map(
+            docDef -> new AuthorizationResourceContext<>(
+                JsonSchemaDocumentDefinition.class,
+                docDef
+            )
+        ).orElse(null);
     }
 
     @FunctionalInterface

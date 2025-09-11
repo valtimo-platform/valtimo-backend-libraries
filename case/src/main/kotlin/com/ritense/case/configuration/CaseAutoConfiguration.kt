@@ -40,12 +40,12 @@ import com.ritense.case.service.CaseExporter
 import com.ritense.case.service.CaseInstanceService
 import com.ritense.case.service.CaseListExporter
 import com.ritense.case.service.CaseListImporter
+import com.ritense.case.service.CaseListRowMapper
 import com.ritense.case.service.CaseTabExporter
 import com.ritense.case.service.CaseTabImporter
 import com.ritense.case.service.CaseTabService
 import com.ritense.case.service.CaseTaskListExporter
 import com.ritense.case.service.CaseTaskListImporter
-import com.ritense.case.service.CaseListRowMapper
 import com.ritense.case.service.ObjectMapperConfigurer
 import com.ritense.case.service.TaskColumnService
 import com.ritense.case.web.rest.CaseDefinitionResource
@@ -59,7 +59,7 @@ import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentSearchService
 import com.ritense.document.service.DocumentService
-import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
+import com.ritense.document.service.impl.JsonSchemaDocumentSearchService
 import com.ritense.exporter.ExportService
 import com.ritense.importer.ImportService
 import com.ritense.importer.ValtimoImportService
@@ -435,10 +435,8 @@ class CaseAutoConfiguration {
     @ConditionalOnMissingBean(CaseExporter::class)
     fun caseExporter(
         caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
-        documentSearchService: DocumentSearchService,
+        documentSearchService: JsonSchemaDocumentSearchService,
         userManagementService: UserManagementService,
-        authorizationService: AuthorizationService,
-        jsonSchemaDocumentDefinitionService: JsonSchemaDocumentDefinitionService,
         outboxService: OutboxService,
         mapper: ObjectMapper,
         caseListRowMapper: CaseListRowMapper
@@ -447,8 +445,6 @@ class CaseAutoConfiguration {
             caseDefinitionListColumnRepository,
             documentSearchService,
             userManagementService,
-            authorizationService,
-            jsonSchemaDocumentDefinitionService,
             outboxService,
             mapper,
             caseListRowMapper

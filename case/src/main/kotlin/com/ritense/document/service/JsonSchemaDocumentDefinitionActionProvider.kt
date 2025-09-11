@@ -30,6 +30,5 @@ class JsonSchemaDocumentDefinitionActionProvider : ResourceActionProvider<JsonSc
         @JvmField val CREATE = Action<JsonSchemaDocumentDefinition>(Action.CREATE)
         @JvmField val MODIFY = Action<JsonSchemaDocumentDefinition>(Action.MODIFY)
         @JvmField val DELETE = Action<JsonSchemaDocumentDefinition>(Action.DELETE)
-        @JvmField val EXPORT = Action<JsonSchemaDocumentDefinition>(Action.EXPORT)
     }
 }

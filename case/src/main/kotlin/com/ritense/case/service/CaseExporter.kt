@@ -18,23 +18,17 @@ package com.ritense.case.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.opencsv.CSVWriter
-import com.ritense.authorization.AuthorizationService
-import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.case.domain.CaseExportRequest
 import com.ritense.case.domain.CaseListColumn
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.service.exception.ExportLimitExceedsException
-import com.ritense.case.service.exception.NoExportPermissionException
 import com.ritense.case.service.exception.NoExportableColumnsException
 import com.ritense.case.service.exception.NoSearchResultsException
 import com.ritense.case.web.rest.dto.CaseListRowDto
 import com.ritense.document.domain.impl.JsonSchemaDocument
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.search.SearchWithConfigRequest
 import com.ritense.document.event.DocumentsExported
-import com.ritense.document.service.DocumentSearchService
-import com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.Companion.EXPORT
-import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
+import com.ritense.document.service.impl.JsonSchemaDocumentSearchService
 import com.ritense.outbox.OutboxService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -55,10 +49,8 @@ import kotlin.text.Charsets.UTF_8
 @Transactional
 class CaseExporter(
     private val caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
-    private val documentSearchService: DocumentSearchService,
+    private val documentSearchService: JsonSchemaDocumentSearchService,
     private val userManagementService: UserManagementService,
-    private val authorizationService: AuthorizationService,
-    private val jsonSchemaDocumentDefinitionService: JsonSchemaDocumentDefinitionService,
     private val outboxService: OutboxService,
     private val mapper: ObjectMapper,
     private val caseListRowMapper: CaseListRowMapper
@@ -137,7 +129,7 @@ class CaseExporter(
 
         val newPageable = mutatePageable(exportableColumns, pageable)
 
-        val searchResults = documentSearchService.search(
+        val searchResults = documentSearchService.searchForExport(
             caseDefinitionKey,
             searchRequest,
             newPageable
@@ -145,7 +137,6 @@ class CaseExporter(
 
         validateResultsFound(searchResults, caseDefinitionKey, userLabel)
         validateExportLimit(searchResults, caseDefinitionKey)
-        validateExportPermission(caseDefinitionKey, userLabel)
 
         val exportableCases = searchResults
             .content
@@ -222,24 +213,6 @@ class CaseExporter(
     private fun validateExportLimit(results: Page<*>, caseDefinitionKey: String) {
         if (results.totalElements > MAX_EXPORT) {
             throw ExportLimitExceedsException(caseDefinitionKey)
-        }
-    }
-
-    private fun validateExportPermission(caseDefinitionKey: String, currentUser: String) {
-
-        val documentDefinition = jsonSchemaDocumentDefinitionService.findActiveByName(caseDefinitionKey)
-
-        val hasExportPermission = authorizationService.hasPermission(
-            EntityAuthorizationRequest(
-                JsonSchemaDocumentDefinition::class.java,
-                EXPORT,
-                documentDefinition.get()
-            )
-        )
-
-        if (!hasExportPermission) {
-            logger.warn { "User '$currentUser' has no permission to  export case '$caseDefinitionKey'." }
-            throw NoExportPermissionException(caseDefinitionKey)
         }
     }
 

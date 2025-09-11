@@ -33,7 +33,10 @@
         },
         {
             "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
-            "action": "view_list",
+            "actions": [
+                "view_list",
+                "export"
+            ],
             "roleKey": "ROLE_USER",
             "conditions": [
                 {
