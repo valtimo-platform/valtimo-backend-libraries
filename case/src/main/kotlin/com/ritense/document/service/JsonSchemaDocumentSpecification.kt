@@ -31,10 +31,10 @@ import org.springframework.data.repository.findByIdOrNull
 import java.util.UUID
 
 class JsonSchemaDocumentSpecification(
-        authRequest: AuthorizationRequest<JsonSchemaDocument>,
-        permissions: List<Permission>,
-        private val documentRepository: JsonSchemaDocumentRepository,
-        private val queryDialectHelper: QueryDialectHelper
+    authRequest: AuthorizationRequest<JsonSchemaDocument>,
+    permissions: List<Permission>,
+    private val documentRepository: JsonSchemaDocumentRepository,
+    private val queryDialectHelper: QueryDialectHelper
 ) : AuthorizationSpecification<JsonSchemaDocument>(authRequest, permissions) {
 
     override fun toPredicate(
@@ -44,7 +44,7 @@ class JsonSchemaDocumentSpecification(
     ): Predicate {
         val predicates = permissions
             .filter { permission: Permission ->
-                JsonSchemaDocument::class.java == permission.resourceType && authRequest.action == permission.action
+                JsonSchemaDocument::class.java == permission.resourceType && permission.actions.contains(authRequest.action)
             }
             .map { permission: Permission ->
                 permission.toPredicate(
