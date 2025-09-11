@@ -105,7 +105,7 @@ class AuthorizationServiceTest {
             listOf(
                 Permission(
                     resourceType = String::class.java,
-                    action = Action<String>(Action.VIEW),
+                    actions = mutableListOf(Action<String>(Action.VIEW)),
                     conditionContainer = ConditionContainer(),
                     role = Role(key = "")
                 )
@@ -153,7 +153,7 @@ class AuthorizationServiceTest {
             listOf(
                 Permission(
                     resourceType = String::class.java,
-                    action = Action<String>(Action.VIEW),
+                    actions = mutableListOf(Action<String>(Action.VIEW)),
                     conditionContainer = ConditionContainer(),
                     role = Role(key = "")
                 )
@@ -186,7 +186,7 @@ class AuthorizationServiceTest {
             listOf(
                 Permission(
                     resourceType = String::class.java,
-                    action = Action<String>(Action.VIEW),
+                    actions = mutableListOf(Action<String>(Action.VIEW)),
                     conditionContainer = ConditionContainer(),
                     role = Role(key = "")
                 )
@@ -236,7 +236,7 @@ class AuthorizationServiceTest {
                 listOf(
                     Permission(
                         resourceType = String::class.java,
-                        action = Action<String>(Action.VIEW),
+                        actions = mutableListOf(Action<String>(Action.VIEW)),
                         conditionContainer = ConditionContainer(),
                         role = Role(key = "")
                     )

@@ -16,13 +16,13 @@
 
 package com.ritense.authorization.permission
 
-import com.ritense.authorization.Action
-import java.util.UUID
 import org.springframework.data.jpa.repository.JpaRepository
+import java.util.UUID
 
 interface PermissionRepository : JpaRepository<Permission, UUID> {
     fun findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(roleKeys: Collection<String>): List<Permission>
 
-    fun findAllByResourceTypeAndAction(resourceType: Class<*>, action: Action<*>): List<Permission>
+
+    fun findAllByResourceTypeAndActions_Key(resourceType: Class<*>, actionKey: String): List<Permission>
     fun deleteByRoleKeyIn(roleKeys: List<String>)
 }

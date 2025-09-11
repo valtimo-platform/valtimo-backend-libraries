@@ -22,7 +22,7 @@ import jakarta.persistence.Embeddable
 @Embeddable
 data class Action<T>(
     @Column(name = "action")
-    val key: String
+    val key: String = ""
 ) {
     companion object {
         @JvmStatic
