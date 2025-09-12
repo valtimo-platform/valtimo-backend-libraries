@@ -31,7 +31,6 @@ import com.ritense.case.web.rest.mapper.CaseListColumnMapper
 import com.ritense.case_.domain.definition.CaseDefinition
 import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.document.service.DocumentDefinitionService
-import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.valueresolver.exception.ValueResolverValidationException
@@ -59,7 +58,6 @@ class CaseDefinitionServiceTest : BaseTest() {
     lateinit var documentDefinitionService: DocumentDefinitionService
     lateinit var valueResolverService: ValueResolverService
     lateinit var authorizationService: AuthorizationService
-    lateinit var userManagementService: UserManagementService
 
     @BeforeEach
     fun setUp() {
@@ -68,7 +66,6 @@ class CaseDefinitionServiceTest : BaseTest() {
         caseDefinitionRepository = mock()
         valueResolverService = mock()
         authorizationService = mock()
-        userManagementService = mock()
         service = CaseDefinitionService(
             caseDefinitionListColumnRepository,
             documentDefinitionService,
@@ -76,8 +73,7 @@ class CaseDefinitionServiceTest : BaseTest() {
             valueResolverService,
             authorizationService,
             mock(),
-            mock(),
-            userManagementService
+            mock()
         )
     }
 

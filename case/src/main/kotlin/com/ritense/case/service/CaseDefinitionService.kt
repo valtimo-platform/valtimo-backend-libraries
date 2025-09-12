@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2024 Ritense BV, the Netherlands.
+ * Copyright 2015-2025 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,6 @@ import com.ritense.case_.repository.CaseDefinitionRepository
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import com.ritense.valtimo.contract.authentication.ManageableUser
-import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
 import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import com.ritense.valtimo.contract.event.CaseDefinitionCreatedEvent
@@ -70,8 +68,7 @@ class CaseDefinitionService(
     valueResolverService: ValueResolverService,
     private val authorizationService: AuthorizationService,
     private val applicationEventPublisher: ApplicationEventPublisher,
-    private val caseDefinitionChecker: CaseDefinitionChecker,
-    private val userManagementService: UserManagementService
+    private val caseDefinitionChecker: CaseDefinitionChecker
 ) {
     var validators: Map<Operation, ListColumnValidator<CaseListColumnDto>> = mapOf(
         Operation.CREATE to CreateCaseListColumnValidator(
@@ -278,7 +275,7 @@ class CaseDefinitionService(
         caseDefinitionListColumnRepository
             .save(CaseListColumnMapper.toEntity(caseDefinitionKey, caseListColumnDto))
 
-        logger.info { "User '${getCurrentUser().fullName} (${getCurrentUser().email})' created a case list column configuration: '$caseListColumnDto' for case definition: '$caseDefinitionKey'"}
+        logger.info { "User '${getCurrentUser()}' created a case list column configuration: '$caseListColumnDto' for case definition: '$caseDefinitionKey'"}
     }
 
     @Transactional
@@ -312,8 +309,8 @@ class CaseDefinitionService(
 
         val currentUser = getCurrentUser()
 
-        if(currentUser.id != "system") {
-            logger.info { "User '${getCurrentUser().fullName} (${getCurrentUser().email})' " +
+        if(currentUser != null) {
+            logger.info { "User '${currentUser}' " +
                 "updated case list column configuration: '$entities' for case definition: '$caseDefinitionName'"}
         }
     }
@@ -414,8 +411,8 @@ class CaseDefinitionService(
         }
     }
 
-    private fun getCurrentUser(): ManageableUser {
-        return userManagementService.currentUser
+    private fun getCurrentUser(): String? {
+        return SecurityUtils.getCurrentUserLogin()
     }
 
     companion object {

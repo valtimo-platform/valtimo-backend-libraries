@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2024 Ritense BV, the Netherlands.
+ * Copyright 2015-2025 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -163,8 +163,7 @@ class CaseAutoConfiguration {
         valueResolverService: ValueResolverService,
         authorizationService: AuthorizationService,
         caseDefinitionChecker: CaseDefinitionChecker,
-        applicationEventPublisher: ApplicationEventPublisher,
-        userManagementService: UserManagementService
+        applicationEventPublisher: ApplicationEventPublisher
     ): CaseDefinitionService {
         return CaseDefinitionService(
             caseDefinitionListColumnRepository,
@@ -173,8 +172,7 @@ class CaseAutoConfiguration {
             valueResolverService,
             authorizationService,
             applicationEventPublisher,
-            caseDefinitionChecker,
-            userManagementService
+            caseDefinitionChecker
         )
     }
 
@@ -436,7 +434,6 @@ class CaseAutoConfiguration {
     fun caseExporter(
         caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
         documentSearchService: JsonSchemaDocumentSearchService,
-        userManagementService: UserManagementService,
         outboxService: OutboxService,
         mapper: ObjectMapper,
         caseListRowMapper: CaseListRowMapper
@@ -444,7 +441,6 @@ class CaseAutoConfiguration {
         return CaseExporter(
             caseDefinitionListColumnRepository,
             documentSearchService,
-            userManagementService,
             outboxService,
             mapper,
             caseListRowMapper

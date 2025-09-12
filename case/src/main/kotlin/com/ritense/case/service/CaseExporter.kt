@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2024 Ritense BV, the Netherlands.
+ * Copyright 2015-2025 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,14 +23,13 @@ import com.ritense.case.domain.CaseListColumn
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.service.exception.ExportLimitExceedsException
 import com.ritense.case.service.exception.NoExportableColumnsException
-import com.ritense.case.service.exception.NoSearchResultsException
 import com.ritense.case.web.rest.dto.CaseListRowDto
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.search.SearchWithConfigRequest
 import com.ritense.document.event.DocumentsExported
 import com.ritense.document.service.impl.JsonSchemaDocumentSearchService
 import com.ritense.outbox.OutboxService
-import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.contract.utils.SecurityUtils
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -50,7 +49,6 @@ import kotlin.text.Charsets.UTF_8
 class CaseExporter(
     private val caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
     private val documentSearchService: JsonSchemaDocumentSearchService,
-    private val userManagementService: UserManagementService,
     private val outboxService: OutboxService,
     private val mapper: ObjectMapper,
     private val caseListRowMapper: CaseListRowMapper
@@ -207,7 +205,7 @@ class CaseExporter(
     }
 
     private fun currentUserInfo(): String =
-        userManagementService.currentUser.let { "${it.fullName} (${it.email})" }
+        SecurityUtils.getCurrentUserLogin() ?: "system"
 
     companion object {
         private val logger = KotlinLogging.logger {}
