@@ -16,20 +16,26 @@
 
 package com.ritense.case.web.rest
 
+import com.ritense.case.service.CaseExporter
 import com.ritense.case.service.CaseInstanceService
 import com.ritense.case.web.rest.dto.CaseListRowDto
 import com.ritense.document.domain.search.SearchWithConfigRequest
 import com.ritense.valtimo.contract.json.MapperSingleton
+import org.hamcrest.CoreMatchers.containsString
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.check
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.ByteArrayHttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -42,15 +48,20 @@ class CaseInstanceResourceTest {
     lateinit var mockMvc: MockMvc
     lateinit var resource: CaseInstanceResource
     lateinit var service: CaseInstanceService
+    lateinit var exporter: CaseExporter
 
     @BeforeEach
     fun setUp() {
         service = mock()
-        resource = CaseInstanceResource(service)
+        exporter = mock()
+        resource = CaseInstanceResource(service, exporter)
         MappingJackson2HttpMessageConverter(MapperSingleton.get())
         mockMvc = MockMvcBuilders.standaloneSetup(resource)
             .setCustomArgumentResolvers(PageableHandlerMethodArgumentResolver())
-            .setMessageConverters(MappingJackson2HttpMessageConverter(MapperSingleton.get()))
+            .setMessageConverters(
+                MappingJackson2HttpMessageConverter(MapperSingleton.get()),
+                ByteArrayHttpMessageConverter()
+            )
             .build()
     }
 
@@ -80,4 +91,58 @@ class CaseInstanceResourceTest {
 
         verify(service).search(eq(caseDefinitionName), any(), any())
     }
+
+    @Test
+    fun `should export cases as csv response`() {
+        val caseDefinitionName = "abc-case"
+        val searchRequest = SearchWithConfigRequest()
+
+        val csvBytes = "id;name\n1;Alice\n".toByteArray()
+
+        whenever(
+            exporter.exportCases(eq(caseDefinitionName), any(), any<Pageable>())
+        ).thenReturn(
+            ResponseEntity.ok()
+                .contentType(MediaType.valueOf("text/csv;charset=UTF-8"))
+                .header("Content-Disposition", "attachment; filename=cases.csv")
+                .body(csvBytes)
+        )
+
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders
+                    .post("/api/v1/case/{caseDefinitionName}/export", caseDefinitionName)
+                    .content(MapperSingleton.get().writeValueAsString(searchRequest))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .accept("text/csv")
+                    .param("page", "0")
+                    .param("size", "50")
+                    .param("sort", "id,asc")
+            )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith("text/csv"))
+            .andExpect(
+                MockMvcResultMatchers.header()
+                    .string("Content-Disposition", containsString("attachment"))
+            )
+            .andExpect(
+                MockMvcResultMatchers.header()
+                    .string("Content-Disposition", containsString("filename=cases.csv"))
+            )
+            .andExpect(MockMvcResultMatchers.content().bytes(csvBytes))
+
+
+
+        verify(exporter).exportCases(
+            eq(caseDefinitionName),
+            any(),
+            check<Pageable> {
+                assert(it.pageNumber == 0)
+                assert(it.pageSize == 50)
+                assert(it.sort.getOrderFor("id")?.isAscending == true)
+            }
+        )
+    }
 }
+

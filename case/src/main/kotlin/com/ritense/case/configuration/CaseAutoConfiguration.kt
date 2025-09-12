@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2024 Ritense BV, the Netherlands.
+ * Copyright 2015-2025 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,11 @@ import com.ritense.case.service.CaseDefinitionDeploymentService
 import com.ritense.case.service.CaseDefinitionExporter
 import com.ritense.case.service.CaseDefinitionImporter
 import com.ritense.case.service.CaseDefinitionService
+import com.ritense.case.service.CaseExporter
 import com.ritense.case.service.CaseInstanceService
 import com.ritense.case.service.CaseListExporter
 import com.ritense.case.service.CaseListImporter
+import com.ritense.case.service.CaseListRowMapper
 import com.ritense.case.service.CaseTabExporter
 import com.ritense.case.service.CaseTabImporter
 import com.ritense.case.service.CaseTabService
@@ -57,9 +59,11 @@ import com.ritense.case_.service.ActiveCaseDefinitionService
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentSearchService
 import com.ritense.document.service.DocumentService
+import com.ritense.document.service.impl.JsonSchemaDocumentSearchService
 import com.ritense.exporter.ExportService
 import com.ritense.importer.ImportService
 import com.ritense.importer.ValtimoImportService
+import com.ritense.outbox.OutboxService
 import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.case_.CaseDefinitionChecker
@@ -114,9 +118,13 @@ class CaseAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = ["caseInstanceResource"]) // because integration tests fail to initialise in portaaltaak
     fun caseInstanceResource(
-        service: CaseInstanceService
+        service: CaseInstanceService,
+        exporter: CaseExporter
     ): CaseInstanceResource {
-        return CaseInstanceResource(service)
+        return CaseInstanceResource(
+            service,
+            exporter
+        )
     }
 
     @Bean
@@ -155,7 +163,7 @@ class CaseAutoConfiguration {
         valueResolverService: ValueResolverService,
         authorizationService: AuthorizationService,
         caseDefinitionChecker: CaseDefinitionChecker,
-        applicationEventPublisher: ApplicationEventPublisher,
+        applicationEventPublisher: ApplicationEventPublisher
     ): CaseDefinitionService {
         return CaseDefinitionService(
             caseDefinitionListColumnRepository,
@@ -164,7 +172,7 @@ class CaseAutoConfiguration {
             valueResolverService,
             authorizationService,
             applicationEventPublisher,
-            caseDefinitionChecker,
+            caseDefinitionChecker
         )
     }
 
@@ -419,5 +427,28 @@ class CaseAutoConfiguration {
         return CaseTabDeploymentService(
             caseTabService
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CaseExporter::class)
+    fun caseExporter(
+        caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
+        documentSearchService: JsonSchemaDocumentSearchService,
+        outboxService: OutboxService,
+        mapper: ObjectMapper,
+        caseListRowMapper: CaseListRowMapper
+    ): CaseExporter {
+        return CaseExporter(
+            caseDefinitionListColumnRepository,
+            documentSearchService,
+            outboxService,
+            mapper,
+            caseListRowMapper
+        )
+    }
+
+    @Bean
+    fun caseListRowMapper(): CaseListRowMapper {
+        return CaseListRowMapper()
     }
 }

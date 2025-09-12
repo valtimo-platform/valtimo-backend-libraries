@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.contract.domain
+package com.ritense.case.domain
 
-import java.nio.charset.StandardCharsets.UTF_8
-import org.springframework.http.MediaType
+import com.ritense.document.domain.search.SearchWithConfigRequest
 
-object ValtimoMediaType {
-
-    val APPLICATION_JSON_UTF8 = MediaType("application", "json", UTF_8)
-    const val APPLICATION_JSON_UTF8_VALUE = "application/json;charset=UTF-8"
-    const val TEXT_PLAIN_UTF8_VALUE = "text/plain;charset=UTF-8"
-    const val TEXT_CSV_UTF8_VALUE = "text/csv;charset=UTF-8"
-
-}
+data class CaseExportRequest(
+    val caseDefinitionKey: String,
+    val searchRequest: SearchWithConfigRequest,
+)
