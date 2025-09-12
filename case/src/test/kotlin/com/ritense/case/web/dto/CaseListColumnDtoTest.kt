@@ -60,7 +60,8 @@ class CaseListColumnDtoTest {
             sortable = true,
             defaultSort = null,
             order = null,
-            title = null
+            title = null,
+            exportable = false
         )
     }
 
@@ -78,7 +79,8 @@ class CaseListColumnDtoTest {
                   "dateFormat" : null
                 }
               },
-              "sortable" : true
+              "sortable" : true,
+              "exportable" : false
             }
         """
     }
