@@ -43,5 +43,6 @@ data class Action<T>(
         const val ASSIGNABLE = "assignable"
         const val IGNORE = "ignore"
         const val DENY = "deny"
+        const val EXPORT = "export"
     }
 }
