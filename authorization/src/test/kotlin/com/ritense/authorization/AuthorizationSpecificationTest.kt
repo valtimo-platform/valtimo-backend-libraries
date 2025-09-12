@@ -45,7 +45,7 @@ class AuthorizationSpecificationTest {
                 listOf(
                     Permission(
                         resourceType = TestEntity::class.java,
-                        action = TestEntityActionProvider.complete,
+                        actions = mutableListOf(TestEntityActionProvider.complete),
                         conditionContainer = ConditionContainer(listOf()),
                         role = Role(key = "")
                     )
@@ -67,7 +67,7 @@ class AuthorizationSpecificationTest {
                 listOf(
                     Permission(
                         resourceType = String::class.java,
-                        action = TestEntityActionProvider.complete,
+                        actions = mutableListOf(TestEntityActionProvider.complete),
                         conditionContainer = ConditionContainer(listOf()),
                         role = Role(key = "")
                     )
@@ -89,7 +89,7 @@ class AuthorizationSpecificationTest {
                 listOf(
                     Permission(
                         resourceType = TestEntity::class.java,
-                        action = TestEntityActionProvider.complete,
+                        actions = mutableListOf(TestEntityActionProvider.complete),
                         conditionContainer = ConditionContainer(listOf()),
                         role = Role(key = "")
                     )
@@ -106,7 +106,7 @@ class AuthorizationSpecificationTest {
         val permission: Permission = spy(
             Permission(
                 resourceType = TestEntity::class.java,
-                action = TestEntityActionProvider.complete,
+                actions = mutableListOf(TestEntityActionProvider.complete),
                 conditionContainer = ConditionContainer(listOf()),
                 role = Role(key = "")
             )

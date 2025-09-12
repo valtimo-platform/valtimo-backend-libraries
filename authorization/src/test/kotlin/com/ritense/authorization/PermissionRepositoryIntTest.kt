@@ -53,29 +53,36 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
     fun `should save Permission`() {
         val permission = Permission(
             resourceType = Class.forName("com.ritense.authorization.testimpl.TestDocument"),
-            action = Action<TestDocument>(Action.VIEW_LIST),
-            conditionContainer = ConditionContainer(listOf(
-                FieldPermissionCondition(
-                    field = "document.name",
-                    operator = EQUAL_TO,
-                    value = "loan"
-                ))
+            actions = mutableListOf(Action<TestDocument>(Action.VIEW_LIST)),
+            conditionContainer = ConditionContainer(
+                listOf(
+                    FieldPermissionCondition(
+                        field = "document.name",
+                        operator = EQUAL_TO,
+                        value = "loan"
+                    )
+                )
             ),
             role = role
         )
 
         permissionRepository.saveAndFlush(permission)
 
-        val permissions = permissionRepository.findAllByResourceTypeAndAction(permission.resourceType, permission.action)
+        val permissions = permissionRepository.findAllByResourceTypeAndActions_Key(
+            permission.resourceType,
+            permission.actions.first().key
+        )
         assertThat(permissions).hasSize(1)
         assertThat(permissions[0].id).isNotNull
         assertThat(permissions[0].resourceType).isEqualTo(Class.forName("com.ritense.authorization.testimpl.TestDocument"))
-        assertThat(permissions[0].action).isEqualTo(Action<TestDocument>(Action.VIEW_LIST))
+        assertThat(permissions[0].actions.toMutableList()).isEqualTo(mutableListOf(Action<TestDocument>(Action.VIEW_LIST)))
         assertThat(permissions[0].conditionContainer.conditions).hasSize(1)
         assertThat(permissions[0].conditionContainer.conditions[0].type).isEqualTo(FIELD)
         assertTrue(permissions[0].conditionContainer.conditions[0] is FieldPermissionCondition<*>)
         assertThat((permissions[0].conditionContainer.conditions[0] as FieldPermissionCondition<*>).field).isEqualTo("document.name")
-        assertThat((permissions[0].conditionContainer.conditions[0] as FieldPermissionCondition<*>).operator).isEqualTo(EQUAL_TO)
+        assertThat((permissions[0].conditionContainer.conditions[0] as FieldPermissionCondition<*>).operator).isEqualTo(
+            EQUAL_TO
+        )
         assertThat((permissions[0].conditionContainer.conditions[0] as FieldPermissionCondition<*>).value).isEqualTo("loan")
     }
 
@@ -85,39 +92,45 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
 
         val permission = Permission(
             resourceType = Class.forName("com.ritense.authorization.testimpl.TestDocument"),
-            action = Action<TestDocument>(Action.VIEW_LIST),
-            conditionContainer = ConditionContainer(listOf(
-                FieldPermissionCondition(
-                    field = "document.name",
-                    operator = EQUAL_TO,
-                    value = "loan"
-                ))
+            actions = mutableListOf(Action<TestDocument>(Action.VIEW_LIST)),
+            conditionContainer = ConditionContainer(
+                listOf(
+                    FieldPermissionCondition(
+                        field = "document.name",
+                        operator = EQUAL_TO,
+                        value = "loan"
+                    )
+                )
             ),
             role = role
         )
 
         val permission2 = Permission(
             resourceType = Class.forName("com.ritense.authorization.testimpl.TestDocument"),
-            action = Action<TestDocument>(Action.VIEW),
-            conditionContainer = ConditionContainer(listOf(
-                FieldPermissionCondition(
-                    field = "document.name",
-                    operator = EQUAL_TO,
-                    value = "loan"
-                ))
+            actions = mutableListOf(Action<TestDocument>(Action.VIEW)),
+            conditionContainer = ConditionContainer(
+                listOf(
+                    FieldPermissionCondition(
+                        field = "document.name",
+                        operator = EQUAL_TO,
+                        value = "loan"
+                    )
+                )
             ),
             role = role
         )
 
         val permission3 = Permission(
             resourceType = Class.forName("com.ritense.authorization.testimpl.TestDocument"),
-            action = Action<TestDocument>(Action.ASSIGN),
-            conditionContainer = ConditionContainer(listOf(
-                FieldPermissionCondition(
-                    field = "document.name",
-                    operator = EQUAL_TO,
-                    value = "loan"
-                ))
+            actions = mutableListOf(Action<TestDocument>(Action.ASSIGN)),
+            conditionContainer = ConditionContainer(
+                listOf(
+                    FieldPermissionCondition(
+                        field = "document.name",
+                        operator = EQUAL_TO,
+                        value = "loan"
+                    )
+                )
             ),
             role = role2
         )
@@ -130,22 +143,31 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
 
         assertThat(permissions[0].id).isNotNull
         assertThat(permissions[0].resourceType).isEqualTo(Class.forName("com.ritense.authorization.testimpl.TestDocument"))
-        assertThat(permissions[0].action).isIn(Action<TestDocument>(Action.VIEW_LIST), Action<TestDocument>(Action.VIEW))
+        assertThat(permissions[0].actions.first()).isIn(
+            mutableListOf(
+                Action<TestDocument>(Action.VIEW_LIST),
+                Action<TestDocument>(Action.VIEW)
+            )
+        )
         assertThat(permissions[0].conditionContainer.conditions).hasSize(1)
         assertThat(permissions[0].conditionContainer.conditions[0].type).isEqualTo(FIELD)
         assertTrue(permissions[0].conditionContainer.conditions[0] is FieldPermissionCondition<*>)
         assertThat((permissions[0].conditionContainer.conditions[0] as FieldPermissionCondition<*>).field).isEqualTo("document.name")
-        assertThat((permissions[0].conditionContainer.conditions[0] as FieldPermissionCondition<*>).operator).isEqualTo(EQUAL_TO)
+        assertThat((permissions[0].conditionContainer.conditions[0] as FieldPermissionCondition<*>).operator).isEqualTo(
+            EQUAL_TO
+        )
         assertThat((permissions[0].conditionContainer.conditions[0] as FieldPermissionCondition<*>).value).isEqualTo("loan")
 
         assertThat(permissions[1].id).isNotNull
         assertThat(permissions[1].resourceType).isEqualTo(Class.forName("com.ritense.authorization.testimpl.TestDocument"))
-        assertThat(permissions[1].action).isIn(Action<TestDocument>(Action.VIEW_LIST), Action<TestDocument>(Action.VIEW))
+        assertThat(permissions[1].actions.first()).isEqualTo(Action<TestDocument>(Action.VIEW))
         assertThat(permissions[1].conditionContainer.conditions).hasSize(1)
         assertThat(permissions[1].conditionContainer.conditions[0].type).isEqualTo(FIELD)
         assertTrue(permissions[1].conditionContainer.conditions[0] is FieldPermissionCondition<*>)
         assertThat((permissions[1].conditionContainer.conditions[0] as FieldPermissionCondition<*>).field).isEqualTo("document.name")
-        assertThat((permissions[1].conditionContainer.conditions[0] as FieldPermissionCondition<*>).operator).isEqualTo(EQUAL_TO)
+        assertThat((permissions[1].conditionContainer.conditions[0] as FieldPermissionCondition<*>).operator).isEqualTo(
+            EQUAL_TO
+        )
         assertThat((permissions[1].conditionContainer.conditions[0] as FieldPermissionCondition<*>).value).isEqualTo("loan")
     }
 }
