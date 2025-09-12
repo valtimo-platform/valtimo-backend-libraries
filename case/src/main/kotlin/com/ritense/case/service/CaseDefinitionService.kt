@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2024 Ritense BV, the Netherlands.
+ * Copyright 2015-2025 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,9 @@ import com.ritense.document.domain.DocumentDefinition
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.valtimo.contract.utils.SecurityUtils
 import com.ritense.valueresolver.ValueResolverService
+import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import kotlin.jvm.optionals.getOrNull
@@ -95,8 +97,15 @@ class CaseDefinitionService(
             validators[Operation.CREATE]!!.validate(caseDefinitionName, caseListColumnDto)
         }
         caseListColumnDto.order = caseDefinitionListColumnRepository.countByIdCaseDefinitionName(caseDefinitionName)
+
+        if (caseListColumnDto.exportable) {
+            validateExportPath(caseListColumnDto.path, caseListColumnDto.key)
+        }
+
         caseDefinitionListColumnRepository
             .save(CaseListColumnMapper.toEntity(caseDefinitionName, caseListColumnDto))
+
+        logger.info { "User '${getCurrentUser()}' created a case list column configuration: '$caseListColumnDto' for case definition: '$caseDefinitionName'"}
     }
 
     fun updateListColumns(
@@ -112,8 +121,24 @@ class CaseDefinitionService(
         caseListColumnDtoList.forEach { caseListColumnDto ->
             caseListColumnDto.order = order++
         }
+
+        caseListColumnDtoList
+            .filter { it.exportable }
+            .forEach { dto ->
+                validateExportPath(dto.path, dto.key)
+            }
+
+        val entities = CaseListColumnMapper.toEntityList(caseDefinitionName, caseListColumnDtoList)
+
         caseDefinitionListColumnRepository
-            .saveAll(CaseListColumnMapper.toEntityList(caseDefinitionName, caseListColumnDtoList))
+            .saveAll(entities)
+
+        val currentUser = getCurrentUser()
+
+        if(currentUser != null) {
+            logger.info { "User '${currentUser}' " +
+                "updated case list column configuration: '$entities' for case definition: '$caseDefinitionName'"}
+        }
     }
 
 
@@ -158,5 +183,20 @@ class CaseDefinitionService(
     private fun assertDocumentDefinitionExists(caseDefinitionName: String): DocumentDefinition {
         return documentDefinitionService.findLatestByName(caseDefinitionName)
             .getOrNull() ?: throw UnknownCaseDefinitionException(caseDefinitionName)
+    }
+
+    private fun validateExportPath(path: String, key: String) {
+        require(PATH_REGEX_EXPORTABLE.containsMatchIn(path)) {
+            "Failed to save the case list column configuration for key '$key'. Only document or case properties can be exported."
+        }
+    }
+
+    private fun getCurrentUser(): String? {
+        return SecurityUtils.getCurrentUserLogin()
+    }
+
+    companion object {
+        val logger = KotlinLogging.logger {}
+        val PATH_REGEX_EXPORTABLE = Regex("^(case:|doc:)")
     }
 }
