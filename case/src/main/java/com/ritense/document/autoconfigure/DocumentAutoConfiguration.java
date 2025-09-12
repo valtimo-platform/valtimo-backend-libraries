@@ -157,6 +157,7 @@ public class DocumentAutoConfiguration {
         final UserManagementService userManagementService,
         final AuthorizationService authorizationService,
         final OutboxService outboxService,
+        final JsonSchemaDocumentDefinitionService jsonSchemaDocumentDefinitionService,
         final ObjectMapper objectMapper
     ) {
         return new JsonSchemaDocumentSearchService(
@@ -166,6 +167,7 @@ public class DocumentAutoConfiguration {
             userManagementService,
             authorizationService,
             outboxService,
+            jsonSchemaDocumentDefinitionService,
             objectMapper
         );
     }
