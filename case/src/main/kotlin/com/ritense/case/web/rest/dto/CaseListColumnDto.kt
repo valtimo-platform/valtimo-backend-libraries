@@ -33,7 +33,7 @@ data class CaseListColumnDto(
     var defaultSort: ColumnDefaultSort?,
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     var order: Int?,
-    var exportable: Boolean
+    var exportable: Boolean = false
 ) {
     @Throws(InvalidListColumnException::class)
     fun validate() {

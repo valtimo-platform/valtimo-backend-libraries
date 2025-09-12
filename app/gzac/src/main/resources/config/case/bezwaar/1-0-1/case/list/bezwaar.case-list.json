@@ -7,8 +7,7 @@
             "displayTypeParameters": {}
         },
         "sortable": true,
-        "order": 0,
-        "exportable": true
+        "order": 0
     },
     {
         "key": "createdOn",
@@ -21,8 +20,7 @@
         },
         "sortable": true,
         "defaultSort": "DESC",
-        "order": 1,
-        "exportable": true
+        "order": 1
     },
     {
         "key": "modifiedOn",
@@ -34,8 +32,7 @@
             }
         },
         "sortable": true,
-        "order": 2,
-        "exportable": true
+        "order": 2
     },
     {
         "key": "assigneeFullName",
