@@ -9,18 +9,30 @@
     "components": [
         {
             "label": "HTML",
-            "attrs": [
-                {
-                    "attr": "",
-                    "value": ""
-                }
-            ],
             "content": "Klik start om uw bezwaar in te dienen.",
             "refreshOnChange": false,
             "key": "html",
             "type": "htmlelement",
             "input": false,
             "tableView": false
+        },
+        {
+            "label": "Voornaam",
+            "applyMaskOn": "change",
+            "tableView": true,
+            "key": "voornaam",
+            "type": "textfield",
+            "defaultValue": "John",
+            "input": true
+        },
+        {
+            "label": "Achternaam",
+            "applyMaskOn": "change",
+            "tableView": true,
+            "key": "achternaam",
+            "defaultValue": "Doe",
+            "type": "textfield",
+            "input": true
         },
         {
             "type": "button",

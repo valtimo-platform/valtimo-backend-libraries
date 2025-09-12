@@ -1,5 +1,5 @@
 {
-    "changesetId": "documents-v2",
+    "changesetId": "documents-v3",
     "permissions": [
         {
             "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
@@ -17,8 +17,11 @@
                 {
                     "type": "field",
                     "field": "documentDefinitionId.caseDefinitionId.key",
-                    "operator": "==",
-                    "value": "leningen"
+                    "operator": "in",
+                    "value": [
+                        "leningen",
+                        "bezwaar"
+                    ]
                 },
                 {
                     "type": "field",
@@ -30,7 +33,10 @@
         },
         {
             "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
-            "action": "view_list",
+            "actions": [
+                "view_list",
+                "export"
+            ],
             "roleKey": "ROLE_USER",
             "conditions": [
                 {
@@ -57,8 +63,11 @@
                 {
                     "type": "field",
                     "field": "documentDefinitionId.name",
-                    "operator": "==",
-                    "value": "leningen"
+                    "operator": "in",
+                    "value": [
+                        "leningen",
+                        "bezwaar"
+                    ]
                 }
             ]
         },
@@ -105,8 +114,11 @@
                         {
                             "type": "field",
                             "field": "id.name",
-                            "operator": "==",
-                            "value": "leningen"
+                            "operator": "in",
+                            "value": [
+                                "leningen",
+                                "bezwaar"
+                            ]
                         }
                     ]
                 }
