@@ -1,6 +1,27 @@
 {
     "searchFields": [
         {
+            "key": "createdOn",
+            "path": "case:createdOn",
+            "dataType": "date",
+            "fieldType": "single",
+            "matchType": "exact"
+        },
+        {
+            "key": "modifiedOn",
+            "path": "case:modifiedOn",
+            "dataType": "date",
+            "fieldType": "single",
+            "matchType": "exact"
+        },
+        {
+            "key": "assigneeFullName",
+            "path": "case:assigneeFullName",
+            "dataType": "text",
+            "fieldType": "single",
+            "matchType": "like"
+        },
+        {
             "key": "voornaam",
             "path": "doc:voornaam",
             "dataType": "text",
@@ -15,30 +36,6 @@
             "fieldType": "single",
             "matchType": "like",
             "title": "Achternaam"
-        },
-        {
-            "key": "straatnaam",
-            "path": "doc:straatnaam",
-            "dataType": "text",
-            "fieldType": "single",
-            "matchType": "like",
-            "title": "Straatnaam"
-        },
-        {
-            "key": "woonplaats",
-            "path": "doc:plaats",
-            "dataType": "text",
-            "fieldType": "single",
-            "matchType": "like",
-            "title": "Woonplaats"
-        },
-        {
-            "key": "huisnummer",
-            "path": "doc:plaats",
-            "dataType": "number",
-            "fieldType": "single",
-            "matchType": "exact",
-            "title": "Huisnummer"
         }
     ]
 }

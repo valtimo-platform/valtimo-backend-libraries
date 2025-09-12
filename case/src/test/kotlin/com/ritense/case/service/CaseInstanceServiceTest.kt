@@ -185,7 +185,8 @@ class CaseInstanceServiceTest : BaseTest() {
             displayType = DisplayType("string", EmptyDisplayTypeParameter()),
             sortable = true,
             defaultSort = ColumnDefaultSort.ASC,
-            order = 1
+            order = 1,
+            exportable = false,
         )
     }
 }
