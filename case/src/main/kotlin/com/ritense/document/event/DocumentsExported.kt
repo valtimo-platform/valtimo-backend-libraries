@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.contract.domain
+package com.ritense.document.event
 
-import java.nio.charset.StandardCharsets.UTF_8
-import org.springframework.http.MediaType
 
-object ValtimoMediaType {
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.outbox.domain.BaseEvent
 
-    val APPLICATION_JSON_UTF8 = MediaType("application", "json", UTF_8)
-    const val APPLICATION_JSON_UTF8_VALUE = "application/json;charset=UTF-8"
-    const val TEXT_PLAIN_UTF8_VALUE = "text/plain;charset=UTF-8"
-    const val TEXT_CSV_UTF8_VALUE = "text/csv;charset=UTF-8"
-
-}
+class DocumentsExported(exportRequest: ObjectNode) : BaseEvent(
+    type = "com.ritense.valtimo.document.exported",
+    resultType = "com.ritense.case.domain.CaseExportRequest",
+    resultId = null,
+    result = exportRequest
+)
