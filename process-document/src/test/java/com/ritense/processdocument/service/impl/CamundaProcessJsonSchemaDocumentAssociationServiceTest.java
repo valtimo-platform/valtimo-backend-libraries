@@ -20,12 +20,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
@@ -44,6 +46,7 @@ import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.contract.result.OperationError;
+import java.util.List;
 import java.util.Optional;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
@@ -250,6 +253,92 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
 
         service.deleteProcessDocumentDefinition(request);
         verify(processDocumentDefinitionRepository).deleteById(id);
+    }
+
+    @Test
+    public void shouldHandleNullCamundaProcessInFindProcessDocumentInstanceDtos() {
+        // Given
+        final var documentId = documentId();
+        final var processInstanceId = processInstanceId();
+        final var document = mock(JsonSchemaDocument.class);
+        final var processDocumentInstance = mock(CamundaProcessJsonSchemaDocumentInstance.class);
+        final var processDocumentInstanceId = CamundaProcessJsonSchemaDocumentInstanceId.existingId(processInstanceId, documentId);
+        final var historicProcessInstanceQuery = mock(org.camunda.bpm.engine.history.HistoricProcessInstanceQuery.class);
+
+        doReturn(Optional.of(document)).when(documentService).findBy(any());
+        when(processDocumentInstanceRepository.findAllByProcessDocumentInstanceIdDocumentId(documentId))
+            .thenReturn(List.of(processDocumentInstance));
+        when(processDocumentInstance.getId()).thenReturn(processDocumentInstanceId);
+        when(historyService.createHistoricProcessInstanceQuery()).thenReturn(historicProcessInstanceQuery);
+        when(historicProcessInstanceQuery.processInstanceId(processInstanceId.toString())).thenReturn(historicProcessInstanceQuery);
+        when(historicProcessInstanceQuery.singleResult()).thenReturn(null); // This simulates camundaProcess being null
+
+        // When - should not throw NullPointerException
+        final var result = service.findProcessDocumentInstanceDtos(documentId);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result).isEmpty(); // Should be empty because null entries are filtered out
+    }
+
+    @Test
+    public void shouldFindProcessDocumentInstanceDtosWithSuccessfulResult() {
+        // Given
+        final var documentId = documentId();
+        final var processInstanceId = processInstanceId();
+        final var document = mock(JsonSchemaDocument.class);
+        final var processDocumentInstance = mock(CamundaProcessJsonSchemaDocumentInstance.class);
+        final var processDocumentInstanceId = CamundaProcessJsonSchemaDocumentInstanceId.existingId(processInstanceId, documentId);
+        final var historicProcessInstanceQuery = mock(org.camunda.bpm.engine.history.HistoricProcessInstanceQuery.class);
+        final var historicProcessInstance = mock(org.camunda.bpm.engine.history.HistoricProcessInstance.class);
+        final var camundaProcessDefinition = mock(com.ritense.valtimo.camunda.domain.CamundaProcessDefinition.class);
+        final var manageableUser = mock(com.ritense.valtimo.contract.authentication.ManageableUser.class);
+
+        // Mock document service
+        doReturn(Optional.of(document)).when(documentService).findBy(any());
+
+        // Mock process document instance repository
+        when(processDocumentInstanceRepository.findAllByProcessDocumentInstanceIdDocumentId(documentId))
+            .thenReturn(List.of(processDocumentInstance));
+        when(processDocumentInstance.getId()).thenReturn(processDocumentInstanceId);
+        when(processDocumentInstance.processName()).thenReturn("Test Process");
+        when(processDocumentInstance.isActive()).thenReturn(true);
+
+        // Mock history service
+        when(historyService.createHistoricProcessInstanceQuery()).thenReturn(historicProcessInstanceQuery);
+        when(historicProcessInstanceQuery.processInstanceId(processInstanceId.toString())).thenReturn(historicProcessInstanceQuery);
+        when(historicProcessInstanceQuery.singleResult()).thenReturn(historicProcessInstance);
+
+        // Mock historic process instance
+        when(historicProcessInstance.getEndTime()).thenReturn(null); // Process is active
+        when(historicProcessInstance.getProcessDefinitionKey()).thenReturn("test-process-key");
+        when(historicProcessInstance.getStartTime()).thenReturn(java.util.Date.from(java.time.Instant.now()));
+        when(historicProcessInstance.getStartUserId()).thenReturn("user@example.com");
+        when(historicProcessInstance.getProcessDefinitionVersion()).thenReturn(2);
+
+        // Mock repository service
+        when(repositoryService.findLatestProcessDefinition("test-process-key")).thenReturn(camundaProcessDefinition);
+        when(camundaProcessDefinition.getVersion()).thenReturn(3);
+
+        // Mock user management service
+        when(userManagementService.findByEmail("user@example.com")).thenReturn(Optional.of(manageableUser));
+        when(manageableUser.getFullName()).thenReturn("Test User");
+
+        // When
+        final var result = service.findProcessDocumentInstanceDtos(documentId);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result).hasSize(1);
+
+        final var dto = result.get(0);
+        assertThat(dto.processDocumentInstanceId()).isEqualTo(processDocumentInstanceId);
+        assertThat(dto.processName()).isEqualTo("Test Process");
+        assertThat(dto.isActive()).isTrue();
+        assertThat(dto.getVersion()).isEqualTo(2);
+        assertThat(dto.getLatestVersion()).isEqualTo(3);
+        assertThat(dto.getStartedBy()).isEqualTo("Test User");
+        assertThat(dto.getStartedOn()).isNotNull();
     }
 
 }
