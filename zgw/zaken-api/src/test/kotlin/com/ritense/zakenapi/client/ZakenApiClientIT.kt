@@ -80,7 +80,7 @@ internal class ZakenApiClientIT @Autowired constructor(
             Permission(
                 UUID.randomUUID(),
                 ResourcePermission::class.java,
-                ResourcePermissionActionProvider.CREATE,
+                mutableListOf(ResourcePermissionActionProvider.CREATE),
                 ConditionContainer(),
                 roleTest
             )
@@ -123,7 +123,7 @@ internal class ZakenApiClientIT @Autowired constructor(
             Permission(
                 UUID.randomUUID(),
                 ResourcePermission::class.java,
-                ResourcePermissionActionProvider.VIEW_LIST,
+                mutableListOf(ResourcePermissionActionProvider.VIEW_LIST),
                 ConditionContainer(),
                 roleTest
             )

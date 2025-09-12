@@ -54,7 +54,7 @@ abstract class AuthorizationSpecification<T : Any>(
     private fun isAuthorizedForEntity(entityAuthorizationRequest: EntityAuthorizationRequest<T>): Boolean {
         val entities = entityAuthorizationRequest.entities.ifEmpty { listOf(null) }
         val permissions = permissions.filter { permission ->
-            entityAuthorizationRequest.resourceType == permission.resourceType && entityAuthorizationRequest.action == permission.action
+            entityAuthorizationRequest.resourceType == permission.resourceType && permission.actions.contains(entityAuthorizationRequest.action)
         }
         return entities.all { entity ->
             permissions.any { permission ->
@@ -96,7 +96,7 @@ abstract class AuthorizationSpecification<T : Any>(
         return permissions
             .filter { permission ->
                 relatedEntityAuthorizationRequest.resourceType == permission.resourceType
-                    && relatedEntityAuthorizationRequest.action == permission.action
+                    &&  permission.actions.contains(relatedEntityAuthorizationRequest.action)
             }
             .firstOrNull { permission ->
                 permission.appliesInContext(
@@ -146,7 +146,7 @@ abstract class AuthorizationSpecification<T : Any>(
             listOf(
                 Permission(
                     resourceType = container.resourceType,
-                    action = Action<Any>(Action.IGNORE),
+                    actions = mutableListOf(Action<Any>(Action.IGNORE)),
                     conditionContainer = ConditionContainer(container.conditions),
                     role = Role(key = "")
                 )

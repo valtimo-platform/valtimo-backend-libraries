@@ -98,7 +98,7 @@ class AuthorizationServiceIntTest @Autowired constructor(
             Permission(
                 UUID.randomUUID(),
                 TestEntity::class.java,
-                TestEntityActionProvider.view,
+                mutableListOf(TestEntityActionProvider.view),
                 ConditionContainer(emptyList()),
                 role
             )
@@ -123,7 +123,7 @@ class AuthorizationServiceIntTest @Autowired constructor(
             Permission(
                 UUID.randomUUID(),
                 TestEntity::class.java,
-                TestEntityActionProvider.view,
+                mutableListOf(TestEntityActionProvider.view),
                 ConditionContainer(
                     listOf(
                         FieldPermissionCondition(
@@ -154,7 +154,7 @@ class AuthorizationServiceIntTest @Autowired constructor(
             Permission(
                 UUID.randomUUID(),
                 TestEntity::class.java,
-                TestEntityActionProvider.view,
+                mutableListOf(TestEntityActionProvider.view),
                 ConditionContainer(emptyList()),
                 role
             )
@@ -190,7 +190,7 @@ class AuthorizationServiceIntTest @Autowired constructor(
             Permission(
                 UUID.randomUUID(),
                 TestEntity::class.java,
-                TestEntityActionProvider.view,
+                mutableListOf(TestEntityActionProvider.view),
                 ConditionContainer(
                     listOf(
                         FieldPermissionCondition(
@@ -205,7 +205,7 @@ class AuthorizationServiceIntTest @Autowired constructor(
             Permission(
                 UUID.randomUUID(),
                 TestEntity::class.java,
-                TestEntityActionProvider.view,
+                mutableListOf(TestEntityActionProvider.view),
                 ConditionContainer(
                     listOf(
                         FieldPermissionCondition(
@@ -240,7 +240,7 @@ class AuthorizationServiceIntTest @Autowired constructor(
             Permission(
                 UUID.randomUUID(),
                 TestEntity::class.java,
-                TestEntityActionProvider.view,
+                mutableListOf(TestEntityActionProvider.view),
                 ConditionContainer(
                     listOf(
                         FieldPermissionCondition(

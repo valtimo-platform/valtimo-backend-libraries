@@ -28,10 +28,10 @@ import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 
 class JsonSchemaDocumentDefinitionSpecification(
-        authRequest: AuthorizationRequest<JsonSchemaDocumentDefinition>,
-        permissions: List<Permission>,
-        private val queryDialectHelper: QueryDialectHelper,
-        private val documentDefinitionService: JsonSchemaDocumentDefinitionService
+    authRequest: AuthorizationRequest<JsonSchemaDocumentDefinition>,
+    permissions: List<Permission>,
+    private val queryDialectHelper: QueryDialectHelper,
+    private val documentDefinitionService: JsonSchemaDocumentDefinitionService
 ) : AuthorizationSpecification<JsonSchemaDocumentDefinition>(authRequest, permissions) {
 
     override fun toPredicate(
@@ -48,7 +48,9 @@ class JsonSchemaDocumentDefinitionSpecification(
         }
         val predicates = permissions
             .filter { permission: Permission ->
-                JsonSchemaDocumentDefinition::class.java == permission.resourceType && authRequest.action == permission.action
+                JsonSchemaDocumentDefinition::class.java == permission.resourceType && permission.actions.contains(
+                    authRequest.action
+                )
             }
             .map { permission: Permission ->
                 permission.toPredicate(
