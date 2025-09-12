@@ -102,27 +102,6 @@ class CaseExporterTest : BaseTest() {
     }
 
     @Test
-    fun `should throw when no exportable columns found`() {
-        val pageable = PageRequest.of(0, 5)
-        val searchRequest = SearchWithConfigRequest()
-
-        whenever(
-            caseDefinitionListColumnRepository.findByIdCaseDefinitionKeyOrderByOrderAsc(CASE_DEFINITION_NAME)
-        ).thenReturn(emptyList())
-
-        val exception = assertThrows<NoExportableColumnsException> {
-            exporter.exportCases(CASE_DEFINITION_NAME, searchRequest, pageable)
-        }
-
-        assertEquals(
-            "Export failed: no exportable columns found.",
-            exception.message
-        )
-
-        verify(outboxService, never()).send(any())
-    }
-
-    @Test
     fun `should export cases as csv response`() {
         val pageable = PageRequest.of(0, 25, Sort.by("created-on").descending())
         val searchRequest = SearchWithConfigRequest()

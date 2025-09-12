@@ -135,7 +135,6 @@ class CaseExporter(
             newPageable
         )
 
-        validateResultsFound(searchResults, caseDefinitionKey, userLabel)
         validateExportLimit(searchResults, caseDefinitionKey)
 
         val exportableCases = searchResults
@@ -173,15 +172,6 @@ class CaseExporter(
         val newSort = if (orders.isEmpty) Sort.unsorted() else Sort.by(orders.toMutableList())
 
         return PageRequest.of(PAGE_FIRST, MAX_EXPORT, newSort)
-    }
-
-    private fun validateResultsFound(results: Page<*>, caseDefinitionKey: String, currentUser: String) {
-        if (results.isEmpty) {
-            logger.info {
-                "User '$currentUser' attempted export for case '$caseDefinitionKey' but the search returned no results."
-            }
-            throw NoSearchResultsException()
-        }
     }
 
     private fun logExport(
