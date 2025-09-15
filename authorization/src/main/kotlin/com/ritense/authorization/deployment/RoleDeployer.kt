@@ -53,7 +53,11 @@ class RoleDeployer(
     }
 
     fun deploy(roles: List<String>) {
-        roleRepository.saveAll(roles.map { Role(key = it) })
+        roles.forEach {
+            if (roleRepository.findByKey(it) == null) {
+                roleRepository.save(Role(key = it))
+            }
+        }
     }
 
     companion object {
