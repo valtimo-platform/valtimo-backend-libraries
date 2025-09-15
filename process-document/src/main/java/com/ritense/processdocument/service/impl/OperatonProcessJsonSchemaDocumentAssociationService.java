@@ -42,6 +42,7 @@ import com.ritense.valtimo.contract.result.OperationError;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import org.operaton.bpm.engine.HistoryService;
@@ -124,38 +125,36 @@ public class OperatonProcessJsonSchemaDocumentAssociationService implements Proc
 
         return processDocumentInstanceRepository.findAllByProcessDocumentInstanceIdDocumentId(documentId).stream()
             .map(process -> {
-                if (process.getId() != null) {
-                    var operatonProcess = historyService.createHistoricProcessInstanceQuery()
-                        .processInstanceId(process.getId().processInstanceId().toString())
-                        .singleResult();
-                    process.setActive(operatonProcess != null && operatonProcess.getEndTime() == null);
-                    var operatonProcessDefinition = runWithoutAuthorization(() ->
-                        repositoryService.findLatestProcessDefinition(operatonProcess.getProcessDefinitionKey())
-                    );
-                    var startDateTime = LocalDateTime.ofInstant(
-                        operatonProcess.getStartTime().toInstant(),
-                        ZoneId.systemDefault()
-                    );
-                    var startedBy = operatonProcess.getStartUserId() == null ? null :
-                        userManagementService.findByEmail(operatonProcess.getStartUserId()).map(ManageableUser::getFullName).orElse(null);
+                var camundaProcess = historyService.createHistoricProcessInstanceQuery()
+                    .processInstanceId(process.getId().processInstanceId().toString())
+                    .singleResult();
 
-                    return new ProcessDocumentInstanceDto(
-                        process.getId(),
-                        process.processName(),
-                        process.isActive(),
-                        operatonProcess.getProcessDefinitionVersion(),
-                        operatonProcessDefinition.getVersion(),
-                        startedBy,
-                        startDateTime
-                    );
+                if (camundaProcess == null) {
+                    return null;
                 }
+
+                process.setActive(camundaProcess.getEndTime() == null);
+                var camundaProcessDefinition = runWithoutAuthorization(() ->
+                    repositoryService.findLatestProcessDefinition(camundaProcess.getProcessDefinitionKey())
+                );
+                var startDateTime = LocalDateTime.ofInstant(
+                    camundaProcess.getStartTime().toInstant(),
+                    ZoneId.systemDefault()
+                );
+                var startedBy = camundaProcess.getStartUserId() == null ? null :
+                    userManagementService.findByEmail(camundaProcess.getStartUserId()).map(ManageableUser::getFullName).orElse(null);
 
                 return new ProcessDocumentInstanceDto(
                     process.getId(),
                     process.processName(),
-                    process.isActive()
+                    process.isActive(),
+                    camundaProcess.getProcessDefinitionVersion(),
+                    camundaProcessDefinition.getVersion(),
+                    startedBy,
+                    startDateTime
                 );
             })
+            .filter(Objects::nonNull)
             .toList();
     }
 
