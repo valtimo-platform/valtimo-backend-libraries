@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization.permission
+package com.ritense.case.service.exception
 
-import org.springframework.data.jpa.repository.JpaRepository
-import java.util.UUID
-
-interface PermissionRepository : JpaRepository<Permission, UUID> {
-    fun findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(roleKeys: Collection<String>): List<Permission>
-
-
-    fun findAllByResourceTypeAndActions_Key(resourceType: Class<*>, actionKey: String): List<Permission>
-    fun deleteByRoleKeyIn(roleKeys: List<String>)
-}
+class NoExportableColumnsException() : RuntimeException("Export failed: no exportable columns found.")

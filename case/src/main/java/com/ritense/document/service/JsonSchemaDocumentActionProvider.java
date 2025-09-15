@@ -32,10 +32,11 @@ public class JsonSchemaDocumentActionProvider implements ResourceActionProvider<
     public static final Action<JsonSchemaDocument> CLAIM = new Action<>(Action.CLAIM);
     public static final Action<JsonSchemaDocument> ASSIGN = new Action<>(Action.ASSIGN);
     public static final Action<JsonSchemaDocument> ASSIGNABLE = new Action<>(Action.ASSIGNABLE);
+    public static final Action<JsonSchemaDocument> EXPORT = new Action<>(Action.EXPORT);
 
     @NotNull
     @Override
     public List<Action<JsonSchemaDocument>> getAvailableActions() {
-        return List.of(VIEW, VIEW_LIST, CREATE, MODIFY, DELETE, CLAIM, ASSIGN, ASSIGNABLE);
+        return List.of(VIEW, VIEW_LIST, CREATE, MODIFY, DELETE, CLAIM, ASSIGN, ASSIGNABLE, EXPORT);
     }
 }

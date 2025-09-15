@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization.permission
+package com.ritense.case.domain
 
-import org.springframework.data.jpa.repository.JpaRepository
-import java.util.UUID
+import com.ritense.document.domain.search.SearchWithConfigRequest
 
-interface PermissionRepository : JpaRepository<Permission, UUID> {
-    fun findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(roleKeys: Collection<String>): List<Permission>
-
-
-    fun findAllByResourceTypeAndActions_Key(resourceType: Class<*>, actionKey: String): List<Permission>
-    fun deleteByRoleKeyIn(roleKeys: List<String>)
-}
+data class CaseExportRequest(
+    val caseDefinitionKey: String,
+    val searchRequest: SearchWithConfigRequest,
+)

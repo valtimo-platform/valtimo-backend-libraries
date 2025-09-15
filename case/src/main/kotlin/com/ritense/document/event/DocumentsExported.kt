@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization.permission
-
-import org.springframework.data.jpa.repository.JpaRepository
-import java.util.UUID
-
-interface PermissionRepository : JpaRepository<Permission, UUID> {
-    fun findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(roleKeys: Collection<String>): List<Permission>
+package com.ritense.document.event
 
 
-    fun findAllByResourceTypeAndActions_Key(resourceType: Class<*>, actionKey: String): List<Permission>
-    fun deleteByRoleKeyIn(roleKeys: List<String>)
-}
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.outbox.domain.BaseEvent
+
+class DocumentsExported(exportRequest: ObjectNode) : BaseEvent(
+    type = "com.ritense.valtimo.document.exported",
+    resultType = "com.ritense.case.domain.CaseExportRequest",
+    resultId = null,
+    result = exportRequest
+)

@@ -22,7 +22,7 @@ import jakarta.persistence.Embeddable
 @Embeddable
 data class Action<T>(
     @Column(name = "action")
-    val key: String
+    val key: String = ""
 ) {
     companion object {
         @JvmStatic
@@ -43,5 +43,6 @@ data class Action<T>(
         const val ASSIGNABLE = "assignable"
         const val IGNORE = "ignore"
         const val DENY = "deny"
+        const val EXPORT = "export"
     }
 }

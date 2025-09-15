@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization.permission
+package com.ritense.case.service.exception
 
-import org.springframework.data.jpa.repository.JpaRepository
-import java.util.UUID
+import com.ritense.case_.domain.definition.CaseDefinition
+import com.ritense.valtimo.web.rest.error.BadRequestAlertException
 
-interface PermissionRepository : JpaRepository<Permission, UUID> {
-    fun findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(roleKeys: Collection<String>): List<Permission>
+import org.zalando.problem.Exceptional
 
-
-    fun findAllByResourceTypeAndActions_Key(resourceType: Class<*>, actionKey: String): List<Permission>
-    fun deleteByRoleKeyIn(roleKeys: List<String>)
+class ExportLimitExceedsException(caseDefinitionKey: String) : BadRequestAlertException
+    ("Export failed for case '$caseDefinitionKey': the number of cases exceeds the maximum limit of 10,000. Please refine your search criteria.",
+    CaseDefinition::class.simpleName,
+    "exportLimit"
+) {
+    override fun getCause(): Exceptional? {
+        return null
+    }
 }
