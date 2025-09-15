@@ -16,6 +16,7 @@
 
 package com.ritense.case.service
 
+import com.ritense.authorization.AuthorizationService
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DisplayType
@@ -53,6 +54,7 @@ class CaseDefinitionServiceTest {
     lateinit var documentDefinitionService: DocumentDefinitionService
     lateinit var valueResolverService: ValueResolverService
     lateinit var service: CaseDefinitionService
+    lateinit var authorizationService: AuthorizationService
 
     @BeforeEach
     fun setUp() {
@@ -60,12 +62,13 @@ class CaseDefinitionServiceTest {
         documentDefinitionService = mock()
         caseDefinitionListColumnRepository = mock()
         valueResolverService = mock()
+        authorizationService = mock()
         service = CaseDefinitionService(
             caseDefinitionSettingsRepository,
             caseDefinitionListColumnRepository,
             documentDefinitionService,
             valueResolverService,
-            mock()
+            authorizationService
         )
     }
 
@@ -416,7 +419,8 @@ class CaseDefinitionServiceTest {
             displayType = displayType,
             sortable = true,
             defaultSort = ColumnDefaultSort.ASC,
-            order = 1
+            order = 1,
+            exportable = false
         )
     }
 
@@ -428,7 +432,8 @@ class CaseDefinitionServiceTest {
             displayType = displayType,
             sortable = true,
             defaultSort = null,
-            order = 2
+            order = 2,
+            exportable = false
         )
     }
 }

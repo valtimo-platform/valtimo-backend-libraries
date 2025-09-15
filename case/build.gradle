@@ -43,6 +43,7 @@ dependencies {
     implementation project(":exporter")
     implementation project(":importer")
     implementation project(":logging")
+    implementation project(":outbox")
     implementation project(":value-resolver")
     implementation project(":web")
 
@@ -60,6 +61,9 @@ dependencies {
     testImplementation project(':core')
     testImplementation project(':resource')
     testImplementation project(':test-utils-common')
+
+    implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
+    implementation "org.liquibase.ext:liquibase-hibernate6:${liquibaseVersion}"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
