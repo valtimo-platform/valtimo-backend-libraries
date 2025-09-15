@@ -73,7 +73,7 @@ class CaseDefinitionServiceTest : BaseTest() {
             valueResolverService,
             authorizationService,
             mock(),
-            mock(),
+            mock()
         )
     }
 
@@ -405,7 +405,8 @@ class CaseDefinitionServiceTest : BaseTest() {
             displayType = displayType,
             sortable = true,
             defaultSort = ColumnDefaultSort.ASC,
-            order = 1
+            order = 1,
+            exportable = false
         )
     }
 
@@ -417,7 +418,8 @@ class CaseDefinitionServiceTest : BaseTest() {
             displayType = displayType,
             sortable = true,
             defaultSort = null,
-            order = 2
+            order = 2,
+            exportable = false
         )
     }
 }

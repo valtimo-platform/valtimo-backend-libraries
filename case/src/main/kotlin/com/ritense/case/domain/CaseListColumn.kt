@@ -44,5 +44,7 @@ data class CaseListColumn(
     @Enumerated(EnumType.STRING)
     val defaultSort: ColumnDefaultSort?,
     @Column(name = "column_order")
-    val order: Int
+    val order: Int,
+    @Column(name = "exportable")
+    val exportable: Boolean
 )

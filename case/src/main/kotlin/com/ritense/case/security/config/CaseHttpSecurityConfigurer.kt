@@ -55,6 +55,7 @@ class CaseHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(antMatcher(POST, "/api/v1/case/{caseDefinitionKey}/stored-quick-search")).authenticated()
                     .requestMatchers(antMatcher(DELETE, "/api/v1/case/{caseDefinitionKey}/stored-quick-search/{title}")).authenticated()
                     .requestMatchers(antMatcher(GET, "/api/v1/case/{caseDefinitionKey}/stored-quick-search")).authenticated()
+                    .requestMatchers(antMatcher(POST, "/api/v1/case/{caseDefinitionName}/export")).authenticated()
                     .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/settings")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(PATCH, "/api/management/v1/case-definition/{caseDefinitionKey}/version/{caseDefinitionVersionTag}/settings")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionKey}")).hasAuthority(ADMIN)
