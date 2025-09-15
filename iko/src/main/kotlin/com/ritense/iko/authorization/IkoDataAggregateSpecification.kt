@@ -42,7 +42,7 @@ class IkoDataAggregateSpecification(
         val predicates = permissions.stream()
             .filter { permission ->
                 IkoDataAggregate::class.java == permission.resourceType
-                    && authRequest.action == permission.action
+                    && permission.actions.contains(authRequest.action)
             }
             .map { permission ->
                 permission.toPredicate(
