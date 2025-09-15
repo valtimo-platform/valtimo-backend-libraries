@@ -482,7 +482,7 @@ class ZakenApiPlugin(
         @PluginActionProperty identificatie: String,
         @PluginActionProperty achternaam: String,
         @PluginActionProperty voorletters: String,
-        @PluginActionProperty voorvoegselAchternaam: String,
+        @PluginActionProperty voorvoegselAchternaam: String? = null,
         @PluginActionProperty afwijkendeNaamBetrokkene: String? = null,
         @PluginActionProperty indicatieMachtiging: String? = null,
         @PluginActionProperty beginGeldigheid: LocalDate? = null,
@@ -511,7 +511,7 @@ class ZakenApiPlugin(
                         identificatie = identificatie,
                         achternaam = achternaam,
                         voorletters = voorletters,
-                        voorvoegselAchternaam = voorvoegselAchternaam
+                        voorvoegselAchternaam = voorvoegselAchternaam ?: ""
                     ),
                     afwijkendeNaamBetrokkene = afwijkendeNaamBetrokkene,
                     indicatieMachtigingString = indicatieMachtiging,
@@ -597,6 +597,7 @@ class ZakenApiPlugin(
         @PluginActionProperty rolToelichting: String,
         @PluginActionProperty kvkNummer: String,
         @PluginActionProperty vestigingsNummer: String,
+        @PluginActionProperty handelsnaam: String? = null,
         @PluginActionProperty beginGeldigheid: LocalDate? = null,
         @PluginActionProperty eindeGeldigheid: LocalDate? = null
     ) {
@@ -618,6 +619,7 @@ class ZakenApiPlugin(
                     roltoelichting = rolToelichting,
                     betrokkeneType = BetrokkeneType.VESTIGING,
                     betrokkeneIdentificatie = RolVestiging(
+                        handelsnaam = handelsnaam?.let { listOf(handelsnaam) },
                         kvkNummer = kvkNummer,
                         vestigingsNummer = vestigingsNummer
                     ),
