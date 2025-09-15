@@ -163,7 +163,7 @@ public class OperatonProcessJsonSchemaDocumentAssociationServiceTest extends Bas
         when(processDocumentInstance.getId()).thenReturn(processDocumentInstanceId);
         when(historyService.createHistoricProcessInstanceQuery()).thenReturn(historicProcessInstanceQuery);
         when(historicProcessInstanceQuery.processInstanceId(processInstanceId.toString())).thenReturn(historicProcessInstanceQuery);
-        when(historicProcessInstanceQuery.singleResult()).thenReturn(null); // This simulates camundaProcess being null
+        when(historicProcessInstanceQuery.singleResult()).thenReturn(null); // This simulates operatonProcess being null
 
         // When - should not throw NullPointerException
         final var result = service.findProcessDocumentInstanceDtos(documentId);
@@ -183,7 +183,7 @@ public class OperatonProcessJsonSchemaDocumentAssociationServiceTest extends Bas
         final var processDocumentInstanceId = OperatonProcessJsonSchemaDocumentInstanceId.existingId(processInstanceId, documentId);
         final var historicProcessInstanceQuery = mock(HistoricProcessInstanceQuery.class);
         final var historicProcessInstance = mock(HistoricProcessInstance.class);
-        final var camundaProcessDefinition = mock(OperatonProcessDefinition.class);
+        final var operatonProcessDefinition = mock(OperatonProcessDefinition.class);
         final var manageableUser = mock(com.ritense.valtimo.contract.authentication.ManageableUser.class);
 
         // Mock document service
@@ -209,8 +209,8 @@ public class OperatonProcessJsonSchemaDocumentAssociationServiceTest extends Bas
         when(historicProcessInstance.getProcessDefinitionVersion()).thenReturn(2);
 
         // Mock repository service
-        when(repositoryService.findLatestProcessDefinition("test-process-key")).thenReturn(camundaProcessDefinition);
-        when(camundaProcessDefinition.getVersion()).thenReturn(3);
+        when(repositoryService.findLatestProcessDefinition("test-process-key")).thenReturn(operatonProcessDefinition);
+        when(operatonProcessDefinition.getVersion()).thenReturn(3);
 
         // Mock user management service
         when(userManagementService.findByEmail("user@example.com")).thenReturn(Optional.of(manageableUser));

@@ -125,31 +125,31 @@ public class OperatonProcessJsonSchemaDocumentAssociationService implements Proc
 
         return processDocumentInstanceRepository.findAllByProcessDocumentInstanceIdDocumentId(documentId).stream()
             .map(process -> {
-                var camundaProcess = historyService.createHistoricProcessInstanceQuery()
+                var operatonProcess = historyService.createHistoricProcessInstanceQuery()
                     .processInstanceId(process.getId().processInstanceId().toString())
                     .singleResult();
 
-                if (camundaProcess == null) {
+                if (operatonProcess == null) {
                     return null;
                 }
 
-                process.setActive(camundaProcess.getEndTime() == null);
-                var camundaProcessDefinition = runWithoutAuthorization(() ->
-                    repositoryService.findLatestProcessDefinition(camundaProcess.getProcessDefinitionKey())
+                process.setActive(operatonProcess.getEndTime() == null);
+                var operatonProcessDefinition = runWithoutAuthorization(() ->
+                    repositoryService.findLatestProcessDefinition(operatonProcess.getProcessDefinitionKey())
                 );
                 var startDateTime = LocalDateTime.ofInstant(
-                    camundaProcess.getStartTime().toInstant(),
+                    operatonProcess.getStartTime().toInstant(),
                     ZoneId.systemDefault()
                 );
-                var startedBy = camundaProcess.getStartUserId() == null ? null :
-                    userManagementService.findByEmail(camundaProcess.getStartUserId()).map(ManageableUser::getFullName).orElse(null);
+                var startedBy = operatonProcess.getStartUserId() == null ? null :
+                    userManagementService.findByEmail(operatonProcess.getStartUserId()).map(ManageableUser::getFullName).orElse(null);
 
                 return new ProcessDocumentInstanceDto(
                     process.getId(),
                     process.processName(),
                     process.isActive(),
-                    camundaProcess.getProcessDefinitionVersion(),
-                    camundaProcessDefinition.getVersion(),
+                    operatonProcess.getProcessDefinitionVersion(),
+                    operatonProcessDefinition.getVersion(),
                     startedBy,
                     startDateTime
                 );
