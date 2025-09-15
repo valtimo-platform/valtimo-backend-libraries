@@ -277,7 +277,7 @@
         </sql>
     </changeSet>
 
-    <changeSet id="12" author="Ritense">
+    <changeSet id="12-fixed" author="Ritense">
         <preConditions onFail="MARK_RAN">
             <tableExists tableName="form_io_form_definition"/>
             <dbms type="mysql"/>
@@ -320,7 +320,7 @@
         </sql>
     </changeSet>
 
-    <changeSet id="14" author="Ritense">
+    <changeSet id="14-fixed" author="Ritense">
         <preConditions onFail="MARK_RAN">
             <tableExists tableName="form_io_form_definition"/>
             <dbms type="mysql"/>
