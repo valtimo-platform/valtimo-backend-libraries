@@ -16,10 +16,8 @@
 
 package com.ritense.case.service
 
-import com.ritense.case.domain.CaseDefinitionSettings
-import com.ritense.BaseTest
 import com.ritense.authorization.AuthorizationService
-import com.ritense.authorization.specification.AuthorizationSpecification
+import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DisplayType
 import com.ritense.case.domain.EnumDisplayTypeParameter
@@ -44,8 +42,6 @@ import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.Pageable
 import java.util.Optional
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -58,6 +54,7 @@ class CaseDefinitionServiceTest {
     lateinit var documentDefinitionService: DocumentDefinitionService
     lateinit var valueResolverService: ValueResolverService
     lateinit var service: CaseDefinitionService
+    lateinit var authorizationService: AuthorizationService
 
     @BeforeEach
     fun setUp() {
@@ -65,6 +62,7 @@ class CaseDefinitionServiceTest {
         documentDefinitionService = mock()
         caseDefinitionListColumnRepository = mock()
         valueResolverService = mock()
+        authorizationService = mock()
         service = CaseDefinitionService(
             caseDefinitionSettingsRepository,
             caseDefinitionListColumnRepository,

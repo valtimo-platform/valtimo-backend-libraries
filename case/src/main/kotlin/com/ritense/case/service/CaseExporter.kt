@@ -123,8 +123,6 @@ class CaseExporter(
         searchRequest: SearchWithConfigRequest,
         pageable: Pageable
     ): List<CaseListRowDto> {
-        val userLabel = currentUserInfo()
-
         val newPageable = mutatePageable(exportableColumns, pageable)
 
         val searchResults = documentSearchService.searchForExport(

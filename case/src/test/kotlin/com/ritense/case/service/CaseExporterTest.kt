@@ -17,7 +17,6 @@
 package com.ritense.case.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.BaseTest
 import com.ritense.case.domain.CaseListColumn
 import com.ritense.case.domain.CaseListColumnId
 import com.ritense.case.domain.ColumnDefaultSort
@@ -33,7 +32,6 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.search.SearchWithConfigRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentSearchService
 import com.ritense.outbox.OutboxService
-import com.ritense.valtimo.contract.case_.CaseDefinitionId
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -55,7 +53,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.text.Charsets.UTF_8
 
-class CaseExporterTest : BaseTest() {
+class CaseExporterTest {
     private lateinit var caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository
     private lateinit var documentSearchService: JsonSchemaDocumentSearchService
     private lateinit var outboxService: OutboxService
@@ -82,14 +80,14 @@ class CaseExporterTest : BaseTest() {
 
         whenever(
             caseDefinitionListColumnRepository
-                .findByIdCaseDefinitionKeyOrderByOrderAsc(CASE_DEFINITION_NAME)
+                .findByIdCaseDefinitionNameOrderByOrderAsc(CASE_DEFINITION_NAME)
         )
             .thenReturn(listOf(CREATED_ON_CASE_LIST_COLUMN, FIRST_NAME_CASE_LIST_COLUMN, LAST_NAME_CASE_LIST_COLUMN))
 
         whenever(DOCUMENT.definitionId()).thenReturn(
-            JsonSchemaDocumentDefinitionId.of(
+            JsonSchemaDocumentDefinitionId.existingId(
                 CASE_DEFINITION_NAME,
-                CaseDefinitionId.of("testCaseDefinition", "1.0.0")
+                1L
             )
         )
     }
@@ -97,7 +95,7 @@ class CaseExporterTest : BaseTest() {
     @Test
     fun `should return only exportable case list columns`() {
         val exportableColumns = caseDefinitionListColumnRepository
-            .findByIdCaseDefinitionKeyOrderByOrderAsc(CASE_DEFINITION_NAME)
+            .findByIdCaseDefinitionNameOrderByOrderAsc(CASE_DEFINITION_NAME)
             .filter { it.exportable }
 
         assertEquals(exportableColumns.size, 2)
@@ -109,9 +107,9 @@ class CaseExporterTest : BaseTest() {
         val searchRequest = SearchWithConfigRequest()
 
         whenever(
-            caseDefinitionListColumnRepository.findByIdCaseDefinitionKeyOrderByOrderAsc(CASE_DEFINITION_NAME)
+            caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAsc(CASE_DEFINITION_NAME)
                 .filter { it.exportable })
-            .thenReturn(listOf(CREATED_ON_CASE_LIST_COLUMN, FIRST_NAME_CASE_LIST_COLUMN))
+                .thenReturn(listOf(CREATED_ON_CASE_LIST_COLUMN, FIRST_NAME_CASE_LIST_COLUMN))
 
         val documentDefinition = mock<JsonSchemaDocumentDefinition>()
 
