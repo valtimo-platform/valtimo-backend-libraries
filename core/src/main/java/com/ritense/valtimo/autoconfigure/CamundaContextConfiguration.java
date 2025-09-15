@@ -46,7 +46,7 @@ public class CamundaContextConfiguration {
     @Bean
     @Order(Ordering.DEFAULT_ORDER - 1)
     public ScriptingWhitelistPlugin scriptingWhitelistPlugin(
-        @Value("valtimo.camunda.scripting.allowedClasses") Set<String> allowedScriptingClasses
+        @Value("${valtimo.camunda.scripting.allowedClasses:}") Set<String> allowedScriptingClasses
     ) {
         return new ScriptingWhitelistPlugin(allowedScriptingClasses);
     }
