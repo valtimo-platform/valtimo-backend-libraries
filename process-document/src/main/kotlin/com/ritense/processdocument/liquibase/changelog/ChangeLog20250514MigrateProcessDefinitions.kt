@@ -54,6 +54,11 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
                 startable_by_user
             FROM
                 camunda_process_json_schema_document_definition
+            WHERE
+            	camunda_process_definition_key in (
+            		select distinct key_
+            		from act_re_procdef
+            	)
         """.trimIndent()
         val statement = connection.prepareStatement(linkQuery)
         val result = statement.executeQuery()
