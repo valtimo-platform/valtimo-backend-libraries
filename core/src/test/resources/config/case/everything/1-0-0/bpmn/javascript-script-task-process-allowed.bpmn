@@ -12,9 +12,9 @@
     <bpmn:scriptTask id="Activity_1wy7vpn" name="Sum" scriptFormat="javascript">
       <bpmn:incoming>Flow_0kymcf3</bpmn:incoming>
       <bpmn:outgoing>Flow_1muqoyt</bpmn:outgoing>
-      <bpmn:script>const Math = Java.type("java.lang.Math");
+      <bpmn:script>const System = Java.type("java.lang.System");
 
-const result = Math.pow(2,3);</bpmn:script>
+const result = System.currentTimeMillis();</bpmn:script>
     </bpmn:scriptTask>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
