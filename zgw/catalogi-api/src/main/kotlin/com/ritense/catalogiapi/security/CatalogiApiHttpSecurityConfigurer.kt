@@ -30,7 +30,7 @@ class CatalogiApiHttpSecurityConfigurer : HttpSecurityConfigurer {
             http.authorizeHttpRequests { requests ->
                 requests.requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/zaaktype/documenttype")).authenticated()
                 requests.requestMatchers(antMatcher(GET, "/api/v1/document/{documentId}/zaaktype/documenttype")).authenticated()
-                    .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/zaaktype/roltype")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionKey}/zaaktype/roltype")).authenticated()
                     .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/zaaktype/statustype")).authenticated()
                     .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/zaaktype/resultaattype")).authenticated()
                     .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionKey}/version/{versionTag}/zaaktype/besluittype")).authenticated()
