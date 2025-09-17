@@ -69,6 +69,9 @@ htmlDependencyReport {
     projects = project.allprojects
 }
 
+apply plugin: 'application'
+mainClassName = 'com.ritense.gzac.Application'
+
 //Sonarqube
 tasks.named("sonar") {
     dependsOn tasks.named("build")
