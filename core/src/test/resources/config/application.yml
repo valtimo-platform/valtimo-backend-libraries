@@ -53,8 +53,7 @@ valtimo:
         encryption-secret: "abcdefghijklmnop"
     operaton:
         scripting:
-            allowedClasses:
-                - java.lang.Math
+            allowedClasses: java.lang.System
     process:
         jobs:
             retry:
