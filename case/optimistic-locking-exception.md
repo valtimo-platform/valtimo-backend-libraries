@@ -1,5 +1,20 @@
 # Optimistic Locking Exception Analysis
 
+## Summary
+
+**Problem**: Den Haag is experiencing frequent OptimisticLockingException failures in production when ValueResolverService updates documents. These are primarily timing conflicts where concurrent processes update different parts of the same document, causing unnecessary failures despite no real business conflicts.
+
+**Recommended Solution**: Implement **Solution 2 - Atomic Read-Update Operations** with configuration-based opt-in. This uses pessimistic locking (FOR UPDATE) to eliminate timing-based OptimisticLockingException while maintaining full backward compatibility.
+
+**Key Benefits**:
+- Zero breaking changes - existing deployments continue working unchanged
+- Simple configuration - Den Haag can enable atomic updates via configuration property
+- Eliminates OptimisticLockingException for short transactions in ValueResolver
+- Gradual adoption - other teams can opt-in when ready
+- May become the default behavior in a future major Valtimo release
+
+---
+
 ## Problem
 
 Optimistic locking is implemented in Valtimo to prevent lost updates when multiple processes modify the same document simultaneously. However, the current implementation has significant limitations and treats all conflicts the same way, regardless of whether they represent real business conflicts or can be safely resolved automatically.
