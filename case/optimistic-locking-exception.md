@@ -19,6 +19,37 @@
 
 Optimistic locking is implemented in Valtimo to prevent lost updates when multiple processes modify the same document simultaneously. However, the current implementation has significant limitations and treats all conflicts the same way, regardless of whether they represent real business conflicts or can be safely resolved automatically.
 
+### Timing Conflict Visualization
+
+```mermaid
+sequenceDiagram
+    participant VR as ValueResolver
+    participant DB as Database
+    participant BP as Background Process
+
+    Note over VR, BP: Document ID: 123, Version: 5
+
+    VR->>DB: GET document/123
+    DB-->>VR: Document (version=5)
+
+    Note over VR: Processing value resolution<br/>for field: /person/email
+
+    BP->>DB: GET document/123
+    DB-->>BP: Document (version=5)
+
+    Note over BP: Processing status update<br/>for field: /case/status
+
+    BP->>DB: UPDATE document/123 (version=5→6)
+    DB-->>BP: ✅ Success (version=6)
+
+    Note over VR: Finished processing<br/>Ready to save changes
+
+    VR->>DB: UPDATE document/123 (version=5→6)
+    DB-->>VR: ❌ OptimisticLockingException<br/>(Expected version=5, found version=6)
+
+    Note over VR: FAILURE<br/>Despite no business conflict!<br/>(Different fields modified)
+```
+
 ### Version Not Passed to Frontend
 The document version is not exposed to the frontend, which limits the effectiveness of optimistic locking. The protection only works at the backend service level.
 
