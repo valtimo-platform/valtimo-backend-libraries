@@ -86,6 +86,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -375,6 +376,44 @@ public class JsonSchemaDocumentService implements DocumentService {
                 });
 
                 return result;
+            }
+        );
+    }
+
+    @Override
+    @Transactional(timeout = 30, rollbackFor = {Exception.class})
+    public Document updateDocumentAtomic(UUID documentId, Function<Document, Document> modifier) {
+        return withLoggingContext(
+            JsonSchemaDocument.class, documentId.toString(), () -> {
+                final var lockedDocument = runWithoutAuthorization(
+                    () -> documentRepository.findByIdForUpdate(documentId)
+                        .orElseThrow(
+                            () -> new DocumentNotFoundException("Document not found with id " + documentId)
+                        )
+                );
+
+                authorizationService.requirePermission(
+                    new EntityAuthorizationRequest<>(
+                        JsonSchemaDocument.class,
+                        MODIFY,
+                        lockedDocument
+                    )
+                );
+
+                final Document modifiedDocument = modifier.apply(lockedDocument);
+
+                if (modifiedDocument instanceof JsonSchemaDocument jsonSchemaDoc) {
+                    final var savedDocument = documentRepository.save(jsonSchemaDoc);
+                    outboxService.send(() ->
+                        new DocumentUpdated(
+                            savedDocument.id().toString(),
+                            objectMapper.valueToTree(savedDocument)
+                        )
+                    );
+                    return savedDocument;
+                } else {
+                    throw new IllegalArgumentException("Modified document must be of type JsonSchemaDocument");
+                }
             }
         );
     }

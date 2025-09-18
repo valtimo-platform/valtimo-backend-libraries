@@ -21,9 +21,14 @@ import com.ritense.document.repository.DocumentRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import jakarta.persistence.LockModeType;
+import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSchemaDocument>,
@@ -44,4 +49,8 @@ public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSch
         @Param("createdBy") String createdBy,
         Pageable pageable
     );
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT d FROM JsonSchemaDocument d WHERE d.id.id = :id")
+    Optional<JsonSchemaDocument> findByIdForUpdate(@Param("id") UUID id);
 }

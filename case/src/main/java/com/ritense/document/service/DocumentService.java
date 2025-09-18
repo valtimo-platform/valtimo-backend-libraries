@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -48,6 +49,8 @@ public interface DocumentService {
     void modifyDocument(Document document, JsonNode jsonNode);
 
     ModifyDocumentResult modifyDocument(ModifyDocumentRequest modifyDocumentRequest);
+
+    Document updateDocumentAtomic(UUID documentId, Function<Document, Document> modifier);
 
     void assignDocumentRelation(Document.Id documentId, DocumentRelation documentRelation);
 
