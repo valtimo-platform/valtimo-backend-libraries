@@ -250,7 +250,10 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
     ): UUID? {
         return if (database.databaseProductName == "MySQL") {
             val bytesResult = results.getBytes(columnName)
-            bytesResult?.let { UUID.nameUUIDFromBytes(it) }
+            bytesResult?.let {
+                val byteBuffer = ByteBuffer.wrap(it)
+                UUID(byteBuffer.long, byteBuffer.long)
+            }
         } else {
             val stringResult = results.getString(columnName)
             stringResult?.let { UUID.fromString(it) }
