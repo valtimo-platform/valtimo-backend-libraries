@@ -44,6 +44,7 @@ class CaseHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(antMatcher(POST, "/api/v1/case/{caseDefinitionName}/search")).authenticated()
                     .requestMatchers(antMatcher(GET, "/api/management/v1/case/{caseDefinitionName}/settings")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(PATCH, "/api/management/v1/case/{caseDefinitionName}/settings")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/v1/case/{caseDefinitionName}/export")).authenticated()
                     .requestMatchers(antMatcher(GET, MANAGEMENT_CASE_LIST_COLUMN_URL)).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(POST, MANAGEMENT_CASE_LIST_COLUMN_URL)).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(PUT, MANAGEMENT_CASE_LIST_COLUMN_URL)).hasAuthority(ADMIN)

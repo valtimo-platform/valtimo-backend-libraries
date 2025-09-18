@@ -45,4 +45,5 @@
     <include file="changelog/20240617-add-showtasks-to-case-tabs.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20241220-add-case-widget-actions.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20250122-add-columns-for-external-start-case-form-to-case-definition.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20250807-add-exportable-to-list-column.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
