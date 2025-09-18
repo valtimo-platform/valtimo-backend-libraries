@@ -33,11 +33,11 @@ Implement **pessimistic locking with configuration toggle** to prevent concurren
 - [x] Ensure proper transaction boundary and error handling
 - [x] Add lock timeout configuration (default: 30 seconds)
 
-### Phase 3: Configuration System
-- [ ] Create `DocumentProperties` configuration class
-- [ ] Add property `valtimo.document.use-pessimistic-locking` (default: false)
-- [ ] Add property `valtimo.document.lock-timeout` (default: 30000ms)
-- [ ] Create Spring configuration bean
+### Phase 3: Configuration System ✅ COMPLETED
+- [x] Create `DocumentProperties` configuration class
+- [x] Add property `valtimo.document.use-pessimistic-locking` (default: false)
+- [x] Add property `valtimo.document.lock-timeout` (default: 30000ms)
+- [x] Create Spring configuration bean
 
 ### Phase 4: ValueResolver Integration
 - [ ] Update `DocumentJsonValueResolverFactory.handleValues()` methods
