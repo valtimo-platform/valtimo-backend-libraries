@@ -19,6 +19,7 @@ package com.ritense.processdocument.autoconfigure;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.case_.service.ActiveCaseDefinitionService;
+import com.ritense.document.config.DocumentProperties;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
@@ -183,13 +184,15 @@ public class ProcessDocumentAutoConfiguration {
         ProcessDocumentService processDocumentService,
         DocumentService documentService,
         JsonSchemaDocumentDefinitionService documentDefinitionService,
-        ObjectMapper objectMapper
+        ObjectMapper objectMapper,
+        DocumentProperties documentProperties
     ) {
         return new DocumentJsonValueResolverFactory(
             processDocumentService,
             documentService,
             documentDefinitionService,
-            objectMapper
+            objectMapper,
+            documentProperties
         );
     }
 

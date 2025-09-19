@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.node.BooleanNode
 import com.fasterxml.jackson.databind.node.IntNode
 import com.fasterxml.jackson.databind.node.MissingNode
 import com.fasterxml.jackson.databind.node.TextNode
+import com.ritense.document.config.DocumentProperties
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchema
@@ -68,11 +69,13 @@ internal class DocumentJsonValueResolverTest {
         processDocumentService = mock()
         documentService = mock()
         documentDefinitionService = mock()
+        val documentProperties = DocumentProperties(false, 30000)
         documentValueResolver = DocumentJsonValueResolverFactory(
             processDocumentService,
             documentService,
             documentDefinitionService,
-            MapperSingleton.get()
+            MapperSingleton.get(),
+            documentProperties
         )
 
         processInstanceId = UUID.randomUUID().toString()
