@@ -74,7 +74,7 @@ public class MysqlQueryDialectHelper implements QueryDialectHelper {
         Expression<?> searchPath = cb.literal(path);
         Expression<?> searchValue = cb.literal("%" + value.trim() + "%");
         if (column.getJavaType() == String.class || column.getJavaType() == Object.class) {
-            searchColumn = cb.function(LOWER_CASE_FUNCTION, String.class, searchColumn);
+            searchColumn = cb.function(LOWER_CASE_FUNCTION, String.class, searchColumn.as(String.class));
             searchPath = cb.function(LOWER_CASE_FUNCTION, String.class, searchPath);
             searchValue = cb.function(LOWER_CASE_FUNCTION, String.class, searchValue);
         }
