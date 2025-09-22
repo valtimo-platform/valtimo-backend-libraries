@@ -51,4 +51,5 @@
     <include file="changelog/20250405-case-definition-draft.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20250828-add-quick-search-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20250807-add-exportable-to-list-column.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20250912-update-widget-properties.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
