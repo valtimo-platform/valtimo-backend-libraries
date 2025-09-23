@@ -24,6 +24,7 @@ import java.util.Set;
 import org.operaton.bpm.spring.boot.starter.configuration.Ordering;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -43,10 +44,11 @@ public class OperatonContextConfiguration {
         return new OperatonWhitelistedBeansPlugin(processBeans, applicationContext);
     }
 
+    @ConditionalOnMissingBean(ScriptingWhitelistPlugin.class)
     @Bean
     @Order(Ordering.DEFAULT_ORDER - 1)
     public ScriptingWhitelistPlugin scriptingWhitelistPlugin(
-        @Value("valtimo.operaton.scripting.allowedClasses") Set<String> allowedScriptingClasses
+        @Value("${valtimo.operaton.scripting.allowedClasses:}") Set<String> allowedScriptingClasses
     ) {
         return new ScriptingWhitelistPlugin(allowedScriptingClasses);
     }
