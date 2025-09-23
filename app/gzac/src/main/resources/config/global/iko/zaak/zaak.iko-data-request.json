@@ -1,0 +1,9 @@
+{
+    "ikoDataAggregateKey": "zaak",
+    "ikoDataRequests": [
+        {
+            "key": "identificatie",
+            "title": "Zoek met identificatie"
+        }
+    ]
+}

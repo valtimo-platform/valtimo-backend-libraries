@@ -1,0 +1,15 @@
+{
+    "ikoDataAggregateKey": "zaak",
+    "ikoDataRequestKey": "identificatie",
+    "ikoSearchFields": [
+        {
+            "key": "identificatie",
+            "title": "Identificatie",
+            "path": "identificatie",
+            "dataType": "text",
+            "fieldType": "single",
+            "matchType": "exact",
+            "required": true
+        }
+    ]
+}

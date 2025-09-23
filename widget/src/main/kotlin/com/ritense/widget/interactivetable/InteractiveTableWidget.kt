@@ -72,5 +72,8 @@ class InteractiveTableWidget(
         properties = this.properties,
     )
 
-    override fun getUnresolvedValues(): List<String> = super.getUnresolvedValues() + properties.collection
+    override fun getUnresolvedValues(): List<String> =
+        super.getUnresolvedValues() +
+            properties.collection +
+            (properties.rowClickAction?.getUnresolvedValues() ?: emptyList())
 }

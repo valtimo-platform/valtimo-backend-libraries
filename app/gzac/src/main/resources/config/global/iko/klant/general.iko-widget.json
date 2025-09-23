@@ -126,46 +126,45 @@
         },
         {
             "key": "lopendeZaken",
-            "type": "table",
+            "type": "interactive-table",
             "title": "Lopende zaken",
             "width": 4,
             "highContrast": false,
             "actions": [
                 {
                     "name": "Create new Bezwaar",
-                    "navigateTo": "/cases/bezwaar#createNewCase"
+                    "caseDefinitionKey": "bezwaar"
                 },
                 {
                     "name": "Create new Verzoek",
-                    "openInNewTab": "http://localhost:8003/leningaanvragen/startpagina"
+                    "navigateTo": "http://localhost:8003/leningaanvragen/startpagina"
                 }
             ],
             "properties": {
-                "collection": "iko:/zaken",
+                "collection": "iko:?ikoDataAggregateKey=zaak&identificatie=ZAAK-2025-0000000001&id=",
+                "rowClickAction": {
+                    "navigateTo": "${$.kenmerken[?(@.kenmerk =~ /^originUrl[0-9]*$/)].bron}"
+                },
                 "defaultPageSize": 4,
                 "columns": [
                     {
-                        "key": "zaakNummer",
-                        "title": "Zaaknummer",
-                        "value": "/zaakNummer"
+                        "key": "identificatie",
+                        "title": "Identificatie",
+                        "value": "/identificatie"
                     },
                     {
-                        "key": "type",
-                        "title": "Type",
-                        "value": "/type"
-                    },
-                    {
-                        "key": "status",
-                        "title": "Status",
-                        "value": "/status"
+                        "key": "verantwoordelijkeOrganisatie",
+                        "title": "VerantwoordelijkeOrganisatie",
+                        "value": "/verantwoordelijkeOrganisatie"
                     },
                     {
                         "key": "uiterlijkeEinddatum",
                         "title": "Uiterlijke einddatum",
-                        "value": "/uiterlijkeEinddatum",
+                        "value": "/uiterlijkeEinddatumAfdoening",
                         "displayProperties": {
                             "type": "date",
-                            "format": "DD-MM-YYYY"
+                            "format": "DD-MM-YYYY",
+                            "hideWhenEmpty": false
                         }
                     }
                 ]

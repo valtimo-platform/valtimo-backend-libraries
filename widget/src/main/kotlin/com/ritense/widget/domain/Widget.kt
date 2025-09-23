@@ -87,9 +87,9 @@ abstract class Widget(
         return actions.flatMap { it.getUnresolvedValues() }.distinct()
     }
 
-    fun getExposedResolvedValues(resolvedValues: Map<String, Any?>): Map<String, Any?> =
+    fun getExposedValues(resolveValue: (String) -> Any? = { null }): Map<String, Any?> =
         actions
-            .flatMap { action -> action.getExposedResolvedValues(resolvedValues).map { it.key to it.value } }
+            .flatMap { action -> action.getExposedValues(resolveValue).map { it.key to it.value } }
             .toMap()
 
     override fun equals(other: Any?): Boolean {

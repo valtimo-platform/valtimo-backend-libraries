@@ -19,6 +19,7 @@ package com.ritense.widget.interactivetable
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.ritense.widget.displayproperties.FieldDisplayProperties
+import com.ritense.widget.domain.WidgetAction
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
@@ -28,12 +29,13 @@ data class InteractiveTableWidgetProperties(
     @field:NotBlank val collection: String,
     @field:Min(1) val defaultPageSize: Int,
     @field:NotEmpty val columns: List<@Valid Column>,
-    val firstColumnAsTitle: Boolean = false
+    val firstColumnAsTitle: Boolean = false,
+    val rowClickAction: WidgetAction?,
 ) {
     @JsonInclude(Include.NON_NULL)
     data class Column(
         @field:NotBlank val key: String,
-        val title: String,
+        val title: String?,
         @field:NotBlank val value: String,
         @field:Valid val displayProperties: FieldDisplayProperties? = null
     )

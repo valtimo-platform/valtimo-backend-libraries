@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.widget.domain
+package com.ritense.widget.interactivetable
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonTypeInfo
+import org.springframework.data.domain.Page
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
-interface WidgetAction {
+data class InteractiveTableWidgetDataResult(
+    val table: Page<InteractiveTableResult>,
+    val resolved: Map<String, Any?>?,
+)
 
-    @JsonIgnore
-    fun getUnresolvedValues(): List<String> = emptyList()
-
-    fun getExposedValues(resolveValue: (String) -> Any? = { null }): Map<String, Any?> = emptyMap()
-
-}
+data class InteractiveTableResult(
+    val data: Map<String, Any?>,
+    val resolved: Map<String, Any?>?,
+)

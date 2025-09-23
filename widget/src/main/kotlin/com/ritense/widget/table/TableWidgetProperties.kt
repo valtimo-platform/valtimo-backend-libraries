@@ -33,7 +33,7 @@ data class TableWidgetProperties(
     @JsonInclude(Include.NON_NULL)
     data class Column(
         @field:NotBlank val key: String,
-        val title: String,
+        val title: String?,
         @field:NotBlank val value: String,
         @field:Valid val displayProperties: FieldDisplayProperties? = null
     )

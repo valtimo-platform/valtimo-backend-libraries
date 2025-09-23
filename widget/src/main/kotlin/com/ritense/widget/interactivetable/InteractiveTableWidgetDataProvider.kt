@@ -41,7 +41,10 @@ class InteractiveTableWidgetDataProvider(
 
     override fun supportedWidgetType() = InteractiveTableWidget::class.java
 
-    override fun getData(widget: InteractiveTableWidget, properties: Map<String, Any>): Map<String, Any> {
+    override fun getData(
+        widget: InteractiveTableWidget,
+        properties: Map<String, Any>
+    ): InteractiveTableWidgetDataResult {
         val pageable = properties[PAGEABLE] as Pageable? ?: Pageable.ofSize(widget.properties.defaultPageSize)
 
         val resolvedValues = valueResolverService.resolveValues(
@@ -50,10 +53,12 @@ class InteractiveTableWidgetDataProvider(
         )
 
         val collectionNode = objectMapper.valueToTree<JsonNode>(resolvedValues[widget.properties.collection])
+        val exposedValues = widget.getExposedValues { path -> resolvedValues[path] }
 
         if (collectionNode.isNull) {
-            return mapOf(
-                "data" to PageImpl<Any>(emptyList(), pageable, 0)
+            return InteractiveTableWidgetDataResult(
+                resolved = exposedValues,
+                table = PageImpl(emptyList(), pageable, 0)
             )
         }
 
@@ -71,30 +76,35 @@ class InteractiveTableWidgetDataProvider(
                     throw InvalidCollectionNodeTypeException(index)
                 }
             }.map { child ->
-                widget.properties.columns.associate { column ->
-                    val value = if (column.value.startsWith("$")) {
-                        JSONPATH_CONTEXT.parse(child.toString()).read<Any>(column.value)
-                    } else {
-                        val pointer = if (column.value.startsWith("/")) column.value else "/${column.value}"
-                        val valueNode = child.at(pointer)
-
-                        if (valueNode.isValueNode && !valueNode.isNull) {
-                            objectMapper.treeToValue<Any?>(valueNode)
-                        } else {
-                            null
-                        }
-                    }
-
-                    column.key to value
-                }
+                InteractiveTableResult(
+                    data = widget.properties.columns.associate { column ->
+                        column.key to getValueAt(child, column.value)
+                    },
+                    resolved = widget.properties.rowClickAction?.getExposedValues(
+                        { path -> resolvedValues[path] ?: getValueAt(child, path) }
+                    ),
+                )
             }
 
-        widget.getUnresolvedValues()
-
-        return mapOf(
-            "resolved" to widget.getExposedResolvedValues(resolvedValues),
-            "data" to PageImpl(result, pageable, collectionNode.size().toLong())
+        return InteractiveTableWidgetDataResult(
+            resolved = exposedValues,
+            table = PageImpl(result, pageable, collectionNode.size().toLong())
         )
+    }
+
+    private inline fun getValueAt(data: JsonNode, path: String): Any? {
+        return if (path.startsWith("$")) {
+            JSONPATH_CONTEXT.parse(data.toString()).read<Any?>(path)
+        } else {
+            val pointer = if (path.startsWith("/")) path else "/${path}"
+            val valueNode = data.at(pointer)
+
+            if (valueNode.isValueNode && !valueNode.isNull) {
+                objectMapper.treeToValue(valueNode)
+            } else {
+                null
+            }
+        }
     }
 
     private companion object {

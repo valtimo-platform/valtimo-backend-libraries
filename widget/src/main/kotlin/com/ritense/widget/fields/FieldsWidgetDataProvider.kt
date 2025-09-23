@@ -39,7 +39,7 @@ class FieldsWidgetDataProvider(
             }
         }.toMap()
 
-        return resolvedFields + widget.getExposedResolvedValues(resolvedValues)
+        return resolvedFields + widget.getExposedValues { path -> resolvedValues[path] }
     }
 
 }

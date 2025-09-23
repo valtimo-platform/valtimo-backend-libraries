@@ -16,16 +16,10 @@
 
 package com.ritense.widget.domain
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonTypeName
 
-@JsonTypeName("open-in-new-tab")
-data class OpenInNewTabWidgetAction(
+@JsonTypeName("createNewCase")
+data class CreateNewCaseWidgetAction(
     val name: String,
-    val openInNewTab: String,
-) : LinkWidgetAction() {
-
-    @JsonIgnore
-    override fun getLink() = openInNewTab
-
-}
+    val caseDefinitionKey: String,
+) : WidgetAction

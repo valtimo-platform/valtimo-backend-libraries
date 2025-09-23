@@ -19,12 +19,36 @@ package com.ritense.widget.domain
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonTypeName
 
-@JsonTypeName("navigate-to")
+@JsonTypeName("navigateTo")
 data class NavigateToWidgetAction(
-    val name: String,
+    val name: String?,
     val navigateTo: String,
-) : LinkWidgetAction() {
+) : WidgetAction {
 
     @JsonIgnore
-    override fun getLink() = navigateTo
+    override fun getUnresolvedValues(): List<String> = getPlaceholders()
+        .map { it.second }
+        .filter { it.matches("[a-z].*".toRegex()) }
+
+    override fun getExposedValues(resolveValue: (String) -> Any?): Map<String, Any?> {
+        var resolvedLink = navigateTo
+        getPlaceholders().forEach { (placeholder, placeholderValue) ->
+            val resolvedPlaceholder = resolveValue(placeholderValue)
+            if (resolvedPlaceholder == null) {
+                return emptyMap()
+            }
+            resolvedLink = if (resolvedPlaceholder is Collection<*>) {
+                resolvedLink.replace(placeholder, resolvedPlaceholder.joinToString(separator = ""))
+            } else {
+                resolvedLink.replace(placeholder, resolvedPlaceholder.toString())
+            }
+        }
+        return mapOf(navigateTo to resolvedLink)
+    }
+
+    private fun getPlaceholders(): List<Pair<String, String>> {
+        return Regex("\\$\\{([^\\}]+)\\}").findAll(navigateTo)
+            .map { it.groupValues[0] to it.groupValues[1] }
+            .toList()
+    }
 }

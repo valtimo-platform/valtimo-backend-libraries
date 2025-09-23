@@ -28,7 +28,6 @@ import com.ritense.iko.repository.IkoDataAggregateRepository
 import com.ritense.iko.repository.IkoDataAggregateSpecificationHelper.Companion.byIkoRepositoryConfigKey
 import com.ritense.iko.repository.IkoDataAggregateSpecificationHelper.Companion.byKey
 import com.ritense.iko.repository.IkoDataAggregateSpecificationHelper.Companion.byTitleContains
-import com.ritense.valtimo.contract.event.CaseDefinitionPreDeleteEvent
 import com.ritense.valtimo.contract.iko.IkoRepository
 import com.ritense.valtimo.contract.iko.PropertyField
 import org.springframework.context.ApplicationEventPublisher
