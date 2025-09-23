@@ -31,5 +31,6 @@
 
     <include file="changelog/20250702-add-tab-table.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20250704-add-widget-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20250923-update-widget-properties.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
