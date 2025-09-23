@@ -993,7 +993,7 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
             join act_re_procdef pd on pd.id_ = pdcd.process_definition_id
             where pdcd.case_definition_key = ?
             and pdcd.case_definition_version_tag = ?
-            and pd.name_ = ?
+            and pd.key_ = ?
         """.trimIndent()
 
         val statement = connection.prepareStatement(existingProcDefQuery)
