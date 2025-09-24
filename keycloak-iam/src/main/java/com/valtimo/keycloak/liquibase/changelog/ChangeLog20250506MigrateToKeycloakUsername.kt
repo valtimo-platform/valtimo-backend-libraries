@@ -209,7 +209,13 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
             try {
                 val username = getKeycloakUsername(userId)
                 if (userId != username) {
-                    executeUpdate(connection, "INSERT INTO user_settings VALUES (?,?)", username, settings)
+                    executeUpdate(connection, """
+                        INSERT INTO user_settings (user_id, settings)
+                        SELECT ?, ?
+                        WHERE NOT EXISTS (
+                            SELECT 1 FROM user_settings WHERE user_id = ?
+                        );
+                     """.trimIndent(), username, settings, username)
                     executeUpdate(connection, "DELETE FROM user_settings WHERE user_id = ?", userId)
                 }
             } catch (_: KeycloakUserNotFoundException) {
