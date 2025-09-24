@@ -1011,29 +1011,30 @@ class ChangeLog20250514MigrateProcessDefinitions : CustomTaskChange {
         val referencedProcesses = mutableListOf<String>()
         val referencedDecisions = mutableListOf<String>()
 
-        bpmnModel.getDefinitions().getChildElementsByType<Process?>(Process::class.java).forEach(
-            Consumer { process: Process? ->
-                process!!.setOperatonVersionTag(OPERATON_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.toString())
-                process.getChildElementsByType<CallActivity>(CallActivity::class.java).forEach {callActivity ->
-                    val elementBinding = callActivity.getOperatonCalledElementBinding()
-                    // when the element binding is null, it means it's set to latest
-                    if (elementBinding == null) {
-                        callActivity.setOperatonCalledElementBinding("versionTag")
-                        callActivity.setOperatonCalledElementVersionTag(OPERATON_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId)
-                        referencedProcesses.add(callActivity.calledElement)
-                    }
-                }
-                process.getChildElementsByType(BusinessRuleTask::class.java).forEach { businessRuleTask ->
-                    val elementBinding = businessRuleTask.getOperatonDecisionRefBinding()
-                    // when the element binding is null, it means it's set to latest
-                    if (elementBinding == null) {
-                        businessRuleTask.setOperatonDecisionRefBinding("versionTag")
-                        businessRuleTask.setOperatonDecisionRefVersionTag(OPERATON_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId)
-                        referencedDecisions.add(businessRuleTask.operatonDecisionRef)
-                    }
-                }
+        bpmnModel.getDefinitions().getChildElementsByType<Process?>(Process::class.java).forEach { process: Process? ->
+            process!!.setOperatonVersionTag(OPERATON_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.toString())
+        }
+
+        bpmnModel.getModelElementsByType<CallActivity>(CallActivity::class.java).forEach {callActivity ->
+            val elementBinding = callActivity.getOperatonCalledElementBinding()
+            // when the element binding is null, it means it's set to latest
+            if (elementBinding == null || callActivity.operatonCalledElementVersionTag?.startsWith(OPERATON_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.key) == true) {
+                callActivity.setOperatonCalledElementBinding("versionTag")
+                callActivity.setOperatonCalledElementVersionTag(OPERATON_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId)
+                referencedProcesses.add(callActivity.calledElement)
             }
-        )
+        }
+
+        bpmnModel.getModelElementsByType(BusinessRuleTask::class.java).forEach { businessRuleTask ->
+            val elementBinding = businessRuleTask.getOperatonDecisionRefBinding()
+            // when the element binding is null, it means it's set to latest
+            if (elementBinding == null || businessRuleTask.operatonDecisionRefVersionTag?.startsWith(OPERATON_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.key) == true) {
+                businessRuleTask.setOperatonDecisionRefBinding("versionTag")
+                businessRuleTask.setOperatonDecisionRefVersionTag(OPERATON_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId)
+                referencedDecisions.add(businessRuleTask.operatonDecisionRef)
+            }
+        }
+
         return ReferencedEntities(referencedProcesses, referencedDecisions)
     }
 
