@@ -25,8 +25,8 @@ import com.ritense.document.service.DocumentService
 import com.ritense.logging.withLoggingContext
 import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId
 import com.ritense.processdocument.domain.impl.OperatonProcessJsonSchemaDocumentInstance
-import com.ritense.valtimo.operaton.service.OperatonRuntimeService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import com.ritense.valtimo.operaton.service.OperatonRuntimeService
 import com.ritense.valtimo.service.OperatonProcessService
 import org.operaton.bpm.engine.RepositoryService
 import org.operaton.bpm.engine.delegate.DelegateExecution
@@ -72,7 +72,7 @@ class ProcessDocumentsService(
         startProcessByProcessDefinitionKey(processDefinitionKey, businessKey, null)
     }
 
-    fun startProcessByProcessDefinitionKey(
+    fun startProcessByProcessDefinitionKeyWithoutCaseDefinition(
         processDefinitionKey: String,
         businessKey: String,
         variables: Map<String, Any>?
@@ -80,6 +80,36 @@ class ProcessDocumentsService(
         val processInstance = runWithoutAuthorization {
             operatonProcessService.startProcess(processDefinitionKey, businessKey, variables)
         }
+
+        require(processInstance.processDefinition.name != null) {
+            "Process definition with id '${processInstance.processDefinition.id}' doesn't have a name"
+        }
+        associateDocumentToProcess(
+            processInstance.processInstanceDto.id,
+            processInstance.processDefinition.name!!,
+            businessKey
+        )
+    }
+
+    fun startProcessByProcessDefinitionKey(
+        processDefinitionKey: String,
+        businessKey: String,
+        variables: Map<String, Any>?
+    ) {
+        val processInstance = runWithoutAuthorization {
+            val document = documentService.findBy(JsonSchemaDocumentId.existingId(UUID.fromString(businessKey)))
+            if (document.isPresent) {
+                operatonProcessService.startProcess(
+                    processDefinitionKey,
+                    businessKey,
+                    document.get().definitionId().caseDefinitionId(),
+                    variables
+                )
+            } else {
+                operatonProcessService.startProcess(processDefinitionKey, businessKey, variables)
+            }
+        }
+
         require(processInstance.processDefinition.name != null) {
             "Process definition with id '${processInstance.processDefinition.id}' doesn't have a name"
         }
