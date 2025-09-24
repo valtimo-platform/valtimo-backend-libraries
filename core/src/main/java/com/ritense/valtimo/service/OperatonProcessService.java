@@ -512,7 +512,7 @@ public class OperatonProcessService {
             }
 
             OperatonProcessDefinition latestProcessDefinition = getExistingProcessForFile(caseDefinitionId, bpmnModel);
-            if (latestProcessDefinition != null) {
+            if (latestProcessDefinition != null && caseDefinitionId != null) {
                 // clean up previous process definition, can only be triggered when we're deploying a draft version
                 applicationEventPublisher.publishEvent(new ProcessDefinitionDeleted(
                     latestProcessDefinition.getId(),
@@ -672,25 +672,39 @@ public class OperatonProcessService {
         bpmnModel.getDefinitions().getChildElementsByType(Process.class).forEach(
             process -> {
                 process.setOperatonVersionTag(OPERATON_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.toString());
-                process.getChildElementsByType(CallActivity.class).forEach(
-                    callActivity -> {
-                        var elementBinding = callActivity.getOperatonCalledElementBinding();
-                        if (elementBinding == null) {
-                            callActivity.setOperatonCalledElementBinding("versionTag");
-                            callActivity.setOperatonCalledElementVersionTag(OPERATON_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId);
-                        }
-                    }
-                );
+            }
+        );
 
-                process.getChildElementsByType(BusinessRuleTask.class).forEach(
-                    businessRuleTask -> {
-                        var elementBinding = businessRuleTask.getOperatonDecisionRefBinding();
-                        if (elementBinding == null) {
-                            businessRuleTask.setOperatonDecisionRefBinding("versionTag");
-                            businessRuleTask.setOperatonDecisionRefVersionTag(OPERATON_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId);
-                        }
-                    }
-                );
+        bpmnModel.getModelElementsByType(CallActivity.class).forEach(
+            callActivity -> {
+                var elementBinding = callActivity.getOperatonCalledElementBinding();
+                if (
+                    elementBinding == null ||
+                    (
+                        callActivity.getOperatonCalledElementVersionTag() != null &&
+                        callActivity.getOperatonCalledElementVersionTag().startsWith(OPERATON_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.getKey())
+                    )
+
+                ) {
+                    callActivity.setOperatonCalledElementBinding("versionTag");
+                    callActivity.setOperatonCalledElementVersionTag(OPERATON_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId);
+                }
+            }
+        );
+
+        bpmnModel.getModelElementsByType(BusinessRuleTask.class).forEach(
+            businessRuleTask -> {
+                var elementBinding = businessRuleTask.getOperatonDecisionRefBinding();
+                if (
+                    elementBinding == null ||
+                    (
+                        businessRuleTask.getOperatonDecisionRefVersionTag() != null &&
+                        businessRuleTask.getOperatonDecisionRefVersionTag().startsWith(OPERATON_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId.getKey())
+                    )
+                ) {
+                    businessRuleTask.setOperatonDecisionRefBinding("versionTag");
+                    businessRuleTask.setOperatonDecisionRefVersionTag(OPERATON_CASE_DEFINITION_VERSION_TAG_PREFIX + caseDefinitionId);
+                }
             }
         );
     }
