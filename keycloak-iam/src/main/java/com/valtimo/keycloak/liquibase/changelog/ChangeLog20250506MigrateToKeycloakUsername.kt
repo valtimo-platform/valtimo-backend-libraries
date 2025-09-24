@@ -34,6 +34,7 @@ import org.springframework.boot.SpringApplication
 import org.springframework.boot.env.EnvironmentPostProcessor
 import org.springframework.core.env.ConfigurableEnvironment
 import org.springframework.core.env.Environment
+import java.nio.ByteBuffer
 import java.sql.ResultSet
 import java.util.UUID
 
@@ -381,7 +382,10 @@ class ChangeLog20250506MigrateToKeycloakUsername : CustomTaskChange, Environment
     ): UUID? {
         return if (database.databaseProductName == "MySQL") {
             val bytesResult = results.getBytes(columnName)
-            bytesResult?.let { UUID.nameUUIDFromBytes(it) }
+            bytesResult?.let {
+                val byteBuffer = ByteBuffer.wrap(it)
+                UUID(byteBuffer.long, byteBuffer.long)
+            }
         } else {
             val stringResult = results.getString(columnName)
             stringResult?.let { UUID.fromString(it) }
