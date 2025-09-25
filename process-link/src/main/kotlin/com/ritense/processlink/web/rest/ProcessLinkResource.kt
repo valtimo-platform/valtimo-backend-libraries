@@ -263,7 +263,7 @@ class ProcessLinkResource(
     fun getUnlinkedProcessDefinitionsWithLinks(
         @PathVariable("processDefinitionKey") processDefinitionKey: String
     ): ResponseEntity<List<ProcessDefinitionResponseDto>> {
-        val definitions = operatonProcessService.getDefinitionsByKey(processDefinitionKey)
+        val definitions = operatonProcessService.getGlobalDefinitionsByKey(processDefinitionKey)
 
         val responseDto = definitions.map {
             ProcessDefinitionResponseDto(
@@ -353,7 +353,7 @@ class ProcessLinkResource(
         @PathVariable("processDefinitionKey") processDefinitionKey: String
     ): ResponseEntity<Any> {
         runWithoutAuthorization {
-            operatonProcessService.getDefinitionsByKey(processDefinitionKey)
+            operatonProcessService.getUnlinkedDeployedDefinitionsByKey(processDefinitionKey)
                 .forEach { definition ->
                     processLinkService.deleteProcessLinksForProcessDefinition(definition.id)
                     operatonProcessService.deleteProcessDefinition(definition.id)
