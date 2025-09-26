@@ -136,7 +136,7 @@ class FormFlowResource(
 
     @PostMapping("/v1/form-flow/instance/{formFlowId}/step/instance/{stepInstanceId}/to/step/instance/{targetStepInstanceId}")
     @Transactional
-    fun navigationStep(
+    fun navigateToStep(
         @LoggableResource(resourceType = FormFlowInstance::class) @PathVariable(name = "formFlowId") formFlowId: String,
         @LoggableResource(resourceType = FormFlowStepInstance::class) @PathVariable(name = "stepInstanceId") stepInstanceId: String,
         @PathVariable(name = "targetStepInstanceId") targetStepInstanceId: String,
@@ -152,7 +152,7 @@ class FormFlowResource(
         }
         formFlowService.save(instance)
 
-        val stepInstance = instance.navigationStep(FormFlowStepInstanceId.existingId(targetStepInstanceId))
+        val stepInstance = instance.navigateToStep(FormFlowStepInstanceId.existingId(targetStepInstanceId))
 
         return ResponseEntity.ok(GetFormFlowStateResult(instance.id.id, openStep(stepInstance)))
     }
