@@ -30,7 +30,7 @@ data class InteractiveTableWidgetProperties(
     @field:Min(1) val defaultPageSize: Int,
     @field:NotEmpty val columns: List<@Valid Column>,
     val firstColumnAsTitle: Boolean = false,
-    val rowClickAction: WidgetAction?,
+    val rowClickAction: WidgetAction? = null,
 ) {
     @JsonInclude(Include.NON_NULL)
     data class Column(

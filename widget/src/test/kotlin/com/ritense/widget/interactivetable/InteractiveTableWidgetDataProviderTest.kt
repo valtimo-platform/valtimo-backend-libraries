@@ -67,39 +67,45 @@ class InteractiveTableWidgetDataProviderTest(
         JSONAssert.assertEquals(
             """
             {
-              "resolved": {},
-              "data": {
-                "content": [
-                  {
-                    "firstName": "John",
-                    "lastName": "Doe",
-                    "real": false,
-                    "age": 30,
-                    "partnerFirstName": "Jane",
-                    "partnerLastName": "Doe",
-                    "partnerReal": true,
-                    "partnerAge": 25
-                  },
-                  {
-                    "firstName": "John",
-                    "lastName": "Doe",
-                    "real": false,
-                    "age": 30,
-                    "partnerFirstName": null,
-                    "partnerLastName": null,
-                    "partnerReal": null,
-                    "partnerAge": null
-                  }
-                ],
-                "first": true,
-                "last": false,
-                "totalPages": 2,
-                "totalElements": 3,
-                "numberOfElements": 2,
-                "size": 2,
-                "number": 0,
-                "sort": []
-              }
+                "table": {
+                    "content": [
+                        {
+                            "data": {
+                                "firstName": "John",
+                                "lastName": "Doe",
+                                "real": false,
+                                "age": 30,
+                                "partnerFirstName": "Jane",
+                                "partnerLastName": "Doe",
+                                "partnerReal": true,
+                                "partnerAge": 25
+                            },
+                            "resolved": null
+                        },
+                        {
+                            "data": {
+                                "firstName": "John",
+                                "lastName": "Doe",
+                                "real": false,
+                                "age": 30,
+                                "partnerFirstName": null,
+                                "partnerLastName": null,
+                                "partnerReal": null,
+                                "partnerAge": null
+                            },
+                            "resolved": null
+                        }
+                    ],
+                    "first": true,
+                    "last": false,
+                    "totalPages": 2,
+                    "totalElements": 3,
+                    "numberOfElements": 2,
+                    "size": 2,
+                    "number": 0,
+                    "sort": []
+                },
+                "resolved": {}
             }
         """.trimIndent(), objectMapper.writeValueAsString(firstPage), JSONCompareMode.STRICT_ORDER
         )
@@ -109,29 +115,32 @@ class InteractiveTableWidgetDataProviderTest(
         JSONAssert.assertEquals(
             """
             {
-              "resolved": {},
-              "data": {
-                "content": [
-                  {
-                    "firstName": null,
-                    "lastName": null,
-                    "real": null,
-                    "age": null,
-                    "partnerFirstName": null,
-                    "partnerLastName": null,
-                    "partnerReal": null,
-                    "partnerAge": null
-                  }
-                ],
-                "first": false,
-                "last": true,
-                "totalPages": 2,
-                "totalElements": 3,
-                "numberOfElements": 1,
-                "size": 2,
-                "number": 1,
-                "sort": []
-              }
+               "resolved": {},
+               "table": {
+                   "content": [
+                       {
+                           "data": {
+                               "firstName": null,
+                               "lastName": null,
+                               "real": null,
+                               "age": null,
+                               "partnerFirstName": null,
+                               "partnerLastName": null,
+                               "partnerReal": null,
+                               "partnerAge": null
+                           },
+                           "resolved": null
+                       }
+                   ],
+                   "first": false,
+                   "last": true,
+                   "totalPages": 2,
+                   "totalElements": 3,
+                   "numberOfElements": 1,
+                   "size": 2,
+                   "number": 1,
+                   "sort": []
+               }
             }
         """.trimIndent(), objectMapper.writeValueAsString(secondPage), JSONCompareMode.STRICT_ORDER
         )
@@ -150,8 +159,8 @@ class InteractiveTableWidgetDataProviderTest(
         val collection = objectMapper.valueToTree<JsonNode>(listOf(john()))
         mockCollection(widget, collection)
 
-        val page = widgetDataProvider.getData(widget, properties)["data"] as Page<Map<String, Any?>>
-        assertThat(page.content.first()).containsEntry("firstName", "John")
+        val page = widgetDataProvider.getData(widget, properties).table
+        assertThat(page.content.first().data).containsEntry("firstName", "John")
     }
 
     @Test
@@ -171,8 +180,8 @@ class InteractiveTableWidgetDataProviderTest(
         )
         mockCollection(widget, collection)
 
-        val page = widgetDataProvider.getData(widget, properties)["data"] as Page<Map<String, Any?>>
-        assertThat(page.content.first()).containsEntry("firstName", "John")
+        val page = widgetDataProvider.getData(widget, properties).table
+        assertThat(page.content.first().data).containsEntry("firstName", "John")
     }
 
     @Test
@@ -222,7 +231,7 @@ class InteractiveTableWidgetDataProviderTest(
         )
         mockCollection(widget, null)
 
-        val data = widgetDataProvider.getData(widget, properties)["data"] as Page<Map<String, Any?>>
+        val data = widgetDataProvider.getData(widget, properties).table
 
         assertThat(data.content.size).isZero()
         assertThat(data.number).isEqualTo(0)
@@ -242,7 +251,7 @@ class InteractiveTableWidgetDataProviderTest(
         val collection = people()
         mockCollection(widget, collection)
 
-        val data = widgetDataProvider.getData(widget, properties)["data"] as Page<Map<String, Any?>>
+        val data = widgetDataProvider.getData(widget, properties).table
 
         assertThat(data.content.size).isZero()
         assertThat(data.number).isEqualTo(2)
@@ -260,7 +269,7 @@ class InteractiveTableWidgetDataProviderTest(
         properties = InteractiveTableWidgetProperties(
             collection = "test:someCollection",
             defaultPageSize = 2,
-            columns = testColumns()
+            columns = testColumns(),
         )
     )
 
